@@ -21,12 +21,14 @@ import android.view.WindowManager.LayoutParams;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
@@ -47,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class IncognitoTabbedSnapshotControllerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Window mWindowMock;
     @Mock private Activity mActivityMock;
     @Mock private TabModelSelector mTabModelSelectorMock;
@@ -75,7 +78,6 @@ public class IncognitoTabbedSnapshotControllerTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mIncognitoTabModelMock)
                 .when(mTabModelSelectorMock)
                 .getModel(/* incognito= */ true);

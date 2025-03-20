@@ -16,6 +16,7 @@
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 // Workaround for https://crbug.com/1369643
@@ -280,7 +281,7 @@ void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
 
   NotifyBrowserWindowAboutToolbarRevealChanged();
   if (NativeWidgetNSWindowBridge* bridge =
-          NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
+          NativeWidgetNSWindowBridge::GetFromNSWindow(browser_window_)) {
     NSScreen* screen = browser_window_.screen;
     // We have an autohiding menu bar if:
     // - We don't have a notch AND
@@ -405,7 +406,7 @@ void ImmersiveModeControllerCocoa::OnPrimaryDisplayChanged() {
   // aligns with the new primary display.
   // See https://crbug.com/365733574#comment28 for more details.
   if (NativeWidgetNSWindowBridge* overlay_bridge =
-          NativeWidgetNSWindowBridge::GetFromNativeWindow(overlay_window_)) {
+          NativeWidgetNSWindowBridge::GetFromNSWindow(overlay_window_)) {
     overlay_bridge->UpdateWindowGeometry();
   }
 }
@@ -548,7 +549,7 @@ void ImmersiveModeControllerCocoa::OnToolbarRevealMaybeChanged() {
 void ImmersiveModeControllerCocoa::OnMenuBarRevealChanged() {
   Reanchor();
   if (NativeWidgetNSWindowBridge* bridge =
-          NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
+          NativeWidgetNSWindowBridge::GetFromNSWindow(browser_window_)) {
     bridge->OnImmersiveFullscreenMenuBarRevealChanged(
         immersive_mode_titlebar_view_controller_.revealAmount);
   }
@@ -607,7 +608,7 @@ double ImmersiveModeControllerCocoa::GetOffscreenYOrigin() {
 void ImmersiveModeControllerCocoa::
     NotifyBrowserWindowAboutToolbarRevealChanged() {
   if (NativeWidgetNSWindowBridge* bridge =
-          NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
+          NativeWidgetNSWindowBridge::GetFromNSWindow(browser_window_)) {
     bridge->OnImmersiveFullscreenToolbarRevealChanged(IsToolbarRevealed());
   }
 }

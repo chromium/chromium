@@ -113,9 +113,9 @@ buildflag_header("buildflags") {
   # Android and ChromeOS don't support multiple browser processes, so they don't
   # employ ProcessSingleton.
   if (is_android || is_chromeos) {
-    flags += [ "ENABLE_PROCESS_SINGLETON=0" ]
+    flags += [ "ENABLE_PROCESS_SINGLETON=false" ]
   } else {
-    flags += [ "ENABLE_PROCESS_SINGLETON=1" ]
+    flags += [ "ENABLE_PROCESS_SINGLETON=true" ]
   }
 }
 
@@ -1240,6 +1240,8 @@ static_library("browser") {
     "privacy_sandbox/notice/notice_framework.h",
     "privacy_sandbox/notice/notice_framework_factory.cc",
     "privacy_sandbox/notice/notice_framework_factory.h",
+    "privacy_sandbox/notice/notice_model.cc",
+    "privacy_sandbox/notice/notice_model.h",
     "privacy_sandbox/privacy_sandbox_countries.h",
     "privacy_sandbox/privacy_sandbox_countries_impl.cc",
     "privacy_sandbox/privacy_sandbox_countries_impl.h",
@@ -2265,6 +2267,7 @@ static_library("browser") {
     "//components/prefs",
     "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_notice_constants",
+    "//components/privacy_sandbox:privacy_sandbox_notice_mojom",
     "//components/privacy_sandbox:privacy_sandbox_notice_storage",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:privacy_sandbox_survey_service",
@@ -6247,6 +6250,8 @@ static_library("browser") {
       "win/jumplist_update_util.h",
       "win/jumplist_updater.cc",
       "win/jumplist_updater.h",
+      "win/limited_access_features.cc",
+      "win/limited_access_features.h",
       "win/parental_controls.cc",
       "win/parental_controls.h",
       "win/remove_app_compat_entries.cc",

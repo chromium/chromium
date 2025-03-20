@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
+#include "ui/gfx/native_widget_types.h"
 
 // Constants ///////////////////////////////////////////////////////////////////
 
@@ -131,7 +132,7 @@ typedef NS_ENUM(NSInteger, FadeWindowsOperation) { kHide, kShow };
 - (void)setCurrentProgress:(NSAnimationProgress)progress {
   CGFloat value = _op == kShow ? progress : 1.0 - progress;
   for (NSWindow* window in NSApp.windows) {
-    if (chrome::FindBrowserWithWindow(window)) {
+    if (chrome::FindBrowserWithWindow(gfx::NativeWindow(window))) {
       window.alphaValue = value;
     }
   }

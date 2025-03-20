@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
@@ -60,14 +59,6 @@ public class HubPaneHostMediator {
     }
 
     private void onPaneChange(@Nullable Pane pane) {
-        @HubColorScheme int newColorScheme = HubColors.getColorSchemeSafe(pane);
-        @HubColorScheme
-        int prevColorScheme =
-                mPropertyModel.get(COLOR_SCHEME) == null
-                        ? newColorScheme
-                        : mPropertyModel.get(COLOR_SCHEME).newColorScheme;
-
-        mPropertyModel.set(COLOR_SCHEME, new HubColorSchemeUpdate(newColorScheme, prevColorScheme));
         View view = pane == null ? null : pane.getRootView();
         mPropertyModel.set(PANE_ROOT_VIEW, view);
     }

@@ -37,6 +37,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_sequence_views.h"
@@ -446,21 +447,16 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       // TODO(crbug.com/330210402): Re-enable this test
-                       DISABLED_InstrumentNonTabAsTestStep) {
+                       InstrumentNonTabAsTestStep) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
   const char kTabSearchWebViewName[] = "Tab Search WebView";
 
   RunTestSequence(
       PressButton(kTabSearchButtonElementId),
       WaitForShow(kTabSearchBubbleElementId),
-      NameViewRelative(
-          kTabSearchBubbleElementId, kTabSearchWebViewName,
-          base::BindOnce([](WebUIBubbleDialogView* view) -> views::View* {
-            return view->web_view();
-          })),
-      InstrumentNonTabWebView(kWebContentsId, kTabSearchWebViewName),
-      EnsurePresent(kTabSearchWebViewName));
+      NameChildViewByType<views::WebView>(kTabSearchBubbleElementId,
+                                          kTabSearchWebViewName),
+      InstrumentNonTabWebView(kWebContentsId, kTabSearchWebViewName));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,

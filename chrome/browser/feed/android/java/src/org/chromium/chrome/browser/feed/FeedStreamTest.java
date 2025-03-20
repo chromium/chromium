@@ -35,12 +35,14 @@ import androidx.test.filters.SmallTest;
 import com.google.protobuf.ByteString;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
@@ -99,6 +101,7 @@ public class FeedStreamTest {
     private static final String HEADER_PREFIX = "header";
     private static final OpenUrlOptions DEFAULT_OPEN_URL_OPTIONS = new OpenUrlOptions() {};
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
     private RecyclerView mRecyclerView;
@@ -164,7 +167,6 @@ public class FeedStreamTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityController = Robolectric.buildActivity(Activity.class);
         mActivity = mActivityController.get();
 

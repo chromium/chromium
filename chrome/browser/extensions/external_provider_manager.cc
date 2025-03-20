@@ -365,7 +365,7 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
     ExtensionService* service =
         ExtensionSystem::Get(context_)->extension_service();
     DCHECK(service);
-    if (!service->corrupted_extension_reinstaller()
+    if (!CorruptedExtensionReinstaller::Get(context_)
              ->IsReinstallForCorruptionExpected(info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
                        current, info.download_location)) {
@@ -422,7 +422,7 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
       // set of extensions. If the extension is corrupted, it should be
       // reinstalled, thus it should be added to the pending extensions for
       // installation.
-      if (!service->corrupted_extension_reinstaller()
+      if (!CorruptedExtensionReinstaller::Get(context_)
                ->IsReinstallForCorruptionExpected(info.extension_id)) {
         return false;
       }

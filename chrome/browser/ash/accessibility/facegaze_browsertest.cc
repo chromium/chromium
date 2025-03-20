@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/facegaze_bubble_test_helper.h"
 #include "chrome/browser/ash/accessibility/facegaze_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -133,6 +134,7 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     utils_ = std::make_unique<FaceGazeTestUtils>();
+    bubble_helper_ = std::make_unique<FaceGazeBubbleTestHelper>();
     GetRootWindow()->AddPreTargetHandler(&event_handler_);
   }
 
@@ -153,9 +155,11 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
 
   MockEventHandler& event_handler() { return event_handler_; }
   FaceGazeTestUtils* utils() { return utils_.get(); }
+  FaceGazeBubbleTestHelper* bubble_helper() { return bubble_helper_.get(); }
 
  private:
   std::unique_ptr<FaceGazeTestUtils> utils_;
+  std::unique_ptr<FaceGazeBubbleTestHelper> bubble_helper_;
   MockEventHandler event_handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1028,6 +1032,44 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DisableActionsDialogCancel) {
   ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeActionsEnabled));
   ASSERT_TRUE(
       prefs->GetBoolean(prefs::kAccessibilityFaceGazeActionsEnabledSentinel));
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, CloseButton) {
+  auto* controller = ash::Shell::Get()->accessibility_controller();
+  auto* prefs = GetPrefs();
+
+  base::RunLoop dialog_waiter;
+  controller->AddFeatureDisableDialogCallbackForTesting(
+      base::BindLambdaForTesting([&dialog_waiter]() { dialog_waiter.Quit(); }));
+
+  // Setup FaceGaze.
+  const base::flat_map<FaceGazeGesture, MacroName> gestures_to_macros = {
+      {FaceGazeGesture::MOUTH_PUCKER, MacroName::MOUSE_CLICK_LEFT}};
+  const base::flat_map<FaceGazeGesture, int> gestures_to_confidences = {
+      {FaceGazeGesture::MOUTH_PUCKER, 50}};
+  utils()->EnableFaceGaze(Config().Default().WithBindings(
+      gestures_to_macros, gestures_to_confidences));
+
+  // Assert initial state.
+  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
+  ASSERT_EQ(nullptr, controller->GetFeatureDisableDialogForTest());
+
+  // Move mouse to close button.
+  gfx::Point close_button = bubble_helper()->GetCloseButtonCenterPoint();
+  utils()->MoveMouseTo(close_button);
+  utils()->AssertCursorAt(close_button);
+  ASSERT_TRUE(bubble_helper()->IsVisible());
+
+  // Clicking the close button will show the dialog to turn off FaceGaze. Note
+  // that the sentinel pref gets turned to false but the FaceGaze feature stays
+  // enabled.
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      MediapipeGesture::MOUTH_PUCKER, 95));
+  dialog_waiter.Run();
+  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+  ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel));
+  ASSERT_NE(nullptr, controller->GetFeatureDisableDialogForTest());
 }
 
 }  // namespace ash

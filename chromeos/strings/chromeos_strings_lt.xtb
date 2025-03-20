@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Slėpti transkribuotą tekstą</translation>
 <translation id="160633243685262989">Peržiūrėti vaizdą</translation>
 <translation id="1611649489706141841">persiųsti</translation>
-<translation id="1615144046047995187">Nepavyko atsisiųsti. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo.</translation>
 <translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Temos naudojimas</translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Garso įrašų sąrašas</translation>
 <translation id="2561093647892030937">citrinos</translation>
 <translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
-<translation id="2573178735329662769">Visų „Chromebook“ garsų įrašymas</translation>
 <translation id="2576253868710695442">Ji užims iki 2 GB vietos saugykloje</translation>
 <translation id="2584547424703650812">Švytintys peizažai</translation>
 <translation id="2584559707064218956">Norėdami nustatyti eikite į Nustatymus</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">mėlynos ir rožinės spalvų</translation>
 <translation id="498186245079027698">Patikrinkite skaitytuvą ir bandykite dar kartą. Įsitikinkite, kad vietinėje sistemoje pakanka vietos nuskaitytiems failams išsaugoti.</translation>
 <translation id="4982627662315910959">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą naudodami „Shift“ ir dar vieną modifikavimo klavišą („Ctrl“, „Alt“ arba „<ph name="META_KEY" />“).</translation>
-<translation id="4983216687482551672">„Chromebook“ garsas</translation>
 <translation id="4985509611418653372">Vykdyti</translation>
 <translation id="4987769320337599931">Užkarda</translation>
 <translation id="4988526792673242964">Psl.</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Jei norite tęsti atnaujinimo procesą, atjunkite „<ph name="DEVICE_NAME" />“ USB laidą ir vėl jį prijunkite</translation>
 <translation id="5099354524039520280">aukštyn</translation>
 <translation id="5107243100836678918">Spartusis klavišas be klavišo „<ph name="META_KEY" />“ gali būti nesuderinamas su kai kurių programų sparčiaisiais klavišais. Dar kartą paspauskite šį spartųjį klavišą, jei norite toliau jį naudoti, arba paspauskite naują spartųjį klavišą naudodami klavišą „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Nepavyko atsisiųsti <ph name="LANGUAGE_NAME" /> k. transkribavimo modelio. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo</translation>
 <translation id="5108781503443873320">Panašūs:</translation>
-<translation id="5121677070210013200">Nepavyko atsisiųsti transkribavimo modelio. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo.</translation>
 <translation id="5130848777448318809">poniai</translation>
 <translation id="5137451382116112100">Viso ekrano režimas</translation>
 <translation id="5139813694804168398">netrukdymo režimas</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">Leisti</translation>
 <translation id="5901630391730855834">Geltona</translation>
 <translation id="5903200662178656908">Įrenginį sudaro klaviatūra ir pelė.</translation>
+<translation id="5903822368221507416">Slėpti skirtukus</translation>
 <translation id="5904994456462260490">Pridėti naują APN</translation>
 <translation id="590746845088109442">katės</translation>
 <translation id="5907649332524363701">klavišo spalva</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">Prisijungęs</translation>
 <translation id="6122277663991249694">„Chrome“ OS įvesties metodo paslauga</translation>
 <translation id="6127426868813166163">baltos spalvos</translation>
-<translation id="613049107179582049">Kai „Chromebook“ įrenginyje garso išvestis įjungta, garso įrašytuvas užfiksuoja visus šiame įrenginyje leidžiamus garsus</translation>
 <translation id="6136285399872347291">naikinimas</translation>
 <translation id="6137614725462089991">kiberpankas</translation>
 <translation id="6137767437444130246">Naudotojo sertifikatas</translation>
@@ -1418,7 +1413,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB jutiklinis ekranas</translation>
 <translation id="757747079855995705">akmens</translation>
-<translation id="7584853321964440104">Atsisiųsti nepavyko. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo.</translation>
 <translation id="7590883480672980941">Įvesties nustatymai</translation>
 <translation id="7595982850646262331">Liko <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> administratorius apribojo šio „<ph name="DEVICE_TYPE" />“ naudojimo laiką.</translation>
@@ -1785,7 +1779,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="9218016617214286986">Rodyti žinomus APN</translation>
 <translation id="932327136139879170">Kontaktinė namų informacija</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Įsitikinkite, kad mikrofonas prijungtas, arba bandykite iš naujo paleisti „Chromebook“</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="950520315903467048">Trūksta klavišo, skirto veiksmui „<ph name="DIRECTION" />“. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Palyginti įrašo balsus, kad transkribuotame tekste atsispindėtų, ką ir kada pasakė kiekvienas kalbantysis</translation>

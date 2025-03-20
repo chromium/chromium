@@ -27,7 +27,7 @@ class MockCredentialManagerImpl
   MOCK_METHOD(void,
               Get,
               (CredentialMediationRequirement mediation,
-               int requested_credential_type_flags,
+               bool include_passwords,
                const std::vector<GURL>& federations,
                credential_management::GetCallback callback),
               (override));

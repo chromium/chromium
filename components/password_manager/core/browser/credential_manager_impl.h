@@ -46,7 +46,7 @@ class CredentialManagerImpl
   void Store(const CredentialInfo& credential, StoreCallback callback) override;
   void PreventSilentAccess(PreventSilentAccessCallback callback) override;
   void Get(CredentialMediationRequirement mediation,
-           int requested_credential_type_flags,
+           bool include_passwords,
            const std::vector<GURL>& federations,
            GetCallback callback) override;
 

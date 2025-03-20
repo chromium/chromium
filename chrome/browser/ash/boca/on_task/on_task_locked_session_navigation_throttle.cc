@@ -24,6 +24,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/common/extension_urls.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "ui/base/page_transition_types.h"
@@ -33,9 +34,6 @@ namespace ash {  // namespace
 namespace {
 
 using ::boca::LockedNavigationOptions;
-
-// Chrome Web Store host.
-constexpr char kCWSHost[] = "chromewebstore.google.com";
 
 // Returns whether all the given query parameters are found in the URL.
 bool DoAllQueryParamsExist(const std::set<std::string>& request_params,
@@ -62,6 +60,11 @@ bool IsOauthLoginStart(const GURL& url) {
 bool IsOauthLoginComplete(const GURL& url) {
   return DoAllQueryParamsExist(
       login_detection::GetOAuthLoginCompleteQueryParams(), url);
+}
+
+bool IsChromeWebStoreURL(const GURL& url) {
+  return (url.host() == extension_urls::GetWebstoreLaunchURL().host()) ||
+         (url.host() == extension_urls::GetNewWebstoreLaunchURL().host());
 }
 
 }  // namespace
@@ -169,13 +172,12 @@ bool OnTaskLockedSessionNavigationThrottle::
   bool is_boca_app_host_url =
       (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
        url.host() == boca::kChromeBocaAppHost);
-  bool is_cws_host_url = (url.host() == kCWSHost);
   return (navigation_handle()->IsDownload() ||
           (navigation_handle()->GetRequestMethod() !=
                net::HttpRequestHeaders::kGetMethod &&
            !navigation_handle()->IsFormSubmission()) ||
           (!url.SchemeIsHTTPOrHTTPS() && !is_boca_app_host_url) ||
-          is_cws_host_url);
+          IsChromeWebStoreURL(url));
 }
 
 bool OnTaskLockedSessionNavigationThrottle::IsOutsideOnTaskAppNavigation() {

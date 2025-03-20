@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Skrýt přepis</translation>
 <translation id="160633243685262989">Náhled obrázku</translation>
 <translation id="1611649489706141841">vpřed</translation>
-<translation id="1615144046047995187">Stažení se nezdařilo. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="1615335640928990664">Využití dat od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Použijte motiv</translation>
 <translation id="1621067168122174824">Spustit test nabití</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Seznam zvukových nahrávek</translation>
 <translation id="2561093647892030937">citrony</translation>
 <translation id="2570743873672969996">Běží test <ph name="TEST_NAME" />…</translation>
-<translation id="2573178735329662769">Nahrává se veškerý zvuk Chromebooku</translation>
 <translation id="2576253868710695442">Může v úložišti zabrat až 2 GB</translation>
 <translation id="2584547424703650812">Zářivé krajiny</translation>
 <translation id="2584559707064218956">Konfiguraci lze provést v sekci Nastavení</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">modrá a růžová</translation>
 <translation id="498186245079027698">Zkontrolujte skener a zkuste to znovu. Zkontrolujte, zda máte dostatek místního úložného prostoru k ukládání naskenovaných souborů.</translation>
 <translation id="4982627662315910959">Zkratka není k dispozici. Stiskněte novou zkratku s klávesou Shift a jednou další modifikační klávesou (Ctrl, Alt nebo <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Zvuk Chromebooku</translation>
 <translation id="4985509611418653372">Spustit</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Stránky</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Pokud chcete v procesu aktualizace pokračovat, odpojte od zařízení <ph name="DEVICE_NAME" /> kabel USB a znovu ho připojte</translation>
 <translation id="5099354524039520280">nahoru</translation>
 <translation id="5107243100836678918">Zkratka bez klávesy <ph name="META_KEY" /> může být v konfliktu se zkratkou některé aplikace. Pokud tuto zkratku chcete nadále používat, stiskněte ji znovu, nebo stiskněte novou klávesovou zkratku s klávesou <ph name="KEY" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Model přepisu jazyka <ph name="LANGUAGE_NAME" /> se nepodařilo stáhnout. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="5108781503443873320">Podobný význam:</translation>
-<translation id="5121677070210013200">Model přepisu nelze stáhnout. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="5130848777448318809">poníci</translation>
 <translation id="5137451382116112100">Maximalizovat</translation>
 <translation id="5139813694804168398">nerušit</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">barva podsvícení</translation>
 <translation id="5292579816060236070">Tapeta s východem slunce</translation>
 <translation id="5294769550414936029">verze <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">přepnout přístup ke kameře</translation>
 <translation id="5300814202279832142">Přesunout okno na plochu</translation>
 <translation id="5302048478445481009">Jazyk</translation>
 <translation id="5303837385540978511">Exkluzivní tapeta pro <ph name="PRODUCT_NAME" /></translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Přehrát</translation>
 <translation id="5901630391730855834">Žlutá</translation>
 <translation id="5903200662178656908">Zařízení je kombinace klávesnice a myši.</translation>
+<translation id="5903822368221507416">Skrýt karty</translation>
 <translation id="5904994456462260490">Přidání nového názvu přístupového bodu</translation>
 <translation id="590746845088109442">kočky</translation>
 <translation id="5907649332524363701">barva klíče</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Služba metod zadávání systému ChromeOS</translation>
 <translation id="6127426868813166163">bílá</translation>
-<translation id="613049107179582049">Když je zapnutý zvuk Chromebooku, zaznamenává Diktafon veškerý zvuk přehrávaný na tomhle zařízení</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certifikát uživatele</translation>
@@ -1417,7 +1413,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Dotyková obrazovka USB</translation>
 <translation id="757747079855995705">kámen</translation>
-<translation id="7584853321964440104">Model nelze stáhnout. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="7590883480672980941">Nastavení zadávání</translation>
 <translation id="7595982850646262331">Zbývá <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Administrátor domény <ph name="MANAGER" /> nastavil, kdy se tohle zařízení <ph name="DEVICE_TYPE" /> může používat.</translation>
@@ -1784,7 +1779,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="9218016617214286986">Zobrazit známé APN</translation>
 <translation id="932327136139879170">Domovská stránka</translation>
 <translation id="939519157834106403">Identifikátor SSID</translation>
-<translation id="940663759301549538">Zkontrolujte, jestli je připojený mikrofon, nebo zkuste Chromebook restartovat</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="950520315903467048">Chybí klávesa pro <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Porovnejte hlasy v nahrávce, aby přepis uváděl, co řekl kdo a kdy</translation>

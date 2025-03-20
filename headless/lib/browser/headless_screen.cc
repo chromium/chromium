@@ -39,13 +39,13 @@ bool HeadlessScreen::IsWindowUnderCursor(gfx::NativeWindow window) {
 
 gfx::NativeWindow HeadlessScreen::GetWindowAtScreenPoint(
     const gfx::Point& point) {
-  return nullptr;
+  return gfx::NativeWindow();
 }
 
 gfx::NativeWindow HeadlessScreen::GetLocalProcessWindowAtPoint(
     const gfx::Point& point,
     const std::set<gfx::NativeWindow>& ignore) {
-  return nullptr;
+  return gfx::NativeWindow();
 }
 
 display::Display HeadlessScreen::GetDisplayNearestWindow(

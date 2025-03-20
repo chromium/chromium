@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 /** Binder class for a GroupSuggestions promotion UI. */
 @NullMarked
@@ -30,6 +31,18 @@ public class GroupSuggestionsPromotionBinder {
             TextView suggestedNameView = view.findViewById(R.id.suggested_name);
             suggestedNameView.setText(
                     model.get(GroupSuggestionsPromotionProperties.SUGGESTED_NAME));
+        } else if (propertyKey == GroupSuggestionsPromotionProperties.GROUP_CONTENT_STRING) {
+            TextView groupContentView = view.findViewById(R.id.group_content);
+            groupContentView.setText(
+                    model.get(GroupSuggestionsPromotionProperties.GROUP_CONTENT_STRING));
+        } else if (propertyKey == GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_TEXT) {
+            ButtonCompat acceptButtonView = view.findViewById(R.id.accept_button);
+            acceptButtonView.setText(
+                    model.get(GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_TEXT));
+        } else if (propertyKey == GroupSuggestionsPromotionProperties.REJECT_BUTTON_TEXT) {
+            ButtonCompat groupContentView = view.findViewById(R.id.reject_button);
+            groupContentView.setText(
+                    model.get(GroupSuggestionsPromotionProperties.REJECT_BUTTON_TEXT));
         }
     }
 }

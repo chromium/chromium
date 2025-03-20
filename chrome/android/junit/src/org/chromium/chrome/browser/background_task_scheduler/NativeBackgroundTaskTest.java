@@ -21,13 +21,15 @@ import android.content.Context;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -124,6 +126,7 @@ public class NativeBackgroundTaskTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private TestBrowserStartupController mBrowserStartupController;
     private TaskFinishedCallback mCallback;
     private TestNativeBackgroundTask mTask;
@@ -243,7 +246,6 @@ public class NativeBackgroundTaskTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mBrowserStartupController = new TestBrowserStartupController();
         mCallback = new TaskFinishedCallback();
         mTask = new TestNativeBackgroundTask(mBrowserStartupController);

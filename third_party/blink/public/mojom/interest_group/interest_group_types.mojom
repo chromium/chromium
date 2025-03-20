@@ -512,10 +512,16 @@ struct AuctionAdConfigNonSharedParams {
   // call to worklet.
   AuctionAdConfigMaybePromiseJson auction_signals;
 
-  // Opaque JSON data, passed as object to the seller worklet.  At time of call
+  // Opaque JSON data, passed as object to the seller worklet. At time of call
   // to browser, it may also be a promise, but it should be resolved at time of
   // call to worklet.
   AuctionAdConfigMaybePromiseJson seller_signals;
+
+  // Seller signals of contextual data which are sent with trusted KVv2 signals
+  // to TKV servers. Values are Opaque JSON data. At time of call to browser,
+  // it may also be a promise, but it should be resolved at time of call to
+  // worklet.
+  AuctionAdConfigMaybePromiseJson seller_tkv_signals;
 
   // The value restricts the runtime of the seller's scoreAd() script.
   mojo_base.mojom.TimeDelta? seller_timeout;

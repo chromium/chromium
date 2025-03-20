@@ -35,7 +35,6 @@
       "debuggable_apks": false,
       "default_min_sdk_version": 23,
       "disable_file_support": true,
-      "enable_base_tracing": false,
       "enable_kythe_annotations": true,
       "enable_reporting": true,
       "enable_resource_allowlist_generation": false,

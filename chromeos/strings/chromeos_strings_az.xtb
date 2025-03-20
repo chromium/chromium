@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Transkripti gizlədin</translation>
 <translation id="160633243685262989">Şəkli Önizləyin</translation>
 <translation id="1611649489706141841">irəli</translation>
-<translation id="1615144046047995187">Endirmək mümkün deyil. Yenidən cəhd edin və ya Chromebook-u yenidən başladın.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> tarixindən bəri data istifadəsi</translation>
 <translation id="1618566998877964907">Tema istifadə edin</translation>
 <translation id="1621067168122174824">Şarj testini icra edin</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Audioyazılar siyahısı</translation>
 <translation id="2561093647892030937">limonlar</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi icra edilir...</translation>
-<translation id="2573178735329662769">Bütün Chromebook audiosu qeydə alınır</translation>
 <translation id="2576253868710695442">Bunun üçün 2 GB-a qədər yaddaş istifadə ediləcək</translation>
 <translation id="2584547424703650812">Parıldayan mənzərələr</translation>
 <translation id="2584559707064218956">Ayarlamaq üçün Ayarlara keçin</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">mavi və çəhrayı</translation>
 <translation id="498186245079027698">Skaneri yoxlayın və yenidən cəhd edin. Skan edilmiş faylları saxlamaq üçün diskdə kifayət qədər yer olduğuna əmin olun.</translation>
 <translation id="4982627662315910959">Qısayol əlçatan deyil. Shift və daha 1 dəyişdirici düymədən (ctrl, alt və ya <ph name="META_KEY" />) istifadə edərək yeni qısayola basın.</translation>
-<translation id="4983216687482551672">Chromebook audiosu</translation>
 <translation id="4985509611418653372">İşə salın</translation>
 <translation id="4987769320337599931">Qoruyucu divar</translation>
 <translation id="4988526792673242964">Səhifələr</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Güncəllənmə prosesinə davam etmək üçün <ph name="DEVICE_NAME" /> USB kabelini ayırın və yenidən taxın</translation>
 <translation id="5099354524039520280">yuxarı</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> düyməsi olmayan qısayol bəzi tətbiq qısayolları ilə ziddiyyətli ola bilər. Bu qısayoldan istifadəyə davam etmək üçün ona yenidən basın, yaxud <ph name="KEY" /> düyməsindən istifadə edərək yeni qısayola basın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> transkripsiya modelini endirmək mümkün deyil. Yenidən cəhd edin və ya Chromebook-u yenidən başladın</translation>
 <translation id="5108781503443873320">Oxşar:</translation>
-<translation id="5121677070210013200">Transkripsiya modelini endirmək mümkün deyil. Yenidən cəhd edin və ya Chromebook-u yenidən başladın.</translation>
 <translation id="5130848777448318809">ponilər</translation>
 <translation id="5137451382116112100">Tam</translation>
 <translation id="5139813694804168398">narahat etməyin</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Onlayn</translation>
 <translation id="6122277663991249694">ChromeOS Daxiletmə Metodu Xidməti</translation>
 <translation id="6127426868813166163">ağ</translation>
-<translation id="613049107179582049">Chromebook audiosu aktiv olduqda Diktofon həmin cihazda səslənən bütün audionu qeydə alır</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">kiberpank</translation>
 <translation id="6137767437444130246">İstifadəçi sertifikatı</translation>
@@ -1419,7 +1413,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB taçskrin</translation>
 <translation id="757747079855995705">daş</translation>
-<translation id="7584853321964440104">Endirmək mümkün deyil. Yenidən cəhd edin və ya Chromebook-u yenidən başladın.</translation>
 <translation id="7590883480672980941">Daxiletmə ayarları</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qalıb</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> administratoru bu <ph name="DEVICE_TYPE" /> cihazının istifadə oluna biləcəyi vaxtı təyin edib.</translation>
@@ -1786,7 +1779,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="9218016617214286986">Məlum APN-ləri göstərin</translation>
 <translation id="932327136139879170">Ev</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Mikrofonun qoşulduğuna əmin olun və ya Chromebook-u yenidən başladın</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> üçün düymə yoxdur. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Çəkiliş boyunca səsləri müqayisə edin ki, transkript hər spikerin nə dediyini və nə vaxt dediyini əks etdirsin</translation>

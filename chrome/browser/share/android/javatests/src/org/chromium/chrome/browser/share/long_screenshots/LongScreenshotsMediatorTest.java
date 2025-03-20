@@ -23,7 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -57,6 +58,8 @@ public class LongScreenshotsMediatorTest {
     private Bitmap mBitmap;
     private LongScreenshotsMediator mMediator;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -76,8 +79,6 @@ public class LongScreenshotsMediatorTest {
     public void setUp() {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
-
-        MockitoAnnotations.initMocks(this);
 
         mBitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888);
 

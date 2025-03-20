@@ -38,6 +38,7 @@ enum class HostPermissionsAccess {
 // Loads installed extensions from the prefs.
 class InstalledLoader {
  public:
+  // TODO(crbug.com/404917682): Pass a Profile instead of ExtensionService.
   explicit InstalledLoader(ExtensionService* extension_service);
   virtual ~InstalledLoader();
 

@@ -195,12 +195,6 @@ void PasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded() const {
   // For most implementations settings do not need to be refreshed.
 }
 
-void PasswordManagerClient::ShowCredentialsInAmbientBubble(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
-    int credential_type_flags,
-    CredentialsCallback callback) {
-  std::move(callback).Run(nullptr);
-}
 void PasswordManagerClient::TriggerSignIn(
     signin_metrics::AccessPoint access_point) const {}
 

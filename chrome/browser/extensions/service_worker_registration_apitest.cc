@@ -1009,9 +1009,8 @@ IN_PROC_BROWSER_TEST_F(
         UpdateExtensionWaitForIdle(kNTPTestExtensionId, crx_v2_path,
                                    /*expected_change=*/0);
   }
-  ExtensionService* service = extension_service();
-  ASSERT_TRUE(service);
-  ASSERT_EQ(1u, service->delayed_install_manager()->delayed_installs().size());
+  ASSERT_EQ(1u,
+            DelayedInstallManager::Get(profile())->delayed_installs().size());
   // v2 won't install though since v1 isn't idle (NTP page is still open) yet so
   // we're given the original `extension_v1` object.
   ASSERT_TRUE(extension_update);

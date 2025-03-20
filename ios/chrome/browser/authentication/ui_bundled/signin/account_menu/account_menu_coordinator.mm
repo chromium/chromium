@@ -299,6 +299,7 @@
                initWithBrowser:self.browser
                       identity:identity
                    accessPoint:signin_metrics::AccessPoint::kAccountMenu
+          precedingHistorySync:NO
              postSignInActions:
                  {PostSignInAction::kShowIdentityConfirmationSnackbar}
       presentingViewController:_navigationController

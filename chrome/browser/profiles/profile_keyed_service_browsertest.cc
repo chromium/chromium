@@ -616,6 +616,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "EventRouter",
     "ExtensionActionDispatcher",
     "ExtensionActionManager",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "ExtensionAllowlist",
+#endif
     "ExtensionCommandsGlobalRegistry",
     "ExtensionErrorController",
     "ExtensionGCMAppHandler",

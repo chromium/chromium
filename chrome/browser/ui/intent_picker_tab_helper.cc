@@ -345,7 +345,7 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
     tabs::TabInterface* tab_interface =
         tabs::TabInterface::GetFromContents(&GetWebContents());
     UpdatePageAction(tab_interface, should_show_icon);

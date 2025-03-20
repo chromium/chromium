@@ -71,7 +71,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
@@ -180,6 +181,8 @@ public class SiteSettingsTest {
 
     @ClassRule public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(mPermissionRule, false);
@@ -249,7 +252,6 @@ public class SiteSettingsTest {
     public void setUp() throws TimeoutException {
         // Clean up cookies and permissions to ensure tests run in a clean environment.
         cleanUpCookiesAndPermissions();
-        MockitoAnnotations.initMocks(this);
     }
 
     @After

@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -186,7 +187,8 @@ void HostedAppBrowserController::Uninstall(
   DCHECK(!uninstall_dialog_);
   uninstall_dialog_ = ExtensionUninstallDialog::Create(
       browser()->profile(),
-      browser()->window() ? browser()->window()->GetNativeWindow() : nullptr,
+      browser()->window() ? browser()->window()->GetNativeWindow()
+                          : gfx::NativeWindow(),
       this);
 
   // The dialog can be closed by UI system whenever it likes, but

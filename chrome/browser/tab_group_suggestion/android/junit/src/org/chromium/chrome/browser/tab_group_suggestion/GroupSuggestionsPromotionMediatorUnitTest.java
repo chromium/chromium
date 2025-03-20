@@ -9,11 +9,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_TEXT;
+import static org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionProperties.GROUP_CONTENT_STRING;
 import static org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionProperties.PROMO_CONTENTS;
 import static org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionProperties.PROMO_HEADER;
+import static org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionProperties.REJECT_BUTTON_TEXT;
 import static org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionProperties.SUGGESTED_NAME;
 
 import android.view.View;
@@ -27,6 +31,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestion;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestions;
@@ -48,10 +54,20 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
     private static final String PROMO_HEADER_2 = "promo_header_2";
     private static final String PROMO_CONTENTS_1 = "promo_contents_1";
     private static final String PROMO_CONTENTS_2 = "promo_contents_2";
+    private static final int TAB_1_ID = 123;
+    private static final int TAB_2_ID = 654;
+    private static final int INVALID_TAB_ID_1 = 357;
+    private static final int INVALID_TAB_ID_2 = 987;
+
+    private static final String TAB_1_TITLE = "Tab 1 title";
+    private static final String TAB_2_TITLE = "Tab 2 title";
 
     @Mock GroupSuggestionsService mGroupSuggestionsService;
     @Mock BottomSheetController mBottomSheetController;
     @Mock View mContainerView;
+    @Mock TabModel mTabModel;
+    @Mock Tab mTab1;
+    @Mock Tab mTab2;
 
     private PropertyModel mModel;
     private GroupSuggestionsPromotionMediator mMediator;
@@ -61,7 +77,18 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         mModel = new PropertyModel(GroupSuggestionsPromotionProperties.ALL_KEYS);
         mMediator =
                 new GroupSuggestionsPromotionMediator(
-                        mModel, mGroupSuggestionsService, mBottomSheetController, mContainerView);
+                        mModel,
+                        mGroupSuggestionsService,
+                        mBottomSheetController,
+                        mTabModel,
+                        mContainerView);
+        doReturn(mTab1).when(mTabModel).getTabById(TAB_1_ID);
+        doReturn(TAB_1_TITLE).when(mTab1).getTitle();
+        doReturn(mTab2).when(mTabModel).getTabById(TAB_2_ID);
+        doReturn(TAB_2_TITLE).when(mTab2).getTitle();
+        doReturn(mTab2).when(mTabModel).getTabById(TAB_2_ID);
+        doReturn(null).when(mTabModel).getTabById(INVALID_TAB_ID_1);
+        doReturn(null).when(mTabModel).getTabById(INVALID_TAB_ID_2);
     }
 
     @Test
@@ -88,8 +115,27 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
     }
 
     @Test
+    public void testShowSuggestion_InvalidSuggestion() {
+        int[] tabIds = {INVALID_TAB_ID_1, INVALID_TAB_ID_2, TAB_1_ID};
+        GroupSuggestion suggestion =
+                new GroupSuggestion(
+                        tabIds,
+                        SUGGESTION_ID_1,
+                        0,
+                        SUGGESTION_NAME_1,
+                        PROMO_HEADER_1,
+                        PROMO_CONTENTS_1);
+        GroupSuggestions suggestions =
+                new GroupSuggestions(new ArrayList<>(Arrays.asList(suggestion)));
+        mMediator.showSuggestion(suggestions, meta -> {});
+
+        verify(mBottomSheetController, never())
+                .requestShowContent(any(GroupSuggestionsBottomSheetContent.class), anyBoolean());
+    }
+
+    @Test
     public void testShowSuggestion_FirstSuggestion() {
-        int[] tabIds = {1, 2};
+        int[] tabIds = {TAB_1_ID, TAB_2_ID};
         GroupSuggestion suggestion1 =
                 new GroupSuggestion(
                         tabIds,
@@ -114,6 +160,9 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         assertEquals(SUGGESTION_NAME_1, mModel.get(SUGGESTED_NAME));
         assertEquals(PROMO_HEADER_1, mModel.get(PROMO_HEADER));
         assertEquals(PROMO_CONTENTS_1, mModel.get(PROMO_CONTENTS));
+        assertEquals("Accept", mModel.get(ACCEPT_BUTTON_TEXT));
+        assertEquals("Reject", mModel.get(REJECT_BUTTON_TEXT));
+        assertEquals("Tab 1: Tab 1 title\nTab 2: Tab 2 title\n", mModel.get(GROUP_CONTENT_STRING));
         verify(mBottomSheetController)
                 .requestShowContent(any(GroupSuggestionsBottomSheetContent.class), anyBoolean());
     }

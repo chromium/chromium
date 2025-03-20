@@ -15,13 +15,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
@@ -37,6 +39,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OfflinePageBridgeUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private OfflinePageBridge mBridge;
 
     private static final String TEST_NAMESPACE = "TEST_NAMESPACE";
@@ -93,7 +96,6 @@ public class OfflinePageBridgeUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         OfflinePageBridgeJni.setInstanceForTesting(mOfflinePageBridgeJniMock);
         OfflinePageBridge bridge = new OfflinePageBridge(0);
         // Using the spy to automatically marshal all the calls to the original methods if they are

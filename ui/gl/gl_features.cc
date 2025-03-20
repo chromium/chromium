@@ -275,6 +275,16 @@ bool IsANGLEValidationEnabled() {
 }
 #endif
 
+// Killswitch feature for allowing ANGLE to pass untranslated shaders to the
+// driver.
+BASE_FEATURE(kAllowANGLEPassthroughShaders,
+             "AllowANGLEPassthroughShaders",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsANGLEPassthroughShadersAllowed() {
+  return base::FeatureList::IsEnabled(kAllowANGLEPassthroughShaders);
+}
+
 void GetANGLEFeaturesFromCommandLineAndFinch(
     const base::CommandLine* command_line,
     std::vector<std::string>& enabled_angle_features,

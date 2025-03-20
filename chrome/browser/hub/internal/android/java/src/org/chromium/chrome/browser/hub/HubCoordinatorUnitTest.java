@@ -82,6 +82,7 @@ public class HubCoordinatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private HubColorMixer mHubColorMixer;
     @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjusterArgumentCaptor;
     private final ObservableSupplierImpl<Integer> mColorOverviewSupplier =
             new ObservableSupplierImpl<>();
@@ -161,7 +162,7 @@ public class HubCoordinatorUnitTest {
                         mMenuButtonCoordinator,
                         mSearchActivityClient,
                         mEdgeToEdgeSupplier,
-                        mColorOverviewSupplier);
+                        mHubColorMixer);
         ShadowLooper.runUiThreadTasks();
         mRootView.getChildCount();
         assertNotEquals(0, mRootView.getChildCount());

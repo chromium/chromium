@@ -122,7 +122,9 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
     }
 
     private void onProductInfoRetrieved(GURL checkedUrl, ProductInfo productInfo) {
-        if (productInfo == null || !productInfo.productClusterId.isPresent()) {
+        if (productInfo == null
+                || !productInfo.productClusterId.isPresent()
+                || mShoppingService == null) {
             mCurrentTabCommerceSubscription = null;
             updatePriceTrackingState(false);
             return;

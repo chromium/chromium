@@ -401,9 +401,7 @@ std::optional<device::CredProtectRequest> ProtectionPolicyToCredProtect(
       //
       // If a site explicitly requests a credProtect level, we'll still respect
       // that because they are presumably going to check the response.
-      if (base::FeatureList::IsEnabled(
-              device::kWebAuthnCredProtectWin10BugWorkaround) &&
-          make_credential_options.resident_key ==
+      if (make_credential_options.resident_key ==
               device::ResidentKeyRequirement::kPreferred &&
           device::WinWebAuthnApi::GetDefault() &&
           device::WinWebAuthnApi::GetDefault()->Version() < 3) {

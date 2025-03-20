@@ -603,6 +603,7 @@
 <translation id="2040894699575719559">Доступ да месцазнаходжання заблакіраваны</translation>
 <translation id="2041788246978549610">Выкарыстоўваць даступныя мікрафоны (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Латок 7</translation>
+<translation id="2043896419861982462">Каб схаваць варыянты з аплатай па частках, перайдзіце ў <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Канверт Personal</translation>
 <translation id="2046951263634619614">Кнігарні</translation>
 <translation id="2048261947532620704">Ідзе пераклад старонкі</translation>
@@ -760,6 +761,7 @@
 <translation id="2293443924986248631">Калі ўключыць гэту наладу, сайты не змогуць выкарыстоўваць файлы cookie для адсочвання вас у інтэрнэце. Функцыі на некаторых сайтах могуць перастаць працаваць.</translation>
 <translation id="2295831393422400053">Каб выкарыстоўваць дапамогу з напісаннем, уключыце наладу "Палепшыць пошук і прагляд"</translation>
 <translation id="2296244067976588032">Ключ доступу • iCloud Keychain</translation>
+<translation id="2296331629987861142">Лёгкая аплата ў растэрміноўку (пры адпаведнасці патрабаванням, прымяняюцца камісіі)</translation>
 <translation id="2300306941146563769">Не запампавана</translation>
 <translation id="2301098101308036335">Якія вэб-сайты наведваюцца і калі.</translation>
 <translation id="230286397113210245">Кнопка "Адкрыць акно ў рэжыме інкогніта". Каб адкрыць новае акно ў рэжыме інкогніта для прыватнага прагляду вэб-старонак, націсніце яе.</translation>
@@ -1020,6 +1022,7 @@
 <translation id="2775884851269838147">Першая старонка для друку</translation>
 <translation id="2781185443919227679">Пляжы і астравы</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781799097551205934">Падрыхтоўка да аплаты</translation>
 <translation id="2782088940970074970">Пракат аўтамабіляў</translation>
 <translation id="278436560439594386">Бытавая тэхніка</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -1047,6 +1050,7 @@
 <translation id="2859383374160668142">Вы можаце ў любы час праглядаць звесткі пра зніжэнне цаны на тавары, якія вы адсочваеце.</translation>
 <translation id="2859806420264540918">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
 <translation id="28618371182701850">Электрычныя і гібрыдныя аўтамабілі</translation>
+<translation id="287387905105155974">Паведамленне з даведкай</translation>
 <translation id="28761159517501904">Фільмы</translation>
 <translation id="2876489322757410363">Адбудзецца выхад з рэжыму інкогніта для плацяжу праз знешнюю праграму. Працягнуць?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць параметрамі Бяспечнага прагляду і выконваць іншыя дзеянні праз налады Chrome, націсніце Tab, затым Enter</translation>
@@ -1106,6 +1110,7 @@
 <translation id="2959274854674276289">Вегетарыянская кухня</translation>
 <translation id="2961809451460302960">Страхаванне жыцця</translation>
 <translation id="2962073860865348475">12 x 18 цаляў</translation>
+<translation id="2965779286557330949">Яшчэ некалькі секунд...</translation>
 <translation id="2967082089043584472">Дададзена ў групу "<ph name="SET" />"</translation>
 <translation id="2967098518029543669">захаваць пароль ва Уліковым запісе Google</translation>
 <translation id="297173220375858963">Настольныя выдавецкія сістэмы</translation>
@@ -1478,6 +1483,7 @@
 <translation id="3600106876108433070">Даведацца пра табліцы параўнання</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Кнопка "Кіраваць наладамі прыватнасці Google". Каб адкрыць налады прыватнасці Уліковага запісу Google, націсніце яе.</translation>
+<translation id="3602695245205338770">Выберыце пастаўшчыка, які прапаноўвае куплю ў растэрміноўку</translation>
 <translation id="3603507503523709">Праграма заблакіравана адміністратарам</translation>
 <translation id="3605899229568538311">5 x 5 цаляў</translation>
 <translation id="3606917451836803637">Тэлешоу і тэлепраграмы</translation>
@@ -2274,6 +2280,7 @@
 <translation id="5001526427543320409">Староннія файлы cookie</translation>
 <translation id="5002932099480077015">Пры ўключэнні гэтага параметра Chrome будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
 <translation id="5007392906805964215">Праглядзець</translation>
+<translation id="5010599530303458903">Плаціце штомесячнымі плацяжамі або 4 часткамі без працэнтаў (пры адпаведнасці патрабаванням)</translation>
 <translation id="5011561501798487822">Выяўленая мова</translation>
 <translation id="5015510746216210676">Назва прылады:</translation>
 <translation id="5017554619425969104">Скапіраваны вамі тэкст</translation>
@@ -2850,6 +2857,7 @@
 <translation id="604124094241169006">Аўтаматычна</translation>
 <translation id="6041777658117377052">Тэмпература камеры</translation>
 <translation id="6042308850641462728">Яшчэ</translation>
+<translation id="6043357981274314628">Гатова!</translation>
 <translation id="6044573915096792553">Памер 12</translation>
 <translation id="6045164183059402045">Шаблон накладання</translation>
 <translation id="6047927260846328439">Праз гэта змесціва вас могуць падмануць і прымусіць усталяваць праграмнае забеспячэнне або выдаць асабістую інфармацыю. <ph name="BEGIN_LINK" />Усё роўна паказаць<ph name="END_LINK" /></translation>
@@ -2897,6 +2905,7 @@
 <translation id="6116338172782435947">Праглядаць тэкст і відарысы, скапіраваныя ў буфер абмену</translation>
 <translation id="6117833587752089929">Сацініраваная фотапапера</translation>
 <translation id="6118782133429281336">Спіс крыніц пусты.</translation>
+<translation id="6120950591512958208">Выкарыстайце гэты код пры афармленні заказу.</translation>
 <translation id="612178891608320683">Веганская кухня</translation>
 <translation id="6122181661879998141">пярэднім баку карты</translation>
 <translation id="6124058285696691147">Спампаваць далучэнне</translation>
@@ -3238,6 +3247,7 @@
 <translation id="6706005862292023715">Шторы і дэкор для акон</translation>
 <translation id="6706210727756204531">Ахоп</translation>
 <translation id="6706678697074905703">Не ўдалося захаваць гэты нумар IBAN ва Уліковым запісе Google. Ён захаваны ў Chrome на гэтай прыладзе.</translation>
+<translation id="6707388108229299854">Каб мець гэты адрас на ўсіх прыладах, пацвердзіце сваю асобу</translation>
 <translation id="6709133671862442373">Навіны</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6710594484020273272">&lt;Увядзіце пошукавы запыт&gt;</translation>
@@ -3916,6 +3926,7 @@
 <translation id="7887885240995164102">Уключыць рэжым "Відарыс у відарысе"</translation>
 <translation id="7888575728750733395">Намер візуалізацыі раздрукоўкі</translation>
 <translation id="7890748547282909375">Каб захаваць здымак экрана, увайдзіце ў Microsoft OneDrive</translation>
+<translation id="7892865709991296481">налады аплаты</translation>
 <translation id="7894280532028510793">Калі напісанне правільнае, <ph name="BEGIN_LINK" />паспрабуйце запусціць дыягностыку сеткі<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Канверт 7 x 9 цаляў</translation>
 <translation id="7905064834449738336">Chromium папярэджвае, калі пароль, які вы выкарыстоўваеце, быў апублікаваны ў інтэрнэце. Пры гэтым вашы паролі і імёны карыстальніка зашыфраваны – прачытаць іх не можа ніхто, нават Google.</translation>

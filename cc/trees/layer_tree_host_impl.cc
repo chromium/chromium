@@ -1388,8 +1388,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     if (should_draw_into_render_pass) {
       // Create a capture render pass if we're in the capture phase for this
       // render surface.
-      if (view_transition_element_resource_id.MatchesToken(
-              capture_view_transition_tokens)) {
+      if (render_surface->has_view_transition_capture_contributions()) {
         frame->render_passes.push_back(
             render_surface->CreateViewTransitionCaptureRenderPass(
                 capture_view_transition_tokens));
@@ -1461,8 +1460,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
           frame->render_passes, target_render_surface->render_pass_id());
 
       viz::CompositorRenderPass* view_transition_capture_render_pass =
-          target_render_surface->ViewTransitionElementResourceId().MatchesToken(
-              view_transition_capture_context.capture_view_transition_tokens)
+          target_render_surface->has_view_transition_capture_contributions()
               ? FindRenderPassById(
                     frame->render_passes,
                     it.target_render_surface()
@@ -3289,7 +3287,7 @@ void LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
 
   layer_context_->UpdateDisplayTreeFrom(
       *active_tree(), *resource_provider(),
-      *layer_tree_frame_sink_->context_provider());
+      *layer_tree_frame_sink_->context_provider(), viewport_damage_rect_);
 }
 
 int LayerTreeHostImpl::RequestedMSAASampleCount() const {

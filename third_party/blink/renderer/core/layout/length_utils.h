@@ -409,8 +409,8 @@ CORE_EXPORT int ResolveUsedColumnCount(int computed_count,
                                        LayoutUnit computed_size,
                                        LayoutUnit used_gap,
                                        LayoutUnit available_size);
-CORE_EXPORT int ResolveUsedColumnCount(LayoutUnit available_size,
-                                       const ComputedStyle&);
+CORE_EXPORT int ResolveUsedColumnCount(const ComputedStyle&,
+                                       LayoutUnit available_size);
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-width.
@@ -418,14 +418,26 @@ CORE_EXPORT LayoutUnit ResolveUsedColumnInlineSize(int computed_count,
                                                    LayoutUnit computed_size,
                                                    LayoutUnit used_gap,
                                                    LayoutUnit available_size);
-CORE_EXPORT LayoutUnit ResolveUsedColumnInlineSize(LayoutUnit available_size,
-                                                   const ComputedStyle&);
+CORE_EXPORT LayoutUnit ResolveUsedColumnInlineSize(const ComputedStyle&,
+                                                   LayoutUnit available_size);
 
-CORE_EXPORT LayoutUnit ResolveUsedColumnGap(LayoutUnit available_size,
-                                            const ComputedStyle&);
+// Return the used value of `column-gap` if it is a `<length-percentage>`.
+// Otherwise, if it's `normal`, whose resolution is algorithm-specific,
+// std::nullopt is returned.
+std::optional<LayoutUnit> ResolveColumnGapLength(const ComputedStyle&,
+                                                 LayoutUnit available_size);
 
-CORE_EXPORT LayoutUnit ColumnInlineProgression(LayoutUnit available_size,
-                                               const ComputedStyle&);
+CORE_EXPORT LayoutUnit ResolveColumnGapForMulticol(const ComputedStyle&,
+                                                   LayoutUnit available_size);
+
+// Return the used value of `row-gap` if it is a `<length-percentage>`.
+// Otherwise, if it's `normal`, whose resolution is algorithm-specific,
+// std::nullopt is returned.
+std::optional<LayoutUnit> ResolveRowGapLength(const ComputedStyle&,
+                                              LayoutUnit available_size);
+
+CORE_EXPORT LayoutUnit ColumnInlineProgression(const ComputedStyle&,
+                                               LayoutUnit available_size);
 
 // Compute physical margins.
 CORE_EXPORT PhysicalBoxStrut

@@ -1,0 +1,23 @@
+[package]
+name = "windows-core"
+version = "0.52.0"
+authors = ["Microsoft"]
+edition = "2021"
+rust-version = "1.56"
+license = "MIT OR Apache-2.0"
+description = "Rust for Windows"
+repository = "https://github.com/microsoft/windows-rs"
+readme = "readme.md"
+categories = ["os::windows-apis"]
+
+[package.metadata.docs.rs]
+default-target = "x86_64-pc-windows-msvc"
+targets = []
+
+[dependencies.windows-targets]
+version = "0.52.0"
+path = "../targets"
+
+[features]
+default = []
+implement = []

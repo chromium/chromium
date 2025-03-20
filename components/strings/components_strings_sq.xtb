@@ -1695,6 +1695,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3964661563329879394">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt }other{Nga # sajte }}</translation>
 <translation id="3965672182149944205">Të ruhet adresa?</translation>
 <translation id="3966044442021752214">Siguria e produktit</translation>
+<translation id="3969869202926863008">Qasja në rrjetin lokal</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> është bllokuar</translation>
 <translation id="3975852104434126461">Industria automobilistike</translation>
@@ -2051,6 +2052,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="460848736049414407">Bllokuar nga administratori</translation>
 <translation id="4610279718074907952">Ky sajt është në një grup, i përcaktuar nga <ph name="SET_OWNER" />, që mund ta shikojë aktivitetin tënd</translation>
 <translation id="46128681529823442">Pajisja për futboll</translation>
+<translation id="4612904677925722054">Ky sajt mund të ketë përmbajtje për të rritur. Një prind ose kujdestar duhet të pranojë që ta vizitosh këtë uebsajt.</translation>
 <translation id="4619564267100705184">Verifiko që je ti</translation>
 <translation id="4622292761762557753">Transfero gjithsesi</translation>
 <translation id="4622647778991854660">Aktivizo njoftimet në "Qendrën e njoftimeve". Hap <ph name="LINK" />.</translation>
@@ -2648,6 +2650,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5660122698869360728">Një dosje e re inteligjente që të ndihmon të ruash të gjitha faqet e blerjeve në një vend, si dhe të monitorosh automatikisht çmimet, të marrësh statistika mbi to etj.</translation>
 <translation id="5663955426505430495">Administratori i kësaj pajisjeje ka instaluar shtesa për funksionet shtesë. Shtesat kanë qasje te disa prej të dhënave të tua.</translation>
 <translation id="5667827081946850877">Libra me audio</translation>
+<translation id="5674082555327905359">Mund të kërkojë të lidhet me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="5675650730144413517">Kjo faqe nuk punon</translation>
 <translation id="5675809467256309336">Muzikë dance dhe elektronike</translation>
 <translation id="5675959228867414813">Shfaq sipas datës</translation>
@@ -2896,6 +2899,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6116338172782435947">Shiko tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve</translation>
 <translation id="6117833587752089929">Fotografi (saten)</translation>
 <translation id="6118782133429281336">Lista e origjinave është bosh.</translation>
+<translation id="6120950591512958208">Përdor këtë kod në përfundim të blerjes.</translation>
 <translation id="612178891608320683">Kuzhina vegane</translation>
 <translation id="6122181661879998141">pjesën e përparme të kartës</translation>
 <translation id="6124058285696691147">Shkarko bashkëngjitjen</translation>
@@ -2920,6 +2924,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6159908896951210943">Formal</translation>
 <translation id="6160391204859821737">Aktivizo veçorinë e privatësisë së reklamave</translation>
 <translation id="6162403104168428984">Të përditësohet adresa?</translation>
+<translation id="6164605812717770913">Një prind ose kujdestar nuk ka pranuar që ta vizitosh këtë sajt. Mund t'i kërkosh që ta zhbllokojë.</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6167577165590485365">Përpjekja e fundit për nxjerrje:</translation>
 <translation id="617256461084925519">Google Chrome po përpiqet të verifikojë që je ti që të mund të plotësojë informacionet e tua të pagesës.</translation>
@@ -3011,6 +3016,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6321917430147971392">Kontrollo cilësimet e tua të DNS-së</translation>
 <translation id="6322182122604171028">Windows Hello nuk mund të përdorej</translation>
 <translation id="6326947323444967009">Cakto Chrome si shfletuesin e parazgjedhur të sistemit te cilësimet e iOS</translation>
+<translation id="6327065120806001832">qasja në rrjetin lokal</translation>
 <translation id="6328639280570009161">Provo çaktivizimin e parashikimit të rrjetit</translation>
 <translation id="6335029926534404762">Atlete</translation>
 <translation id="6337133576188860026">Liron më pak se <ph name="SIZE" />. Disa sajte mund të ngarkohen më ngadalë gjatë vizitës tënde të radhës.</translation>

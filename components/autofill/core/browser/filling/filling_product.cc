@@ -34,6 +34,8 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "PlusAddresses";
     case FillingProduct::kAutofillAi:
       return "AutofillAi";
+    case FillingProduct::kLoyaltyCard:
+      return "LoyaltyCard";
   };
   NOTREACHED();
 }
@@ -100,6 +102,9 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kManageAutofillAi:
       return FillingProduct::kAutofillAi;
+    case SuggestionType::kLoyaltyCardEntry:
+    case SuggestionType::kManageLoyaltyCard:
+      return FillingProduct::kLoyaltyCard;
   }
   NOTREACHED();
 }

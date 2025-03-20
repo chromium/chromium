@@ -59,11 +59,11 @@ void ContentCredentialManager::PreventSilentAccess(
 }
 
 void ContentCredentialManager::Get(CredentialMediationRequirement mediation,
-                                   int requested_credential_type_flags,
+                                   bool include_passwords,
                                    const std::vector<GURL>& federations,
                                    GetCallback callback) {
-  credential_manager_->Get(mediation, requested_credential_type_flags,
-                           federations, std::move(callback));
+  credential_manager_->Get(mediation, include_passwords, federations,
+                           std::move(callback));
 }
 
 }  // namespace password_manager

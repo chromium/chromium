@@ -1870,7 +1870,7 @@ void Widget::OnNativeFocus() {
 }
 
 void Widget::OnNativeBlur() {
-  WidgetFocusManager::GetInstance()->OnNativeFocusChanged(nullptr);
+  WidgetFocusManager::GetInstance()->OnNativeFocusChanged(gfx::NativeView());
 }
 
 void Widget::OnNativeWidgetVisibilityChanged(bool visible) {

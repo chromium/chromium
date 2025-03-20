@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -118,12 +117,10 @@ class VideoCaptureEffectsProcessorTest
 
     auto& gpu_channel_host = VideoCaptureGpuChannelHost::GetInstance();
     gpu_channel_host.SetSharedImageInterface(test_sii_);
-    gpu_channel_host.SetGpuMemoryBufferManager(&test_gmb_manager_);
   }
 
   void TearDown() override {
     auto& gpu_channel_host = VideoCaptureGpuChannelHost::GetInstance();
-    gpu_channel_host.SetGpuMemoryBufferManager(nullptr);
     gpu_channel_host.SetSharedImageInterface(nullptr);
   }
 
@@ -133,7 +130,6 @@ class VideoCaptureEffectsProcessorTest
   base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
-  gpu::TestGpuMemoryBufferManager test_gmb_manager_;
 
   std::optional<VideoEffectsProcessor> video_effects_processor_;
 

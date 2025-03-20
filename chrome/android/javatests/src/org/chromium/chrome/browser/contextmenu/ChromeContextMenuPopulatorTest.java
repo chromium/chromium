@@ -30,7 +30,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -79,6 +80,8 @@ public class ChromeContextMenuPopulatorTest {
     private static final String IMAGE_TITLE_TEXT = "IMAGE!";
     private static final String RETRIEVED_IMAGE_URL = "http://www.blah.com/retrieved_image.jpg";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveRule =
             new AutomotiveContextWrapperTestRule();
@@ -97,7 +100,6 @@ public class ChromeContextMenuPopulatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mAutomotiveRule.setIsAutomotive(false);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();

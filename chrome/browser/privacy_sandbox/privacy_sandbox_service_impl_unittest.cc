@@ -27,6 +27,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -2500,15 +2501,25 @@ TEST_F(PrivacySandboxServiceTest, RecordPrivacySandbox4StartupMetrics_APIs) {
     base::HistogramTester histogram_tester;
     prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+
     histogram_tester.ExpectBucketCount("Settings.PrivacySandbox.Topics.Enabled",
                                        static_cast<int>(true),
                                        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Settings.PrivacySandbox.Topics.EnabledForProfile",
+        privacy_sandbox::ProfileEnabledState::kPSProfileOneEnabled,
+        /*expected_count=*/1);
 
     prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+
     histogram_tester.ExpectBucketCount("Settings.PrivacySandbox.Topics.Enabled",
                                        static_cast<int>(false),
                                        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Settings.PrivacySandbox.Topics.EnabledForProfile",
+        privacy_sandbox::ProfileEnabledState::kPSProfileOneDisabled,
+        /*expected_count=*/1);
   }
 
   // Fledge
@@ -2516,14 +2527,25 @@ TEST_F(PrivacySandboxServiceTest, RecordPrivacySandbox4StartupMetrics_APIs) {
     base::HistogramTester histogram_tester;
     prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+
     histogram_tester.ExpectBucketCount("Settings.PrivacySandbox.Fledge.Enabled",
                                        static_cast<int>(true),
                                        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Settings.PrivacySandbox.Fledge.EnabledForProfile",
+        privacy_sandbox::ProfileEnabledState::kPSProfileOneEnabled,
+        /*expected_count=*/1);
+
     prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, false);
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+
     histogram_tester.ExpectBucketCount("Settings.PrivacySandbox.Fledge.Enabled",
                                        static_cast<int>(false),
                                        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Settings.PrivacySandbox.Fledge.EnabledForProfile",
+        privacy_sandbox::ProfileEnabledState::kPSProfileOneDisabled,
+        /*expected_count=*/1);
   }
 
   // Ad measurement
@@ -2531,17 +2553,115 @@ TEST_F(PrivacySandboxServiceTest, RecordPrivacySandbox4StartupMetrics_APIs) {
     base::HistogramTester histogram_tester;
     prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+
     histogram_tester.ExpectBucketCount(
         "Settings.PrivacySandbox.AdMeasurement.Enabled", static_cast<int>(true),
         /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Settings.PrivacySandbox.AdMeasurement.EnabledForProfile",
+        privacy_sandbox::ProfileEnabledState::kPSProfileOneEnabled,
+        /*expected_count=*/1);
     prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, false);
     privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+
     histogram_tester.ExpectBucketCount(
         "Settings.PrivacySandbox.AdMeasurement.Enabled",
         static_cast<int>(false),
         /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Settings.PrivacySandbox.AdMeasurement.EnabledForProfile",
+        privacy_sandbox::ProfileEnabledState::kPSProfileOneDisabled,
+        /*expected_count=*/1);
   }
 }
+
+// Test class to verify that non-regular profiles (guest and incognito) emit
+// only client-level histograms for privacy sandbox startup metrics.
+class PrivacySandbox4StartupMetricsNonRegularProfilesTest
+    : public PrivacySandboxServiceTest,
+      public testing::WithParamInterface<
+          std::tuple<std::string,
+                     std::string,
+                     bool,
+                     profile_metrics::BrowserProfileType>> {};
+
+TEST_P(PrivacySandbox4StartupMetricsNonRegularProfilesTest, APIs) {
+  std::string feature_name = std::get<0>(GetParam());
+  std::string feature_pref = std::get<1>(GetParam());
+  bool is_enabled = std::get<2>(GetParam());
+  profile_metrics::BrowserProfileType profile_type = std::get<3>(GetParam());
+
+  base::HistogramTester histogram_tester;
+
+  profile_metrics::SetBrowserProfileType(profile(), profile_type);
+  prefs()->SetBoolean(feature_pref, is_enabled);
+  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+  const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
+
+  // Check that no profile level histograms are emitted.
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::AnyOf(base::StrCat(
+          {"Settings.PrivacySandbox.", feature_name, ".EnabledForProfile"}))));
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"Settings.PrivacySandbox.", feature_name, ".Enabled"}),
+      static_cast<int>(is_enabled),
+      /*expected_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandbox4StartupMetricsNonRegularProfilesTests,
+    PrivacySandbox4StartupMetricsNonRegularProfilesTest,
+    ::testing::Values(
+        std::make_tuple("Topics",
+                        prefs::kPrivacySandboxM1TopicsEnabled,
+                        true,
+                        profile_metrics::BrowserProfileType::kGuest),
+        std::make_tuple("Fledge",
+                        prefs::kPrivacySandboxM1FledgeEnabled,
+                        true,
+                        profile_metrics::BrowserProfileType::kGuest),
+        std::make_tuple("AdMeasurement",
+                        prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                        true,
+                        profile_metrics::BrowserProfileType::kGuest),
+        std::make_tuple("Topics",
+                        prefs::kPrivacySandboxM1TopicsEnabled,
+                        true,
+                        profile_metrics::BrowserProfileType::kIncognito),
+        std::make_tuple("Fledge",
+                        prefs::kPrivacySandboxM1FledgeEnabled,
+                        true,
+                        profile_metrics::BrowserProfileType::kIncognito),
+        std::make_tuple("AdMeasurement",
+                        prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                        true,
+                        profile_metrics::BrowserProfileType::kIncognito),
+        std::make_tuple("Topics",
+                        prefs::kPrivacySandboxM1TopicsEnabled,
+                        false,
+                        profile_metrics::BrowserProfileType::kGuest),
+        std::make_tuple("Fledge",
+                        prefs::kPrivacySandboxM1FledgeEnabled,
+                        false,
+                        profile_metrics::BrowserProfileType::kGuest),
+        std::make_tuple("AdMeasurement",
+                        prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                        false,
+                        profile_metrics::BrowserProfileType::kGuest),
+        std::make_tuple("Topics",
+                        prefs::kPrivacySandboxM1TopicsEnabled,
+                        false,
+                        profile_metrics::BrowserProfileType::kIncognito),
+        std::make_tuple("Fledge",
+                        prefs::kPrivacySandboxM1FledgeEnabled,
+                        false,
+                        profile_metrics::BrowserProfileType::kIncognito),
+        std::make_tuple("AdMeasurement",
+                        prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                        false,
+                        profile_metrics::BrowserProfileType::kIncognito)));
 
 class PrivacySandboxNoticeActionToStorageTests
     : public PrivacySandboxServiceTest,

@@ -72,8 +72,9 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   OfferNotificationBubbleViewsInteractiveUiTest()
       : test_offer_type_(GetParam().offer_type) {
     if (GetParam().is_page_actions_migration_enabled) {
-      feature_list_.InitWithFeatures({::features::kPageActionsMigration},
-                                     /*disabled_features=*/{});
+      feature_list_.InitAndEnableFeatureWithParameters(
+          ::features::kPageActionsMigration,
+          {{::features::kPageActionsMigrationOfferNotification.name, "true"}});
     }
   }
 

@@ -233,7 +233,7 @@ class ServerStartedTest(unittest.TestCase):
       self.waitForTasksDone()
 
       proc_result = callServer(['--print-status', self._build_id])
-      self.assertIn('[1/1]', proc_result.stdout)
+      self.assertEqual('', proc_result.stdout)
 
       proc_result = callServer(['--print-status-all'])
       self.assertIn('has 1 registered build', proc_result.stdout)
@@ -243,14 +243,16 @@ class ServerStartedTest(unittest.TestCase):
         # cat gets stuck until we open the other end of the fifo.
         self.sendTask(['cat', str(fifo_path)])
         proc_result = callServer(['--print-status', self._build_id])
-        self.assertIn('[1/2]', proc_result.stdout)
+        self.assertIn('is still 1 static analysis job', proc_result.stdout)
         self.assertIn('--wait-for-idle', proc_result.stdout)
+        proc_result = callServer(['--print-status-all'])
+        self.assertIn('[1/2]', proc_result.stdout)
 
       self.waitForTasksDone()
       callServer(['--cancel-build', self._build_id])
       self.waitForTasksDone()
       proc_result = callServer(['--print-status', self._build_id])
-      self.assertIn('[2/2]', proc_result.stdout)
+      self.assertEqual('', proc_result.stdout)
 
     proc_result = callServer(['--print-status-all'])
     self.assertIn('Siso finished', proc_result.stdout)

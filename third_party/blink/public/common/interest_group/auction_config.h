@@ -278,6 +278,12 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // passing to worklet.
     MaybePromiseJson seller_signals;
 
+    // Seller signals of contextual data which are sent with trusted KVv2
+    // signals to TKV servers. Values are Opaque JSON data. At time of call to
+    // browser, it may also be a promise, but it should be resolved at time of
+    // call to worklet.
+    MaybePromiseJson seller_tkv_signals;
+
     // The value restricts the runtime of the seller's scoreAd() script.
     std::optional<base::TimeDelta> seller_timeout;
 
@@ -474,7 +480,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // will be sent to V1 trusted seller signals server.
   std::optional<bool> send_creative_scanning_metadata;
 
-  static_assert(__LINE__ == 477, R"(
+  static_assert(__LINE__ == 483, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom

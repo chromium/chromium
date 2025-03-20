@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Απόκρυψη μεταγραφής</translation>
 <translation id="160633243685262989">Εικόνα προεπισκόπησης</translation>
 <translation id="1611649489706141841">προώθηση</translation>
-<translation id="1615144046047995187">Δεν είναι δυνατή η λήψη. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="1615335640928990664">Χρήση δεδομένων από τις <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Χρήση θέματος</translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Λίστα εγγραφών ήχου</translation>
 <translation id="2561093647892030937">λεμόνια</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
-<translation id="2573178735329662769">Εγγραφή όλου του ήχου του Chromebook</translation>
 <translation id="2576253868710695442">Για να γίνει αυτό απαιτούνται έως και 2 GB αποθηκευτικού χώρου</translation>
 <translation id="2584547424703650812">Λάμψεις</translation>
 <translation id="2584559707064218956">Για να ρυθμίσετε το δίκτυο, μεταβείτε στις Ρυθμίσεις.</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">μπλε και ροζ</translation>
 <translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
 <translation id="4982627662315910959">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χρησιμοποιώντας το shift και 1 ακόμα πλήκτρο τροποποίησης (ctrl, alt ή <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Ήχος Chromebook</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
 <translation id="4987769320337599931">Τείχος προστασίας</translation>
 <translation id="4988526792673242964">Σελίδες</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Αποσυνδέστε το καλώδιο USB της συσκευής <ph name="DEVICE_NAME" /> και τοποθετήστε το ξανά για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
 <translation id="5099354524039520280">επάνω</translation>
 <translation id="5107243100836678918">Η συντόμευση χωρίς πλήκτρο <ph name="META_KEY" /> ενδέχεται να δημιουργήσει διένεξη με τη συντόμευση κάποιας εφαρμογής. Πατήστε ξανά αυτή τη συντόμευση για να συνεχίσετε να τη χρησιμοποιείτε ή πατήστε μια νέα συντόμευση χρησιμοποιώντας το πλήκτρο <ph name="KEY" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Δεν είναι δυνατή η λήψη του μοντέλου μεταγραφής στα <ph name="LANGUAGE_NAME" />. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook</translation>
 <translation id="5108781503443873320">Συνώνυμα:</translation>
-<translation id="5121677070210013200">Δεν είναι δυνατή η λήψη του μοντέλου μεταγραφής. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="5130848777448318809">πόνυ</translation>
 <translation id="5137451382116112100">Πλήρης</translation>
 <translation id="5139813694804168398">μην ενοχλείτε</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Συνδεδεμένο</translation>
 <translation id="6122277663991249694">Υπηρεσία μεθόδου εισαγωγής Chrome OS</translation>
 <translation id="6127426868813166163">λευκό</translation>
-<translation id="613049107179582049">Όταν ο ήχος του Chromebook είναι ενεργοποιημένος, η Εγγραφή καταγράφει όλο τον ήχο που αναπαράγεται σε αυτή τη συσκευή</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">κυβερνοπάνκ</translation>
 <translation id="6137767437444130246">Πιστοποιητικό χρήστη</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Επιφάνεια αφής USB</translation>
 <translation id="757747079855995705">πέτρα</translation>
-<translation id="7584853321964440104">Δεν είναι δυνατή η λήψη. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Ο διαχειριστής <ph name="MANAGER" /> έχει ορίσει πότε μπορεί να χρησιμοποιηθεί η συσκευή <ph name="DEVICE_TYPE" />.</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">Εμφάνιση γνωστών APN</translation>
 <translation id="932327136139879170">Αρχική σελίδα</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Βεβαιωθείτε ότι το μικρόφωνό σας είναι συνδεδεμένο ή δοκιμάστε να επανεκκινήσετε το Chromebook</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="950520315903467048">Λείπει το πλήκτρο για το <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Να συγκρίνει φωνές σε ολόκληρη την εγγραφή, έτσι ώστε η μεταγραφή να αντικατοπτρίζει τι είπε ο κάθε ομιλητής και πότε</translation>

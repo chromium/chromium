@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Fshih transkriptin</translation>
 <translation id="160633243685262989">Shiko paraprakisht imazhin</translation>
 <translation id="1611649489706141841">përpara</translation>
-<translation id="1615144046047995187">Nuk mund të shkarkohet. Provo përsëri ose rinis pajisjen tënde Chromebook.</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Përdor një temë</translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Lista e regjistrimeve të audios</translation>
 <translation id="2561093647892030937">limonë</translation>
 <translation id="2570743873672969996">Po ekzekuton testin <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">Po regjistrohen të gjitha audiot e Chromebook</translation>
 <translation id="2576253868710695442">Kjo do të zërë deri në 2 GB hapësirë ruajtëse</translation>
 <translation id="2584547424703650812">Peizazhe plot shkëlqim</translation>
 <translation id="2584559707064218956">Për ta konfiguruar, shko te "Cilësimet"</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">blu dhe rozë</translation>
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
 <translation id="4982627662315910959">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re duke përdorur Shift dhe 1 tast tjetër modifikues (Ctrl, Alt ose "<ph name="META_KEY" />").</translation>
-<translation id="4983216687482551672">Audioja e Chromebook</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
 <translation id="4987769320337599931">Mur mbrojtës</translation>
 <translation id="4988526792673242964">Faqet</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Hiq kabllon USB të "<ph name="DEVICE_NAME" />" dhe më pas fute sërish për të vazhduar procesin e përditësimit</translation>
 <translation id="5099354524039520280">lart</translation>
 <translation id="5107243100836678918">Shkurtorja pa tastin "<ph name="META_KEY" />" mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin "<ph name="KEY" />". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Modeli i transkriptimit në <ph name="LANGUAGE_NAME" /> nuk mund të shkarkohet. Provo përsëri ose rinis pajisjen tënde Chromebook</translation>
 <translation id="5108781503443873320">Të ngjashme:</translation>
-<translation id="5121677070210013200">Modeli i transkriptimit nuk mund të shkarkohet. Provo përsëri ose rinis pajisjen tënde Chromebook.</translation>
 <translation id="5130848777448318809">kalushë</translation>
 <translation id="5137451382116112100">I plotë</translation>
 <translation id="5139813694804168398">mos shqetëso</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">ngjyra e dritës së sfondit</translation>
 <translation id="5292579816060236070">Imazhi i sfondit për lindjen e diellit</translation>
 <translation id="5294769550414936029">versioni <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">aktivizo/çaktivizo qasjen te kamera</translation>
 <translation id="5300814202279832142">Zhvendose dritaren te tavolina e punës</translation>
 <translation id="5302048478445481009">Gjuha</translation>
 <translation id="5303837385540978511">Imazhi ekskluziv i sfondit për <ph name="PRODUCT_NAME" /></translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Luaj</translation>
 <translation id="5901630391730855834">E verdhë</translation>
 <translation id="5903200662178656908">Pajisja është një kombinim i tastierës dhe mausit.</translation>
+<translation id="5903822368221507416">Fshih skedat</translation>
 <translation id="5904994456462260490">Shto një APN të re</translation>
 <translation id="590746845088109442">mace</translation>
 <translation id="5907649332524363701">ngjyra e tastit</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Shërbimi i mënyrës së hyrjes së ChromeOS</translation>
 <translation id="6127426868813166163">e bardhë</translation>
-<translation id="613049107179582049">Kur audioja e Chromebook është aktive, "Regjistruesi" regjistron të gjitha audiot që luhen në këtë pajisje.</translation>
 <translation id="6136285399872347291">hapësirë prapa</translation>
 <translation id="6137614725462089991">punk kibernetik</translation>
 <translation id="6137767437444130246">Certifikata e përdoruesit</translation>
@@ -1417,7 +1413,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekrani me prekje me USB</translation>
 <translation id="757747079855995705">gur</translation>
-<translation id="7584853321964440104">Nuk mund të shkarkohet. Provo përsëri ose rinis pajisjen tënde Chromebook.</translation>
 <translation id="7590883480672980941">Cilësimet e hyrjes</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
 <translation id="7600430297804876776">Administratori i <ph name="MANAGER" /> ka caktuar se kur mund të përdoret kjo pajisje <ph name="DEVICE_TYPE" />.</translation>
@@ -1784,7 +1779,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="9218016617214286986">Shfaq APN-të e njohura</translation>
 <translation id="932327136139879170">Faqja kryesore</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Sigurohu që mikrofoni yt të jetë i lidhur ose provo të rinisësh Chromebook</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="950520315903467048">Tasti mungon për drejtimin <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Të krahasojë zërat gjatë të gjithë regjistrimit që transkripti të pasqyrojë atë që ka thënë dhe kur e ka thënë çdo folës</translation>

@@ -305,7 +305,8 @@ void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
   NSUInteger count_discarded_scene_still_connected = 0;
   NSMutableSet<NSString*>* connected_identifiers = [[NSMutableSet alloc] init];
   for (SceneState* scene_state in connected_scenes) {
-    [connected_identifiers addObject:scene_state.sceneSessionID];
+    [connected_identifiers
+        addObject:base::SysUTF8ToNSString(scene_state.sceneSessionID)];
   }
 
   for (UISceneSession* scene_session in scene_sessions) {
@@ -1616,8 +1617,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
                          sceneDelegate.window)];
 
   ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
-  const std::string sceneIdentifier =
-      base::SysNSStringToUTF8(sceneState.sceneSessionID);
+  const std::string& sceneIdentifier = sceneState.sceneSessionID;
 
   // If the SceneState is not associated with the correct profile, then
   // perform the necessary work to switch the profile used for the scene.
@@ -1751,8 +1751,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
               profileManager:(ProfileManagerIOS*)manager
            attributesStorage:(ProfileAttributesStorageIOS*)storage
                   localState:(PrefService*)localState {
-  const std::string sceneID =
-      base::SysNSStringToUTF8(sceneState.sceneSessionID);
+  const std::string& sceneID = sceneState.sceneSessionID;
 
   // Determine which profile to use. The logic is to take the first valid
   // profile (i.e. the value is set and the profile is known) amongst the

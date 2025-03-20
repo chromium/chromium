@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Схаваць расшыфроўку</translation>
 <translation id="160633243685262989">Перадпрагляд відарыса</translation>
 <translation id="1611649489706141841">наперад</translation>
-<translation id="1615144046047995187">Не ўдалося спампаваць. Паўтарыце спробу ці перазапусціце Chromebook.</translation>
 <translation id="1615335640928990664">Выкарыстанне трафіка з <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Скарыстайце тэму</translation>
 <translation id="1621067168122174824">Выканаць праверку зарадкі</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Спіс аўдыязапісаў</translation>
 <translation id="2561093647892030937">лімоны</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
-<translation id="2573178735329662769">Запіс усяго аўдыя Chromebook</translation>
 <translation id="2576253868710695442">Для мадэлі патрабуецца 2 ГБ у сховішчы</translation>
 <translation id="2584547424703650812">Зіхатлівыя краявіды</translation>
 <translation id="2584559707064218956">Каб задаць канфігурацыю, перайдзіце ў Налады</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">сіні і ружовы</translation>
 <translation id="498186245079027698">Праверце сканер і паўтарыце спробу. Упэўніцеся, што на прыладзе дастаткова месца для захавання файлаў адсканіраваных відарысаў.</translation>
 <translation id="4982627662315910959">Гэта спалучэнне клавіш недаступнае – выберыце іншае, націснуўшы клавішы ў такой камбінацыі, якая будзе ўключаць клавішу Shift і яшчэ адну клавішу-мадыфікатар (Ctrl, Alt або "<ph name="META_KEY" />").</translation>
-<translation id="4983216687482551672">Аўдыя Chromebook</translation>
 <translation id="4985509611418653372">Запусціць</translation>
 <translation id="4987769320337599931">Брандмаўар</translation>
 <translation id="4988526792673242964">Старонкі</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Каб працягнуць абнаўленне, адключыце кабель USB прылады "<ph name="DEVICE_NAME" />", а потым падключыце яго зноў</translation>
 <translation id="5099354524039520280">уверх</translation>
 <translation id="5107243100836678918">Спалучэнне клавіш, у якім не выкарыстоўваецца клавіша "<ph name="META_KEY" />", можа канфліктаваць са спалучэннямі клавіш іншых праграм. Націсніце гэта спалучэнне клавіш яшчэ раз, калі вы хочаце выкарыстоўваць яго і далей, або націсніце іншае спалучэнне клавіш, у якім выкарыстоўваецца клавіша "<ph name="KEY" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Не ўдаецца спампаваць мадэль расшыфроўкі мовы "<ph name="LANGUAGE_NAME" />". Паўтарыце спробу ці перазапусціце Chromebook.</translation>
 <translation id="5108781503443873320">Маюць падобнае значэнне:</translation>
-<translation id="5121677070210013200">Не ўдаецца спампаваць мадэль расшыфроўкі. Паўтарыце спробу ці перазапусціце Chromebook.</translation>
 <translation id="5130848777448318809">поні</translation>
 <translation id="5137451382116112100">Поўны экран</translation>
 <translation id="5139813694804168398">Не турбаваць</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">У інтэрнэце</translation>
 <translation id="6122277663991249694">Сэрвіс спосабаў уводу Chrome OS</translation>
 <translation id="6127426868813166163">белы</translation>
-<translation id="613049107179582049">Калі аўдыя Chromebook уключана, дыктафон запісвае ўсё аўдыя, якое прайграецца на прыладзе</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">кіберпанк</translation>
 <translation id="6137767437444130246">Сертыфікат карыстальніка</translation>
@@ -1417,7 +1411,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сэнсарны экран з USB</translation>
 <translation id="757747079855995705">камень</translation>
-<translation id="7584853321964440104">Не ўдалося спампаваць. Паўтарыце спробу ці перазапусціце Chromebook.</translation>
 <translation id="7590883480672980941">Налады ўводу</translation>
 <translation id="7595982850646262331">Застаецца <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Адміністратар <ph name="MANAGER" /> указаў, калі можна выкарыстоўваць прыладу "<ph name="DEVICE_TYPE" />".</translation>
@@ -1784,7 +1777,6 @@
 <translation id="9218016617214286986">Паказаць вядомыя APN</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Пераканайцеся, што мікрафон падключаны, або перазапусціце Chromebook</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="950520315903467048">Для напрамку "<ph name="DIRECTION" />" не ўказана клавіша. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">параўноўваць галасы ва ўсім запісе, каб у расшыфроўцы было зразумела, што і калі сказаў кожны суразмоўнік.</translation>

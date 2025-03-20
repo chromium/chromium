@@ -32,7 +32,7 @@ void ThirdPartyCredentialManagerImpl::PreventSilentAccess(
 
 void ThirdPartyCredentialManagerImpl::Get(
     password_manager::CredentialMediationRequirement mediation,
-    int requested_credential_type_flags,
+    bool include_passwords,
     const std::vector<GURL>& federations,
     GetCallback callback) {
   // TODO(crbug.com/374710839): Implement.

@@ -17,12 +17,14 @@ import static org.mockito.Mockito.when;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -57,6 +59,7 @@ public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL = new GURL("chrome-distiller://url");
     private static final GURL MOCK_URL = JUnitTestGURLs.GOOGLE_URL_CAT;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private MockWebContents mWebContents;
@@ -83,7 +86,6 @@ public class ReaderModeManagerTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        MockitoAnnotations.initMocks(this);
         org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtilsJni.setInstanceForTesting(
                 mDistillerTabUtilsJniMock);
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);

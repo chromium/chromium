@@ -479,6 +479,65 @@ TEST_F(BnplManagerTest, OnIssuerSelected_OnRedirectUrlFetched) {
   EXPECT_EQ(ongoing_flow_state->redirect_url, kRedirectUrl);
 }
 
+// Tests that the error message is shown when redirect url fetch fails with a
+// temporary error.
+TEST_F(BnplManagerTest,
+       OnIssuerSelected_OnRedirectUrlFetched_TemporaryFailure) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
+
+  BnplFetchUrlResponseDetails response;
+  response.redirect_url = kRedirectUrl;
+  response.success_url_prefix = GURL("success");
+  response.failure_url_prefix = GURL("failure");
+  response.context_token = kContextToken;
+
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingUrl)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
+          response));
+
+  OnIssuerSelected(linked_issuer);
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
+  EXPECT_EQ(autofill_client_->GetPaymentsAutofillClient()
+                ->autofill_error_dialog_context(),
+            AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                /*is_permanent_error=*/false));
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+}
+
+// Tests that the error message is shown when redirect url fetch fails.
+TEST_F(BnplManagerTest,
+       OnIssuerSelected_OnRedirectUrlFetched_PermanentFailure) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
+
+  BnplFetchUrlResponseDetails response;
+  response.redirect_url = kRedirectUrl;
+  response.success_url_prefix = GURL("success");
+  response.failure_url_prefix = GURL("failure");
+  response.context_token = kContextToken;
+
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingUrl)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+          response));
+
+  OnIssuerSelected(linked_issuer);
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
+  EXPECT_EQ(autofill_client_->GetPaymentsAutofillClient()
+                ->autofill_error_dialog_context(),
+            AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                /*is_permanent_error=*/true));
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+}
+
 // Tests that when BNPL flow completed successfully, the manager will attempt to
 // fetch VCN.
 TEST_F(BnplManagerTest, OnPopupWindowCompleted_WithSuccess) {
@@ -543,6 +602,38 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_UserClosed) {
 
   OnIssuerSelected(linked_issuer);
 
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+}
+
+// Tests that when BNPL flow completed with failure, the error message is shown.
+TEST_F(BnplManagerTest, OnPopupWindowCompleted_Failure) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+
+  // Init the `PaymentsWindowManager` BNPL flow.
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingUrl)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+          BnplFetchUrlResponseDetails()));
+  BnplIssuer linked_issuer = test::GetTestLinkedBnplIssuer();
+  auto& payments_window_manager = *static_cast<MockPaymentsWindowManager*>(
+      autofill_client_->GetPaymentsAutofillClient()
+          ->GetPaymentsWindowManager());
+
+  EXPECT_CALL(payments_window_manager, InitBnplFlow)
+      .WillOnce([&](PaymentsWindowManager::BnplContext bnpl_context) {
+        std::move(bnpl_context.completion_callback)
+            .Run(PaymentsWindowManager::BnplFlowResult::kFailure, kPopupUrl);
+      });
+
+  OnIssuerSelected(linked_issuer);
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
+  EXPECT_EQ(autofill_client_->GetPaymentsAutofillClient()
+                ->autofill_error_dialog_context(),
+            AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                /*is_permanent_error=*/false));
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 

@@ -52,8 +52,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
     private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @NonNull SearchActivityClient mSearchActivityClient;
-    private final @NonNull ObservableSupplierImpl<Integer> mHubToolbarOverviewColorSupplier =
-            new ObservableSupplierImpl<>(null);
+    private final @NonNull HubColorMixer mOverviewColorMixer;
 
     // This is effectively NonNull and final once the HubLayout is initialized.
     private HubLayoutController mHubLayoutController;
@@ -95,6 +94,9 @@ public class HubManagerImpl implements HubManager, HubController {
         mHubContainerView.setLayoutParams(params);
 
         mPaneManager.getFocusedPaneSupplier().addObserver(mOnFocusedPaneChanged);
+        mOverviewColorMixer =
+                new HubColorMixer(
+                        mActivity, mHubVisibilitySupplier, mPaneManager.getFocusedPaneSupplier());
     }
 
     @Override
@@ -102,6 +104,7 @@ public class HubManagerImpl implements HubManager, HubController {
         mHubVisibilitySupplier.set(false);
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChanged);
         mPaneManager.destroy();
+        mOverviewColorMixer.destroy();
         destroyHubCoordinator();
     }
 
@@ -145,8 +148,8 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
-    public ObservableSupplier<Integer> getHubToolbarOverviewColorSupplier() {
-        return mHubToolbarOverviewColorSupplier;
+    public ObservableSupplier<Integer> getHubOverviewColorSupplier() {
+        return mOverviewColorMixer.getOverviewColorSupplier();
     }
 
     @Override
@@ -219,7 +222,7 @@ public class HubManagerImpl implements HubManager, HubController {
                         mMenuButtonCoordinator,
                         mSearchActivityClient,
                         mEdgeToEdgeSupplier,
-                        mHubToolbarOverviewColorSupplier);
+                        mOverviewColorMixer);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
         Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         attachPaneDependencies(pane);
@@ -233,8 +236,6 @@ public class HubManagerImpl implements HubManager, HubController {
             mBackPressManager.removeHandler(mHubCoordinator);
             mHubCoordinator.destroy();
             mHubCoordinator = null;
-
-            mHubToolbarOverviewColorSupplier.set(null);
         }
     }
 

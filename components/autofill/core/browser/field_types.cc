@@ -493,7 +493,7 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case ADDRESS_HOME_STATE:
       return "State";
     case ADDRESS_HOME_ZIP:
-      return "Zip code";
+      return "ZIP code";
     case ADDRESS_HOME_COUNTRY:
       return "Country";
     case ADDRESS_HOME_OVERFLOW:

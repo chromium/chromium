@@ -63,7 +63,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -236,6 +237,8 @@ public class PageInfoViewTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
@@ -550,8 +553,6 @@ public class PageInfoViewTest {
         PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
 
         PageInfoAdPersonalizationController.setTopicsForTesting(Arrays.asList("Testing topic"));
-
-        MockitoAnnotations.initMocks(this);
     }
 
     @After

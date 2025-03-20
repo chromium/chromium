@@ -290,7 +290,8 @@ GraphImplTflite::CreateAndBuild(
     ContextImplTflite* context) {
   ASSIGN_OR_RETURN(GraphBuilderTflite::Result result,
                    GraphBuilderTflite::CreateAndBuild(
-                       context->properties(), *graph_info, constant_operands),
+                       context->properties(), *graph_info, constant_operands,
+                       compute_resource_info.operand_to_dependent_operations),
                    [](std::string error) {
                      return mojom::Error::New(
                          mojom::Error::Code::kNotSupportedError,

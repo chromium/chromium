@@ -267,8 +267,8 @@ void IsolatedWebAppInstallerViewController::Show() {
 
   widget_ =
       views::DialogDelegate::CreateDialogWidget(std::move(dialog_delegate),
-                                                /*context=*/nullptr,
-                                                /*parent=*/nullptr);
+                                                /*context=*/gfx::NativeWindow(),
+                                                /*parent=*/gfx::NativeView());
 
   CHECK(!window_);
   window_ = widget_->GetNativeWindow();

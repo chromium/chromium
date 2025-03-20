@@ -364,6 +364,7 @@ positionTryFallbacks
 positionTryOrder
 positionVisibility
 prefix
+printColorAdjust
 quotes
 r
 range

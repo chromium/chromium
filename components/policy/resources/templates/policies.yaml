@@ -1345,6 +1345,8 @@ policies:
   1344: KioskChromeAppsForceAllowed
   1345: ReduceAcceptLanguageEnabled
   1346: GenAIInlineImageSettings
+  1347: UserSecuritySignalsReporting
+  1348: UserSecurityAuthenticatedReporting
 
 atomic_groups:
   1: Homepage

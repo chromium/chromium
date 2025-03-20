@@ -19,7 +19,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -44,6 +45,7 @@ import java.util.concurrent.Semaphore;
 @EnableFeatures({ChromeFeatureList.PRICE_ANNOTATIONS, ChromeFeatureList.PRICE_CHANGE_MODULE})
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class ShoppingPersistedTabDataDeferredStartupTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Mock ShoppingService mShoppingService;
@@ -56,7 +58,6 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PersistedTabDataConfiguration.setUseTestConfig(true);

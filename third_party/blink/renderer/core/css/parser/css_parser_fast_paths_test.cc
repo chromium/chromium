@@ -500,46 +500,4 @@ TEST(CSSParserFastPathsTest, InternalColorsOnlyAllowedInUaMode) {
                 "-internal-current-search-text-color", kUASheetMode, color));
 }
 
-TEST(CSSParserFastPathsTest, IsSafeAreaInsetBottom) {
-  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(""));
-  EXPECT_FALSE(
-      CSSParserFastPaths::IsSafeAreaInsetBottom("safe-area-inset-bottom"));
-  EXPECT_FALSE(
-      CSSParserFastPaths::IsSafeAreaInsetBottom("env(safe-area-inset-top)"));
-  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-top))"));
-  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom) * 2)"));
-  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(-env(safe-area-inset-bottom))"));
-  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom, \") + 1px\") / 2)"));
-  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom) + 50kg)"));
-  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom) + 50px bar)"));
-  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom) + env(safe-area-max-inset-left))"));
-  EXPECT_FALSE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom) + env(safe-area-inset-bottom))"));
-
-  EXPECT_TRUE(
-      CSSParserFastPaths::IsSafeAreaInsetBottom("env(safe-area-inset-bottom)"));
-  EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "env(  safe-area-inset-bottom, 0px)"));
-  EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom))"));
-  EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc( env( safe-area-inset-bottom , 0px) )"));
-  EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom, 0px)+999px)"));
-  EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom, 0px)-var(--foo))"));
-  EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom) + env(safe-area-max-inset-bottom))"));
-  EXPECT_TRUE(CSSParserFastPaths::IsSafeAreaInsetBottom(
-      "calc(env(safe-area-inset-bottom, 0px) - env(safe-area-max-inset-bottom, "
-      "1px))"));
-}
-
 }  // namespace blink

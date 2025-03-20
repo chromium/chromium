@@ -960,6 +960,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
                                     b.GetPositionTryFallbacks());
     case CSSPropertyID::kPositionVisibility:
       return a.GetPositionVisibility() == b.GetPositionVisibility();
+    case CSSPropertyID::kPrintColorAdjust:
+      return a.PrintColorAdjust() == b.PrintColorAdjust();
 
     // These properties are not animateable, but perhaps equality should still
     // be defined for them.
@@ -1069,6 +1071,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasWebkitPaddingStart:
     case CSSPropertyID::kAliasWebkitPerspective:
     case CSSPropertyID::kAliasWebkitPerspectiveOrigin:
+    case CSSPropertyID::kAliasWebkitPrintColorAdjust:
     case CSSPropertyID::kAliasWebkitShapeImageThreshold:
     case CSSPropertyID::kAliasWebkitShapeMargin:
     case CSSPropertyID::kAliasWebkitShapeOutside:
@@ -1109,7 +1112,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitBoxReflect:
     case CSSPropertyID::kWebkitLineBreak:
     case CSSPropertyID::kWebkitMaskBoxImageRepeat:
-    case CSSPropertyID::kWebkitPrintColorAdjust:
     case CSSPropertyID::kWebkitRtlOrdering:
     case CSSPropertyID::kWebkitRubyPosition:
     case CSSPropertyID::kWebkitTapHighlightColor:

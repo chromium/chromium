@@ -96,6 +96,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -1730,7 +1731,7 @@ public final class SafetyHubTest {
 
     private void addCredentialToAccountStore() {
         // Set up an account with at least one password in the account store.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
 
         PasswordStoreBridge passwordStoreBridge =

@@ -39,6 +39,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_widget_types.h"
 
 using blink::DragOperationsMask;
 using remote_cocoa::mojom::DraggingInfoPtr;
@@ -130,23 +131,26 @@ WebContentsViewCocoa* WebContentsViewMac::GetInProcessNSView() const {
 }
 
 gfx::NativeView WebContentsViewMac::GetNativeView() const {
-  return GetInProcessNSView();
+  return gfx::NativeView(GetInProcessNSView());
 }
 
 gfx::NativeView WebContentsViewMac::GetContentNativeView() const {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
-  if (!rwhv)
-    return nullptr;
+  if (!rwhv) {
+    return gfx::NativeView();
+  }
   return rwhv->GetNativeView();
 }
 
 gfx::NativeWindow WebContentsViewMac::GetTopLevelNativeWindow() const {
   NSWindow* window = [GetInProcessNSView() window];
-  if (window)
-    return window;
-  if (delegate_)
+  if (window) {
+    return gfx::NativeWindow(window);
+  }
+  if (delegate_) {
     return delegate_->GetNativeWindow();
-  return nullptr;
+  }
+  return gfx::NativeWindow();
 }
 
 gfx::Rect WebContentsViewMac::GetContainerBounds() const {

@@ -54,6 +54,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -684,10 +685,10 @@ void ParentPermissionDialogView::ShowDialogInternal() {
   // from an extension.
   CreateContents();
   views::Widget* widget =
-      params_->window
-          ? constrained_window::CreateBrowserModalDialogViews(this,
-                                                              params_->window)
-          : views::DialogDelegate::CreateDialogWidget(this, nullptr, nullptr);
+      params_->window ? constrained_window::CreateBrowserModalDialogViews(
+                            this, params_->window)
+                      : views::DialogDelegate::CreateDialogWidget(
+                            this, gfx::NativeWindow(), gfx::NativeView());
   widget->Show();
 
   if (test_view_observer) {

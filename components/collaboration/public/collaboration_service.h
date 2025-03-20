@@ -9,6 +9,7 @@
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
+#include "components/collaboration/public/collaboration_flow_entry_point.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
@@ -69,14 +70,16 @@ class CollaborationService : public KeyedService,
   // share flows in the same browser instance.
   virtual void StartJoinFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
-      const GURL& url) = 0;
+      const GURL& url,
+      CollaborationServiceJoinEntryPoint entry) = 0;
 
   // Starts a new share or manage flow. This will cancel all existing ongoing
   // flows in the same browser instance. Note: EitherGroupID is either a local
   // tab group id or a sync id.
   virtual void StartShareOrManageFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
-      const tab_groups::EitherGroupID& either_id) = 0;
+      const tab_groups::EitherGroupID& either_id,
+      CollaborationServiceShareOrManageEntryPoint entry) = 0;
 
   // Get the current ServiceStatus.
   virtual ServiceStatus GetServiceStatus() = 0;

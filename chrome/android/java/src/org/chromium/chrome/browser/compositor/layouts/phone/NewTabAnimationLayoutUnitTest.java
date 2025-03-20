@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEvent
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayerJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
@@ -90,6 +91,7 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     @Mock private CompositorViewHolder mCompositorViewHolder;
     @Mock private ToolbarManager mToolbarManager;
+    @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private SceneLayer.Natives mSceneLayerJni;
     @Mock private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
     @Mock private LayoutUpdateHost mUpdateHost;
@@ -166,7 +168,8 @@ public class NewTabAnimationLayoutUnitTest {
                                 mContentContainer,
                                 mCompositorViewHolderSupplier,
                                 mAnimationHostView,
-                                mToolbarManager));
+                                mToolbarManager,
+                                mBrowserControlsManager));
         mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
         when(mAnimationHostView.findViewById(R.id.tab_switcher_button))

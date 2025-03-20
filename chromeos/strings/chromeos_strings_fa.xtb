@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">پنهان کردن ترانویسی</translation>
 <translation id="160633243685262989">پیش‌دید کردن تصویر</translation>
 <translation id="1611649489706141841">هدایت</translation>
-<translation id="1615144046047995187">‏بارگیری نشد. دوباره امتحان کنید یا Chromebook را بازراه‌اندازی کنید.</translation>
 <translation id="1615335640928990664">مصرف داده از <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">استفاده از زمینه</translation>
 <translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">فهرست صداهای ضبط‌شده</translation>
 <translation id="2561093647892030937">لیمو</translation>
 <translation id="2570743873672969996">درحال اجرای آزمایش <ph name="TEST_NAME" />…</translation>
-<translation id="2573178735329662769">‏ضبط کردن همه صداهای Chromebook</translation>
 <translation id="2576253868710695442">این بارگیری ۲ گیگابایت فضای خالی لازم دارد</translation>
 <translation id="2584547424703650812">منظره‌های درخشان</translation>
 <translation id="2584559707064218956">برای راه‌اندازی، به «تنظیمات» بروید</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">آبی و صورتی</translation>
 <translation id="498186245079027698">اسکنر را بررسی کنید و دوباره امتحان کنید. مطمئن شوید فضای کافی برای ذخیره کردن فایل‌های اسکن‌شده در دستگاه وجود داشته باشد.</translation>
 <translation id="4982627662315910959">میان‌بر دردسترس نیست. میان‌بر جدیدی را بااستفاده از کلید تبدیل و یک کلید توصیف‌گر دیگر (مهار، دگرساز، یا <ph name="META_KEY" />) فشار دهید.</translation>
-<translation id="4983216687482551672">‏صدای Chromebook</translation>
 <translation id="4985509611418653372">اجرا</translation>
 <translation id="4987769320337599931">دیوار آتش</translation>
 <translation id="4988526792673242964">صفحات</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">‏برای ادامه فرایند به‌روزرسانی، کابل USB دستگاه <ph name="DEVICE_NAME" /> را جدا و دوباره وصل کنید</translation>
 <translation id="5099354524039520280">بالا</translation>
 <translation id="5107243100836678918">اگر میان‌بر کلید <ph name="META_KEY" /> نداشته باشد، ممکن است با میان‌بر برخی‌از برنامه‌ها تداخل پیدا کند. اگر می‌خواهید همچنان از این میان‌بر استفاده کنید آن را دوباره فشار دهید، یا میان‌بر جدیدی را بااستفاده از کلید <ph name="KEY" /> فشار دهید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">‏مدل ترانویسی <ph name="LANGUAGE_NAME" /> بارگیری نشد. دوباره امتحان کنید یا Chromebook را بازراه‌اندازی کنید</translation>
 <translation id="5108781503443873320">مترادف:</translation>
-<translation id="5121677070210013200">‏مدل ترانویسی بارگیری نشد. دوباره امتحان کنید یا Chromebook را بازراه‌اندازی کنید.</translation>
 <translation id="5130848777448318809">اسبچه</translation>
 <translation id="5137451382116112100">تمام‌صفحه</translation>
 <translation id="5139813694804168398">مزاحم نشوید</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">آنلاین</translation>
 <translation id="6122277663991249694">‏سرویس روش ورودی ChromeOS</translation>
 <translation id="6127426868813166163">سفید</translation>
-<translation id="613049107179582049">‏وقتی صدای Chromebook روشن باشد، برنامه «ضبط‌صوت» همه صداهای درحال پخش در این دستگاه را ضبط می‌کند</translation>
 <translation id="6136285399872347291">پس‌بر</translation>
 <translation id="6137614725462089991">سایبرپانک</translation>
 <translation id="6137767437444130246">گواهی کاربر</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏صفحه لمسی USB</translation>
 <translation id="757747079855995705">سنگ</translation>
-<translation id="7584853321964440104">‏بارگیری نشد. دوباره امتحان کنید یا Chromebook را بازراه‌اندازی کنید.</translation>
 <translation id="7590883480672980941">تنظیمات ورودی</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی مانده است</translation>
 <translation id="7600430297804876776">سرپرست <ph name="MANAGER" /> زمان‌هایی را که می‌توان از این <ph name="DEVICE_TYPE" /> استفاده کرد تنظیم کرده است.</translation>
@@ -1657,7 +1650,7 @@
 <translation id="8677859815076891398">‏آلبومی وجود ندارد. آلبومی در <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ایجاد کنید.</translation>
 <translation id="8682949824227998083">رامِن</translation>
 <translation id="8689520252402395106">‏برای ادامه فرایند به‌روزرسانی، کابل USB دستگاه <ph name="DEVICE_NAME" /> را دوباره وصل کنید</translation>
-<translation id="8709616837707653427"><ph name="DESC_TEXT" /> برای مدیریت این ویژگی، از کلیدهای پیکان روبه راست یا روبه چپ استفاده کنید.</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> برای مدیریت این ویژگی، از کلیدهای جهت‌نما روبه راست یا روبه چپ استفاده کنید.</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>
 <translation id="8721554916373590179">پیام‌واره‌های نمونه</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">نمایش موارد «نام نقطه دستیابی» معلوم</translation>
 <translation id="932327136139879170">منزل</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">‏مطمئن شوید میکروفونتان وصل است یا Chromebook را بازراه‌اندازی کنید</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="950520315903467048">کلید <ph name="DIRECTION" /> وجود ندارد. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">مقایسه صداها در کل صدای ضبط‌شده برای اینکه ترانویسی صحبت هر گوینده و زمان صحبت را نشان دهد</translation>

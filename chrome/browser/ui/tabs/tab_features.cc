@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
@@ -191,18 +192,27 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     page_action_controller_->Initialize(
         tab, std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
                                             page_actions::kActionIds.end()));
-    translate_page_action_controller_ =
-        std::make_unique<TranslatePageActionController>(tab);
 
-    memory_saver_chip_controller_ =
-        std::make_unique<memory_saver::MemorySaverChipController>(
-            *page_action_controller());
+    if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
+      translate_page_action_controller_ =
+          std::make_unique<TranslatePageActionController>(tab);
+    }
 
-    intent_picker_view_page_action_controller_ =
-        std::make_unique<IntentPickerViewPageActionController>(tab);
+    if (IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
+      memory_saver_chip_controller_ =
+          std::make_unique<memory_saver::MemorySaverChipController>(
+              *page_action_controller());
+    }
 
-    zoom_page_action_controller_ =
-        std::make_unique<zoom::ZoomPageActionController>(tab);
+    if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
+      intent_picker_view_page_action_controller_ =
+          std::make_unique<IntentPickerViewPageActionController>(tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kZoom)) {
+      zoom_page_action_controller_ =
+          std::make_unique<zoom::ZoomPageActionController>(tab);
+    }
   }
 
   customize_chrome_side_panel_controller_ =

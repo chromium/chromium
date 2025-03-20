@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.hub;
 import java.util.Locale;
 import java.util.Objects;
 
-class HubColorSchemeUpdate {
+/** Represents color scheme updates to be made in the Hub. */
+public class HubColorSchemeUpdate {
     public final @HubColorScheme int newColorScheme;
     public final @HubColorScheme int previousColorScheme;
 

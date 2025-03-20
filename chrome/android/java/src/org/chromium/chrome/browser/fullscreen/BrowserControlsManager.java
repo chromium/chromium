@@ -80,6 +80,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private int mTopControlsMinHeight;
     private int mBottomControlsHeight;
     private int mBottomControlsMinHeight;
+    private int mBottomControlsAdditionalHeight;
     private boolean mAnimateBrowserControlsHeightChanges;
 
     private int mRendererTopControlOffset;
@@ -477,6 +478,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 obs.onBottomControlsHeightChanged(mBottomControlsHeight, mBottomControlsMinHeight);
             }
         }
+    }
+
+    @Override
+    public void setBottomControlsAdditionalHeight(int height) {
+        mBottomControlsAdditionalHeight = height;
     }
 
     private void topControlsAnimationMaybeStarted(
@@ -1269,14 +1275,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             }
         }
 
-        OffsetTagConstraints currentBottomConstraints =
-                mOffsetTagDefinitions.getConstraints().getBottomControlsConstraints();
-        int additionalHeight = 0;
-        if (currentBottomConstraints != null) {
-            additionalHeight = (int) currentBottomConstraints.maxY() - (oldHeight - oldMinHeight);
-        }
         OffsetTagConstraints newBottomConstraints =
-                new OffsetTagConstraints(0, 0, minY, maxY + additionalHeight);
+                new OffsetTagConstraints(0, 0, minY, maxY + mBottomControlsAdditionalHeight);
         BrowserControlsOffsetTagConstraints constraints =
                 new BrowserControlsOffsetTagConstraints(
                         mOffsetTagDefinitions.getConstraints().getTopControlsConstraints(),

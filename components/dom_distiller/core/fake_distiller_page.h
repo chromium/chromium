@@ -30,7 +30,6 @@ class MockDistillerPage : public DistillerPage {
  public:
   MockDistillerPage();
   ~MockDistillerPage() override;
-  bool StringifyOutput() override { return false; }
   MOCK_METHOD2(DistillPageImpl,
                void(const GURL& gurl, const std::string& script));
 };

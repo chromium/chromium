@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Ascunde transcrierea</translation>
 <translation id="160633243685262989">Previzualizează imaginea</translation>
 <translation id="1611649489706141841">înainte</translation>
-<translation id="1615144046047995187">Nu se poate descărca. Încearcă din nou sau repornește Chromebookul.</translation>
 <translation id="1615335640928990664">Utilizarea datelor începând de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Folosește o temă</translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Listă de înregistrări audio</translation>
 <translation id="2561093647892030937">lămâi</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">Înregistrarea tuturor elementelor audio de pe Chromebook</translation>
 <translation id="2576253868710695442">Acesta va ocupa un spațiu de stocare de până la 2 GB</translation>
 <translation id="2584547424703650812">Peisaje strălucitoare</translation>
 <translation id="2584559707064218956">Accesează Setările pentru configurare</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">albastru și roz</translation>
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
 <translation id="4982627662315910959">Comanda rapidă nu este disponibilă. Introdu o nouă comandă rapidă folosind Shift și o altă tastă de modificare (Ctrl, Alt sau <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Sunetul Chromebookului</translation>
 <translation id="4985509611418653372">Rulează</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pagini</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Deconectează cablul USB <ph name="DEVICE_NAME" />, apoi reintrodu-l pentru a continua procesul de actualizare</translation>
 <translation id="5099354524039520280">sus</translation>
 <translation id="5107243100836678918">Comanda rapidă fără <ph name="META_KEY" /> poate intra în conflict cu comanda rapidă a unei aplicații. Introdu din nou comanda rapidă ca să o folosești în continuare sau introdu o nouă comandă rapidă care folosește tasta <ph name="KEY" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Nu se poate descărca modelul de transcriere <ph name="LANGUAGE_NAME" />. Încearcă din nou sau repornește Chromebookul.</translation>
 <translation id="5108781503443873320">Sinonime:</translation>
-<translation id="5121677070210013200">Nu se poate descărca modelul de transcriere. Încearcă din nou sau repornește Chromebookul.</translation>
 <translation id="5130848777448318809">ponei</translation>
 <translation id="5137451382116112100">Complet</translation>
 <translation id="5139813694804168398">nu deranja</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Serviciul metodei de introducere a textului din sistemul de operare Chrome</translation>
 <translation id="6127426868813166163">alb</translation>
-<translation id="613049107179582049">Când Conținutul audio de pe Chromebook este activat, Recorder înregistrează tot conținutul audio redat pe acest dispozitiv</translation>
 <translation id="6136285399872347291">șterge un caracter</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificat de utilizator</translation>
@@ -1419,7 +1413,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ecran tactil USB</translation>
 <translation id="757747079855995705">piatră</translation>
-<translation id="7584853321964440104">Nu se poate descărca. Încearcă din nou sau repornește Chromebookul.</translation>
 <translation id="7590883480672980941">Setări de introducere a textului</translation>
 <translation id="7595982850646262331">Timp rămas: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Administratorul <ph name="MANAGER" /> a setat când se poate folosi acest <ph name="DEVICE_TYPE" /></translation>
@@ -1786,7 +1779,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="9218016617214286986">Afișează APN-uri cunoscute</translation>
 <translation id="932327136139879170">Pagina de pornire</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Verifică dacă microfonul este conectat sau repornește Chromebookul</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="950520315903467048">Lipsește tasta pentru <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Compară vocile în înregistrare, astfel încât transcrierea să reflecte ce a spus fiecare vorbitor și când</translation>

@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Les sites utilisent généralement la communication en champ proche (CCP) pour fonctionner avec des balises ou des appareils à proximité, comme le balayage de badges ou le paiement sans contact</translation>
 <translation id="1547123415014299762">Les témoins tiers sont autorisés</translation>
 <translation id="1593426485665524382">Nouvelles actions accessibles près du haut de l'écran</translation>
+<translation id="1615755956145364867">Les sites peuvent demander à lire du contenu protégé</translation>
 <translation id="1620510694547887537">Caméra</translation>
+<translation id="1621729191093924223">Les fonctionnalités qui nécessitent l'accès au micro ne seront pas accessibles</translation>
 <translation id="1633720957382884102">Sites connexes</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1652197001188145583">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils CCP. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser les appareils CCP.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Demander avant d'autoriser des sites à se connecter à un appareil (recommandé)</translation>
 <translation id="1779089405699405702">Décodeur d’image</translation>
 <translation id="1785415724048343560">Recommandé pour une expérience optimale</translation>
+<translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne fonctionneront pas</translation>
 <translation id="1799920918471566157">Astuces de Chrome</translation>
 <translation id="1816835383954230954">Lorsque l'optimiseur est activé, Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu. Lorsque l'optimiseur est désactivé, les performances s'en trouvent réduites, mais le V8 est plus résistant aux attaques.</translation>
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez aussi l'accès à l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL du site</translation>
 <translation id="2004697686368036666">Des fonctionnalités de certains sites pourraient ne pas fonctionner</translation>
 <translation id="2025115093177348061">Réalité augmentée</translation>
+<translation id="2028449514182362831">Les fonctionnalités qui nécessitent l'accès aux capteurs de mouvement ne seront pas accessibles</translation>
 <translation id="2030769033451695672">Touchez pour revenir à <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2091887806945687916">Son</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Navigation bloquée : <ph name="URL" /></translation>
 <translation id="4274673989874969668">Lorsque vous quittez un site, la synchronisation de celui-ci peut se poursuivre afin de terminer certaines tâches, comme téléverser des photos ou envoyer un message de clavardage</translation>
 <translation id="4278390842282768270">Autorisé</translation>
+<translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
 <translation id="429312253194641664">Un site lit du contenu multimédia</translation>
 <translation id="42981349822642051">Développer</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Masquer la carte Continuer avec cet onglet}one{Masquer la carte Continuer avec cet onglet}other{Masquer la carte Continuer avec ces onglets}}</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8042586301629853791">Trier par :</translation>
+<translation id="8051193500142930381">Les fonctionnalités qui nécessitent une caméra ne seront pas accessibles</translation>
 <translation id="8067883171444229417">Lire la vidéo</translation>
 <translation id="8068648041423924542">Impossible de sélectionner le certificat.</translation>
 <translation id="8077120325605624147">Tous les sites que vous visitez peuvent vous suggérer n’importe quelle annonce</translation>

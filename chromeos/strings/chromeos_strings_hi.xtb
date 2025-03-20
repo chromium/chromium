@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ट्रांसक्रिप्ट छिपाएं</translation>
 <translation id="160633243685262989">इमेज की झलक देखें</translation>
 <translation id="1611649489706141841">आगे जाएं</translation>
-<translation id="1615144046047995187">इसे डाउनलोड नहीं किया जा सकता. फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
 <translation id="1618566998877964907">किसी थीम का इस्तेमाल करें</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">ऑडियो रिकॉर्डिंग की सूची</translation>
 <translation id="2561093647892030937">नींबू</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
-<translation id="2573178735329662769">Chromebook का पूरा ऑडियो रिकॉर्ड किया जा रहा है</translation>
 <translation id="2576253868710695442">इसमें 2 जीबी तक का स्टोरेज इस्तेमाल होगा</translation>
 <translation id="2584547424703650812">ग्लोस्केप्स</translation>
 <translation id="2584559707064218956">सेट अप के लिए, सेटिंग पर जाएं</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">नीला और गुलाबी</translation>
 <translation id="498186245079027698">स्कैनर की जांच करके फिर से कोशिश करें. पक्का करें कि स्कैन की गई फ़ाइलों को सेव करने के लिए, डिवाइस में खाली जगह हो.</translation>
 <translation id="4982627662315910959">शॉर्टकट उपलब्ध नहीं है. कार्रवाई बदलने वाली एक और कुंजी (ctrl, alt, shift बटन या <ph name="META_KEY" />) के साथ-साथ shift इस्तेमाल करके नए शॉर्टकट का इस्तेमाल करें.</translation>
-<translation id="4983216687482551672">Chromebook ऑडियो</translation>
 <translation id="4985509611418653372">चलाएं</translation>
 <translation id="4987769320337599931">फ़ायरवॉल</translation>
 <translation id="4988526792673242964">पेज</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> की यूएसबी केबल हटाएं और इसे फिर से लगाएं</translation>
 <translation id="5099354524039520280">ऊपर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> बटन के बिना किसी शॉर्टकट का इस्तेमाल करने पर, कुछ ऐप्लिकेशन के शॉर्टकट में गड़बड़ी हो सकती है. इस शॉर्टकट का इस्तेमाल जारी रखने के लिए कुंजियों को फिर से दबाएं या <ph name="KEY" /> बटन के साथ किसी नए शॉर्टकट का इस्तेमाल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> में बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल डाउनलोड नहीं किया जा सका. फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें</translation>
 <translation id="5108781503443873320">इसी अर्थ वाले दूसरे शब्द:</translation>
-<translation id="5121677070210013200">बोले जा रहे शब्दों को टेक्स्ट में बदलने का मॉडल डाउनलोड नहीं किया जा सका. फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="5130848777448318809">खच्चर</translation>
 <translation id="5137451382116112100">फ़ुलस्क्रीन मोड</translation>
 <translation id="5139813694804168398">परेशान न करें</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">चलाएं</translation>
 <translation id="5901630391730855834">पीला</translation>
 <translation id="5903200662178656908">यह डिवाइस, कीबोर्ड और माउस का कॉम्बो है.</translation>
+<translation id="5903822368221507416">टैब छिपाएं</translation>
 <translation id="5904994456462260490">नया एपीएन जोड़ें</translation>
 <translation id="590746845088109442">बिल्लियां</translation>
 <translation id="5907649332524363701">बटन का रंग</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">ऑनलाइन</translation>
 <translation id="6122277663991249694">ChromeOS के इनपुट के तरीके से जुड़ी सेवा</translation>
 <translation id="6127426868813166163">सफ़ेद</translation>
-<translation id="613049107179582049">Chromebook का ऑडियो चालू होने पर, रिकॉर्डर इस डिवाइस पर चल रहे सभी ऑडियो को रिकॉर्ड करता है</translation>
 <translation id="6136285399872347291">बैकस्पेस</translation>
 <translation id="6137614725462089991">सायबरपंक</translation>
 <translation id="6137767437444130246">उपयोगकर्ता प्रमाणपत्र</translation>
@@ -1378,6 +1373,7 @@
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> के लिए ज़्यादा विकल्प</translation>
 <translation id="7388959671917308825">पहले से मौजूद टचपैड</translation>
 <translation id="7397270852490618635">हल्के रंग वाली थीम बंद करें</translation>
+<translation id="7400166052988585408">शिक्षक <ph name="NUM_SECONDS" /> सेकंड में आपकी स्क्रीन पर कॉन्टेंट पिन करेगा</translation>
 <translation id="7401543881546089382">शॉर्टकट मिटाएं</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> को अपडेट किया जा सकता है</translation>
 <translation id="741244894080940828">एक यूनिट से दूसरी यूनिट में बदलना</translation>
@@ -1416,7 +1412,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">यूएसबी टचस्क्रीन</translation>
 <translation id="757747079855995705">पत्थर</translation>
-<translation id="7584853321964440104">इसे डाउनलोड नहीं किया जा सका. फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाकी हैं</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> के एडमिन ने इस <ph name="DEVICE_TYPE" /> को इस्तेमाल करने के लिए समय सेट किया है.</translation>
@@ -1783,7 +1778,6 @@
 <translation id="9218016617214286986">अक्सर इस्तेमाल किए जाने वाले एपीएन दिखाएं</translation>
 <translation id="932327136139879170">होम बटन</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">पक्का करें आपका माइक कनेक्ट हो या Chromebook को रीस्टार्ट करें</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> के लिए कोई बटन नहीं चुना गया है. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">पूरी रिकॉर्डिंग में आवाज़ों को मैच करता है, ताकि ट्रांसक्रिप्ट में यह पता चल सके कि किसी स्पीकर ने क्या कहा और कब कहा</translation>

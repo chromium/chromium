@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Spletna mesta običajno uporabljajo tehnologijo NFC za delovanje z oznakami ali napravami v bližini, na primer pri optičnem branju značk ali brezstičnem plačevanju</translation>
 <translation id="1547123415014299762">Piškotki tretjih oseb so dovoljeni.</translation>
 <translation id="1593426485665524382">Nova dejanja so na voljo pri vrhu zaslona.</translation>
+<translation id="1615755956145364867">Spletna mesta lahko zahtevajo predvajanje zaščitene vsebine.</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Funkcije, ki potrebujejo mikrofon, ne bodo delovale</translation>
 <translation id="1633720957382884102">Povezana spletna mesta</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="1652197001188145583">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav NFC. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Prikaži poziv, preden se spletnim mestom dovoli povezovanje z napravo (priporočeno)</translation>
 <translation id="1779089405699405702">Slikovni dekodirnik</translation>
 <translation id="1785415724048343560">Priporočljivo za najboljšo izkušnjo</translation>
+<translation id="1796588414813960292">Funkcije, ki potrebujejo zvok, ne bodo delovale.</translation>
 <translation id="1799920918471566157">Nasveti za Chrome</translation>
 <translation id="1816835383954230954">Če je vklopljeno, Chrome deluje hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno. Če je izklopljeno, se zmanjša učinkovitost delovanja, vendar je mehanizem V8 odpornejši proti napadom.</translation>
 <translation id="1818308510395330587">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo razširjene resničnosti, prav tako vklopite fotoaparat v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL spletnega mesta</translation>
 <translation id="2004697686368036666">Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="2025115093177348061">Razširjena resničnost</translation>
+<translation id="2028449514182362831">Funkcije, ki potrebujejo tipala gibanja, ne bodo delovale</translation>
 <translation id="2030769033451695672">Dotaknite se, če se želite vrniti na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2091887806945687916">Zvok</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Krmarjenje je blokirano: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Ko zapustite spletno mesto, se ta običajno še naprej sinhronizira, da dokonča opravila, kot je nalaganje fotografij ali pošiljanje sporočila v klepetu.</translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
+<translation id="4290791284969893584">Ko zaprete stran, se začeta opravila morda ne bodo dokončala.</translation>
 <translation id="429312253194641664">Spletno mesto predvaja predstavnost</translation>
 <translation id="42981349822642051">Razširi</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skrij kartico za nadaljevanje s tem zavihkom}one{Skrij kartico za nadaljevanje s temi zavihki}two{Skrij kartico za nadaljevanje s temi zavihki}few{Skrij kartico za nadaljevanje s temi zavihki}other{Skrij kartico za nadaljevanje s temi zavihki}}</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8042586301629853791">Razvrsti po:</translation>
+<translation id="8051193500142930381">Funkcije, ki potrebujejo kamero, ne bodo delovale</translation>
 <translation id="8067883171444229417">Predvajanje videa</translation>
 <translation id="8068648041423924542">Izbira potrdila ni mogoča</translation>
 <translation id="8077120325605624147">Vsa spletna mesta, ki jih obiščete, vam lahko prikazujejo kateri koli oglas.</translation>

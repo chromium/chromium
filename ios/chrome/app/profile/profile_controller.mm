@@ -202,13 +202,12 @@ void RemoveSessionsFromSessionsToDiscard(const SessionIds& session_ids,
 // See https://crbug.com/392575873 for more details.
 void RecordDiscardedSceneConnectedAfterBeingPurged(
     const SessionIds& purged_identifiers,
-    NSString* scene_identifier) {
+    std::string_view scene_identifier) {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     return;
   }
 
-  const auto iterator =
-      purged_identifiers.find(base::SysNSStringToUTF8(scene_identifier));
+  const auto iterator = purged_identifiers.find(scene_identifier);
   base::UmaHistogramBoolean(
       "IOS.Sessions.DiscardedSceneConnectedAfterBeingPurged",
       iterator != purged_identifiers.end());

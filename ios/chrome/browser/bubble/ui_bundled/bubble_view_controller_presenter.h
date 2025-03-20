@@ -17,8 +17,7 @@ typedef NS_ENUM(NSInteger, BubbleViewType);
 
 // Used for the bubble's dismissal callback.
 using CallbackWithIPHDismissalReasonType =
-    void (^)(IPHDismissalReasonType reason,
-             feature_engagement::Tracker::SnoozeAction action);
+    void (^)(IPHDismissalReasonType reason);
 
 @class BubbleViewController;
 

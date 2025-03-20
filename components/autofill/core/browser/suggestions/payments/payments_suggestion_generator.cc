@@ -1571,6 +1571,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:
     case SuggestionType::kManageIban:
+    case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManagePlusAddress:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kViewPasswordDetails:
@@ -1611,6 +1612,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kLoyaltyCardEntry:
       return false;
   }
 }

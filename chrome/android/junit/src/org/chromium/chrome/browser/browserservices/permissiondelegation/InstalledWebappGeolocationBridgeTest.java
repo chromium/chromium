@@ -21,10 +21,12 @@ import android.os.Bundle;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
@@ -41,6 +43,7 @@ import org.chromium.url.JUnitTestGURLs;
 public class InstalledWebappGeolocationBridgeTest {
     private static final long NATIVE_POINTER = 12;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private GURL mScope;
     private GURL mOtherScope;
 
@@ -53,7 +56,6 @@ public class InstalledWebappGeolocationBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         InstalledWebappGeolocationBridgeJni.setInstanceForTesting(mNativeMock);
 
         mScope = JUnitTestGURLs.URL_1;

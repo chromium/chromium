@@ -34,10 +34,12 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
@@ -69,6 +71,7 @@ public class TileGroupUnitTest {
     private static final int TILE_TITLE_LINES = 1;
     private static final String[] URLS = {"https://www.google.com/", "https://tellmedadjokes.com/"};
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TileGroup.Observer mTileGroupObserver;
     @Mock private TileGroup.Delegate mTileGroupDelegate;
     @Mock private SuggestionsUiDelegate mSuggestionsUiDelegate;
@@ -85,7 +88,6 @@ public class TileGroupUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mContext =
                 new ContextThemeWrapper(

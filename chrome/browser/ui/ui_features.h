@@ -224,6 +224,11 @@ BASE_DECLARE_FEATURE(kPageActionsMigration);
 // The following feature params indicate whether individual features should
 // have their page actions controlled using the new framework.
 extern const base::FeatureParam<bool> kPageActionsMigrationLensOverlay;
+extern const base::FeatureParam<bool> kPageActionsMigrationMemorySaver;
+extern const base::FeatureParam<bool> kPageActionsMigrationTranslate;
+extern const base::FeatureParam<bool> kPageActionsMigrationIntentPicker;
+extern const base::FeatureParam<bool> kPageActionsMigrationZoom;
+extern const base::FeatureParam<bool> kPageActionsMigrationOfferNotification;
 
 // Controls whether browser tab loading animations are driven by the compositor
 // vs. a repeating timer.

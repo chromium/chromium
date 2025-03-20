@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './selectable_icon_button.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -11,17 +12,14 @@ import type {InkSizeSelectorElement} from './ink_size_selector.js';
 
 export function getHtml(this: InkSizeSelectorElement) {
   return html`
-    <div @keydown="${this.onSizeKeydown_}" role="radiogroup">
-      ${this.getCurrentBrushSizes_().map((item, index) => html`
-        <cr-icon-button iron-icon="pdf:${item.icon}" role="radio"
-            tabindex="${this.getTabIndexForSize_(item.size)}"
-            data-index="${index}" data-size="${item.size}"
-            data-selected="${this.isCurrentSize_(item.size)}"
-            aria-checked="${this.isCurrentSize_(item.size)}"
-            aria-label="${this.i18n(item.label)}"
-            title="${this.i18n(item.label)}"
-            @click="${this.onSizeClick_}"></cr-icon-button>
+    <cr-radio-group selectable-elements="selectable-icon-button"
+        .selected="${this.currentSizeString_()}"
+        @selected-changed="${this.onSelectedChanged_}">
+      ${this.getCurrentBrushSizes_().map(item => html`
+        <selectable-icon-button icon="pdf:${item.icon}"
+            name="${item.size}" label="${this.i18n(item.label)}">
+        </selectable-icon-button>
       `)}
-    </div>
+    </cr-radio-group>
   `;
 }

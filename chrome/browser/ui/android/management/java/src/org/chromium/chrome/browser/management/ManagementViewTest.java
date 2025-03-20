@@ -16,7 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
@@ -32,6 +33,8 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ManagementViewTest {
     private static final String TITLE = "title";
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -50,8 +53,6 @@ public class ManagementViewTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         ManagedBrowserUtilsJni.setInstanceForTesting(mMockManagedBrowserUtilNatives);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsNatives);
         doReturn(mMockPrefService).when(mMockUserPrefsNatives).get(mMockProfile);

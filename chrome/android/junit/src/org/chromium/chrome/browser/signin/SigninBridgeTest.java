@@ -143,7 +143,7 @@ public class SigninBridgeTest {
     @Test
     @SmallTest
     public void testAccountPickerSuppressedWhenSigninNotAllowed() {
-        when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(false);
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
 
         SigninBridge.openAccountPickerBottomSheet(
                 mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
@@ -158,7 +158,7 @@ public class SigninBridgeTest {
     @Test
     @SmallTest
     public void testAccountPickerSuppressedWhenNoAccountsOnDevice() {
-        when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(true);
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
         SigninBridge.openAccountPickerBottomSheet(
                 mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
@@ -173,7 +173,7 @@ public class SigninBridgeTest {
     @Test
     @SmallTest
     public void testAccountPickerSuppressedIfDismissLimitReached() {
-        when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(true);
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount("account@test.com");
         ChromeSharedPreferences.getInstance()
                 .writeInt(
@@ -193,7 +193,7 @@ public class SigninBridgeTest {
     @Test
     @SmallTest
     public void testAccountPickerShown() {
-        when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(true);
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount("account@test.com");
 
         SigninBridge.openAccountPickerBottomSheet(

@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -125,8 +124,6 @@ public class PriceHistoryBottomSheetContentRenderTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         doReturn(mMockProfile).when(mMockTab).getProfile();
         doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);

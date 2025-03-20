@@ -169,8 +169,9 @@ SkColor GetFrameColor(Browser* browser) {
 class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
  public:
   WebAppFrameToolbarBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({features::kPageActionsMigration},
-                                          {});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageActionsMigration,
+        {{features::kPageActionsMigrationZoom.name, "true"}});
   }
 
   WebAppFrameToolbarTestHelper* helper() {

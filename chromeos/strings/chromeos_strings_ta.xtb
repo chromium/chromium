@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">டிரான்ஸ்கிரிப்ட்டை மறைக்கும்</translation>
 <translation id="160633243685262989">படத்தின் மாதிரிக்காட்சி</translation>
 <translation id="1611649489706141841">அடுத்த பக்கம்</translation>
-<translation id="1615144046047995187">பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது Chromebookகை மீண்டும் தொடங்கவும்.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> வரையிலான டேட்டா உபயோகம்</translation>
 <translation id="1618566998877964907">தீமினைப் பயன்படுத்துங்கள்</translation>
 <translation id="1621067168122174824">சார்ஜ் சோதனையை இயக்கு</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">ஆடியோ ரெக்கார்டிங்குங்கள் பட்டியல்</translation>
 <translation id="2561093647892030937">எலுமிச்சம்பழங்கள்</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
-<translation id="2573178735329662769">எல்லா Chromebook ஆடியோவையும் ரெக்கார்டு செய்தல்</translation>
 <translation id="2576253868710695442">இது 2 ஜி.பை. சேமிப்பகம் வரை பயன்படுத்தக்கூடும்</translation>
 <translation id="2584547424703650812">குளோஸ்கேப்கள்</translation>
 <translation id="2584559707064218956">அமைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">நீலம் மற்றும் இளஞ்சிவப்பு</translation>
 <translation id="498186245079027698">ஸ்கேனரைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும். ஸ்கேன் செய்த ஃபைல்களைச் சேமிக்க போதுமான இடம் இருப்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4982627662315910959">ஷார்ட்கட் இல்லை. shift உடன் மேலும் ஒரு மாற்றி விசையை (ctrl, alt அல்லது <ph name="META_KEY" />) பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
-<translation id="4983216687482551672">Chromebook ஆடியோ</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
 <translation id="4987769320337599931">ஃபயர்வால்</translation>
 <translation id="4988526792673242964">பக்கங்கள்</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> இன் USB கேபிளை அகற்றிவிட்டு மீண்டும் செருகவும்</translation>
 <translation id="5099354524039520280">மேல்</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> பட்டன் இல்லாத ஷார்ட்கட், சில ஆப்ஸின் ஷார்ட்கட்டுடன் முரண்படக்கூடும். இந்த ஷார்ட்கட்டைத் தொடர்ந்து பயன்படுத்த, அதை மீண்டும் அழுத்தவும் அல்லது <ph name="KEY" /> பட்டனைப் பயன்படுத்தி புதிய ஷார்ட்கட்டை அழுத்தவும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> டிரான்ஸ்கிரிப்ஷன் மாடலைப் பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது Chromebookகை மீண்டும் தொடங்கவும்.</translation>
 <translation id="5108781503443873320">இதைப் போன்றவை:</translation>
-<translation id="5121677070210013200">டிரான்ஸ்கிரிப்ஷன் மாடலைப் பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது Chromebookகை மீண்டும் தொடங்கவும்.</translation>
 <translation id="5130848777448318809">சிறிய குதிரைகள்</translation>
 <translation id="5137451382116112100">முழுத்திரை</translation>
 <translation id="5139813694804168398">தொந்தரவு செய்ய வேண்டாம் ஐகான்</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">பின்னொளி வண்ணம்</translation>
 <translation id="5292579816060236070">சன்ரைஸ் வால்பேப்பர்</translation>
 <translation id="5294769550414936029">பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">கேமராவிற்கான அணுகலை மாற்றும் பட்டன்</translation>
 <translation id="5300814202279832142">சாளரத்தை டெஸ்கிற்கு நகர்த்து</translation>
 <translation id="5302048478445481009">மொழி</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> பிரத்தியேக வால்பேப்பர்</translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">பிளே செய்யும்</translation>
 <translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5903200662178656908">கீபோர்டும் மவுஸும் இணைந்ததே சாதனமாகும்.</translation>
+<translation id="5903822368221507416">பக்கங்களை மறை</translation>
 <translation id="5904994456462260490">புதிய APNனைச் சேர்த்தல்</translation>
 <translation id="590746845088109442">பூனைகள்</translation>
 <translation id="5907649332524363701">கீபோர்டு வண்ணம்</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">ஆன்லைன்</translation>
 <translation id="6122277663991249694">ChromeOS உள்ளீட்டு முறை சேவை</translation>
 <translation id="6127426868813166163">வெள்ளை</translation>
-<translation id="613049107179582049">Chromebook ஆடியோ இயக்கப்பட்டிருக்கும்போது, இந்தச் சாதனத்தில் பிளேயாகும் எல்லா ஆடியோவையும் ரெக்கார்டர் ரெக்கார்டு செய்யும்</translation>
 <translation id="6136285399872347291">பேக்ஸ்பேஸ்</translation>
 <translation id="6137614725462089991">சைபர்பன்க்</translation>
 <translation id="6137767437444130246">பயனர் சான்றிதழ்</translation>
@@ -1417,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB டச்ஸ்கிரீன்</translation>
 <translation id="757747079855995705">கல்</translation>
-<translation id="7584853321964440104">பதிவிறக்க முடியவில்லை. மீண்டும் முயலவும் அல்லது Chromebookகை மீண்டும் தொடங்கவும்.</translation>
 <translation id="7590883480672980941">உள்ளீட்டு அமைப்புகள்</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> மீதமுள்ளது</translation>
 <translation id="7600430297804876776"><ph name="DEVICE_TYPE" /> ஐ எப்போது பயன்படுத்தலாம் என்பதை <ph name="MANAGER" /> நிர்வாகி அமைத்துள்ளார்.</translation>
@@ -1784,7 +1779,6 @@
 <translation id="9218016617214286986">அறியப்பட்ட APNகளைக் காட்டு</translation>
 <translation id="932327136139879170">முகப்பு</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">உங்கள் மைக் இணைக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும் அல்லது உங்கள் Chromebookகை மீண்டும் தொடங்கவும்</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" />க்குப் பட்டன் ஒதுக்கப்படவில்லை. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ஒவ்வொருவரும் என்ன பேசினார்கள், எப்போது பேசினார்கள் என்பதை டிரான்ஸ்கிரிப்ட்டில் காட்ட ரெக்கார்டிங் முழுவதிலும் குரல்களை ஒப்பிடுதல்.</translation>

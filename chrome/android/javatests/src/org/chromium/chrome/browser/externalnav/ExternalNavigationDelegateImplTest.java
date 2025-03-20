@@ -13,10 +13,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -62,6 +64,7 @@ public class ExternalNavigationDelegateImplTest {
         Assert.assertEquals(isRendererInitiated, metadata.isRendererInitiated());
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ExternalNavigationDelegateImpl mExternalNavigationDelegateImpl;
     private ExternalNavigationDelegateImplForTesting mExternalNavigationDelegateImplForTesting;
 
@@ -70,7 +73,6 @@ public class ExternalNavigationDelegateImplTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         doReturn(mMockWindowAndroid).when(mMockTab).getWindowAndroid();
         mExternalNavigationDelegateImpl =

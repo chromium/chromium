@@ -624,6 +624,7 @@
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1431188203598586230">Son yazılım güncellemesi</translation>
 <translation id="1432581352905426595">Arama motorlarını yönet</translation>
+<translation id="1432650420699700107">Siteler, yerel ağınızdaki cihazlara bağlanmak isteyebilir</translation>
 <translation id="1433478348197382180">Okuma Modu</translation>
 <translation id="1433980411933182122">Başlatma Sırasında</translation>
 <translation id="1434696352799406980">Bu işlem, başlangıç sayfanızı, yeni sekme sayfanızı, arama motorunuzu ve sabit sekmelerinizi sıfırlar. Ayrıca, tüm uzantılar devre dışı bırakılır ve çerezler gibi geçici veriler temizlenir. Yer işaretleriniz, geçmişiniz ve kayıtlı şifreleriniz temizlenmez.</translation>
@@ -1335,6 +1336,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1918127774159128277">WiFi Direct Özelliklerini Yenile</translation>
 <translation id="1918141783557917887">Daha &amp;küçük</translation>
 <translation id="1918281588461452432">Göz attığınız sitelerin sayfa içerikleri şifrelenerek cihazınıza kaydedilir.</translation>
+<translation id="1919096511823372013">Bağlantılar, emojiler ve diğer öğeleri ekleyin. Ayrıca, Google Yapay Zeka'dan yazma ve resim oluşturma konusunda yardım alabilirsiniz.</translation>
 <translation id="1919872106782726755">Parmak izini ayarlamak için çocuğunuzun, klavyenin sağ üst köşesindeki güç düğmesinin yanında bulunan parmak izi sensörüne dokunması gerekir. Çocuğunuzun parmak izi verileri güvenli bir şekilde depolanır ve her zaman <ph name="DEVICE_TYPE" /> cihazınızda tutulur.</translation>
 <translation id="192015196730532810">Kendi sekme grubunuzu oluşturabilirsiniz.</translation>
 <translation id="1920314570001095522">Düzenlenecek benzer sekme yok ancak aşağıdaki grupları beğenebilirsiniz</translation>
@@ -4820,6 +4822,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4364830672918311045">Bildirimleri görüntüleme</translation>
 <translation id="4367971618859387374">Görünen ad</translation>
 <translation id="4368960422722232719">Sekme önizleme bilgi kutucuğunda bellek kullanımını göster</translation>
+<translation id="4369151461324628035">Sitelerin yerel ağımdaki cihazlara bağlanmasına izin verme</translation>
 <translation id="4369215744064167350">Web sitesi isteği onaylandı</translation>
 <translation id="4369233657762989723">Dikteyi aç/kapat</translation>
 <translation id="436926121798828366">Bunu istediğiniz zaman <ph name="SETTINGS_LINK" /> bölümünde değiştirebilirsiniz</translation>
@@ -5373,6 +5376,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4772914216048388646">Düzenli</translation>
 <translation id="4773112038801431077">Linux'u yeni sürüme geçirin</translation>
 <translation id="4773122030389014189">"<ph name="GROUP_NAME" />" sekme grubunu paylaşın</translation>
+<translation id="4773253008034797668">Yerel ağınızdaki cihazlara bağlanmasına izin verilen siteler</translation>
 <translation id="477548766361111120">Uzantının bu siteyi okumasına ve değiştirmesine izin verin</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> bağlandı</translation>
 <translation id="4776594120007763294">Daha sonra okunacak bir sayfa eklemek için düğmeyi tıklayın</translation>
@@ -7837,6 +7841,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6563002009564846727">Windows'dan içe aktarılan sertifikaları görüntüleyin</translation>
 <translation id="6563055593659435495">Telefonunuzla bağlantı sürdürülemiyor. Telefonunuzun yakında bulunduğundan, kilidinin ve Bluetooth ile kablosuz bağlantının da açık olduğundan emin olun.</translation>
 <translation id="6564860838537532172">Tarama geçmişinde arama yaptığınızda geçmiş aramalarınız, en iyi eşleşmelerin sayfa içeriği ve üretilen model çıktıları Google'a gönderilerek bu özelliğin geliştirilmesi için inceleme uzmanları tarafından görüntülenebilir.</translation>
+<translation id="6565144332292237355">Siteler, yerel ağınızdaki cihazları aramak ve cihazlara bağlanmak için bu özelliği kullanabilir</translation>
 <translation id="6569931898053264308">Orta Seviye Tasarruf</translation>
 <translation id="6570622975915850879">Farklı bir cihaz kullan</translation>
 <translation id="65711204837946324">İndirme için izin gerekiyor</translation>
@@ -8965,6 +8970,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7377451353532943397">Sensör erişimini engellemeye devam et</translation>
 <translation id="7377481913241237033">Kod kullanarak bağlanma</translation>
 <translation id="73786666777299047">Chrome Web Mağazası'nı açın</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Aynı görev grubundaki diğer görev: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Aynı görev grubundaki diğer # görev: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Yerel verileri kurtarma devre dışı bırakılsın mı?</translation>
 <translation id="7380459290951585794">Telefonunuzun yakında bulunduğundan, kilidinin ve Bluetooth ile Kablosuz bağlantının da açık olduğundan emin olun</translation>
 <translation id="7380622428988553498">Cihaz adı geçersiz karakterler içeriyor</translation>
@@ -11549,6 +11555,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
       <ph name="LIST_ITEM" />Chrome Bağlantı Teşhisi'ni çalıştırma
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Verilerinize erişmesi konusunda bu siteye güveniyor musunuz?</translation>
+<translation id="9164418710391288146">Yerel ağınızdaki hiçbir cihaza bağlanmasına izin verilmeyen siteler</translation>
 <translation id="9165856803582999927"><ph name="APP_NAME" /> için geçiş anahtarınızı oluşturup kaydetmek istediğiniz cihazın kamerasıyla bu QR kodunu tarayın</translation>
 <translation id="916607977885256133">Pencere İçinde Pencere</translation>
 <translation id="9166253503936244008">Bu QR kodunu, <ph name="APP_NAME" /> için kullanmak istediğiniz geçiş anahtarına sahip cihazla tarayın</translation>

@@ -626,6 +626,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1431188203598586230">Poslední aktualizace softwaru</translation>
 <translation id="1432581352905426595">Spravovat vyhledávače</translation>
+<translation id="1432650420699700107">Weby můžou žádat o připojení k libovolnému zařízení v místní síti</translation>
 <translation id="1433478348197382180">Režim čtení</translation>
 <translation id="1433980411933182122">Spuštění</translation>
 <translation id="1434696352799406980">Bude resetována vaše počáteční stránka, stránka Nová karta, vyhledávač a připnuté karty. Budou také zakázána všechna rozšíření a vymazána dočasná data, jako jsou soubory cookie. Uložené záložky, historie ani hesla vymazána nebudou.</translation>
@@ -1337,6 +1338,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1918127774159128277">Obnovit funkce Wi-Fi Direct</translation>
 <translation id="1918141783557917887">Menší</translation>
 <translation id="1918281588461452432">Při procházení webů se obsah stránek šifruje a ukládá na vašem zařízení</translation>
+<translation id="1919096511823372013">Vkládejte odkazy, emodži a mnohem víc. Můžete si také nechat pomoct s psaním a vytvářením obrázků od Google AI.</translation>
 <translation id="1919872106782726755">Pokud chcete nastavit otisk prstu, nechte dítě dotknout se snímače otisků prstů v pravém horním rohu klávesnice vedle vypínače. Otisk prstu dítěte je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Můžete vytvořit vlastní skupinu karet.</translation>
 <translation id="1920314570001095522">Nejsou k dispozici žádné podobné karty, které by bylo možné uspořádat, ale tyto skupiny by se vám mohly líbit</translation>
@@ -4823,6 +4825,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4364830672918311045">Zobrazování oznámení</translation>
 <translation id="4367971618859387374">Zobrazované jméno</translation>
 <translation id="4368960422722232719">V náhledu karty při najetí myší zobrazovat využití paměti</translation>
+<translation id="4369151461324628035">Nepovolovat webům připojení k zařízením v místní síti</translation>
 <translation id="4369215744064167350">Žádost webu byla schválena</translation>
 <translation id="4369233657762989723">Vypínač diktování</translation>
 <translation id="436926121798828366">V <ph name="SETTINGS_LINK" /> to můžete kdykoliv změnit</translation>
@@ -5376,6 +5379,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4772914216048388646">Spořádaná</translation>
 <translation id="4773112038801431077">Aktualizovat Linux</translation>
 <translation id="4773122030389014189">Sdílení skupiny karet <ph name="GROUP_NAME" /></translation>
+<translation id="4773253008034797668">Povolení připojovat se k zařízením v místní síti</translation>
 <translation id="477548766361111120">Povolit rozšíření číst a měnit tento web</translation>
 <translation id="4776311127346151860">Zařízení <ph name="DEVICE_NAME" /> bylo připojeno</translation>
 <translation id="4776594120007763294">Kliknutím na tlačítko přidáte stránku, kterou si později chcete přečíst</translation>
@@ -7835,6 +7839,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6563002009564846727">Zobrazit importované certifikáty z Windows</translation>
 <translation id="6563055593659435495">Nelze udržet spojení s telefonem. Zkontrolujte, zda je telefon poblíž, zda je odemknutý a zda jsou zapnuté Bluetooth a Wi-Fi.</translation>
 <translation id="6564860838537532172">Když vyhledáváte v historii prohlížení, vaše vyhledávání v historii, obsah stránek s nejlepšími shodami a vygenerované výstupy modelu se odesílají do Googlu a mohou je vidět kontroloři, kteří tuto funkci pomáhají vylepšovat.</translation>
+<translation id="6565144332292237355">Weby můžou tuhle funkci použít k vyhledání a připojení k libovolnému zařízení v místní síti</translation>
 <translation id="6569931898053264308">Střední úspora</translation>
 <translation id="6570622975915850879">Použít jiné zařízení</translation>
 <translation id="65711204837946324">Ke stažení je potřeba oprávnění</translation>
@@ -8967,6 +8972,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7377451353532943397">I nadále blokovat přístup k senzorům</translation>
 <translation id="7377481913241237033">Připojit pomocí kódu</translation>
 <translation id="73786666777299047">Otevřít Internetový obchod Chrome</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Další úloha ve stejné skupině: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Další # úlohy ve stejné skupině: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Dalších # úlohy ve stejné skupině: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Dalších # úloh ve stejné skupině: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Zakázat místní obnovení dat?</translation>
 <translation id="7380459290951585794">Zkontrolujte, zda je telefon poblíž, zda je odemknutý a zda na něm je zapnuté Bluetooth a Wi-Fi</translation>
 <translation id="7380622428988553498">Název zařízení obsahuje neplatné znaky</translation>
@@ -11552,6 +11558,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
       <ph name="LIST_ITEM" />Spustit Diagnostiku připojení Chrome
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Svěříte tomuhle webu své údaje?</translation>
+<translation id="9164418710391288146">Zákaz připojovat se k zařízením v místní síti</translation>
 <translation id="9165856803582999927">Naskenujte tento QR kód fotoaparátem zařízení, ve kterém chcete vytvořit a uložit přístupový klíč pro <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
 <translation id="9166253503936244008">Naskenujte tento QR kód pomocí zařízení, které má přístupový klíč, jenž chcete použít pro <ph name="APP_NAME" /></translation>

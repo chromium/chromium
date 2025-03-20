@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -34,10 +35,12 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
  public:
   MockGlicKeyedService(content::BrowserContext* browser_context,
                        signin::IdentityManager* identity_manager,
-                       GlicProfileManager* profile_manager)
+                       ProfileManager* profile_manager,
+                       GlicProfileManager* glic_profile_manager)
       : GlicKeyedService(Profile::FromBrowserContext(browser_context),
                          identity_manager,
-                         profile_manager) {}
+                         profile_manager,
+                         glic_profile_manager) {}
   MOCK_METHOD(void, TryPreload, (), (override));
 };
 
@@ -72,7 +75,7 @@ class GlicButtonControllerTest : public testing::Test {
 
     mock_glic_service_ = std::make_unique<MockGlicKeyedService>(
         profile_, identity_test_environment.identity_manager(),
-        &glic_profile_manager_);
+        testing_profile_manager_->profile_manager(), &glic_profile_manager_);
 
     glic_button_controller_ = std::make_unique<GlicButtonController>(
         profile_, &mock_glic_controller_delegate_, mock_glic_service_.get());

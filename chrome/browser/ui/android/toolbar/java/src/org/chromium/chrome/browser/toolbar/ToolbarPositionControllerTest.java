@@ -85,6 +85,9 @@ public class ToolbarPositionControllerTest {
                 }
 
                 @Override
+                public void setBottomControlsAdditionalHeight(int height) {}
+
+                @Override
                 public void setTopControlsHeight(int topControlsHeight, int topControlsMinHeight) {
                     mTopControlsHeight = topControlsHeight;
                     mTopControlsMinHeight = topControlsMinHeight;

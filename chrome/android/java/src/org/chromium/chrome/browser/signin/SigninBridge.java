@@ -100,7 +100,7 @@ final class SigninBridge {
         Profile profile = tab.getProfile();
         SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(profile.getOriginalProfile());
-        if (!signinManager.isSyncOptInAllowed()) {
+        if (!signinManager.isSigninAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
                     SigninAccessPoint.WEB_SIGNIN);

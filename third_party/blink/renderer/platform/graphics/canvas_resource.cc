@@ -863,10 +863,15 @@ scoped_refptr<CanvasResourceSwapChain> CanvasResourceSwapChain::Create(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider) {
   TRACE_EVENT0("blink", "CanvasResourceSwapChain::Create");
+  CHECK(context_provider_wrapper);
   auto resource = AdoptRef(new CanvasResourceSwapChain(
       size, format, alpha_type, color_space,
       std::move(context_provider_wrapper), std::move(provider)));
-  return resource->IsValid() ? resource : nullptr;
+
+  // As the context provider wrapper is non-null, the created resource will be
+  // valid.
+  CHECK(resource->IsValid());
+  return resource;
 }
 
 CanvasResourceSwapChain::~CanvasResourceSwapChain() {
@@ -1005,8 +1010,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
                                  .GetCapabilities()
                                  .gpu_rasterization) {
-  if (!context_provider_wrapper_)
-    return;
+  CHECK(context_provider_wrapper_);
 
   // These SharedImages are both read and written by the raster interface (both
   // occur, for example, when copying canvas resources between canvases).

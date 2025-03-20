@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string>
+
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
@@ -80,7 +82,7 @@ enum class ActivationLevelPolicy {
 
 // The persistent identifier for the scene session. This should be used instead
 // of -[UISceneSession persistentIdentifier].
-@property(nonatomic, readonly) NSString* sceneSessionID;
+@property(nonatomic, readonly) const std::string& sceneSessionID;
 
 // The controller for this scene.
 @property(nonatomic, weak) SceneController* controller;

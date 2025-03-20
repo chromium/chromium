@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
 import("//build/config/gclient_args.gni")
 
@@ -36,7 +37,7 @@ declare_args() {
   # altogether, in which case all tracing instrumentation in //base becomes a
   # no-op.
   # TODO(crbug.com/40124378): Add dependency on perfetto to support typed events.
-  enable_base_tracing = true
+  enable_base_tracing = !is_cronet_build
 
   # Limits the defined //third_party/android_deps targets to only "buildCompile"
   # and "buildCompileNoDeps" targets. This is useful for third-party

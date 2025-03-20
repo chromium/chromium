@@ -68,6 +68,10 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
   // Prevents the tab strip from hiding while in immersive fullscreen.
   std::unique_ptr<ImmersiveRevealedLock> tab_strip_reveal_lock_;
 
+  // Height of the window frame header. This is used to track the frame header
+  // height when in unlocked mode for consistent positioning in locked mode.
+  int frame_header_height_;
+
   // Whether the window is pinned or not.
   bool is_window_pinned_;
 

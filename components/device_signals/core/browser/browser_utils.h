@@ -1,0 +1,39 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_BROWSER_UTILS_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_BROWSER_UTILS_H_
+
+#include <optional>
+
+#include "build/build_config.h"
+#include "components/device_signals/core/common/common_types.h"
+
+namespace device_signals {
+
+// Returns the hostname of the current machine.
+std::string GetHostName();
+
+// Returns the hostname of the current machine.
+std::vector<std::string> GetSystemDnsServers();
+
+// Returns the current state of the OS firewall.
+SettingValue GetOSFirewall();
+
+#if BUILDFLAG(IS_LINUX)
+// Returns the path to the ufw configuration file.
+const char** GetUfwConfigPath();
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
+// Returns the domain of the current Windows user.
+std::optional<std::string> GetWindowsUserDomain();
+
+// Returns the machine GUID of the current Windows machine.
+std::optional<std::string> GetMachineGuid();
+#endif  // BUILDFLAG(IS_WIN)
+
+}  // namespace device_signals
+
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_BROWSER_UTILS_H_

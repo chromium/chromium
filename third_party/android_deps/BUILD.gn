@@ -282,7 +282,6 @@ java_prebuilt("org_ow2_asm_asm_analysis_java") {
   # //third_party/android_deps/build.gradle.
   visibility = [
     ":*",
-    "//third_party/android_deps/autorolled:*",
     "//third_party/androidx:*",
   ]
   deps = [ ":org_ow2_asm_asm_tree_java" ]
@@ -1205,7 +1204,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
@@ -1224,7 +1222,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1248,7 +1245,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1272,7 +1268,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1293,7 +1288,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1314,7 +1308,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1337,7 +1330,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
   }
@@ -1353,7 +1345,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1372,7 +1363,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [ ":javax_inject_javax_inject_java" ]
@@ -1390,7 +1380,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1417,7 +1406,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1440,7 +1428,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1464,7 +1451,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
@@ -1482,7 +1468,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1505,7 +1490,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1526,7 +1510,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1547,7 +1530,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1574,7 +1556,6 @@ if (!limit_android_deps) {
       # //third_party/android_deps/build.gradle.
       visibility = [
         ":*",
-        "//third_party/android_deps/autorolled:*",
         "//third_party/androidx:*",
       ]
       deps = [
@@ -1596,7 +1577,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1614,7 +1594,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1630,7 +1609,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     deps = [ ":com_squareup_okio_okio_jvm_java" ]
@@ -1642,7 +1620,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1661,7 +1638,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
   }
@@ -1677,7 +1653,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1696,7 +1671,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1714,7 +1688,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1731,7 +1704,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1749,7 +1721,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
@@ -1761,7 +1732,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     deps = [ ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java" ]
@@ -1773,7 +1743,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1792,7 +1761,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1808,7 +1776,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     deps = [ ":org_jetbrains_kotlinx_kotlinx_serialization_core_jvm_java" ]
@@ -1826,7 +1793,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1843,7 +1809,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1860,7 +1825,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1885,7 +1849,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1909,7 +1872,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1926,7 +1888,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1947,7 +1908,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1970,7 +1930,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -1994,7 +1953,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -2022,7 +1980,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -2043,7 +2000,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -2074,7 +2030,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -2098,7 +2053,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true
@@ -2121,7 +2075,6 @@ if (!limit_android_deps) {
     # //third_party/android_deps/build.gradle.
     visibility = [
       ":*",
-      "//third_party/android_deps/autorolled:*",
       "//third_party/androidx:*",
     ]
     testonly = true

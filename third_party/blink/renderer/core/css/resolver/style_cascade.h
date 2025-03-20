@@ -655,10 +655,12 @@ class CORE_EXPORT StyleCascade {
   // disable the matched property cache in some cases.
   void MarkHasVariableReference(const CSSProperty&);
   // Set ComputedStyle bits that require parsing unresolved env() variables.
-  void ApplyUnresolvedEnv();
+  void ApplyUnresolvedEnv(CascadeResolver& resolver);
+
   // See comments on IsBottomRelativeToSafeAreaInset in
   // computed_style_extra_fields.json5.
-  void ApplyIsBottomRelativeToSafeAreaInset();
+  void ApplyIsBottomRelativeToSafeAreaInset(CascadeResolver& resolver);
+
   // See comments on ReferencesSafeAreaInsetBottom in
   // computed_style_extra_fields.json5.
   void ApplyReferencesSafeAreaInsetBottom();

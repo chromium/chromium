@@ -10,10 +10,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -26,6 +28,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 @Config(manifest = Config.NONE)
 public class CommerceSubscriptionsServiceFactoryUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfileOne;
     @Mock private Profile mIncognitoProfileOne;
 
@@ -35,7 +38,6 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(false).when(mProfileOne).isOffTheRecord();
         doReturn(mProfileOne).when(mProfileOne).getOriginalProfile();
 

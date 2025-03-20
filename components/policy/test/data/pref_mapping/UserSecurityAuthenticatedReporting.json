@@ -1,0 +1,18 @@
+[
+  {
+    "os": [
+      "mac",
+      "win",
+      "linux"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "enterprise_reporting.user_security_signals.authenticated",
+      "pref_location": "user_profile",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

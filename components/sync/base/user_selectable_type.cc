@@ -40,9 +40,6 @@ constexpr char kProductComparisonTypeName[] = "productComparison";
 constexpr char kCookiesTypeName[] = "cookies";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  // TODO(crbug.com/397767033): In CL #3, map SHARED_TAB_GROUP_ACCOUNT_DATA to
-  // an existing selectable type or to a new one. The first option should be
-  // trivial, the second requires touching UI code across platforms.
   static_assert(55 == syncer::GetNumDataTypes(),
                 "Almost always when adding a new Data, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
@@ -91,7 +88,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       return {kTabsTypeName,
               SESSIONS,
               {SESSIONS, SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA,
-               COLLABORATION_GROUP}};
+               COLLABORATION_GROUP, SHARED_TAB_GROUP_ACCOUNT_DATA}};
 #else
       return {kTabsTypeName, SESSIONS, {SESSIONS}};
 #endif
@@ -102,7 +99,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       // together with open tabs same as mobile.
       return {kSavedTabGroupsTypeName,
               SAVED_TAB_GROUP,
-              {SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP}};
+              {SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP,
+               SHARED_TAB_GROUP_ACCOUNT_DATA}};
     case UserSelectableType::kSharedTabGroupData:
       // Note: COLLABORATION_GROUP might be re-used for other
       // features. If this happens, it should probably be in
@@ -111,7 +109,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       // needed any more.
       return {kSharedTabGroupDataTypeName,
               SHARED_TAB_GROUP_DATA,
-              {SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP}};
+              {SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP,
+               SHARED_TAB_GROUP_ACCOUNT_DATA}};
     case UserSelectableType::kPayments:
       return {kPaymentsTypeName,
               AUTOFILL_WALLET_DATA,

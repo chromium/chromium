@@ -24,7 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,6 +50,8 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({SHARE_CUSTOM_ACTIONS_IN_CCT})
 public class CustomTabToolbarCoordinatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
@@ -74,7 +77,6 @@ public class CustomTabToolbarCoordinatorUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
 
         mActivityForResources = Robolectric.setupActivity(Activity.class);
         mTabController = env.createTabController();

@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Versteek transkripsie</translation>
 <translation id="160633243685262989">Voorbeskou prent</translation>
 <translation id="1611649489706141841">vorentoe</translation>
-<translation id="1615144046047995187">Kan nie aflaai nie. Probeer weer of herbegin jou Chromebook.</translation>
 <translation id="1615335640928990664">Datagebruik sedert <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Gebruik ’n tema</translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Lys oudio-opnames</translation>
 <translation id="2561093647892030937">suurlemoene</translation>
 <translation id="2570743873672969996">Laat loop tans <ph name="TEST_NAME" />-toets …</translation>
-<translation id="2573178735329662769">Alle Chromebook-oudio word tans opgeneem</translation>
 <translation id="2576253868710695442">Dit sal tot 2 GB se berging gebruik</translation>
 <translation id="2584547424703650812">Glowscapes</translation>
 <translation id="2584559707064218956">Gaan na Instellings om dit op te stel</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">blou en pienk</translation>
 <translation id="498186245079027698">Gaan die skandeerder na en probeer weer. Maak seker daar is genoeg plaaslike spasie om lêers wat geskandeer is, te stoor.</translation>
 <translation id="4982627662315910959">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad deur gebruik te maak van shift en nog 1 wysigersleutel (ctrl, alt of <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Chromebook-oudio</translation>
 <translation id="4985509611418653372">Laat loop</translation>
 <translation id="4987769320337599931">Brandmuur</translation>
 <translation id="4988526792673242964">Bladsye</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Prop die <ph name="DEVICE_NAME" /> se USB-kabel uit en prop dit weer in om met die opdateringproses voort te gaan</translation>
 <translation id="5099354524039520280">op</translation>
 <translation id="5107243100836678918">Kortpad sonder <ph name="META_KEY" />-sleutel kan dalk met sommige apps se kortpad bots. Druk weer hierdie kortpad om voort te gaan om dit te gebruik, of druk ’n nuwe kortpad deur die <ph name="KEY" />-sleutel te gebruik. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Kan nie <ph name="LANGUAGE_NAME" /> transkripsiemodel aflaai nie. Probeer weer of herbegin jou Chromebook</translation>
 <translation id="5108781503443873320">Soortgelyk:</translation>
-<translation id="5121677070210013200">Kan nie transkripsiemodel aflaai nie. Probeer weer of herbegin jou Chromebook.</translation>
 <translation id="5130848777448318809">ponies</translation>
 <translation id="5137451382116112100">Vol</translation>
 <translation id="5139813694804168398">Moenie Steur Nie</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">agterligkleur</translation>
 <translation id="5292579816060236070">Sonsopkomsmuurpapier</translation>
 <translation id="5294769550414936029">weergawe <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">wissel kameratoegang</translation>
 <translation id="5300814202279832142">Skuif venster na lessenaar</translation>
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" />-eksklusiewe muurpapier</translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Speel</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903200662178656908">Toestel is ’n sleutelbord-en-muis-kombinasie.</translation>
+<translation id="5903822368221507416">Versteek oortjies</translation>
 <translation id="5904994456462260490">Voeg ’n nuwe APN by</translation>
 <translation id="590746845088109442">katte</translation>
 <translation id="5907649332524363701">sleutelkleur</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Aanlyn</translation>
 <translation id="6122277663991249694">Chrome-bedryfstelsel se invoermetodediens</translation>
 <translation id="6127426868813166163">wit</translation>
-<translation id="613049107179582049">Wanneer Chromebook-oudio aan is, vang Klankopnemer alle oudio vas wat op hierdie toestel speel</translation>
 <translation id="6136285399872347291">terugvee</translation>
 <translation id="6137614725462089991">kuberpunk</translation>
 <translation id="6137767437444130246">Gebruikersertifikaat</translation>
@@ -1417,7 +1413,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-raakskerm</translation>
 <translation id="757747079855995705">klip</translation>
-<translation id="7584853321964440104">Kan nie aflaai nie. Probeer weer of herbegin jou Chromebook.</translation>
 <translation id="7590883480672980941">Invoerinstellings</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> oor</translation>
 <translation id="7600430297804876776">Die <ph name="MANAGER" />-admin het gestel wanneer hierdie <ph name="DEVICE_TYPE" /> gebruik kan word.</translation>
@@ -1784,7 +1779,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="9218016617214286986">Wys bekende APN's</translation>
 <translation id="932327136139879170">Tuis</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Maak seker dat jou mikrofoon gekoppel is of probeer om jou Chromebook te herbegin</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="950520315903467048">Sleutel ontbreek vir <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Vergelyk stemme regdeur die opname sodat die transkripsie aandui wat elke spreker gesê het en wanneer hulle dit gesê het</translation>

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {InkSizeSelectorElement, SelectableIconButtonElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {PEN_SIZES} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertLabels, assertSelectedSize, getSizeButtons} from './test_util.js';
+import {assertSelectedSize, getSizeButtons} from './test_util.js';
 
 function createSelector(initialValue?: number): InkSizeSelectorElement {
   const selector = document.createElement('ink-size-selector');
@@ -32,8 +32,8 @@ function createSelector(initialValue?: number): InkSizeSelectorElement {
  *     event.
  */
 async function testSizeKeyboardEvent(
-    sizeButtons: NodeListOf<HTMLElement>, targetElement: HTMLElement,
-    key: string, expectedButtonIndex: number) {
+    sizeButtons: NodeListOf<SelectableIconButtonElement>,
+    targetElement: HTMLElement, key: string, expectedButtonIndex: number) {
   keyDownOn(targetElement, 0, [], key);
   await microtasksFinished();
 
@@ -49,9 +49,9 @@ async function testSizeKeyboardEvent(
  * @param buttonIndex The expected size button with a tabindex of 0.
  */
 function assertTabIndices(
-    sizeButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
+    sizeButtons: NodeListOf<SelectableIconButtonElement>, buttonIndex: number) {
   for (let i = 0; i < sizeButtons.length; ++i) {
-    const actualTabIndex = sizeButtons[i]!.getAttribute('tabindex');
+    const actualTabIndex = sizeButtons[i]!.$.button.getAttribute('tabindex');
     chrome.test.assertTrue(actualTabIndex !== null);
     chrome.test.assertEq(i === buttonIndex ? '0' : '-1', actualTabIndex);
   }
@@ -182,11 +182,11 @@ chrome.test.runTests([
     const selector = createSelector();
     const sizeButtons = getSizeButtons(selector);
 
-    assertLabels(sizeButtons[0]!, 'Extra thin');
-    assertLabels(sizeButtons[1]!, 'Thin');
-    assertLabels(sizeButtons[2]!, 'Medium');
-    assertLabels(sizeButtons[3]!, 'Thick');
-    assertLabels(sizeButtons[4]!, 'Extra thick');
+    chrome.test.assertEq(sizeButtons[0]!.label, 'Extra thin');
+    chrome.test.assertEq(sizeButtons[1]!.label, 'Thin');
+    chrome.test.assertEq(sizeButtons[2]!.label, 'Medium');
+    chrome.test.assertEq(sizeButtons[3]!.label, 'Thick');
+    chrome.test.assertEq(sizeButtons[4]!.label, 'Extra thick');
 
     chrome.test.succeed();
   },

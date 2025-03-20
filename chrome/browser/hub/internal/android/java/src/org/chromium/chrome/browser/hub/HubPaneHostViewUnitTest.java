@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
@@ -49,6 +51,7 @@ public class HubPaneHostViewUnitTest {
 
     @Mock Runnable mOnActionButton;
     @Mock Callback<ViewGroup> mSnackbarContainerCallback;
+    @Mock private HubColorMixer mColorMixer;
 
     private Activity mActivity;
     private HubPaneHostView mPaneHost;
@@ -71,7 +74,10 @@ public class HubPaneHostViewUnitTest {
         mSnackbarContainer = mPaneHost.findViewById(R.id.pane_host_view_snackbar_container);
         mActivity.setContentView(mPaneHost);
 
-        mPropertyModel = new PropertyModel(HubPaneHostProperties.ALL_KEYS);
+        mPropertyModel =
+                new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS)
+                        .with(COLOR_MIXER, mColorMixer)
+                        .build();
         PropertyModelChangeProcessor.create(mPropertyModel, mPaneHost, HubPaneHostViewBinder::bind);
     }
 
@@ -137,6 +143,11 @@ public class HubPaneHostViewUnitTest {
     public void testSnackbarContainerSupplier() {
         mPropertyModel.set(SNACKBAR_CONTAINER_CALLBACK, mSnackbarContainerCallback);
         verify(mSnackbarContainerCallback).onResult(mSnackbarContainer);
+    }
+
+    @Test
+    public void testHubColorScheme() {
+        verify(mColorMixer).registerBlend(any());
     }
 
     /** Order of children does not matter. */

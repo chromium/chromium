@@ -93,15 +93,27 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
           ComputeMinAndMaxContentContributionForSelf(item_node, space).sizes);
     }
 
-    if (span.IsTranslatedDefinite()) {
-      // For groups of items that are explicitly placed, we only need to add a
-      // single virtual masonry item within the specified span.
-      virtual_item->resolved_position.SetSpan(span, grid_axis_direction);
-      virtual_items.Append(virtual_item);
-      continue;
+    if (span.IsIndefinite()) {
+      // For groups of items that are auto-placed, we need to create copies of
+      // the virtual item and place them at each possible start line. At the end
+      // of the loop below, `span` will be located at the last start line, which
+      // should be the position of the last copy appended to `virtual_items`.
+      span = GridSpan::TranslatedDefiniteGridSpan(0, span.IndefiniteSpanSize());
+
+      while (span.EndLine() < max_end_line) {
+        auto* item_copy = MakeGarbageCollected<GridItemData>(*virtual_item);
+        item_copy->resolved_position.SetSpan(span, grid_axis_direction);
+        virtual_items.Append(std::move(item_copy));
+
+        // `Translate` will move the span to the start and end of the next line,
+        // allowing us to "slide" over the entire implicit grid.
+        span.Translate(1);
+      }
     }
 
-    DCHECK(span.IsIndefinite());
+    DCHECK(span.IsTranslatedDefinite());
+    virtual_item->resolved_position.SetSpan(span, grid_axis_direction);
+    virtual_items.Append(virtual_item);
   }
   return virtual_items;
 }

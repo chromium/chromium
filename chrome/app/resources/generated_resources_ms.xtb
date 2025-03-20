@@ -267,6 +267,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1175572348579024023">Tatal</translation>
 <translation id="1175914831232945926">Digit</translation>
 <translation id="1176471985365269981">Tidak dibenarkan untuk mengedit fail atau folder pada peranti anda</translation>
+<translation id="1176864681932214421">Buat imej dengan AI</translation>
 <translation id="1177073277575830464">Persediaan pantas Android selesai. Teruskan persediaan pada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="1177440945615690056">Anda boleh membuat sambungan kepada sebarang rangkaian mudah alih yang layak dalam Tetapan</translation>
 <translation id="1177548198167638471">Jangan Tanya Lagi</translation>
@@ -3699,6 +3700,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3582057310199111521">Dimasukkan pada tapak penipuan dan dijumpai dalam pelanggaran data</translation>
 <translation id="3582299299336701326">Jadikan skrin cerah menjadi gelap, dan skrin gelap menjadi cerah. Tekan Cari + Ctrl + H untuk menghidupkan dan mematikan penyongsangan warna.</translation>
 <translation id="3584169441612580296">Baca dan ubah foto, muzik dan media lain daripada komputer anda</translation>
+<translation id="3586741240886978899">Anda gunakan pada laman ini</translation>
 <translation id="3586806079541226322">Tidak dapat membuka fail ini</translation>
 <translation id="3586931643579894722">Sembunyikan butiran</translation>
 <translation id="3587279952965197737">Mestilah <ph name="MAX_CHARACTER_COUNT" /> aksara atau kurang</translation>
@@ -9368,6 +9370,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7650582458329409456">{COUNT,plural, =1{1 cap jari telah disediakan}other{{COUNT} cap jari telah disediakan}}</translation>
 <translation id="7650677314924139716">Tetapan penggunaan data semasa ialah Wi-Fi sahaja</translation>
 <translation id="7650920359639954963">Tidak didayakan: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">Untuk mendapatkan penanda halaman ini pada semua peranti anda, sahkan identiti anda</translation>
 <translation id="7651400349472467012">Tempat liputan segera tersedia</translation>
 <translation id="7651784568388208829">Penyambungan tugas Hab Telefon</translation>
 <translation id="765293928828334535">Apl, sambungan dan skrip pengguna tidak boleh ditambahkan daripada laman web ini</translation>
@@ -9406,6 +9409,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7670434942695515800">Untuk mendapatkan prestasi terbaik, tingkatkan kepada versi terbaharu. Anda disyorkan untuk menyandarkan fail sekiranya peningkatan tidak dapat diselesaikan. Setelah peningkatan bermula, Linux akan dimatikan. Simpan fail terbuka sebelum meneruskan. <ph name="LINK_START" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Sari Kata</translation>
 <translation id="7671130400130574146">Gunakan bar dan sempadan tajuk sistem</translation>
+<translation id="7671139479636735732">Klik kanan untuk menggambarkan idea anda dengan mudah</translation>
 <translation id="767127784612208024">Sentuh untuk mengesahkan penetapan semula</translation>
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" mahu mengimbas daripada "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Pilih peranti yang mempunyai kunci laluan untuk <ph name="APP_NAME" /></translation>

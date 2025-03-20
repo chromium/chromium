@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Скриј ја транскрипцијата</translation>
 <translation id="160633243685262989">Прегледајте ја сликата</translation>
 <translation id="1611649489706141841">напред</translation>
-<translation id="1615144046047995187">Не може да се преземе. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
 <translation id="1615335640928990664">Потрошен интернет од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Користете тема</translation>
 <translation id="1621067168122174824">Изврши тест за наполнетост</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Список со аудиоснимки</translation>
 <translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Се извршува тест за <ph name="TEST_NAME" />…</translation>
-<translation id="2573178735329662769">Снимање на секое аудио на Chromebook</translation>
 <translation id="2576253868710695442">Ова ќе зафати простор од 2 GB</translation>
 <translation id="2584547424703650812">Сјајни пејзажи</translation>
 <translation id="2584559707064218956">За да ја поставите, одете во „Поставки“</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">сина и розова</translation>
 <translation id="498186245079027698">Проверете го скенерот и обидете се повторно. Уверете се дека има доволно простор на уредот за да се зачуваат скенираните датотеки.</translation>
 <translation id="4982627662315910959">Кратенката не е достапна. Притиснете нова кратенка со копчето Shift и уште 1 копче модификатор (Ctrl, Alt или <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Аудио од Chromebook</translation>
 <translation id="4985509611418653372">Изврши</translation>
 <translation id="4987769320337599931">Заштитен ѕид</translation>
 <translation id="4988526792673242964">Страници</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Исклучете го USB-кабелот на <ph name="DEVICE_NAME" />, па вклучете го повторно за да продолжите со процесот на ажурирање</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Можно е да дојде до поклопување меѓу кратенка без копче за <ph name="META_KEY" /> и кратенката на некоја апликација. Притиснете ја кратенкава повторно за да продолжите да ја користите или притиснете нова кратенка со копчето за <ph name="KEY" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Не може да се преземе моделот за транскрипции на <ph name="LANGUAGE_NAME" />. Обидете се повторно или рестартирајте го вашиот Chromebook</translation>
 <translation id="5108781503443873320">Слични:</translation>
-<translation id="5121677070210013200">Не може да се преземе моделот за транскрипции. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
 <translation id="5130848777448318809">понија</translation>
 <translation id="5137451382116112100">Цел екран</translation>
 <translation id="5139813694804168398">Не вознемирувај</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Онлајн</translation>
 <translation id="6122277663991249694">Услуга за методи за внесување во Chrome OS</translation>
 <translation id="6127426868813166163">бела</translation>
-<translation id="613049107179582049">Кога е вклучено аудиото на Chromebook, „Диктафон“ го снима секое аудио што се пушта на уредов</translation>
 <translation id="6136285399872347291">бриши</translation>
 <translation id="6137614725462089991">сајберпанк</translation>
 <translation id="6137767437444130246">Сертификат на корисник</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Допирен екран со USB</translation>
 <translation id="757747079855995705">камен</translation>
-<translation id="7584853321964440104">Не може да се преземе. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
 <translation id="7590883480672980941">Поставки за внесување</translation>
 <translation id="7595982850646262331">Уште <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Администраторот на <ph name="MANAGER" /> поставил кога може да се користи овој <ph name="DEVICE_TYPE" />.</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">Прикажи ги познатите APN</translation>
 <translation id="932327136139879170">Дома</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Погрижете се да биде поврзан микрофонот или рестартирајте го вашиот Chromebook</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="950520315903467048">Недостасува копче за <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">за да ги споредува гласовите на снимката со цел транскрипцијата да прикаже што кажал секој од говорниците, а и кога</translation>

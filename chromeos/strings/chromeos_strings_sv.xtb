@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Dölj transkription</translation>
 <translation id="160633243685262989">Förhandsgranska bild</translation>
 <translation id="1611649489706141841">framåt</translation>
-<translation id="1615144046047995187">Det gick inte att ladda ned. Försök igen eller starta om Chromebook.</translation>
 <translation id="1615335640928990664">Dataanvändning sedan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Använd ett tema</translation>
 <translation id="1621067168122174824">Kör laddningstest</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Lista över ljudinspelningar</translation>
 <translation id="2561093647892030937">citroner</translation>
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
-<translation id="2573178735329662769">Spela in allt ljud på Chromebook</translation>
 <translation id="2576253868710695442">Detta kräver upp till 2 GB lagringsutrymme</translation>
 <translation id="2584547424703650812">Glödlandskap</translation>
 <translation id="2584559707064218956">Öppna inställningarna för att konfigurera det</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">blått och rosa</translation>
 <translation id="498186245079027698">Kontrollera skannern och försök igen. Kontrollera att utrymmet lokalt räcker för att spara de skannade filerna.</translation>
 <translation id="4982627662315910959">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando med Skift och en till specialtangent (Ctrl, Alt eller <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Ljud på Chromebook</translation>
 <translation id="4985509611418653372">Kör</translation>
 <translation id="4987769320337599931">Brandvägg</translation>
 <translation id="4988526792673242964">Sidor</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Koppla bort USB-kabeln från <ph name="DEVICE_NAME" /> och anslut den sedan igen för att fortsätta uppdateringsprocessen</translation>
 <translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Ett kortkommando utan <ph name="META_KEY" />tangenten kan hamna i konflikt med ett kortkommando för en viss app. Tryck på kortkommandot igen om du vill fortsätta använda det, eller tryck på ett nytt kortkommando med <ph name="KEY" />tangenten. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Det gick inte att ladda ned transkriptionsmodellen för <ph name="LANGUAGE_NAME" />. Försök igen eller starta om Chromebook</translation>
 <translation id="5108781503443873320">Liknande:</translation>
-<translation id="5121677070210013200">Det gick inte att ladda ned transkriptionsmodellen. Försök igen eller starta om Chromebook.</translation>
 <translation id="5130848777448318809">ponnyer</translation>
 <translation id="5137451382116112100">Helskärm</translation>
 <translation id="5139813694804168398">stör ej</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">färg på bakgrundsbelysning</translation>
 <translation id="5292579816060236070">Bakgrund med soluppgång</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">aktivera eller inaktivera kameraåtkomst</translation>
 <translation id="5300814202279832142">Flytta fönstret till ett skrivbord</translation>
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5303837385540978511">Exklusiv bakgrund för <ph name="PRODUCT_NAME" /></translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Spela upp</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Detta är en kombinationsenhet med tangentbord och mus.</translation>
+<translation id="5903822368221507416">Dölj flikar</translation>
 <translation id="5904994456462260490">Lägg till en ny APN</translation>
 <translation id="590746845088109442">katter</translation>
 <translation id="5907649332524363701">tangentfärg</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Tjänst för inmatningsmetod för ChromeOS</translation>
 <translation id="6127426868813166163">vit</translation>
-<translation id="613049107179582049">När Chromebook-ljud är aktiverat spelar ljudinspelaren in allt ljud som spelas upp på enheten</translation>
 <translation id="6136285399872347291">backsteg</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Användarcertifikat</translation>
@@ -1417,7 +1413,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-pekskärm</translation>
 <translation id="757747079855995705">sten</translation>
-<translation id="7584853321964440104">Det gick inte att ladda ned. Försök igen eller starta om Chromebook.</translation>
 <translation id="7590883480672980941">Inmatningsinställningar</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> återstår</translation>
 <translation id="7600430297804876776">Administratören för <ph name="MANAGER" /> har ställt in när denna <ph name="DEVICE_TYPE" /> får användas.</translation>
@@ -1784,7 +1779,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="9218016617214286986">Visa kända APN:er</translation>
 <translation id="932327136139879170">Startsida</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Kontrollera att mikrofonen är ansluten eller försök starta om Chromebook</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="950520315903467048">Tangent saknas för <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Jämför röster i hela inspelningen så att transkriptionen återspeglar vad varje talare sa och när</translation>

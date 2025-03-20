@@ -210,7 +210,8 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
      * Gets the center location for the button.
      *
      * @param location Array to store the x and y position.
-     * @param yOffset y-offset to account for the status bar.
+     * @param yOffset y-offset to account for the status bar or status indicator (ex: no internet
+     *     connection).
      */
     /* package */ void getButtonLocation(int[] location, int yOffset) {
         assert location.length == 2;

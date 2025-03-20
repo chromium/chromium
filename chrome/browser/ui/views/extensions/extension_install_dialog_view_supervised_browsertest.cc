@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_icon_manager.h"
 #include "extensions/common/extension.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -101,7 +102,7 @@ ExtensionInstallDialogViewTestSupervised::CreateAndShowPrompt(
   ExtensionInstallDialogView* delegate_view = dialog.get();
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-      dialog.release(), nullptr,
+      dialog.release(), gfx::NativeWindow(),
       platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
   modal_dialog->Show();
 
@@ -117,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, ChildAccepts) {
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt = CreatePrompt();
 
   // Launch the extension install dialog.
-  ExtensionInstallPrompt install_prompt(profile(), nullptr);
+  ExtensionInstallPrompt install_prompt(profile(), gfx::NativeWindow());
   base::RunLoop run_loop;
   ExtensionInstallPromptTestHelper helper(run_loop.QuitClosure());
   const extensions::Extension* const extension = prompt->extension();
@@ -169,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised,
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt = CreatePrompt();
 
   // Launch the extension install dialog.
-  ExtensionInstallPrompt install_prompt(profile(), nullptr);
+  ExtensionInstallPrompt install_prompt(profile(), gfx::NativeWindow());
   base::RunLoop run_loop;
   ExtensionInstallPromptTestHelper helper(run_loop.QuitClosure());
   const extensions::Extension* const extension = prompt->extension();

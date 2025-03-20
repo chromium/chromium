@@ -4,11 +4,6 @@
 
 #include "components/performance_manager/public/performance_manager.h"
 
-#include <utility>
-
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -29,43 +24,6 @@ PerformanceManager::~PerformanceManager() = default;
 // static
 Graph* PerformanceManager::GetGraph() {
   return PerformanceManagerImpl::GetGraphImpl();
-}
-
-// static
-void PerformanceManager::CallOnGraph(const base::Location& from_here,
-                                     base::OnceClosure callback) {
-  DCHECK(callback);
-
-  PerformanceManagerImpl::GetTaskRunner()->PostTask(from_here,
-                                                    std::move(callback));
-}
-// static
-void PerformanceManager::CallOnGraph(const base::Location& from_here,
-                                     GraphCallback callback) {
-  DCHECK(callback);
-
-  // TODO(siggi): Unwrap this by binding the loose param.
-  PerformanceManagerImpl::GetTaskRunner()->PostTask(
-      from_here, base::BindOnce(&PerformanceManagerImpl::RunCallbackWithGraph,
-                                std::move(callback)));
-}
-
-// static
-void PerformanceManager::PassToGraph(const base::Location& from_here,
-                                     std::unique_ptr<GraphOwned> graph_owned) {
-  DCHECK(graph_owned);
-
-  // PassToGraph() should only be called when a graph is available to take
-  // ownership of |graph_owned|.
-  DCHECK(IsAvailable());
-
-  PerformanceManagerImpl::CallOnGraphImpl(
-      from_here,
-      base::BindOnce(
-          [](std::unique_ptr<GraphOwned> graph_owned, GraphImpl* graph) {
-            graph->PassToGraph(std::move(graph_owned));
-          },
-          std::move(graph_owned)));
 }
 
 // static
@@ -176,11 +134,6 @@ void PerformanceManager::AddObserver(PerformanceManagerObserver* observer) {
 // static
 void PerformanceManager::RemoveObserver(PerformanceManagerObserver* observer) {
   PerformanceManagerRegistryImpl::GetInstance()->RemoveObserver(observer);
-}
-
-// static
-scoped_refptr<base::SequencedTaskRunner> PerformanceManager::GetTaskRunner() {
-  return PerformanceManagerImpl::GetTaskRunner();
 }
 
 // static

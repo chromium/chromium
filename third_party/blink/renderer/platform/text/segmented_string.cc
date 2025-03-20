@@ -70,7 +70,7 @@ void SegmentedString::Append(const SegmentedSubstring& s) {
 }
 
 void SegmentedString::Push(UChar c) {
-  DCHECK(c);
+  CHECK(c);
 
   // pushIfPossible attempts to rewind the pointer in the SegmentedSubstring,
   // however it will fail if the SegmentedSubstring is empty, or

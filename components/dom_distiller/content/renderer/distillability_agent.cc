@@ -5,7 +5,7 @@
 #include "components/dom_distiller/content/renderer/distillability_agent.h"
 
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/dom_distiller/content/common/mojom/distillability_service.mojom.h"
 #include "components/dom_distiller/core/distillable_page_detector.h"
@@ -113,6 +113,30 @@ void DumpDistillability(content::RenderFrame* render_frame,
                                     msg);
 }
 
+void RecordDistillabilityMetrics(int score,
+                                 int long_score,
+                                 bool is_disitillable) {
+  int adj_score = std::abs(score * 100);
+  if (score > 0) {
+    base::UmaHistogramCounts100("DomDistiller.AdaBoostModel.PositiveScore",
+                                adj_score);
+  } else {
+    base::UmaHistogramCounts100("DomDistiller.AdaBoostModel.NegativeScore",
+                                adj_score);
+  }
+
+  int adj_long_score = std::abs(long_score * 100);
+  if (long_score > 0) {
+    base::UmaHistogramCounts100("DomDistiller.LongModel.PositiveScore",
+                                adj_long_score);
+  } else {
+    base::UmaHistogramCounts100("DomDistiller.LongModel.NegativeScore",
+                                adj_long_score);
+  }
+
+  base::UmaHistogramBoolean("DomDistiller.IsDistillable", is_disitillable);
+}
+
 bool IsDistillablePageAdaboost(blink::WebDocument& doc,
                                const DistillablePageDetector* detector,
                                const DistillablePageDetector* long_page,
@@ -137,6 +161,9 @@ bool IsDistillablePageAdaboost(blink::WebDocument& doc,
   is_long_article = long_score > 0;
   bool filtered = IsFiltered(parsed_url);
 
+  bool is_distillable = distillable && is_long_article;
+  RecordDistillabilityMetrics(score, long_score, is_distillable);
+
   if (dump_info) {
     DumpDistillability(render_frame, features, derived, score, distillable,
                        long_score, is_long_article, filtered);
@@ -145,7 +172,8 @@ bool IsDistillablePageAdaboost(blink::WebDocument& doc,
   if (filtered) {
     return false;
   }
-  return distillable && is_long_article;
+
+  return is_distillable;
 }
 
 bool IsDistillablePage(blink::WebDocument& doc,

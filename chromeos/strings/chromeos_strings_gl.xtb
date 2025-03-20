@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Ocultar a transcrición</translation>
 <translation id="160633243685262989">Mostrar vista previa da imaxe</translation>
 <translation id="1611649489706141841">adiante</translation>
-<translation id="1615144046047995187">Non se puido realizar a descarga. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="1615335640928990664">Uso de datos desde o <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Usar un tema</translation>
 <translation id="1621067168122174824">Realizar proba de carga</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Lista de gravacións de audio</translation>
 <translation id="2561093647892030937">limóns</translation>
 <translation id="2570743873672969996">Executando proba de <ph name="TEST_NAME" />…</translation>
-<translation id="2573178735329662769">Estase gravando todo o audio do Chromebook</translation>
 <translation id="2576253868710695442">Pode ocupar ata 2 GB de almacenamento</translation>
 <translation id="2584547424703650812">Paisaxes brillantes</translation>
 <translation id="2584559707064218956">Para axustar as opcións, vai a Configuración</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">azul e rosa</translation>
 <translation id="498186245079027698">Comproba o escáner e téntao de novo. Asegúrate de que exista espazo local suficiente para gardar os ficheiros escaneados.</translation>
 <translation id="4982627662315910959">O atallo non está dispoñible. Preme un novo atallo usando Maiúsculas e outra tecla modificadora (Control, Alt ou <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Audio de Chromebook</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Páxinas</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Desconecta o cable USB do dispositivo (<ph name="DEVICE_NAME" />) e, a continuación, volve inserilo para seguir co proceso de actualización</translation>
 <translation id="5099354524039520280">arriba</translation>
 <translation id="5107243100836678918">Un atallo sen a tecla <ph name="META_KEY" /> podería entrar en conflito co atallo dalgunha aplicación. Preme este atallo de novo para seguir usándoo ou preme un novo que inclúa a tecla <ph name="KEY" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Non se puido descargar o modelo de transcrición de <ph name="LANGUAGE_NAME" />. Téntao de novo ou reinicia o Chromebook</translation>
 <translation id="5108781503443873320">Similares:</translation>
-<translation id="5121677070210013200">Non se puido descargar o modelo de transcrición. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Completa</translation>
 <translation id="5139813694804168398">non molestar</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">cor da luz traseira</translation>
 <translation id="5292579816060236070">Fondo de pantalla Amencer</translation>
 <translation id="5294769550414936029">versión <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">activar ou desactivar o acceso á cámara</translation>
 <translation id="5300814202279832142">Mover ventá a escritorio</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5303837385540978511">Fondo de pantalla exclusivo de <ph name="PRODUCT_NAME" /></translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Servizo do método de introdución de texto de Chrome OS</translation>
 <translation id="6127426868813166163">branca</translation>
-<translation id="613049107179582049">Cando o audio do Chromebook está activado, a gravadora captura todo o audio que se reproduce no dispositivo</translation>
 <translation id="6136285399872347291">retroceso</translation>
 <translation id="6137614725462089991">ciberpunk</translation>
 <translation id="6137767437444130246">Certificado de usuario</translation>
@@ -1418,7 +1413,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla táctil con conexión por USB</translation>
 <translation id="757747079855995705">pedra</translation>
-<translation id="7584853321964440104">Non se puido realizar a descarga. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="7590883480672980941">Configuración da introdución de texto</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">A persoa administradora de <ph name="MANAGER" /> configurou cando se pode usar este dispositivo (<ph name="DEVICE_TYPE" />).</translation>
@@ -1785,7 +1779,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="9218016617214286986">Mostrar APN coñecidos</translation>
 <translation id="932327136139879170">Inicio</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Comproba que o micrófono estea conectado ou proba a reiniciar o Chromebook</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="950520315903467048">Falta a tecla para <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Comparar as voces da gravación co fin de que a transcrición reflicta o que dixo cada falante e cando</translation>

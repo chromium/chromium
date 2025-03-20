@@ -8,11 +8,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
-#import "base/debug/dump_without_crashing.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "components/crash/core/common/crash_key.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -25,11 +23,6 @@
 using base::SysNSStringToUTF8;
 
 namespace {
-
-// Crash key to investigate the content of the user verification preference
-// string received through a passkey request.
-crash_reporter::CrashKeyString<64> user_verification_preference_crash_key(
-    "iOS CPE user verification preference");
 
 // Appends "data" at the end of "container".
 void Append(std::vector<uint8_t>& container, NSData* data) {
@@ -194,7 +187,8 @@ UserVerificationPreference UserVerificationPreferenceFromString(
               ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged]) {
     return UserVerificationPreference::kDiscouraged;
   } else {
-    // Probably indicates that the WebAuthn API changed.
+    // Either indicates that the WebAuthn API changed, or that the website
+    // provided an unexpected/empty string.
     return UserVerificationPreference::kOther;
   }
 }
@@ -352,22 +346,13 @@ BOOL ShouldPerformUserVerificationForPreference(
   UserVerificationPreference user_verification_preference =
       UserVerificationPreferenceFromString(user_verification_preference_string);
 
-  // If the UserVerificationPreference value is `kOther`, the WebAuthn API
-  // probably changed. This should be investigated, but shouldn't cause a crash.
-  if (user_verification_preference == UserVerificationPreference::kOther) {
-    // TODO(crbug.com/392239320): Clean up crash key and when done with the
-    // investigation.
-    user_verification_preference_crash_key.Set(
-        base::SysNSStringToUTF8(user_verification_preference_string));
-    base::debug::DumpWithoutCrashing();
-  }
-
   switch (user_verification_preference) {
     case UserVerificationPreference::kRequired:
-    case UserVerificationPreference::kOther:  // Fall back to highest degree of
-                                              // security.
       return YES;
     case UserVerificationPreference::kPreferred:
+    case UserVerificationPreference::kOther:  // Fall back to the default
+                                              // preference as per the WebAuthn
+                                              // spec.
       return is_biometric_authentication_enabled;
     case UserVerificationPreference::kDiscouraged:
       return NO;

@@ -1797,7 +1797,7 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, OnNativeWidgetPaint) {
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
        OnNativeWidgetParentChanged) {
-  widget()->OnNativeWidgetParentChanged(nullptr);
+  widget()->OnNativeWidgetParentChanged(gfx::NativeView());
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
@@ -1916,7 +1916,7 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ReorderNativeViews) {
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ReparentNativeView) {
   EXPECT_DCHECK_DEATH(
-      Widget::ReparentNativeView(widget()->GetNativeView(), nullptr));
+      Widget::ReparentNativeView(widget()->GetNativeView(), gfx::NativeView()));
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Restore) {

@@ -230,15 +230,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
 }
 
-- (void)omniboxAutocompleteController:
-            (OmniboxAutocompleteController*)omniboxAutocompleteController
-                  didInvalidatePedals:
-                      (NSArray<id<AutocompleteSuggestionGroup>>*)
-                          nonPedalSuggestionsGroups {
-  [self.consumer updateMatches:nonPedalSuggestionsGroups
-      preselectedMatchGroupIndex:0];
-}
-
 #pragma mark - AutocompleteResultDataSource
 
 - (void)requestResultsWithVisibleSuggestionCount:

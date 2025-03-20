@@ -6462,6 +6462,89 @@ IN_PROC_BROWSER_TEST_F(InterestGroupContextualDataBrowserTest,
   WaitForAccessObserved({});
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupContextualDataBrowserTest,
+                       RunAdAuctionInvalidSellerTKVSignals) {
+  GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL decision_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': sellerTKVSignals for AuctionAdConfig with seller "
+      "'https://a.test:*' must be a JSON-serializable object.");
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicURL: $2,
+      sellerTKVSignals: function() {},
+      interestGroupBuyers: []
+  })",
+                                  test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
+// Exercise rejection path in the renderer for promise-delivered
+// sellerTKVSignals.
+IN_PROC_BROWSER_TEST_F(InterestGroupContextualDataBrowserTest,
+                       RunAdAuctionRejectPromiseSellerTKVSignals) {
+  GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL decision_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/decision_logic.js");
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicURL: $2,
+      sellerTKVSignals: new Promise((resolve, reject) => { setTimeout(
+          () => { reject('boo'); }, 10) }),
+      interestGroupBuyers: []
+  })";
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+}
+
+// Exercise error-handling path in the renderer for promise-delivered
+// sellerTKVSignals.
+IN_PROC_BROWSER_TEST_F(InterestGroupContextualDataBrowserTest,
+                       RunAdAuctionResolvePromiseInvalidSellerTKVSignals) {
+  GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL decision_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/decision_logic.js");
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicURL: $2,
+      sellerTKVSignals: new Promise((resolve, reject) => { setTimeout(
+          () => { resolve(function() {}); }, 10) }),
+      interestGroupBuyers: []
+  })";
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': sellerTKVSignals for AuctionAdConfig with seller "
+      "'https://a.test:*' must be a JSON-serializable object.");
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
 // Test rejection path in the renderer for promise-delivered perBuyerTimeouts.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionRejectPromisePerBuyerTimeouts) {

@@ -785,6 +785,13 @@ CORE_EXPORT CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream&,
 bool MaybeConsumeImportant(CSSParserTokenStream& stream,
                            bool allow_important_annotation);
 
+// Return true if env(safe-inset-area-bottom [, ...]) exists.
+bool ContainsSafeAreaInsetBottom(StringView string);
+
+// Return true if it's a simple sum of literals, e.g. "0px + 42em - 13cqw" or
+// calc(10px + 42em - 13cqw).
+bool IsSimpleSum(StringView string);
+
 }  // namespace css_parsing_utils
 }  // namespace blink
 

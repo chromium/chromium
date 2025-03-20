@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Mae gwefannau fel arfer yn defnyddio cyfathrebu agosfaes (NFC) i weithio gyda thagiau neu ddyfeisiau cyfagos, fel sganio bathodynnau neu dapio i dalu</translation>
 <translation id="1547123415014299762">Caniateir cwcis trydydd parti</translation>
 <translation id="1593426485665524382">Mae gweithredoedd newydd ar gael yn agos at frig y sgrîn</translation>
+<translation id="1615755956145364867">Gall gwefannau ofyn am chwarae cynnwys gwarchodedig</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1621729191093924223">Ni fydd nodweddion sydd angen meicroffon yn gweithio</translation>
 <translation id="1633720957382884102">Gwefannau Cysylltiedig</translation>
 <translation id="1644574205037202324">Hanes</translation>
 <translation id="1652197001188145583">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio dyfeisiau NFC. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio dyfeisiau NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Gofyn cyn caniatáu i wefannau gysylltu â dyfais (argymhellir)</translation>
 <translation id="1779089405699405702">Datgodiwr lluniau</translation>
 <translation id="1785415724048343560">Argymhellir ar gyfer y profiad gorau</translation>
+<translation id="1796588414813960292">Ni fydd nodweddion sy'n gofyn am sain yn gweithio</translation>
 <translation id="1799920918471566157">Awgrymiadau Chrome</translation>
 <translation id="1816835383954230954">Pan fydd ymlaen, mae Chrome yn rhedeg yn gyflymach a dylai nodweddion sy'n defnyddio JavaScript weithio fel y'u dyluniwyd. Pan fydd wedi'i ddiffodd, mae hyn yn lleihau perfformiad ond yn gwneud V8 yn fwy ymwrthol i ymosodiadau.</translation>
 <translation id="1818308510395330587">I ganiatáu i <ph name="APP_NAME" /> ddefnyddio AR, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL gwefan</translation>
 <translation id="2004697686368036666">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio</translation>
 <translation id="2025115093177348061">Realiti estynedig</translation>
+<translation id="2028449514182362831">Ni fydd nodweddion sydd angen synwyryddion symudiad yn gweithio</translation>
 <translation id="2030769033451695672">Tapiwch i ddychwelyd i <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2091887806945687916">Sain</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Llywio wedi'i rwystro: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Ar ôl i chi adael gwefan, gall ddal i gysoni i orffen tasgau, megis uwchlwytho lluniau neu anfon neges sgwrsio</translation>
 <translation id="4278390842282768270">Caniateir</translation>
+<translation id="4290791284969893584">Ar ôl cau tudalen, mae'n bosib na fydd y tasgau y gwnaethoch eu cychwyn yn gorffen</translation>
 <translation id="429312253194641664">Mae gwefan yn chwarae cyfryngau</translation>
 <translation id="42981349822642051">Ehangu</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Yn darfod yfory}zero{Yn darfod mewn # diwrnod}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Cuddio cerdyn parhau â'r tab hwn}zero{Cuddio cerdyn parhau â'r tabiau hyn}two{Cuddio cerdyn parhau â'r tabiau hyn}few{Cuddio cerdyn parhau â'r tabiau hyn}many{Cuddio cerdyn parhau â'r tabiau hyn}other{Cuddio cerdyn parhau â'r tabiau hyn}}</translation>
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
 <translation id="8042586301629853791">Trefnu yn ôl:</translation>
+<translation id="8051193500142930381">Ni fydd nodweddion sydd angen camera yn gweithio</translation>
 <translation id="8067883171444229417">Chwarae'r fideo</translation>
 <translation id="8068648041423924542">Methu â dewis tystysgrif.</translation>
 <translation id="8077120325605624147">Gall unrhyw wefan yr ymwelwch â hi ddangos unrhyw hysbyseb i chi</translation>

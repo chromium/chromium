@@ -34,6 +34,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CollaborationService.JoinFlow.EntryPoint"
+    enum="CollaborationServiceJoinEntryPoint" expires_after="2025-05-11">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the entry point from where the join flow started.
+
+    Recorded when a join event is started by the CollaborationService.
+  </summary>
+</histogram>
+
 <histogram name="CollaborationService.ShareOrManageFlow"
     enum="CollaborationServiceShareOrManageEvent" expires_after="2025-05-11">
   <owner>dljames@chromium.org</owner>
@@ -43,6 +54,20 @@ chromium-metrics-reviews@google.com.
     sharing a collaboration such as starting the share flow.
 
     Recorded when a share event is triggered by the CollaborationService.
+  </summary>
+</histogram>
+
+<histogram name="CollaborationService.ShareOrManageFlow.EntryPoint"
+    enum="CollaborationServiceShareOrManageEntryPoint"
+    expires_after="2025-05-11">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the entry point from where the share or manage flow
+    started.
+
+    Recorded when a share or manage event is started by the
+    CollaborationService.
   </summary>
 </histogram>
 

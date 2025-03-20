@@ -102,7 +102,7 @@ void CredentialManagerImpl::PreventSilentAccess(
 }
 
 void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
-                                int requested_credential_type_flags,
+                                bool include_passwords,
                                 const std::vector<GURL>& federations,
                                 GetCallback callback) {
   using metrics_util::LogCredentialManagerGetResult;
@@ -150,8 +150,7 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
   }
   pending_request_ = std::make_unique<CredentialManagerPendingRequestTask>(
       this, base::BindOnce(&RunGetCallback, std::move(callback)), mediation,
-      requested_credential_type_flags, federations,
-      GetSynthesizedFormForOrigin());
+      include_passwords, federations, GetSynthesizedFormForOrigin());
 }
 
 void CredentialManagerImpl::ResetPendingRequest() {

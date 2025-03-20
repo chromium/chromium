@@ -11,7 +11,8 @@ void FakeLayerContext::SetVisible(bool visible) {}
 void FakeLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider) {}
+    viz::RasterContextProvider& context_provider,
+    const gfx::Rect& viewport_damage_rect) {}
 
 void FakeLayerContext::UpdateDisplayTile(
     PictureLayerImpl& layer,

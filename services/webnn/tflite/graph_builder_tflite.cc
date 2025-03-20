@@ -12,6 +12,7 @@
 #include <functional>
 #include <iterator>
 #include <numeric>
+#include <optional>
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
@@ -364,17 +365,33 @@ GraphBuilderTflite::CreateAndBuild(
     ContextProperties context_properties,
     const mojom::GraphInfo& graph_info,
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
-        constant_operands) {
+        constant_operands,
+    const base::flat_map<uint64_t, base::flat_set<size_t>>&
+        operand_to_dependent_operations) {
   GraphBuilderTflite builder(std::move(context_properties), graph_info,
-                             constant_operands);
+                             constant_operands,
+                             operand_to_dependent_operations);
 
   bool graph_requires_fp32_precision = false;
-  for (const mojom::OperationPtr& operation : graph_info.operations) {
+  for (size_t i = 0; i < graph_info.operations.size(); ++i) {
+    const mojom::OperationPtr& operation = graph_info.operations[i];
     if (!graph_requires_fp32_precision &&
         builder.RequiresFloat32Precision(*operation)) {
       graph_requires_fp32_precision = true;
     }
-    RETURN_IF_ERROR(builder.SerializeOperation(*operation));
+    RETURN_IF_ERROR(builder.SerializeOperation(*operation, i));
+  }
+  // Make sure to serialize `dequantizeLinear` if it is used as an output.
+  for (uint64_t operand_id : graph_info.output_operands) {
+    auto it = builder.lazy_serialized_dequantize_operations_.find(operand_id);
+    if (it != builder.lazy_serialized_dequantize_operations_.end() &&
+        !it->second.second) {
+      ASSIGN_OR_RETURN(OperatorOffset operator_offset,
+                       builder.SerializeDequantizeLinear(
+                           builder.GetDequantizeOp(operand_id)));
+
+      builder.operators_.emplace_back(operator_offset);
+    }
   }
 
   return builder.FinishAndTakeResult(graph_info.input_operands,
@@ -385,8 +402,11 @@ GraphBuilderTflite::CreateAndBuild(
 // static
 ContextProperties GraphBuilderTflite::GetContextProperties() {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
-  static constexpr SupportedDataTypes kInt4AndInts8 = {
-      OperandDataType::kInt4, OperandDataType::kUint8, OperandDataType::kInt8};
+  static constexpr SupportedDataTypes kInt4AndInts8Int32 = {
+      OperandDataType::kInt4, OperandDataType::kUint8, OperandDataType::kInt8,
+      OperandDataType::kInt32};
+  static constexpr SupportedDataTypes kInts8AndInt32 = {
+      OperandDataType::kUint8, OperandDataType::kInt8, OperandDataType::kInt32};
   static constexpr SupportedDataTypes kFloat16To32AndInt8{
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt8};
@@ -464,12 +484,13 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        {kFloat16To32AndInt32To64, SupportedRanks::NonScalarUpTo(8)},
        // DequantizeLinear may be emulated by sub and mul ops that only support
        // max rank up to 6.
-       /*dequantize_linear_input=*/{kInt4AndInts8, SupportedRanks::UpTo(6)},
+       /*dequantize_linear_input=*/
+       {kInt4AndInts8Int32, SupportedRanks::UpTo(6)},
        // TODO(crbug.com/376722724): Support float16 scale.
        /*dequantize_linear_scale=*/
        {DataTypeConstraint::kFloat32, SupportedRanks::UpTo(6)},
        /*dequantize_linear_zero_point=*/
-       {kInt4AndInts8, SupportedRanks::UpTo(6)},
+       {kInt4AndInts8Int32, SupportedRanks::UpTo(6)},
        // Limited to 6D when broadcasting is required:
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/add.cc
        /*add_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(6)},
@@ -628,7 +649,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // TFLite doesn't support int4 quantization that is tracked in
        // https://github.com/tensorflow/tensorflow/issues/80335
        /*quantize_linear_zero_point=*/
-       {DataTypeConstraint::kInts8, SupportedRanks::UpTo(5)},
+       {kInts8AndInt32, SupportedRanks::UpTo(5)},
        // ReduceL1 is emulated by abs and reduceSum.
        /*reduce_l1_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(8)},
        // ReduceL2 is emulated by reduceSumSquare followed by sqrt.
@@ -713,10 +734,13 @@ GraphBuilderTflite::GraphBuilderTflite(
     ContextProperties context_properties,
     const mojom::GraphInfo& graph_info,
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
-        constant_operands)
+        constant_operands,
+    const base::flat_map<uint64_t, base::flat_set<size_t>>&
+        operand_to_dependent_operations)
     : context_properties_(std::move(context_properties)),
       graph_info_(graph_info),
-      constant_operands_(constant_operands) {
+      constant_operands_(constant_operands),
+      operand_to_dependent_operations_(operand_to_dependent_operations) {
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
@@ -792,7 +816,28 @@ base::expected<GraphBuilderTflite::TensorInfo, std::string>
 GraphBuilderTflite::SerializeInputTensorInfo(
     uint64_t operand_id,
     QuantizateParametersOffset quantize_params,
-    bool operation_supports_float16) {
+    bool operation_supports_float16,
+    bool fuse_dequantize) {
+  auto dequantize_it = lazy_serialized_dequantize_operations_.find(operand_id);
+  if (dequantize_it != lazy_serialized_dequantize_operations_.end()) {
+    auto& [dequantize_op_index, serialized] = dequantize_it->second;
+    const mojom::DequantizeLinear& dequantize_op =
+        *graph_info_->operations[dequantize_op_index]->get_dequantize_linear();
+    if (!fuse_dequantize && !serialized) {
+      ASSIGN_OR_RETURN(OperatorOffset operator_offset,
+                       SerializeDequantizeLinear(dequantize_op));
+      operators_.emplace_back(operator_offset);
+      serialized = true;
+    }
+    if (fuse_dequantize) {
+      operand_id = dequantize_op.input_operand_id;
+    }
+    // The `operand_id` should already be serialized by
+    // `SerializeDequantizeLinear` or `TrySerializeQuantizedInput`.
+    auto it = operand_to_tensor_info_map_.find(operand_id);
+    CHECK(it != operand_to_tensor_info_map_.end());
+    return it->second;
+  }
   TensorInfo input_tensor_info;
   auto it = operand_to_tensor_info_map_.find(operand_id);
   if (it == operand_to_tensor_info_map_.end()) {
@@ -910,7 +955,8 @@ GraphBuilderTflite::SerializeOutputTensorInfo(
 }
 
 base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
-    const mojom::Operation& op) {
+    const mojom::Operation& op,
+    size_t operation_index) {
   OperatorOffset operator_offset;
   switch (op.which()) {
     case mojom::Operation::Tag::kArgMinMax: {
@@ -941,8 +987,15 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       break;
     }
     case mojom::Operation::Tag::kDequantizeLinear: {
-      ASSIGN_OR_RETURN(operator_offset,
-                       SerializeDequantizeLinear(*op.get_dequantize_linear()));
+      auto operation = *op.get_dequantize_linear();
+      // Don't serialize the dequantize right now until the dequantized output
+      // is needed for a subsequent operation. During `SerializeInputTensorInfo`
+      // for subsequent operations, it will check whether it needs to inject
+      // a dequantize operation.
+      if (TrySerializeQuantizedInput(operation, operation_index)) {
+        return base::ok();
+      }
+      ASSIGN_OR_RETURN(operator_offset, SerializeDequantizeLinear(operation));
       break;
     }
     case mojom::Operation::Tag::kElementWiseBinary: {
@@ -1048,6 +1101,9 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       break;
     }
     case mojom::Operation::Tag::kQuantizeLinear: {
+      if (quantize_ops_to_skip_.contains(operation_index)) {
+        return base::ok();
+      }
       ASSIGN_OR_RETURN(operator_offset,
                        SerializeQuantizeLinear(*op.get_quantize_linear()));
       break;
@@ -1274,6 +1330,257 @@ bool GraphBuilderTflite::RequiresFloat32Precision(const mojom::Operation& op) {
   }
   return (GetOperand(input_operand_id).descriptor.data_type() ==
           OperandDataType::kFloat32);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Conv2d& conv2d) {
+  // TODO(crbug.com/401281047): Construct a quantized empty bias tensor if not
+  // provided.
+  if (!IsDequantizeOutput(conv2d.input_operand_id) ||
+      !IsDequantizeOutput(conv2d.filter_operand_id) ||
+      !conv2d.bias_operand_id || !IsDequantizeOutput(*conv2d.bias_operand_id)) {
+    return std::nullopt;
+  }
+
+  const mojom::Operand& input_operand = GetOperand(conv2d.input_operand_id);
+  const mojom::Operand& output_operand = GetOperand(conv2d.output_operand_id);
+  const uint32_t input_channels = input_operand.descriptor.shape()[3];
+  const uint32_t output_channels = output_operand.descriptor.shape()[3];
+  // TODO(crbug.com/401281047): Support quantization fusion for transposed
+  // conv2d and depthwise conv2d.
+  if (conv2d.kind != mojom::Conv2d::Kind::kDirect) {
+    return std::nullopt;
+  }
+  if (webnn::IsDepthwiseConv2d(input_channels, output_channels,
+                               conv2d.groups)) {
+    return std::nullopt;
+  }
+
+  // Filter and input have to be dequantized from (u)int8 or (u)int16, WebNN
+  // doesn't support (u)int16.
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(conv2d.input_operand_id);
+  const mojom::DequantizeLinear& filter_dequantize =
+      GetDequantizeOp(conv2d.filter_operand_id);
+  const OperandDataType quantized_type =
+      GetOperand(input_dequantize.input_operand_id).descriptor.data_type();
+  if (!DataTypeConstraint::kInts8.Has(quantized_type) ||
+      GetOperand(filter_dequantize.input_operand_id).descriptor.data_type() !=
+          quantized_type) {
+    return std::nullopt;
+  }
+
+  // Filter must have all-zero zero-points.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/conv.cc;l=363;drc=e433dac46a0bb8ffa4b6e600d4d94751768392c0
+  auto filter_zero_point_constant_it =
+      constant_operands_->find(filter_dequantize.zero_point_operand_id);
+  CHECK(filter_zero_point_constant_it != constant_operands_->end());
+  for (uint8_t byte : filter_zero_point_constant_it->second->ByteSpan()) {
+    if (byte != 0) {
+      return std::nullopt;
+    }
+  }
+
+  // Bias must be int32 and have all-zero zero-points.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/conv.cc;l=384;drc=e433dac46a0bb8ffa4b6e600d4d94751768392c0
+  const mojom::DequantizeLinear& bias_dequantize =
+      GetDequantizeOp(*conv2d.bias_operand_id);
+  if (GetOperand(bias_dequantize.input_operand_id).descriptor.data_type() !=
+      OperandDataType::kInt32) {
+    return std::nullopt;
+  }
+  auto bias_zero_point_constant_it =
+      constant_operands_->find(bias_dequantize.zero_point_operand_id);
+  CHECK(bias_zero_point_constant_it != constant_operands_->end());
+
+  for (uint8_t byte : bias_zero_point_constant_it->second->ByteSpan()) {
+    if (byte != 0) {
+      return std::nullopt;
+    }
+  }
+
+  std::optional<size_t> next_op =
+      IsNextOpQuantize(conv2d.output_operand_id, {quantized_type});
+  if (!next_op) {
+    return std::nullopt;
+  }
+  const mojom::QuantizeLinear& quantize_linear = GetQuantizeOp(*next_op);
+  // For XNNPack delegate, input and output scale have to be scaler, both filter
+  // and bias scale can be either scalar or vector that matches the output
+  // channel.
+  CHECK(constant_operands_->contains(input_dequantize.scale_operand_id));
+  CHECK(constant_operands_->contains(quantize_linear.scale_operand_id));
+  CHECK(constant_operands_->contains(bias_dequantize.scale_operand_id));
+  CHECK(constant_operands_->contains(filter_dequantize.scale_operand_id));
+  base::span<const float> input_scale_values =
+      GetConstantValue<float>(input_dequantize.scale_operand_id);
+  base::span<const float> output_scale_values =
+      GetConstantValue<float>(quantize_linear.scale_operand_id);
+  base::span<const float> bias_scale_values =
+      GetConstantValue<float>(bias_dequantize.scale_operand_id);
+  base::span<const float> filter_scale_values =
+      GetConstantValue<float>(filter_dequantize.scale_operand_id);
+  if (input_scale_values.size() != 1 || output_scale_values.size() != 1) {
+    return std::nullopt;
+  }
+
+  if (bias_scale_values.size() != 1 ||
+      bias_scale_values.size() != output_channels ||
+      filter_scale_values.size() != 1 ||
+      filter_scale_values.size() != output_channels) {
+    return std::nullopt;
+  }
+
+  // uint8 only allows scaler filter scale and bias scale:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/kernel_util.cc;l=239;drc=2f4e6fd051b670e0e032cc45c6492dd42d054a1c
+  if (quantized_type == OperandDataType::kUint8 &&
+      filter_scale_values.size() != 1 && bias_scale_values.size() != 1) {
+    return std::nullopt;
+  }
+  // For XNNPack delegate, the bias scale is not really used so it requires
+  // input_scale * filter_scale and bias_scale to be about the same.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/kernel_util.cc;l=303;drc=492dc9719f6e1845f4f5c0553cd5c7651115f671
+  const double input_scale = static_cast<double>(input_scale_values[0]);
+  const double output_scale = static_cast<double>(output_scale_values[0]);
+  const bool scalar_filter_scale = filter_scale_values.size() == 1;
+  auto input_product_scalar_filter = base::MakeCheckedNum<double>(input_scale);
+  if (scalar_filter_scale) {
+    input_product_scalar_filter *= filter_scale_values[0];
+  }
+  for (size_t i = 0; i < bias_scale_values.size(); ++i) {
+    base::CheckedNumeric<double> scale_diff =
+        scalar_filter_scale
+            ? input_product_scalar_filter
+            : base::CheckMul(input_scale,
+                             static_cast<double>(filter_scale_values[i]));
+    scale_diff -= static_cast<double>(bias_scale_values[i]);
+    scale_diff = scale_diff.Abs() / output_scale;
+
+    if (!scale_diff.IsValid() || scale_diff.ValueOrDie() > 0.02) {
+      return std::nullopt;
+    }
+  }
+  return TrySerializeQuantizedOutput(*next_op);
+}
+
+bool GraphBuilderTflite::IsDequantizeOutput(uint64_t operand_id) {
+  return lazy_serialized_dequantize_operations_.contains(operand_id);
+}
+
+const mojom::DequantizeLinear& GraphBuilderTflite::GetDequantizeOp(
+    uint64_t operand_id) {
+  auto it = lazy_serialized_dequantize_operations_.find(operand_id);
+  CHECK(it != lazy_serialized_dequantize_operations_.end());
+
+  size_t operation_index = it->second.first;
+  CHECK_LT(operation_index, graph_info_->operations.size());
+
+  const mojom::Operation& operation = *graph_info_->operations[operation_index];
+  CHECK(operation.is_dequantize_linear());
+  return *operation.get_dequantize_linear();
+}
+
+const mojom::QuantizeLinear& GraphBuilderTflite::GetQuantizeOp(
+    size_t operation_index) {
+  CHECK_LT(operation_index, graph_info_->operations.size());
+
+  const mojom::Operation& operation = *graph_info_->operations[operation_index];
+  CHECK(operation.is_quantize_linear());
+  return *operation.get_quantize_linear();
+}
+
+bool GraphBuilderTflite::TrySerializeQuantizedInput(
+    const mojom::DequantizeLinear& dequantize_linear,
+    size_t operation_index) {
+  const mojom::Operand& input_operand =
+      GetOperand(dequantize_linear.input_operand_id);
+  if (!BroadcastShapes(
+          GetOperand(dequantize_linear.scale_operand_id).descriptor.shape(),
+          input_operand.descriptor.shape(),
+          /*bidirectional=*/false)) {
+    return false;
+  }
+
+  std::optional<QuantizateParametersOffset> quantize_params =
+      SerializeQuantizeParams(dequantize_linear.zero_point_operand_id,
+                              dequantize_linear.scale_operand_id,
+                              input_operand.descriptor.shape().size());
+  if (!quantize_params) {
+    return false;
+  }
+
+  // Eagerly serialize input with `quantize_params` so that when the
+  // dequantizeLinear is skipped, the `quantize_params` is already attached to
+  // the input.
+  if (!SerializeInputTensorInfo(dequantize_linear.input_operand_id,
+                                *quantize_params)
+           .has_value()) {
+    return false;
+  }
+
+  CHECK(lazy_serialized_dequantize_operations_
+            .try_emplace(dequantize_linear.output_operand_id,
+                         std::make_pair(operation_index, /*serialized=*/false))
+            .second);
+  return true;
+}
+
+std::optional<size_t> GraphBuilderTflite::IsNextOpQuantize(
+    uint64_t output_operand_id,
+    SupportedDataTypes supported_quantized_types) {
+  auto next_next_ops_it =
+      operand_to_dependent_operations_->find(output_operand_id);
+  // The only next op should be `quantizeLinear`.
+  if (next_next_ops_it == operand_to_dependent_operations_->end() ||
+      next_next_ops_it->second.size() != 1) {
+    return std::nullopt;
+  }
+  size_t quantize_op_idx = *next_next_ops_it->second.begin();
+  CHECK_LT(quantize_op_idx, graph_info_->operations.size());
+  const mojom::Operation& quantize_op =
+      *graph_info_->operations[quantize_op_idx];
+  if (!quantize_op.is_quantize_linear()) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& quantize_linear =
+      *quantize_op.get_quantize_linear();
+  if (!supported_quantized_types.Has(
+          GetOperand(quantize_linear.output_operand_id)
+              .descriptor.data_type())) {
+    return std::nullopt;
+  }
+
+  // qint tensors don't support blockwise quantization.
+  if (!BroadcastShapes(
+          GetOperand(quantize_linear.scale_operand_id).descriptor.shape(),
+          GetOperand(quantize_linear.input_operand_id).descriptor.shape(),
+          /*bidirectional=*/false)) {
+    return std::nullopt;
+  }
+  return quantize_op_idx;
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::TrySerializeQuantizedOutput(size_t quantize_op_idx) {
+  const mojom::QuantizeLinear& quantize_linear = GetQuantizeOp(quantize_op_idx);
+  std::optional<QuantizateParametersOffset> quantize_params =
+      SerializeQuantizeParams(quantize_linear.zero_point_operand_id,
+                              quantize_linear.scale_operand_id,
+                              GetOperand(quantize_linear.input_operand_id)
+                                  .descriptor.shape()
+                                  .size());
+  if (!quantize_params) {
+    return std::nullopt;
+  }
+
+  quantize_ops_to_skip_.insert(quantize_op_idx);
+  auto output = SerializeOutputTensorInfo(quantize_linear.output_operand_id,
+                                          *quantize_params);
+  if (!output.has_value()) {
+    return std::nullopt;
+  }
+  return output.value();
 }
 
 auto GraphBuilderTflite::FinishAndTakeResult(
@@ -2266,8 +2573,15 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
       GetTfLitePaddingMode(*conv2d.padding, input_size2d, filter_size2d,
                            *conv2d.strides, *conv2d.dilations,
                            conv2d.kind == mojom::Conv2d::Kind::kTransposed));
+
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(conv2d);
+  const bool fuse_dequantize = quantized_output.has_value();
+
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(conv2d.input_operand_id));
+                   SerializeInputTensorInfo(
+                       conv2d.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
   // Insert a Pad operator before TfLite Conv2d if needed for explicit padding.
   std::optional<int32_t> explicit_pad_index;
   if (padding_mode.paddings) {
@@ -2289,8 +2603,12 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
           bias_operand.descriptor));
     }
 
-    ASSIGN_OR_RETURN(const TensorInfo& bias_tensor_info,
-                     SerializeInputTensorInfo(*conv2d.bias_operand_id));
+    ASSIGN_OR_RETURN(
+        const TensorInfo& bias_tensor_info,
+        SerializeInputTensorInfo(*conv2d.bias_operand_id,
+                                 /*quantize_params=*/0,
+                                 /*operation_supports_float16=*/false,
+                                 fuse_dequantize));
     bias_index = bias_tensor_info.index;
   } else {
     const std::array<int32_t, 1> bias_shape = {
@@ -2303,7 +2621,9 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
   // possible.
 
   ASSIGN_OR_RETURN(const TensorInfo& filter_tensor_info,
-                   SerializeInputTensorInfo(conv2d.filter_operand_id));
+                   SerializeInputTensorInfo(
+                       conv2d.filter_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/false, fuse_dequantize));
   std::vector<int32_t> op_inputs;
   ::tflite::BuiltinOperator operator_kind;
   ::tflite::BuiltinOptions builtin_options_type;
@@ -2353,10 +2673,18 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
   // code.
-  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(conv2d.output_operand_id));
+
+  int32_t output_tensor_index;
+  if (quantized_output) {
+    output_tensor_index = quantized_output->index;
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                     SerializeOutputTensorInfo(conv2d.output_operand_id));
+    output_tensor_index = output_tensor_info.index;
+  }
+
   const auto operator_code_index = GetOperatorCodeIndex(operator_kind);
-  const std::array<int32_t, 1> op_outputs = {output_tensor_info.index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
   return ::tflite::CreateOperator(builder_, operator_code_index,
                                   builder_.CreateVector<int32_t>(op_inputs),
                                   builder_.CreateVector<int32_t>(op_outputs),
@@ -4805,11 +5133,13 @@ auto GraphBuilderTflite::SerializeQuantizeLinear(
       GetOperand(quantize_linear.input_operand_id);
   const mojom::Operand& scale_operand =
       GetOperand(quantize_linear.scale_operand_id);
+  const mojom::Operand& zero_point_operand =
+      GetOperand(quantize_linear.zero_point_operand_id);
   CHECK(context_properties_.data_type_limits.quantize_linear_input.SupportsAll(
       {input_operand.descriptor, scale_operand.descriptor}));
   CHECK(
       context_properties_.data_type_limits.quantize_linear_zero_point.Supports(
-          GetOperand(quantize_linear.zero_point_operand_id).descriptor));
+          zero_point_operand.descriptor));
 
   // TODO(crbug.com/377172670): Add emulation support for block-wise
   // quantizeLinear.
@@ -4826,7 +5156,8 @@ auto GraphBuilderTflite::SerializeQuantizeLinear(
       SerializeQuantizeParams(quantize_linear.zero_point_operand_id,
                               quantize_linear.scale_operand_id,
                               input_tensor_info.dimensions.size());
-  if (quantize_params) {
+  if (quantize_params &&
+      zero_point_operand.descriptor.data_type() != OperandDataType::kInt32) {
     ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
                      SerializeOutputTensorInfo(
                          quantize_linear.output_operand_id, *quantize_params));
@@ -4874,7 +5205,8 @@ auto GraphBuilderTflite::SerializeQuantizeLinear(
 
     ASSIGN_OR_RETURN(
         const TensorInfo& output_tensor_info,
-        SerializeOutputTensorInfo(quantize_linear.output_operand_id));
+        SerializeOutputTensorInfo(quantize_linear.output_operand_id,
+                                  quantize_params.value_or(0)));
     float min_value, max_value;
     if (output_tensor_info.data_type == ::tflite::TensorType_INT8) {
       min_value = -128.0f;
@@ -4882,6 +5214,9 @@ auto GraphBuilderTflite::SerializeQuantizeLinear(
     } else if (output_tensor_info.data_type == ::tflite::TensorType_UINT8) {
       min_value = 0.0f;
       max_value = 255.0f;
+    } else if (output_tensor_info.data_type == ::tflite::TensorType_INT32) {
+      min_value = 0.0f;
+      max_value = 2147483647.0f;
     } else {
       NOTREACHED() << "This data type is not supported.";
     }
@@ -4932,7 +5267,8 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
   // TODO(crbug.com/375614289): Support constant input after TFLite runtime fix
   // the issue https://github.com/tensorflow/tensorflow/issues/78748.
   if (quantize_params &&
-      input_operand.kind != mojom::Operand::Kind::kConstant) {
+      input_operand.kind != mojom::Operand::Kind::kConstant &&
+      input_operand.descriptor.data_type() != OperandDataType::kInt32) {
     ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                      SerializeInputTensorInfo(
                          dequantize_linear.input_operand_id, *quantize_params));
@@ -4982,7 +5318,8 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
         SerializeInputTensorInfo(dequantize_linear.scale_operand_id));
     ASSIGN_OR_RETURN(
         const TensorInfo& output_tensor_info,
-        SerializeOutputTensorInfo(dequantize_linear.output_operand_id));
+        SerializeOutputTensorInfo(dequantize_linear.output_operand_id,
+                                  quantize_params.value_or(0)));
 
     return SerializeBinaryOperation(
         ::tflite::BuiltinOperator_MUL, output_tensor_index_of_sub,

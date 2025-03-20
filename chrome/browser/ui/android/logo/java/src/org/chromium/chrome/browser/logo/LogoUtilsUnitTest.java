@@ -14,10 +14,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -28,12 +30,12 @@ import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LogoUtilsUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Resources mResources;
     @Mock private LogoView mLogoView;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mResources = Robolectric.buildActivity(Activity.class).setup().get().getResources();
     }
 

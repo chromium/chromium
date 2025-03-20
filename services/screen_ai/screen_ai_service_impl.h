@@ -118,7 +118,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   // vector of ints. Unserializes `snapshot` into `tree`. Runs the library
   // `ExtractMainContent` function whose return value sets `content_node_ids`.
   // If `content_node_ids` is empty; returns false; otherwise, returns true.
-  bool ExtractMainContentInternal(
+  bool ExtractMainContentInternalAndRecordMetrics(
       const ui::AXTreeUpdate& snapshot,
       ui::AXTree& tree,
       std::optional<std::vector<int32_t>>& content_node_ids);

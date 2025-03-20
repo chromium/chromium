@@ -138,10 +138,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   UserSelectableTypeSet all_registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
 
-  // TODO(crbug.com/397767033): In CL #3, delete (SHARED_TAB_GROUP_ACCOUNT_DATA
-  // is now mapped to a selectable type.
-  expected_types.Remove(SHARED_TAB_GROUP_ACCOUNT_DATA);
-
 #if BUILDFLAG(IS_CHROMEOS)
   expected_types.RemoveAll({WEB_APKS});
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -283,9 +279,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
 
   DataTypeSet expected_types = GetUserTypes();
   expected_types.RemoveAll({WEB_APKS});
-  // TODO(crbug.com/397767033): In CL #3, delete (SHARED_TAB_GROUP_ACCOUNT_DATA
-  // is now mapped to a selectable type.
-  expected_types.Remove(SHARED_TAB_GROUP_ACCOUNT_DATA);
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
 
@@ -492,11 +485,11 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
       /*types=*/{UserSelectableType::kHistory, UserSelectableType::kTabs});
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // For android and iOS, we enable SAVED_TAB_GROUP under OpenTabs as well.
-  EXPECT_EQ(
-      GetPreferredUserTypes(*sync_user_settings),
-      Union(AlwaysPreferredUserTypes(),
-            {COLLABORATION_GROUP, HISTORY, HISTORY_DELETE_DIRECTIVES,
-             SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA, SESSIONS, USER_EVENTS}));
+  EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
+            Union(AlwaysPreferredUserTypes(),
+                  {COLLABORATION_GROUP, HISTORY, HISTORY_DELETE_DIRECTIVES,
+                   SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA, SESSIONS,
+                   USER_EVENTS, SHARED_TAB_GROUP_ACCOUNT_DATA}));
 #else
   EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
             Union(AlwaysPreferredUserTypes(),
@@ -516,10 +509,10 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{UserSelectableType::kTabs});
-  EXPECT_EQ(
-      GetPreferredUserTypes(*sync_user_settings),
-      Union(AlwaysPreferredUserTypes(), {COLLABORATION_GROUP, SAVED_TAB_GROUP,
-                                         SESSIONS, SHARED_TAB_GROUP_DATA}));
+  EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
+            Union(AlwaysPreferredUserTypes(),
+                  {COLLABORATION_GROUP, SAVED_TAB_GROUP, SESSIONS,
+                   SHARED_TAB_GROUP_DATA, SHARED_TAB_GROUP_ACCOUNT_DATA}));
 #else
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -534,10 +527,10 @@ TEST_F(SyncUserSettingsImplTest, ShouldSyncSessionsOnlyIfOpenTabsIsSelected) {
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{UserSelectableType::kSavedTabGroups});
-  EXPECT_EQ(
-      GetPreferredUserTypes(*sync_user_settings),
-      Union(AlwaysPreferredUserTypes(),
-            {COLLABORATION_GROUP, SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA}));
+  EXPECT_EQ(GetPreferredUserTypes(*sync_user_settings),
+            Union(AlwaysPreferredUserTypes(),
+                  {COLLABORATION_GROUP, SAVED_TAB_GROUP, SHARED_TAB_GROUP_DATA,
+                   SHARED_TAB_GROUP_ACCOUNT_DATA}));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 

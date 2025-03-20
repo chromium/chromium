@@ -29,6 +29,10 @@
 // Updates the NTP for changes in module visibility.
 - (void)updateModuleVisibility;
 
+// Signals to the receiver that the NTP has been scrolled while the Feed is
+// visible.
+- (void)feedDidScroll;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONTENT_DELEGATE_H_

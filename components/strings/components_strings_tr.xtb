@@ -1695,6 +1695,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3964661563329879394">{COUNT,plural, =0{Yok}=1{1 siteden }other{# siteden }}</translation>
 <translation id="3965672182149944205">Adres kaydedilsin mi?</translation>
 <translation id="3966044442021752214">Ürün güvenliği</translation>
+<translation id="3969869202926863008">Yerel ağ erişimi</translation>
 <translation id="397105322502079400">Hesaplanıyor...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> engellendi</translation>
 <translation id="3975852104434126461">Otomotiv Sektörü</translation>
@@ -2051,6 +2052,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="460848736049414407">Yönetici tarafından engellendi</translation>
 <translation id="4610279718074907952">Bu site, <ph name="SET_OWNER" /> tarafından tanımlanmış, etkinliğinizi görebilen bir grupta bulunuyor</translation>
 <translation id="46128681529823442">Futbol Gereçleri</translation>
+<translation id="4612904677925722054">Bu sitede erişkinlere uygun içerikler bulunabilir. Bir anne veya babanın ya da velinin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir.</translation>
 <translation id="4619564267100705184">Kimliğinizi doğrulayın</translation>
 <translation id="4622292761762557753">Yine de aktar</translation>
 <translation id="4622647778991854660">Bildirim Merkezi'nden bildirimleri etkinleştirin. <ph name="LINK" /> sayfasını aç</translation>
@@ -2648,6 +2650,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5660122698869360728">Tüm alışveriş sayfalarınızı tek bir yere kaydetmenizi, fiyatları otomatik olarak takip etmenizi, fiyat analizleri almanızı ve daha pek çok şey yapmanızı sağlayan yeni bir akıllı klasör.</translation>
 <translation id="5663955426505430495">Bu cihazın yöneticisi diğer işlevler için uzantılar yüklemiş. Söz konusu uzantıların bazı verilerinize erişimi bulunuyor.</translation>
 <translation id="5667827081946850877">Sesli kitaplar</translation>
+<translation id="5674082555327905359">Yerel ağınızdaki cihazlara bağlanmak isteyebilir</translation>
 <translation id="5675650730144413517">Bu sayfa çalışmıyor</translation>
 <translation id="5675809467256309336">Dans Müziği ve Elektronik Müzik</translation>
 <translation id="5675959228867414813">Tarihe göre göster</translation>
@@ -2896,6 +2899,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6116338172782435947">Panoya kopyalanan metin ve resimleri görme</translation>
 <translation id="6117833587752089929">Fotoğraf (Saten)</translation>
 <translation id="6118782133429281336">Kaynak listesi boş.</translation>
+<translation id="6120950591512958208">Ödeme sırasında bu kodu kullanın.</translation>
 <translation id="612178891608320683">Vegan Mutfağı</translation>
 <translation id="6122181661879998141">kartınızın önünde</translation>
 <translation id="6124058285696691147">Eklentiyi indir</translation>
@@ -2921,6 +2925,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6159908896951210943">Resmi</translation>
 <translation id="6160391204859821737">Reklam gizlilik özelliklerini etkinleştirme</translation>
 <translation id="6162403104168428984">Adres güncellensin mi?</translation>
+<translation id="6164605812717770913">Ebeveyniniz ya da veliniz bu siteyi ziyaret etmenize izin vermiyor. Dilerseniz sitenin engelini kaldırmasını isteyebilirsiniz.</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6167577165590485365">Son getirme girişimi:</translation>
 <translation id="617256461084925519">Google Chrome ödeme bilgilerinizi girebilmek için kimliğinizi doğrulamaya çalışıyor.</translation>
@@ -3012,6 +3017,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6321917430147971392">DNS ayarlarınızı kontrol edin</translation>
 <translation id="6322182122604171028">Windows Hello kullanılamadı</translation>
 <translation id="6326947323444967009">Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlayın.</translation>
+<translation id="6327065120806001832">yerel ağ erişimi</translation>
 <translation id="6328639280570009161">Ağ tahmin özelliğini devre dışı bırakmayı deneyin</translation>
 <translation id="6335029926534404762">Spor Ayakkabıları</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> boyutundan daha az yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>

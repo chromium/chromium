@@ -484,7 +484,13 @@ NSString* const kDomain2 = @"domain2.com";
       base::StrCat({"enterprise@", policy::SignatureProvider::kTestDomain1}));
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity identityWithEmail:managedAccountEmail];
-  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   // Open the menu and click on the item.
   [ChromeEarlGreyUI openToolsMenu];
@@ -512,7 +518,13 @@ NSString* const kDomain2 = @"domain2.com";
       base::StrCat({"enterprise@", policy::SignatureProvider::kTestDomain1}));
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity identityWithEmail:managedAccountEmail];
-  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   // Open the menu and click on the item.
   [ChromeEarlGreyUI openToolsMenu];
@@ -592,7 +604,13 @@ NSString* const kDomain2 = @"domain2.com";
       [@"enterprise@" stringByAppendingString:kDomain1];
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity identityWithEmail:managedAccountEmail];
-  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   // Open the management page and check if the content is expected.
   [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
@@ -634,7 +652,13 @@ NSString* const kDomain2 = @"domain2.com";
       [@"enterprise@" stringByAppendingString:kDomain2];
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity identityWithEmail:managedAccountEmail];
-  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   // Open the management page and check if the content is expected.
   [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
@@ -678,7 +702,13 @@ NSString* const kDomain2 = @"domain2.com";
       [@"enterprise@" stringByAppendingString:kDomain1];
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity identityWithEmail:managedAccountEmail];
-  [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    [SigninEarlGrey
+        signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
+  } else {
+    [SigninEarlGrey signinWithFakeIdentity:fakeManagedIdentity];
+  }
 
   // Open the management page and check if the content is expected.
   [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
