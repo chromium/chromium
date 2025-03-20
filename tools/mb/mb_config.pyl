@@ -829,7 +829,6 @@
       'gn_args': ('use_partition_alloc=false enable_reporting=true '
                   'use_hashed_jni_names=true '
                   'default_min_sdk_version=23 '
-                  'enable_base_tracing=false '
                   'clang_use_default_sample_profile=false '
                   'media_use_ffmpeg = false'
                   'use_thin_lto=false '  # https://crbug.com/1136963
