@@ -26644,7 +26644,8 @@
                         "LocationProviderManagerMode": "PlatformOnly"
                     },
                     "enable_features": [
-                        "LocationProviderManager"
+                        "LocationProviderManager",
+                        "WinSystemLocationPermission"
                     ]
                 }
             ]
@@ -26676,21 +26677,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WinSboxNoFakeGdiInit"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WinSystemLocationPermission": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WinSystemLocationPermission"
                     ]
                 }
             ]
