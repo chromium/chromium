@@ -4075,6 +4075,9 @@ crbug.com/1395394 fast/css-generated-content/pseudo-animation-display.html [ Fai
 
 crbug.com/664450 http/tests/devtools/console/console-on-animation-worklet.js [ Failure Pass Timeout ]
 
+# [css-easing]
+crbug.com/405004975 external/wpt/css/css-easing/linear-timing-functions-chrome-405004975-crash.html [ Crash ]
+
 # [css-transitions]
 crbug.com/1289685 external/wpt/css/css-transitions/properties-value-inherit-001.html [ Failure Pass ]
 
