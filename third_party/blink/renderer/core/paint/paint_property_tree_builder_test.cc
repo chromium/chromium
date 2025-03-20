@@ -3002,6 +3002,29 @@ TEST_P(PaintPropertyTreeBuilderTest, PaintOffsetWithPixelSnappingWithFixedPos) {
                     d, frame_view->GetLayoutView(), 1);
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, SubpixelAccumulationThroughScale) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="position: absolute; left: 0.75px; top: 0.4px">
+      <div style="transform: scaleX(0.5)" style="height: 50px">
+        <div id="a">A</div>
+      </div>
+      <div style="transform: scaleY(0.5)" style="height: 50px">
+        <div id="b">B</div>
+      </div>
+      <div style="transform: scale(0.5)" style="height: 50px">
+        <div id="c">C</div>
+      </div>
+    </div>
+  )HTML");
+
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(), LayoutUnit(0.4)),
+            GetLayoutObjectByElementId("a")->FirstFragment().PaintOffset());
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(-0.25), LayoutUnit()),
+            GetLayoutObjectByElementId("b")->FirstFragment().PaintOffset());
+  EXPECT_EQ(PhysicalOffset(),
+            GetLayoutObjectByElementId("c")->FirstFragment().PaintOffset());
+}
+
 TEST_P(PaintPropertyTreeBuilderTest, SvgPixelSnappingShouldResetPaintOffset) {
   SetBodyInnerHTML(R"HTML(
     <style>
