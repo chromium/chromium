@@ -329,6 +329,11 @@ void SearchResultsPanel::RefreshStackingOrder(aura::Window* new_root) {
 }
 
 bool SearchResultsPanel::IsTextfieldPseudoFocused() const {
+  if (features::IsSunfishLensWebEnabled()) {
+    return false;
+  }
+
+  CHECK(search_box_view_);
   return CaptureModeSessionFocusCycler::HighlightHelper::Get(
              search_box_view_->textfield_)
       ->has_focus();
