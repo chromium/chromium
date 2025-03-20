@@ -1113,6 +1113,8 @@ source_set("browser") {
     "find_in_page_client.h",
     "find_request_manager.cc",
     "find_request_manager.h",
+    "fingerprinting_protection/canvas_noise_token_data.cc",
+    "fingerprinting_protection/canvas_noise_token_data.h",
     "first_party_sets/database/first_party_sets_database.cc",
     "first_party_sets/database/first_party_sets_database.h",
     "first_party_sets/first_party_set_parser.cc",

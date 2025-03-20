@@ -143,7 +143,11 @@ void ResizeWebContentsView(Shell* shell,
 
 class WebContentsImplBrowserTest : public ContentBrowserTest {
  public:
-  WebContentsImplBrowserTest() = default;
+  WebContentsImplBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kCanvasInterventions);
+  }
+
   void SetUp() override {
     RenderWidgetHostImpl::DisableResizeAckCheckForTesting();
     ContentBrowserTest::SetUp();

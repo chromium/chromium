@@ -1488,6 +1488,7 @@ test("content_browsertests") {
     "../browser/file_system_access/file_system_access_observer_browsertest.cc",
     "../browser/file_system_access/file_system_chooser_browsertest.cc",
     "../browser/find_request_manager_browsertest.cc",
+    "../browser/fingerprinting_protection/canvas_noise_token_data_browsertest.cc",
     "../browser/first_party_sets/first_party_sets_handler_impl_browsertest.cc",
     "../browser/first_party_sets/test/first_party_sets_initialization_browsertest.cc",
     "../browser/font_access/font_access_manager_browsertest.cc",

@@ -91,6 +91,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool caret_browsing_enabled{false};
   bool uses_platform_autofill{false};
   std::vector<uint16_t> explicitly_allowed_network_ports;
+  uint64_t canvas_noise_token{0};
 
   RendererPreferences();
   RendererPreferences(const RendererPreferences& other);
