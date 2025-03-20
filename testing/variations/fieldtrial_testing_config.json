@@ -17129,6 +17129,21 @@
             ]
         }
     ],
+    "PinweaverPasswords": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootPinweaverForPassword"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlainTextPainter": [
         {
             "platforms": [
