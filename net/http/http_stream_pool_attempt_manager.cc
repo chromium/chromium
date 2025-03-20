@@ -1337,7 +1337,9 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
 
     auto in_flight_attempt = std::make_unique<InFlightAttempt>(this);
     InFlightAttempt* raw_attempt = in_flight_attempt.get();
-    in_flight_attempts_.emplace(std::move(in_flight_attempt));
+    auto [_, inserted] =
+        in_flight_attempts_.emplace(std::move(in_flight_attempt));
+    CHECK(inserted);
     pool()->IncrementTotalConnectingStreamCount();
 
     std::unique_ptr<StreamAttempt> attempt;
