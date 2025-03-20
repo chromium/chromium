@@ -2553,6 +2553,12 @@ BASE_FEATURE(kScannerDogfood,
              "ScannerDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the toast which allows users to provide feedback after a Scanner
+// action is completed.
+BASE_FEATURE(kScannerFeedbackToast,
+             "ScannerFeedbackToast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the scanner update.
 BASE_FEATURE(kScannerUpdate,
              "ScannerUpdate",
@@ -4347,6 +4353,10 @@ bool IsScalableShelfPodsEnabled() {
 bool IsScannerEnabled() {
   return base::FeatureList::IsEnabled(kScannerUpdate) ||
          base::FeatureList::IsEnabled(kScannerDogfood);
+}
+
+bool IsScannerFeedbackToastEnabled() {
+  return base::FeatureList::IsEnabled(kScannerFeedbackToast);
 }
 
 bool IsSeaPenDemoModeEnabled() {
