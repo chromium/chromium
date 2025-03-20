@@ -706,12 +706,10 @@ float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
       return true;
     }
 
-    if (tab->split()) {
-      const Tab* const split_tab = tab->controller()->GetAdjacentSplitTab(tab);
-      return split_tab->IsActive() || split_tab->IsSelected();
-    }
-
-    return false;
+    return std::ranges::any_of(
+        tab->controller()->GetTabsInSplit(tab), [](const Tab* split_tab) {
+          return split_tab->IsActive() || split_tab->IsSelected();
+        });
   };
 
   // These tab states all have visible backgrounds. Separators must not
@@ -790,11 +788,11 @@ bool TabStyleViewsImpl::IsHovering() const {
   if (tab_->mouse_hovered()) {
     return true;
   }
-  if (tab_->split()) {
-    const Tab* const split_tab = tab()->controller()->GetAdjacentSplitTab(tab_);
-    return split_tab && split_tab->mouse_hovered();
-  }
-  return false;
+
+  return std::ranges::any_of(tab()->controller()->GetTabsInSplit(tab_),
+                             [](const Tab* split_tab) {
+                               return split_tab && split_tab->mouse_hovered();
+                             });
 }
 
 bool TabStyleViewsImpl::IsHoverAnimationActive() const {
@@ -895,11 +893,18 @@ SkColor TabStyleViewsImpl::GetCurrentTabBackgroundColor(
 
 TabStyle::TabSelectionState TabStyleViewsImpl::GetSelectionState() const {
   // Split tabs should share the selection state.
-  const Tab* const split_tab = tab()->controller()->GetAdjacentSplitTab(tab());
-  if (tab_->IsActive() || (split_tab && split_tab->IsActive())) {
+  const std::vector<Tab*> split_tabs =
+      tab()->controller()->GetTabsInSplit(tab());
+
+  const bool is_split_active = std::ranges::any_of(
+      split_tabs, [](const Tab* split_tab) { return split_tab->IsActive(); });
+  if (tab_->IsActive() || is_split_active) {
     return TabStyle::TabSelectionState::kActive;
   }
-  if (tab_->IsSelected() || (split_tab && split_tab->IsSelected())) {
+
+  const bool is_split_selected = std::ranges::any_of(
+      split_tabs, [](const Tab* split_tab) { return split_tab->IsSelected(); });
+  if (tab_->IsSelected() || is_split_selected) {
     return TabStyle::TabSelectionState::kSelected;
   }
 
@@ -1046,13 +1051,19 @@ void TabStyleViewsImpl::PaintSeparators(gfx::Canvas* canvas) const {
 }
 
 bool TabStyleViewsImpl::IsStartSplitTab(const Tab* tab) const {
-  Tab* const split_tab = tab->controller()->GetAdjacentSplitTab(tab);
-  return split_tab == tab->controller()->GetAdjacentTab(tab, 1);
+  const Tab* tab_to_left = tab->controller()->GetAdjacentTab(tab, -1);
+  return std::ranges::none_of(tab->controller()->GetTabsInSplit(tab),
+                              [&tab_to_left](const Tab* split_tab) {
+                                return split_tab == tab_to_left;
+                              });
 }
 
 bool TabStyleViewsImpl::IsEndSplitTab(const Tab* tab) const {
-  Tab* const split_tab = tab->controller()->GetAdjacentSplitTab(tab);
-  return split_tab == tab->controller()->GetAdjacentTab(tab, -1);
+  const Tab* tab_to_right = tab->controller()->GetAdjacentTab(tab, 1);
+  return std::ranges::none_of(tab->controller()->GetTabsInSplit(tab),
+                              [&tab_to_right](const Tab* split_tab) {
+                                return split_tab == tab_to_right;
+                              });
 }
 
 float TabStyleViewsImpl::GetTopCornerRadiusForWidth(int width) const {

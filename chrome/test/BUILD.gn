@@ -11196,6 +11196,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/tabs/dragging/tab_drag_controller_interactive_uitest.h",
         "../browser/ui/views/tabs/recent_activity_bubble_dialog_view_interactive_uitest.cc",
         "../browser/ui/views/tabs/tab_hover_card_controller_interactive_uitest.cc",
+        "../browser/ui/views/tabs/tab_strip_interactive_uitest.cc",
         "../browser/ui/views/test/view_event_test_base.cc",
         "../browser/ui/views/test/view_event_test_base.h",
         "../browser/ui/views/toolbar/app_menu_interactive_uitest.cc",
