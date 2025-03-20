@@ -6113,6 +6113,7 @@ test("unit_tests") {
     "../browser/privacy_sandbox/privacy_sandbox_service_impl_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_settings_delegate_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_utils_unittest.cc",
+    "../browser/privacy_sandbox/profile_bucket_metrics_unittest.cc",
     "../browser/profiles/gaia_info_update_service_unittest.cc",
     "../browser/profiles/incognito_mode_policy_handler_unittest.cc",
     "../browser/profiles/profile_attributes_storage_unittest.cc",
