@@ -63,6 +63,7 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
+    case FillingProduct::kLoyaltyCard:
       NOTREACHED();
   }
 }
@@ -92,6 +93,7 @@ void LogSuggestionAcceptedIndex(int index,
                                uma_index);
       break;
     case FillingProduct::kIban:
+    case FillingProduct::kLoyaltyCard:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
