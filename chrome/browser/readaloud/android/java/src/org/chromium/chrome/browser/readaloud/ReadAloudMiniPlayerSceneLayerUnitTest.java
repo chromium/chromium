@@ -17,11 +17,13 @@ import static org.mockito.Mockito.verify;
 import android.graphics.RectF;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +37,7 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
     private static final RectF VIEWPORT = new RectF(0f, 0f, 500f, 1000f);
     private static final long PTR = 123456789L;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ReadAloudMiniPlayerSceneLayerJni mSceneLayerJni;
 
@@ -42,7 +45,6 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ReadAloudMiniPlayerSceneLayerJni.setInstanceForTesting(mSceneLayerJni);
         doReturn(PTR).when(mSceneLayerJni).init(any());
         mSceneLayer = new ReadAloudMiniPlayerSceneLayer(mBrowserControlsStateProvider);
