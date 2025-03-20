@@ -30,7 +30,7 @@ steps:
           --custom-var checkout_pgo_profiles=True \
           git@github.com:protectednet/hopium.git
   env:
-    - 'PATH=/workspace/depot_tools:$PATH'
+    - 'PATH=/workspace/depot_tools:\$PATH'
 
 - name: 'ubuntu'
   id: 'sync-deps'
@@ -42,7 +42,7 @@ steps:
           cd /workspace/hopium
           gclient sync -r $TAG_NAME
   env:
-    - 'PATH=/workspace/depot_tools:$PATH'
+    - 'PATH=/workspace/depot_tools:\$PATH'
 
 - name: 'ubuntu'
   id: 'checkout-branch'
@@ -55,7 +55,7 @@ steps:
           git checkout $TAG_NAME
           gclient sync -D
   env:
-    - 'PATH=/workspace/depot_tools:$PATH'
+    - 'PATH=/workspace/depot_tools:\$PATH'
 
 # 4. Configure & Build
 - name: 'ubuntu'
