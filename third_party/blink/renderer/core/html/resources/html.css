@@ -1773,7 +1773,7 @@ dialog:where(:modal) {
     box-sizing: border-box;
     border: 1px solid;
     padding: 0;
-    color: CanvasText;
+    color: -internal-auto-base(inherit, CanvasText);
     background-color: Canvas;
     margin: 0;
     inset: auto;
