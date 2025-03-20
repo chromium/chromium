@@ -6,18 +6,9 @@ import {MetricsBrowserProxyImpl, ReadAnythingSpeechError, ReadAnythingVoiceType}
 import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {isEspeak, isNatural} from './voice_language_util.js';
 
-// TODO(crbug.com/40927698) - Investigate if both App and AppConstructor logs
-// are needed.
 export enum TimeFrom {
   APP = 'App',
-  APP_CONSTRUCTOR = 'AppConstructor',
   TOOLBAR = 'Toolbar',
-  TOOLBAR_CONSTRUCTOR = 'ToolbarConstructor',
-}
-
-export enum TimeTo {
-  CONNNECTED_CALLBACK = 'ConnectedCallback',
-  CONSTRUCTOR = 'Constructor',
 }
 
 export enum SpeechControls {
@@ -70,10 +61,9 @@ export class ReadAnythingLogger {
     this.metrics.recordSpeechError(error);
   }
 
-  logTimeBetween(
-      from: TimeFrom, to: TimeTo, startTime: number, endTime: number) {
+  logTimeFrom(from: TimeFrom, startTime: number, endTime: number) {
     const umaName = 'Accessibility.ReadAnything.' +
-        'TimeFrom' + from + 'StartedTo' + to;
+        'TimeFrom' + from + 'StartedToConstructor';
     this.metrics.recordTime(umaName, endTime - startTime);
   }
 

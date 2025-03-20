@@ -2909,17 +2909,6 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
-    name="Accessibility.ReadAnything.TimeFromEntryTriggeredToContentLoaded"
-    units="ms" expires_after="2025-08-24">
-  <owner>lwinston@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <summary>
-    Records the time from when opening the Read Anything side panel entry first
-    triggers the renderer and when the WebUI content has finished loading.
-  </summary>
-</histogram>
-
-<histogram
     name="Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected"
     units="ms" expires_after="2025-08-24">
   <owner>lwinston@google.com</owner>
@@ -2927,17 +2916,6 @@ even if they fit the naming pattern. -->
   <summary>
     Records the time from when opening the Read Anything side panel entry first
     triggers the renderer and when the WebUI connects.
-  </summary>
-</histogram>
-
-<histogram
-    name="Accessibility.ReadAnything.TimeFromWebUIConnectToContentLoaded"
-    units="ms" expires_after="2025-08-24">
-  <owner>lwinston@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <summary>
-    Records the time from when the Read Anything WebUI content connects and when
-    the content has loaded.
   </summary>
 </histogram>
 
@@ -2951,14 +2929,12 @@ even if they fit the naming pattern. -->
   </summary>
   <token key="Flow">
     <variant name="App" summary="read_anything/app.ts"/>
-    <variant name="AppConstructor"
-        summary="read_anything/app.ts 's constructor"/>
+    <variant name="AppConstructor" summary="Deprecated 2025-03-19"/>
     <variant name="Toolbar" summary="read_anything/read_anything_toolbar.ts"/>
-    <variant name="ToolbarConstructor"
-        summary="read_anything/read_anything_toolbar.ts 's constructor"/>
+    <variant name="ToolbarConstructor" summary="Deprecated 2025-03-19"/>
   </token>
   <token key="Method">
-    <variant name="ConnectedCallback"/>
+    <variant name="ConnectedCallback" summary="Deprecated 2025-03-19"/>
     <variant name="Constructor"/>
   </token>
 </histogram>

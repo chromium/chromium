@@ -1459,7 +1459,6 @@ const std::string& ReadAnythingAppController::GetDefaultLanguageCodeForSpeech()
 void ReadAnythingAppController::OnConnected() {
   // This needs to be logged here in the controller so we can base it off of the
   // controller's constructor time.
-  web_ui_connected_time_ms_ = base::TimeTicks::Now();
   base::UmaHistogramLongTimes(
       "Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected",
       base::TimeTicks::Now() - renderer_load_triggered_time_ms_);
@@ -1768,14 +1767,6 @@ void ReadAnythingAppController::SetContentForTesting(
 }
 
 void ReadAnythingAppController::ShouldShowUI() {
-  // These need to be logged here in the controller so we can base them off of
-  // the controller's constructor time.
-  base::UmaHistogramLongTimes(
-      "Accessibility.ReadAnything.TimeFromEntryTriggeredToContentLoaded",
-      base::TimeTicks::Now() - renderer_load_triggered_time_ms_);
-  base::UmaHistogramLongTimes(
-      "Accessibility.ReadAnything.TimeFromWebUIConnectToContentLoaded",
-      base::TimeTicks::Now() - web_ui_connected_time_ms_);
   page_handler_factory_->ShouldShowUI();
 }
 

@@ -33,7 +33,7 @@ import type {HighlightMenuElement} from './menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 import type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
-import {ReadAnythingLogger, SpeechControls, TimeFrom, TimeTo} from './read_anything_logger.js';
+import {ReadAnythingLogger, SpeechControls, TimeFrom} from './read_anything_logger.js';
 import {getCss} from './read_anything_toolbar.css.js';
 import {getHtml} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
@@ -277,9 +277,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   constructor() {
     super();
     this.constructorTime_ = Date.now();
-    this.logger_.logTimeBetween(
-        TimeFrom.TOOLBAR, TimeTo.CONSTRUCTOR, this.startTime_,
-        this.constructorTime_);
+    this.logger_.logTimeFrom(
+        TimeFrom.TOOLBAR, this.startTime_, this.constructorTime_);
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
 
     // Only add the button to the toolbar if the feature is enabled.
@@ -297,13 +296,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    const connectedCallbackTime = Date.now();
-    this.logger_.logTimeBetween(
-        TimeFrom.TOOLBAR, TimeTo.CONNNECTED_CALLBACK, this.startTime_,
-        connectedCallbackTime);
-    this.logger_.logTimeBetween(
-        TimeFrom.TOOLBAR_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
-        this.constructorTime_, connectedCallbackTime);
 
     this.windowResizeCallback_ = this.maybeUpdateMoreOptions_.bind(this);
     window.addEventListener('resize', this.windowResizeCallback_);
