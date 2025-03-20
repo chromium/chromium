@@ -7,7 +7,6 @@
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/capture/capture_export.h"
 
@@ -21,8 +20,7 @@ class VideoCaptureGpuContextLostObserver {
   virtual ~VideoCaptureGpuContextLostObserver() = default;
 };
 
-// GPU memory buffer manager for Linux Video Capture.
-// This class provides the access to `gpu::GpuMemoryBufferManager` for the
+// This class provides the access to `gpu::SharedImageInterface` for the
 // `V4L2GpuMemoryBufferTracker`. It listens the GPU context lost event and
 // broadcast it to trackers.
 class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
@@ -33,23 +31,6 @@ class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
   VideoCaptureGpuChannelHost(const VideoCaptureGpuChannelHost&) = delete;
   VideoCaptureGpuChannelHost& operator=(const VideoCaptureGpuChannelHost&) =
       delete;
-
-  // Set gpu::GpuMemoryBufferManager by
-  // `VideoCaptureServiceImpl::VizGpuContextProvider` from the main thead of
-  // utility process. It will be set with
-  // `viz::Gpu::GetGpuMemoryBufferManager()` when calling
-  // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
-  // success or set to nullptr if failed.
-  void SetGpuMemoryBufferManager(gpu::GpuMemoryBufferManager*);
-
-  // This method is called by `V4L2GpuMemoryBufferTracker::Init()` from the
-  // single thread task runner created in the
-  // `VideoCaptureDeviceLinux::VideoCaptureDeviceLinux()`. It will be called
-  // when VideoCaptureBufferPoolImpl want to create new tracker for the v4l2
-  // camera capture data. It will return nullptr when
-  // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
-  // failed.
-  gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager();
 
   // Set `gpu::SharedImageInterface` by
   // `VideoCaptureServiceImpl::VizGpuContextProvider` from the main thead of
@@ -77,10 +58,6 @@ class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
   ~VideoCaptureGpuChannelHost() override;
 
   mutable base::Lock lock_;
-  // The |gpu_buffer_manager_| is nullptr before set by the
-  // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
-  // which is called with the memory buffer manager that viz::Gpu owns.
-  raw_ptr<gpu::GpuMemoryBufferManager> gpu_buffer_manager_ GUARDED_BY(lock_);
 
   // Protects observer list. The observer list will be operated from the
   // |v4l2_task_runner| of V4L2CaptureDelegate and the |main_task_runner_| of
