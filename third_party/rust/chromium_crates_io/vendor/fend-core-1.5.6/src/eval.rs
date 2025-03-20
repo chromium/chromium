@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::{
-	ast, error::Interrupt, lexer, parser, result::FResult, scope::Scope, value::Value, Span,
+	Span, ast, error::Interrupt, lexer, parser, result::FResult, scope::Scope, value::Value,
 };
 
 pub(crate) fn evaluate_to_value<I: Interrupt>(

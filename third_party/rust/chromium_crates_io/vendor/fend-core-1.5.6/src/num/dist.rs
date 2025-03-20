@@ -1,5 +1,5 @@
 use crate::error::{FendError, Interrupt};
-use crate::interrupt::{test_int, Never};
+use crate::interrupt::{Never, test_int};
 use crate::num::bigrat::BigRat;
 use crate::num::complex::{self, Complex};
 use crate::result::FResult;

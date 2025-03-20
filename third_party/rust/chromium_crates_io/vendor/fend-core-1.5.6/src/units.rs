@@ -1,16 +1,16 @@
 use std::borrow::Cow;
 
+use crate::Attrs;
 use crate::error::{FendError, Interrupt};
 use crate::eval::evaluate_to_value;
 use crate::num::Number;
 use crate::result::FResult;
 use crate::value::Value;
-use crate::Attrs;
 
 mod builtin;
 
-pub(crate) use builtin::lookup_default_unit;
 pub(crate) use builtin::IMPLICIT_UNIT_MAP;
+pub(crate) use builtin::lookup_default_unit;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub(crate) enum PrefixRule {
@@ -202,6 +202,7 @@ fn query_unit_case_sensitive<I: Interrupt>(
 		}
 	}
 	let mut split_idx = ident.chars().next().unwrap().len_utf8();
+	#[allow(clippy::needless_continue)]
 	while split_idx < ident.len() {
 		let (prefix, remaining_ident) = ident.split_at(split_idx);
 		split_idx += remaining_ident.chars().next().unwrap().len_utf8();

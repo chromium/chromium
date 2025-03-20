@@ -7,8 +7,8 @@ use crate::result::FResult;
 use crate::scope::Scope;
 use crate::serialize::{Deserialize, Serialize};
 use crate::units::{lookup_default_unit, query_unit_static};
-use crate::{ast, ident::Ident};
 use crate::{Attrs, DecimalSeparatorStyle, Span, SpanKind};
+use crate::{ast, ident::Ident};
 use std::borrow::Cow;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -26,10 +26,10 @@ use unit_exponent::UnitExponent;
 
 use self::named_unit::compare_hashmaps;
 
+use super::Exact;
 use super::bigrat::BigRat;
 use super::biguint::BigUint;
 use super::real::Real;
-use super::Exact;
 
 #[derive(Clone)]
 #[allow(clippy::pedantic)]
@@ -973,7 +973,7 @@ impl Value {
 					}
 					Err(FendError::Interrupted) => return Err(FendError::Interrupted),
 					Err(_) => (),
-				};
+				}
 			}
 			res_components.push(comp.clone());
 		}
@@ -1000,10 +1000,12 @@ impl Value {
 			// and there are no other units (like `80kg * 5%`), or
 			// 0 (removing it) otherwise
 			let scale = match res_components[..] {
-				[UnitExponent {
-					ref unit,
-					ref mut exponent,
-				}] if exponent.imag().is_zero()
+				[
+					UnitExponent {
+						ref unit,
+						ref mut exponent,
+					},
+				] if exponent.imag().is_zero()
 					&& matches!(exponent.real().try_as_usize(int), Ok(1..)) =>
 				{
 					let new_exponent = Complex::from(1);

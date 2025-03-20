@@ -1,11 +1,11 @@
+use crate::DecimalSeparatorStyle;
 use crate::error::{FendError, Interrupt};
 use crate::format::Format;
-use crate::num::bigrat::{BigRat, FormattedBigRat};
 use crate::num::Exact;
+use crate::num::bigrat::{BigRat, FormattedBigRat};
 use crate::num::{Base, FormattingStyle};
 use crate::result::FResult;
 use crate::serialize::{Deserialize, Serialize};
-use crate::DecimalSeparatorStyle;
 use std::cmp::Ordering;
 use std::ops::Neg;
 use std::{fmt, hash, io};
@@ -96,9 +96,41 @@ impl Real {
 		match self.pattern {
 			Pattern::Simple(s) => Ok(s),
 			Pattern::Pi(n) => {
-				let num = BigRat::from(3_141_592_653_589_793_238);
-				let den = BigRat::from(1_000_000_000_000_000_000);
-				let pi = num.div(&den, int)?;
+				let required_accuracy_dp = 20;
+				let mut pi = BigRat::from(0);
+				for k in 0..=(required_accuracy_dp / 14) {
+					let mut term = BigRat::from(1);
+					if k % 2 == 1 {
+						term = -term;
+					}
+					let k = BigRat::from(k);
+					term = term.mul(&BigRat::from(6).mul(&k, int)?.factorial(int)?, int)?;
+					term = term.mul(
+						&BigRat::from(545_140_134)
+							.mul(&k, int)?
+							.add(BigRat::from(13_591_409), int)?,
+						int,
+					)?;
+					term = term.div(&BigRat::from(3).mul(&k, int)?.factorial(int)?, int)?;
+					term = term.div(
+						&k.clone().factorial(int)?.pow(BigRat::from(3), int)?.value,
+						int,
+					)?;
+					term = term.div(
+						&BigRat::from(640_320)
+							.pow(
+								BigRat::from(3)
+									.mul(&k, int)?
+									.add(BigRat::from(3).div(&BigRat::from(2), int)?, int)?,
+								int,
+							)?
+							.value,
+						int,
+					)?;
+					pi = pi.add(term, int)?;
+				}
+				pi = pi.mul(&BigRat::from(12), int)?;
+				pi = pi.pow(-BigRat::from(1), int)?.value;
 				Ok(n.mul(&pi, int)?)
 			}
 		}

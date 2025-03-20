@@ -1495,6 +1495,11 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.5.3 -> 1.5.5"
 
+[[audits.fend-core]]
+who = "Chris Palmer <palmer@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.5.5 -> 1.5.6"
+
 [[audits.fixed_decimal]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]

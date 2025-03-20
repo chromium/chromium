@@ -10,10 +10,11 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2021"
+edition = "2024"
 name = "fend-core"
-version = "1.5.5"
+version = "1.5.6"
 build = false
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -35,6 +36,7 @@ categories = [
 ]
 license = "MIT"
 repository = "https://github.com/printfn/fend"
+resolver = "2"
 
 [lib]
 name = "fend_core"

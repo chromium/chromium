@@ -3,10 +3,10 @@ use crate::date::{Date, DayOfWeek, Month};
 use crate::error::{FendError, Interrupt};
 use crate::num::{Base, FormattingStyle, Number};
 use crate::result::FResult;
-use crate::scope::{compare_option_arc_scope, Scope};
+use crate::scope::{Scope, compare_option_arc_scope};
 use crate::serialize::{Deserialize, Serialize};
+use crate::{Attrs, Span, SpanKind, date};
 use crate::{ast::Expr, ident::Ident};
-use crate::{date, Attrs, Span, SpanKind};
 use std::borrow::Cow;
 use std::{cmp, io};
 use std::{

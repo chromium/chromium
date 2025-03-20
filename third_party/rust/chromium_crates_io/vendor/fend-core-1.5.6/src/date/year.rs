@@ -47,11 +47,7 @@ impl Year {
 	}
 
 	pub(crate) fn number_of_days(self) -> u16 {
-		if self.is_leap_year() {
-			366
-		} else {
-			365
-		}
+		if self.is_leap_year() { 366 } else { 365 }
 	}
 
 	pub(crate) fn serialize(self, write: &mut impl io::Write) -> FResult<()> {

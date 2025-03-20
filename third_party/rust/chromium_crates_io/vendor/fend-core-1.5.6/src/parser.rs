@@ -187,6 +187,11 @@ fn parse_apply_cont<'a>(input: &'a [Token], lhs: &Expr) -> ParseResult<'a> {
 				Expr::Literal(Value::Num(_)) | Expr::UnaryMinus(_) | Expr::ApplyMul(_, _),
 				Expr::Literal(Value::Num(_)),
 			) => {
+				if let Expr::UnaryMinus(b) = &lhs {
+					if !matches!(b.as_ref(), Expr::Literal(Value::Num(_))) {
+						return Ok((Expr::Apply(Box::new(lhs.clone()), Box::new(rhs)), input));
+					}
+				}
 				// this may later be parsed as a compound fraction, e.g. 1 2/3
 				// or as an addition, e.g. 6 feet 1 inch
 				return Err(ParseError::InvalidApplyOperands);
@@ -346,7 +351,7 @@ fn parse_implicit_addition(input: &[Token]) -> ParseResult<'_> {
 				Expr::Bop(Bop::ImplicitPlus, Box::new(res), Box::new(rhs)),
 				remaining,
 			));
-		};
+		}
 	}
 	Ok((res, input))
 }

@@ -1,8 +1,8 @@
+use crate::FendError;
 use crate::result::FResult;
 use crate::value::Expr;
 use crate::value::Ident;
 use crate::value::Scope;
-use crate::FendError;
 use crate::{Deserialize, Serialize};
 use std::{fmt, io};
 

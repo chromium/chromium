@@ -13,11 +13,7 @@ fn parse_char(s: &str) -> Result<(char, &str), ()> {
 
 fn parse_specific_char(s: &str, c: char) -> Result<&str, ()> {
 	let (ch, s) = parse_char(s)?;
-	if ch == c {
-		Ok(s)
-	} else {
-		Err(())
-	}
+	if ch == c { Ok(s) } else { Err(()) }
 }
 
 fn parse_digit(s: &str) -> Result<(i32, &str), ()> {

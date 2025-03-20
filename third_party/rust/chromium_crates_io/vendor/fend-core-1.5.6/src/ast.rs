@@ -6,7 +6,7 @@ use crate::num::{Base, FormattingStyle, Number, Range, RangeBound};
 use crate::result::FResult;
 use crate::scope::Scope;
 use crate::serialize::{Deserialize, Serialize};
-use crate::value::{built_in_function::BuiltInFunction, ApplyMulHandling, Value};
+use crate::value::{ApplyMulHandling, Value, built_in_function::BuiltInFunction};
 use crate::{Attrs, Context, DecimalSeparatorStyle};
 use std::borrow::Cow;
 use std::sync::Arc;
@@ -864,7 +864,7 @@ fn to_roman(mut num: usize, large: bool) -> String {
 		("I", 1),
 	];
 	if large {
-		for (r, mut n) in &values[0..values.len() - 1] {
+		for &(r, mut n) in &values[0..values.len() - 1] {
 			n *= 1000;
 			let q = num / n;
 			num -= q * n;

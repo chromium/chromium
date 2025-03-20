@@ -1,5 +1,5 @@
-use crate::result::FResult;
 use crate::FendError;
+use crate::result::FResult;
 use crate::{
 	date::Year,
 	serialize::{Deserialize, Serialize},

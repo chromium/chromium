@@ -5,13 +5,13 @@
 // https://perl.plover.com/classes/cftalk/INFO/gosper.html
 // https://crypto.stanford.edu/pbc/notes/contfrac/nonsimple.html
 
+use crate::Interrupt;
 use crate::error::FendError;
 use crate::format::Format;
 use crate::interrupt::Never;
 use crate::num::bigrat::sign::Sign;
 use crate::num::biguint::BigUint;
 use crate::result::FResult;
-use crate::Interrupt;
 use std::hash::Hash;
 use std::rc::Rc;
 use std::{cmp, fmt, io, iter, mem, ops};
@@ -309,7 +309,7 @@ impl<F: Fn() -> Option<BigUint>> Iterator for HomographicIterator<F> {
 					self.state = HomographicState::Terminated;
 					return None;
 				}
-			};
+			}
 		}
 	}
 }

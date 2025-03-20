@@ -11,7 +11,7 @@ pub(crate) use day_of_week::DayOfWeek;
 pub(crate) use month::Month;
 use year::Year;
 
-use crate::{error::FendError, ident::Ident, result::FResult, value::Value, Interrupt};
+use crate::{Interrupt, error::FendError, ident::Ident, result::FResult, value::Value};
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub(crate) struct Date {

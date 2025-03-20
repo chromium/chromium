@@ -1,10 +1,10 @@
 use crate::error::{FendError, Interrupt};
 use crate::format::Format;
 use crate::interrupt::test_int;
-use crate::num::{out_of_range, Base, Exact, Range, RangeBound};
+use crate::num::{Base, Exact, Range, RangeBound, out_of_range};
 use crate::result::FResult;
 use crate::serialize::{Deserialize, Serialize};
-use std::cmp::{max, Ordering};
+use std::cmp::{Ordering, max};
 use std::{fmt, hash, io};
 
 #[derive(Clone)]
@@ -466,7 +466,7 @@ impl BigUint {
 			Ordering::Equal => return Self::from(0),
 			Ordering::Less => unreachable!("number would be less than 0"),
 			Ordering::Greater => (),
-		};
+		}
 		if other.is_zero() {
 			return self;
 		}
@@ -882,7 +882,7 @@ impl Format for BigUint {
 					test_int(int)?;
 					let divmod_res = num.divmod(&divisor, int)?;
 					let mut digit_group_value =
-						u128::from(divmod_res.1.get(1)) << 64 | u128::from(divmod_res.1.get(0));
+						(u128::from(divmod_res.1.get(1)) << 64) | u128::from(divmod_res.1.get(0));
 					for _ in 0..rounds {
 						let digit_value = digit_group_value % base_as_u128;
 						digit_group_value /= base_as_u128;
@@ -905,7 +905,7 @@ impl Format for BigUint {
 				}
 				let exact = params
 					.sf_limit
-					.map_or(true, |sf| sf >= output.len() - num_leading_zeroes);
+					.is_none_or(|sf| sf >= output.len() - num_leading_zeroes);
 				Exact::new(
 					FormattedBigUint {
 						base: base_prefix,
@@ -1141,7 +1141,15 @@ mod tests {
 			"ten quintillion three hundred and forty-seven trillion one billion twenty-three million two"
 		);
 		assert_eq!(
-			BigUint::Large(vec![0, 0x0e3c_bb5a_c574_1c64, 0x1cfd_a3a5_6977_58bf, 0x097e_dd87]).to_words(int).unwrap_err().to_string(),
+			BigUint::Large(vec![
+				0,
+				0x0e3c_bb5a_c574_1c64,
+				0x1cfd_a3a5_6977_58bf,
+				0x097e_dd87
+			])
+			.to_words(int)
+			.unwrap_err()
+			.to_string(),
 			"1000000000000000000000000000000000000000000000000000000000000000000 must lie in the interval [0, 10^66 - 1]"
 		);
 		Ok(())

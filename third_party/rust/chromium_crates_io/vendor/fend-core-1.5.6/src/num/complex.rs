@@ -1,9 +1,9 @@
+use crate::DecimalSeparatorStyle;
 use crate::error::{FendError, Interrupt};
-use crate::num::real::{self, Real};
 use crate::num::Exact;
+use crate::num::real::{self, Real};
 use crate::num::{Base, FormattingStyle};
 use crate::result::FResult;
-use crate::DecimalSeparatorStyle;
 use std::cmp::Ordering;
 use std::ops::Neg;
 use std::{fmt, io};
