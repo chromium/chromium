@@ -146,6 +146,17 @@ void AddCurvedCornerFromOrigin(SkPath& path,
                                const RectVertices& target_vertex,
                                RectVertices origin_vertex,
                                float curvature) {
+  if (target_vertex.at(VertexPoint::kEnd) ==
+      target_vertex.at(VertexPoint::kStart)) {
+    path.lineTo(gfx::PointFToSkPoint(target_vertex.at(VertexPoint::kEnd)));
+    return;
+  }
+
+  if (target_vertex == origin_vertex) {
+    AddCurvedCorner(path, target_vertex, curvature);
+    return;
+  }
+
   gfx::Vector2dF offset(((target_vertex.at(VertexPoint::kStart) -
                           origin_vertex.at(VertexPoint::kCenter))
                              .Length() -
@@ -432,7 +443,6 @@ PathBuilder& PathBuilder::AddContouredRect(
       curvature.TopLeft());
   diagonal_corner_path_2.close();
   op_builder.add(diagonal_corner_path_2, kIntersect_SkPathOp);
-
   // Resolve the path-ops and append to this path.
   SkPath result;
   CHECK(op_builder.resolve(&result));
