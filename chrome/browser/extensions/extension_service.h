@@ -375,12 +375,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   bool block_extensions() const { return block_extensions_; }
 
-  // TODO(crbug.com/404561030): Delete this accessor and use
-  // DelayedInstallManager::Get() instead.
-  DelayedInstallManager* delayed_install_manager() {
-    return delayed_install_manager_;
-  }
-
   Profile* profile() { return profile_; }
 
   // Note that this may return NULL if autoupdate is not turned on.
