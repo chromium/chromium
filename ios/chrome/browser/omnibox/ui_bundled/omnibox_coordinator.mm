@@ -180,8 +180,6 @@
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
-  self.viewController.textChangeDelegate = _editView.get();
-
   _keyboardMediator = [[OmniboxAssistiveKeyboardMediator alloc] init];
   _keyboardMediator.applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
@@ -254,7 +252,6 @@
   [self.popupCoordinator stop];
   self.popupCoordinator = nil;
 
-  self.viewController.textChangeDelegate = nil;
   self.returnDelegate.acceptDelegate = nil;
   _editView.reset();
   self.viewController = nil;

@@ -17,7 +17,6 @@
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
-class OmniboxTextChangeDelegate;
 @protocol TextFieldViewContaining;
 
 // Delegate for text input changes in OmniboxViewController.
@@ -91,8 +90,6 @@ class OmniboxTextChangeDelegate;
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
-
-- (void)setTextChangeDelegate:(OmniboxTextChangeDelegate*)textChangeDelegate;
 
 // Hides extra chrome, i.e. attributed text, and clears.
 - (void)prepareOmniboxForScribble;

@@ -85,4 +85,54 @@
   }
 }
 
+- (void)clearText {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->ClearText();
+  }
+}
+
+- (void)onDidBeginEditing {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnDidBeginEditing();
+  }
+}
+
+- (BOOL)shouldChangeCharactersInRange:(NSRange)range
+                    replacementString:(NSString*)newText {
+  if (_omniboxViewIOS) {
+    return _omniboxViewIOS->OnWillChange(range, newText);
+  }
+  return YES;
+}
+
+- (void)textDidChangeWithUserEvent:(BOOL)isProcessingUserEvent {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnDidChange(isProcessingUserEvent);
+  }
+}
+
+- (void)onAcceptAutocomplete {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnAcceptAutocomplete();
+  }
+}
+
+- (void)onCopy {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnCopy();
+  }
+}
+
+- (void)willPaste {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->WillPaste();
+  }
+}
+
+- (void)onDeleteBackward {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnDeleteBackward();
+  }
+}
+
 @end
