@@ -58,6 +58,7 @@ class ASH_EXPORT FaceGazeBubbleView : public views::BubbleDialogDelegateView {
 
  private:
   friend class FaceGazeBubbleControllerTest;
+  friend class FaceGazeBubbleTestHelper;
 
   // Updates color of this view.
   void UpdateColor(bool is_warning);

@@ -44,6 +44,7 @@ class ASH_EXPORT FaceGazeBubbleController : public views::ViewObserver {
  private:
   friend class AccessibilityPrivateApiTest;
   friend class FaceGazeBubbleControllerTest;
+  friend class FaceGazeBubbleTestHelper;
 
   // Performs initialization if necessary.
   void MaybeInitialize();
