@@ -229,7 +229,10 @@
       HandlerForProtocol(dispatcher, QuickDeleteCommands);
 
   AutocompleteResultWrapper* autocompleteResultWrapper =
-      [[AutocompleteResultWrapper alloc] init];
+      [[AutocompleteResultWrapper alloc]
+          initWithOmniboxClient:_editView->controller()
+                                    ? _editView->controller()->client()
+                                    : nullptr];
   autocompleteResultWrapper.pedalAnnotator = annotator;
   autocompleteResultWrapper.templateURLService = templateURLService;
   autocompleteResultWrapper.isIncognito = isIncognito;

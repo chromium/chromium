@@ -251,17 +251,6 @@ using base::UserMetricsAction;
 
 #pragma mark - AutocompleteResultWrapperDelegate
 
-// TODO(crbug.com/400626674): Move isStarredMatch logic to the wrapper so it
-// doesn't rely on its delegate.
-- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
-  if (_omniboxController && _omniboxController->client()) {
-    auto* bookmark_model = _omniboxController->client()->GetBookmarkModel();
-    return bookmark_model &&
-           bookmark_model->IsBookmarked(match.destination_url);
-  }
-  return NO;
-}
-
 - (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
               didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
                                       nonPedalSuggestionsGroups {

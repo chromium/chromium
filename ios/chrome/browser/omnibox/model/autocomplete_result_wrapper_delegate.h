@@ -12,11 +12,6 @@ struct AutocompleteMatch;
 // The autocomplete match wrapper delegate.
 @protocol AutocompleteResultWrapperDelegate
 
-// TODO(crbug.com/400626674): Move isStarredMatch logic to the wrapper so it
-// doesn't rely on its delegate
-/// Whether `match` is a starred/bookmarked match.
-- (BOOL)isStarredMatch:(const AutocompleteMatch&)match;
-
 /// Informs the delegate when pedals are invalidated.
 - (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
               didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)

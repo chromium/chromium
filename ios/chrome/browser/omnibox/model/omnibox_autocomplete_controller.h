@@ -56,9 +56,6 @@ class OmniboxViewIOS;
 - (void)requestSuggestionsWithVisibleSuggestionCount:
     (NSUInteger)visibleSuggestionCount;
 
-/// Whether `match` is a starred/bookmarked match.
-- (BOOL)isStarredMatch:(const AutocompleteMatch&)match;
-
 /// Selects `match` for opening.
 - (void)selectMatchForOpening:(const AutocompleteMatch&)match
                         inRow:(NSUInteger)row
