@@ -1199,6 +1199,18 @@ const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
      std::size(kPageContentAnnotationsTitleParams), nullptr},
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+constexpr FeatureEntry::FeatureParam
+    kHappinessTrackingSurveysForDesktopDemoWithoutAutoPrompt[] = {
+        {"auto_prompt", "false"}};
+constexpr FeatureEntry::FeatureVariation
+    kHappinessTrackingSurveysForDesktopDemoVariations[] = {
+        {"without Auto Prompt",
+         kHappinessTrackingSurveysForDesktopDemoWithoutAutoPrompt,
+         std::size(kHappinessTrackingSurveysForDesktopDemoWithoutAutoPrompt),
+         nullptr}};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kHistoryEmbeddingsAtKeywordAcceleration[]{
@@ -7644,7 +7656,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoName,
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kHappinessTrackingSurveysForDesktopDemo)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kHappinessTrackingSurveysForDesktopDemo,
+         kHappinessTrackingSurveysForDesktopDemoVariations,
+         "HappinessTrackingSurveysForDesktopDemo")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
