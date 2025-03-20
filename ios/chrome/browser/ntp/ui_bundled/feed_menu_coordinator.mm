@@ -73,8 +73,7 @@ const CGFloat kManagementContextMenuIconSize = 18;
   if (IsHomeCustomizationEnabled()) {
     return YES;
   }
-  PrefService* prefService =
-      ProfileIOS::FromBrowserState(self.profile)->GetPrefs();
+  PrefService* prefService = self.profile->GetPrefs();
   return prefService->GetBoolean(feed::prefs::kArticlesListVisible);
 }
 
