@@ -688,8 +688,8 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
   // contexts.
   return controls_visible &&
          (HasOriginSandboxedTopLevelDocument() || !protections_on ||
-          site_data_access_attempted || GetIsSubresourceBlocked() ||
-          GetIsSubresourceProxied());
+          site_data_access_attempted || is_subresource_blocked_ ||
+          is_subresource_proxied_);
 }
 
 CookieControlsController::TabObserver::TabObserver(
@@ -755,16 +755,25 @@ void CookieControlsController::TabObserver::OnStatefulBounceDetected() {
 }
 
 void CookieControlsController::TabObserver::OnSubresourceBlocked() {
+  cookie_controls_->is_subresource_blocked_ =
+      cookie_controls_->GetIsSubresourceBlocked();
   cookie_controls_->OnSubresourceBlocked();
 }
 
 void CookieControlsController::TabObserver::
     OnFirstSubresourceProxiedOnCurrentPrimaryPage() const {
+  cookie_controls_->is_subresource_proxied_ =
+      cookie_controls_->GetIsSubresourceProxied();
   cookie_controls_->OnFirstSubresourceProxiedOnCurrentPrimaryPage();
 }
 
 void CookieControlsController::TabObserver::PrimaryPageChanged(
     content::Page& page) {
+  // Reset blocked/proxied status when the page changes.
+  cookie_controls_->is_subresource_blocked_ =
+      cookie_controls_->GetIsSubresourceBlocked();
+  cookie_controls_->is_subresource_proxied_ =
+      cookie_controls_->GetIsSubresourceProxied();
   const GURL& current_url =
       content::WebContentsObserver::web_contents()->GetVisibleURL();
   cookie_accessed_set_.clear();
