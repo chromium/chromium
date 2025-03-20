@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -402,12 +403,19 @@ double CSSPrimitiveValue::ComputeNumber(
              : To<CSSNumericLiteralValue>(this)->ComputeNumber();
 }
 
+template <>
 double CSSPrimitiveValue::ComputePercentage(
     const CSSLengthResolver& length_resolver) const {
   DCHECK(IsPercentage());
   return IsCalculated() ? To<CSSMathFunctionValue>(this)->ComputePercentage(
                               length_resolver)
                         : To<CSSNumericLiteralValue>(this)->ComputePercentage();
+}
+
+template <>
+float CSSPrimitiveValue::ComputePercentage(
+    const CSSLengthResolver& length_resolver) const {
+  return ClampTo<float>(ComputePercentage<double>(length_resolver));
 }
 
 double CSSPrimitiveValue::ComputeValueInCanonicalUnit(
