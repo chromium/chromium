@@ -243,8 +243,9 @@
   std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
           browser, self.baseViewController);
-  collaborationService->StartShareOrManageFlow(std::move(delegate),
-                                               tabGroup->tab_group_id());
+  collaborationService->StartShareOrManageFlow(
+      std::move(delegate), tabGroup->tab_group_id(),
+      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate
