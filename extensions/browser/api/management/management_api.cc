@@ -68,8 +68,8 @@ namespace management = api::management;
 
 namespace {
 
-typedef std::vector<management::ExtensionInfo> ExtensionInfoList;
-typedef std::vector<management::IconInfo> IconInfoList;
+using ExtensionInfoList = std::vector<management::ExtensionInfo>;
+using IconInfoList = std::vector<management::IconInfo>;
 
 enum AutoConfirmForTest { DO_NOT_SKIP = 0, PROCEED, ABORT };
 
