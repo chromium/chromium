@@ -516,7 +516,7 @@
 <translation id="1870473978371099486">Услуги репетиторов</translation>
 <translation id="1871208020102129563">Выбрано использование фиксированных прокси-серверов, а не URL PAC-скрипта.</translation>
 <translation id="1871284979644508959">Поле, обязательное для заполнения</translation>
-<translation id="1871739799120352748">Высокие цены</translation>
+<translation id="1871739799120352748">Высокая цена</translation>
 <translation id="1874224422119691492">Чтобы изменить это поведение, перейдите в <ph name="SETTINGS" />.</translation>
 <translation id="1875025161375567525">Фотолоток</translation>
 <translation id="1875512691959384712">Google Формы</translation>
@@ -648,7 +648,7 @@
 <translation id="2119505898009119320">Кому выдан: <ph name="ORGANIZATION" /> (<ph name="JURISDICTION" />)</translation>
 <translation id="2119867082804433120">Отверстие в правом нижнем углу</translation>
 <translation id="2122165854541876335">Ресурсы для потребителей</translation>
-<translation id="2122214041802369259">Высокие цены</translation>
+<translation id="2122214041802369259">Высокая цена</translation>
 <translation id="2122719317867821810">Правило работает корректно, но переопределяет конфликтующее значение, заданное где-то ещё.</translation>
 <translation id="2126374524350484896">Производитель PDF:</translation>
 <translation id="2127090458081644412">Пароль сохранен на этом устройстве</translation>
@@ -1157,7 +1157,7 @@
 <translation id="3062655045399308513">Удалить данные браузера…</translation>
 <translation id="3063453392496098461">Не удалось установить фоновые службы VPN.</translation>
 <translation id="306573536155379004">Игра началась.</translation>
-<translation id="3067505415088964188">Низкие цены</translation>
+<translation id="3067505415088964188">Низкая цена</translation>
 <translation id="3068118691172921711">Загрузка файлов в сервис <ph name="CLOUD_PROVIDER" /> начнется через 1 минуту</translation>
 <translation id="3068976060094139647">Вы можете использовать для автозаполнения эту карту, потому что ваш аккаунт связан с Google Pay.</translation>
 <translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} товар}one{{ITEMS} товар}few{{ITEMS} товара}many{{ITEMS} товаров}other{{ITEMS} товара}}</translation>
@@ -4594,7 +4594,7 @@
     ещё раз, а затем вернитесь на эту вкладку, чтобы сгенерировать текст.</translation>
 <translation id="9145936855791010051">Compare</translation>
 <translation id="9148507642005240123">&amp;Отменить изменения</translation>
-<translation id="9148599396704355100">Низкие цены</translation>
+<translation id="9148599396704355100">Низкая цена</translation>
 <translation id="9150025764986957246">Что вы можете ввести</translation>
 <translation id="9154194610265714752">Обновлено</translation>
 <translation id="9155211586651734179">Какие периферийные аудиоустройства подключены.</translation>

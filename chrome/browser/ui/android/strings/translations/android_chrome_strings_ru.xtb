@@ -459,7 +459,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Прочитайте в Chrome статьи, подобранные с учетом ваших интересов.</translation>
 <translation id="3066573403916685335">Перейти вниз</translation>
-<translation id="3067505415088964188">Низкие цены</translation>
+<translation id="3067505415088964188">Низкая цена</translation>
 <translation id="3070005020161560471">Переводить автоматически</translation>
 <translation id="3072980200212375806">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Также действует <ph name="BEGIN_LINK3" />Политика конфиденциальности<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Сохраняйте страницы, чтобы продолжить чтение позже или в офлайн-режиме.</translation>
@@ -524,7 +524,7 @@
 <translation id="3430670036890315772">Если вы отключите блокировку профиля, вся сохраненная вами информация будет удалена.</translation>
 <translation id="3435465986463792564">Открыто много окон? Ими можно управлять здесь.</translation>
 <translation id="3435738964857648380">Безопасность</translation>
-<translation id="3439276997620616816">Здесь будут ваши недавние вкладки.</translation>
+<translation id="3439276997620616816">Здесь будут ваши недавние вкладки</translation>
 <translation id="3443221991560634068">Обновить страницу</translation>
 <translation id="3444179773590444986">Отправить отзыв о тёмной теме для сайтов?</translation>
 <translation id="3452832259067974318">Чтобы обеспечить конфиденциальность ваших данных, мы просим ввести пароль вручную.</translation>
@@ -813,7 +813,7 @@
 <translation id="4769095993849849966">Новое название файла</translation>
 <translation id="4769632191812288342">Выбрана стандартная защита</translation>
 <translation id="4773122030389014189">Общий доступ к группе вкладок "<ph name="GROUP_NAME" />"</translation>
-<translation id="4775646243557794597">Удалены данные <ph name="TIME_PERIOD" />.</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" />: данные удалены.</translation>
 <translation id="4777866634702576038">Удалить группу вкладок?</translation>
 <translation id="4778653490315793244">Контент отсутствует</translation>
 <translation id="4782929588435725897">Поисковая система по умолчанию – <ph name="SEARCH_ENGINE" />.</translation>
@@ -1607,7 +1607,7 @@
 <translation id="820568752112382238">Часто посещаемые сайты</translation>
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователь}one{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователь}few{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователя}many{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователей}other{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё <ph name="NUMBER_OF_OTHER_MEMBERS" /> пользователя}}</translation>
 <translation id="8209050860603202033">Открыть изображение</translation>
-<translation id="8210770465353466621">Здесь будут ваши вкладки.</translation>
+<translation id="8210770465353466621">Здесь будут ваши вкладки</translation>
 <translation id="8211101263765532799">Некоторые пароли скоро перестанут работать</translation>
 <translation id="8215740705341534369">Боковая панель</translation>
 <translation id="8218622182176210845">Управление аккаунтом</translation>
@@ -1682,7 +1682,7 @@
 <translation id="8503559462189395349">Пароли Chrome</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8505766168025405649">Статус скачивания можно увидеть в уведомлении.</translation>
-<translation id="8506357771923193001">Здесь будут показаны ваши скачанные файлы.</translation>
+<translation id="8506357771923193001">Здесь будут показаны ваши скачанные файлы</translation>
 <translation id="8512053371384421952">Вы больше не будете получать уведомления от сайта <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Экспорт паролей, сохраненных в Chrome</translation>
 <translation id="8516012719330875537">Редактор изображений</translation>
