@@ -54,9 +54,8 @@ enum ColorModel {
 };
 
 // Print job duplex mode values.
-[Stable, Extensible]
 enum DuplexMode {
-  [Default] kUnknownDuplexMode = -1,
+  kUnknownDuplexMode = -1,
   kSimplex,
   kLongEdge,
   kShortEdge,
@@ -123,10 +122,9 @@ enum GenerateDocumentOutline {
 };
 
 // What kind of margins to use.
-[Stable, Extensible]
 enum MarginType {
   // Default varies depending on headers being enabled or not
-  [Default] kDefaultMargins,
+  kDefaultMargins,
   kNoMargins,
   kPrintableAreaMargins,
   kCustomMargins,
@@ -134,18 +132,18 @@ enum MarginType {
 
 // Allowed printing modes as a bitmask.
 // This is used in pref file and should never change.
-[Stable, Extensible, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 enum ColorModeRestriction {
-  [Default] kUnset = 0x0,
+  kUnset = 0x0,
   kMonochrome = 0x1,
   kColor = 0x2,
 };
 
 // Allowed duplex modes as a bitmask.
 // This is used in pref file and should never change.
-[Stable, Extensible, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 enum DuplexModeRestriction {
-  [Default] kUnset = 0x0,
+  kUnset = 0x0,
   kSimplex = 0x1,
   kLongEdge = 0x2,
   kShortEdge = 0x4,
@@ -154,9 +152,9 @@ enum DuplexModeRestriction {
 
 // Allowed PIN printing modes.
 // This is used in pref file and should never change.
-[Stable, Extensible, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 enum PinModeRestriction {
-  [Default] kUnset = 0,
+  kUnset = 0,
   kPin = 1,
   kNoPin = 2,
 };
@@ -174,7 +172,6 @@ enum ResultCode {
 
 // Matches print_preview.PrinterType in
 // chrome/browser/resources/print_preview/data/destination_match.ts
-[Stable, Extensible]
 enum PrinterType {
   kPrivetDeprecated,
   kExtension,
@@ -201,14 +198,13 @@ struct PageRange {
 // Corresponds to the 'client-info' IPP attribute.
 // For optional fields, missing values correspond to the 'no-value' IPP
 // out-of-band value.
-[Stable, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 struct IppClientInfo {
-  [Stable, Extensible]
   enum ClientType {
     kApplication = 3,
     kOperatingSystem = 4,
     kDriver = 5,
-    [Default] kOther = 6,
+    kOther = 6,
   };
   ClientType client_type;
   string client_name;
