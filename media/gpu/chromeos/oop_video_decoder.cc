@@ -455,8 +455,7 @@ OOPVideoDecoder::OOPVideoDecoder(
 
   // Set a connection error handler in case the remote decoder gets
   // disconnected, for instance, if the remote decoder process crashes.
-  // The remote decoder lives in a utility process (for lacros-chrome,
-  // this utility process is in ash-chrome).
+  // The remote decoder lives in a utility process.
   // base::Unretained() is safe because `this` owns the `mojo::Remote`.
   remote_decoder_.set_disconnect_handler(
       base::BindOnce(&OOPVideoDecoder::Stop, base::Unretained(this)));
