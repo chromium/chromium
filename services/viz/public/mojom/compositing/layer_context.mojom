@@ -59,6 +59,9 @@ struct LayerTreeUpdate {
   int32 outer_clip;
   int32 outer_scroll;
 
+  // The tree's viewport damage rect.
+  gfx.mojom.Rect viewport_damage_rect;
+
   // Properties of layers added or modified since the last update. Note that the
   // ordering of this array is arbitrary and not relevant to the tree's layer
   // list order. If any layers were added, removed, or otherwise reordered in

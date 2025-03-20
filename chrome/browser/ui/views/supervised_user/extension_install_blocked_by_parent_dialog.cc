@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace {
@@ -66,7 +67,8 @@ void ShowExtensionInstallBlockedByParentDialog(
           .SetDialogDestroyingCallback(std::move(done_callback))
           .Build();
   gfx::NativeWindow parent_window =
-      web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+      web_contents ? web_contents->GetTopLevelNativeWindow()
+                   : gfx::NativeWindow();
   constrained_window::ShowBrowserModal(std::move(dialog_model), parent_window);
 }
 

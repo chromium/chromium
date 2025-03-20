@@ -158,6 +158,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1264309058268477500">Alterno</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1268480293435976622">Busta Chinese #7</translation>
+<translation id="1269045546668906972">Attiva la compilazione automatica con l'AI per compilare automaticamente più campi</translation>
 <translation id="1269516672602708785">Crea rapidamente un nuovo sito in Google Sites</translation>
 <translation id="1270328905573953738">Traslochi e trasferimenti</translation>
 <translation id="1270502636509132238">Metodo di ritiro</translation>
@@ -1138,6 +1139,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3005723025932146533">Mostra copia salvata</translation>
 <translation id="300580149047131921">Utilizzata di recente</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab per sfogliare le azioni disponibili, quindi Invio per eseguire l'azione selezionata.</translation>
+<translation id="3010991137650052245">Per usare <ph name="PERMISSION" /> su questo sito, consenti l'accesso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Articoli per la casa</translation>
 <translation id="3014553260345122294">Notizie di economia</translation>
 <translation id="3014726756341138577">Funzionalità avanzate della stampante</translation>
@@ -1698,6 +1700,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3964661563329879394">{COUNT,plural, =0{Nessuno}=1{Di 1 sito }other{Di # siti }}</translation>
 <translation id="3965672182149944205">Salvare l'indirizzo?</translation>
 <translation id="3966044442021752214">Sicurezza del prodotto</translation>
+<translation id="3969869202926863008">Accesso alla rete locale</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> è bloccato</translation>
 <translation id="3975852104434126461">Auto e motori</translation>
@@ -1784,6 +1787,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">L'ambito della norma non è supportato.</translation>
+<translation id="411918202192379658">La compilazione automatica è migliorata</translation>
 <translation id="4121428309786185360">Scade in data</translation>
 <translation id="4123572138124678573">Tripla perforatura in basso</translation>
 <translation id="412601465078863288">Timeout del caricamento</translation>
@@ -2054,6 +2058,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="460848736049414407">Bloccato dall'amministratore</translation>
 <translation id="4610279718074907952">Questo sito fa parte di un gruppo, definito da <ph name="SET_OWNER" />, che può vedere la tua attività</translation>
 <translation id="46128681529823442">Attrezzature e articoli per il calcio</translation>
+<translation id="4612904677925722054">Questo sito potrebbe includere contenuti inappropriati per i minori. Un genitore o tutore deve autorizzarti a visitare questo sito web.</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4622292761762557753">Trasferisci comunque</translation>
 <translation id="4622647778991854660">Abilita le notifiche nel Centro notifiche. Apri <ph name="LINK" />.</translation>
@@ -2171,6 +2176,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4819347708020428563">Vuoi modificare le annotazioni nella visualizzazione predefinita?</translation>
 <translation id="4822493756793346865">I prezzi tipici si basano sui negozi disponibili sul web negli ultimi 90 giorni.</translation>
 <translation id="4822922322149719535">Esamina il log degli errori</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> deve accedere a <ph name="PERMISSION" /> del dispositivo</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo foglio Google</translation>
 <translation id="4826588772550366629">fotocamera e microfono</translation>
 <translation id="4827283332383516812">Elimina carta</translation>
@@ -2652,6 +2658,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5660122698869360728">Una nuova cartella intelligente che ti consente di salvare tutte le tue pagine di shopping in un unico posto, monitorare automaticamente i prezzi, ottenere approfondimenti sul prezzo e altro ancora.</translation>
 <translation id="5663955426505430495">L'amministratore di questo dispositivo ha installato estensioni relative a funzioni aggiuntive. Le estensioni hanno accesso ad alcuni tuoi dati.</translation>
 <translation id="5667827081946850877">Audiolibri</translation>
+<translation id="5674082555327905359">Può chiedere di connettersi a qualsiasi dispositivo sulla rete locale</translation>
 <translation id="5675650730144413517">La pagina non funziona</translation>
 <translation id="5675809467256309336">Musica dance ed elettronica</translation>
 <translation id="5675959228867414813">Mostra per data</translation>
@@ -2900,6 +2907,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6116338172782435947">Leggere testi e immagini copiati negli appunti</translation>
 <translation id="6117833587752089929">Foto (satinata)</translation>
 <translation id="6118782133429281336">L'elenco delle origini è vuoto.</translation>
+<translation id="6120950591512958208">Utilizza questo codice al momento del pagamento.</translation>
 <translation id="612178891608320683">Cucina vegana</translation>
 <translation id="6122181661879998141">parte anteriore della carta</translation>
 <translation id="6124058285696691147">Scarica l'allegato</translation>
@@ -2924,6 +2932,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6159908896951210943">Formale</translation>
 <translation id="6160391204859821737">Attivare una funzionalità di privacy per gli annunci</translation>
 <translation id="6162403104168428984">Aggiornare l'indirizzo?</translation>
+<translation id="6164605812717770913">Un genitore o tutore ha detto che non puoi visitare questo sito. Puoi chiedere loro di sbloccarlo.</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6167577165590485365">Ultimo tentativo di recupero:</translation>
 <translation id="617256461084925519">Google Chrome sta provando a verificare la tua identità per poter inserire i tuoi dati di pagamento.</translation>
@@ -3015,6 +3024,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6321917430147971392">Controlla le impostazioni DNS</translation>
 <translation id="6322182122604171028">Impossibile usare Windows Hello</translation>
 <translation id="6326947323444967009">Imposta Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
+<translation id="6327065120806001832">accesso alla rete locale</translation>
 <translation id="6328639280570009161">Prova a disattivare la previsione della rete</translation>
 <translation id="6335029926534404762">Scarpe da atletica</translation>
 <translation id="6337133576188860026">Consente di liberare meno di <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>

@@ -25,5 +25,7 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'batchNormalization' on 'MLGraphBuilder': Unsupported rank 2 for argument input (must be at least 3)."
 [FAIL] batchNormalization options.axis=0  + softmax
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+[FAIL] quantized conv2d
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int32 must be one of [int8,uint8,int4,uint4]."
 Harness: the test ran to completion.
 

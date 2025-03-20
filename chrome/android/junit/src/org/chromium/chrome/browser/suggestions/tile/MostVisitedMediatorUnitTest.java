@@ -27,11 +27,13 @@ import android.view.ViewStub;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -58,6 +60,7 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MostVisitedMediatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Resources mResources;
     @Mock Configuration mConfiguration;
     @Mock UiConfig mUiConfig;
@@ -84,7 +87,6 @@ public class MostVisitedMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
         mDisplayMetrics.widthPixels = 1000;

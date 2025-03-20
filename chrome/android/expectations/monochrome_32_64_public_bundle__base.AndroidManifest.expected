@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="35"
-    platformBuildVersionName="15"
+    platformBuildVersionCode="36"
+    platformBuildVersionName="16"
     android:isolatedSplits="true"
     android:versionCode="OFFSET=21"
     android:versionName="#.#.#.#">

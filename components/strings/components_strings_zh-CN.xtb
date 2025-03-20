@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">备用</translation>
 <translation id="1264974993859112054">体育</translation>
 <translation id="1268480293435976622">中式 #7 信封</translation>
+<translation id="1269045546668906972">开启“利用 AI 自动填充”功能即可自动填充更多字段</translation>
 <translation id="1269516672602708785">在 Google 协作平台中快速创建新网站</translation>
 <translation id="1270328905573953738">搬迁</translation>
 <translation id="1270502636509132238">取货方式</translation>
@@ -1133,6 +1134,7 @@
 <translation id="3005723025932146533">显示已保存的版本</translation>
 <translation id="300580149047131921">最近使用过</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键浏览可执行的操作，然后按 Enter 键执行选定的操作。</translation>
+<translation id="3010991137650052245">若要在此网站上使用您的<ph name="PERMISSION" />，请授予 <ph name="SHORT_PRODUCT_NAME" /> 访问权限</translation>
 <translation id="3013711734159931232">家居用品</translation>
 <translation id="3014553260345122294">财经新闻</translation>
 <translation id="3014726756341138577">高级打印机功能</translation>
@@ -1778,6 +1780,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">政策范围不受支持。</translation>
+<translation id="411918202192379658">自动填充功能变得更好用了</translation>
 <translation id="4121428309786185360">截止日期</translation>
 <translation id="4123572138124678573">三孔（底部）</translation>
 <translation id="412601465078863288">上传超时</translation>
@@ -2166,6 +2169,7 @@
 <translation id="4819347708020428563">在默认视图中修改注释？</translation>
 <translation id="4822493756793346865">一般价格是基于过去 90 天网上各个商店中的价格得出的。</translation>
 <translation id="4822922322149719535">查看错误日志</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> 需要访问设备的<ph name="PERMISSION" /></translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
 <translation id="4827283332383516812">删除卡</translation>
@@ -2895,6 +2899,7 @@
 <translation id="6116338172782435947">查看复制到剪贴板的文字和图片</translation>
 <translation id="6117833587752089929">相纸（磨光）</translation>
 <translation id="6118782133429281336">源列表为空。</translation>
+<translation id="6120950591512958208">结账时使用此折扣代码。</translation>
 <translation id="612178891608320683">纯素食</translation>
 <translation id="6122181661879998141">卡正面</translation>
 <translation id="6124058285696691147">下载该附件</translation>

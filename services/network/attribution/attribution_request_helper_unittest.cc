@@ -39,7 +39,7 @@ constexpr char kAttributionReportingEligible[] =
     "Attribution-Reporting-Eligible";
 
 constexpr char kAdAuctionRegistrationEligible[] =
-    "Ad-Auction-Registration-Eligible";
+    "Sec-Ad-Auction-Event-Recording-Eligible";
 
 class AttributionRequestHelperTest : public testing::Test {
  protected:

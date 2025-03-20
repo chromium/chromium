@@ -50,93 +50,109 @@ suite('PaymentsSectionPaymentsList', function() {
   }
 
   /**
-   * Returns an array containing all list separator items from paymentsList.
+   * Returns an array containing all vertical-list items from paymentsList.
    */
-  function getPaymentsListListSeparatorItems() {
+  function getVerticalLists() {
     return paymentsList!.shadowRoot!.querySelectorAll<HTMLElement>(
-        '.list-separator');
+        '.vertical-list');
   }
 
-  test('verifyPaymentsListSeparatorsShown', async function() {
+  function assertNoBorderTop(borderTop: string) {
+    assertEquals(borderTop, '0px none rgb(0, 0, 0)');
+  }
+
+  function assertBorderTop(borderTop: string) {
+    // RGBA values are not the same across different platforms, so this is
+    // omitted from the check.
+    assertTrue(borderTop.includes('1px solid'));
+  }
+
+  test('verifyPaymentsListBorderTop', async function() {
     paymentsList = await createPaymentsList(
         [createCreditCardEntry()], [createIbanEntry()],
         [createPayOverTimeIssuerEntry()]);
 
     const paymentMethods = getPaymentsListPaymentMethodItems();
-    const listSeparators = getPaymentsListListSeparatorItems();
+    const lists = getVerticalLists();
 
     assertEquals(3, paymentMethods.length);
-    assertEquals(2, listSeparators.length);
-    assertTrue(isVisible(listSeparators[0]!));
-    assertTrue(isVisible(listSeparators[1]!));
+    assertEquals(3, lists.length);
+    assertNoBorderTop(getComputedStyle(lists[0]!).borderTop);
+    assertBorderTop(getComputedStyle(lists[1]!).borderTop);
+    assertBorderTop(getComputedStyle(lists[2]!).borderTop);
   });
 
-  test('verifyPaymentsListSeparatorsShownNoCreditCards', async function() {
+  test('verifyPaymentsListBorderTopNoCreditCards', async function() {
     paymentsList = await createPaymentsList(
         /*creditCards=*/[], [createIbanEntry()],
         [createPayOverTimeIssuerEntry()]);
 
     const paymentMethods = getPaymentsListPaymentMethodItems();
-    const listSeparators = getPaymentsListListSeparatorItems();
+    const lists = getVerticalLists();
 
     assertEquals(2, paymentMethods.length);
-    assertEquals(2, listSeparators.length);
-    assertFalse(isVisible(listSeparators[0]!));
-    assertTrue(isVisible(listSeparators[1]!));
+    assertEquals(3, lists.length);
+    assertNoBorderTop(getComputedStyle(lists[0]!).borderTop);
+    assertNoBorderTop(getComputedStyle(lists[1]!).borderTop);
+    assertBorderTop(getComputedStyle(lists[2]!).borderTop);
   });
 
-  test('verifyPaymentsListSeparatorsShownNoIbans', async function() {
+  test('verifyPaymentsListBorderTopNoIbans', async function() {
     paymentsList = await createPaymentsList(
         [createCreditCardEntry()], /*ibans=*/[],
         [createPayOverTimeIssuerEntry()]);
 
     const paymentMethods = getPaymentsListPaymentMethodItems();
-    const listSeparators = getPaymentsListListSeparatorItems();
+    const lists = getVerticalLists();
 
     assertEquals(2, paymentMethods.length);
-    assertEquals(2, listSeparators.length);
-    assertFalse(isVisible(listSeparators[0]!));
-    assertTrue(isVisible(listSeparators[1]!));
+    assertEquals(3, lists.length);
+    assertNoBorderTop(getComputedStyle(lists[0]!).borderTop);
+    assertNoBorderTop(getComputedStyle(lists[1]!).borderTop);
+    assertBorderTop(getComputedStyle(lists[2]!).borderTop);
   });
 
-  test('verifyPaymentsListSeparatorsShownNoIssuers', async function() {
+  test('verifyPaymentsListBorderTopNoIssuers', async function() {
     paymentsList = await createPaymentsList(
         [createCreditCardEntry()], [createIbanEntry()],
         /*payOverTimeIssuers=*/[]);
 
     const paymentMethods = getPaymentsListPaymentMethodItems();
-    const listSeparators = getPaymentsListListSeparatorItems();
+    const lists = getVerticalLists();
 
     assertEquals(2, paymentMethods.length);
-    assertEquals(2, listSeparators.length);
-    assertTrue(isVisible(listSeparators[0]!));
-    assertFalse(isVisible(listSeparators[1]!));
+    assertEquals(3, lists.length);
+    assertNoBorderTop(getComputedStyle(lists[0]!).borderTop);
+    assertBorderTop(getComputedStyle(lists[1]!).borderTop);
+    assertNoBorderTop(getComputedStyle(lists[2]!).borderTop);
   });
 
-  test('verifyPaymentsListSeparatorsHiddenEmptyList', async function() {
+  test('verifyPaymentsListBorderTopEmptyList', async function() {
     paymentsList = await createPaymentsList(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[]);
 
     const paymentMethods = getPaymentsListPaymentMethodItems();
-    const listSeparators = getPaymentsListListSeparatorItems();
+    const lists = getVerticalLists();
 
     assertEquals(0, paymentMethods.length);
-    assertEquals(2, listSeparators.length);
-    assertFalse(isVisible(listSeparators[0]!));
-    assertFalse(isVisible(listSeparators[1]!));
+    assertEquals(3, lists.length);
+    assertNoBorderTop(getComputedStyle(lists[0]!).borderTop);
+    assertNoBorderTop(getComputedStyle(lists[1]!).borderTop);
+    assertNoBorderTop(getComputedStyle(lists[2]!).borderTop);
   });
 
-  test('verifyPaymentsListSeparatorsHiddenOnePaymentMethod', async function() {
+  test('verifyPaymentsBorderTopOnePaymentMethod', async function() {
     paymentsList = await createPaymentsList(
         /*creditCards=*/[], /*ibans=*/[], [createPayOverTimeIssuerEntry()]);
 
     const paymentMethods = getPaymentsListPaymentMethodItems();
-    const listSeparators = getPaymentsListListSeparatorItems();
+    const lists = getVerticalLists();
 
     assertEquals(1, paymentMethods.length);
-    assertEquals(2, listSeparators.length);
-    assertFalse(isVisible(listSeparators[0]!));
-    assertFalse(isVisible(listSeparators[1]!));
+    assertEquals(3, lists.length);
+    assertNoBorderTop(getComputedStyle(lists[0]!).borderTop);
+    assertNoBorderTop(getComputedStyle(lists[1]!).borderTop);
+    assertNoBorderTop(getComputedStyle(lists[2]!).borderTop);
   });
 
   test('verifyNoPaymentMethodsLabelShown', async function() {

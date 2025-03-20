@@ -1536,7 +1536,28 @@ source_set("platform_browser_tests") {
   }
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/content/browser:client_side_detection_service" ]
+    sources += [
+      "../browser/safe_browsing/safe_browsing_blocking_page_platform_test.cc",
+      "../browser/safe_browsing/safe_browsing_blocking_page_platform_test_helper.cc",
+      "../browser/safe_browsing/safe_browsing_blocking_page_platform_test_helper.h",
+    ]
+    deps += [
+      "//chrome/browser/safe_browsing:metrics_collector",
+      "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+      "//components/enterprise/connectors/core",
+      "//components/safe_browsing/content/browser",
+      "//components/safe_browsing/content/browser:client_side_detection_service",
+      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
+      "//components/safe_browsing/core/browser:verdict_cache_manager",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/unified_consent:unified_consent",
+    ]
+    if (safe_browsing_mode == 1) {
+      deps += [
+        "//chrome/browser/ui/hats",
+        "//chrome/browser/ui/hats:test_support",
+      ]
+    }
   }
 }
 
@@ -3524,6 +3545,8 @@ if (!is_android) {
       ]
 
       deps += [
+        "//chrome/browser/actor",
+        "//chrome/browser/actor:browser_tests",
         "//chrome/browser/background/glic:glic",
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic:glic",
@@ -6108,10 +6131,12 @@ test("unit_tests") {
     "../browser/preloading/prefetch/prefetch_service/prefetch_origin_decider_unittest.cc",
     "../browser/preloading/preloading_prefs_unittest.cc",
     "../browser/privacy/privacy_metrics_service_unittest.cc",
+    "../browser/privacy_sandbox/notice/notice_model_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_policy_handler_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_service_impl_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_settings_delegate_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_utils_unittest.cc",
+    "../browser/privacy_sandbox/profile_bucket_metrics_unittest.cc",
     "../browser/profiles/gaia_info_update_service_unittest.cc",
     "../browser/profiles/incognito_mode_policy_handler_unittest.cc",
     "../browser/profiles/profile_attributes_storage_unittest.cc",
@@ -6132,6 +6157,8 @@ test("unit_tests") {
     "../browser/renderer_preferences_util_unittest.cc",
     "../browser/resource_coordinator/tab_load_tracker_unittest.cc",
     "../browser/resources_util_unittest.cc",
+    "../browser/safe_browsing/advanced_protection_status_manager_factory_unittest.cc",
+    "../browser/safe_browsing/advanced_protection_status_manager_unittest.cc",
     "../browser/safe_browsing/notification_content_detection_service_factory_unittest.cc",
     "../browser/search_engines/template_url_fetcher_unittest.cc",
     "../browser/search_engines/template_url_parser_unittest.cc",
@@ -6689,6 +6716,7 @@ test("unit_tests") {
     "//components/policy/test_support:unittests",
     "//components/privacy_sandbox:privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_notice_constants",
+    "//components/privacy_sandbox:privacy_sandbox_notice_mojom",
     "//components/privacy_sandbox:privacy_sandbox_notice_storage",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:privacy_sandbox_survey_service",
@@ -6912,7 +6940,10 @@ test("unit_tests") {
   ]
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic:glic" ]
+    deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/glic:glic",
+    ]
   }
 
   if (chrome_root_store_cert_management_ui) {
@@ -6947,6 +6978,7 @@ test("unit_tests") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/actor:unit_tests",
       "//chrome/browser/background/glic:unit_tests",
       "//chrome/browser/glic:test_support",
       "//chrome/browser/glic:unit_tests",
@@ -7024,6 +7056,7 @@ test("unit_tests") {
       "../browser/win/chrome_elf_init_unittest.cc",
       "../browser/win/jumplist_file_util_unittest.cc",
       "../browser/win/jumplist_update_util_unittest.cc",
+      "../browser/win/limited_access_features_unittest.cc",
       "../browser/win/remove_app_compat_entries_unittest.cc",
       "../browser/win/uninstallation_via_os_settings_unittest.cc",
       "../common/chrome_constants_win_unittest.cc",
@@ -9372,8 +9405,7 @@ test("unit_tests") {
   if (safe_browsing_mode == 1) {
     # TODO(sgurun): enable tests for safe_browsing==2.
     sources += [
-      "../browser/safe_browsing/advanced_protection_status_manager_factory_unittest.cc",
-      "../browser/safe_browsing/advanced_protection_status_manager_unittest.cc",
+      "../browser/safe_browsing/advanced_protection_status_manager_desktop_unittest.cc",
       "../browser/safe_browsing/chrome_client_side_detection_host_delegate_unittest.cc",
       "../browser/safe_browsing/chrome_password_reuse_detection_manager_client_unittest.cc",
       "../browser/safe_browsing/chrome_ping_manager_factory_unittest.cc",
@@ -11191,6 +11223,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/tabs/dragging/tab_drag_controller_interactive_uitest.h",
         "../browser/ui/views/tabs/recent_activity_bubble_dialog_view_interactive_uitest.cc",
         "../browser/ui/views/tabs/tab_hover_card_controller_interactive_uitest.cc",
+        "../browser/ui/views/tabs/tab_strip_interactive_uitest.cc",
         "../browser/ui/views/test/view_event_test_base.cc",
         "../browser/ui/views/test/view_event_test_base.h",
         "../browser/ui/views/toolbar/app_menu_interactive_uitest.cc",

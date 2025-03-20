@@ -17,10 +17,12 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -39,6 +41,7 @@ import java.util.function.BooleanSupplier;
 public class CustomTabsOpenTimeRecorderTest {
     private static final String CHROME_PACKAGE_NAME = "chrome.package.name";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mAppContext;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private CustomTabActivityNavigationController mNavigationController;
@@ -50,7 +53,6 @@ public class CustomTabsOpenTimeRecorderTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         CustomTabsOpenTimeRecorderJni.setInstanceForTesting(mNativeMock);
         ContextUtils.initApplicationContextForTests(mAppContext);
     }

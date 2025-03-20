@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -280,8 +281,12 @@ bool CanShowPendingStatePromo(const PasswordManagerClient& password_client) {
       password_manager::sync_util::HasChosenToSyncPasswords(
           password_client.GetSyncService());
 
+  // Pending state promo should not be shown on the gaia sign in page or in the
+  // password manager
   const bool is_external_url =
-      !gaia::HasGaiaSchemeHostPort(password_client.GetLastCommittedURL());
+      !gaia::HasGaiaSchemeHostPort(password_client.GetLastCommittedURL()) &&
+      password_client.GetLastCommittedURL().host_piece() !=
+          password_manager::kChromeUIPasswordManagerHost;
 
   return password_client.GetIdentityManager()
              ->HasAccountWithRefreshTokenInPersistentErrorState(

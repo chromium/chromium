@@ -1344,6 +1344,7 @@
 <translation id="1918127774159128277">የቀጥተኛ Wi-Fi ችሎታዎችን ዓድስ</translation>
 <translation id="1918141783557917887">&amp;አሳንስ</translation>
 <translation id="1918281588461452432">ጣቢያዎችን በሚያስሱበት ጊዜ፣ የገፆቻቸው ይዘቶች ይመሰጠራሉ እና ወደ መሣሪያዎ ይቀመጣሉ</translation>
+<translation id="1919096511823372013">አገናኞችን፣ ስሜት ገላጭ ምስሎችን እና ሌሎችንም ያስገቡ። እንዲሁም በGoogle ሰው ሠራሽ አስተውሎት ምስሎችን ለመፃፍ እና ለመፍጠር እገዛ ማግኘት ይችላሉ።</translation>
 <translation id="1919872106782726755">የጣት አሻራን ለማዋቀር ከማብሪያ/ማጥፊያ ቁልፉ ቀጥሎ በቁልፍ ሰሌዳው ከላይ በስተቀኝ ጥግ የሚገኘውን የጣት አሻራ ዳሳሽ ልጅዎ እንዲነካው ያድርጉ። የልጅዎ የጣት አሻራ ውሂብ ደህንነቱ በተጠበቀ ሁኔታ ይከማቻል እና በጭራሽ ከዚህ <ph name="DEVICE_TYPE" /> አይወጣም።</translation>
 <translation id="192015196730532810">የራስዎን የትር ቡድን መፍጠር ይችላሉ።</translation>
 <translation id="1920314570001095522">ለማደራጀት ምንም ተመሳሳይ ትሮች የሉም፣ ነገር ግን እነዚህን ቡድኖች ሊወዷቸው ይችላሉ</translation>
@@ -1888,6 +1889,7 @@
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">ፋይል በጣቢያው ላይ አልተገኘም</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" />ን ያብጁት እና ይቆጣጠሩት</translation>
+<translation id="2301064673700597535">የተረጋገጡ የዕውቅና ማረጋገጫ መግለጫዎች</translation>
 <translation id="2301382460326681002">የቅጥያ ስርወ ማውጫ ልክ አይደለም።</translation>
 <translation id="2301402091755573488">የተጋራ ትር</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />የስህተት ማረሚያ ባህሪያት<ph name="END_H3" />
@@ -8982,6 +8984,7 @@
 <translation id="7377451353532943397">የዳሳሽ መዳረሻን ማገዱን ቀጥል</translation>
 <translation id="7377481913241237033">ከኮድ ጋር ተገናኝ</translation>
 <translation id="73786666777299047">Chrome የድር መደብርን ይክፈቱ</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />። በተመሳሳይ ተግባር ቡድን ውስጥ ያለ ሌላ ተግባር፦ <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />። በተመሳሳይ ተግባር ቡድን ውስጥ ያለ ሌላ # ተግባር፦ <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />። በተመሳሳይ ተግባር ቡድን ውስጥ ያሉ ሌሎች # ተግባሮች፦ <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">አካባቢያዊ የውሂብ መልሶ ማግኘት ይሰናከል?</translation>
 <translation id="7380459290951585794">ስልክዎ በአቅራቢያ እንዳለ፣ የተከፈተ መሆኑን እና ብሉቱዝ እና Wi-Fi እንደበራ ያረጋግጡ</translation>
 <translation id="7380622428988553498">የመሣሪያ ስም ልክ ያልሆኑ ቁምፊዎችን ይዟል</translation>

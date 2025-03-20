@@ -17,12 +17,14 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -45,6 +47,7 @@ public class LoadProgressMediatorTest {
     private static final GURL URL_1 = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL NATIVE_PAGE_URL = JUnitTestGURLs.NTP_URL;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
 
@@ -58,7 +61,6 @@ public class LoadProgressMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mModel =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new PropertyModel(LoadProgressProperties.ALL_KEYS));

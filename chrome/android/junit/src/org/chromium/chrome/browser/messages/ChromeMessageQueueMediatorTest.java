@@ -16,12 +16,14 @@ import android.os.Handler;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
@@ -61,6 +63,7 @@ import java.util.concurrent.TimeoutException;
 public class ChromeMessageQueueMediatorTest {
     private static final int EXPECTED_TOKEN = 42;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BrowserControlsManager mBrowserControlsManager;
 
     @Mock private MessageContainerCoordinator mMessageContainerCoordinator;
@@ -85,7 +88,6 @@ public class ChromeMessageQueueMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mMessageDispatcher.suspend()).thenReturn(EXPECTED_TOKEN);
     }
 

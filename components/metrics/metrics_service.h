@@ -306,6 +306,13 @@ class MetricsService {
     return CreateLog(log_type);
   }
 
+  // Used to test observers of the logs_event_manager_.
+  void NotifyLogsEventManagerForTesting(MetricsLogsEventManager::LogEvent event,
+                                        std::string_view log_hash,
+                                        std::string_view message) {
+    logs_event_manager_.NotifyLogEvent(event, log_hash, message);
+  }
+
  protected:
   // Sets the persistent system profile. Virtual for tests.
   virtual void SetPersistentSystemProfile(const std::string& serialized_proto,

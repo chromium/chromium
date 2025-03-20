@@ -51,10 +51,12 @@ class CollaborationServiceImpl : public CollaborationService,
   void AddObserver(CollaborationService::Observer* observer) override;
   void RemoveObserver(CollaborationService::Observer* observer) override;
   void StartJoinFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
-                     const GURL& url) override;
+                     const GURL& url,
+                     CollaborationServiceJoinEntryPoint entry) override;
   void StartShareOrManageFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
-      const tab_groups::EitherGroupID& group_id) override;
+      const tab_groups::EitherGroupID& either_id,
+      CollaborationServiceShareOrManageEntryPoint entry) override;
   ServiceStatus GetServiceStatus() override;
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) override;

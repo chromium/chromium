@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/observer_list.h"
@@ -36,9 +37,11 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
@@ -164,6 +167,54 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
   raw_ptr<Browser> attached_browser_ = nullptr;
 };
 
+class BrowserIsOpenCalculator : public BrowserListObserver {
+ public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void BrowserIsOpenChanged(bool browser_is_open) = 0;
+  };
+
+  explicit BrowserIsOpenCalculator(Profile* profile, Observer* observer)
+      : profile_(profile) {
+    BrowserList::AddObserver(this);
+    BrowserList* list = BrowserList::GetInstance();
+    for (Browser* browser : *list) {
+      OnBrowserAdded(browser);
+    }
+    // Don't notify observer during construction.
+    observer_ = observer;
+  }
+  ~BrowserIsOpenCalculator() override { BrowserList::RemoveObserver(this); }
+
+  void OnBrowserAdded(Browser* browser) override {
+    if (browser->profile() == profile_) {
+      UpdateBrowserCount(1);
+    }
+  }
+  void OnBrowserRemoved(Browser* browser) override {
+    if (browser->profile() == profile_) {
+      UpdateBrowserCount(-1);
+    }
+  }
+
+  bool IsOpen() const { return open_browser_count_ > 0; }
+
+ private:
+  void UpdateBrowserCount(int delta) {
+    bool was_open = IsOpen();
+    open_browser_count_ += delta;
+    bool is_open = IsOpen();
+    if (was_open != is_open && observer_) {
+      observer_->BrowserIsOpenChanged(is_open);
+    }
+  }
+  // Profile outlives this class. The glic web contents is torn down along with
+  // GlicKeyedService, which is tied to the profile.
+  raw_ptr<Profile> profile_;
+  raw_ptr<Observer> observer_ = nullptr;
+  int open_browser_count_ = 0;
+};
+
 mojom::WebClientSizingMode GetWebClientSizingMode() {
   return base::FeatureList::IsEnabled(features::kGlicSizingFitWindow)
              ? glic::mojom::WebClientSizingMode::kFitWindow
@@ -181,7 +232,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              public GlicWindowController::StateObserver,
                              public GlicWebClientAccess,
                              public BrowserAttachObserver,
-                             public ActiveStateCalculator::Observer {
+                             public ActiveStateCalculator::Observer,
+                             public BrowserIsOpenCalculator::Observer {
  public:
   explicit GlicWebClientHandler(
       GlicPageHandler* page_handler,
@@ -193,6 +245,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
         pref_service_(profile_->GetPrefs()),
         active_state_calculator_(&glic_service_->window_controller()),
+        browser_is_open_calculator_(profile_, this),
         receiver_(this, std::move(receiver)),
         annotation_manager_(
             std::make_unique<GlicAnnotationManager>(glic_service_)) {
@@ -261,6 +314,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->panel_is_active = active_state_calculator_.IsActive();
 
     state->sizing_mode = GetWebClientSizingMode();
+
+    state->browser_is_open = browser_is_open_calculator_.IsOpen();
 
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
     local_state_pref_change_registrar_.Add(
@@ -547,6 +602,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       web_client_->NotifyPanelActiveChange(is_active);
     }
   }
+  // BrowserIsOpenCalculator implementation.
+  void BrowserIsOpenChanged(bool is_open) override {
+    if (web_client_) {
+      web_client_->NotifyBrowserIsOpenChanged(is_open);
+    }
+  }
 
   void OnOsPermissionSettingChanged(ContentSettingsType content_type,
                                     bool is_blocked) {
@@ -617,6 +678,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   raw_ptr<GlicKeyedService> glic_service_;
   raw_ptr<PrefService> pref_service_;
   ActiveStateCalculator active_state_calculator_;
+  BrowserIsOpenCalculator browser_is_open_calculator_;
   base::CallbackListSubscription focus_changed_subscription_;
   std::unique_ptr<TabDataObserver> focused_tab_data_observer_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;

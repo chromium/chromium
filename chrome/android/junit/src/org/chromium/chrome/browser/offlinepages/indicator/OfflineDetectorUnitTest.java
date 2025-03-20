@@ -24,11 +24,13 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector
 /** Unit tests for {@link OfflineDetector}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OfflineDetectorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ConnectivityDetector mConnectivityDetector;
     @Mock private Handler mHandler;
 
@@ -55,7 +58,6 @@ public class OfflineDetectorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = ApplicationProvider.getApplicationContext();
         mContentResolver = mContext.getContentResolver();
 

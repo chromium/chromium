@@ -1053,6 +1053,9 @@
   <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SHOW_MORE" translateable="false">
     Show more
   </message>
+  <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes." translateable="false">
+    Last 15 min
+  </message>
 
   <!-- Downloads Page -->
   <message name="IDS_SETTINGS_DOWNLOADS" desc="Name of the settings page which displays download preferences.">

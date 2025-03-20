@@ -9,6 +9,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
+#include "ui/gfx/native_widget_types.h"
 
 @interface AppShimRenderWidgetHostViewMacDelegate () <HistorySwiperDelegate>
 @end
@@ -96,9 +97,10 @@
 - (BOOL)canNavigateInDirection:(history_swiper::NavigationDirection)direction
                       onWindow:(NSWindow*)window {
   auto* bridge =
-      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
-  if (!bridge)
+      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(window);
+  if (!bridge) {
     return NO;
+  }
 
   if (direction == history_swiper::kForwards) {
     return bridge->CanGoForward();
@@ -110,9 +112,10 @@
 - (void)navigateInDirection:(history_swiper::NavigationDirection)direction
                    onWindow:(NSWindow*)window {
   auto* bridge =
-      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
-  if (!bridge)
+      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(window);
+  if (!bridge) {
     return;
+  }
 
   bool was_executed = false;
   if (direction == history_swiper::kForwards) {

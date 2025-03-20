@@ -39,6 +39,19 @@ class IsolatedWebAppsEnabledPrefObserverAsh
     }
 
     // Runs callback once asynchronously to match the Lacros behavior.
+    //
+    // When this file (pref_observer_ash.cc) was originally created, there used
+    // to be a companion one called pref_observer_lacros.cc. The lacros file is
+    // long deleted by now due to Lacros sunsetting.
+    //
+    // In the Lacros implementation, the callback was run once, and was run
+    // asynchronously, immediately after the observation started but before any
+    // pref change happened.
+    //
+    // As a result, in pref_observer_ash.cc, we match this behavior for Ash.
+    // This is also due to the fact that this behavior is expected downstream
+    // through the downstream OS-agnostic `IsolatedWebAppsEnabledPrefObserver`
+    // class.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&IsolatedWebAppsEnabledPrefObserverAsh::RunCallback,

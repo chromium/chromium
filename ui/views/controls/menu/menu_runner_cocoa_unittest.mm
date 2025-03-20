@@ -16,6 +16,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/events/event_utils.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/menus/cocoa/menu_controller.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
@@ -174,7 +175,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
     runner_->RunMenuAt(
         parent_, nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-        ui::mojom::MenuSourceType::kNone, MenuRunner::CONTEXT_MENU, nullptr);
+        ui::mojom::MenuSourceType::kNone, MenuRunner::CONTEXT_MENU);
     MaybeRunAsync();
   }
 

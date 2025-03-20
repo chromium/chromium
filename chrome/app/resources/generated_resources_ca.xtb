@@ -624,6 +624,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1431188203598586230">Darrera actualització de programari</translation>
 <translation id="1432581352905426595">Gestiona els motors de cerca</translation>
+<translation id="1432650420699700107">Els llocs web poden demanar permís per connectar-se a qualsevol dispositiu de la teva xarxa local</translation>
 <translation id="1433478348197382180">Mode de lectura</translation>
 <translation id="1433980411933182122">Arrencada</translation>
 <translation id="1434696352799406980">Aquesta funció restablirà la pàgina d'arrencada, la pàgina Pestanya nova, el motor de cerca i les pestanyes fixades que tingueu configurades. També desactivarà totes les extensions i esborrarà les dades temporals, com ara les galetes. Les adreces d'interès, l'historial i les contrasenyes desades no s'esborraran.</translation>
@@ -4822,6 +4823,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4364830672918311045">Mostra les notificacions</translation>
 <translation id="4367971618859387374">Nom de visualització</translation>
 <translation id="4368960422722232719">Mostra l'ús de memòria a la targeta de previsualització que apareix en passar el cursor per sobre d'una pestanya</translation>
+<translation id="4369151461324628035">No permetis que els llocs web es connectin a cap dispositiu de la teva xarxa local</translation>
 <translation id="4369215744064167350">Sol·licitud de lloc web aprovada</translation>
 <translation id="4369233657762989723">Dictat activat/desactivat</translation>
 <translation id="436926121798828366">Pots canviar-ho en qualsevol moment a <ph name="SETTINGS_LINK" /></translation>
@@ -5375,6 +5377,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4772914216048388646">Ordenat</translation>
 <translation id="4773112038801431077">Actualitza Linux</translation>
 <translation id="4773122030389014189">Comparteix el grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
+<translation id="4773253008034797668">Amb permís per connectar-se a qualsevol dispositiu de la teva xarxa local</translation>
 <translation id="477548766361111120">Permet que l'extensió llegeixi i canviï aquest lloc web</translation>
 <translation id="4776311127346151860">S'ha connectat <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Si vols afegir una pàgina per llegir-la més tard, fes clic al botó</translation>
@@ -7836,6 +7839,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6563002009564846727">Mostra els certificats importats de Windows</translation>
 <translation id="6563055593659435495">No es pot mantenir la connexió amb el teu telèfon. Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi-Fi activats.</translation>
 <translation id="6564860838537532172">Quan fas una cerca a l'historial de navegació, les cerques a l'historial, el contingut de les pàgines de les millors coincidències i les sortides del model generades s'envien a Google i és possible que els revisors humans els vegin per millorar aquesta funció.</translation>
+<translation id="6565144332292237355">Els llocs web poden utilitzar aquesta funció per cercar qualsevol dispositiu a la teva xarxa local i connectar-s'hi</translation>
 <translation id="6569931898053264308">Estalvi mitjà</translation>
 <translation id="6570622975915850879">Utilitza un dispositiu diferent</translation>
 <translation id="65711204837946324">Necessita permís per poder baixar-lo</translation>
@@ -11551,6 +11555,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
       <ph name="LIST_ITEM" />Executa Diagnòstic de connectivitat de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Confies en aquest lloc web perquè accedeixi a les teves dades?</translation>
+<translation id="9164418710391288146">Sense permís per connectar-se a cap dispositiu de la teva xarxa local</translation>
 <translation id="9165856803582999927">Escaneja aquest codi QR amb la càmera del dispositiu en què vulguis crear i desar la clau d'accés per a <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Imatge sobre imatge</translation>
 <translation id="9166253503936244008">Escaneja aquest codi QR amb el dispositiu que té la clau d'accés que vols utilitzar per a <ph name="APP_NAME" /></translation>

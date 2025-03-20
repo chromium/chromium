@@ -243,13 +243,12 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   const LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   DCHECK_GE(ChildAvailableSize().inline_size, LayoutUnit());
   column_inline_size_ =
-      ResolveUsedColumnInlineSize(ChildAvailableSize().inline_size, Style());
-
+      ResolveUsedColumnInlineSize(Style(), ChildAvailableSize().inline_size);
   column_inline_progression_ =
       column_inline_size_ +
-      ResolveUsedColumnGap(ChildAvailableSize().inline_size, Style());
+      ResolveColumnGapForMulticol(Style(), ChildAvailableSize().inline_size);
   used_column_count_ =
-      ResolveUsedColumnCount(ChildAvailableSize().inline_size, Style());
+      ResolveUsedColumnCount(Style(), ChildAvailableSize().inline_size);
 
   // Write the column inline-size and count back to the legacy flow thread if
   // we're at the first fragment. TextAutosizer needs the inline-size, and the
@@ -405,7 +404,7 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
   // values. We typically have multiple columns and also gaps between them.
   int column_count = Style().ColumnCount();
   DCHECK_GE(column_count, 1);
-  LayoutUnit column_gap = ResolveUsedColumnGap(LayoutUnit(), Style());
+  LayoutUnit column_gap = ResolveColumnGapForMulticol(Style(), LayoutUnit());
   LayoutUnit gap_extra = column_gap * (column_count - 1);
 
   // Another peculiarity in the (old and only) spec (see above) is that

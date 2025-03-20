@@ -1725,8 +1725,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
   __weak __typeof(self) weakSelf = self;
   CallbackWithIPHDismissalReasonType dismissalCallback =
-      ^(IPHDismissalReasonType dismissReason,
-        feature_engagement::Tracker::SnoozeAction snoozeAction) {
+      ^(IPHDismissalReasonType dismissReason) {
         [weakSelf signinIPHDismissed];
       };
   _bubblePresenter = [[BubbleViewControllerPresenter alloc]

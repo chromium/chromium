@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
-#include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -21,33 +19,13 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/component_updater/pref_names.h"
+#include "components/device_signals/core/browser/browser_utils.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "device_management_backend.pb.h"
 
-#if BUILDFLAG(IS_POSIX)
-#include "net/dns/public/resolv_reader.h"
-#include "net/dns/public/scoped_res_state.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include <CoreFoundation/CoreFoundation.h>
-
-#include "base/mac/mac_util.h"
-#include "base/process/launch.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include <netfw.h>
-#include <wrl/client.h>
-
-#include "net/dns/public/win_dns_system_settings.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -70,135 +48,6 @@ std::optional<std::string> GetEnterpriseProfileId(Profile* profile) {
     return profile_id_service->GetProfileId();
   return std::nullopt;
 }
-
-#if BUILDFLAG(IS_LINUX)
-const char** GetUfwConfigPath() {
-  static const char* path = "/etc/ufw/ufw.conf";
-  return &path;
-}
-
-SettingValue GetUfwStatus() {
-  base::FilePath path(*GetUfwConfigPath());
-  std::string file_content;
-  base::StringPairs values;
-
-  if (!base::PathExists(path) || !base::PathIsReadable(path) ||
-      !base::ReadFileToString(path, &file_content)) {
-    return SettingValue::UNKNOWN;
-  }
-  base::SplitStringIntoKeyValuePairs(file_content, '=', '\n', &values);
-  auto is_ufw_enabled = std::ranges::find(
-      values, "ENABLED", &std::pair<std::string, std::string>::first);
-  if (is_ufw_enabled == values.end())
-    return SettingValue::UNKNOWN;
-
-  if (is_ufw_enabled->second == "yes")
-    return SettingValue::ENABLED;
-  else if (is_ufw_enabled->second == "no")
-    return SettingValue::DISABLED;
-  else
-    return SettingValue::UNKNOWN;
-}
-#endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_WIN)
-SettingValue GetWinOSFirewall() {
-  Microsoft::WRL::ComPtr<INetFwPolicy2> firewall_policy;
-  HRESULT hr = CoCreateInstance(CLSID_NetFwPolicy2, nullptr, CLSCTX_ALL,
-                                IID_PPV_ARGS(&firewall_policy));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << logging::SystemErrorCodeToString(hr);
-    return SettingValue::UNKNOWN;
-  }
-
-  long profile_types = 0;
-  hr = firewall_policy->get_CurrentProfileTypes(&profile_types);
-  if (FAILED(hr))
-    return SettingValue::UNKNOWN;
-
-  // The most restrictive active profile takes precedence.
-  constexpr NET_FW_PROFILE_TYPE2 kProfileTypes[] = {
-      NET_FW_PROFILE2_PUBLIC, NET_FW_PROFILE2_PRIVATE, NET_FW_PROFILE2_DOMAIN};
-  for (size_t i = 0; i < std::size(kProfileTypes); ++i) {
-    if ((profile_types & UNSAFE_TODO(kProfileTypes[i])) != 0) {
-      VARIANT_BOOL enabled = VARIANT_TRUE;
-      hr = firewall_policy->get_FirewallEnabled(UNSAFE_TODO(kProfileTypes[i]),
-                                                &enabled);
-      if (FAILED(hr))
-        return SettingValue::UNKNOWN;
-      if (enabled == VARIANT_TRUE)
-        return SettingValue::ENABLED;
-      else if (enabled == VARIANT_FALSE)
-        return SettingValue::DISABLED;
-      else
-        return SettingValue::UNKNOWN;
-    }
-  }
-  return SettingValue::UNKNOWN;
-}
-#endif
-
-#if BUILDFLAG(IS_MAC)
-SettingValue GetMacOSFirewall() {
-  if (base::mac::MacOSMajorVersion() < 15) {
-    // There is no official Apple documentation on how to obtain the enabled
-    // status of the firewall (System Preferences> Security & Privacy> Firewall)
-    // prior to MacOS versions 15. Reading globalstate from com.apple.alf is the
-    // closest way to get such an API in Chrome without delegating to
-    // potentially unstable commands. Values of "globalstate":
-    //   0 = de-activated
-    //   1 = on for specific services
-    //   2 = on for essential services
-    // You can get 2 by, e.g., enabling the "Block all incoming connections"
-    // firewall functionality.
-    Boolean key_exists_with_valid_format = false;
-    CFIndex globalstate = CFPreferencesGetAppIntegerValue(
-        CFSTR("globalstate"), CFSTR("com.apple.alf"),
-        &key_exists_with_valid_format);
-
-    if (!key_exists_with_valid_format) {
-      return SettingValue::UNKNOWN;
-    }
-
-    switch (globalstate) {
-      case 0:
-        return SettingValue::DISABLED;
-      case 1:
-      case 2:
-        return SettingValue::ENABLED;
-      default:
-        return SettingValue::UNKNOWN;
-    }
-  }
-
-  // Based on this recommendation from Apple:
-  // https://developer.apple.com/documentation/macos-release-notes/macos-15-release-notes/#Application-Firewall
-  base::FilePath fw_util("/usr/libexec/ApplicationFirewall/socketfilterfw");
-  if (!base::PathExists(fw_util)) {
-    return SettingValue::UNKNOWN;
-  }
-
-  base::CommandLine command(fw_util);
-  command.AppendSwitch("getglobalstate");
-  std::string output;
-  if (!base::GetAppOutput(command, &output)) {
-    return SettingValue::UNKNOWN;
-  }
-
-  // State 1 is when the Firewall is simply enabled.
-  // State 2 is when the Firewall is enabled and all incoming connections are
-  // blocked.
-  if (output.find("(State = 1)") != std::string::npos ||
-      output.find("(State = 2)") != std::string::npos) {
-    return SettingValue::ENABLED;
-  }
-  if (output.find("(State = 0)") != std::string::npos) {
-    return SettingValue::DISABLED;
-  }
-
-  return SettingValue::UNKNOWN;
-}
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 SettingValue GetChromeosFirewall() {
@@ -328,12 +177,8 @@ std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 SettingValue ContextInfoFetcher::GetOSFirewall() {
-#if BUILDFLAG(IS_LINUX)
-  return GetUfwStatus();
-#elif BUILDFLAG(IS_WIN)
-  return GetWinOSFirewall();
-#elif BUILDFLAG(IS_MAC)
-  return GetMacOSFirewall();
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  return device_signals::GetOSFirewall();
 #elif BUILDFLAG(IS_CHROMEOS)
   return GetChromeosFirewall();
 #else
@@ -343,47 +188,21 @@ SettingValue ContextInfoFetcher::GetOSFirewall() {
 
 #if BUILDFLAG(IS_LINUX)
 ScopedUfwConfigPathForTesting::ScopedUfwConfigPathForTesting(const char* path)
-    : initial_path_(*GetUfwConfigPath()) {
-  *GetUfwConfigPath() = path;
+    : initial_path_(*device_signals::GetUfwConfigPath()) {
+  *device_signals::GetUfwConfigPath() = path;
 }
 
 ScopedUfwConfigPathForTesting::~ScopedUfwConfigPathForTesting() {
-  *GetUfwConfigPath() = initial_path_;
+  *device_signals::GetUfwConfigPath() = initial_path_;
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
 std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
-  std::vector<std::string> dns_addresses;
-#if BUILDFLAG(IS_POSIX)
-  std::unique_ptr<net::ScopedResState> res = net::ResolvReader().GetResState();
-  if (res) {
-    std::optional<std::vector<net::IPEndPoint>> nameservers =
-        net::GetNameservers(res->state());
-    if (nameservers) {
-      // If any name server is 0.0.0.0, assume the configuration is invalid.
-      for (const net::IPEndPoint& nameserver : nameservers.value()) {
-        if (nameserver.address().IsZero())
-          return std::vector<std::string>();
-        else
-          dns_addresses.push_back(nameserver.ToString());
-      }
-    }
-  }
-#elif BUILDFLAG(IS_WIN)
-  std::optional<std::vector<net::IPEndPoint>> nameservers;
-  base::expected<net::WinDnsSystemSettings, net::ReadWinSystemDnsSettingsError>
-      settings = net::ReadWinSystemDnsSettings();
-  if (settings.has_value()) {
-    nameservers = settings->GetAllNameservers();
-  }
-
-  if (nameservers.has_value()) {
-    for (const net::IPEndPoint& nameserver : nameservers.value()) {
-      dns_addresses.push_back(nameserver.ToString());
-    }
-  }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  return device_signals::GetSystemDnsServers();
+#else
+  return std::vector<std::string>();
 #endif
-  return dns_addresses;
 }
 
 }  // namespace enterprise_signals

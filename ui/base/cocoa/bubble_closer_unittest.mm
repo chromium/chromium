@@ -8,6 +8,7 @@
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/base/test/menu_test_observer.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
@@ -31,7 +32,7 @@ class BubbleCloserTest : public CocoaTest {
     bubble_window_.releasedWhenClosed = NO;
     [bubble_window_ makeKeyAndOrderFront:nil];
     bubble_closer_ = std::make_unique<BubbleCloser>(
-        bubble_window_,
+        gfx::NativeWindow(bubble_window_),
         base::BindRepeating([](int* i) { *i += 1; }, &click_outside_count_));
   }
 
@@ -70,7 +71,7 @@ class BubbleCloserTest : public CocoaTest {
 TEST_F(BubbleCloserTest, SecondBubbleCloser) {
   auto resetter = [](BubbleCloserTest* me) { me->ResetCloser(); };
   auto deleter = std::make_unique<BubbleCloser>(
-      bubble_window(), base::BindRepeating(resetter, this));
+      gfx::NativeWindow(bubble_window()), base::BindRepeating(resetter, this));
   SendClick(LEFT, OUTSIDE);
 
   // The order is non-deterministic, so click_outside_count() may not change.

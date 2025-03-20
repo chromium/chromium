@@ -370,6 +370,8 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
                     result);
   SerializeIntoDict("sellerSignals", conf.non_shared_params.seller_signals,
                     result);
+  SerializeIntoDict("sellerTKVSignals",
+                    conf.non_shared_params.seller_tkv_signals, result);
   SerializeIntoDict("sellerTimeout", conf.non_shared_params.seller_timeout,
                     result);
   SerializeIntoDict("perBuyerSignals", conf.non_shared_params.per_buyer_signals,

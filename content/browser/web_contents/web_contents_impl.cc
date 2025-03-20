@@ -84,6 +84,7 @@
 #include "content/browser/download/save_package.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/find_request_manager.h"
+#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/guest_page_holder_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
@@ -1353,6 +1354,11 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 
   if (input::IsTransferInputToVizSupported()) {
     SetupRenderInputRouterDelegateConnection();
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kCanvasInterventions)) {
+    renderer_preferences_.canvas_noise_token =
+        CanvasNoiseTokenData::GetToken(browser_context);
   }
 }
 
@@ -8850,6 +8856,10 @@ const blink::RendererPreferences& WebContentsImpl::GetRendererPrefs(
   if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
           *render_view_host->frame_tree()->GetMainFrame())) {
     return guest->GetRendererPrefs();
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kCanvasInterventions)) {
+    renderer_preferences_.canvas_noise_token =
+        CanvasNoiseTokenData::GetToken(GetBrowserContext());
   }
   RenderViewHostImpl::GetPlatformSpecificPrefs(&renderer_preferences_);
   return renderer_preferences_;

@@ -5,9 +5,8 @@
 module printing.mojom;
 
 // Print job color mode values.
-[Stable, Extensible]
 enum ColorModel {
-  [Default] kUnknownColorModel,
+  kUnknownColorModel,
   kGray,
   kColor,
   kCMYK,
@@ -38,27 +37,25 @@ enum ColorModel {
   kSharpARCModeCMBW,            // Used in Sharp printer PPDs.
   kXeroxXRXColorAutomatic,      // Used in Xerox printer PPDs.
   kXeroxXRXColorBW,             // Used in Xerox printer PPDs.
-  kColorModelLast = kXeroxXRXColorBW,  // Obsolete, do not use
-  [MinVersion=1] kCanonCNColorModeColor,       // Used in Canon printer PPDs.
-  [MinVersion=1] kCanonCNColorModeMono,        // Used in Canon printer PPDs.
-  [MinVersion=1] kCanonCNIJGrayScaleOne,       // Used in Canon printer PPDs.
-  [MinVersion=1] kCanonCNIJGrayScaleZero,      // Used in Canon printer PPDs.
+  kCanonCNColorModeColor,       // Used in Canon printer PPDs.
+  kCanonCNColorModeMono,        // Used in Canon printer PPDs.
+  kCanonCNIJGrayScaleOne,       // Used in Canon printer PPDs.
+  kCanonCNIJGrayScaleZero,      // Used in Canon printer PPDs.
   // Used in Konica Minolta printer PPDs.
-  [MinVersion=1] kKonicaMinoltaSelectColorColor,
-  [MinVersion=1] kKonicaMinoltaSelectColorGrayscale,
-  [MinVersion=1] kOkiOKControlColor,           // Used in Oki printer PPDs.
-  [MinVersion=1] kOkiOKControlGray,            // Used in Oki printer PPDs.
+  kKonicaMinoltaSelectColorColor,
+  kKonicaMinoltaSelectColorGrayscale,
+  kOkiOKControlColor,           // Used in Oki printer PPDs.
+  kOkiOKControlGray,            // Used in Oki printer PPDs.
   // Used in Xerox printer PPDs.
-  [MinVersion=1] kXeroxXROutputColorPrintAsColor,
-  [MinVersion=1] kXeroxXROutputColorPrintAsGrayscale,
-  [MinVersion=2] kHpPjlColorAsGrayNo,   // Used in HP printer PPDs.
-  [MinVersion=2] kHpPjlColorAsGrayYes,  // Used in HP printer PPDs.
+  kXeroxXROutputColorPrintAsColor,
+  kXeroxXROutputColorPrintAsGrayscale,
+  kHpPjlColorAsGrayNo,   // Used in HP printer PPDs.
+  kHpPjlColorAsGrayYes,  // Used in HP printer PPDs.
 };
 
 // Print job duplex mode values.
-[Stable, Extensible]
 enum DuplexMode {
-  [Default] kUnknownDuplexMode = -1,
+  kUnknownDuplexMode = -1,
   kSimplex,
   kLongEdge,
   kShortEdge,
@@ -125,10 +122,9 @@ enum GenerateDocumentOutline {
 };
 
 // What kind of margins to use.
-[Stable, Extensible]
 enum MarginType {
   // Default varies depending on headers being enabled or not
-  [Default] kDefaultMargins,
+  kDefaultMargins,
   kNoMargins,
   kPrintableAreaMargins,
   kCustomMargins,
@@ -136,18 +132,18 @@ enum MarginType {
 
 // Allowed printing modes as a bitmask.
 // This is used in pref file and should never change.
-[Stable, Extensible, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 enum ColorModeRestriction {
-  [Default] kUnset = 0x0,
+  kUnset = 0x0,
   kMonochrome = 0x1,
   kColor = 0x2,
 };
 
 // Allowed duplex modes as a bitmask.
 // This is used in pref file and should never change.
-[Stable, Extensible, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 enum DuplexModeRestriction {
-  [Default] kUnset = 0x0,
+  kUnset = 0x0,
   kSimplex = 0x1,
   kLongEdge = 0x2,
   kShortEdge = 0x4,
@@ -156,9 +152,9 @@ enum DuplexModeRestriction {
 
 // Allowed PIN printing modes.
 // This is used in pref file and should never change.
-[Stable, Extensible, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 enum PinModeRestriction {
-  [Default] kUnset = 0,
+  kUnset = 0,
   kPin = 1,
   kNoPin = 2,
 };
@@ -176,7 +172,6 @@ enum ResultCode {
 
 // Matches print_preview.PrinterType in
 // chrome/browser/resources/print_preview/data/destination_match.ts
-[Stable, Extensible]
 enum PrinterType {
   kPrivetDeprecated,
   kExtension,
@@ -203,14 +198,13 @@ struct PageRange {
 // Corresponds to the 'client-info' IPP attribute.
 // For optional fields, missing values correspond to the 'no-value' IPP
 // out-of-band value.
-[Stable, EnableIf=is_chromeos]
+[EnableIf=is_chromeos]
 struct IppClientInfo {
-  [Stable, Extensible]
   enum ClientType {
     kApplication = 3,
     kOperatingSystem = 4,
     kDriver = 5,
-    [Default] kOther = 6,
+    kOther = 6,
   };
   ClientType client_type;
   string client_name;

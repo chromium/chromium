@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ট্রানস্ক্রিপ্ট লুকান</translation>
 <translation id="160633243685262989">ছবির প্রিভিউ দেখুন</translation>
 <translation id="1611649489706141841">ফরওয়ার্ড</translation>
-<translation id="1615144046047995187">ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার Chromebook রিস্টার্ট করুন।</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> পর্যন্ত ডেটার ব্যবহার</translation>
 <translation id="1618566998877964907">থিম ব্যবহার করুন</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">অডিও রেকর্ডিংয়ের তালিকা</translation>
 <translation id="2561093647892030937">লেমন</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> টেস্ট চলছে...</translation>
-<translation id="2573178735329662769">Chromebook-এর সব অডিও রেকর্ড করা হচ্ছে</translation>
 <translation id="2576253868710695442">এর জন্য ২জিবি পর্যন্ত স্টোরেজ লাগবে</translation>
 <translation id="2584547424703650812">গ্লোস্পেস</translation>
 <translation id="2584559707064218956">সেট আপ করতে, সেটিংসে যান</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">নীল ও গোলাপি</translation>
 <translation id="498186245079027698">স্ক্যানার চেক করে আবার চেষ্টা করুন। স্ক্যান করা ফাইল সেভ করার জন্য পর্যাপ্ত লোকাল স্পেস আছে কিনা দেখে নিন।</translation>
 <translation id="4982627662315910959">শর্টকাট উপলভ্য নেই। shift ও আরও ১টি 'পরিবর্তক কী' (ctrl, alt, অথবা <ph name="META_KEY" />) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
-<translation id="4983216687482551672">Chromebook-এর অডিও</translation>
 <translation id="4985509611418653372">চালান</translation>
 <translation id="4987769320337599931">ফায়ারওয়াল</translation>
 <translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003"><ph name="DEVICE_NAME" />-এর USB কেবেল আনপ্লাগ করুন এবং আপডেট করার প্রসেস চালিয়ে যেতে সেটি আবার যোগ করুন</translation>
 <translation id="5099354524039520280">উপরে</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> 'কী' ছাড়া শর্টকার্ট কয়েকটি অ্যাপের শর্টকার্টের ক্ষেত্রে সমস্যা সৃষ্টি করতে পারে। এটি ব্যবহার করা চালিয়ে যেতে এই শর্টকার্ট প্রেস করুন বা <ph name="KEY" /> 'কী' ব্যবহার করে নতুন শর্টকার্ট প্রেস করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> ট্রান্সক্রিপশন মডেল ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার Chromebook রিস্টার্ট করুন</translation>
 <translation id="5108781503443873320">একই ধরনের:</translation>
-<translation id="5121677070210013200">ট্রান্সক্রিপশন মডেল ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার Chromebook রিস্টার্ট করুন।</translation>
 <translation id="5130848777448318809">ছোট ঘোড়া</translation>
 <translation id="5137451382116112100">ফুলস্ক্রিন স্ট্যাটাস</translation>
 <translation id="5139813694804168398">বিরক্ত করবেন না</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6122277663991249694">ChromeOS ইনপুট পদ্ধতি পরিষেবা</translation>
 <translation id="6127426868813166163">সাদা</translation>
-<translation id="613049107179582049">Chromebook-এর অডিও চালু থাকলে, Recorder এই ডিভাইসে চলা সব অডিও ক্যাপচার করে</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">সাইবারপাঙ্ক</translation>
 <translation id="6137767437444130246">ব্যবহারকারীর সার্টিফিকেট</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">ইউএসবি টাচস্ক্রিন</translation>
 <translation id="757747079855995705">পাথর</translation>
-<translation id="7584853321964440104">ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার Chromebook রিস্টার্ট করুন।</translation>
 <translation id="7590883480672980941">ইনপুট সেটিংস</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকি আছে</translation>
 <translation id="7600430297804876776">এই <ph name="DEVICE_TYPE" /> ডিভাইস কখন ব্যবহার করা যাবে তা <ph name="MANAGER" /> অ্যাডমিনিস্ট্রেটর সেট করে দিয়েছেন।</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">পরিচিত APN দেখুন</translation>
 <translation id="932327136139879170">হোম</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">আপনা মাইক কানেক্ট করা আছে কিনা দেখুন বা আপনার Chromebook রিস্টার্ট করে দেখুন</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" />-এর জন্য কোনও 'কী' নেই। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">রেকর্ডিং জুড়ে ভয়েসের তুলনা করুন যাতে প্রত্যেক স্পিকার কী এবং কখন বলেছেন, ট্রান্সক্রিপ্টে তা প্রতিফলিত হয়</translation>

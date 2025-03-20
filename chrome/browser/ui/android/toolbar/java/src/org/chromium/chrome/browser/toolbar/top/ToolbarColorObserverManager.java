@@ -94,7 +94,7 @@ class ToolbarColorObserverManager implements ToolbarAlphaInOverviewObserver, Too
         @ColorInt int opaqueToolbarColor = ColorUtils.getOpaqueColor(mToolbarColor);
 
         final @ColorInt int toolbarRenderingColor =
-                ColorUtils.getColorWithOverlay(opaqueToolbarColor, overviewColor, mOverviewAlpha);
+                ColorUtils.blendColorsMultiply(opaqueToolbarColor, overviewColor, mOverviewAlpha);
         mToolbarColorObserver.onToolbarColorChanged(toolbarRenderingColor);
     }
 }

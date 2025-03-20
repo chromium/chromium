@@ -83,6 +83,13 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [self verifySignedInWithFakeIdentity:identity];
 }
 
+- (void)signinWithFakeManagedIdentityInPersonalProfile:
+    (FakeSystemIdentity*)identity {
+  [SigninEarlGreyAppInterface
+      signinWithFakeManagedIdentityInPersonalProfile:identity];
+  [self verifySignedInWithFakeIdentity:identity];
+}
+
 - (void)signinAndWaitForSyncTransportStateActive:(FakeSystemIdentity*)identity {
   [self signinWithFakeIdentity:identity];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];

@@ -151,7 +151,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="1604959087182679653">Transcript verbergen</translation>
 <translation id="160633243685262989">Voorbeeld van afbeelding bekijken</translation>
 <translation id="1611649489706141841">vooruit</translation>
-<translation id="1615144046047995187">Kan niet downloaden. Probeer het nogmaals of start je Chromebook opnieuw op.</translation>
 <translation id="1615335640928990664">Datagebruik sinds <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Een thema gebruiken</translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
@@ -370,7 +369,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="2560876255701405320">Lijst met audio-opnamen</translation>
 <translation id="2561093647892030937">citroenen</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
-<translation id="2573178735329662769">Alle Chromebook-audio opnemen</translation>
 <translation id="2576253868710695442">Dit kan tot 2 GB aan opslagruimte in beslag nemen</translation>
 <translation id="2584547424703650812">Lichtlandschappen</translation>
 <translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
@@ -849,7 +847,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="4981003703840817201">blauw en roze</translation>
 <translation id="498186245079027698">Check de scanner en probeer het opnieuw. Zorg dat er voldoende lokale ruimte is om gescande bestanden op te slaan.</translation>
 <translation id="4982627662315910959">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets met Shift en nog 1 functietoets (Ctrl, Alt of <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Chromebook-audio</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pagina's</translation>
@@ -875,9 +872,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="5095761549884461003">Koppel de USB-kabel van de <ph name="DEVICE_NAME" /> los en sluit deze weer aan om door te gaan met het updateproces</translation>
 <translation id="5099354524039520280">omhoog</translation>
 <translation id="5107243100836678918">Sneltoets zonder <ph name="META_KEY" />-toets kan conflicteren met de sneltoets van bepaalde apps. Druk opnieuw op deze sneltoets om die te blijven gebruiken of druk op een nieuwe sneltoets met de <ph name="KEY" />-toets. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Kan transcriptiemodel voor <ph name="LANGUAGE_NAME" /> niet downloaden. Probeer het nogmaals of start je Chromebook opnieuw op.</translation>
 <translation id="5108781503443873320">Vergelijkbaar:</translation>
-<translation id="5121677070210013200">Kan transcriptiemodel niet downloaden. Probeer het nogmaals of start je Chromebook opnieuw op.</translation>
 <translation id="5130848777448318809">pony's</translation>
 <translation id="5137451382116112100">Volledig</translation>
 <translation id="5139813694804168398">Niet storen</translation>
@@ -920,6 +915,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="5286263799730375393">kleur van achtergrondverlichting</translation>
 <translation id="5292579816060236070">Achtergrond Zonsopkomst</translation>
 <translation id="5294769550414936029">versie <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">cameratoegang aan-/uitzetten</translation>
 <translation id="5300814202279832142">Venster verplaatsen naar bureau</translation>
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5303837385540978511">Exclusieve <ph name="PRODUCT_NAME" />-achtergrond</translation>
@@ -1088,7 +1084,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Invoermethodeservice voor Chrome OS</translation>
 <translation id="6127426868813166163">wit</translation>
-<translation id="613049107179582049">Als Chromebook-audio aanstaat, neemt Recorder alle audio op die op dit apparaat wordt afgespeeld</translation>
 <translation id="6136285399872347291">Backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Gebruikerscertificaat</translation>
@@ -1418,7 +1413,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-touchscreen</translation>
 <translation id="757747079855995705">steen</translation>
-<translation id="7584853321964440104">Kan niet downloaden. Probeer het nogmaals of start je Chromebook opnieuw op.</translation>
 <translation id="7590883480672980941">Invoerinstellingen</translation>
 <translation id="7595982850646262331">Nog <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">De beheerder van <ph name="MANAGER" /> heeft ingesteld wanneer dit <ph name="DEVICE_TYPE" /> kan worden gebruikt.</translation>
@@ -1785,7 +1779,6 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="9218016617214286986">Bekende APN's tonen</translation>
 <translation id="932327136139879170">Homepage</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Zorg dat je microfoon is aangesloten of start je Chromebook opnieuw op</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="950520315903467048">De toets ontbreekt voor <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">De stemmen in de hele opname vergelijken zodat het transcript aangeeft wat elke spreker heeft gezegd en wanneer</translation>

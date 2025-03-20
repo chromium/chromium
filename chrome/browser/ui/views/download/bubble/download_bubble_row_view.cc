@@ -548,7 +548,7 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
           navigation_handler_->PreventDialogCloseOnDeactivate();
     }
     DragDownloadItem(info_->model()->GetDownloadItem(), &file_icon_,
-                     widget ? widget->GetNativeView() : nullptr);
+                     widget ? widget->GetNativeView() : gfx::NativeView());
     // DragDownloadItem returns when the drag is over.
     // `this` may be deleted by now!
   }

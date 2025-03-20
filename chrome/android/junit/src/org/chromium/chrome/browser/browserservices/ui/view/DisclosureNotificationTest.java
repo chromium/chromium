@@ -21,11 +21,13 @@ import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDe
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -46,6 +48,7 @@ public class DisclosureNotificationTest {
     private static final String SCOPE = "https://www.example.com";
     private static final String PACKAGE = "com.example.twa";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
     @Mock public NotificationManagerProxy mNotificationManager;
@@ -55,7 +58,6 @@ public class DisclosureNotificationTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
         mModel.set(DISCLOSURE_SCOPE, SCOPE);

@@ -32,8 +32,6 @@ static_library("autofill") {
     "iban_manager_factory.h",
     "merchant_promo_code_manager_factory.cc",
     "merchant_promo_code_manager_factory.h",
-    "passes_data_manager_factory.cc",
-    "passes_data_manager_factory.h",
     "personal_data_manager_factory.cc",
     "personal_data_manager_factory.h",
     "strike_database_factory.cc",
@@ -44,6 +42,8 @@ static_library("autofill") {
     "ui/ui_util.h",
     "validation_rules_storage_factory.cc",
     "validation_rules_storage_factory.h",
+    "valuables_data_manager_factory.cc",
+    "valuables_data_manager_factory.h",
   ]
 
   public_deps = [

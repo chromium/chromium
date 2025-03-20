@@ -2,39 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/signals/device_info_fetcher_win.h"
 
-#include <windows.h>
-
-// SECURITY_WIN32 must be defined in order to get
-// EXTENDED_NAME_FORMAT enumeration.
-#define SECURITY_WIN32 1
-#include <security.h>
-#undef SECURITY_WIN32
-
-#include <shobjidl.h>
-
-#include <DSRole.h>
-#include <iphlpapi.h>
-#include <powersetting.h>
-#include <propsys.h>
-
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/win/registry.h"
-#include "base/win/win_util.h"
-#include "base/win/wincred_shim.h"
+#include "base/system/sys_info.h"
 #include "base/win/windows_version.h"
+#include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
-#include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "net/base/network_interfaces.h"
 
 namespace enterprise_signals {
 
@@ -44,24 +19,6 @@ std::string GetSecurityPatchLevel() {
   base::win::OSInfo* gi = base::win::OSInfo::GetInstance();
 
   return base::NumberToString(gi->version_number().patch);
-}
-
-std::optional<std::string> GetWindowsUserDomain() {
-  WCHAR username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
-  DWORD username_length = sizeof(username);
-  if (!::GetUserNameExW(::NameSamCompatible, username, &username_length) ||
-      username_length <= 0) {
-    return std::nullopt;
-  }
-  // The string corresponds to DOMAIN\USERNAME. If there isn't a domain, the
-  // domain name is replaced by the name of the machine, so the function
-  // returns nothing in that case.
-  std::string username_str = base::WideToUTF8(username);
-  std::string domain = username_str.substr(0, username_str.find("\\"));
-
-  return domain == base::ToUpperASCII(policy::GetDeviceFqdn())
-             ? std::nullopt
-             : std::make_optional(domain);
 }
 
 }  // namespace
@@ -78,9 +35,13 @@ DeviceInfoFetcherWin::~DeviceInfoFetcherWin() = default;
 DeviceInfo DeviceInfoFetcherWin::Fetch() {
   DeviceInfo device_info;
   device_info.os_name = "windows";
-  device_info.os_version = device_signals::GetOsVersion();
+  // Using `SysInfo` instead of device_signals function because the clients of
+  // this class expects the version to have the format of
+  // "<Major>.<Minor>.<Build>", instead of the full version number returned by
+  // platform_utils, which also includes <Revision>.
+  device_info.os_version = base::SysInfo::OperatingSystemVersion();
   device_info.security_patch_level = GetSecurityPatchLevel();
-  device_info.device_host_name = policy::GetDeviceFqdn();
+  device_info.device_host_name = device_signals::GetHostName();
   device_info.device_model = device_signals::GetDeviceModel();
   device_info.serial_number = device_signals::GetSerialNumber();
   device_info.screen_lock_secured = device_signals::GetScreenlockSecured();
@@ -88,7 +49,7 @@ DeviceInfo DeviceInfoFetcherWin::Fetch() {
   device_info.mac_addresses = device_signals::GetMacAddresses();
   device_info.windows_machine_domain =
       device_signals::GetWindowsMachineDomain();
-  device_info.windows_user_domain = GetWindowsUserDomain();
+  device_info.windows_user_domain = device_signals::GetWindowsUserDomain();
   device_info.secure_boot_enabled = device_signals::GetSecureBootEnabled();
 
   return device_info;

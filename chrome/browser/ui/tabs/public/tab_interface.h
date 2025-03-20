@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/tabs/split_tab_id.h"
 #include "components/tab_collections/public/supports_handles.h"
 #include "components/tab_groups/tab_group_id.h"
 
@@ -18,6 +17,10 @@ class WebContents;
 }  // namespace content
 
 class BrowserWindowInterface;
+
+namespace split_tabs {
+class SplitTabId;
+}  // namespace split_tabs
 
 namespace tabs {
 

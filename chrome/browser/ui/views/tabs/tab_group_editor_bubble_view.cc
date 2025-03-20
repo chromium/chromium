@@ -797,7 +797,9 @@ void TabGroupEditorBubbleView::ShareOrManagePressed() {
           browser_->profile());
   auto delegate = std::make_unique<CollaborationControllerDelegateDesktop>(
       const_cast<Browser*>(browser_.get()));
-  service->StartShareOrManageFlow(std::move(delegate), group_);
+  service->StartShareOrManageFlow(
+      std::move(delegate), group_,
+      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
 
   bool is_group_shared = IsGroupShared();
   if (!is_group_shared) {

@@ -798,7 +798,7 @@ class ComputedStyle final : public ComputedStyleBase {
            HasGlyphRelativeUnits();
   }
   bool HasAnyRelativeUnits() const {
-    return HasFontRelativeUnits() || HasContainerRelativeUnits() ||
+    return HasFontRelativeUnits() || HasContainerRelativeValue() ||
            HasLogicalDirectionRelativeUnits() || HasViewportUnits();
   }
 
@@ -996,7 +996,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool ColumnRuleEquivalent(const ComputedStyle& other_style) const;
   bool HasColumnRule() const {
-    if (!SpecifiesColumns() && Display() != EDisplay::kGrid) [[likely]] {
+    if (!SpecifiesColumns() && (Display() != EDisplay::kGrid &&
+                                Display() != EDisplay::kFlex)) [[likely]] {
       return false;
     }
     return ColumnRuleWidth().GetLegacyValue() && !ColumnRuleIsTransparent() &&
@@ -1013,6 +1014,8 @@ class ComputedStyle final : public ComputedStyleBase {
     return RowRuleWidth().GetLegacyValue() && !RowRuleIsTransparent() &&
            BorderStyleIsVisible(RowRuleStyle().GetLegacyValue());
   }
+
+  bool HasGapRule() const { return HasColumnRule() || HasRowRule(); }
 
   // Flex utility functions.
   bool ResolvedIsColumnFlexDirection() const {

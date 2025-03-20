@@ -15,13 +15,15 @@ import android.os.Looper;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
@@ -50,6 +52,7 @@ public class CurrentPageVerifierTest {
 
     public static final String PACKAGE_NAME = "package.name";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock TabObserverRegistrar mTabObserverRegistrar;
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock CustomTabActivityTabProvider mTabProvider;
@@ -63,7 +66,6 @@ public class CurrentPageVerifierTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mTabProvider.getTab()).thenReturn(mTab);
         doNothing()
                 .when(mTabObserverRegistrar)

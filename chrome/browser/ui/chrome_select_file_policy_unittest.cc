@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if defined(USE_AURA)
@@ -48,9 +49,9 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
     const std::u16string title = std::u16string();
 
     file_selection_initialisation_in_progress = true;
-    select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
-                                    title, file_path, nullptr, 0,
-                                    base::FilePath::StringType(), nullptr);
+    select_file_dialog_->SelectFile(
+        ui::SelectFileDialog::SELECT_OPEN_FILE, title, file_path, nullptr, 0,
+        base::FilePath::StringType(), gfx::NativeWindow());
     file_selection_initialisation_in_progress = false;
   }
 

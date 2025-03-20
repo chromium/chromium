@@ -241,6 +241,8 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1755556344721611131">Aplicación Diagnósticos</translation>
 <translation id="1756833229520115364">Non se puido gardar o modelo. Hai demasiadas ventás ou pestanas.</translation>
 <translation id="1757857692711134412">Función desactivada ata o solpor</translation>
+<translation id="1763084151787818322">Outras accións</translation>
+<translation id="1768138163688567246">Pechar a opción de facer buscas na miña pantalla</translation>
 <translation id="1768366657309696705">Cambiouse o atallo de teclado <ph name="LAUNCHER_KEY_NAME" /> + Punto. Para utilizar a tecla Inserir, preme <ph name="LAUNCHER_KEY_NAME" /> + Maiúsculas + Retroceso.</translation>
 <translation id="1770726142253415363">Moveuse á fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Desprazarse á dereita</translation>
@@ -1943,6 +1945,7 @@ Nova instalación</translation>
 <translation id="742594950370306541">Estase utilizando a cámara.</translation>
 <translation id="742608627846767349">Bos días!</translation>
 <translation id="743058460480092004">Estanse utilizando a cámara e o micrófono.</translation>
+<translation id="7440404390546433462">Busca de Google</translation>
 <translation id="7441711280402516925">Reproducindo · Cambiar á pestana</translation>
 <translation id="7453330308669753048">Quitouse un resultado do historial de busca</translation>
 <translation id="7459485586006128091">Debido a un erro interno, desactivouse a zona wifi. Proba a conectala de novo dentro duns minutos.</translation>

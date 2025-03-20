@@ -43,7 +43,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -101,6 +102,8 @@ public class GoogleBottomBarActionsHandlerTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -122,7 +125,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Before
     public void setup() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
-        MockitoAnnotations.initMocks(this);
         mGoogleBottomBarActionsHandler =
                 new GoogleBottomBarActionsHandler(mActivity, mTabSupplier, mShareDelegateSupplier);
 

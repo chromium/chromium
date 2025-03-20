@@ -2361,4 +2361,10 @@ class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
   }
 };
 
-VIEW_TEST(BookmarkBarViewTest29, DNDToEmptyMenu)
+// Fails on Mac. crbug.com/405061054
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DNDToEmptyMenu DISABLED_DNDToEmptyMenu
+#else
+#define MAYBE_DNDToEmptyMenu DNDToEmptyMenu
+#endif
+VIEW_TEST(BookmarkBarViewTest29, MAYBE_DNDToEmptyMenu)

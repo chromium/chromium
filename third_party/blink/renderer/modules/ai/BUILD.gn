@@ -37,6 +37,7 @@ blink_modules_sources("ai") {
     "ai_writer.h",
     "ai_writer_factory.cc",
     "ai_writer_factory.h",
+    "ai_writing_assistance_base.h",
     "dom_ai.cc",
     "dom_ai.h",
     "exception_helpers.cc",

@@ -11,10 +11,12 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -39,6 +41,7 @@ public class CompositorModelChangeProcessorUnitTest {
     private static final PropertyModel.WritableBooleanPropertyKey PROPERTY_EXCLUDED =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final CallbackHelper mRequestRenderCallbackHelper = new CallbackHelper();
 
     @Mock private SceneLayer mView;
@@ -51,8 +54,6 @@ public class CompositorModelChangeProcessorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mFrameSupplier =
                 new CompositorModelChangeProcessor.FrameRequestSupplier(
                         mRequestRenderCallbackHelper::notifyCalled);

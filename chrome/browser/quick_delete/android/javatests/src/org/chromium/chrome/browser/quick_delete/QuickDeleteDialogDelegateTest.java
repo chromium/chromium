@@ -50,6 +50,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 
@@ -132,7 +133,7 @@ public class QuickDeleteDialogDelegateTest {
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Feature({"RenderTest"})
     public void testQuickDeleteDialogView_WithSignInAndSync() throws IOException {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         setSyncable(true);
 
         mPage = mPage.loadWebPageProgrammatically("https://www.example.com/");

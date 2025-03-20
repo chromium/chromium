@@ -22,7 +22,7 @@ source_set("tab_resumption") {
     "//components/commerce/core:shopping_service",
     "//components/optimization_guide/core:core",
     "//components/page_image_service",
-    "//components/payments/core:core",
+    "//components/payments/core:currency_formatter",
     "//components/segmentation_platform/public",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager/objc",

@@ -14,11 +14,13 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -42,12 +44,12 @@ import org.chromium.ui.base.DeviceFormFactor;
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchCriticalTest extends ContextualSearchInstrumentationBase {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ContextualSearchManager.Natives mContextualSearchManagerNatives;
 
     @Override
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
 
         mTestPage = "/chrome/test/data/android/contextualsearch/tap_test.html";
         mContextualSearchManagerNatives = Mockito.spy(new ContextualSearchManagerJni());

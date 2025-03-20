@@ -6,9 +6,11 @@
 
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/proto_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state_observer.h"
 
 namespace web {
@@ -78,9 +80,28 @@ void WebStateImpl::SerializedData::SerializeMetadataToProto(
   }
 }
 
-WebState::WebStateStorageLoader
-WebStateImpl::SerializedData::TakeStorageLoader() {
-  return std::move(storage_loader_);
+proto::WebStateStorage WebStateImpl::SerializedData::LoadStorage() {
+  if (std::optional<proto::WebStateStorage> storage =
+          std::move(storage_loader_).Run()) {
+    return std::move(storage).value();
+  }
+
+  // If the visible URL is valid but the data cannot be loade from disk,
+  // create a WebStateStorage as if it contained a single navigation to
+  // that URL. The full navigation history will be lost, but at least
+  // the tab won't be fully lost.
+  if (page_visible_url_.is_valid()) {
+    const bool created_with_opener = false;
+    return CreateWebStateStorage(
+        NavigationManager::WebLoadParams(page_visible_url_), page_title_,
+        created_with_opener, UserAgentType::AUTOMATIC, creation_time_);
+  }
+
+  // Return an empty WebStateStorage. This will leave the tab blank,
+  // which will be weird, but there is not much that can be done if
+  // the data cannot be loaded and the visible URL from the metadata
+  // is invalid.
+  return proto::WebStateStorage();
 }
 
 WebState::NativeSessionFetcher

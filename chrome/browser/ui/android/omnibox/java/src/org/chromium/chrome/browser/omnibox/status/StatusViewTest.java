@@ -35,9 +35,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -69,6 +71,7 @@ public class StatusViewTest {
 
     private static Activity sActivity;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
     private PropertyModelChangeProcessor mStatusMCP;
@@ -80,8 +83,6 @@ public class StatusViewTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         runOnUiThreadBlocking(
                 () -> {
                     ViewGroup view = new LinearLayout(sActivity);

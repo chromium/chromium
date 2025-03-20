@@ -626,6 +626,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1431188203598586230">Pēdējais programmatūras atjauninājums</translation>
 <translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
+<translation id="1432650420699700107">Vietnes var pieprasīt atļauju izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā</translation>
 <translation id="1433478348197382180">Lasīšanas režīms</translation>
 <translation id="1433980411933182122">Startēšana</translation>
 <translation id="1434696352799406980">Tādējādi tiks atiestatīta jūsu sākumlapa, jaunas cilnes lapa, meklētājprogramma un piespraustās cilnes. Turklāt tiks atspējoti visi paplašinājumi, kā arī tiks notīrīti pagaidu dati, piemēram, sīkfaili. Netiks notīrītas jūsu grāmatzīmes, vēsture un saglabātās paroles.</translation>
@@ -4825,6 +4826,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4364830672918311045">Parādīt paziņojumus</translation>
 <translation id="4367971618859387374">Parādāmais vārds</translation>
 <translation id="4368960422722232719">Rādīt atmiņas lietojumu ciļņu priekšskatījuma norāžu kartītē</translation>
+<translation id="4369151461324628035">Neļaut vietnēm izveidot savienojumu ne ar vienu ierīci jūsu lokālajā tīklā</translation>
 <translation id="4369215744064167350">Tīmekļa vietnes pieprasījums apstiprināts</translation>
 <translation id="4369233657762989723">Ieslēgt/izslēgt diktēšanu</translation>
 <translation id="436926121798828366">Jebkurā brīdī šeit varat mainīt opciju: <ph name="SETTINGS_LINK" /></translation>
@@ -5378,6 +5380,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4772914216048388646">Kārtīgs</translation>
 <translation id="4773112038801431077">Linux jaunināšana</translation>
 <translation id="4773122030389014189">Ciļņu grupas “<ph name="GROUP_NAME" />” kopīgošana</translation>
+<translation id="4773253008034797668">Drīkst izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā</translation>
 <translation id="477548766361111120">Atļaut paplašinājumam lasīt un mainīt šo vietni</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> ir pievienota</translation>
 <translation id="4776594120007763294">Lai pievienotu lapu, ko vēlaties lasīt vēlāk, noklikšķiniet uz pogas</translation>
@@ -7838,6 +7841,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6563002009564846727">Skatīt no operētājsistēmas Windows importētos sertifikātus</translation>
 <translation id="6563055593659435495">Nevar uzturēt savienojumu ar jūsu tālruni. Tālrunim ir jāatrodas tuvumā, tam jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
 <translation id="6564860838537532172">Kad veicat meklēšanu pārlūkošanas vēsturē, vēstures meklēšanas vaicājumi, precīzāko atbilstību lapu saturs un ģenerētie modeļa izvades dati tiek nosūtīti Google serveriem un tos var skatīt pārskatītāji, lai uzlabotu šo funkciju.</translation>
+<translation id="6565144332292237355">Vietnes var izmantot šo funkciju, lai meklētu un izveidotu savienojumu ar jebkuru ierīci jūsu lokālajā tīklā.</translation>
 <translation id="6569931898053264308">Vidējs ietaupījums</translation>
 <translation id="6570622975915850879">Izmantot citu ierīci</translation>
 <translation id="65711204837946324">Lejupielādei vajadzīga atļauja</translation>
@@ -11557,6 +11561,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
       <ph name="LIST_ITEM" />Veiciet Chrome savienojamības diagnostiku.
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Vai esat pārliecināts, ka varat uzticēt šai vietnei savus datus?</translation>
+<translation id="9164418710391288146">Nedrīkst izveidot savienojumu ne ar vienu ierīci jūsu lokālajā tīklā</translation>
 <translation id="9165856803582999927">Skenējiet šo kvadrātkodu, izmantojot tās ierīces kameru, kurā vēlaties izveidot un saglabāt piekļuves atslēgu vietnei <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Attēls attēlā</translation>
 <translation id="9166253503936244008">Skenējiet šo kvadrātkodu, izmantojot ierīci, kurā ir vēlamā vietnes <ph name="APP_NAME" /> piekļuves atslēga.</translation>

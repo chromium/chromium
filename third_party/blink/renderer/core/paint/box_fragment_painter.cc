@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
+#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
@@ -1360,6 +1361,8 @@ void BoxFragmentPainter::PaintGridGaps(
   Color rule_color;
   EBorderStyle rule_style;
   LayoutUnit rule_thickness;
+  RuleBreak rule_break;
+  Length rule_outset;
 
   // TODO(crbug.com/357648037): We are currently only painting gaps with a
   // single color, but we should update this to paint with all values
@@ -1370,26 +1373,107 @@ void BoxFragmentPainter::PaintGridGaps(
     rule_style = ComputedStyle::CollapsedBorderStyle(
         style.ColumnRuleStyle().GetLegacyValue());
     rule_thickness = LayoutUnit(style.ColumnRuleWidth().GetLegacyValue());
+    rule_break = style.ColumnRuleBreak();
+    rule_outset = style.ColumnRuleOutset();
   } else {
     rule_color =
         LayoutObject::ResolveColor(style, GetCSSPropertyRowRuleColor());
     rule_style = ComputedStyle::CollapsedBorderStyle(
         style.RowRuleStyle().GetLegacyValue());
     rule_thickness = LayoutUnit(style.RowRuleWidth().GetLegacyValue());
+    rule_break = style.RowRuleBreak();
+    rule_outset = style.RowRuleOutset();
   }
+
+  // Determines if the `end_index` should advance when determining pairs for gap
+  // decorations. For `kSpanningItem` rule break, decorations break only at "T"
+  // intersections, so we simply check that the intersection isn't blocked
+  // after. For `kIntersection` rule break, decorations break at both "T" and
+  // "cross" intersections, so we also need to check that the corresponding
+  // intersection in the cross direction is flanked by spanning items.
+  // https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
+  auto ShouldMoveIntersectionEndForward =
+      [&](wtf_size_t end_index,
+          const GapFragmentData::GapIntersectionList intersections,
+          wtf_size_t gap_index) {
+        if (rule_break == RuleBreak::kSpanningItem) {
+          return !intersections[end_index].is_blocked_after;
+        } else {
+          CHECK_EQ(rule_break, RuleBreak::kIntersection);
+
+          if (intersections[end_index].is_blocked_after) {
+            return false;
+          }
+
+          const auto cross_gaps =
+              track_direction == kForColumns
+                  ? gap_geometry->GetGapIntersections(kForRows)
+                  : gap_geometry->GetGapIntersections(kForColumns);
+
+          // Get the matching intersection in the cross direction by
+          // swapping the indices. This transpose allows us determine if the
+          // intersection is flanked by spanning items on opposing sides.
+          // `end_index` should move forward if there are adjacent spanners in
+          // the cross direction since that intersection won't form a T or cross
+          // intersection.
+          auto cross_direction_intersection =
+              cross_gaps[end_index - 1][gap_index + 1];
+          bool has_adjacent_spanners =
+              cross_direction_intersection.is_blocked_before &&
+              cross_direction_intersection.is_blocked_after;
+
+          return has_adjacent_spanners;
+        }
+      };
 
   // Adjusts the (start, end) intersection pair to ensure that the gap
   // decorations are painted correctly based on `rule_break`.
   auto AdjustIntersectionIndexPair =
       [&](wtf_size_t& start, wtf_size_t& end,
-          const GapFragmentData::GapIntersectionList intersections) {
-        // TODO(samomekarajr): Let start be the first intersection and end be
-        // the last intersection i.e. assume `*-rule-break` is `none`. This is
-        // subject to change once the other `*-rule-break` values(`intersection`
-        // & `spanning-item`) are implemented.
-        start = 0;
-        end = intersections.size() - 1;
+          const GapFragmentData::GapIntersectionList intersections,
+          wtf_size_t gap_index) {
+        wtf_size_t num_intersections = intersections.size();
+        // If rule_break is `kNone`, cover the entire intersection range.
+        if (rule_break == RuleBreak::kNone) {
+          start = 0;
+          end = num_intersections - 1;
+          return;
+        }
+
+        // `start` should be the first intersection point that is not blocked
+        // after.
+        while (start < num_intersections &&
+               intersections[start].is_blocked_after) {
+          start += 1;
+        }
+
+        // If `start` is the last intersection point, there are no gaps to
+        // paint.
+        if (start == num_intersections - 1) {
+          return;
+        }
+
+        end = start + 1;
+
+        // Advance `end` based on the rule_break type.
+        while (
+            end < num_intersections - 1 &&
+            ShouldMoveIntersectionEndForward(end, intersections, gap_index)) {
+          end += 1;
+        }
       };
+
+  auto IntersectionPointIncludesContentEdge =
+      [&](const wtf_size_t intersection_point,
+          wtf_size_t num_intersections) -> bool {
+    return intersection_point == 0 ||
+           intersection_point == num_intersections - 1;
+  };
+
+  auto* grid = To<LayoutGrid>(box_fragment_.GetLayoutObject());
+  const LayoutUnit cross_gutter_size = track_direction == kForColumns
+                                           ? grid->GridGap(kForRows)
+                                           : grid->GridGap(kForColumns);
 
   const auto gaps = gap_geometry->GetGapIntersections(track_direction);
   for (wtf_size_t gap_index = 0; gap_index < gaps.size(); ++gap_index) {
@@ -1406,23 +1490,64 @@ void BoxFragmentPainter::PaintGridGaps(
     // intersection points in the center of the corresponding gap and parallel
     // to its edges.
     while (start < num_intersections - 1) {
-      wtf_size_t end = start + 1;
-      AdjustIntersectionIndexPair(start, end, gap);
+      wtf_size_t end = start;
+      AdjustIntersectionIndexPair(start, end, gap, gap_index);
+
+      if (start >= end) {
+        // Break because there are no gaps to paint.
+        break;
+      }
+
+      // The cross gutter size is used to determine the "crossing gap width" at
+      // intersection points. The crossing gap width of an intersection point is
+      // defined as:
+      // * `0` if the intersection is at the content edge of the container.
+      // * The cross gutter size if it is an intersection with another gap.
+      // https://drafts.csswg.org/css-gaps-1/#crossing-gap-width
+      LayoutUnit start_width =
+          IntersectionPointIncludesContentEdge(start, num_intersections)
+              ? LayoutUnit()
+              : cross_gutter_size;
+      LayoutUnit end_width =
+          IntersectionPointIncludesContentEdge(end, num_intersections)
+              ? LayoutUnit()
+              : cross_gutter_size;
+
+      // Outset values are used to offset the end points of gap decorations.
+      // Percentage values are resolved against the crossing gap width of the
+      // intersection point.
+      // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-outset
+      const LayoutUnit start_outset = ValueForLength(rule_outset, start_width);
+      const LayoutUnit end_outset = ValueForLength(rule_outset, end_width);
+
+      // Compute the gap decorations offset as half of the `crossing_gap_width`
+      // minus the outset.
+      // https://drafts.csswg.org/css-gaps-1/#compute-the-offset
+      LayoutUnit decoration_start_offset =
+          LayoutUnit(start_width / 2.0f) - start_outset;
+      LayoutUnit decoration_end_offset =
+          LayoutUnit(end_width / 2.0f) - end_outset;
 
       if (track_direction == kForColumns) {
         // For columns, paint a vertical strip at the center of the gap.
         const LayoutUnit center = gap[start].inline_offset;
         inline_start = center - (rule_thickness / 2);
         inline_size = rule_thickness;
-        block_start = gap[start].block_offset;
-        block_size = gap[end].block_offset - block_start;
+
+        // Compute the block positions using the computed offsets.
+        block_start = gap[start].block_offset + decoration_start_offset;
+        block_size =
+            gap[end].block_offset - block_start - decoration_end_offset;
       } else {
         // For rows, paint a horizontal strip at the center of the gap.
         const LayoutUnit center = gap[start].block_offset;
         block_start = center - (rule_thickness / 2);
         block_size = rule_thickness;
-        inline_start = gap[start].inline_offset;
-        inline_size = gap[end].inline_offset - inline_start;
+
+        // Compute the inline positions using the computed offsets.
+        inline_start = gap[start].inline_offset + decoration_start_offset;
+        inline_size =
+            gap[end].inline_offset - inline_start - decoration_end_offset;
       }
 
       const LogicalRect gap_logical(inline_start, block_start, inline_size,

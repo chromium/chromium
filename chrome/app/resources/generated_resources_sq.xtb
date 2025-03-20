@@ -624,6 +624,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1431188203598586230">Përditësimi përfundimtar i softuerit</translation>
 <translation id="1432581352905426595">Menaxho motorët e kërkimit</translation>
+<translation id="1432650420699700107">Sajtet mund të kërkojnë të lidhen me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="1433478348197382180">Modaliteti i leximit</translation>
 <translation id="1433980411933182122">Nisja</translation>
 <translation id="1434696352799406980">Ky funksion do të rivendosë faqen e parë, faqen e skedës së re, motorin e kërkimit dhe skedat e gozhduara. Ai do të çaktivizojë po ashtu të gjitha shtesat dhe do të pastrojë të dhënat e përkohshme si kukit. Faqeshënuesit, historiku dhe fjalëkalimet e ruajtura nuk do të pastrohen.</translation>
@@ -1332,6 +1333,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1918127774159128277">Rifresko aftësitë e WiFi Direct</translation>
 <translation id="1918141783557917887">Më i vogël</translation>
 <translation id="1918281588461452432">Kur shfleton sajtet, përmbajtjet e faqeve të tyre enkriptohen dhe ruhen në pajisjen tënde</translation>
+<translation id="1919096511823372013">Fut lidhje, emoji etj. Mund të marrësh gjithashtu ndihmë për të shkruar dhe krijuar imazhe me IA-në e Google.</translation>
 <translation id="1919872106782726755">Për të konfiguruar gjurmën e gishtit, vëre fëmijën tënd të prekë sensorin e gjurmës së gishtit në këndin lart djathtas të tastierës, pranë butonit të energjisë. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga ky <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Mund të krijosh grupin tënd të skedave.</translation>
 <translation id="1920314570001095522">Nuk ka skeda të ngjashme për t'i organizuar, por mund të të pëlqejnë këto grupe</translation>
@@ -4820,6 +4822,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4364830672918311045">Shfaq njoftimet</translation>
 <translation id="4367971618859387374">Emri prezantues</translation>
 <translation id="4368960422722232719">Shfaq përdorimin e memories në kartën e pamjes paraprake pas qëndrimit pezull te skeda</translation>
+<translation id="4369151461324628035">Mos i lejo sajtet të lidhen me asnjë pajisje në rrjetin tënd lokal</translation>
 <translation id="4369215744064167350">Kërkesa e uebsajtit u miratua</translation>
 <translation id="4369233657762989723">Diktimi aktiv/joaktiv</translation>
 <translation id="436926121798828366">Këtë mund ta ndryshosh në çdo kohë te "<ph name="SETTINGS_LINK" />"</translation>
@@ -5373,6 +5376,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4772914216048388646">E rregullt</translation>
 <translation id="4773112038801431077">Përmirëso Linux</translation>
 <translation id="4773122030389014189">Ndaj grupin e skedave "<ph name="GROUP_NAME" />"</translation>
+<translation id="4773253008034797668">Lejohen të lidhen me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="477548766361111120">Lejo që shtesa të lexojë dhe të ndryshojë këtë sajt</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> është lidhur</translation>
 <translation id="4776594120007763294">Për të shtuar një faqe për ta lexuar më vonë, kliko te butoni</translation>
@@ -7835,6 +7839,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6563002009564846727">Shiko certifikatat e importuara nga Windows</translation>
 <translation id="6563055593659435495">Nuk mund të ruhej një lidhje me telefonin tënd. Sigurohu që telefoni yt të jetë në afërsi, i shkyçur dhe që Bluetooth-i dhe Wi-Fi të jenë aktivizuar.</translation>
 <translation id="6564860838537532172">Kur kërkon te historiku i shfletimit, kërkimet te historiku, përmbajtja e faqeve të përputhjeve më të mira dhe daljet e modeleve të gjeneruara dërgohen te Google dhe mund të shikohen nga shqyrtues njerëzore për të përmirësuar këtë veçori.</translation>
+<translation id="6565144332292237355">Sajtet mund ta përdorin këtë veçori për të kërkuar dhe për t'u lidhur me çdo pajisje në rrjetin tënd lokal</translation>
 <translation id="6569931898053264308">Kursime mesatare</translation>
 <translation id="6570622975915850879">Përdor një pajisje tjetër</translation>
 <translation id="65711204837946324">Ka nevojë për leje për ta shkarkuar</translation>
@@ -8962,6 +8967,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7377451353532943397">Vazhdo të bllokosh qasjen te sensorët</translation>
 <translation id="7377481913241237033">Lidhu me një kod</translation>
 <translation id="73786666777299047">Hap "Dyqanin e uebit të Chrome"</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Një detyrë tjetër në të njëjtin grup detyrash: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # detyra të tjera në të njëjtin grup detyrash: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Të çaktivizohet rikuperimi i të dhënave lokale?</translation>
 <translation id="7380459290951585794">Sigurohu që telefoni yt të jetë në afërsi, i shkyçur dhe ta ketë të aktivizuar Bluetooth-in dhe Wi-Fi</translation>
 <translation id="7380622428988553498">Emri i pajisjes përmban karaktere të pavlefshme</translation>
@@ -11545,6 +11551,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
       <ph name="LIST_ITEM" />Të ekzekutosh "Diagnostikimin e lidhjes së Chrome"
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">A ke besim te ky sajt me të dhënat e tua?</translation>
+<translation id="9164418710391288146">Nuk lejohen të lidhet me asnjë pajisje në rrjetin tënd lokal</translation>
 <translation id="9165856803582999927">Skano këtë kod QR me kamerën në pajisjen ku dëshiron të krijosh dhe ruash çelësin e kalimit për <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Figura brenda figurës</translation>
 <translation id="9166253503936244008">Skano këtë kod QR me pajisjen që ka çelësin e kalimit që dëshiron të përdorësh për <ph name="APP_NAME" /></translation>

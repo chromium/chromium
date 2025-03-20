@@ -986,7 +986,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(TaskType::kJavascriptTimerDelayedLowNesting,
                     TaskType::kJavascriptTimerDelayedHighNesting),
     [](const testing::TestParamInfo<TaskType>& info) {
-      return TaskTypeNames::TaskTypeToString(info.param);
+      return TaskTypeNames::TaskTypeToString(info.param).value;
     });
 
 TEST_F(FrameSchedulerImplTest, FreezeForegroundOnlyTasks) {
@@ -1540,7 +1540,7 @@ TEST_F(FrameSchedulerImplTest, ThrottledTaskTypes) {
   for (TaskType task_type : kAllFrameTaskTypes) {
     SCOPED_TRACE(testing::Message()
                  << "TaskType is "
-                 << TaskTypeNames::TaskTypeToString(task_type));
+                 << TaskTypeNames::TaskTypeToString(task_type).value);
     switch (task_type) {
       case TaskType::kIdleTask:
       case TaskType::kInternalContentCapture:
@@ -2913,7 +2913,7 @@ INSTANTIATE_TEST_SUITE_P(
             /* task_type=*/TaskType::kWebSchedulingPostedTask,
             /* is_intensive_throttling_expected=*/true}),
     [](const testing::TestParamInfo<IntensiveWakeUpThrottlingTestParam>& info) {
-      return TaskTypeNames::TaskTypeToString(info.param.task_type);
+      return TaskTypeNames::TaskTypeToString(info.param.task_type).value;
     });
 
 TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,

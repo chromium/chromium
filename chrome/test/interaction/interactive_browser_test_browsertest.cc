@@ -1168,7 +1168,7 @@ class TestDialog : public views::DialogDelegateView {
       case ui::mojom::ModalType::kSystem:
       case ui::mojom::ModalType::kNone:
         widget = views::DialogDelegate::CreateDialogWidget(
-            std::move(dialog), nullptr,
+            std::move(dialog), gfx::NativeWindow(),
             BrowserView::GetBrowserViewForBrowser(parent)
                 ->GetWidget()
                 ->GetNativeView());

@@ -26,13 +26,13 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -86,6 +86,8 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 public class MostVisitedTilesLayoutTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -136,11 +138,6 @@ public class MostVisitedTilesLayoutTest {
     @AfterClass
     public static void tearDownAfterActivityDestroyed() {
         ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
-    }
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
     }
 
     @Test

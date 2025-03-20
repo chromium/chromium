@@ -306,11 +306,11 @@
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.selectedIdentity
                                       accessPoint:self.accessPoint
+                             precedingHistorySync:YES
                                 postSignInActions:PostSignInActionSet()
                          presentingViewController:self.navigationController
                                        anchorView:nil
                                        anchorRect:CGRectNull];
-  authenticationFlow.precedingHistorySync = YES;
   [self.consistencyPromoSigninMediator
       signinWithAuthenticationFlow:authenticationFlow];
 }

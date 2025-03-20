@@ -296,13 +296,10 @@ bool AuthenticationService::HasPrimaryIdentityManaged(
 bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
   // Data on the device should be cleared on signout when all conditions are
   // met:
-  // 1. `kClearDeviceDataOnSignOutForManagedUsers` feaature is enabled).
-  // 2. The user is signed in with a managed account.
-  // 3. The app management configuration key is present.
+  // 1. The user is signed in with a managed account.
+  // 2. The app management configuration key is present.
   // Note: data will be cleared from the time of sign-in in this case.
-  return base::FeatureList::IsEnabled(
-             kClearDeviceDataOnSignOutForManagedUsers) &&
-         HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin) &&
+  return HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin) &&
          !IsApplicationManagedByMDM();
 }
 

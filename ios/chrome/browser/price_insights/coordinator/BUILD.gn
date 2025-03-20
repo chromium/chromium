@@ -13,7 +13,7 @@ source_set("coordinator") {
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:shopping_service",
     "//components/image_fetcher/core",
-    "//components/payments/core",
+    "//components/payments/core:currency_formatter",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",

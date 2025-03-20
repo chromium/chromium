@@ -17,8 +17,14 @@
 namespace payments::facilitated {
 
 namespace {
+
 const char kInitiatePaymentRequestPath[] =
     "payments/apis-secure/chromepaymentsservice/initiatepayment";
+
+// Billable service number is defined in Payments server to distinguish
+// different requests.
+constexpr int kFacilitatedPaymentsBillableServiceNumber = 70154;
+
 }  // namespace
 
 FacilitatedPaymentsInitiatePaymentRequest::

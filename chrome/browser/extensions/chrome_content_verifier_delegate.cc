@@ -223,7 +223,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
 
   ExtensionService* service = system->extension_service();
   CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
-      service->corrupted_extension_reinstaller();
+      CorruptedExtensionReinstaller::Get(context_);
 
   const VerifyInfo info = GetVerifyInfo(*extension);
 

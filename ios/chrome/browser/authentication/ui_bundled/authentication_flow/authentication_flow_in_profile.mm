@@ -60,6 +60,8 @@ enum class AuthenticationFlowInProfileState {
   AuthenticationFlowPerformer* _performer;
   raw_ptr<Browser> _browser;
   signin_metrics::AccessPoint _accessPoint;
+  BOOL _precedingHistorySync;
+  PostSignInActionSet _postSignInActions;
   // Token to have access to user policies from dmserver.
   NSString* _dmToken;
   // ID of the client that is registered for user policy.
@@ -70,13 +72,13 @@ enum class AuthenticationFlowInProfileState {
   NSArray<NSString*>* _userAffiliationIDs;
   // Capabilities fetcher for the subsequent History Sync Opt-In screen.
   HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
-  PostSignInActionSet _postSignInActions;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
               isManagedIdentity:(BOOL)isManagedIdentity
                     accessPoint:(signin_metrics::AccessPoint)accessPoint
+           precedingHistorySync:(BOOL)precedingHistorySync
               postSignInActions:(PostSignInActionSet)postSignInActions {
   self = [super init];
   if (self) {
@@ -86,6 +88,7 @@ enum class AuthenticationFlowInProfileState {
     _identityToSignIn = identity;
     _isManagedIdentity = isManagedIdentity;
     _accessPoint = accessPoint;
+    _precedingHistorySync = precedingHistorySync;
     _postSignInActions = postSignInActions;
     _state = AuthenticationFlowInProfileState::kBegin;
   }
@@ -119,7 +122,7 @@ enum class AuthenticationFlowInProfileState {
 
 // Return YES if capabilities should be fetched for the History Sync screen.
 - (BOOL)shouldFetchCapabilities {
-  if (!self.precedingHistorySync) {
+  if (!_precedingHistorySync) {
     return NO;
   }
 

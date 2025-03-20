@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.chrome.browser.tabmodel.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
 import android.app.Activity;
@@ -231,7 +232,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
@@ -313,8 +313,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
     private static final String TAG = "ChromeTabbedActivity";
 
     protected static final String WINDOW_INDEX = "window_index";
-
-    private static final int INVALID_WINDOW_ID = TabWindowManager.INVALID_WINDOW_ID;
 
     // How long to delay closing the current tab when our app is minimized.  Have to delay this
     // so that we don't show the contents of the next tab while minimizing.
@@ -980,9 +978,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 new ObservableSupplierImpl<>(SemanticColorUtils.getDefaultBgColor(this));
         mHubManagerSupplier.onAvailable(
                 (hubManager) -> {
-                    ObservableSupplier<Integer> hubToolbarOverviewColorSupplier =
-                            hubManager.getHubToolbarOverviewColorSupplier();
-                    Callback<Integer> hubToolbarOverviewColorObserver = overviewColorSupplier::set;
+                    ObservableSupplier<Integer> hubOverviewColorSupplier =
+                            hubManager.getHubOverviewColorSupplier();
+                    Callback<Integer> hubOverviewColorObserver = overviewColorSupplier::set;
 
                     ObservableSupplier<Boolean> hubVisibilitySupplier =
                             hubManager.getHubVisibilitySupplier();
@@ -990,11 +988,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     Callback<Boolean> hubVisibilityObserver =
                             isVisible -> {
                                 if (isVisible) {
-                                    hubToolbarOverviewColorSupplier.addObserver(
-                                            hubToolbarOverviewColorObserver);
+                                    hubOverviewColorSupplier.addObserver(hubOverviewColorObserver);
                                 } else {
-                                    hubToolbarOverviewColorSupplier.removeObserver(
-                                            hubToolbarOverviewColorObserver);
+                                    hubOverviewColorSupplier.removeObserver(
+                                            hubOverviewColorObserver);
                                 }
                             };
                     hubVisibilitySupplier.addObserver(hubVisibilityObserver);
@@ -1002,8 +999,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     mCleanUpHubOverviewColorObserver =
                             () -> {
                                 hubVisibilitySupplier.removeObserver(hubVisibilityObserver);
-                                hubToolbarOverviewColorSupplier.removeObserver(
-                                        hubToolbarOverviewColorObserver);
+                                hubOverviewColorSupplier.removeObserver(hubOverviewColorObserver);
                             };
                 });
         return overviewColorSupplier;
@@ -3973,15 +3969,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             boolean isActivityInAppTasks,
             boolean isActivityInSameTask) {
         boolean shouldHandleMismatch =
-                (ChromeFeatureList.sTabWindowManagerIndexReassignmentActivityFinishing.isEnabled()
-                                && activityAtRequestedIndex.isFinishing())
-                        || (ChromeFeatureList.sTabWindowManagerIndexReassignmentActivityInSameTask
-                                        .isEnabled()
-                                && isActivityInSameTask)
-                        || (ChromeFeatureList
-                                        .sTabWindowManagerIndexReassignmentActivityNotInAppTasks
-                                        .isEnabled()
-                                && !isActivityInAppTasks);
+                activityAtRequestedIndex.isFinishing()
+                        || isActivityInSameTask
+                        || !isActivityInAppTasks;
 
         if (!shouldHandleMismatch
                 || !(activityAtRequestedIndex

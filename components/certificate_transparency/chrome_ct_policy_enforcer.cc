@@ -28,6 +28,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
@@ -43,9 +44,13 @@ const uint8_t kExtensionTypeLeafIndex = 0;
 base::Value::Dict NetLogCertComplianceCheckResultParams(
     net::X509Certificate* cert,
     bool build_timely,
+    base::Time log_list_timestamp,
     CTPolicyCompliance compliance) {
   base::Value::Dict dict;
   dict.Set("build_timely", build_timely);
+  dict.Set("log_list_timestamp",
+           net::NetLogNumberValue(
+               log_list_timestamp.InMillisecondsSinceUnixEpoch()));
   dict.Set("ct_compliance_status", CTPolicyComplianceToString(compliance));
   return dict;
 }
@@ -141,7 +146,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
 
   net_log.AddEvent(net::NetLogEventType::CERT_CT_COMPLIANCE_CHECKED, [&] {
     return NetLogCertComplianceCheckResultParams(cert, build_timely,
-                                                 compliance);
+                                                 log_list_date_, compliance);
   });
 
   return compliance;

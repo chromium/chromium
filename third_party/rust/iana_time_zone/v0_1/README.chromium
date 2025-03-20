@@ -1,0 +1,10 @@
+Name: iana-time-zone
+URL: https://crates.io/crates/iana-time-zone
+Version: 0.1.61
+Revision: 665d2c8e4fa8b664ec9264b8d1c1691794affbb2
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/iana-time-zone-0.1.61/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: get the IANA time zone for the current system

@@ -772,6 +772,7 @@ EVENT_TYPE(SIGNED_CERTIFICATE_TIMESTAMPS_CHECKED)
 //    "certificate": <An X.509 certificate, same format as in
 //                   CERT_VERIFIER_JOB.>
 //    "build_timely": <boolean>
+//    "log_list_timestamp": <timestamp in milliseconds since the Unix epoch>
 //    "ct_compliance_status": <string describing compliance status>
 // }
 EVENT_TYPE(CERT_CT_COMPLIANCE_CHECKED)

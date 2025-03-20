@@ -548,84 +548,93 @@ suite('CrLitElement', function() {
     await microtasksFinished();
     assertTrue(element.prop3);
   });
+});
 
-  test('Properties defined with accessor keyword', async function() {
-    class CrDummyPropertiesWithAccessorElement extends CrLitElement {
-      static get is() {
-        return 'cr-dummy-properties-with-accessor' as const;
-      }
-
-      static override get properties() {
-        return {
-          propReflected: {
-            type: Boolean,
-            reflect: true,
-          },
-
-          propNonReflected: {type: Boolean},
-        };
-      }
-
-      // Simulate the code emitted by TS when 'accessor' is used as follows:
-      // accessor propReflected: boolean = true;
-      // accessor propNonReflected: boolean = true;
-      // along with the config at
-      // tools/typescript/tsconfig_base_lit_389737066.json. To ensure that such
-      // properties are initialized as expected.
-
-      #propReflected_accessor_storge: boolean = true;
-      get propReflected() {
-        return this.#propReflected_accessor_storge;
-      }
-      set propReflected(value: boolean) {
-        this.#propReflected_accessor_storge = value;
-      }
-
-      #propNonReflected_accessor_storge: boolean = true;
-      get propNonReflected() {
-        return this.#propNonReflected_accessor_storge;
-      }
-      set propNonReflected(value: boolean) {
-        this.#propNonReflected_accessor_storge = value;
-      }
-
-      override willUpdate(changedProperties: PropertyValues<this>) {
-        super.willUpdate(changedProperties);
-        willUpdateCalls.push(changedProperties);
-      }
-
-      override updated(changedProperties: PropertyValues<this>) {
-        super.updated(changedProperties);
-        updatedCalls.push(changedProperties);
-      }
+suite('CrLitElement accessor', function() {
+  class CrDummyPropertiesWithAccessorElement extends CrLitElement {
+    static get is() {
+      return 'cr-dummy-properties-with-accessor' as const;
     }
 
-    customElements.define(
-        CrDummyPropertiesWithAccessorElement.is,
-        CrDummyPropertiesWithAccessorElement);
+    static override get properties() {
+      return {
+        propReflected: {
+          type: String,
+          reflect: true,
+        },
 
-    const willUpdateCalls:
-        Array<PropertyValues<CrDummyPropertiesWithAccessorElement>> = [];
-    const updatedCalls:
-        Array<PropertyValues<CrDummyPropertiesWithAccessorElement>> = [];
+        propNonReflected: {type: String},
+      };
+    }
 
+    // Simulate the code emitted by TS when 'accessor' is used as follows:
+    // accessor propReflected: boolean = true;
+    // accessor propNonReflected: boolean = true;
+    // along with the config at
+    // tools/typescript/tsconfig_base_lit_389737066.json. To ensure that such
+    // properties are initialized as expected.
+
+    #propReflected_accessor_storge: string = 'initial';
+    get propReflected() {
+      return this.#propReflected_accessor_storge;
+    }
+    set propReflected(value: string) {
+      this.#propReflected_accessor_storge = value;
+    }
+
+    #propNonReflected_accessor_storge: string = 'initial';
+    get propNonReflected() {
+      return this.#propNonReflected_accessor_storge;
+    }
+    set propNonReflected(value: string) {
+      this.#propNonReflected_accessor_storge = value;
+    }
+
+    override willUpdate(changedProperties: PropertyValues<this>) {
+      super.willUpdate(changedProperties);
+      willUpdateCalls.push(changedProperties);
+    }
+
+    override updated(changedProperties: PropertyValues<this>) {
+      super.updated(changedProperties);
+      updatedCalls.push(changedProperties);
+    }
+  }
+
+  customElements.define(
+      CrDummyPropertiesWithAccessorElement.is,
+      CrDummyPropertiesWithAccessorElement);
+
+  let willUpdateCalls:
+      Array<PropertyValues<CrDummyPropertiesWithAccessorElement>> = [];
+  let updatedCalls:
+      Array<PropertyValues<CrDummyPropertiesWithAccessorElement>> = [];
+
+  function assertChangedProperties(
+      changedProperties: PropertyValues<CrDummyPropertiesWithAccessorElement>,
+      propReflected: string|undefined, propNonReflected: string|undefined) {
+    assertTrue(changedProperties.has('propReflected'));
+    assertEquals(propReflected, changedProperties.get('propReflected'));
+    assertTrue(changedProperties.has('propNonReflected'));
+    assertEquals(propNonReflected, changedProperties.get('propNonReflected'));
+  }
+
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    willUpdateCalls = [];
+    updatedCalls = [];
+  });
+
+  test('InitialValuesOnly', async function() {
     const element =
         document.createElement(CrDummyPropertiesWithAccessorElement.is) as
         CrDummyPropertiesWithAccessorElement;
     document.body.appendChild(element);
 
-    function assertChangedProperties(
-        changedProperties: PropertyValues<CrDummyPropertiesWithAccessorElement>,
-        propReflected: boolean|undefined, propNonReflected: boolean|undefined) {
-      assertTrue(changedProperties.has('propReflected'));
-      assertEquals(propReflected, changedProperties.get('propReflected'));
-      assertTrue(changedProperties.has('propNonReflected'));
-      assertEquals(propNonReflected, changedProperties.get('propNonReflected'));
-    }
-
     // Check initial state.
-    assertTrue(element.propReflected);
-    assertTrue(element.propNonReflected);
+    assertEquals('initial', element.propReflected);
+    assertEquals('initial', element.propNonReflected);
 
     // Check `changedProperties` in initial willUpdate call.
     assertEquals(1, willUpdateCalls.length);
@@ -634,39 +643,93 @@ suite('CrLitElement', function() {
     assertEquals(1, updatedCalls.length);
     assertChangedProperties(updatedCalls[0]!, undefined, undefined);
     // Check that initial value is reflected correctly.
-    assertTrue(element.hasAttribute('prop-reflected'));
+    assertEquals('initial', element.getAttribute('prop-reflected'));
     assertFalse(element.hasAttribute('prop-non-reflected'));
 
 
-    element.propReflected = false;
-    element.propNonReflected = false;
+    element.propReflected = 'other1';
+    element.propNonReflected = 'other1';
     await microtasksFinished();
 
     // Check `changedProperties` in 2nd willUpdate call.
     assertEquals(2, willUpdateCalls.length);
-    assertChangedProperties(willUpdateCalls[1]!, true, true);
+    assertChangedProperties(willUpdateCalls[1]!, 'initial', 'initial');
     // Check `changedProperties` in 2nd updated call.
     assertEquals(2, updatedCalls.length);
-    assertChangedProperties(updatedCalls[1]!, true, true);
+    assertChangedProperties(updatedCalls[1]!, 'initial', 'initial');
     // Check property -> attribute
-    assertFalse(element.hasAttribute('prop-reflected'));
+    assertEquals('other1', element.getAttribute('prop-reflected'));
     assertFalse(element.hasAttribute('prop-non-reflected'));
 
-    element.toggleAttribute('prop-reflected', true);
-    element.toggleAttribute('prop-non-reflected', true);
+    element.setAttribute('prop-reflected', 'other2');
+    element.setAttribute('prop-non-reflected', 'other2');
     await microtasksFinished();
 
     // Check `changedProperties` in 3rd willUpdate call.
     assertEquals(3, willUpdateCalls.length);
-    assertChangedProperties(willUpdateCalls[2]!, false, false);
+    assertChangedProperties(willUpdateCalls[2]!, 'other1', 'other1');
     // Check `changedProperties` in 3rd updated call.
     assertEquals(3, updatedCalls.length);
-    assertChangedProperties(updatedCalls[2]!, false, false);
+    assertChangedProperties(updatedCalls[2]!, 'other1', 'other1');
 
     // Check attribute -> property
-    assertTrue(element.propReflected);
+    assertEquals('other2', element.propReflected);
     // Non-reflected property changes don't update the attribute, but the
     // property updates when the attribute changes.
-    assertTrue(element.propNonReflected);
+    assertEquals('other2', element.propNonReflected);
+  });
+
+  test('InitialAndInheritedValues', async function() {
+    document.body.innerHTML = getTrustedHTML`
+       <cr-dummy-properties-with-accessor
+           prop-reflected="inherited" prop-non-reflected="inherited">
+       </cr-dummy-properties-with-accessor>
+    `;
+    const element =
+        document.body.querySelector<CrDummyPropertiesWithAccessorElement>(
+            CrDummyPropertiesWithAccessorElement.is)!;
+
+    // Check initial state.
+    assertEquals('inherited', element.propReflected);
+    assertEquals('inherited', element.propNonReflected);
+
+    // Check `changedProperties` in initial willUpdate call.
+    assertEquals(1, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[0]!, undefined, undefined);
+    // Check `changedProperties` in initial updated call.
+    assertEquals(1, updatedCalls.length);
+    assertChangedProperties(updatedCalls[0]!, undefined, undefined);
+
+    element.propReflected = 'other1';
+    element.propNonReflected = 'other1';
+    await microtasksFinished();
+
+    // Check `changedProperties` in 2nd willUpdate call.
+    assertEquals(2, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[1]!, 'inherited', 'inherited');
+    // Check `changedProperties` in 2nd updated call.
+    assertEquals(2, updatedCalls.length);
+    assertChangedProperties(updatedCalls[1]!, 'inherited', 'inherited');
+    // Check property -> attribute
+    assertEquals('other1', element.getAttribute('prop-reflected'));
+    // Check that non-reflected property leaves the attribute unaffected.
+    assertEquals('inherited', element.getAttribute('prop-non-reflected'));
+
+    element.setAttribute('prop-reflected', 'other2');
+    element.setAttribute('prop-non-reflected', 'other2');
+    await microtasksFinished();
+
+    // Check `changedProperties` in 3rd willUpdate call.
+    assertEquals(3, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[2]!, 'other1', 'other1');
+    // Check `changedProperties` in 3rd updated call.
+    assertEquals(3, updatedCalls.length);
+    assertChangedProperties(updatedCalls[2]!, 'other1', 'other1');
+
+    // Check attribute -> property
+    assertEquals('other2', element.propReflected);
+    // Non-reflected property changes don't update the attribute, but the
+    // property updates when the attribute changes.
+    assertEquals('other2', element.propNonReflected);
   });
 });

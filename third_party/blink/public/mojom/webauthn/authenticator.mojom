@@ -383,7 +383,7 @@ enum Mediation {
 struct PublicKeyCredentialRequestOptions {
   Mediation mediation = Mediation.MODAL;
 
-  // Aflag word corresponding to the flags in credential_type_flags.mojom,
+  // A flag word corresponding to the flags in credential_type_flags.mojom,
   // representing the types of credentials that were indicated in the request.
   int32 requested_credential_type_flags;
 

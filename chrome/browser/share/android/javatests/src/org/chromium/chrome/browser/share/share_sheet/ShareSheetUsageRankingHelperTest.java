@@ -18,10 +18,12 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.LooperMode;
 
@@ -57,6 +59,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ShareSheetUsageRankingHelperTest {
     private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ShareSheetBottomSheetContent mBottomSheet;
@@ -75,7 +78,6 @@ public class ShareSheetUsageRankingHelperTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
 
         mActivity = Robolectric.setupActivity(Activity.class);

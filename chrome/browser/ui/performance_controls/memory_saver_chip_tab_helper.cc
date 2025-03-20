@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -132,7 +133,7 @@ void MemorySaverChipTabHelper::ComputeChipState(
   bool const is_site_supported =
       memory_saver::IsURLSupported(navigation_handle->GetURL());
 
-  if (!(was_discarded &&
+  if (!(is_memory_saver_mode_enabled_ && was_discarded &&
         (discard_reason == mojom::LifecycleUnitDiscardReason::PROACTIVE ||
          discard_reason == mojom::LifecycleUnitDiscardReason::SUGGESTED) &&
         is_site_supported)) {
@@ -149,7 +150,7 @@ void MemorySaverChipTabHelper::ComputeChipState(
 }
 
 void MemorySaverChipTabHelper::UpdatePageActionState() {
-  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (!IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
     return;
   }
 
@@ -161,11 +162,6 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
   }
   memory_saver::MemorySaverChipController* controller =
       tab_features->memory_saver_chip_controller();
-
-  if (!is_memory_saver_mode_enabled_) {
-    controller->Hide();
-    return;
-  }
 
   switch (chip_state_) {
     case memory_saver::ChipState::HIDDEN:
@@ -190,7 +186,13 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
 void MemorySaverChipTabHelper::OnMemorySaverModeChanged() {
   is_memory_saver_mode_enabled_ =
       UserPerformanceTuningManager::GetInstance()->IsMemorySaverModeActive();
-  UpdatePageActionState();
+
+  // If disabling the feature, clear any active UI. If enabling, let future
+  // navigation events show the UI.
+  if (!is_memory_saver_mode_enabled_) {
+    chip_state_ = memory_saver::ChipState::HIDDEN;
+    UpdatePageActionState();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MemorySaverChipTabHelper);

@@ -189,7 +189,7 @@ void ParentToBrowser(Browser* browser,
   // in fullscreen cases.
   zoom_bubble->set_parent_window(
       zoom_bubble->anchor_widget()
-          ? nullptr
+          ? gfx::NativeView()
           : browser_view->GetWidget()->GetNativeView());
 
   views::BubbleDialogDelegateView::CreateBubble(zoom_bubble);
@@ -347,7 +347,7 @@ std::u16string ZoomBubbleView::GetAccessibleWindowTitle() const {
   ToolbarButtonProvider* provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
 
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (IsPageActionMigrated(PageActionIconType::kZoom)) {
     return provider->GetPageActionView(kActionZoomNormal)->GetAccessibleName();
   }
 

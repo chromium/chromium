@@ -940,9 +940,13 @@ void ComputeSurfaceDrawProperties(PropertyTrees* property_trees,
   SetSurfaceClipRect(property_trees, render_surface);
 }
 
-void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
-                                   RenderSurfaceList* render_surface_list,
-                                   PropertyTrees* property_trees) {
+void AddSurfaceToRenderSurfaceList(
+    RenderSurfaceImpl* render_surface,
+    RenderSurfaceList* render_surface_list,
+    PropertyTrees* property_trees,
+    const base::flat_set<blink::ViewTransitionToken>&
+        capture_view_transition_tokens,
+    std::vector<RenderSurfaceImpl*>& view_transition_capture_surfaces) {
   // |render_surface| must appear after its target, so first make sure its
   // target is in the list.
   RenderSurfaceImpl* target = render_surface->render_target();
@@ -963,8 +967,9 @@ void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
     CHECK(vt_target);
 
     if (!vt_target->is_render_surface_list_member()) {
-      AddSurfaceToRenderSurfaceList(vt_target, render_surface_list,
-                                    property_trees);
+      AddSurfaceToRenderSurfaceList(
+          vt_target, render_surface_list, property_trees,
+          capture_view_transition_tokens, view_transition_capture_surfaces);
     }
   }
 
@@ -972,11 +977,19 @@ void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
   // changes the render list in an incorrect way due to CC assumptions about how
   // surfaces and view-transition captures interact.
   if (!is_root && !target->is_render_surface_list_member()) {
-    AddSurfaceToRenderSurfaceList(target, render_surface_list, property_trees);
+    AddSurfaceToRenderSurfaceList(target, render_surface_list, property_trees,
+                                  capture_view_transition_tokens,
+                                  view_transition_capture_surfaces);
   }
   render_surface->ClearAccumulatedContentRect();
   render_surface_list->push_back(render_surface);
   render_surface->set_is_render_surface_list_member(true);
+  if (render_surface->ViewTransitionElementResourceId().MatchesToken(
+          capture_view_transition_tokens)) {
+    // The capture surface itself has contributions.
+    render_surface->set_has_view_transition_capture_contributions(true);
+    view_transition_capture_surfaces.push_back(render_surface);
+  }
   if (is_root) {
     // The root surface does not contribute to any other surface, it has no
     // target.
@@ -1146,15 +1159,19 @@ void ComputeInitialRenderSurfaceList(
        i < static_cast<int>(effect_tree.size()); ++i) {
     if (RenderSurfaceImpl* render_surface = effect_tree.GetRenderSurface(i)) {
       render_surface->set_is_render_surface_list_member(false);
+      render_surface->set_has_view_transition_capture_contributions(false);
       render_surface->reset_num_contributors();
     }
   }
+
+  std::vector<RenderSurfaceImpl*> view_transition_capture_surfaces;
 
   RenderSurfaceImpl* root_surface =
       effect_tree.GetRenderSurface(kContentsRootPropertyNodeId);
   // The root surface always gets added to the render surface  list.
   AddSurfaceToRenderSurfaceList(root_surface, render_surface_list,
-                                property_trees);
+                                property_trees, capture_view_transition_tokens,
+                                view_transition_capture_surfaces);
 
   // For all non-skipped layers, add their target to the render surface list if
   // it's not already been added, and add their content rect to the target
@@ -1201,8 +1218,9 @@ void ComputeInitialRenderSurfaceList(
 
     RenderSurfaceImpl* render_target = layer->render_target();
     if (!render_target->is_render_surface_list_member()) {
-      AddSurfaceToRenderSurfaceList(render_target, render_surface_list,
-                                    property_trees);
+      AddSurfaceToRenderSurfaceList(
+          render_target, render_surface_list, property_trees,
+          capture_view_transition_tokens, view_transition_capture_surfaces);
     }
 
     AdjustLayerDrawPropertiesForPixelAlignmentOffset(layer, property_trees);
@@ -1223,6 +1241,31 @@ void ComputeInitialRenderSurfaceList(
         gfx::Rect());
     view_transition_content_layers[layer->ViewTransitionResourceId()] =
         view_transition_content_layer;
+  }
+
+  // Mark any intermediate surfaces as having view transition contributions.
+  for (RenderSurfaceImpl* render_surface : view_transition_capture_surfaces) {
+    CHECK(render_surface->IsViewTransitionElement());
+    CHECK(render_surface->has_view_transition_capture_contributions());
+    // Find an ancestor that is also a view transition capture element.
+    RenderSurfaceImpl* view_transition_target = render_surface->render_target();
+    while (
+        view_transition_target != root_surface &&
+        !view_transition_target->has_view_transition_capture_contributions()) {
+      view_transition_target = view_transition_target->render_target();
+    }
+
+    // If we found a `view_transition_target` which has view transition capture
+    // contributions, then mark the chain between render_surface and the
+    // `view_transition_target` as having contributions.
+    if (view_transition_target->has_view_transition_capture_contributions()) {
+      RenderSurfaceImpl* intermediate_target = render_surface->render_target();
+      while (intermediate_target != view_transition_target) {
+        intermediate_target->set_has_view_transition_capture_contributions(
+            true);
+        intermediate_target = intermediate_target->render_target();
+      }
+    }
   }
 }
 

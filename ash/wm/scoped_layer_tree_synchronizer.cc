@@ -25,6 +25,8 @@ namespace {
 
 using Corner = gfx::RRectF::Corner;
 
+constexpr float kEpsilon = std::numeric_limits<float>::epsilon();
+
 float Square(float n) {
   return std::pow(n, 2);
 }
@@ -140,7 +142,7 @@ struct CircularArc {
     }
 
     // Single intersection point. Circles are tangent to each other.
-    if (d == r1 + r2) {
+    if (std::abs(d - r1 + r2) < kEpsilon) {  // d == 0
       float x = (c1.x() + c2.x()) / 2;
       float y = (c1.y() + c2.y()) / 2;
       return {{gfx::PointF(x, y)}, /*infinite_points=*/false};

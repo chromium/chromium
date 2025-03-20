@@ -1,0 +1,3 @@
+allowed-duplicate-crates = ["cfg-if"]
+avoid-breaking-exported-api = true
+msrv = "1.48.0"

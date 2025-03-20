@@ -141,4 +141,25 @@ suite('cr-radio-button', function() {
     labelWrapperRect = labelWrapper.getBoundingClientRect();
     assertGT(buttonRect.left, labelWrapperRect.left);
   });
+
+  test('No ripple', function() {
+    // Reset the radio button to have no ripple. noRipple is only checked
+    // in connectedCallback().
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    radioButton = document.createElement('cr-radio-button');
+    radioButton.noRipple = true;
+    document.body.appendChild(radioButton);
+
+    function getRipple() {
+      return radioButton.shadowRoot.querySelector('cr-ripple');
+    }
+
+    assertFalse(!!getRipple());
+    // Confirm that "up" and "blur" events don't call getRipple() when
+    // noRipple is set to true.
+    radioButton.fire('up');
+    assertFalse(!!getRipple());
+    radioButton.fire('blur');
+    assertFalse(!!getRipple());
+  });
 });

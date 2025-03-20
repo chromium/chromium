@@ -166,7 +166,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
  private:
   gfx::NativeView GetHostView() const override {
     views::Widget* const host_widget = GetHostWidget();
-    return host_widget ? host_widget->GetNativeView() : nullptr;
+    return host_widget ? host_widget->GetNativeView() : gfx::NativeView();
   }
 
   // Add/remove observer.

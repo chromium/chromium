@@ -12,12 +12,12 @@ import static org.mockito.Mockito.when;
 import android.content.res.Resources;
 import android.graphics.Color;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.android.XmlResourceParserImpl;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -63,14 +63,10 @@ public class WebApkSyncServiceTest {
 
     @Mock private Resources mMockResources;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeClockRule = new FakeTimeTestRule();
 
     private String mPrimaryIconXmlContents;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     private XmlResourceParserImpl getMockXmlResourceParserImpl() {
         try {

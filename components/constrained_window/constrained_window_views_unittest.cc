@@ -44,7 +44,7 @@ class TestConstrainedWindowViewsClient
     return nullptr;
   }
   gfx::NativeView GetDialogHostView(gfx::NativeWindow parent) override {
-    return nullptr;
+    return gfx::NativeView();
   }
 };
 
@@ -96,8 +96,8 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
     auto contents = std::make_unique<views::StaticSizedView>();
     contents_ = delegate_->SetContentsView(std::move(contents));
 
-    dialog_ = views::DialogDelegate::CreateDialogWidget(delegate_.get(),
-                                                        GetContext(), nullptr);
+    dialog_ = views::DialogDelegate::CreateDialogWidget(
+        delegate_.get(), GetContext(), gfx::NativeView());
 
     // Create a dialog host sufficiently large enough to accommodate dialog
     // size changes during testing.
@@ -229,7 +229,7 @@ TEST_F(ConstrainedWindowViewsTest, MAYBE_NullModalParent) {
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetModalType(ui::mojom::ModalType::kWindow);
   views::Widget* widget =
-      CreateBrowserModalDialogViews(delegate.get(), nullptr);
+      CreateBrowserModalDialogViews(delegate.get(), gfx::NativeWindow());
   widget->Show();
   EXPECT_TRUE(widget->IsVisible());
   widget->CloseNow();

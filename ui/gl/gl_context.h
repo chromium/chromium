@@ -107,6 +107,10 @@ struct GL_EXPORT GLContextAttribs {
   int client_minor_es_version = 0;
   bool can_skip_validation = false;
 
+  // Use EXT_ANGLE_create_context_passthrough_shaders if it is available to tell
+  // ANGLE to not translate shaders and pass them unaltered to the driver.
+  bool passthrough_shaders = false;
+
   // If true, and if supported (for EGL, this requires the robustness
   // extension), set the reset notification strategy to lose context on reset.
   // This setting can be changed independently of robust_buffer_access.

@@ -23,12 +23,15 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_cell.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
@@ -137,6 +140,26 @@
     // For convenience, add the identity, if it was not added yet.
     [self addFakeIdentity:identity withUnknownCapabilities:NO];
   }
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  authenticationService->SignIn(identity,
+                                signin_metrics::AccessPoint::kSettings);
+}
+
++ (void)signinWithFakeManagedIdentityInPersonalProfile:
+    (FakeSystemIdentity*)identity {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  CHECK(IsIdentityManaged(identity).value_or(NO));
+  if (![self isIdentityAdded:identity]) {
+    // For convenience, add the identity, if it was not added yet.
+    [self addFakeIdentity:identity withUnknownCapabilities:NO];
+  }
+
+  GetApplicationContext()
+      ->GetAccountProfileMapper()
+      ->MakePersonalProfileManagedWithGaiaID(GaiaId(identity.gaiaID));
+
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);

@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Ezkutatu transkripzioa</translation>
 <translation id="160633243685262989">Aurrebista-irudia</translation>
 <translation id="1611649489706141841">aurrera</translation>
-<translation id="1615144046047995187">Ezin da deskargatu. Saiatu berriro edo berrabiarazi Chromebook-a.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datu-erabilera</translation>
 <translation id="1618566998877964907">Erabili gai bat</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Audio-grabaketen zerrenda</translation>
 <translation id="2561093647892030937">limoiak</translation>
 <translation id="2570743873672969996">Abian da <ph name="TEST_NAME" /> proba…</translation>
-<translation id="2573178735329662769">Chromebook-aren audio guztia grabatzen</translation>
 <translation id="2576253868710695442">2 GB hartuko ditu biltegian</translation>
 <translation id="2584547424703650812">Paisaia distiratsuak</translation>
 <translation id="2584559707064218956">Konfiguratzeko, joan Ezarpenak atalera</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">urdin eta arrosa</translation>
 <translation id="498186245079027698">Eman begirada bat eskanerrari eta saiatu berriro. Ziurtatu eskaneatutako fitxategiak gordetzeko behar beste toki dagoela gailuan.</translation>
 <translation id="4982627662315910959">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat Maius eta beste tekla aldatzaile bat erabilita (Ktrl, Alt edo <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Chromebook-aren audioa</translation>
 <translation id="4985509611418653372">Exekutatu</translation>
 <translation id="4987769320337599931">Suebakia</translation>
 <translation id="4988526792673242964">Orriak</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Eguneratzen jarraitzeko, deskonektatu USB kablea <ph name="DEVICE_NAME" /> gailutik eta konekta ezazu berriro</translation>
 <translation id="5099354524039520280">gora</translation>
 <translation id="5107243100836678918">Baliteke <ph name="META_KEY" /> teklarik gabeko lasterbideak gatazkan egotea aplikazioren baten lasterbidearekin. Lasterbide hau erabiltzen jarraitzeko, saka ezazu berriro; bestela, sakatu beste lasterbide bat <ph name="KEY" /> tekla erabilita. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Ezin da deskargatu <ph name="LANGUAGE_NAME" /> transkribatzeko eredua. Saiatu berriro edo berrabiarazi Chromebook-a</translation>
 <translation id="5108781503443873320">Antzekoak:</translation>
-<translation id="5121677070210013200">Ezin da deskargatu transkripzio-eredua. Saiatu berriro edo berrabiarazi Chromebook-a.</translation>
 <translation id="5130848777448318809">poneyak</translation>
 <translation id="5137451382116112100">Osoa</translation>
 <translation id="5139813694804168398">ez molestatzeko modua</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">atzeko planoko argiaren kolorea</translation>
 <translation id="5292579816060236070">Egunsentia erakusten duen horma-papera</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> bertsioa</translation>
+<translation id="5300172019534884676">aktibatu edo desaktibatu kamerarako sarbidea</translation>
 <translation id="5300814202279832142">Eraman leihoa lan-eremura</translation>
 <translation id="5302048478445481009">Hizkuntza</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> gailuko horma-paper esklusiboa</translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Erreproduzitu</translation>
 <translation id="5901630391730855834">Horia</translation>
 <translation id="5903200662178656908">Gailua teklatu baten eta sagu baten konbinazio bat da.</translation>
+<translation id="5903822368221507416">Ezkutatu fitxak</translation>
 <translation id="5904994456462260490">Gehitu beste APN bat</translation>
 <translation id="590746845088109442">katuak</translation>
 <translation id="5907649332524363701">teklen kolorea</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Konektatu</translation>
 <translation id="6122277663991249694">Chrome OS-ren idazketa-metodoaren zerbitzua</translation>
 <translation id="6127426868813166163">kolore zuriko</translation>
-<translation id="613049107179582049">Chromebook-aren audioa aktibatuta dagoenean, gailuan erreproduzitzen den audio guztia grabatzen du grabagailuak</translation>
 <translation id="6136285399872347291">atzera</translation>
 <translation id="6137614725462089991">ziberpunka</translation>
 <translation id="6137767437444130246">Erabiltzaile-ziurtagiria</translation>
@@ -1417,7 +1413,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB bidezko ukipen-pantaila</translation>
 <translation id="757747079855995705">harria</translation>
-<translation id="7584853321964440104">Ezin da deskargatu. Saiatu berriro edo berrabiarazi Chromebook-a.</translation>
 <translation id="7590883480672980941">Idazketa-metodoaren ezarpenak</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> geratzen dira</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> domeinuaren administratzaileak <ph name="DEVICE_TYPE" /> hau noiz erabil daitekeen ezarri du.</translation>
@@ -1784,7 +1779,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="9218016617214286986">Erakutsi APN ezagunak</translation>
 <translation id="932327136139879170">Hasiera</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Ziurtatu mikrofonoa konektatuta dagoela edo berrabiarazi Chromebook-a</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> funtziorako tekla falta da. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Grabaketako ahotsak konparatu, gauza bakoitza nork eta noiz esan duen adieraz dezan transkripzioak.</translation>

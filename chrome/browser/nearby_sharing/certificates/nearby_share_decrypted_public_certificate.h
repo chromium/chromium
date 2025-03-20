@@ -69,7 +69,7 @@ class NearbyShareDecryptedPublicCertificate {
   NearbyShareDecryptedPublicCertificate(
       base::Time not_before,
       base::Time not_after,
-      std::unique_ptr<crypto::SymmetricKey> secret_key,
+      base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key,
       std::vector<uint8_t> public_key,
       std::vector<uint8_t> id,
       nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
@@ -83,7 +83,7 @@ class NearbyShareDecryptedPublicCertificate {
 
   // A 32-byte AES key that was used for metadata key and metadata decryption.
   // Also, used to generate an authentication token hash.
-  std::unique_ptr<crypto::SymmetricKey> secret_key_;
+  std::array<uint8_t, kNearbyShareNumBytesSecretKey> secret_key_;
 
   // A P-256 public key used for verification. The bytes comprise a DER-encoded
   // ASN.1 SubjectPublicKeyInfo from the X.509 specification (RFC 5280).

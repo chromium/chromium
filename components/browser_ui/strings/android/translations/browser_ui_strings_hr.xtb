@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Web-lokacije obično upotrebljavaju komunikaciju kratkog dometa (NFC) za rad s oznakama ili uređajima u blizini, na primjer za skeniranje znački ili plaćanje dodirom</translation>
 <translation id="1547123415014299762">Dopušteni su kolačići trećih strana</translation>
 <translation id="1593426485665524382">Nove radnje dostupne su pri vrhu zaslona</translation>
+<translation id="1615755956145364867">Web-lokacije mogu tražiti dopuštenje za reprodukciju zaštićenog sadržaja</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
+<translation id="1621729191093924223">Značajke kojima je potreban mikrofon neće raditi</translation>
 <translation id="1633720957382884102">Povezane web-lokacije</translation>
 <translation id="1644574205037202324">Povijest</translation>
 <translation id="1652197001188145583">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu NFC uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati NFC uređaje.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Web-lokacije moraju tražiti dopuštenje za povezivanje s uređajem (preporučeno)</translation>
 <translation id="1779089405699405702">Dekodiranje slika</translation>
 <translation id="1785415724048343560">Preporučuje se za najbolji doživljaj</translation>
+<translation id="1796588414813960292">Značajke kojima je potreban zvuk neće funkcionirati</translation>
 <translation id="1799920918471566157">Savjeti za Chrome</translation>
 <translation id="1816835383954230954">Kad je ta opcija uključena, Chrome se pokreće brže, a značajke koje upotrebljavaju JavaScript trebale bi funkcionirati kako je predviđeno. Kad je ta opcija isključena, to slabi izvedbu, ali V8 čini otpornijim na napade.</translation>
 <translation id="1818308510395330587">Da bi aplikacija <ph name="APP_NAME" /> mogla koristiti proširenu stvarnost, uključite kameru i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL web-lokacije</translation>
 <translation id="2004697686368036666">Značajke na nekim web-lokacijama možda neće funkcionirati</translation>
 <translation id="2025115093177348061">Proširena stvarnost</translation>
+<translation id="2028449514182362831">Značajke kojima su potrebni senzori kretanja neće raditi</translation>
 <translation id="2030769033451695672">Dodirnite da biste se vratili na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2091887806945687916">Zvuk</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Otvaranje je blokirano: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Nakon što je napustite, web-lokacija može nastaviti sa sinkronizacijom kao što je prijenos fotografija ili slanje poruke chata</translation>
 <translation id="4278390842282768270">Dopušteno</translation>
+<translation id="4290791284969893584">Nakon zatvaranja stranice zadaci koje ste započeli možda se neće dovršiti</translation>
 <translation id="429312253194641664">Web-lokacija reproducira medije</translation>
 <translation id="42981349822642051">Proširi</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Istječe sutra}one{Istječe za # dan}few{Istječe za # dana}other{Istječe za # dana}}</translation>
@@ -524,6 +529,7 @@
 <translation id="789180354981963912">Blokiraj kolačiće trećih strana u anonimnom načinu:</translation>
 <translation id="789722939441020330">Ne dopuštaj web-lokacijama automatsko preuzimanje više datoteka</translation>
 <translation id="7940722705963108451">Podsjeti me</translation>
+<translation id="7948081750384205628">Saznajte više o postavci <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Web-lokacije mogu tražiti dopuštenje da vide tekst i slike u vašem međuspremniku</translation>
 <translation id="7986741934819883144">Odaberite kontakt</translation>
 <translation id="7990211076305263060">Kada je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu mikrofona. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati vaš mikrofon.</translation>
@@ -531,6 +537,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Sakrij karticu Nastavi s ovom karticom}one{Sakrij karticu Nastavi s ovim karticama}few{Sakrij karticu Nastavi s ovim karticama}other{Sakrij karticu Nastavi s ovim karticama}}</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8042586301629853791">Kriterij razvrstavanja:</translation>
+<translation id="8051193500142930381">Značajke kojima je potrebna kamera neće raditi</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
 <translation id="8068648041423924542">Ne može se odabrati certifikat.</translation>
 <translation id="8077120325605624147">Svaka web-lokacija koju posjetite može vam prikazati bilo koji oglas</translation>

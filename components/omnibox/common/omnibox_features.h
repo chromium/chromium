@@ -48,6 +48,12 @@ BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnSRP);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
 // Related, kMaxZeroSuggestMatches.
 
+// Contextual zero-prefix (aka zero-suggest). There are suggestions based on the
+// user's current URL. Fullfillment of these suggestions is delegated to Lens
+// since Lens provides additional logic for contextualizing the results to the
+// current page, by using more than the URL, i.e. the page content.
+BASE_DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
+
 // On Device Suggest.
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderIncognito);
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderNonIncognito);

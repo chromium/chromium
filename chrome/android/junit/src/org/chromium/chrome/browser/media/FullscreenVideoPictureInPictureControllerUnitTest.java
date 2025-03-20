@@ -17,12 +17,14 @@ import android.os.Build;
 import android.os.PowerManager;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
@@ -53,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 public class FullscreenVideoPictureInPictureControllerUnitTest {
     private static final int TAB_ID = 0;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private FullscreenManager mFullscreenManager;
@@ -99,7 +102,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ShadowLog.stream = System.out;
 
         ShadowPostTask.setTestImpl(

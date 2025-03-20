@@ -13,10 +13,12 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 public class CustomTabAppMenuHelperUnitTest {
     private static final String PACKAGE_NAME = "org.foo.bar";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock private Supplier<Profile> mProfileSupplier;
@@ -44,7 +47,6 @@ public class CustomTabAppMenuHelperUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         // Testing conditions other than version-specific/flag-controlled ones.
         CustomTabAppMenuHelper.setAppHistoryEnabledForTesting(true);
     }

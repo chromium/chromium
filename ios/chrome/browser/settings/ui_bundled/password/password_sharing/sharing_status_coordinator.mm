@@ -74,7 +74,7 @@
       [[SharingStatusViewController alloc] initWithNibName:nil bundle:nil];
   self.viewController.delegate = self;
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   self.mediator = [[SharingStatusMediator alloc]
         initWithAuthService:AuthenticationServiceFactory::GetForProfile(profile)
       accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(

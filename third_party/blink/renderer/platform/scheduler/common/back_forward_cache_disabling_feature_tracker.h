@@ -105,7 +105,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // TODO(crbug.com/1366675): Remove back_forward_cache_disabling_features_.
   std::bitset<static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) + 1>
       back_forward_cache_disabling_features_{};
-  TraceableState<bool, TracingCategory::kInfo>
+  TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
       opted_out_from_back_forward_cache_;
 
   // The last set of features passed to FrameOrWorkerScheduler::Delegate::

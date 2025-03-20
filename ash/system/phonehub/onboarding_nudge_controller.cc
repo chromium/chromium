@@ -203,7 +203,7 @@ void OnboardingNudgeController::AddToEligibleDevicesPref(
       pref_service->GetList(kSyncedDevices);
   base::Value::List updated_device_list = devices_in_pref.Clone();
   updated_device_list.Append(device.instance_id());
-  pref_service->SetList(kSyncedDevices, updated_device_list.Clone());
+  pref_service->SetList(kSyncedDevices, std::move(updated_device_list));
 }
 
 void OnboardingNudgeController::ResetNudgePrefs() {

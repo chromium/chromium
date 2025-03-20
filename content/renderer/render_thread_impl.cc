@@ -342,8 +342,11 @@ bool IsBackgrounded(std::optional<base::Process::Priority> process_priority) {
 }
 
 perfetto::StaticString ProcessPriorityToString(
-    base::Process::Priority priority) {
-  switch (priority) {
+    std::optional<base::Process::Priority> priority) {
+  if (!priority) {
+    return "Unknown";
+  }
+  switch (*priority) {
     case base::Process::Priority::kBestEffort:
       return "Best effort";
     case base::Process::Priority::kUserVisible:
@@ -355,8 +358,11 @@ perfetto::StaticString ProcessPriorityToString(
 }
 
 perfetto::StaticString ProcessVisibilityToString(
-    mojom::RenderProcessVisibleState visible_state) {
-  switch (visible_state) {
+    std::optional<mojom::RenderProcessVisibleState> visible_state) {
+  if (!visible_state) {
+    return "Unknown";
+  }
+  switch (*visible_state) {
     case mojom::RenderProcessVisibleState::kVisible:
       return "Visible";
     case mojom::RenderProcessVisibleState::kHidden:
@@ -496,8 +502,6 @@ RenderThreadImpl::RenderThreadImpl(
       main_thread_scheduler_(std::move(scheduler)),
       client_id_(client_id) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
-  TRACE_EVENT_BEGIN("renderer", "Unknown", process_priority_track_);
-  TRACE_EVENT_BEGIN("renderer", "Unknown", process_visibility_track_);
   Init();
 }
 
@@ -528,12 +532,17 @@ RenderThreadImpl::RenderThreadImpl(
       main_thread_scheduler_(std::move(scheduler)),
       client_id_(GetClientIdFromCommandLine()) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
-  TRACE_EVENT_BEGIN("renderer", "Unknown", process_priority_track_);
-  TRACE_EVENT_BEGIN("renderer", "Unknown", process_visibility_track_);
   Init();
 }
 
 void RenderThreadImpl::Init() {
+  TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(std::nullopt),
+                    process_priority_track_);
+  TRACE_EVENT_BEGIN("renderer", ProcessVisibilityToString(std::nullopt),
+                    process_visibility_track_);
+  base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
+      weak_factory_.GetWeakPtr());
+
   TRACE_EVENT0("startup", "RenderThreadImpl::Init");
 
   SCOPED_UMA_HISTOGRAM_TIMER("Renderer.RenderThreadImpl.Init");
@@ -681,6 +690,9 @@ void RenderThreadImpl::Init() {
 }
 
 RenderThreadImpl::~RenderThreadImpl() {
+  base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
+      this);
+
   TRACE_EVENT_END("renderer", process_priority_track_);
   TRACE_EVENT_END("renderer", process_visibility_track_);
 
@@ -741,6 +753,18 @@ std::string RenderThreadImpl::GetLocale() {
   DCHECK(!lang.empty());
   return lang;
 }
+
+void RenderThreadImpl::OnTraceLogEnabled() {
+  TRACE_EVENT_END("renderer", process_priority_track_);
+  TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(process_priority_),
+                    process_priority_track_);
+
+  TRACE_EVENT_END("renderer", process_visibility_track_);
+  TRACE_EVENT_BEGIN("renderer", ProcessVisibilityToString(visible_state_),
+                    process_visibility_track_);
+}
+
+void RenderThreadImpl::OnTraceLogDisabled() {}
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 IPC::SyncMessageFilter* RenderThreadImpl::GetSyncMessageFilter() {
@@ -1270,11 +1294,6 @@ base::WaitableEvent* RenderThreadImpl::GetShutdownEvent() {
 
 int32_t RenderThreadImpl::GetClientId() {
   return client_id_;
-}
-
-void RenderThreadImpl::SetRendererProcessType(
-    blink::scheduler::WebRendererProcessType type) {
-  main_thread_scheduler_->SetRendererProcessType(type);
 }
 
 blink::WebString RenderThreadImpl::GetUserAgent() {

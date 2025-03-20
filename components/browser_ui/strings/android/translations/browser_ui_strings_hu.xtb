@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">A webhelyek általában a közeli rádiófrekvenciás kommunikáció (NFC) technológiát használják a közeli címkékkel vagy eszközökkel való együttműködéshez, például jelvények beolvasásához vagy érintkezés nélküli fizetéshez.</translation>
 <translation id="1547123415014299762">A harmadik féltől származó cookie-k engedélyezve vannak</translation>
 <translation id="1593426485665524382">Új műveletek állnak rendelkezésre a képernyő tetejéhez közel</translation>
+<translation id="1615755956145364867">A webhelyek rákérdezhetnek arra, hogy lejátszhatnak-e védett tartalmakat</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">A mikrofont igénylő funkciók nem működnek majd</translation>
 <translation id="1633720957382884102">Kapcsolódó webhelyek</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1652197001188145583">Ha be van kapcsolva, a webhelyek kérhetik NFC-eszközök használatát. Ha ki van kapcsolva, a webhelyek nem használhatnak NFC-eszközöket.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára egy adott eszközhöz való csatlakozást (ajánlott)</translation>
 <translation id="1779089405699405702">Képdekóder</translation>
 <translation id="1785415724048343560">Ajánlott a legjobb élmény érdekében</translation>
+<translation id="1796588414813960292">A hangot igénylő funkciók nem működnek majd</translation>
 <translation id="1799920918471566157">Chrome-tippek</translation>
 <translation id="1816835383954230954">Ha be van kapcsolva, a Chrome gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük. Ha ki van kapcsolva, csökken a teljesítmény, de ellenállóbb lesz a V8 a támadásokkal szemben.</translation>
 <translation id="1818308510395330587">Ahhoz, hogy a(z) <ph name="APP_NAME" /> használhassa az AR-t, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Webhely URL-je</translation>
 <translation id="2004697686368036666">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően</translation>
 <translation id="2025115093177348061">Kiterjesztett valóság</translation>
+<translation id="2028449514182362831">A mozgásérzékelőket igénylő funkciók nem működnek</translation>
 <translation id="2030769033451695672">Koppintson, hogy visszatérjen ide: <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2091887806945687916">Hang</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Le van tiltva az ide vezető navigáció: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Elhagyásuk után a webhelyek tovább folytathatják a szinkronizálást a feladatok (például fotók feltöltése vagy csevegőüzenetek küldése) befejezése érdekében.</translation>
 <translation id="4278390842282768270">Engedélyezve</translation>
+<translation id="4290791284969893584">Előfordulhat, hogy az adott oldal bezárása után az elkezdett feladatok nem fejeződnek be</translation>
 <translation id="429312253194641664">Az egyik webhely médiatartalmat játszik le</translation>
 <translation id="42981349822642051">Kibontás</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Holnap jár le}other{# nap múlva jár le}}</translation>
@@ -524,6 +529,7 @@
 <translation id="789180354981963912">Harmadik felektől származó cookie-k letiltása Inkognitó módban:</translation>
 <translation id="789722939441020330">A webhelyek nem kérhetnek engedélyt több fájl automatikus letöltésére</translation>
 <translation id="7940722705963108451">Emlékeztessen</translation>
+<translation id="7948081750384205628">További információ a következőről: <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">A webhelyek engedélyt kérhetnek arra, hogy lássák a vágólapon szereplő szöveget és képeket</translation>
 <translation id="7986741934819883144">Válasszon ki egy névjegyet</translation>
 <translation id="7990211076305263060">Ha be van kapcsolva, a webhelyek hozzáférést kérhetnek az Ön mikrofonjához. Ha ki van kapcsolva, a webhelyek nem használhatják a mikrofont.</translation>
@@ -531,6 +537,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{A Folytatás ezen a lapon kártya elrejtése}other{A Folytatás ezekkel a lapokkal kártya elrejtése}}</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
 <translation id="8042586301629853791">Rendezés:</translation>
+<translation id="8051193500142930381">A kamerát igénylő funkciók nem működnek majd</translation>
 <translation id="8067883171444229417">Videó lejátszása</translation>
 <translation id="8068648041423924542">A tanúsítvány kiválasztása nem sikerült.</translation>
 <translation id="8077120325605624147">Bármely felkeresett webhely bármilyen hirdetést megjeleníthet Önnek</translation>

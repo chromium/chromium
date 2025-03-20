@@ -245,11 +245,11 @@
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:_identity
                                       accessPoint:self.accessPoint
+                             precedingHistorySync:YES
                                 postSignInActions:postSigninActions
                          presentingViewController:self.baseViewController
                                        anchorView:nil
                                        anchorRect:CGRectNull];
-  authenticationFlow.precedingHistorySync = YES;
   [_mediator startSignInOnlyFlowWithAuthenticationFlow:authenticationFlow];
 }
 

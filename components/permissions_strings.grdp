@@ -311,12 +311,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_SAA_PERMISSION_CHIP" desc="Button text representing a request for using Storage Access API from a website embedded in another website. When clicked, shows a permission prompt bubble with more information.">
       Allow embedded content?
     </message>
-    <message name="IDS_VR_PERMISSION_CHIP" desc="Button text representing a request for using VR from a website. When clicked, shows a permission prompt bubble with more information.">
-      Allow VR?
-    </message>
-    <message name="IDS_AR_PERMISSION_CHIP" desc="Button text representing a request for using AR from a website. When clicked, shows a permission prompt bubble with more information.">
-      Allow AR?
-    </message>
     <message name="IDS_IDLE_DETECTION_PERMISSION_CHIP" desc="Button text representing a request for using using idle detection from a website. When clicked, shows a permission prompt bubble with more information.">
       Know your device use?
     </message>
@@ -333,13 +327,39 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       Install web apps?
     </message>
 
+    <message name="IDS_AR_PERMISSION_CHIP" desc="Button text representing a request for using AR from a website. When clicked, shows a permission prompt bubble with more information.">
+      Allow AR?
+    </message>
+    <message name="IDS_PERMISSIONS_AR_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that an AR permission requested has been granted.">
+      AR allowed
+    </message>
+    <message name="IDS_PERMISSIONS_AR_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that an AR permission requested has been granted once.">
+      AR allowed this time
+    </message>
+    <message name="IDS_PERMISSIONS_AR_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that an AR permission requested has been denied.">
+      AR not allowed
+    </message>
+
+    <message name="IDS_VR_PERMISSION_CHIP" desc="Button text representing a request for using VR from a website. When clicked, shows a permission prompt bubble with more information.">
+      Allow VR?
+    </message>
+    <message name="IDS_PERMISSIONS_VR_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a VR permission requested has been granted.">
+      VR allowed
+    </message>
+    <message name="IDS_PERMISSIONS_VR_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a VR permission requested has been granted once.">
+      VR allowed this time
+    </message>
+    <message name="IDS_PERMISSIONS_VR_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a VR permission requested has been denied.">
+      VR not allowed
+    </message>
+
     <message name="IDS_HAND_TRACKING_PERMISSION_CHIP" desc="Button text representing a request for using hand tracking from a website. When clicked, shows a permission prompt bubble with more information.">
       Allow hand tracking?
     </message>
     <message name="IDS_HAND_TRACKING_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for using hand tracking from a website. When clicked, shows a permission prompt bubble with more information.">
       Hand tracking blocked
     </message>
-    <message name="IDS_PERMISSIONS_HAND_TRACKING_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been granted..">
+    <message name="IDS_PERMISSIONS_HAND_TRACKING_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been granted.">
       Hand tracking allowed
     </message>
     <message name="IDS_PERMISSIONS_HAND_TRACKING_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been granted once.">
@@ -384,7 +404,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       <message name="IDS_PERMISSIONS_NOTIFICATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a notification permission requested has been denied.">
         Notifications not allowed
     </message>
-      <message name="IDS_PERMISSIONS_GEOLOCATION_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been granted..">
+      <message name="IDS_PERMISSIONS_GEOLOCATION_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been granted.">
         Location allowed
     </message>
     <message name="IDS_PERMISSIONS_GEOLOCATION_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been granted once.">
@@ -393,7 +413,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       <message name="IDS_PERMISSIONS_GEOLOCATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been denied.">
         Location not allowed
     </message>
-    <message name="IDS_PERMISSIONS_CAMERA_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a camera permission requested has been granted..">
+    <message name="IDS_PERMISSIONS_CAMERA_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a camera permission requested has been granted.">
         Camera allowed
     </message>
     <message name="IDS_PERMISSIONS_CAMERA_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a camera permission requested has been granted once.">

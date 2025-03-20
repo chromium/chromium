@@ -624,6 +624,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1430915738399379752">Print</translation>
 <translation id="1431188203598586230">Final software update</translation>
 <translation id="1432581352905426595">Manage search engines</translation>
+<translation id="1432650420699700107">Sites can ask to connect to any device on your local network</translation>
 <translation id="1433478348197382180">Reading mode</translation>
 <translation id="1433980411933182122">Startup</translation>
 <translation id="1434696352799406980">This will reset your startup page, new tab page, search engine and pinned tabs. It will also disable all extensions and clear temporary data like cookies. Your bookmarks, history and saved passwords will not be cleared.</translation>
@@ -4838,6 +4839,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4364830672918311045">Display notifications</translation>
 <translation id="4367971618859387374">Display name</translation>
 <translation id="4368960422722232719">Show memory usage on tab hover preview card</translation>
+<translation id="4369151461324628035">Don't allow sites to connect to any device on your local network</translation>
 <translation id="4369215744064167350">Website request approved</translation>
 <translation id="4369233657762989723">Dictation on/off</translation>
 <translation id="436926121798828366">You can change this at any time in <ph name="SETTINGS_LINK" /></translation>
@@ -5391,6 +5393,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4772914216048388646">Orderly</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
 <translation id="4773122030389014189">Share '<ph name="GROUP_NAME" />' tab group</translation>
+<translation id="4773253008034797668">Allowed to connect to any device on your local network</translation>
 <translation id="477548766361111120">Allow extension to read and change this site</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> has been connected</translation>
 <translation id="4776594120007763294">To add a page to read later, click the button</translation>
@@ -7855,6 +7858,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6563002009564846727">View imported certificates from Windows</translation>
 <translation id="6563055593659435495">Can't maintain a connection with your phone. Make sure that your phone is nearby, unlocked and that Bluetooth and Wi-Fi are turned on.</translation>
 <translation id="6564860838537532172">When you search browsing history, your history searches, the page content of best matches and generated model outputs are sent to Google and may be seen by human reviewers to improve this feature.</translation>
+<translation id="6565144332292237355">Sites can use this feature to look for and connect to any device on your local network</translation>
 <translation id="6569931898053264308">Medium savings</translation>
 <translation id="6570622975915850879">Use a different device</translation>
 <translation id="65711204837946324">Needs permission to download</translation>
@@ -11569,6 +11573,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <ph name="LIST_ITEM" />Running Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Do you trust this site with your data?</translation>
+<translation id="9164418710391288146">Not allowed to connect to any device on your local network</translation>
 <translation id="9165856803582999927">Scan this QR code with the camera on the device where you want to create and save your passkey for <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Picture-in-picture</translation>
 <translation id="9166253503936244008">Scan this QR code with the device that has the passkey that you want to use for <ph name="APP_NAME" /></translation>

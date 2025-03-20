@@ -1,0 +1,125 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
+
+#include "base/files/scoped_temp_dir.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
+#include "components/webdata/common/web_database.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+namespace {
+
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
+
+class ValuablesTableTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    db_.AddTable(&table_);
+    ASSERT_EQ(sql::INIT_OK,
+              db_.Init(temp_dir_.GetPath().AppendASCII("TestDB")));
+  }
+
+  ValuablesTable& valuables_table() { return table_; }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  ValuablesTable table_;
+  WebDatabase db_;
+};
+
+TEST_F(ValuablesTableTest, GetLoyaltyCards) {
+  const LoyaltyCard card1 = test::CreateLoyaltyCard();
+  const LoyaltyCard card2 = test::CreateLoyaltyCard2();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card2));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(),
+              UnorderedElementsAre(card1, card2));
+}
+
+TEST_F(ValuablesTableTest, GetLoyaltyCardById) {
+  const LoyaltyCard card1 = test::CreateLoyaltyCard();
+  const LoyaltyCard card2 = test::CreateLoyaltyCard2();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card2));
+  EXPECT_EQ(valuables_table().GetLoyaltyCardById(card1.loyalty_card_id), card1);
+  EXPECT_EQ(valuables_table().GetLoyaltyCardById(card2.loyalty_card_id), card2);
+  EXPECT_EQ(valuables_table().GetLoyaltyCardById("invalid_id"), std::nullopt);
+}
+
+TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard) {
+  LoyaltyCard card1 = test::CreateLoyaltyCard();
+  LoyaltyCard card2 = test::CreateLoyaltyCard2();
+  // Add `card1`.
+  EXPECT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), UnorderedElementsAre(card1));
+  // Update `card1`.
+  card1.unmasked_loyalty_card_suffix = "9876";
+  EXPECT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), UnorderedElementsAre(card1));
+  // Add `card2`.
+  EXPECT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card2));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(),
+              UnorderedElementsAre(card1, card2));
+}
+
+TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_EmptyProgramLogoUrl) {
+  LoyaltyCard card1 = test::CreateLoyaltyCard();
+  card1.program_logo = GURL("");
+  EXPECT_TRUE(card1.program_logo.is_empty());
+  EXPECT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), UnorderedElementsAre(card1));
+}
+
+TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_InvalidProgramLogoUrl) {
+  LoyaltyCard card1 = test::CreateLoyaltyCard();
+  card1.program_logo = GURL("http:://google.com");
+
+  EXPECT_FALSE(card1.program_logo.is_empty());
+  EXPECT_FALSE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), IsEmpty());
+}
+
+TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_EmptyLoyaltyCardId) {
+  LoyaltyCard card1 = test::CreateLoyaltyCard();
+  card1.loyalty_card_id = "";
+
+  EXPECT_FALSE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), IsEmpty());
+}
+
+TEST_F(ValuablesTableTest, RemoveLoyaltyCard) {
+  const LoyaltyCard card1 = test::CreateLoyaltyCard();
+  const LoyaltyCard card2 = test::CreateLoyaltyCard2();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card2));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(),
+              UnorderedElementsAre(card1, card2));
+  EXPECT_TRUE(valuables_table().RemoveLoyaltyCard(card1.loyalty_card_id));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), UnorderedElementsAre(card2));
+  // Removing a non-existing `loyalty_card_id` shouldn't be considered a
+  // failure.
+  EXPECT_TRUE(valuables_table().RemoveLoyaltyCard(card1.loyalty_card_id));
+}
+
+TEST_F(ValuablesTableTest, ClearLoyaltyCards) {
+  const LoyaltyCard card1 = test::CreateLoyaltyCard();
+  const LoyaltyCard card2 = test::CreateLoyaltyCard2();
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card1));
+  ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card2));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(),
+              UnorderedElementsAre(card1, card2));
+  EXPECT_TRUE(valuables_table().ClearLoyaltyCards());
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), IsEmpty());
+}
+
+}  // namespace
+
+}  // namespace autofill

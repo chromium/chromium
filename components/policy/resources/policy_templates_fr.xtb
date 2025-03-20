@@ -501,6 +501,7 @@ Si elle est définie sur "PromptInTab", lorsque l'authentification de l'utilisat
       Cela s'applique à la suppression de la pression sur la mémoire et du mode Haute efficacité.
       Une page supprimée est déchargée et ses ressources entièrement récupérées. L'onglet auquel elle est associée reste dans la barre d'onglets, mais son affichage déclenche une actualisation complète.
       </translation>
+<translation id="1386369130542976774">Spécifie des intervalles hebdomadaires pendant lesquels les appareils ChromeOS ne peuvent pas être utilisés</translation>
 <translation id="138847842893090358">Indiquer l'état de la mise à jour du système</translation>
 <translation id="1389138080311956934">Économies de mémoire maximales.</translation>
 <translation id="1390529781843037070">Si vous activez cette règle, ou si vous ne la configurez pas, les utilisateurs peuvent imprimer sur <ph name="CLOUD_PRINT_NAME" /> à partir de la boîte de dialogue d'impression de <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> peut envoyer des documents à <ph name="CLOUD_PRINT_NAME" /> pour impression. Cela n'empêche pas les utilisateurs d'envoyer des tâches d'impression sur des sites Web.
@@ -3845,6 +3846,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Autoriser le fond d'écran par IA générative sans améliorer les modèles d'IA</translation>
+<translation id="3849923496599301707">Forcer l'autorisation des applis Chrome en mode Kiosque</translation>
 <translation id="3851443303439635700">Contrôlez le seuil d'imbrication avant que la fonction JavaScript setTimeout() commence à être limitée</translation>
 <translation id="3854609566862485607">Cette règle permet de définir un libellé personnalisé servant à identifier les profils gérés. Pour les profils gérés, ce libellé s'affichera à côté de l'avatar dans la barre d'outils. Le libellé personnalisé ne sera pas traduit.
 
@@ -4077,6 +4079,16 @@ Remarque : Si ce paramètre a pour conséquence qu'aucune méthode d'authentifi
 
       Si cette règle est définie sur "True", les suites de chiffrement 3DES dans TLS sont activées. Si cette règle est définie sur "False", celles-ci sont désactivées. Si cette règle n'est pas configurée, les suites de chiffrement 3DES sont désactivées par défaut. Cette règle peut être utilisée pour assurer temporairement la compatibilité avec un serveur obsolète. Il s'agit d'une solution provisoire et il est conseillé de reconfigurer le serveur.
       </translation>
+<translation id="4016078577612157250">Spécifie des intervalles hebdomadaires pendant lesquels les appareils ChromeOS ne peuvent pas être utilisés.
+
+Pendant les intervalles de restriction, les sessions en cours sont fermées et les utilisateurs ne peuvent pas se connecter.
+
+À prendre en compte :
+
+* Les intervalles qui se chevauchent ne sont pas acceptés.
+* Le planning des restrictions liées aux appareils utilise le fuseau horaire de l'appareil.
+* Pour empêcher les utilisateurs de modifier le fuseau horaire de leur appareil, utilisez SystemTimezone.
+* Pour empêcher les utilisateurs de modifier l'heure de leur appareil, utilisez SystemFeaturesDisableList pour désactiver Crosh, et URLBlocklist pour bloquer chrome://set-time.</translation>
 <translation id="4016367078069682737">Cette règle a été supprimée dans M61.
 
       Indique le comportement à adopter par un appareil qui a été fourni avec eCryptfs et qui doit faire la transition vers un chiffrement ext4.
@@ -4125,18 +4137,6 @@ Cette règle s'applique à la fois à l'URL vers laquelle l'utilisateur navigue 
 <translation id="4052529125939620019">Charger l'extension du composant CryptoToken au démarrage</translation>
 <translation id="4053157306171963473">Désactiver les rapports sur le temps d'activité de l'appareil</translation>
 <translation id="4056910949759281379">Désactiver le protocole SPDY</translation>
-<translation id="4057113125482566814">Active le fournisseur de framework d'accessibilité <ph name="UIA_NAME" /> dans <ph name="PRODUCT_NAME" /> pour en permettre l'utilisation par les outils d'accessibilité.
-
-Cette règle est disponible dans <ph name="PRODUCT_NAME" /> pendant une période de transition d'un an afin de permettre aux administrateurs d'entreprise de contrôler le déploiement du fournisseur de framework d'accessibilité <ph name="UIA_NAME" /> du navigateur. Les outils d'accessibilité et autres qui utilisent le framework d'accessibilité <ph name="UIA_NAME" /> pour interagir avec le navigateur peuvent nécessiter des mises à jour pour fonctionner correctement avec le fournisseur <ph name="UIA_NAME" /> du navigateur. Les administrateurs peuvent utiliser cette règle pour désactiver temporairement le fournisseur <ph name="UIA_NAME" /> du navigateur (et rétablir ainsi l'ancien comportement) pendant qu'ils travaillent avec les fournisseurs pour proposer des mises à jour aux outils concernés.
-
-Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'active que son fournisseur <ph name="MSAA_NAME" />. Les outils d'accessibilité et autres qui utilisent le nouveau framework d'accessibilité <ph name="UIA_NAME" /> pour interagir avec le navigateur communiqueront avec lui par l'intermédiaire d'un shim de compatibilité dans <ph name="MS_WIN_NAME" />.
-
-Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> active son fournisseur <ph name="UIA_NAME" /> en plus de son fournisseur <ph name="MSAA_NAME" />.
-Les outils d'accessibilité et autres qui utilisent le nouveau framework d'accessibilité <ph name="UIA_NAME" /> pour interagir avec le navigateur communiqueront directement avec lui.
-
-Si cette règle n'est pas configurée, le framework des variantes dans <ph name="PRODUCT_NAME" /> est utilisé pour activer ou désactiver le fournisseur.
-
-Cette règle ne sera plus disponible à partir de <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="4057442294431066708">Cette règle contrôle l'option de raccourci sélectionnée pour remapper les événements avec F11/F12 dans la sous-page des touches de remappage. Ces paramètres ne s'appliquent qu'aux claviers ChromeOS et sont désactivés par défaut lorsque la règle n'est pas configurée.</translation>
 <translation id="4061590579642538878">Transmettre les informations liées aux rapports d'erreur.</translation>
 <translation id="4062646759141042418">Activer <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL.
@@ -5471,6 +5471,11 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5041315457555330432">Autoriser <ph name="PRODUCT_NAME" /> à ne se connecter qu'aux appareils avec une adresse IP privée, sauf si la fonctionnalité CastAllowAllIPs est activée.</translation>
 <translation id="504689994545234073">Activer le stockage local des fichiers utilisateur</translation>
 <translation id="5048890362473520096">Activer le bac à sable LPAC pour les services d'impression</translation>
+<translation id="5049989450078943331">Si cette règle est définie sur "True", les applis Chrome peuvent continuer à s'exécuter dans une session Kiosque, quel que soit leur état d'activation par défaut.
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur "False", le comportement par défaut défini sur l'appareil est appliqué.
+
+Si l'utilisateur tente de lancer une appli Chrome désactivée, un message lui indique pourquoi elle n'a pas été lancée et lui suggère de contacter son service informatique.</translation>
 <translation id="5055474681190962362">Jour du mois [1-31] (interprété dans le fuseau horaire local de l'appareil) où l'appareil doit redémarrer. Utilisé uniquement quand "frequency" est défini sur "MONTHLY". Si le nombre maximal de jours dans un mois donné est dépassé, le dernier jour de ce mois est sélectionné.</translation>
 <translation id="5055513974503523022">L'arrière-plan de visioconférence par IA générative permet aux utilisateurs de s'exprimer en utilisant les fonctionnalités d'IA générative pour créer des arrière-plans de visioconférence personnalisés dans <ph name="PRODUCT_OS_NAME" />.
 
@@ -5721,11 +5726,11 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si ce paramètre n'est pas défini, la période par défaut est fixée à 604 800 000 millisecondes (une semaine).</translation>
 <translation id="5212810195096589189">Spécifier l'autorisation concernant l'interface de ligne de commande pour les machines virtuelles</translation>
 <translation id="5213038356678567351">Sites Web qui ne doivent jamais déclencher un changement de navigateur.</translation>
-<translation id="5216520638921067085">Précise l'âge minimal de la version au-delà duquel les notifications de relance sont plus agressives. L'âge est calculé à partir de la date de dernière diffusion aux clients de la version en cours.
+<translation id="5216520638921067085">Précise l'ancienneté minimale de la version au-delà de laquelle les notifications de relance deviennent plus fréquentes. L'ancienneté est calculée à partir de la date de dernière diffusion aux clients de la version en cours.
 
 Si une nouvelle version est en attente, qu'un redémarrage du navigateur ou de l'appareil est nécessaire et que la version actuelle a été remplacée depuis plus de jours que le nombre indiqué par ce paramètre, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> est remplacée par deux heures. Si la règle <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> est définie sur 1 ("Obligatoire"), les utilisateurs seront obligés de relancer ou de redémarrer à la fin de la période.
 
-Si elle n'est pas définie ou que l'âge de la version ne peut pas être déterminé, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sera utilisée pour toutes les mises à jour.</translation>
+Si elle n'est pas définie ou que l'ancienneté de la version ne peut pas être déterminée, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sera utilisée pour toutes les mises à jour.</translation>
 <translation id="5216815237712190041">Configurez le fond d'écran de l'appareil à afficher sur la page de connexion avant qu'un utilisateur ne se connecte à l'appareil. Pour configurer cette règle, vous devez indiquer l'URL depuis laquelle l'appareil Chrome OS peut télécharger l'image de fond d'écran et un hachage chiffré utilisé pour vérifier l'intégrité du téléchargement. L'image doit être au format JPEG, et sa taille ne doit pas dépasser 16 Mo. L'URL doit être accessible sans authentification. L'image de fond d'écran est téléchargée et mise en cache. Elle sera de nouveau téléchargée à chaque modification de l'URL ou du hachage.
 
       Si la règle relative au fond d'écran est configurée, l'appareil Chrome OS téléchargera et utilisera l'image de fond d'écran sur l'écran de connexion si aucun utilisateur ne s'est encore connecté à l'appareil. Lorsque l'utilisateur se connecte, la règle relative au fond d'écran pour cet utilisateur est activée.
@@ -6352,6 +6357,7 @@ Si la règle est définie sur une liste non vide et qu'une extension figure dans
 Si cette règle n'est pas configurée ou si elle est définie sur une liste vide, des boîtes de dialogue de confirmation de scan s'affichent lorsque <ph name="GET_SCANNER_LIST_FUNCTION" /> ou <ph name="START_SCAN_FUNCTION" /> sont appelés.</translation>
 <translation id="5599461642204007579">Paramètres de gestion de <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">Code</translation>
+<translation id="5605676983184673391">Autoriser les applis Chrome à s'exécuter en sessions Kiosque.</translation>
 <translation id="5607021831414604820">Activer les rapports sur l'état de stockage de l'appareil</translation>
 <translation id="5608114828230655271">Comportement par défaut de l'appareil</translation>
 <translation id="561001683838346956">Cette règle a été supprimée dans la version 124 de <ph name="PRODUCT_NAME" />. À partir de cette version, les hachages non sécurisés sont toujours interdits. Dans les versions précédentes, cette règle contrôlait si le navigateur autorisait ou non les anciens hachages non sécurisés pendant le processus d'un handshake TLS.
@@ -6474,6 +6480,7 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cl
 
 Notez que cette règle ne s'applique que si l'origine est autorisée à utiliser l'API Direct Sockets.
 Pour en savoir plus, veuillez consulter <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="566569751231933416">Utiliser le comportement par défaut.</translation>
 <translation id="5666457529647159548">Autoriser les utilisateurs à gérer les certificats client installés.</translation>
 <translation id="5670249935663090320">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> est activé. Les utilisateurs pourront le lancer depuis le menu de l'application, les menus contextuels des pages, les commandes multimédias sur les sites Web compatibles Cast et l'icône Cast de la barre d'outils (si elle est affichée).
 

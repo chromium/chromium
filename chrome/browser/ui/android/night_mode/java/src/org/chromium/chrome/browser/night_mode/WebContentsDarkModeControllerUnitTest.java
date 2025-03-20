@@ -14,11 +14,13 @@ import android.content.Context;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -41,6 +43,7 @@ import org.chromium.url.GURL;
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class WebContentsDarkModeControllerUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock WebsitePreferenceBridge.Natives mMockWebsitePreferenceBridgeJni;
     @Mock Profile mMockProfile;
     @Mock GURL mMockGurl;
@@ -51,7 +54,6 @@ public class WebContentsDarkModeControllerUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         WebsitePreferenceBridgeJni.setInstanceForTesting(mMockWebsitePreferenceBridgeJni);
 
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);

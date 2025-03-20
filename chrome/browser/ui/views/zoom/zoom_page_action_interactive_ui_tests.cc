@@ -30,7 +30,9 @@ namespace {
 class ZoomPageActionInteractiveUiTest : public InteractiveBrowserTest {
  public:
   ZoomPageActionInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kPageActionsMigration);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageActionsMigration,
+        {{features::kPageActionsMigrationZoom.name, "true"}});
   }
 
   ZoomPageActionInteractiveUiTest(const ZoomPageActionInteractiveUiTest&) =

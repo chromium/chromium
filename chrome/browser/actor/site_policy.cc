@@ -1,0 +1,118 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/actor/site_policy.h"
+
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/functional/callback.h"
+#include "base/notimplemented.h"
+#include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "components/safe_browsing/buildflags.h"
+#include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#endif
+
+namespace actor {
+
+namespace {
+
+void ResolveDecision(DecisionCallback callback, bool decision) {
+  // Some decisions are made asynchronously, so always invoke the callback
+  // asynchronously for consistency.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), decision));
+}
+
+// Returns true if `url`'s host is in the `allowlist`. Subdomains also match if
+// the parent domain is in the list.
+bool IsHostInAllowList(const std::vector<std::string_view>& allowlist,
+                       const GURL& url) {
+  std::string host = url.host();
+  while (!host.empty()) {
+    if (base::Contains(allowlist, host)) {
+      return true;
+    }
+    host = net::GetSuperdomain(host);
+  }
+  return false;
+}
+
+void MayActOnUrl(const GURL& url, DecisionCallback callback) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    ResolveDecision(std::move(callback), false);
+    return;
+  }
+
+  if (net::IsLocalhost(url)) {
+    ResolveDecision(std::move(callback), true);
+    return;
+  }
+
+  if (url.HostIsIPAddress()) {
+    ResolveDecision(std::move(callback), false);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kGlicActionAllowlist)) {
+    const std::string allowlist_joined = kAllowlist.Get();
+    const std::vector<std::string_view> allowlist =
+        base::SplitStringPiece(allowlist_joined, ",", base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY);
+    if (IsHostInAllowList(allowlist, url)) {
+      ResolveDecision(std::move(callback), true);
+      return;
+    }
+
+    if (kAllowlistOnly.Get()) {
+      ResolveDecision(std::move(callback), false);
+      return;
+    }
+  }
+
+  // TODO(mcnee): Implement blocklist.
+  NOTIMPLEMENTED();
+
+  ResolveDecision(std::move(callback), true);
+}
+
+}  // namespace
+
+// TODO(mcnee): Add UMA for the outcomes.
+void MayActOnTab(const tabs::TabInterface& tab, DecisionCallback callback) {
+  const content::WebContents& web_contents = *tab.GetContents();
+
+  if (web_contents.GetPrimaryMainFrame()->IsErrorDocument()) {
+    ResolveDecision(std::move(callback), false);
+    return;
+  }
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing
+  // warnings until user interaction. If the current page has a delayed warning,
+  // it'll have a user interaction observer attached.
+  // Do not act on such a page.
+  if (safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
+          &web_contents)) {
+    ResolveDecision(std::move(callback), false);
+    return;
+  }
+#endif
+
+  const GURL& url = web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
+  MayActOnUrl(url, std::move(callback));
+}
+
+}  // namespace actor

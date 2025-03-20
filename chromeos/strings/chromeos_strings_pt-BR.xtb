@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Ocultar transcrição</translation>
 <translation id="160633243685262989">Imagem de prévia</translation>
 <translation id="1611649489706141841">avançar</translation>
-<translation id="1615144046047995187">Não foi possível fazer o download. Tente de novo ou reinicie o Chromebook.</translation>
 <translation id="1615335640928990664">Uso de dados desde <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Usar um tema</translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Lista de gravações de áudio</translation>
 <translation id="2561093647892030937">limões-sicilianos</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
-<translation id="2573178735329662769">Gravando todo o áudio do Chromebook</translation>
 <translation id="2576253868710695442">Isso vai usar até 2 GB de armazenamento</translation>
 <translation id="2584547424703650812">Paisagens brilhantes</translation>
 <translation id="2584559707064218956">Para definir, acesse as Configurações</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">azul e rosa</translation>
 <translation id="498186245079027698">Confira o scanner e tente novamente. Confirme se há armazenamento local suficiente para salvar os arquivos digitalizados.</translation>
 <translation id="4982627662315910959">Atalho indisponível. Pressione um novo atalho usando Shift e mais uma tecla modificadora (Ctrl, Alt ou <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Áudio do Chromebook</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Páginas</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Desconecte e reconecte o cabo USB do <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
 <translation id="5099354524039520280">para cima</translation>
 <translation id="5107243100836678918">Atalhos sem a tecla <ph name="META_KEY" /> podem entrar em conflito com o atalho de algum app. Pressione esse atalho novamente para continuar a usá-lo ou pressione um novo atalho usando a tecla <ph name="KEY" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Não é possível baixar o modelo de transcrição em <ph name="LANGUAGE_NAME" />. Tente de novo ou reinicie o Chromebook</translation>
 <translation id="5108781503443873320">Semelhantes:</translation>
-<translation id="5121677070210013200">Não é possível baixar o modelo de transcrição. Tente de novo ou reinicie o Chromebook.</translation>
 <translation id="5130848777448318809">pôneis</translation>
 <translation id="5137451382116112100">Tela cheia</translation>
 <translation id="5139813694804168398">Não perturbe</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">Reproduzir</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903200662178656908">O dispositivo é uma combinação de teclado e mouse.</translation>
+<translation id="5903822368221507416">Ocultar guias</translation>
 <translation id="5904994456462260490">Adicionar um novo APN</translation>
 <translation id="590746845088109442">gatos</translation>
 <translation id="5907649332524363701">cor da tecla</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">On-line</translation>
 <translation id="6122277663991249694">Serviço de método de entrada do ChromeOS</translation>
 <translation id="6127426868813166163">branca</translation>
-<translation id="613049107179582049">Quando o áudio do Chromebook está ativado, o Gravador captura todo o áudio tocado no dispositivo</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificado do usuário</translation>
@@ -1418,7 +1413,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Tela touchscreen USB</translation>
 <translation id="757747079855995705">pedra</translation>
-<translation id="7584853321964440104">Não foi possível fazer o download. Tente de novo ou reinicie o Chromebook.</translation>
 <translation id="7590883480672980941">Configurações de entrada</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">O administrador de <ph name="MANAGER" /> definiu quando este <ph name="DEVICE_TYPE" /> pode ser usado.</translation>
@@ -1785,7 +1779,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="9218016617214286986">Mostrar APNs conhecidos</translation>
 <translation id="932327136139879170">Início</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Confira se o microfone está conectado ou reinicie o Chromebook</translation>
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="950520315903467048">Está faltando a tecla para <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Comparar as vozes durante a gravação para que a transcrição inclua o que e quando cada pessoa falou.</translation>

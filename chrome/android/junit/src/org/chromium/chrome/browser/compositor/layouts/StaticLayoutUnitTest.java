@@ -27,12 +27,14 @@ import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
@@ -80,6 +82,7 @@ public class StaticLayoutUnitTest {
     private static final int WIDTH = 9;
     private static final int HEIGHT = 16;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private DisplayMetrics mDisplayMetrics;
@@ -118,7 +121,6 @@ public class StaticLayoutUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mRequestSupplier =
                 new CompositorModelChangeProcessor.FrameRequestSupplier(

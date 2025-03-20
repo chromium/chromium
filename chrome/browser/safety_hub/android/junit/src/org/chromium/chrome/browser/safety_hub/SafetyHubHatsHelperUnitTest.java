@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -78,8 +77,6 @@ public class SafetyHubHatsHelperUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
         UserPrefsJni.setInstanceForTesting(mUserPrefsNativeMock);
         doReturn(mPrefServiceMock).when(mUserPrefsNativeMock).get(mProfile);
         mockPasswordCounts(0, 0, 0);

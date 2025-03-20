@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
 import android.view.ViewGroup;
@@ -41,6 +41,7 @@ public class HubPaneHostMediatorUnitTest {
     private @Mock PaneManager mPaneManager;
     private @Mock FullButtonData mButtonData;
     private @Mock ViewGroup mRootView;
+    private @Mock HubColorMixer mColorMixer;
 
     private ObservableSupplierImpl<Pane> mPaneSupplier;
     private PropertyModel mModel;
@@ -48,7 +49,10 @@ public class HubPaneHostMediatorUnitTest {
     @Before
     public void setUp() {
         mPaneSupplier = new ObservableSupplierImpl<>();
-        mModel = new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS).build();
+        mModel =
+                new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS)
+                        .with(COLOR_MIXER, mColorMixer)
+                        .build();
 
         when(mPane.getRootView()).thenReturn(mRootView);
 
@@ -96,25 +100,5 @@ public class HubPaneHostMediatorUnitTest {
         new HubPaneHostMediator(mModel, mPaneSupplier);
         ShadowLooper.idleMainLooper();
         assertEquals(mRootView, mModel.get(PANE_ROOT_VIEW));
-    }
-
-    @Test
-    @SmallTest
-    public void testHubColorScheme() {
-        new HubPaneHostMediator(mModel, mPaneSupplier);
-        mPaneSupplier.set(mPane);
-        assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT),
-                mModel.get(COLOR_SCHEME));
-
-        mPaneSupplier.set(mIncognitoPane);
-        assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.DEFAULT),
-                mModel.get(COLOR_SCHEME));
-
-        mPaneSupplier.set(null);
-        assertEquals(
-                new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.INCOGNITO),
-                mModel.get(COLOR_SCHEME));
     }
 }

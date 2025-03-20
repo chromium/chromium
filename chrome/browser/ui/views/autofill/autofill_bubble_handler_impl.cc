@@ -68,7 +68,7 @@ View* ShowBubble(ToolbarButtonProvider* toolbar_button_provider,
       std::make_unique<View>(anchor_view, std::forward<Args>(args)...);
   if (!views::Button::AsButton(anchor_view)) {
     views::Button* icon_view;
-    if (base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
+    if (IsPageActionMigrated(page_action_icon_type)) {
       CHECK(action_id.has_value());
       auto* page_action =
           toolbar_button_provider->GetPageActionView(action_id.value());

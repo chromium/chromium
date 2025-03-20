@@ -23,10 +23,12 @@ import androidx.annotation.StringRes;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -65,6 +67,7 @@ public class DownloadLocationDialogTest {
     private static final String PRIMARY_STORAGE_PATH = "/sdcard";
     private static final String SECONDARY_STORAGE_PATH = "/android/Download";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
@@ -81,7 +84,6 @@ public class DownloadLocationDialogTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(any())).thenReturn(mPrefService);
         DownloadDialogBridgeJni.setInstanceForTesting(mDownloadDialogBridgeJniMock);

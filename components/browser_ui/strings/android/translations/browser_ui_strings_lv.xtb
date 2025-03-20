@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Vietnēs parasti tiek izmantoti tuva darbības lauka sakari (NFC), lai darbotos ar tuvumā esošiem izsekotājiem vai ierīcēm, piemēram, skenētu emblēmas vai veiktu bezkontakta maksājumus.</translation>
 <translation id="1547123415014299762">Trešo pušu sīkfaili ir atļauti</translation>
 <translation id="1593426485665524382">Ekrāna augšdaļā ir pieejamas jaunas darbības</translation>
+<translation id="1615755956145364867">Atļaut vietnēm pieprasīt atļauju atskaņot aizsargātu saturu</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Funkcijas, kurām nepieciešama piekļuve mikrofonam, nedarbosies</translation>
 <translation id="1633720957382884102">Saistītās vietnes</translation>
 <translation id="1644574205037202324">Vēsture</translation>
 <translation id="1652197001188145583">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot NFC ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot NFC ierīces.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Jautāt, pirms atļaut vietnēm izveidot savienojumu ar ierīci (ieteicams)</translation>
 <translation id="1779089405699405702">Attēlu dekodētājs</translation>
 <translation id="1785415724048343560">Ieteicams labākai pieredzei</translation>
+<translation id="1796588414813960292">Funkcijas, kurām nepieciešama skaņa, nedarbosies</translation>
 <translation id="1799920918471566157">Chrome padomi</translation>
 <translation id="1816835383954230954">Kad tas ir ieslēgts, pārlūks Chrome darbojas ātrāk, un funkcijām, kas izmanto JavaScript, ir jādarbojas paredzētajā veidā. Ja izslēgts, tiek samazināta veiktspēja, bet uzlabojas V8 noturība pret uzbrukumiem.</translation>
 <translation id="1818308510395330587">Lai atļautu lietotnei <ph name="APP_NAME" /> izmantot papildināto realitāti, ieslēdziet arī kameru <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Vietnes URL</translation>
 <translation id="2004697686368036666">Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="2025115093177348061">Papildinātā realitāte</translation>
+<translation id="2028449514182362831">Funkcijas, kurām nepieciešama piekļuve kustību sensoriem, nedarbosies</translation>
 <translation id="2030769033451695672">Pieskarieties, lai atgrieztos cilnē <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2091887806945687916">Signāls</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Navigācija ir bloķēta: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Pēc tam, kad aizverat vietni, tajā var tikt turpināta sinhronizācija, lai pabeigtu noteiktus uzdevumus, piemēram, fotoattēlu augšupielādi vai tērzēšanas ziņojuma nosūtīšanu.</translation>
 <translation id="4278390842282768270">Atļauts</translation>
+<translation id="4290791284969893584">Pēc lapas aizvēršanas var netikt pabeigti jūsu iesāktie uzdevumi</translation>
 <translation id="429312253194641664">Vietne atskaņo multivides saturu</translation>
 <translation id="42981349822642051">Izvērst</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Derīguma termiņš beigsies rīt}zero{Derīguma termiņš beigsies pēc # dienām}one{Derīguma termiņš beigsies pēc # dienas}other{Derīguma termiņš beigsies pēc # dienām}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Paslēpt kartīti “Turpināt šajā cilnē”}zero{Paslēpt kartīti “Turpināt šajās cilnēs”}one{Paslēpt kartīti “Turpināt šajās cilnēs”}other{Paslēpt kartīti “Turpināt šajās cilnēs”}}</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8042586301629853791">Kārtot pēc:</translation>
+<translation id="8051193500142930381">Funkcijas, kurām nepieciešama piekļuve kamerai, nedarbosies</translation>
 <translation id="8067883171444229417">Atskaņot videoklipu</translation>
 <translation id="8068648041423924542">Nevar atlasīt sertifikātu.</translation>
 <translation id="8077120325605624147">Jebkurā jūsu apmeklētā vietnē var tikt rādītas jebkādas reklāmas</translation>

@@ -187,11 +187,11 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       .IntersectWith(
           {DataTypeConstraint::kFloat16To32Ints32To64, kNonScalarMaxRank});
   backend_context_properties.data_type_limits.dequantize_linear_input.data_types
-      .RetainAll(DataTypeConstraint::kInts4ToInts8);
+      .RetainAll(DataTypeConstraint::kInts4Ints8Ints32);
   backend_context_properties.data_type_limits.dequantize_linear_scale.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.dequantize_linear_zero_point
-      .data_types.RetainAll(DataTypeConstraint::kInts4ToInts8);
+      .data_types.RetainAll(DataTypeConstraint::kInts4Ints8Ints32);
   backend_context_properties.data_type_limits.erf_input.data_types.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.exp_input.data_types.RetainAll(
@@ -283,7 +283,7 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.quantize_linear_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.quantize_linear_zero_point
-      .data_types.RetainAll(DataTypeConstraint::kInts4ToInts8);
+      .data_types.RetainAll(DataTypeConstraint::kInts4Ints8Ints32);
   backend_context_properties.data_type_limits.reduce_l1_input.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32Ints32To64);
   backend_context_properties.data_type_limits.reduce_l2_input.data_types

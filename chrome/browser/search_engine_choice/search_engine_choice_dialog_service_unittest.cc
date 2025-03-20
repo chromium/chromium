@@ -30,6 +30,7 @@
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 
@@ -104,7 +105,8 @@ class ResizableDialogTestBrowserWindow : public DialogTestBrowserWindow {
   GetTestWebContentsModalDialogHost() {
     if (!dialog_host_) {
       dialog_host_ =
-          std::make_unique<web_modal::TestWebContentsModalDialogHost>(nullptr);
+          std::make_unique<web_modal::TestWebContentsModalDialogHost>(
+              gfx::NativeView());
 
       // Absurdly large size to ensure we don't run into "too small" issues.
       dialog_host_->set_max_dialog_size(gfx::Size(5000, 5000));

@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ເຊື່ອງການຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
 <translation id="160633243685262989">ຮູບຕົວຢ່າງ</translation>
 <translation id="1611649489706141841">ສົ່ງຕໍ່</translation>
-<translation id="1615144046047995187">ບໍ່ສາມາດດາວໂຫຼດໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="1615335640928990664">ການນຳໃຊ້ອິນເຕີເນັດນັບຕັ້ງແຕ່ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">ໃຊ້ຮູບແບບສີສັນ</translation>
 <translation id="1621067168122174824">ເອີ້ນໃຊ້ການທົດສອບການສາກ</translation>
@@ -239,6 +238,7 @@
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
 <translation id="1908234395526491708">ຂໍ UDP ບໍ່ສຳເລັດ</translation>
 <translation id="1908394185991500139">ລູກສອນຊ້າຍ</translation>
+<translation id="1911678930322867245">ຍ້າຍໄປຂວາເທິງ</translation>
 <translation id="1914144885717544695">ໃນວັນສຸກ</translation>
 <translation id="1915960750806557358">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ກວດສອບວ່າບໍ່ຮວມເອົາສິ່ງໃດກໍຕາມທີ່ເປັນສ່ວນຕົວ, ລະອຽດອ່ອນ ຫຼື ເປັນຄວາມລັບ.</translation>
 <translation id="1923388006036088459">ສີເນັ້ນ</translation>
@@ -370,7 +370,6 @@
 <translation id="2560876255701405320">ລາຍຊື່ການບັນທຶກສຽງ</translation>
 <translation id="2561093647892030937">ໝາກນາວ (ເລມອນ)</translation>
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">ກຳລັງບັນທຶກສຽງທັງໝົດຈາກ Chromebook</translation>
 <translation id="2576253868710695442">ການດຳເນີນການນີ້ຈະໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນສູງສຸດ 2GB</translation>
 <translation id="2584547424703650812">Glowscapes</translation>
 <translation id="2584559707064218956">ເພື່ອຕັ້ງຄ່າ, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
@@ -849,7 +848,6 @@
 <translation id="4981003703840817201">ຟ້າ ແລະ ບົວ</translation>
 <translation id="498186245079027698">ກວດເບິ່ງເຄື່ອງສະແກນ ແລ້ວລອງໃໝ່. ກວດໃຫ້ແນ່ໃຈວ່າມີພື້ນທີ່ໃນເຄື່ອງຢ່າງພຽງພໍເພື່ອບັນທຶກໄຟລ໌ທີ່ສະແກນແລ້ວໄວ້.</translation>
 <translation id="4982627662315910959">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດຄີລັດໃໝ່ໂດຍໃຊ້ປຸ່ມ shift ແລະ ປຸ່ມຕົວດັດແປງອີກ 1 ປຸ່ມ (ctrl, alt ຫຼື <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">ສຽງຈາກ Chromebook</translation>
 <translation id="4985509611418653372">ເອີ້ນໃຊ້</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">ໜ້າ</translation>
@@ -875,9 +873,7 @@
 <translation id="5095761549884461003">ຖອດປລັກສາຍ USB <ph name="DEVICE_NAME" /> ອອກ ແລ້ວສຽບຄືນໃໝ່ເພື່ອສືບຕໍ່ຂັ້ນຕອນການອັບເດດ</translation>
 <translation id="5099354524039520280">ຂຶ້ນ</translation>
 <translation id="5107243100836678918">ຄີລັດທີ່ບໍ່ມີປຸ່ມ <ph name="META_KEY" /> ອາດຂັດແຍ່ງກັບທາງລັດຂອງບາງແອັບ. ກົດທາງລັດນີ້ອີກຄັ້ງເພື່ອສືບຕໍ່ໃຊ້ມັນ ຫຼື ກົດທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມ <ph name="KEY" />. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">ບໍ່ສາມາດດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມຂອງພາສາ <ph name="LANGUAGE_NAME" /> ໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ</translation>
 <translation id="5108781503443873320">ຄ້າຍກັນ:</translation>
-<translation id="5121677070210013200">ບໍ່ສາມາດດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="5130848777448318809">ມ້າແຄະ</translation>
 <translation id="5137451382116112100">ເຕັມໜ້າຈໍ</translation>
 <translation id="5139813694804168398">ຫ້າມລົບກວນ</translation>
@@ -1089,7 +1085,6 @@
 <translation id="6122191549521593678">ອອນ​ລາຍ</translation>
 <translation id="6122277663991249694">ບໍລິການວິທີການປ້ອນຂໍ້ມູນຂອງ ChromeOS</translation>
 <translation id="6127426868813166163">ຂາວ</translation>
-<translation id="613049107179582049">ເມື່ອສຽງ Chromebook ເປີດຢູ່, ຕົວບັນທຶກຈະບັນທຶກສຽງທັງໝົດທີ່ຫຼິ້ນຢູ່ອຸປະກອນນີ້</translation>
 <translation id="6136285399872347291">ລຶບຖອຍຫຼັງ</translation>
 <translation id="6137614725462089991">ໄຊເບີພັງຄ໌</translation>
 <translation id="6137767437444130246">ໃບຮັບຮອງຜູ້ໃຊ້</translation>
@@ -1420,7 +1415,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">ໜ້າຈໍສຳຜັດ USB</translation>
 <translation id="757747079855995705">ຫິນ</translation>
-<translation id="7584853321964440104">ບໍ່ສາມາດດາວໂຫຼດໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="7590883480672980941">ການຕັ້ງຄ່າການປ້ອນຂໍ້ມູນ</translation>
 <translation id="7595982850646262331">ຍັງເຫຼືອ <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">ຜູ້ເບິ່ງແຍງລະບົບ <ph name="MANAGER" /> ໄດ້ກຳນົດເວລາທີ່ຈະສາມາດໃຊ້ <ph name="DEVICE_TYPE" /> ເຄື່ອງນີ້ໄດ້.</translation>
@@ -1687,6 +1681,7 @@
 <translation id="8820817407110198400">ບຸກມາກ</translation>
 <translation id="8833620912470026819">ປ່າກະບອງເພັດ</translation>
 <translation id="8834539327799336565">ຕອນນີ້ເຊື່ອມຕໍ່ແລ້ວ</translation>
+<translation id="8842526499753992487">ຍ້າຍໄປຊ້າຍເທິງ</translation>
 <translation id="8845001906332463065">ຂໍການຊ່ວຍເຫຼືອ</translation>
 <translation id="8849799913685544685">ປະພາຄານ</translation>
 <translation id="8851859208664803097">ຢຸດແລ້ວ - ບໍ່ສາມາດເຂົ້າເຖິງເຄື່ອງພິມໄດ້</translation>
@@ -1787,7 +1782,6 @@
 <translation id="9218016617214286986">ສະແດງ APN ທີ່ຮູ້ຈັກ</translation>
 <translation id="932327136139879170">ບ້ານ</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">ກວດສອບວ່າໄມຂອງທ່ານເຊື່ອມຕໍ່ຢູ່ ຫຼື ລອງຣີສະຕາດ Chromebook ຂອງທ່ານ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="950520315903467048">ບໍ່ມີປຸ່ມສຳລັບ <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ປຽບທຽບສຽງໃນສຽງທີ່ບັນທຶກໄວ້ຕັ້ງແຕ່ຕົ້ນຈົນຈົບເພື່ອໃຫ້ຂໍ້ຄວາມຖອດສຽງສະແດງຂໍ້ຄວາມຂອງຜູ້ເວົ້າແຕ່ລະຄົນ ແລະ ເວລາທີ່ເວົ້າ</translation>

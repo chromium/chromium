@@ -74,6 +74,10 @@ TEST(SerializeAuctionConfigTest, SerializeComponents) {
    "sellerSignals": {
       "pending": false,
       "value": null
+   },
+   "sellerTKVSignals": {
+      "pending": false,
+      "value": null
    }
 }
 )";
@@ -196,6 +200,10 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
       "pending": false,
       "value": "[5]"
    },
+   "sellerTKVSignals": {
+      "pending": false,
+      "value": "[6]"
+   },
    "sellerTimeout": 6000.0,
    "reportingTimeout": 7000.0,
    "trustedScoringSignalsURL": "https://seller.test/bar",
@@ -211,12 +219,45 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
               base::test::IsJson(kExpected));
 }
 
-TEST(SerializeAuctionConfigTest, PendingPromise) {
+TEST(SerializeAuctionConfigTest, AuctionSignalsPendingPromise) {
+  AuctionConfig config = CreateBasicAuctionConfig();
+  config.non_shared_params.auction_signals =
+      AuctionConfig::MaybePromiseJson::FromPromise();
+  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
+  const base::Value::Dict* signal_dict = serialized.FindDict("auctionSignals");
+  ASSERT_TRUE(signal_dict);
+
+  const char kExpected[] = R"({
+   "pending": true
+}
+)";
+
+  EXPECT_THAT(*signal_dict, base::test::IsJson(kExpected));
+}
+
+TEST(SerializeAuctionConfigTest, SellerSignalsPendingPromise) {
   AuctionConfig config = CreateBasicAuctionConfig();
   config.non_shared_params.seller_signals =
       AuctionConfig::MaybePromiseJson::FromPromise();
   base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
   const base::Value::Dict* signal_dict = serialized.FindDict("sellerSignals");
+  ASSERT_TRUE(signal_dict);
+
+  const char kExpected[] = R"({
+   "pending": true
+}
+)";
+
+  EXPECT_THAT(*signal_dict, base::test::IsJson(kExpected));
+}
+
+TEST(SerializeAuctionConfigTest, SellerTKVSignalsPendingPromise) {
+  AuctionConfig config = CreateBasicAuctionConfig();
+  config.non_shared_params.seller_tkv_signals =
+      AuctionConfig::MaybePromiseJson::FromPromise();
+  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
+  const base::Value::Dict* signal_dict =
+      serialized.FindDict("sellerTKVSignals");
   ASSERT_TRUE(signal_dict);
 
   const char kExpected[] = R"({

@@ -25,11 +25,11 @@ struct CloudSyncStatus {
   bool synced = false;
   // True if the user's Desktop folder is synced in the cloud storage.
   bool desktop_synced = false;
-  // In the future, you can add more flags, e.g., documents_synced,
-  // pictures_synced, etc.
+  // True if the user's Documents folder is synced in the cloud storage.
+  bool documents_synced = false;
 };
 
-// Determines whether OneDrive is not synced, synced, or synced with desktop.
+// Determines OneDrive synced status.
 CloudSyncStatus EvaluateOneDriveSyncStatus();
 
 // Determines if a file or directory is managed by a cloud storage provider and

@@ -64,6 +64,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   switch (filling_product) {
     case FillingProduct::kCreditCard:
     case FillingProduct::kIban:
+    case FillingProduct::kLoyaltyCard:
     case FillingProduct::kAddress:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kPassword:

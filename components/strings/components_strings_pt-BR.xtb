@@ -1695,6 +1695,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{1 site }one{# site }other{# sites }}</translation>
 <translation id="3965672182149944205">Salvar endereço?</translation>
 <translation id="3966044442021752214">Segurança do produto</translation>
+<translation id="3969869202926863008">Acesso à rede local</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3975852104434126461">Indústria automotiva</translation>
@@ -2051,6 +2052,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="460848736049414407">Bloqueado pelo administrador</translation>
 <translation id="4610279718074907952">Este site está em um grupo, definido por <ph name="SET_OWNER" />, que pode ver sua atividade</translation>
 <translation id="46128681529823442">Equipamento para futebol</translation>
+<translation id="4612904677925722054">Este site pode ter conteúdo para maiores. Um familiar ou responsável precisa autorizar seu acesso a ele.</translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
 <translation id="4622292761762557753">Transferir mesmo assim</translation>
 <translation id="4622647778991854660">Ative as notificações na Central de notificações. Abra as <ph name="LINK" />.</translation>
@@ -2648,6 +2650,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5660122698869360728">Uma nova pasta inteligente que ajuda você a salvar todas as páginas de compras em um só lugar e a monitorar preços automaticamente, além de receber informações de preços e muito mais.</translation>
 <translation id="5663955426505430495">O administrador do dispositivo instalou extensões para funções adicionais. As extensões têm acesso a alguns dos seus dados.</translation>
 <translation id="5667827081946850877">Audiolivros</translation>
+<translation id="5674082555327905359">Pode pedir para se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="5675650730144413517">Esta página não está funcionando</translation>
 <translation id="5675809467256309336">Dance e música eletrônica</translation>
 <translation id="5675959228867414813">Mostrar por data</translation>
@@ -2896,6 +2899,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6116338172782435947">Ver os textos e imagens copiados para a área de transferência</translation>
 <translation id="6117833587752089929">Foto (acetinada)</translation>
 <translation id="6118782133429281336">A lista de origem está vazia.</translation>
+<translation id="6120950591512958208">Use este código ao finalizar a compra.</translation>
 <translation id="612178891608320683">Culinária vegana</translation>
 <translation id="6122181661879998141">parte da frente do cartão</translation>
 <translation id="6124058285696691147">Baixar o anexo</translation>
@@ -2921,6 +2925,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6159908896951210943">Formal</translation>
 <translation id="6160391204859821737">Ativar um recurso de privacidade de anúncios</translation>
 <translation id="6162403104168428984">Atualizar endereço?</translation>
+<translation id="6164605812717770913">Um familiar ou responsável definiu que você não pode acessar este site. Peça autorização a eles.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6167577165590485365">Última tentativa de busca:</translation>
 <translation id="617256461084925519">O Google Chrome está tentando confirmar sua identidade para preencher suas informações de pagamento.</translation>
@@ -3012,6 +3017,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6321917430147971392">Verifique suas configurações do DNS</translation>
 <translation id="6322182122604171028">Não foi possível usar o Windows Hello</translation>
 <translation id="6326947323444967009">Defina o Chrome como o navegador padrão do sistema nas configurações do iOS</translation>
+<translation id="6327065120806001832">acesso à rede local</translation>
 <translation id="6328639280570009161">Tente desativar a previsão de rede</translation>
 <translation id="6335029926534404762">Calçados esportivos</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. O carregamento de alguns sites pode ficar mais lento no seu próximo acesso.</translation>

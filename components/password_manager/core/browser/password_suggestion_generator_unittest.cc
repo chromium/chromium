@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
@@ -321,6 +322,8 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
 
   const GURL kExternalURL{"https://example.com"};
   const GURL kGaiaURL{"https://accounts.google.com"};
+  const GURL kPasswordsManagerURL{base::StrCat(
+      {"chrome://", password_manager::kChromeUIPasswordManagerHost})};
 
  private:
   gfx::Image favicon_;
@@ -1309,6 +1312,56 @@ TEST_F(PasswordSuggestionGeneratorTest,
   base::test::ScopedFeatureList feature_list(
       switches::kEnablePendingModePasswordsPromo);
   ON_CALL(client(), GetLastCommittedURL).WillByDefault(ReturnRef(kGaiaURL));
+
+  EnablePasswordSync();
+
+  AccountInfo account = signin::MakePrimaryAccountAvailable(
+      identity_test_env()->identity_manager(), "example@google.com",
+      signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+
+  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
+      password_form_fill_data(), favicon(), /*username_filter=*/u"",
+      OffersGeneration(false), ShowPasswordSuggestions(true),
+      ShowWebAuthnCredentials(false));
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsDomainPasswordSuggestion(
+                              SuggestionType::kPasswordEntry, u"username",
+                              password_label(8u),
+                              /*realm_label=*/u"", favicon()),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       PendingStateSignin_NoSavedCredentials_PasswordManagerURL) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnablePendingModePasswordsPromo);
+  EXPECT_CALL(client(), GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(kPasswordsManagerURL));
+
+  EnablePasswordSync();
+
+  AccountInfo account = signin::MakePrimaryAccountAvailable(
+      identity_test_env()->identity_manager(), "example@google.com",
+      signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+
+  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
+      /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
+      OffersGeneration(false), ShowPasswordSuggestions(true),
+      ShowWebAuthnCredentials(false));
+
+  EXPECT_THAT(suggestions, IsEmpty());
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       PendingStateSignin_HasSavedCredentials_PasswordManagerURL) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnablePendingModePasswordsPromo);
+  ON_CALL(client(), GetLastCommittedURL)
+      .WillByDefault(ReturnRef(kPasswordsManagerURL));
 
   EnablePasswordSync();
 

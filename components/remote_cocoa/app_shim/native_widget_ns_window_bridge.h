@@ -80,8 +80,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Retrieve a NativeWidgetNSWindowBridge* from its id or window.
   static NativeWidgetNSWindowBridge* GetFromId(
       uint64_t bridged_native_widget_id);
-  static NativeWidgetNSWindowBridge* GetFromNativeWindow(
-      gfx::NativeWindow window);
+  static NativeWidgetNSWindowBridge* GetFromNSWindow(NSWindow* window);
 
   // Create an NSWindow for the specified parameters.
   static NativeWidgetMacNSWindow* CreateNSWindow(

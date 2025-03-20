@@ -28,7 +28,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
@@ -51,7 +52,7 @@ import org.chromium.url.GURL;
 /**
  * Unit tests for {@link CustomTabActivityNavigationController}.
  *
- * {@link CustomTabActivityNavigationController#navigate} is tested in integration with other
+ * <p>{@link CustomTabActivityNavigationController#navigate} is tested in integration with other
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,6 +60,8 @@ import org.chromium.url.GURL;
         manifest = Config.NONE,
         shadows = {ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
 public class CustomTabActivityNavigationControllerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
@@ -85,7 +88,6 @@ public class CustomTabActivityNavigationControllerTest {
     @Before
     public void setUp() {
         ShadowPostTask.setTestImpl((@TaskTraits int taskTraits, Runnable task, long delay) -> {});
-        MockitoAnnotations.initMocks(this);
         mTestContext = new TestContext(ContextUtils.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mTestContext);
         mNavigationController = env.createNavigationController(mTabController);

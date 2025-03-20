@@ -44,6 +44,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // reporting for now. This might need to be changed in the future.
   registry->RegisterTimeDeltaPref(kCloudReportingUploadFrequency,
                                   kDefaultReportFrequency);
+  registry->RegisterBooleanPref(kUserSecuritySignalsReporting, false);
+  registry->RegisterBooleanPref(kUserSecurityAuthenticatedReporting, false);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterBooleanPref(prefs::kCloudExtensionRequestEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCloudExtensionRequestIds);

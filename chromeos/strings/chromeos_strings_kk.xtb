@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Транскрипциясын жасыру</translation>
 <translation id="160633243685262989">Кескінді алдын ала көру</translation>
 <translation id="1611649489706141841">алға</translation>
-<translation id="1615144046047995187">Жүктеп алу мүмкін емес. Әрекетті қайталаңыз немесе Chromebook-ты өшіріп қосыңыз.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> бергі дерек трафигі</translation>
 <translation id="1618566998877964907">Тақырып пайдалану</translation>
 <translation id="1621067168122174824">Заряд тексерісін іске қосу</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Аудиожазбалар тізімі</translation>
 <translation id="2561093647892030937">лимондар</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
-<translation id="2573178735329662769">Барлық Chromebook аудиосын жазып алу</translation>
 <translation id="2576253868710695442">Жадтың 2 ГБ орнына дейін алады.</translation>
 <translation id="2584547424703650812">Жылтыр пейзаждар</translation>
 <translation id="2584559707064218956">Реттеу үшін "Параметрлер" бөліміне өтіңіз.</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">көк және қызғылт</translation>
 <translation id="498186245079027698">Сканерді тексеріп, әрекетті қайталаңыз. Сканерленген файлдарды сақтайтын орынның жеткілікті екенін тексеріңіз.</translation>
 <translation id="4982627662315910959">Пернелер тіркесімі қолжетімді емес. Shift пен 1 өзгерткіш пернені (ctrl, alt немесе <ph name="META_KEY" />) пайдаланып, жаңа пернелер тіркесімін басыңыз.</translation>
-<translation id="4983216687482551672">Chromebook аудиосы</translation>
 <translation id="4985509611418653372">Іске қосу</translation>
 <translation id="4987769320337599931">Брандмауэр</translation>
 <translation id="4988526792673242964">Беттер</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Жаңарту процесін жалғастыру үшін <ph name="DEVICE_NAME" /> USB кабелін ажыратып, қайта жалғаңыз.</translation>
 <translation id="5099354524039520280">жоғары</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> пернесі жоқ пернелер тіркесімі кейбір қолданбаның пернелер тіркесіміне қайшы келуі мүмкін. Осы пернелер тіркесімін пайдалануды жалғастыру үшін қайта басыңыз немесе <ph name="KEY" /> пернесін пайдаланып, жаңа пернелер тіркесімін басыңыз. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> транскрипция үлгісі жүктеп алынбады. Әрекетті қайталаңыз немесе Chromebook-ты өшіріп қосыңыз.</translation>
 <translation id="5108781503443873320">Ұқсас:</translation>
-<translation id="5121677070210013200">Транскрипция үлгісі жүктеп алынбады. Әрекетті қайталаңыз немесе Chromebook-ты өшіріп қосыңыз.</translation>
 <translation id="5130848777448318809">понилер</translation>
 <translation id="5137451382116112100">Толық</translation>
 <translation id="5139813694804168398">мазаламау</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">ChromeOS енгізу әдісі қызметі</translation>
 <translation id="6127426868813166163">ақ</translation>
-<translation id="613049107179582049">Chromebook аудиосы қосулы кезде, диктофон осы құрылғыда ойнап жатқан барлық аудионы жазып алады.</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">киберпанк</translation>
 <translation id="6137767437444130246">Пайдаланушы сертификаты</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB сенсорлық экраны</translation>
 <translation id="757747079855995705">тас</translation>
-<translation id="7584853321964440104">Жүктеп алу мүмкін емес. Әрекетті қайталаңыз немесе Chromebook-ты өшіріп қосыңыз.</translation>
 <translation id="7590883480672980941">Енгізу параметрлері</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> қалды</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> әкімшісі осы <ph name="DEVICE_TYPE" /> құрылғысын пайдалануға болатын мерзімді белгіледі.</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">Белгілі APN-дерді көрсету</translation>
 <translation id="932327136139879170">Негізгі бет</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Микрофон қосылғанына көз жеткізіңіз немесе Chromebook-ты өшіріп қосып көріңіз.</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> бағыт үшін перне жоқ. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">транскрипцияда әр сөйлеушінің айтқан сөзі мен уақытын білу үшін жазбадағы дауыстарды салыстыру.</translation>

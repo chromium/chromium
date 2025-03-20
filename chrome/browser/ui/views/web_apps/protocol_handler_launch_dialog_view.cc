@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -79,8 +80,8 @@ void ShowWebAppProtocolLaunchDialog(
       url, profile, app_id, std::move(close_callback));
   view->Init();
   views::DialogDelegate::CreateDialogWidget(std::move(view),
-                                            /*context=*/nullptr,
-                                            /*parent=*/nullptr)
+                                            /*context=*/gfx::NativeWindow(),
+                                            /*parent=*/gfx::NativeView())
       ->Show();
 }
 

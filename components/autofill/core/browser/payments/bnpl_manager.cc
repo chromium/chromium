@@ -205,7 +205,7 @@ void BnplManager::OnVcnDetailsFetched(
             PaymentsAutofillClient::PaymentsRpcResult::
                 kVcnRetrievalPermanentFailure));
   }
-  ongoing_flow_state_.reset();
+  Reset();
 }
 
 void BnplManager::OnIssuerSelected(const BnplIssuer& selected_issuer) {
@@ -263,7 +263,7 @@ void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
           /*is_permanent_error=*/result ==
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
 
-  ongoing_flow_state_.reset();
+  Reset();
 }
 
 void BnplManager::LoadRiskDataForFetchingRedirectUrl() {
@@ -320,7 +320,11 @@ void BnplManager::OnRedirectUrlFetched(
     payments_autofill_client().GetPaymentsWindowManager()->InitBnplFlow(
         std::move(bnpl_context));
   } else {
-    // TODO(crbug.com/378518504): Display error dialog.
+    payments_autofill_client().ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+            /*is_permanent_error=*/result ==
+            PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+    Reset();
   }
 }
 
@@ -329,13 +333,16 @@ void BnplManager::OnPopupWindowCompleted(
     GURL url) {
   switch (result) {
     case PaymentsWindowManager::BnplFlowResult::kUserClosed:
-      ongoing_flow_state_.reset();
+      Reset();
       break;
     case PaymentsWindowManager::BnplFlowResult::kSuccess:
       FetchVcnDetails(std::move(url));
       break;
     case PaymentsWindowManager::BnplFlowResult::kFailure:
-      // TODO(crbug.com/378518504): Display error dialog.
+      payments_autofill_client().ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+              /*is_permanent_error=*/false));
+      Reset();
       break;
   }
 }

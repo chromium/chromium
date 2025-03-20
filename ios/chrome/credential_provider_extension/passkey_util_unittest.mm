@@ -238,19 +238,19 @@ TEST_F(PasskeyUtilTest,
       @"invalid preference",
       /*is_biometric_authentication_enabled=*/YES));  // Not a valid preference
                                                       // value, should fall back
-                                                      // to performing user
-                                                      // verification.
-  EXPECT_TRUE(ShouldPerformUserVerificationForPreference(
-      @"invalid preference",
-      /*is_biometric_authentication_enabled=*/NO));  // Not a valid preference
-                                                     // value, should fall back
-                                                     // to performing user
-                                                     // verification.
+                                                      // to the "preferred"
+                                                      // preference.
 
   // Cases where user verification shouldn't be performed.
   EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
       ASAuthorizationPublicKeyCredentialUserVerificationPreferencePreferred,
       /*is_biometric_authentication_enabled=*/NO));
+  EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
+      @"invalid preference",
+      /*is_biometric_authentication_enabled=*/NO));  // Not a valid preference
+                                                     // value, should fall back
+                                                     // to the "preferred"
+                                                     // preference.
   EXPECT_FALSE(ShouldPerformUserVerificationForPreference(
       ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged,
       /*is_biometric_authentication_enabled=*/YES));

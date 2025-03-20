@@ -15,7 +15,20 @@ public class GroupSuggestionsPromotionProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SUGGESTED_NAME =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> GROUP_CONTENT_STRING =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> ACCEPT_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> REJECT_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {PROMO_HEADER, PROMO_CONTENTS, SUGGESTED_NAME};
+            new PropertyKey[] {
+                PROMO_HEADER,
+                PROMO_CONTENTS,
+                SUGGESTED_NAME,
+                GROUP_CONTENT_STRING,
+                ACCEPT_BUTTON_TEXT,
+                REJECT_BUTTON_TEXT
+            };
 }

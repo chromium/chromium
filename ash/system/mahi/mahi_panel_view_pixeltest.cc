@@ -126,7 +126,7 @@ TEST_F(MahiPanelViewPixelTest, MainPanel) {
   views::test::RunScheduledLayout(widget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "panel_view", /*revision_number=*/11, panel_view()));
+      "panel_view", /*revision_number=*/12, panel_view()));
 }
 
 TEST_F(MahiPanelViewPixelTest, ContentSourceButton) {

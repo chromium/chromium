@@ -81,7 +81,8 @@ void CollaborationServiceAndroid::StartJoinFlow(
     const JavaParamRef<jobject>& j_url) {
   collaboration_service_->StartJoinFlow(
       conversion::GetDelegateUniquePtrFromJava(delegateNativePtr),
-      url::GURLAndroid::ToNativeGURL(env, j_url));
+      url::GURLAndroid::ToNativeGURL(env, j_url),
+      CollaborationServiceJoinEntryPoint::kUnknown);
 }
 
 void CollaborationServiceAndroid::StartShareOrManageFlow(
@@ -94,7 +95,8 @@ void CollaborationServiceAndroid::StartShareOrManageFlow(
       base::Uuid::ParseLowercase(sync_group_id_str);
 
   collaboration_service_->StartShareOrManageFlow(
-      conversion::GetDelegateUniquePtrFromJava(delegateNativePtr), either_id);
+      conversion::GetDelegateUniquePtrFromJava(delegateNativePtr), either_id,
+      CollaborationServiceShareOrManageEntryPoint::kUnknown);
 }
 
 ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetServiceStatus(

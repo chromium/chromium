@@ -9,11 +9,12 @@ import static org.mockito.Mockito.when;
 import android.view.View;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.params.BlockJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -156,14 +157,10 @@ public final class HeaderIphScrollListenerTest {
 
     private static final int FEED_VIEW_HEIGHT = 100;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tracker mTracker;
 
     private boolean mHasShownMenuIph;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     @Feature({"Feed"})

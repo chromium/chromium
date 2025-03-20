@@ -73,6 +73,9 @@ class CookieControlsController final
   // Returns whether any ACT features should be shown.
   bool ShowActFeatures();
 
+  // Record UMA for toggling ACT User Bypass.
+  void RecordActMetrics(bool protections_on);
+
   // Returns whether the cookie blocking setting for the current site was
   // changed by the user via user bypass.
   bool HasUserChangedCookieBlockingForSite();
@@ -257,6 +260,9 @@ class CookieControlsController final
   bool has_exception_expired_since_last_visit_ = false;
 
   bool waiting_for_page_load_finish_ = false;
+
+  bool is_subresource_blocked_ = false;
+  bool is_subresource_proxied_ = false;
 
   base::ObserverList<CookieControlsObserver> observers_;
 

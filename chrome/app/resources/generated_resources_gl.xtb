@@ -1335,6 +1335,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1918127774159128277">Actualizar funcións de Wi-Fi Direct</translation>
 <translation id="1918141783557917887">&amp;Máis pequeno</translation>
 <translation id="1918281588461452432">Cando navegas polos sitios, o contido das súas páxinas está encriptado e gárdase no teu dispositivo</translation>
+<translation id="1919096511823372013">Insire ligazóns, emojis e moito máis. Tamén podes obter axuda para escribir e crear imaxes coa IA de Google.</translation>
 <translation id="1919872106782726755">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o sensor correspondente na esquina superior dereita do teclado, xunto ao botón de acendido. Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="192015196730532810">Podes crear o teu propio grupo de pestanas.</translation>
 <translation id="1920314570001095522">Non hai ningunha pestana similar para organizar, pero pode que che gusten estes grupos</translation>
@@ -8971,6 +8972,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7377451353532943397">Continuar bloqueando o acceso aos sensores</translation>
 <translation id="7377481913241237033">Conectar cun código</translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Outra tarefa no mesmo grupo: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. ·# tarefas máis no mesmo grupo: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Queres desactivar a recuperación de datos locais?</translation>
 <translation id="7380459290951585794">Asegúrate de ter o teléfono preto, desbloqueado e co Bluetooth e a wifi activados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contén caracteres non válidos</translation>

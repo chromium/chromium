@@ -293,6 +293,12 @@ group = 'test'
 [crate.smallvec]
 ban_features = ['malloc_size_of']
 
+[crate.temporal_capi]
+license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
+
+[crate.temporal_rs]
+license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
+
 [crate.unicode-linebreak]
 allow_first_party_usage = false
 build_script_outputs = [ "tables.rs" ]

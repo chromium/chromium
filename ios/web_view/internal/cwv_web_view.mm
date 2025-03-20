@@ -239,7 +239,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
     (web::BrowserState*)browserState {
   return web::WebState::CreateWithStorage(
       browserState, self.webStateID, _storage.metadata(),
-      base::ReturnValueOnce(std::move(_storage)),
+      base::ReturnValueOnce(std::make_optional(std::move(_storage))),
       base::ReturnValueOnce<NSData*>(nil));
 }
 

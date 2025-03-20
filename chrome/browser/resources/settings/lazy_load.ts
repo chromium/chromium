@@ -13,6 +13,9 @@ import './autofill_page/autofill_section.js';
 import './autofill_page/passkeys_subpage.js';
 // </if>
 import './autofill_page/payments_section.js';
+// <if expr="not is_chromeos">
+import './clear_browsing_data_dialog/clear_browsing_data_account_indicator.js';
+// </if>
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog_v2.js';
 import './search_engines_page/search_engines_page.js';
@@ -141,6 +144,9 @@ export {SettingsPaymentsListElement} from './autofill_page/payments_list.js';
 export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
+// <if expr="not is_chromeos">
+export {SettingsClearBrowsingDataAccountIndicator} from './clear_browsing_data_dialog/clear_browsing_data_account_indicator.js';
+// </if>
 export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, TimePeriod, UpdateSyncStateEvent} from './clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
 export {SettingsClearBrowsingDataDialogElement} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 export {SettingsClearBrowsingDataDialogV2Element} from './clear_browsing_data_dialog/clear_browsing_data_dialog_v2.js';

@@ -478,7 +478,7 @@ def BuildZStd():
 
 
 def DownloadPinnedClang():
-  PINNED_CLANG_VERSION = 'llvmorg-17-init-16420-g0c545a44-1'
+  PINNED_CLANG_VERSION = 'llvmorg-21-init-5118-g52cd27e6-4'
   DownloadAndUnpackPackage('clang', PINNED_CLANG_DIR, GetDefaultHostOs(),
                            PINNED_CLANG_VERSION)
 

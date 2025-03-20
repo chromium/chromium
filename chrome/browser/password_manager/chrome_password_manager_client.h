@@ -325,10 +325,6 @@ class ChromePasswordManagerClient
       const std::u16string& password_hostname,
       bool show_warning_text,
       base::OnceClosure confirmation_callback) override;
-  void ShowCredentialsInAmbientBubble(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
-      int credential_type_flags,
-      CredentialsCallback callback) override;
   void TriggerSignIn(signin_metrics::AccessPoint access_point) const override;
 
   // autofill::mojom::PasswordGenerationDriver overrides.

@@ -1269,7 +1269,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
               .inline_size -
           border_padding.InlineSum();
       column_inline_progression =
-          ColumnInlineProgression(available_inline_size, style);
+          ColumnInlineProgression(style, available_inline_size);
     }
 
     // Collect the children of the multicol fragments.

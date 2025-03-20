@@ -82,7 +82,7 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
     }
   }
 
-  // TODO(https://crbug.com/379165457) Remove loaded profile look up once the
+  // TODO(https://crbug.com/379166075) Remove loaded profile look up once the
   // pinned profile is implemented.
   // Look at the list of loaded profiles to use for glic
   if (g_browser_process->profile_manager()) {
@@ -94,7 +94,7 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
     }
   }
 
-  // TODO(https://crbug.com/379165457): Implement profile choice logic.
+  // TODO(https://crbug.com/379166075): Implement profile choice logic.
   return nullptr;
 }
 

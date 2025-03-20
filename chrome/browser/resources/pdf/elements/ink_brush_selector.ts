@@ -10,6 +10,7 @@ import {record, UserAction} from '../metrics.js';
 
 import {getCss} from './ink_brush_selector.css.js';
 import {getHtml} from './ink_brush_selector.html.js';
+import type {SelectableIconButtonElement} from './selectable_icon_button.js';
 
 export const BRUSH_TYPES: AnnotationBrushType[] = [
   AnnotationBrushType.PEN,
@@ -19,9 +20,9 @@ export const BRUSH_TYPES: AnnotationBrushType[] = [
 
 export interface InkBrushSelectorElement {
   $: {
-    eraser: HTMLElement,
-    highlighter: HTMLElement,
-    pen: HTMLElement,
+    eraser: SelectableIconButtonElement,
+    highlighter: SelectableIconButtonElement,
+    pen: SelectableIconButtonElement,
   };
 }
 
@@ -49,15 +50,14 @@ export class InkBrushSelectorElement extends CrLitElement {
 
   currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
-  protected onBrushClick_(e: Event) {
-    const targetElement = e.currentTarget as HTMLElement;
-    const newType = targetElement.dataset['brush'] as AnnotationBrushType;
-    if (this.currentType === newType) {
+  protected onSelectedChanged_(e: CustomEvent<{value: string}>) {
+    const newType = e.detail.value as AnnotationBrushType;
+    if (newType === this.currentType) {
+      // Don't record programmatic changes to metrics.
       return;
     }
 
     this.currentType = newType;
-
     switch (newType) {
       case AnnotationBrushType.ERASER:
         record(UserAction.SELECT_INK2_BRUSH_ERASER);
@@ -72,7 +72,7 @@ export class InkBrushSelectorElement extends CrLitElement {
   }
 
   protected getIcon_(type: AnnotationBrushType): string {
-    const isCurrentType = this.isCurrentType_(type);
+    const isCurrentType = type === this.currentType;
     switch (type) {
       case AnnotationBrushType.ERASER:
         return isCurrentType ? 'pdf:ink-eraser-fill' : 'pdf:ink-eraser';
@@ -93,10 +93,6 @@ export class InkBrushSelectorElement extends CrLitElement {
       case AnnotationBrushType.PEN:
         return loadTimeData.getString('annotationPen');
     }
-  }
-
-  protected isCurrentType_(type: AnnotationBrushType): boolean {
-    return this.currentType === type;
   }
 }
 

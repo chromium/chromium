@@ -53,6 +53,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/scroll_view.h"
@@ -216,7 +217,7 @@ class ExtensionInstallDialogViewTest
     ExtensionInstallDialogView* delegate_view = dialog.get();
 
     views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-        dialog.release(), nullptr,
+        dialog.release(), gfx::NativeWindow(),
         platform_util::GetViewForWindow(
             browser()->window()->GetNativeWindow()));
     modal_dialog->Show();
@@ -604,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
       base::DoNothing(), std::move(prompt));
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-      dialog, nullptr,
+      dialog, gfx::NativeWindow(),
       platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
   ASSERT_TRUE(modal_dialog);
   views::test::WidgetDestroyedWaiter dialog_observer(modal_dialog);
@@ -631,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
       base::DoNothing(), std::move(prompt));
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-      dialog, nullptr,
+      dialog, gfx::NativeWindow(),
       platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
   ASSERT_TRUE(modal_dialog);
   views::test::WidgetDestroyedWaiter dialog_observer(modal_dialog);
@@ -675,7 +676,7 @@ void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
       base::DoNothing(), std::move(prompt));
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-      dialog, nullptr,
+      dialog, gfx::NativeWindow(),
       platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
   modal_dialog->Show();
 
@@ -756,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithWithholdPermissionsUI,
   views::BubbleDialogDelegateView* delegate_view = dialog.get();
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-      dialog.release(), nullptr,
+      dialog.release(), gfx::NativeWindow(),
       platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
   modal_dialog->Show();
 
@@ -791,7 +792,7 @@ class ExtensionInstallDialogViewRequestTest
     ExtensionInstallDialogView* delegate_view = dialog.get();
 
     views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-        dialog.release(), nullptr,
+        dialog.release(), gfx::NativeWindow(),
         platform_util::GetViewForWindow(
             browser()->window()->GetNativeWindow()));
     modal_dialog->Show();

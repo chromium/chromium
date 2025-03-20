@@ -743,7 +743,8 @@ void VizLayerContext::SetVisible(bool visible) {
 void VizLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider) {
+    viz::RasterContextProvider& context_provider,
+    const gfx::Rect& viewport_damage_rect) {
   auto& property_trees = *tree.property_trees();
   auto update = viz::mojom::LayerTreeUpdate::New();
   update->begin_frame_args = tree.CurrentBeginFrameArgs();
@@ -764,6 +765,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->inner_scroll = property_ids.inner_scroll;
   update->outer_clip = property_ids.outer_clip;
   update->outer_scroll = property_ids.outer_scroll;
+
+  update->viewport_damage_rect = viewport_damage_rect;
 
   // This flag will be set if and only if a new layer list was pushed to the
   // active tree during activation, implying that at least one layer addition or

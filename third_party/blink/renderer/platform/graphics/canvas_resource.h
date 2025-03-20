@@ -428,6 +428,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
 
 class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
  public:
+  // The passed-in WeakPtrs must be non-null.
   static scoped_refptr<CanvasResourceSwapChain> Create(
       gfx::Size size,
       viz::SharedImageFormat format,

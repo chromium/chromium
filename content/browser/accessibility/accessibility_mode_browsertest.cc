@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, ReEnablingDoesNotAlterUniqueIds) {
   int32_t unique_id_2 = button_2->GetAXPlatformNode()->GetUniqueId();
 
   // Turn accessibility off again.
-  BrowserAccessibilityState::GetInstance()->ResetAccessibilityMode();
+  BrowserAccessibilityState::GetInstance()->DisableProcessAccessibility();
   accessibility_mode = web_contents()->GetAccessibilityMode();
   ASSERT_TRUE(accessibility_mode.is_mode_off());
   EXPECT_EQ(nullptr, GetManager());
