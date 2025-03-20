@@ -1,0 +1,125 @@
+# Set build timeout to 120 mins rather than the default of 10 mins
+timeout: 7200s
+
+options:
+    machineType: 'E2_HIGHCPU_32'
+
+steps:
+    # 1. Install Dependencies
+    - name: 'gcr.io/cloud-builders/apt'
+      id: 'install-deps'
+      args: ['install', '-y', 'git', 'python3', 'curl', 'ninja-build', 'pkg-config', 'libnss3-dev', 'libssl-dev']
+
+    # 2. Install Depot Tools
+    - name: 'gcr.io/cloud-builders/git'
+      id: 'clone-depot-tools'
+      args: ['clone', 'https://chromium.googlesource.com/chromium/tools/depot_tools.git', '/workspace/depot_tools']
+
+    - name: 'ubuntu'
+      id: 'setup-depot-tools'
+      waitFor: ['clone-depot-tools']
+      entrypoint: 'bash'
+      args:
+          - '-c'
+          - |
+              echo 'export PATH=$PATH:/workspace/depot_tools' >> ~/.bashrc
+              source ~/.bashrc
+
+    # 3. Fetch the Code
+    - name: 'ubuntu'
+      id: 'configure-gclient'
+      waitFor: [ 'fetch-code' ]
+      entrypoint: 'bash'
+      args:
+          - '-c'
+          - |
+              cd /workspace/hopium
+              gclient config --unmanaged --name src \
+              --custom-var build_with_hopium=True \
+              --custom-var checkout_pgo_profiles=True \
+              git@github.com:protectednet/hopium.git
+
+    - name: 'ubuntu'
+      id: 'sync-deps'
+      waitFor: [ 'configure-gclient' ]
+      entrypoint: 'bash'
+      args:
+          - '-c'
+          - |
+              cd /workspace/hopium
+              gclient sync -r $TAG_NAME
+
+    - name: 'ubuntu'
+      id: 'checkout-branch'
+      waitFor: [ 'sync-deps' ]
+      entrypoint: 'bash'
+      args:
+          - '-c'
+          - |
+              cd /workspace/hopium/src
+              git checkout $TAG_NAME
+              gclient sync -D
+
+    # 4. Configure & Build
+    - name: 'ubuntu'
+      id: 'configure-build'
+      waitFor: [ 'checkout-branch' ]
+      entrypoint: 'bash'
+      args:
+          - '-c'
+          - |
+              cd /workspace/hopium/src
+              gn args out/Debug <<EOF
+              is_component_build = false
+              is_debug = false
+              is_official_build = true
+              blink_symbol_level = 0
+              v8_symbol_level = 0
+              proprietary_codecs = true
+              ffmpeg_branding = "Chrome"
+              tsec_brand = true
+              tsec_full_rebrand = true
+              hopium_internal_url = "total"
+              tsec_notarize = true
+              treat_warnings_as_errors = false
+              enable_widevine = true
+              widevine_cdm = true
+              enable_media_foundation = true
+              EOF
+
+    - name: 'ubuntu'
+      id: 'branding-script'
+      waitFor: [ 'configure-build' ]
+      entrypoint: 'bash'
+      args:
+          - '-c'
+          - |
+              cd /workspace/hopium/src
+              python3 hopium/tsec_branding/pre_rebrand.py -b totalbrowser
+
+    - name: 'ubuntu'
+      id: 'build-browser'
+      waitFor: [ 'branding-script' ]
+      entrypoint: 'bash'
+      args:
+          - '-c'
+          - |
+              cd /workspace/hopium/src
+              autoninja -C out/Debug chrome -j 32
+
+    # 5. Post-Build Verification
+    - name: 'ubuntu'
+      id: 'verify-binary'
+      waitFor: [ 'build-browser' ]
+      entrypoint: 'bash'
+      args:
+          - '-c'
+          - |
+              ls -lh /workspace/hopium/src/out/Debug
+
+
+    # 6. Store Build Artifacts
+    - name: 'gcr.io/cloud-builders/gsutil'
+      id: 'upload-artifact'
+      waitFor: [ 'verify-binary' ]
+      args: ['cp', '-r', '/workspace/hopium/src/out/Debug/TotalBrowser', 'gs://tmp_tbr_build_output_bucket/$TAG']
