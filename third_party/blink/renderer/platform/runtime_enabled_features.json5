@@ -3048,7 +3048,8 @@
     {
       // This flag makes the <option> element's label attribute render the
       // contents of the label attribute even if it is only whitespace in order
-      // to match the spec and firefox.
+      // to match the spec and firefox. It also stops stripping/simplifying
+      // whitespace when using the label attribute for rendering.
       // https://github.com/whatwg/html/issues/10955
       name: "OptionLabelAttributeWhitespace",
       status: "stable",
