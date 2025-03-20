@@ -23,7 +23,7 @@ steps:
       args:
           - '-c'
           - |
-              echo 'export PATH=$PATH:/workspace/depot_tools' >> ~/.bashrc
+              echo "export PATH=/workspace/depot_tools:$PATH" >> ~/.bashrc
               source ~/.bashrc
 
     # 3. Fetch the Code
