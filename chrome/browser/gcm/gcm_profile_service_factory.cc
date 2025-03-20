@@ -79,7 +79,7 @@ void RequestProxyResolvingSocketFactory(
 scoped_refptr<base::SequencedTaskRunner> GetNetworkThreadTaskRunner() {
   if (base::FeatureList::IsEnabled(kGCMUseDedicatedNetworkThread)) {
     return base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::SingleThreadTaskRunnerThreadMode::SHARED);
   }
