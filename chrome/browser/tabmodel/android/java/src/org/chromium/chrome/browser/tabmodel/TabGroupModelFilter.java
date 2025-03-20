@@ -77,15 +77,6 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver, TabList {
      */
     List<Tab> getRelatedTabList(@TabId int tabId);
 
-    /**
-     * Returns the list of tab ids that are grouped with the given {@code tabId}.
-     *
-     * @param tabId The id of a {@link Tab} in the group.
-     * @return An unmodifiable list of tab ids that are grouped, or a list containing only the given
-     *     tab's id if the tab is not in a group.
-     */
-    List<@TabId Integer> getRelatedTabIds(@TabId int tabId);
-
     /** Returns the list of tabs in a tab group or an empty list if the group does not exist. */
     List<Tab> getTabsInGroup(@Nullable Token tabGroupId);
 
