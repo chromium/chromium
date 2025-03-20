@@ -47,7 +47,7 @@ TEST(NearbySharePrivateCertificateTest, ToFromDictionary) {
   EXPECT_EQ(before.not_after(), after.not_after());
   EXPECT_EQ(before.unencrypted_metadata().SerializeAsString(),
             after.unencrypted_metadata().SerializeAsString());
-  EXPECT_EQ(before.secret_key_->key(), after.secret_key_->key());
+  EXPECT_EQ(before.secret_key_, after.secret_key_);
   EXPECT_EQ(before.metadata_encryption_key_, after.metadata_encryption_key_);
   EXPECT_EQ(before.consumed_salts_, after.consumed_salts_);
 
