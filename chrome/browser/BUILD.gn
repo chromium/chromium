@@ -6774,6 +6774,7 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/services/system_signals/public/cpp/browser",
+      "//components/supervised_user/core/common:features",
     ]
 
     if (is_win) {
