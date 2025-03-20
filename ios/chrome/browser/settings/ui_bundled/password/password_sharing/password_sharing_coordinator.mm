@@ -97,7 +97,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)start {
   [super start];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   self.mediator = [[PasswordSharingMediator alloc]
              initWithDelegate:self
        sharedURLLoaderFactory:profile->GetSharedURLLoaderFactory()
