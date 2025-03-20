@@ -5,11 +5,18 @@
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
+#include "third_party/blink/renderer/core/animation/deferred_timeline.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
+#include "third_party/blink/renderer/core/animation/timeline_range.h"
+#include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 
 namespace blink {
 
@@ -104,6 +111,196 @@ const RangeBoundary* AnimationTrigger::exitRangeStart(
 const RangeBoundary* AnimationTrigger::exitRangeEnd(
     ExecutionContext* execution_context) {
   return exit_range_end_;
+}
+
+double ComputeTriggerBoundary(
+    std::optional<TimelineOffset> offset,
+    double default_value,
+    ScrollTimeline* timeline,
+    const TimelineRange::ScrollOffsets& range_offsets) {
+  if (offset) {
+    double range = range_offsets.end - range_offsets.start;
+    return range_offsets.start +
+           (timeline->IsViewTimeline()
+                ? range *
+                      To<ViewTimeline>(timeline)->ToFractionalOffset(*offset)
+                : MinimumValueForLength(offset->offset, LayoutUnit(range)));
+  }
+  return default_value;
+}
+
+void AnimationTrigger::ActionAnimation(Animation* animation) {
+  CSSAnimation::ScopedResetIgnoreCSSProperties scoped_ignore_reset(
+      DynamicTo<CSSAnimation>(animation));
+
+  if (!timeline_->IsActive()) {
+    return;
+  }
+
+  if (!timeline_->IsProgressBased()) {
+    // Only scroll-triggered animations are supported at the moment.
+    return;
+  }
+
+  ScrollTimeline* timeline =
+      DynamicTo<ScrollTimeline>(timeline_->ExposedTimeline());
+
+  std::optional<double> current_offset = timeline->GetCurrentScrollPosition();
+  if (!current_offset) {
+    return;
+  }
+
+  auto* timeline_source = timeline->ComputeResolvedSource();
+  if (!timeline_source) {
+    return;
+  }
+  if (IsA<LayoutView>(timeline_source->GetLayoutObject())) {
+    // If the source is the root document, it isn't an "Element", so we need
+    // to work with its scrollingElement
+    timeline_source = To<Document>(timeline_source)->ScrollingElementNoLayout();
+  }
+
+  ExceptionState exception_state(nullptr);
+  std::optional<TimelineOffset> trigger_start = TimelineOffset::Create(
+      To<Element>(timeline_source), range_start_, 0, exception_state);
+  std::optional<TimelineOffset> trigger_end = TimelineOffset::Create(
+      To<Element>(timeline_source), range_end_, 1, exception_state);
+  std::optional<TimelineOffset> exit_start = TimelineOffset::Create(
+      To<Element>(timeline_source), exit_range_start_, 0, exception_state);
+  std::optional<TimelineOffset> exit_end = TimelineOffset::Create(
+      To<Element>(timeline_source), exit_range_end_, 1, exception_state);
+
+  const TimelineState timeline_state = timeline->ComputeTimelineState();
+  // For a ScrollTimeline, these correspond to the min and max scroll offsets of
+  // the associated scroll container.
+  // For a ViewTimeline, these correspond to the cover 0% and cover 100%
+  // respectively.
+  const double default_start_position = timeline_state.scroll_offsets->start;
+  const double default_end_position = timeline_state.scroll_offsets->end;
+
+  double trigger_start_offset =
+      ComputeTriggerBoundary(trigger_start, default_start_position, timeline,
+                             *timeline_state.scroll_offsets);
+  double trigger_end_offset =
+      ComputeTriggerBoundary(trigger_end, default_end_position, timeline,
+                             *timeline_state.scroll_offsets);
+  double exit_start_offset =
+      ComputeTriggerBoundary(exit_start, trigger_start_offset, timeline,
+                             *timeline_state.scroll_offsets);
+  double exit_end_offset = ComputeTriggerBoundary(
+      exit_end, trigger_end_offset, timeline, *timeline_state.scroll_offsets);
+
+  bool within_trigger = false;
+  bool within_exit = false;
+  if (current_offset >= trigger_start_offset &&
+      current_offset <= trigger_end_offset) {
+    within_trigger = true;
+  }
+  if (current_offset >= exit_start_offset &&
+      current_offset <= exit_end_offset) {
+    within_exit = true;
+  }
+
+  if (ActionAnimationInternal(animation, within_trigger, within_exit)) {
+    animation->SetPendingTriggerPlayStateUpdate(false);
+  } else {
+    ProcessPendingPlayStateUpdate(animation);
+  }
+}
+
+bool AnimationTrigger::ActionAnimationInternal(Animation* animation,
+                                               bool within_trigger_range,
+                                               bool within_exit_range) {
+  std::optional<bool> ignore_play_state;
+  if (CSSAnimation* css_animation = DynamicTo<CSSAnimation>(animation)) {
+    ignore_play_state = css_animation->GetIgnoreCSSPlayState();
+  }
+  std::optional<EAnimPlayState> css_play_state =
+      animation->GetTriggerActionPlayState();
+  // Whether we are to pause whatever action we choose to take.
+  bool pause_action = ignore_play_state.has_value()
+                          ? !ignore_play_state.value() &&
+                                css_play_state == EAnimPlayState::kPaused
+                          : false;
+
+  TriggerState trigger_state = animation->GetTriggerState();
+  bool did_action = false;
+  if (within_trigger_range) {
+    if (trigger_state != TriggerState::kPrimary) {
+      // If AnimationTrigger.type ceases to be readonly, we'll need to
+      // re-evaluate this DCHECK.
+      DCHECK(type_ != Type::Enum::kOnce ||
+             trigger_state == TriggerState::kIdle);
+
+      if (trigger_state == TriggerState::kIdle) {
+        animation->play();
+      } else if (type_ == Type::Enum::kState) {
+        animation->Unpause();
+      } else if (type_ == Type::Enum::kAlternate) {
+        animation->reverse();
+      } else {
+        // kRepeat
+        animation->play();
+      }
+
+      animation->SetTriggerState(TriggerState::kPrimary);
+      if (pause_action) {
+        animation->pause();
+      }
+      did_action = true;
+    }
+  } else if (type_ != Type::Enum::kOnce && !within_exit_range) {
+    if (trigger_state == TriggerState::kPrimary) {
+      if (type_ == Type::Enum::kRepeat) {
+        // If we cancel the animation, don't pause it.
+        animation->cancel();
+      } else if (type_ == Type::Enum::kAlternate) {
+        animation->reverse();
+        if (pause_action) {
+          animation->pause();
+        }
+      } else if (type_ == Type::Enum::kState) {
+        animation->pause();
+      }
+
+      animation->SetTriggerState(TriggerState::kInverse);
+      did_action = true;
+    }
+  }
+
+  return did_action;
+}
+
+void AnimationTrigger::ProcessPendingPlayStateUpdate(Animation* animation) {
+  if (animation->PendingTriggerPlayStateUpdate()) {
+    CSSAnimation* css_animation = DynamicTo<CSSAnimation>(animation);
+    bool ignoring_play_state =
+        !css_animation || css_animation->GetIgnoreCSSPlayState();
+    TriggerState trigger_state = animation->GetTriggerState();
+
+    // Do not respond to `animation-play-state` changes if any of the following
+    // is true:
+    // 1. The trigger is idle.
+    // 2. The animation is ignoring `animation-play-state`.
+    // 3. This is a repeat trigger outside its exit range. Repeat triggers reset
+    //    their animations outside the exit range and should not be playing and
+    //    pausing their animation(s).
+    bool should_toggle =
+        !(trigger_state == TriggerState::kIdle || ignoring_play_state ||
+          (type_ == Type::Enum::kRepeat &&
+           trigger_state == TriggerState::kInverse));
+
+    if (should_toggle) {
+      DCHECK(!ignoring_play_state);
+      if (animation->GetTriggerActionPlayState() == EAnimPlayState::kPaused) {
+        animation->pause();
+      } else {
+        animation->Unpause();
+      }
+    }
+
+    animation->SetPendingTriggerPlayStateUpdate(false);
+  }
 }
 
 }  // namespace blink
