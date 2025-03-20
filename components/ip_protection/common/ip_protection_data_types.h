@@ -147,11 +147,24 @@ std::vector<MdlType> FromMdlResourceProto(
     const masked_domain_list::Resource& resource);
 
 struct ProbabilisticRevealToken {
+  ProbabilisticRevealToken();
+  ProbabilisticRevealToken(std::int32_t version,
+                           std::string u,
+                           std::string e,
+                           std::string epoch_id);
+  ProbabilisticRevealToken(const ProbabilisticRevealToken&);
+  ProbabilisticRevealToken(ProbabilisticRevealToken&&);
+  ProbabilisticRevealToken& operator=(const ProbabilisticRevealToken&);
+  ProbabilisticRevealToken& operator=(ProbabilisticRevealToken&&);
+  ~ProbabilisticRevealToken();
+
+  bool operator==(const ProbabilisticRevealToken& token) const = default;
+  std::optional<std::string> SerializeAndEncode() const;
+
   std::int32_t version;
   std::string u;
   std::string e;
-  bool operator==(const ProbabilisticRevealToken& token) const = default;
-  std::optional<std::string> SerializeAndEncode() const;
+  std::string epoch_id;
 };
 
 // Declares possible return status for TryGetProbabilisticRevealTokens().
@@ -172,7 +185,8 @@ enum class TryGetProbabilisticRevealTokensStatus {
   kInvalidNumTokensWithSignal = 12,
   kRequestBackedOff = 13,
   kNoGoogleChromeBranding = 14,
-  kMaxValue = kNoGoogleChromeBranding,
+  kInvalidEpochIdSize = 15,
+  kMaxValue = kInvalidEpochIdSize,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:ProbabilisticRevealTokensResult)
 
