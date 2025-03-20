@@ -39,6 +39,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/insecure_random_generator.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,6 +69,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/filter/filter_source_stream_test_util.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
@@ -81,6 +83,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_connection.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/gtest_util.h"
 #include "net/test/quic_simple_test_server.h"
@@ -100,6 +103,7 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -194,6 +198,20 @@ const net::MockWrite kOriginTestWrites[] = {
                    "User-Agent: \r\n"
                    "Accept-Encoding: gzip, deflate\r\n\r\n"),
 };
+
+// TODO(crbug.com/391950057): Move this method to //net/  .
+std::vector<uint8_t> CompressGzip(std::string_view uncompressed_body) {
+  // Attempt to pick size that's large enough even in the worst case (deflate
+  // block headers should be shorter than 512 bytes, and deflating should never
+  // double size of data, modulo headers).
+  std::vector<uint8_t> compressed_body(uncompressed_body.size() * 2 + 512);
+  size_t compressed_size = compressed_body.size();
+  net::CompressGzip(uncompressed_body.data(), uncompressed_body.size(),
+                    reinterpret_cast<char*>(compressed_body.data()),
+                    &compressed_size, true /* gzip_framing */);
+  compressed_body.resize(compressed_size);
+  return compressed_body;
+}
 
 static ResourceRequest CreateResourceRequest(const char* method,
                                              const GURL& url) {
@@ -841,6 +859,9 @@ class URLLoaderTest : public testing::Test {
 
     request.target_ip_address_space = target_ip_address_space_;
 
+    request.client_side_content_decoding_enabled =
+        client_side_content_decoding_enabled_;
+
     return LoadRequest(request, body);
   }
 
@@ -897,6 +918,11 @@ class URLLoaderTest : public testing::Test {
     url_loader = url_loader_options.MakeURLLoader(
         context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), request, client_.CreateRemote());
+
+    if (partial_decoder_decoding_buffer_size_) {
+      url_loader->set_partial_decoder_decoding_buffer_size_for_testing(
+          *partial_decoder_decoding_buffer_size_);
+    }
 
     ran_ = true;
     devtools_observer_ = nullptr;
@@ -1027,6 +1053,12 @@ class URLLoaderTest : public testing::Test {
     return file_path.AppendASCII(file_name);
   }
 
+  std::string ReadTestFile(const std::string& file_name) {
+    std::string contents;
+    CHECK(base::ReadFileToString(GetTestFilePath(file_name), &contents));
+    return contents;
+  }
+
   base::File OpenFileForUpload(const base::FilePath& file_path) {
     int open_flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
 #if BUILDFLAG(IS_WIN)
@@ -1074,6 +1106,10 @@ class URLLoaderTest : public testing::Test {
   void set_expect_redirect() {
     DCHECK(!ran_);
     expect_redirect_ = true;
+  }
+  void set_client_side_content_decoding_enabled() {
+    DCHECK(!ran_);
+    client_side_content_decoding_enabled_ = true;
   }
   void set_factory_client_security_state(mojom::ClientSecurityStatePtr state) {
     factory_client_security_state_ = std::move(state);
@@ -1235,6 +1271,7 @@ class URLLoaderTest : public testing::Test {
   bool send_ssl_for_cert_error_ = false;
   bool ignore_certificate_errors_ = false;
   bool expect_redirect_ = false;
+  bool client_side_content_decoding_enabled_ = false;
   mojom::ClientSecurityStatePtr factory_client_security_state_;
   mojom::ClientSecurityStatePtr request_client_security_state_;
   raw_ptr<MockDevToolsObserver> devtools_observer_ = nullptr;
@@ -1243,6 +1280,7 @@ class URLLoaderTest : public testing::Test {
   mojom::IPAddressSpace target_ip_address_space_ =
       mojom::IPAddressSpace::kUnknown;
   net::CookieSettingOverrides cookie_setting_overrides_;
+  std::optional<int> partial_decoder_decoding_buffer_size_;
 
   bool orb_enabled_ = false;
 
@@ -1278,6 +1316,19 @@ class URLLoaderMockSocketTest : public URLLoaderTest {
   }
 
  protected:
+  // Generates a sequence of random bytes that are hard to compress, using a
+  // seed.
+  std::vector<uint8_t> CreateRandomBytesWithSeed(uint64_t seed, size_t size) {
+    std::vector<uint8_t> data;
+    data.reserve(size);
+    base::test::InsecureRandomGenerator gen;
+    gen.ReseedForTesting(seed);
+    for (size_t i = 0; i < size; ++i) {
+      data.push_back(gen.RandUint32() & 0xFF);
+    }
+    return data;
+  }
+
   net::MockClientSocketFactory socket_factory_;
 };
 
@@ -2798,6 +2849,50 @@ TEST_P(ParameterizedURLLoaderTest, FirstReadIsEnoughToSniff) {
   LoadPacketsAndVerifyContents(first, std::string());
   EXPECT_TRUE(did_mime_sniff());
   ASSERT_EQ(std::string("text/plain"), mime_type());
+}
+
+TEST_P(ParameterizedURLLoaderTest, CompressedResponse) {
+  std::string body;
+  EXPECT_EQ(net::OK, Load(test_server()->GetURL("/hello.html.gz"), &body));
+  ASSERT_EQ(std::string("text/html"), mime_type());
+  EXPECT_EQ(body, ReadTestFile("hello.html"));
+}
+
+TEST_P(ParameterizedURLLoaderTest, CompressedResponseClienteSideDecoding) {
+  set_client_side_content_decoding_enabled();
+  std::string body;
+  EXPECT_EQ(net::OK, Load(test_server()->GetURL("/hello.html.gz"), &body));
+  ASSERT_EQ(std::string("text/html"), mime_type());
+  EXPECT_EQ(body, ReadTestFile("hello.html.gz"));
+  EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
+              ElementsAre(net::SourceStreamType::kGzip));
+}
+
+TEST_P(ParameterizedURLLoaderTest, CompressedResponseSniffMime) {
+  set_sniff();
+  std::string body;
+  EXPECT_EQ(
+      net::OK,
+      Load(test_server()->GetURL("/content-sniffer-test0.html.gz"), &body));
+  EXPECT_TRUE(did_mime_sniff());
+  ASSERT_EQ(std::string("text/html"), mime_type());
+  EXPECT_EQ(body,
+            base::as_string_view(ReadTestFile("content-sniffer-test0.html")));
+}
+
+TEST_P(ParameterizedURLLoaderTest,
+       CompressedResponseSniffMimeClienteSideDecoding) {
+  set_sniff();
+  set_client_side_content_decoding_enabled();
+  std::string body;
+  EXPECT_EQ(
+      net::OK,
+      Load(test_server()->GetURL("/content-sniffer-test0.html.gz"), &body));
+  EXPECT_TRUE(did_mime_sniff());
+  ASSERT_EQ(std::string("text/html"), mime_type());
+  EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
+              ElementsAre(net::SourceStreamType::kGzip));
+  EXPECT_EQ(body, ReadTestFile("content-sniffer-test0.html.gz"));
 }
 
 class NeverFinishedBodyHttpResponse : public net::test_server::HttpResponse {
@@ -7374,6 +7469,409 @@ TEST_F(URLLoaderMockSocketTest, SniffMimeByteByByteRead) {
   EXPECT_TRUE(did_mime_sniff());
   EXPECT_EQ(mime_type(), "text/html");
   EXPECT_EQ(body, kTestHtml);
+}
+
+TEST_F(URLLoaderMockSocketTest, CompressedResponseSniffMime) {
+  const std::string_view kTestHtml = "<html><body>hello world</body></html>";
+  const auto compressed = CompressGzip(kTestHtml);
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, /*seq=*/1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Encoding: gzip\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, base::as_string_view(compressed),
+                    /*result=*/0,
+                    /*seq=*/2),
+      net::MockRead(net::SYNCHRONOUS, net::OK, /*seq=*/3)};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(did_mime_sniff());
+  EXPECT_EQ(mime_type(), "text/html");
+  EXPECT_EQ(body, kTestHtml);
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingSniffMimeSync) {
+  const std::string_view kTestHtml = "<html><body>hello world</body></html>";
+  const auto compressed = CompressGzip(kTestHtml);
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, /*seq=*/1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Encoding: gzip\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, base::as_string_view(compressed),
+                    /*result=*/0,
+                    /*seq=*/2),
+      net::MockRead(net::SYNCHRONOUS, net::OK, /*seq=*/3)};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(did_mime_sniff());
+  EXPECT_EQ(mime_type(), "text/html");
+
+  EXPECT_THAT(body, base::as_string_view(compressed));
+
+  EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
+              ElementsAre(net::SourceStreamType::kGzip));
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingSniffMimeAsync) {
+  const std::string_view kTestHtml = "<html><body>hello world</body></html>";
+  const auto compressed = CompressGzip(kTestHtml);
+  const net::MockRead kReads[] = {
+      net::MockRead(net::ASYNC, /*seq=*/1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Encoding: gzip\r\n\r\n"),
+      net::MockRead(net::ASYNC, base::as_string_view(compressed),
+                    /*result=*/0,
+                    /*seq=*/2),
+      net::MockRead(net::ASYNC, net::OK, /*seq=*/3)};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(did_mime_sniff());
+  EXPECT_EQ(mime_type(), "text/html");
+
+  EXPECT_THAT(body, base::as_string_view(compressed));
+
+  EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
+              ElementsAre(net::SourceStreamType::kGzip));
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingSniffMimeAsyncDelaySniff) {
+  const std::string_view kTestHtml = "<html><body>hello world</body></html>";
+  // SniffForHTML() in mime_sniffer.cc sniffs the head 512 bytes. So add spaces
+  // to delay the completion of sniffing by padding the beginning with spaces to
+  // make the total 512 bytes.
+  const std::string large_space_and_html =
+      base::StrCat({std::string(512 - kTestHtml.size(), ' '), kTestHtml});
+  const auto compressed = CompressGzip(large_space_and_html);
+  std::vector<net::MockRead> reads;
+  reads.emplace_back(net::ASYNC, /*seq=*/1,
+                     "HTTP/1.1 200 OK\r\n"
+                     "Content-Encoding: gzip\r\n\r\n");
+  for (size_t i = 0; i < compressed.size(); ++i) {
+    reads.emplace_back(net::ASYNC,
+                       base::as_string_view(compressed).substr(i, 1),
+                       /*result=*/0, /*seq=*/i + 2);
+  }
+  reads.emplace_back(net::ASYNC, net::OK, /*seq=*/compressed.size() + 2);
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(reads, kOriginTestWrites);
+  socket_data_reads_writes.set_receive_buffer_size(1);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(did_mime_sniff());
+  EXPECT_EQ(mime_type(), "text/html");
+
+  EXPECT_THAT(body, base::as_string_view(compressed));
+
+  EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
+              ElementsAre(net::SourceStreamType::kGzip));
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingSniffMimeSyncError) {
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, /*seq=*/1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Encoding: gzip\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, /*result=*/net::ERR_FAILED,
+                    /*seq=*/2)};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request, &body));
+  EXPECT_TRUE(body.empty());
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingSniffMimeAsyncError) {
+  const net::MockRead kReads[] = {
+      net::MockRead(net::ASYNC, /*seq=*/1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Encoding: gzip\r\n\r\n"),
+      net::MockRead(net::ASYNC, /*result=*/net::ERR_FAILED,
+                    /*seq=*/2)};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request, &body));
+  EXPECT_TRUE(body.empty());
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingSniffMimeSyncDecodeError) {
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, /*seq=*/1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Encoding: gzip\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, /*seq=*/2,
+                    "this is an invalid gzipped data")};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::ERR_CONTENT_DECODING_FAILED, LoadRequest(request, &body));
+  EXPECT_TRUE(body.empty());
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingSniffMimeAsyncDecodeError) {
+  const net::MockRead kReads[] = {
+      net::MockRead(net::ASYNC, /*seq=*/1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Encoding: gzip\r\n\r\n"),
+      net::MockRead(net::ASYNC, /*seq=*/2, "this is an invalid gzipped data")};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::ERR_CONTENT_DECODING_FAILED, LoadRequest(request, &body));
+  EXPECT_TRUE(body.empty());
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingSniffMimeEmpty) {
+  const net::MockRead kReads[] = {
+      net::MockRead(net::ASYNC, /*seq=*/1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Encoding: gzip\r\n\r\n"),
+      net::MockRead(net::ASYNC, /*result=*/net::OK, /*seq=*/2)};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(body.empty());
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingSniffMimeSyncCancelAfterResponse) {
+  const std::string_view kTestHtml = "<html><body>hello world</body></html>";
+  const auto compressed = CompressGzip(kTestHtml);
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, /*seq=*/1,
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Encoding: gzip\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, base::as_string_view(compressed),
+                    /*result=*/0,
+                    /*seq=*/2),
+      net::MockRead(net::SYNCHRONOUS, net::OK, /*seq=*/3)};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+
+  URLLoaderOptions url_loader_options;
+  url_loader_options.options = mojom::kURLLoadOptionSniffMimeType;
+  url_loader_options.sync_url_loader_client = client_.GetSyncClientWeakPtr();
+  std::unique_ptr<URLLoader> url_loader;
+  mojo::Remote<mojom::URLLoader> loader;
+  base::RunLoop delete_run_loop;
+  url_loader = url_loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client_.CreateRemote());
+  client_.SetResponseReceivedCallback(
+      base::BindLambdaForTesting([&]() { client_.response_body_release(); }));
+  delete_run_loop.Run();
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingOrbClosesSocketOnSniffingMimeType) {
+  orb_enabled_ = true;
+
+  const auto compressed = CompressGzip("{\"x\" : 3}");
+  const std::string first_read = base::StringPrintf(
+      "HTTP/1.1 200 OK\r\n"
+      "Connection: keep-alive\r\n"
+      "Content-Encoding: gzip\r\n"
+      "Content-Type: application/json\r\n"
+      "Content-Length: %zu\r\n\r\n",
+      compressed.size());
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
+      net::MockRead(net::SYNCHRONOUS, base::as_string_view(compressed),
+                    /*result=*/0,
+                    /*seq=*/2)};
+
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+
+  GURL url("http://origin.test/");
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.mode = mojom::RequestMode::kNoCors;
+  request.request_initiator = initiator;
+  // Set the flag for ClientSideContentDecoding.
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(body.empty());
+
+  // Socket should have been destroyed, so it will not be reused.
+  EXPECT_FALSE(socket_data_reads_writes.socket());
+}
+
+// Tests the code path where client-side decompression is enabled and the
+// underlying compressed data (corresponding to a chunk of data decompressed by
+// the PartialDecoder) is larger than the Mojo data pipe's capacity.
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingOrbBodyLargerThanMojoPipe) {
+  orb_enabled_ = true;
+  const auto data_pipe_size = GetDataPipeDefaultAllocationSize(
+      DataPipeAllocationSize::kLargerSizeIfPossible);
+  // Configures the PartialDecoder's internal buffer size to be larger than the
+  // Mojo data pipe. This ensures that when the PartialDecoder accumulates
+  // enough decompressed data to exceed the Mojo pipe size, the corresponding
+  // compressed data will also be larger than the pipe, triggering the specific
+  // code path we want to test.
+  partial_decoder_decoding_buffer_size_ = data_pipe_size + 100;
+
+  const std::vector<uint8_t> raw_data = CreateRandomBytesWithSeed(
+      /*seed=*/1234, /*size=*/data_pipe_size * 2);
+  const auto compressed = CompressGzip(base::as_string_view(raw_data));
+  // Verify that the compressed data is indeed larger than the Mojo pipe's
+  // capacity, which is a prerequisite for the test scenario.
+  EXPECT_GT(compressed.size(), data_pipe_size);
+  const std::string first_read = base::StringPrintf(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Encoding: gzip\r\n"
+      "Content-Type: application/json\r\n"
+      "Content-Length: %zu\r\n\r\n",
+      compressed.size());
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
+      net::MockRead(net::SYNCHRONOUS, base::as_string_view(compressed),
+                    /*result=*/0,
+                    /*seq=*/2)};
+
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+
+  GURL url("http://origin.test/");
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.mode = mojom::RequestMode::kNoCors;
+  request.request_initiator = initiator;
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  // The body might be empty if ORB blocks the response. If not blocked, we
+  // expect the compressed content.
+  if (!body.empty()) {
+    EXPECT_THAT(body, base::as_string_view(compressed));
+  }
+}
+
+TEST_F(URLLoaderMockSocketTest,
+       CompressedResponseClienteSideDecodingOrbNotBlocked) {
+  orb_enabled_ = true;
+  const std::string_view kTestData = "            ";
+  const auto compressed = CompressGzip(kTestData);
+  const std::string first_read = base::StringPrintf(
+      "HTTP/1.1 200 OK\r\n"
+      "Connection: keep-alive\r\n"
+      "Content-Encoding: gzip\r\n"
+      "Content-Type: application/json\r\n"
+      "Content-Length: %zu\r\n\r\n",
+      compressed.size());
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
+      net::MockRead(net::SYNCHRONOUS, base::as_string_view(compressed),
+                    /*result=*/0,
+                    /*seq=*/2)};
+
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+
+  GURL url("http://origin.test/");
+  url::Origin initiator =
+      url::Origin::Create(GURL("http://other-origin.test/"));
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.mode = mojom::RequestMode::kNoCors;
+  request.request_initiator = initiator;
+  request.client_side_content_decoding_enabled = true;
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_THAT(body, base::as_string_view(compressed));
 }
 
 TEST_P(ParameterizedURLLoaderTest, WithDnsAliases) {
