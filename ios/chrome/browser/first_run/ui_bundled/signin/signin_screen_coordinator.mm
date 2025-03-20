@@ -203,11 +203,11 @@
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.mediator.selectedIdentity
                                       accessPoint:_accessPoint
+                             precedingHistorySync:YES
                                 postSignInActions:PostSignInActionSet()
                          presentingViewController:self.viewController
                                        anchorView:nil
                                        anchorRect:CGRectNull];
-  authenticationFlow.precedingHistorySync = YES;
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^() {
     [weakSelf finishPresentingWithSignIn:YES];
