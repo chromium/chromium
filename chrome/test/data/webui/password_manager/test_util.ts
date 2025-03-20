@@ -151,6 +151,11 @@ export function makePasswordManagerPrefs() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
+    credentials_enable_automatic_passkey_upgrades: {
+      key: 'credentials_enable_automatic_passkey_upgrades',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
     profile: {
       password_dismiss_compromised_alert: {
         key: 'profile.password_dismiss_compromised_alert',
@@ -159,11 +164,6 @@ export function makePasswordManagerPrefs() {
       },
     },
     password_manager: {
-      automatic_passkey_upgrades: {
-        key: 'password_manager.automatic_passkey_upgrades',
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: true,
-      },
       // <if expr="is_win or is_macosx or is_chromeos">
       biometric_authentication_filling: {
         key: 'password_manager.biometric_authentication_filling',
