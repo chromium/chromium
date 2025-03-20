@@ -24,7 +24,6 @@
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
-#include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_telemetry_service_verdict_handler.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
@@ -70,6 +69,7 @@ class CorruptedExtensionReinstaller;
 class CrxInstaller;
 class DelayedInstallManager;
 class ExtensionActionStorageManager;
+class ExtensionAllowlist;
 class ExtensionErrorController;
 class ExtensionRegistry;
 class ExtensionSystem;
@@ -402,7 +402,9 @@ class ExtensionService : public ExtensionServiceInterface,
     return &force_installed_tracker_;
   }
 
-  ExtensionAllowlist* allowlist() { return &allowlist_; }
+  // TODO(crbug.com/404941806): Delete this method and use the KeyedService
+  // directly.
+  ExtensionAllowlist* allowlist() { return allowlist_; }
 
   const std::set<std::string>& disable_flag_exempted_extensions() const {
     return disable_flag_exempted_extensions_;
@@ -529,7 +531,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // Blocklist for the owning profile.
   raw_ptr<Blocklist> blocklist_ = nullptr;
 
-  ExtensionAllowlist allowlist_;
+  raw_ptr<ExtensionAllowlist> allowlist_ = nullptr;
 
   SafeBrowsingVerdictHandler safe_browsing_verdict_handler_;
 
