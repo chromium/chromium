@@ -559,9 +559,6 @@ bool IsNewSyncOptInIllustration();
 // Feature flag to disable Lens LVF features.
 BASE_DECLARE_FEATURE(kDisableLensCamera);
 
-// Feature flag that allows clearing data for managed users signing out.
-BASE_DECLARE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers);
-
 // YES when the Downloads Auto Deletion feature is enabled.
 BASE_DECLARE_FEATURE(kDownloadAutoDeletionFeatureEnabled);
 
