@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.chrome.browser.tabmodel.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
 import android.app.Activity;
@@ -231,7 +232,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
@@ -313,8 +313,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
     private static final String TAG = "ChromeTabbedActivity";
 
     protected static final String WINDOW_INDEX = "window_index";
-
-    private static final int INVALID_WINDOW_ID = TabWindowManager.INVALID_WINDOW_ID;
 
     // How long to delay closing the current tab when our app is minimized.  Have to delay this
     // so that we don't show the contents of the next tab while minimizing.
