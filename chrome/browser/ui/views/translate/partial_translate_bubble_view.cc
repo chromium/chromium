@@ -154,9 +154,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PartialTranslateBubbleView,
                                       kErrorMessage);
 
 void PartialTranslateBubbleView::CloseBubble() {
-  if (action_item_.get()) {
-    action_item_->SetIsShowingBubble(false);
-  }
   mouse_handler_.reset();
   LocationBarBubbleDelegateView::CloseBubble();
 }
