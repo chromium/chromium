@@ -37,6 +37,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:ActInFocusedTabErrorReason) -->
 
+<!-- LINT.IfChange(GlicAttachChangeReason) -->
+
+<enum name="GlicAttachChangeReason">
+  <int value="0" label="Drag gesture."/>
+  <int value="1" label="Menu click."/>
+  <int value="2" label="Panel initialized."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:AttachChangeReason) -->
+
 <!-- LINT.IfChange(GlicEntryPointImpression) -->
 
 <enum name="GlicEntryPointImpression">

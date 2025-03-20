@@ -450,7 +450,7 @@ void GlicWindowController::ToggleWhenNotAlwaysDetached(
         // Button clicked on a different browser: attach to that one.
         MovePositionToBrowserGlicButton(*new_attached_browser,
                                         /*animate=*/true);
-        AttachToBrowser(*new_attached_browser);
+        AttachToBrowser(*new_attached_browser, AttachChangeReason::kInit);
       }
       return;
     }
@@ -706,7 +706,7 @@ void GlicWindowController::OpenAttached(Browser& browser) {
   AddAccelerators();
 
   glic_widget_->Show();
-  AttachToBrowser(browser);
+  AttachToBrowser(browser, AttachChangeReason::kInit);
 
   // Set target size for animation and run the open attached animation.
   gfx::Size widget_size =
@@ -738,7 +738,7 @@ void GlicWindowController::OpenDetached(Browser* browser) {
 #endif
   } else {
     // Be sure to reparent the widget and set its state first before showing it.
-    MaybeCreateHolderWindowAndReparent();
+    MaybeCreateHolderWindowAndReparent(AttachChangeReason::kInit);
   }
   GetGlicWidget()->Show();
 
@@ -887,7 +887,7 @@ void GlicWindowController::Attach() {
   if (AlwaysDetached()) {
     return;
   }
-  AttachToBrowser(*browser);
+  AttachToBrowser(*browser, AttachChangeReason::kMenu);
 }
 
 void GlicWindowController::Detach() {
@@ -896,7 +896,7 @@ void GlicWindowController::Detach() {
   }
   state_ = State::kDetaching;
   if (!AlwaysDetached()) {
-    MaybeCreateHolderWindowAndReparent();
+    MaybeCreateHolderWindowAndReparent(AttachChangeReason::kMenu);
   }
 
   // Move down a little bit when detaching.
@@ -912,10 +912,13 @@ void GlicWindowController::DetachFinished() {
   state_ = State::kOpen;
 }
 
-void GlicWindowController::AttachToBrowser(Browser& browser) {
+void GlicWindowController::AttachToBrowser(Browser& browser,
+                                           AttachChangeReason reason) {
   CHECK(!AlwaysDetached());
   CHECK(GetGlicWidget());
   attached_browser_ = &browser;
+
+  glic_service_->metrics()->OnAttachedToBrowser(reason);
 
   // TODO(crbug.com/395734073): Investigate reparenting to a holder widget on
   // Windows
@@ -1166,12 +1169,12 @@ void GlicWindowController::OnDragComplete() {
   // widget.
   if (!browser) {
     MaybeAdjustSizeForDisplay(/*animate=*/true);
-    MaybeCreateHolderWindowAndReparent();
+    MaybeCreateHolderWindowAndReparent(AttachChangeReason::kDrag);
     return;
   }
   // Attach to the found browser.
   MovePositionToBrowserGlicButton(*browser, /*animate=*/true);
-  AttachToBrowser(*browser);
+  AttachToBrowser(*browser, AttachChangeReason::kDrag);
 }
 
 void GlicWindowController::HandleGlicButtonIndicator() {
@@ -1291,10 +1294,13 @@ void GlicWindowController::MovePositionToBrowserGlicButton(
   NotifyIfPanelStateChanged();
 }
 
-void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
+void GlicWindowController::MaybeCreateHolderWindowAndReparent(
+    AttachChangeReason reason) {
   attached_browser_ = nullptr;
   anchor_observer_.reset();
   browser_close_subscription_.reset();
+
+  glic_service_->metrics()->OnDetachedFromBrowser(reason);
 
 // TODO(crbug.com/395734073): Investigate reparenting to a holder widget on
 // Windows

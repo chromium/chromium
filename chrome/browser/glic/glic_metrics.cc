@@ -326,4 +326,12 @@ void GlicMetrics::OnPinningPrefChanged() {
   }
 }
 
+void GlicMetrics::OnAttachedToBrowser(AttachChangeReason reason) {
+  base::UmaHistogramEnumeration("Glic.AttachedToBrowser", reason);
+}
+
+void GlicMetrics::OnDetachedFromBrowser(AttachChangeReason reason) {
+  base::UmaHistogramEnumeration("Glic.DetachedFromBrowser", reason);
+}
+
 }  // namespace glic
