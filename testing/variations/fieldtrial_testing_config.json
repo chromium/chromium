@@ -2268,46 +2268,6 @@
             ]
         }
     ],
-    "AutofillIncludeMaxLengthInCrowdsourcing": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "ios",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillIncludeMaxLengthInCrowdsourcing"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillIncludeSelectOptionsInCrowdsourcing": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "ios",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillIncludeSelectOptionsInCrowdsourcing"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillInferLabelFromDefaultSelectText": [
         {
             "platforms": [
