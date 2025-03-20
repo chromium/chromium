@@ -5194,6 +5194,7 @@
                         "LensOverlayEnableLocationBarEntrypoint"
                     ],
                     "disable_features": [
+                        "LensGestureTextSelectionDisabled",
                         "LensOverlayEnableLocationBarEntrypointOnSRP"
                     ]
                 },
