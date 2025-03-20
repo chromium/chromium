@@ -84,21 +84,6 @@ interface PageHandler {
   WebUiStateChanged(WebUiState new_state);
 };
 
-// Reason for failure while extracting tab context. This MUST be kept in sync
-// with the glic_api.ts enum.
-[Stable, Extensible]
-enum GetTabContextErrorReason {
-  [ Default] kUnknown = 0 ,
-  // The web contents was navigated or closed during context gathering.
-  [ MinVersion=1 ] kWebContentsChanged = 1,
-  // Permission to capture page context is denied.
-  [ MinVersion=1 ] kPermissionDenied = 2,
-  // The URL in the tab data is not supported.
-  [ MinVersion=1 ] kUnsupportedUrl = 3,
-  // There are no Chrome tabs available to be focused.
-  [ MinVersion=1 ] kNoFocusableTabs = 4,
-};
-
 // Reason for failure while acting in a focused tab. This MUST be kept in
 // sync with the glic_api.ts enum.
 // LINT.IfChange(ActInFocusedTabErrorReason)
@@ -114,24 +99,6 @@ enum ActInFocusedTabErrorReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ActInFocusedTabErrorReason)
 
-// Reason why a focused tab candidate is not valid for focus.
-[Stable, Extensible]
-enum InvalidCandidateError {
-  // Candidate was deemed invalid for focus for an unknown reason.
-  [Default] kUnknown = 0,
-  // The URL in the candidate's tab data is not supported.
-  kUnsupportedUrl = 1,
-};
-
-// Reason why a focused tab is not available.
-[Stable, Extensible]
-enum NoCandidateTabError {
-  // An unknown error occurred while getting the tab data.
-  [Default] kUnknown = 0,
-  // There are no Chrome tabs available to be focused.
-  kNoFocusableTabs = 1,
-};
-
 // Reason why capturing desktop screenshot failed. This MUST be kept in sync
 // with the glic_api.ts enum.
 [Stable, Extensible]
@@ -145,7 +112,7 @@ enum CaptureScreenshotErrorReason {
 };
 
 union GetContextResult {
-  GetTabContextErrorReason error_reason;
+  string error_reason;
   TabContext tab_context;
 };
 
@@ -650,21 +617,17 @@ struct TabData {
 union FocusedTabData {
   // Stores the focused tab data if one exists.
   TabData focused_tab;
-  // If a focus candidate exists but cannot be focused then
-  // `focused_tab_candidate` will hold its `TabData` and an
-  // `InvalidCandidateError` specifying why it is not focusable.
-  FocusedTabCandidate focused_tab_candidate;
-  // If no candidate exists then the `no_candidate_tab_error` will indicate why.
-  NoCandidateTabError no_candidate_tab_error;
+  // Information about why there is no focused tab.
+  NoFocusedTabData no_focused_tab_data;
 };
 
-// Data about the focused tab candidate.
-struct FocusedTabCandidate {
-  // Stores the focused tab candidate data when the browser has valid TabData
-  // that cannot be used for context extraction.
-  TabData focused_tab_candidate_data;
-  // Specifies why the candidate was invalid for focus.
-  InvalidCandidateError invalid_candidate_error;
+// Data about the why there is no focused tab.
+struct NoFocusedTabData {
+  // Data about the active tab that could not be focused, if one exists.
+
+  TabData? active_tab_data;
+  // A human-readable debug message explaining why there is no focused tab.
+  string no_focus_reason;
 };
 
 // A meta tag.
@@ -722,4 +685,29 @@ enum WebClientSizingMode {
   // The web client resizes its content to fit the window size.
   // This can be tested using "--glic-sizing-fit-window".
   kFitWindow,
+};
+
+//
+// TODO(harringtond): Delete these unused enums.
+//
+
+[Stable, Extensible]
+enum InvalidCandidateError {
+  [Default] kUnknown = 0,
+  kUnsupportedUrl = 1,
+};
+
+[Stable, Extensible]
+enum NoCandidateTabError {
+  [Default] kUnknown = 0,
+  kNoFocusableTabs = 1,
+};
+
+[Stable, Extensible]
+enum GetTabContextErrorReason {
+  [ Default] kUnknown = 0 ,
+  [ MinVersion=1 ] kWebContentsChanged = 1,
+  [ MinVersion=1 ] kPermissionDenied = 2,
+  [ MinVersion=1 ] kUnsupportedUrl = 3,
+  [ MinVersion=1 ] kNoFocusableTabs = 4,
 };

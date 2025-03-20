@@ -68,7 +68,7 @@ class MockTabManager : public GlicFocusedTabManager {
       : GlicFocusedTabManager(profile, window_controller) {}
   ~MockTabManager() override = default;
   FocusedTabData GetFocusedTabData() override {
-    return FocusedTabData(contents_, std::nullopt, std::nullopt);
+    return FocusedTabData(contents_ ? contents_->GetWeakPtr() : nullptr);
   }
   void SetWebContents(content::WebContents* contents) { contents_ = contents; }
   raw_ptr<content::WebContents> contents_;

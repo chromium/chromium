@@ -79,16 +79,11 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // Active browsers with invalid state are observed for state changes.
   bool IsBrowserStateValid(Browser* browser);
 
-  // Returns nullopt if `web_contents` is considered a valid focus
-  // candidate. Otherwise returns a NoCandidateTabError specifying why it is
-  // not.
-  std::optional<glic::mojom::NoCandidateTabError> IsValidCandidate(
-      content::WebContents* web_contents);
+  // Returns whether `web_contents` is considered a valid focus candidate.
+  bool IsValidCandidate(content::WebContents* web_contents);
 
-  // Returns nullopt if `web_contents` is a valid candidate AND is valid for
-  // focus. Otherwise returns an InvalidCandidateError specifying why it is not.
-  std::optional<glic::mojom::InvalidCandidateError> IsValidFocusable(
-      content::WebContents* web_contents);
+  // Returns whether `web_contents` is a valid candidate AND is valid for focus.
+  bool IsValidFocusable(content::WebContents* web_contents);
 
   // Updates focused tab if a new one is computed. Notifies if updated or if
   // `force_notify` is true (for any call within the duration of the optional
@@ -136,8 +131,7 @@ class GlicFocusedTabManager : public BrowserListObserver,
   raw_ref<GlicWindowController> window_controller_;
 
   // The currently focused tab data.
-  FocusedTabData focused_tab_data_ =
-      FocusedTabData(nullptr, std::nullopt, std::nullopt);
+  FocusedTabData focused_tab_data_;
 
   // Callback subscription for listening to changes to the Glic window
   // activation changes.

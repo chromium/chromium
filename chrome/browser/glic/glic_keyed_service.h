@@ -27,13 +27,13 @@ class IdentityManager;
 namespace glic {
 class AuthController;
 class GlicActorController;
+class FocusedTabData;
 class GlicEnabling;
 class GlicFocusedTabManager;
 class GlicMetrics;
 class GlicProfileManager;
-class GlicWindowController;
 class GlicScreenshotCapturer;
-struct FocusedTabData;
+class GlicWindowController;
 
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
 // non-system, etc.) browser profile if Glic flags are enabled, regardless

@@ -64,9 +64,9 @@ void GlicAnnotationManager::ScrollTo(
 
   if (!annotation_agent_container_.is_bound()) {
     auto focused_tab_data = service_->GetFocusedTabData();
-    if (focused_tab_data.focused_tab_contents) {
+    if (focused_tab_data.focus()) {
       focused_primary_page_ =
-          focused_tab_data.focused_tab_contents->GetPrimaryPage().GetWeakPtr();
+          focused_tab_data.focus()->GetPrimaryPage().GetWeakPtr();
     }
     if (!focused_primary_page_) {
       std::move(callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
@@ -151,9 +151,8 @@ void GlicAnnotationManager::OnFocusedTabChanged(
     FocusedTabData focused_tab_data) {
   content::Page* prev_focused_primary_page = focused_primary_page_.get();
   content::Page* new_focused_primary_page = nullptr;
-  if (focused_tab_data.focused_tab_contents) {
-    new_focused_primary_page =
-        &focused_tab_data.focused_tab_contents->GetPrimaryPage();
+  if (focused_tab_data.focus()) {
+    new_focused_primary_page = &focused_tab_data.focus()->GetPrimaryPage();
   }
   // If the focused tab hasn't changed and it's primary page hasn't changed, we
   // don't need to do anything.

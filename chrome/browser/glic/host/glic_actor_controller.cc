@@ -21,27 +21,13 @@ namespace glic {
 
 namespace {
 
-mojom::ActInFocusedTabErrorReason ConvertErrorReason(
-    mojom::GetTabContextErrorReason error_reason) {
-  switch (error_reason) {
-    case mojom::GetTabContextErrorReason::kUnknown:
-      return mojom::ActInFocusedTabErrorReason::kUnknown;
-    case mojom::GetTabContextErrorReason::kWebContentsChanged:
-    case mojom::GetTabContextErrorReason::kPermissionDenied:
-    case mojom::GetTabContextErrorReason::kUnsupportedUrl:
-    case mojom::GetTabContextErrorReason::kNoFocusableTabs:
-      return mojom::ActInFocusedTabErrorReason::kGetContextFailed;
-  }
-  return mojom::ActInFocusedTabErrorReason::kUnknown;
-}
-
 void OnGetContextFromFocusedTab(
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
     mojom::GetContextResultPtr tab_context_result) {
   if (tab_context_result->is_error_reason()) {
     mojom::ActInFocusedTabResultPtr result =
         mojom::ActInFocusedTabResult::NewErrorReason(
-            ConvertErrorReason(tab_context_result->get_error_reason()));
+            mojom::ActInFocusedTabErrorReason::kGetContextFailed);
     UMA_HISTOGRAM_ENUMERATION("Glic.Action.ActInFocusedTabErrorReason",
                               result->get_error_reason());
     std::move(callback).Run(std::move(result));
@@ -76,8 +62,8 @@ void GlicActorController::Act(
     actor_coordinator_ = std::make_unique<actor::ActorCoordinator>();
   }
 
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(
-      focused_tab_data.focused_tab_contents.get());
+  tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(focused_tab_data.focus());
   CHECK(tab);
 
   actor_coordinator_->Act(

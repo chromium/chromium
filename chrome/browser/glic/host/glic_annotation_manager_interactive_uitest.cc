@@ -211,20 +211,18 @@ class GlicAnnotationManagerUiTest : public test::InteractiveGlicTest {
             InteractiveBrowserTest::AsInstrumentedWebContents(tracked_element)
                 ->web_contents();
       }
-      if (glic_service->GetFocusedTabData().focused_tab_contents.get() ==
-          web_contents) {
+      if (glic_service->GetFocusedTabData().focus() == web_contents) {
         return true;
       }
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-      auto subscription = glic_service->AddFocusedTabChangedCallback(
-          base::BindLambdaForTesting([&run_loop, glic_service,
-                                      web_contents](FocusedTabData) {
-            if (glic_service->GetFocusedTabData().focused_tab_contents.get() ==
-                web_contents) {
-              run_loop.Quit();
-              return;
-            }
-          }));
+      auto subscription =
+          glic_service->AddFocusedTabChangedCallback(base::BindLambdaForTesting(
+              [&run_loop, glic_service, web_contents](FocusedTabData) {
+                if (glic_service->GetFocusedTabData().focus() == web_contents) {
+                  run_loop.Quit();
+                  return;
+                }
+              }));
       run_loop.Run();
       return true;
     });

@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_TAB_DATA_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents.h"
@@ -64,36 +66,50 @@ class TabDataObserver : public content::WebContentsObserver,
   base::RepeatingCallback<void(glic::mojom::TabDataPtr)> tab_data_changed_;
 };
 
-struct FocusedTabCandidate {
-  FocusedTabCandidate(
-      content::WebContents* const web_contents,
-      glic::mojom::InvalidCandidateError invalid_candidate_error);
-  ~FocusedTabCandidate();
-  FocusedTabCandidate(const FocusedTabCandidate& other);
-  FocusedTabCandidate(FocusedTabCandidate&& other) noexcept;
-  FocusedTabCandidate& operator=(const FocusedTabCandidate& other);
-  FocusedTabCandidate& operator=(FocusedTabCandidate&& other) noexcept;
-  bool operator==(const FocusedTabCandidate& other) const;
+// Data provided when there is no focused tab.
+// The browser-side type corresponding to mojom::NoFocusedTabData.
+struct NoFocusedTabData {
+  explicit NoFocusedTabData(std::string_view reason,
+                            content::WebContents* tab = nullptr);
+  NoFocusedTabData();
+  ~NoFocusedTabData();
+  NoFocusedTabData(const NoFocusedTabData& src);
+  NoFocusedTabData& operator=(const NoFocusedTabData& src);
+  bool IsSame(const NoFocusedTabData& new_data) const;
 
-  base::WeakPtr<content::WebContents> focused_tab_candidate_contents = nullptr;
-  glic::mojom::InvalidCandidateError invalid_candidate_error;
+  // The active tab that could not be focused, may be null.
+  base::WeakPtr<content::WebContents> active_tab;
+  // Human readable debug message about why there is no focused tab.
+  std::string_view no_focus_reason;
 };
 
-struct FocusedTabData {
-  FocusedTabData(
-      content::WebContents* const web_contents,
-      std::optional<glic::mojom::InvalidCandidateError> invalid_candidate_error,
-      std::optional<glic::mojom::NoCandidateTabError> no_candidate_tab_error);
-  ~FocusedTabData();
-  FocusedTabData(const FocusedTabData& other);
-  FocusedTabData(FocusedTabData&& other) noexcept;
-  FocusedTabData& operator=(const FocusedTabData& other);
-  FocusedTabData& operator=(FocusedTabData&& other) noexcept;
-  bool operator==(const FocusedTabData& other) const;
+// Either a focused web contents, or a NoFocusedTabData.
+class FocusedTabData : public std::variant<base::WeakPtr<content::WebContents>,
+                                           NoFocusedTabData> {
+ public:
+  FocusedTabData() = delete;  // Disallow the empty state.
+  using variant::variant;
 
-  base::WeakPtr<content::WebContents> focused_tab_contents = nullptr;
-  std::optional<FocusedTabCandidate> focused_tab_candidate;
-  std::optional<glic::mojom::NoCandidateTabError> no_candidate_tab_error;
+  bool is_focus() const {
+    return std::holds_alternative<base::WeakPtr<content::WebContents>>(*this);
+  }
+
+  // Returns the focused tab web contents. Note that if FocusedTabData
+  // represents a valid focus, this can still return nullptr if the web contents
+  // has been deleted.
+  content::WebContents* focus() const {
+    const base::WeakPtr<content::WebContents>* focus = std::get_if<0>(this);
+    return focus ? focus->get() : nullptr;
+  }
+
+  // Whether this FocusedTabData is the same as `new_data`. Note that this
+  // returns true if both FocusedTabData point to two different invalidated web
+  // contents.
+  bool IsSame(const FocusedTabData& new_data) const;
+
+  // Returns the focused web contents, or a human-readable message indicating
+  // why there is none.
+  base::expected<content::WebContents*, std::string_view> GetFocus() const;
 };
 
 // Populates and returns a TabDataPtr from a given WebContents, or null if
@@ -102,7 +118,7 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents);
 
 // Populates and returns a FocusedTabDataPtr from a given FocusedTabData.
 glic::mojom::FocusedTabDataPtr CreateFocusedTabData(
-    FocusedTabData focused_tab_data);
+    const FocusedTabData& focused_tab_data);
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_TAB_DATA_H_

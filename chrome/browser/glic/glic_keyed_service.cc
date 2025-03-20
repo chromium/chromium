@@ -261,7 +261,7 @@ void GlicKeyedService::GetContextFromFocusedTab(
   if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled) ||
       !window_controller_->IsShowing()) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-        mojom::GetTabContextErrorReason::kPermissionDenied));
+        std::string("permission denied")));
     return;
   }
 
@@ -328,9 +328,8 @@ FocusedTabData GlicKeyedService::GetFocusedTabData() {
 
 bool GlicKeyedService::IsContextAccessIndicatorShown(
     const content::WebContents* contents) {
-  const raw_ptr<content::WebContents> web_contents =
-      GetFocusedTabData().focused_tab_contents.get();
-  return is_context_access_indicator_enabled_ && web_contents == contents;
+  return is_context_access_indicator_enabled_ &&
+         GetFocusedTabData().focus() == contents;
 }
 
 void GlicKeyedService::WebClientCreated() {

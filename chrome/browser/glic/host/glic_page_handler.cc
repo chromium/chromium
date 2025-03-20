@@ -655,7 +655,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
     focused_tab_data_observer_ = std::make_unique<TabDataObserver>(
-        focused_tab_data.focused_tab_contents.get(),
+        focused_tab_data.focus(),
         /*disconnect_on_primary_page_changed=*/true,
         base::BindRepeating(&GlicWebClientHandler::FocusedTabDataChanged,
                             base::Unretained(this)));

@@ -185,7 +185,7 @@ export declare interface GlicBrowserHost {
    * Fetches page context for the currently focused tab, optionally including
    * more expensive-to-generate data.
    *
-   * @throws {GetTabContextError} on failure.
+   * @throws {Error} on failure.
    */
   getContextFromFocusedTab?
       (options: TabContextOptions): Promise<TabContextResult>;
@@ -730,27 +730,29 @@ export declare interface TabData {
 
 /** Data class holding information about the focused tab state. */
 export declare interface FocusedTabData {
-  /** Stores the focused tab data if one exists. */
-  focusedTab?: TabData;
-  /**
-   * If a focus candidate exists but cannot be focused then
-   * `focusedTabCandidate` will hold its `TabData` and an
-   * `InvalidCandidateError` specifying why it is not focusable.
-   */
-  focusedTabCandidate?: FocusedTabCandidate;
-  /** If no candidate exists than the noCandidateTabError will indicate why. */
-  noCandidateTabError?: NoCandidateTabError;
+  // This is a union. Exactly one field is present.
+
+  /** Present if a tab has focus. */
+  hasFocus?: FocusedTabDataHasFocus;
+  /** Present if no tab has focus. */
+  hasNoFocus?: FocusedTabDataHasNoFocus;
 }
 
-/** Data class holding information about the focused tab candidate. */
-export declare interface FocusedTabCandidate {
+/** FocusedTabData variant with focus. */
+export declare interface FocusedTabDataHasFocus {
+  /** Information about the focused tab. */
+  tabData: TabData;
+}
+
+/** FocusedTabData variant without focus. */
+export declare interface FocusedTabDataHasNoFocus {
   /**
-   * Stores the focused tab candidate data if the browser has valid TabData
-   * which cannot be used for context extraction.
+   * Information about the active tab, which cannot be focused. Present only
+   * if there is an active tab.
    */
-  focusedTabCandidateData?: TabData;
-  /** Specifies why the candidate was invalid for focus. */
-  invalidCandidateError?: InvalidCandidateError;
+  tabFocusCandidateData?: TabData;
+  /** A human-readable message explaining why there is no focused tab. */
+  noFocusReason: string;
 }
 
 /**
@@ -785,7 +787,6 @@ export declare interface Screenshot {
 
 /** Maps the ErrorWithReason.reasonType to the type of reason. */
 export declare interface ErrorReasonTypes {
-  tabContext: GetTabContextErrorReason;
   captureScreenshot: CaptureScreenshotErrorReason;
   scrollTo: ScrollToErrorReason;
   webClientInitialize: WebClientInitializeErrorReason;
@@ -813,19 +814,6 @@ export declare interface ErrorWithReason<
   reason: ErrorReasonTypes[T];
 }
 
-/** Reason for failure while extracting tab context. */
-export enum GetTabContextErrorReason {
-  UNKNOWN = 0,
-  /** The web contents was navigated or closed during context gathering. */
-  WEB_CONTENTS_CHANGED = 1,
-  /** Permission to capture page context is denied. */
-  PERMISSION_DENIED = 2,
-  /** The URL in the tab data is not supported. */
-  UNSUPPORTED_URL = 3,
-  /** There are no Chrome tabs available to be focused. */
-  NO_FOCUSABLE_TABS = 4,
-}
-
 /** Reason for failure while acting in the focused tab. */
 export enum ActInFocusedTabErrorReason {
   UNKNOWN = 0,
@@ -835,29 +823,6 @@ export enum ActInFocusedTabErrorReason {
   INVALID_ACTION_PROTO = 2,
   /** Action target is not found. */
   TARGET_NOT_FOUND = 3,
-}
-
-/**
- * Reason why a focused tab candidate is not valid for focus. NOTE: This may be
- * extended in the future so avoid using complete switches on the currently used
- * enum values.
- */
-export enum InvalidCandidateError {
-  /** Candidate invalid for an unknown reason. */
-  UNKNOWN = 0,
-  /** The URL in the tab data is not supported. */
-  UNSUPPORTED_URL = 1,
-}
-
-/**
- * Reason why a focused tab is not available. NOTE: This may be extended in the
- * future so avoid using complete switches on the currently used enum values.
- */
-export enum NoCandidateTabError {
-  /** An unknown error occurred while getting the tab data. */
-  UNKNOWN = 0,
-  /** There are no Chrome tabs available to be focused. */
-  NO_FOCUSABLE_TABS = 1,
 }
 
 /**
@@ -890,9 +855,6 @@ export declare interface ActInFocusedTabParams {
   // Tab context options to gather context after acting.
   tabContextOptions: TabContextOptions;
 }
-
-/** Error type used for tab context extraction errors. */
-export type GetTabContextError = ErrorWithReason<'tabContext'>;
 
 /** Error type used for screenshot capture errors. */
 export type CaptureScreenshotError = ErrorWithReason<'captureScreenshot'>;
@@ -1062,7 +1024,6 @@ export interface BackwardsCompatibleTypes {
   createTabOptions: CreateTabOptions;
   documentData: DocumentData;
   draggableArea: DraggableArea;
-  focusedTabCandidate: FocusedTabCandidate;
   focusedTabData: FocusedTabData;
   glicBrowserHostMetrics: GlicBrowserHostMetrics;
   hostRegistry: GlicHostRegistry;
@@ -1094,11 +1055,8 @@ export interface ClosedEnums {
 
 // Enums that can be extended.
 export interface ExtensibleEnums {
-  getTabContextErrorReason: typeof GetTabContextErrorReason;
   captureScreenshotErrorReason: typeof CaptureScreenshotErrorReason;
   scrollToErrorReason: typeof ScrollToErrorReason;
-  invalidCandidateError: typeof InvalidCandidateError;
-  noCandidateTabError: typeof NoCandidateTabError;
   webClientInitializeErrorReason: typeof WebClientInitializeErrorReason;
   invocationSource: typeof InvocationSource;
   actInFocusedTabErrorReason: typeof ActInFocusedTabErrorReason;
