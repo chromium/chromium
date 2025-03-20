@@ -806,6 +806,8 @@ void MaybeRecordOneDriveSyncMetrics() {
   base::UmaHistogramBoolean("Windows.OneDriveSyncState.Synced", status.synced);
   base::UmaHistogramBoolean("Windows.OneDriveSyncState.DesktopSynced",
                             status.desktop_synced);
+  base::UmaHistogramBoolean("Windows.OneDriveSyncState.DocumentsSynced",
+                            status.documents_synced);
 }
 
 #endif  // BUILDFLAG(IS_WIN)

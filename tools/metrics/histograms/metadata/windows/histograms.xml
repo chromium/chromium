@@ -218,6 +218,8 @@ chromium-metrics-reviews@google.com.
   <token key="SyncedState">
     <variant name="DesktopSynced"
         summary="Desktop file path is synced with cloud provided."/>
+    <variant name="DocumentsSynced"
+        summary="Documents file path is synced with cloud provided."/>
     <variant name="Synced"
         summary="File path storage is synced with cloud provided."/>
   </token>
