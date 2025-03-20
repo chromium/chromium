@@ -58,8 +58,7 @@ class TestFamilyLinkSettingsStateHelper {
 
   bool IsFamilyLinkSettingsStateSeeded() {
     CHECK(family_link_settings_state_);
-    ProfileIOS* profile =
-        ProfileIOS::FromBrowserState(chrome_test_util::GetOriginalProfile());
+    ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
     return family_link_settings_state_->Check(
         GetSupervisedUserServicesForProfile(profile));
   }
@@ -80,8 +79,7 @@ class TestFamilyLinkSettingsStateHelper {
  private:
   void SeedFamilyLinkSettingsState() {
     // Prepare the services.
-    ProfileIOS* profile =
-        ProfileIOS::FromBrowserState(chrome_test_util::GetOriginalProfile());
+    ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
     CHECK(profile);
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
@@ -147,8 +145,7 @@ class TestFamilyLinkSettingsStateHelper {
 }
 
 + (void)triggerSyncServiceRefresh {
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(chrome_test_util::GetOriginalProfile());
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   SyncServiceFactory::GetForProfile(profile)->TriggerRefresh(
       syncer::DataTypeSet::All());
 }
