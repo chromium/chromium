@@ -15,7 +15,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
@@ -32,7 +31,6 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -40,10 +38,12 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.WindowId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -62,8 +62,9 @@ import java.util.List;
 @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
 public class TabWindowManagerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private TabWindowManager mSubject;
-    private AsyncTabParamsManager mAsyncTabParamsManager;
+
+    private final NextTabPolicySupplier mNextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
+
     @Mock private ProfileProvider mProfileProvider;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler;
@@ -71,33 +72,36 @@ public class TabWindowManagerTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private TabModelSelector mArchivedTabModelSelector;
     @Mock private ModalDialogManager mModalDialogManager;
-    private NextTabPolicySupplier mNextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
-    private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
-            new OneshotSupplierImpl<>();
+
+    private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier;
+    private AsyncTabParamsManager mAsyncTabParamsManager;
+    private TabWindowManager mSubject;
 
     @Before
     public void setUp() {
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        mProfileProviderSupplier = new OneshotSupplierImpl<>();
         mProfileProviderSupplier.set(mProfileProvider);
 
         TabModelSelectorFactory mockTabModelSelectorFactory =
-                new TabModelSelectorFactory() {
-                    @Override
-                    public TabModelSelector buildSelector(
-                            Context context,
-                            ModalDialogManager modalDialogManager,
-                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
-                            TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier) {
-                        return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
-                    }
+                (context,
+                        modalDialogManager,
+                        profileProviderSupplier,
+                        tabCreatorManager,
+                        nextTabPolicySupplier) -> {
+                    return new MockTabModelSelector(
+                            mProfile,
+                            mIncognitoProfile,
+                            /* tabCount= */ 0,
+                            /* incognitoTabCount= */ 0,
+                            /* delegate= */ null);
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAsyncTabParamsManager =
                             AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
                     int maxInstances =
-                            (Build.VERSION.SDK_INT >= 31 /*S*/
+                            (Build.VERSION.SDK_INT >= VERSION_CODES.S
                                     ? TabWindowManager.MAX_SELECTORS_S
                                     : TabWindowManager.MAX_SELECTORS_LEGACY);
                     mSubject =
@@ -124,7 +128,7 @@ public class TabWindowManagerTest {
     public void testSingleActivity() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -137,7 +141,7 @@ public class TabWindowManagerTest {
         assertEquals(0, assignment0.first.intValue());
         TabModelSelector selector0 = assignment0.second;
         assertNotNull("Was not able to build the TabModelSelector", selector0);
-        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected window id", 0, mSubject.getIdForWindow(activity0));
 
         destroyActivity(activityController0);
     }
@@ -152,7 +156,7 @@ public class TabWindowManagerTest {
         Activity activity0 = activityController0.get();
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -161,7 +165,7 @@ public class TabWindowManagerTest {
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler,
                         0);
-        Pair<Integer, TabModelSelector> assignment1 =
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
                         mModalDialogManager,
@@ -175,8 +179,8 @@ public class TabWindowManagerTest {
         assertEquals(1, assignment1.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
-        assertEquals("Unexpected model index", 1, mSubject.getIdForWindow(activity1));
+        assertEquals("Unexpected window id", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected window id", 1, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController0);
         destroyActivity(activityController1);
@@ -224,19 +228,19 @@ public class TabWindowManagerTest {
     }
 
     /**
-     * Test that requesting the same {@link TabModelSelector} index will fall back and return a
-     * model for a different available index instead. In this case, a higher index (0 -> 1).
+     * Test that requesting the same {@link TabModelSelector} window id will fall back and return a
+     * model for a different available window id instead. In this case, a higher window id (0 -> 1).
      */
     @Test
     @Feature({"Multiwindow"})
-    public void testIndexFallback() {
+    public void testWindowIdFallback() {
         assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -246,7 +250,7 @@ public class TabWindowManagerTest {
                         mMismatchedIndicesHandler,
                         0);
         // Request 0 again, but should get 1 instead.
-        Pair<Integer, TabModelSelector> assignment1 =
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
                         mModalDialogManager,
@@ -260,27 +264,27 @@ public class TabWindowManagerTest {
         assertEquals(1, assignment1.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
-        assertEquals("Unexpected model index", 1, mSubject.getIdForWindow(activity1));
+        assertEquals("Unexpected window id", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected window id", 1, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController0);
         destroyActivity(activityController1);
     }
 
     /**
-     * Test that requesting the same {@link TabModelSelector} index will fall back and return a
-     * model for a different available index instead. In this case, a lower index (2 -> 0).
+     * Test that requesting the same {@link TabModelSelector} window id will fall back and return a
+     * model for a different available window id instead. In this case, a lower window id (2 -> 0).
      */
     @Test
     @Feature({"Multiwindow"})
-    public void testIndexFallback2() {
+    public void testWindowIdFallback2() {
         assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 3);
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -290,7 +294,7 @@ public class TabWindowManagerTest {
                         mMismatchedIndicesHandler,
                         2);
         // Request 2 again, but should get 0 instead.
-        Pair<Integer, TabModelSelector> assignment1 =
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
                         mModalDialogManager,
@@ -304,8 +308,8 @@ public class TabWindowManagerTest {
         assertEquals(0, assignment1.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 2, mSubject.getIdForWindow(activity0));
-        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity1));
+        assertEquals("Unexpected window id", 2, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected window id", 0, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController0);
         destroyActivity(activityController1);
@@ -320,7 +324,7 @@ public class TabWindowManagerTest {
     public void testActivityDeathRemovesSingle() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -332,7 +336,7 @@ public class TabWindowManagerTest {
 
         assertEquals(0, assignment0.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected window id", 0, mSubject.getIdForWindow(activity0));
 
         destroyActivity(activityController0);
 
@@ -343,15 +347,15 @@ public class TabWindowManagerTest {
     }
 
     /**
-     * Test that an {@link Activity} requesting an index that was previously assigned to a destroyed
-     * {@link Activity} can take that {@link TabModelSelector}.
+     * Test that an {@link Activity} requesting an window id that was previously assigned to a
+     * destroyed {@link Activity} can take that {@link TabModelSelector}.
      */
     @Test
     @Feature({"Multiwindow"})
     public void testActivityDeathLetsModelReassign() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -363,7 +367,7 @@ public class TabWindowManagerTest {
 
         assertEquals(0, assignment0.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected window id", 0, mSubject.getIdForWindow(activity0));
 
         destroyActivity(activityController0);
 
@@ -374,7 +378,7 @@ public class TabWindowManagerTest {
 
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
-        Pair<Integer, TabModelSelector> assignment1 =
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
                         mModalDialogManager,
@@ -386,14 +390,14 @@ public class TabWindowManagerTest {
 
         assertEquals(0, assignment1.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity1));
+        assertEquals("Unexpected window id", 0, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController1);
     }
 
     /**
-     * Test that an {@link Activity} requesting an index that was previously assigned to a destroyed
-     * {@link Activity} can take that {@link TabModelSelector} when there are other {@link
+     * Test that an {@link Activity} requesting an window id that was previously assigned to a
+     * destroyed {@link Activity} can take that {@link TabModelSelector} when there are other {@link
      * Activity}s assigned {@link TabModelSelector}s.
      */
     @Test
@@ -405,7 +409,7 @@ public class TabWindowManagerTest {
         Activity activity0 = activityController0.get();
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -414,7 +418,7 @@ public class TabWindowManagerTest {
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler,
                         0);
-        Pair<Integer, TabModelSelector> assignment1 =
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
                         mModalDialogManager,
@@ -428,8 +432,8 @@ public class TabWindowManagerTest {
         assertEquals(1, assignment1.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
-        assertEquals("Unexpected model index", 1, mSubject.getIdForWindow(activity1));
+        assertEquals("Unexpected window id", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected window id", 1, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController1);
 
@@ -440,7 +444,7 @@ public class TabWindowManagerTest {
 
         ActivityController<Activity> activityController2 = createActivity();
         Activity activity2 = activityController2.get();
-        Pair<Integer, TabModelSelector> assignment2 =
+        Pair<@WindowId Integer, TabModelSelector> assignment2 =
                 mSubject.requestSelector(
                         activity2,
                         mModalDialogManager,
@@ -452,8 +456,8 @@ public class TabWindowManagerTest {
 
         assertEquals(1, assignment2.first.intValue());
         assertNotNull("Was not able to build the TabModelSelector", assignment2.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
-        assertEquals("Unexpected model index", 1, mSubject.getIdForWindow(activity2));
+        assertEquals("Unexpected window id", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected window id", 1, mSubject.getIdForWindow(activity2));
 
         destroyActivity(activityController0);
         destroyActivity(activityController2);
@@ -467,7 +471,7 @@ public class TabWindowManagerTest {
         Activity activity0 = activityController0.get();
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -476,7 +480,7 @@ public class TabWindowManagerTest {
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler,
                         0);
-        Pair<Integer, TabModelSelector> assignment1 =
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
                         mModalDialogManager,
@@ -496,7 +500,7 @@ public class TabWindowManagerTest {
         assertNull(mSubject.getTabById(tab2.getId() + 1));
 
         mAsyncTabParamsManager.getAsyncTabParams().clear();
-        final int asyncTabId = 123;
+        final @TabId int asyncTabId = 123;
         final TabReparentingParams placeholderParams =
                 new TabReparentingParams(new MockTab(0, mProfile), null);
         assertNull(mSubject.getTabById(asyncTabId));
@@ -519,7 +523,7 @@ public class TabWindowManagerTest {
         Activity activity0 = activityController0.get();
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -528,7 +532,7 @@ public class TabWindowManagerTest {
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler,
                         0);
-        Pair<Integer, TabModelSelector> assignment1 =
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
                         mModalDialogManager,
@@ -548,7 +552,7 @@ public class TabWindowManagerTest {
         assertNull(mSubject.getTabById(tab2.getId() + 1));
 
         mAsyncTabParamsManager.getAsyncTabParams().clear();
-        final int asyncTabId = 123;
+        final @TabId int asyncTabId = 123;
         final TabReparentingParams placeholderParams =
                 new TabReparentingParams(new MockTab(0, mProfile), null);
         assertNull(mSubject.getTabById(asyncTabId));
@@ -571,7 +575,7 @@ public class TabWindowManagerTest {
         Activity activity0 = activityController0.get();
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -580,7 +584,7 @@ public class TabWindowManagerTest {
                         mNextTabPolicySupplier,
                         mMismatchedIndicesHandler,
                         0);
-        Pair<Integer, TabModelSelector> assignment1 =
+        Pair<@WindowId Integer, TabModelSelector> assignment1 =
                 mSubject.requestSelector(
                         activity1,
                         mModalDialogManager,
@@ -655,12 +659,12 @@ public class TabWindowManagerTest {
     @Test
     @Config(sdk = VERSION_CODES.Q)
     @EnableFeatures({ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH})
-    public void testIndexReassignmentWhenIndicesMismatch() {
-        // Simulate successful index mismatch handling, that will trigger reassignment.
+    public void testWindowIdReassignmentWhenIndicesMismatch() {
+        // Simulate successful window id mismatch handling, that will trigger reassignment.
         when(mMismatchedIndicesHandler.handleMismatchedIndices(any(), anyBoolean(), anyBoolean()))
                 .thenReturn(true);
 
-        // Create activity0 and request its tab model selector to use index 0.
+        // Create activity0 and request its tab model selector to use window id 0.
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
         mSubject.requestSelector(
@@ -672,7 +676,7 @@ public class TabWindowManagerTest {
                 mMismatchedIndicesHandler,
                 0);
 
-        // Create activity1 and request its tab model selector to use index 0.
+        // Create activity1 and request its tab model selector to use window id 0.
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
 
@@ -691,19 +695,20 @@ public class TabWindowManagerTest {
                             mMismatchedIndicesHandler,
                             0);
             assertEquals(
-                    "Requested selector's index assignment is incorrect.",
+                    "Requested selector's window id assignment is incorrect.",
                     0,
                     (int) assignment.first);
         }
 
-        // activity0's index 0 assignment should be cleared and activity1 should be able to use the
-        // requested index 0.
+        // activity0's window id 0 assignment should be cleared and activity1 should be able to use
+        // the
+        // requested window id 0.
         assertEquals(
-                "Index for activity0 should be cleared.",
+                "Window Id for activity0 should be cleared.",
                 TabWindowManager.INVALID_WINDOW_ID,
                 mSubject.getIdForWindow(activity0));
         assertEquals(
-                "Requested index for activity1 should be used.",
+                "Requested window id for activity1 should be used.",
                 0,
                 mSubject.getIdForWindow(activity1));
 
@@ -712,7 +717,7 @@ public class TabWindowManagerTest {
     }
 
     @Test
-    public void testcanTabStateBeDeleted_ArchiveDisabled() {
+    public void testCanTabStateBeDeleted_ArchiveDisabled() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.TabStateCleanupAbortedByArchive", false);
@@ -722,10 +727,10 @@ public class TabWindowManagerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
-    public void testcanTabStateBeDeleted() {
+    public void testCanTabStateBeDeleted() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
@@ -787,10 +792,10 @@ public class TabWindowManagerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
-    public void testcanTabThumbnailBeDeleted() {
+    public void testCanTabThumbnailBeDeleted() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
-        Pair<Integer, TabModelSelector> assignment0 =
+        Pair<@WindowId Integer, TabModelSelector> assignment0 =
                 mSubject.requestSelector(
                         activity0,
                         mModalDialogManager,
