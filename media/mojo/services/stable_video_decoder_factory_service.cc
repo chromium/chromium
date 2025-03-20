@@ -99,7 +99,6 @@ class MojoMediaClientImpl : public MojoMediaClient {
 
  private:
   const gpu::GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
-  const scoped_refptr<FrameRegistry> frame_registry_;
 };
 
 }  // namespace
