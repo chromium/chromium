@@ -1274,6 +1274,20 @@ TEST_F(StyleResolverTest, ComputeValueStandardProperty) {
   EXPECT_EQ("rgb(0, 128, 0)", computed_value->CssText());
 }
 
+TEST_F(StyleResolverTest, ComputedValueRootElement) {
+  UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().documentElement();
+  ASSERT_TRUE(target);
+  CSSPropertyID property_id = CSSPropertyID::kFontSize;
+  const CSSValue* parsed_value = css_test_helpers::ParseLonghand(
+      GetDocument(), GetCSSPropertyFontSize(), "calc(40px + 2px)");
+  ASSERT_TRUE(parsed_value);
+  const CSSValue* computed_value = StyleResolver::ComputeValue(
+      target, CSSPropertyName(property_id), *parsed_value);
+  ASSERT_TRUE(computed_value);
+  EXPECT_EQ("42px", computed_value->CssText());
+}
+
 namespace {
 
 const CSSValue* ParseCustomProperty(Document& document,
