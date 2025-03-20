@@ -380,6 +380,9 @@ class GlicWindowController : public views::WidgetObserver,
   // Create a GlicWidget.
   std::unique_ptr<GlicWidget> CreateGlicWidget(const gfx::Rect& bounds);
 
+  // Warms the web client and sets `contents_`.
+  void CreateContents();
+
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};

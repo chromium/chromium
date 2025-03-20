@@ -89,7 +89,7 @@ class GlicFreController {
   // Does nothing if the FRE should not be shown.
   void MaybePreconnect();
 
-  bool IsShowingDialogForTesting() const;
+  bool IsShowingDialog() const;
 
   AuthController& GetAuthControllerForTesting() { return auth_controller_; }
 
@@ -109,6 +109,8 @@ class GlicFreController {
   // Called when the tab showing the FRE dialog is detached.
   void OnTabShowingModalWillDetach(tabs::TabInterface* tab,
                                    tabs::TabInterface::DetachReason reason);
+
+  void CreateView();
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<views::Widget> fre_widget_;

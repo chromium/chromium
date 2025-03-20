@@ -577,7 +577,7 @@ void GlicWindowController::Show(Browser* browser,
   show_start_time_ = base::TimeTicks::Now();
 
   if (!contents_) {
-    contents_ = std::make_unique<WebUIContentsContainer>(profile_, this);
+    CreateContents();
   }
   glic_service_->GetAuthController().CheckAuthBeforeShow(
       AuthController::FallbackBehavior::kShowReauthPage,
@@ -1388,7 +1388,7 @@ GlicWindowController::AddWindowActivationChangedCallback(
 
 void GlicWindowController::Preload() {
   if (!contents_) {
-    contents_ = std::make_unique<WebUIContentsContainer>(profile_, this);
+    CreateContents();
   }
 }
 
@@ -1486,6 +1486,12 @@ std::unique_ptr<GlicWidget> GlicWindowController::CreateGlicWidget(
     const gfx::Rect& bounds) {
   return GlicWidget::Create(profile_, bounds,
                             /*accelerator_delegate=*/GetWeakPtr());
+}
+
+void GlicWindowController::CreateContents() {
+  contents_ = std::make_unique<WebUIContentsContainer>(profile_, this);
+  glic::GlicProfileManager::GetInstance()->OnLoadingClientForService(
+      glic_service_);
 }
 
 }  // namespace glic
