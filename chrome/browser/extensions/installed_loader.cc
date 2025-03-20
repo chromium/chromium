@@ -339,7 +339,7 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
 
     if ((disable_reasons.contains(disable_reason::DISABLE_CORRUPTED))) {
       CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
-          extension_service_->corrupted_extension_reinstaller();
+          CorruptedExtensionReinstaller::Get(extension_service_->profile());
       if (policy->MustRemainEnabled(extension.get(), nullptr)) {
         // This extension must have been disabled due to corruption on a
         // previous run of chrome, and for some reason we weren't successful in

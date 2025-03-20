@@ -87,11 +87,6 @@ class ExtensionServiceInterface {
  public:
   virtual ~ExtensionServiceInterface() = default;
 
-  // Gets the object managing reinstalls of the corrupted extensions.
-  // TODO(crbug.com/404564705): Delete this and switch callers to
-  // CorruptedExtensionReinstaller::Get().
-  virtual CorruptedExtensionReinstaller* corrupted_extension_reinstaller() = 0;
-
   // Creates an CrxInstaller to update an extension.
   // Returns null if an update is not possible. Eg: system shutdown or extension
   // doesn't exist.
@@ -179,7 +174,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // ExtensionServiceInterface implementation.
   //
-  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override;
   scoped_refptr<CrxInstaller> CreateUpdateInstaller(
       const CRXFileInfo& file,
       bool file_ownership_passed) override;

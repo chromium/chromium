@@ -421,7 +421,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   const PendingExtensionManager* pending_extension_manager =
       PendingExtensionManager::Get(profile_);
   const CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
-      service_->corrupted_extension_reinstaller();
+      CorruptedExtensionReinstaller::Get(profile_);
 
   ExtensionUpdateCheckParams update_check_params;
 

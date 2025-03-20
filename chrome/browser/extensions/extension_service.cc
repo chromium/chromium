@@ -291,11 +291,6 @@ ExtensionService::ExtensionService(
                           base::Unretained(this)));
 }
 
-CorruptedExtensionReinstaller*
-ExtensionService::corrupted_extension_reinstaller() {
-  return corrupted_extension_reinstaller_;
-}
-
 base::WeakPtr<ExtensionServiceInterface> ExtensionService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -391,7 +386,7 @@ void ExtensionService::Init() {
   // Check for updates especially for corrupted user installed extension from
   // the webstore. This will do nothing if an extension update check was
   // triggered before and is still running.
-  if (corrupted_extension_reinstaller()->HasAnyReinstallForCorruption()) {
+  if (corrupted_extension_reinstaller_->HasAnyReinstallForCorruption()) {
     CheckForUpdatesSoon();
   }
 }
@@ -983,11 +978,11 @@ void ExtensionService::OnExtensionInstalled(
   const PendingExtensionInfo* pending_extension_info =
       pending_extension_manager_->GetById(id);
   bool is_reinstall_for_corruption =
-      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+      corrupted_extension_reinstaller_->IsReinstallForCorruptionExpected(
           extension->id());
 
   if (is_reinstall_for_corruption) {
-    corrupted_extension_reinstaller()->MarkResolved(id);
+    corrupted_extension_reinstaller_->MarkResolved(id);
   }
 
   if (pending_extension_info) {
