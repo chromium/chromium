@@ -3496,6 +3496,28 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="DomDistiller.AdaBoostModel.NegativeScore" units="count"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the score for the ada boost model for negative scores (scores that
+    prevent pages from showing). This model is used to determine if any given
+    page is suitable for distillation. Recorded for every page load.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.AdaBoostModel.PositiveScore" units="count"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the score for the ada boost model for positive scores. This model is
+    used to determine if any given page is suitable for distillation. Recorded
+    for every page load.
+  </summary>
+</histogram>
+
 <histogram
     name="DomDistiller.Android.OnDistillableResult.AccessibilitySettingEnabled"
     enum="Boolean" expires_after="2025-08-24">
@@ -3536,6 +3558,38 @@ even if they fit the naming pattern. -->
   <summary>
     Tracks when the user interacts with the reader mode toggle in accessibility
     settings.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.IsDistillable" enum="Boolean"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the end result when determining if given page is distillable.
+    Recorded for every page load.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.LongModel.NegativeScore" units="count"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the score for the ada boost model for negative scores (scores that
+    prevent pages from showing). This model is used to determine if any given
+    page is suitable for distillation. Recorded for every page load.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.LongModel.PositiveScore" units="count"
+    expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records the score for the ada boost model for positive scores. This model is
+    used to determine if any given page is suitable for distillation. Recorded
+    for every page load.
   </summary>
 </histogram>
 
