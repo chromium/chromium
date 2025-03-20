@@ -7,8 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 using SceneUtilTest = PlatformTest;
@@ -20,10 +20,10 @@ TEST_F(SceneUtilTest, SessionIdentifierForScene) {
   NSString* identifier = [[NSUUID UUID] UUIDString];
   id scene = FakeSceneWithIdentifier(identifier);
 
-  NSString* expected = @"{SyntheticIdentifier}";
+  std::string expected = "{SyntheticIdentifier}";
   if (base::ios::IsMultipleScenesSupported()) {
-    expected = identifier;
+    expected = base::SysNSStringToUTF8(identifier);
   }
 
-  EXPECT_NSEQ(expected, SessionIdentifierForScene(scene));
+  EXPECT_EQ(expected, SessionIdentifierForScene(scene));
 }
