@@ -1414,6 +1414,12 @@
       // [1] https://drafts.csswg.org/css-scoping-1/#shadow-names
       name: "CSSTreeScopedTimelines",
     },
+    {
+      // The var() fallback does not validate against the type
+      // of the custom property being referenced.
+      name: "CSSTypeAgnosticVarFallback",
+      status: "stable",
+    },
     // Support for `user-select:contain`.
     {
       name: "CSSUserSelectContain",
