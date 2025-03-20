@@ -393,16 +393,13 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   //
   // In other cases, the error interstitial is manually loaded here, after the
   // load is canceled:
-  // - Subresources: since only documents load using a navigation, these
-  //   won't hit the throttle.
-  // - Nested frames and WebContents: The interstitial should be shown in the
-  //   top, outer-most frame but the navigation is occurring in a nested
-  //   context.
   // - Delayed Warning Experiment: When enabled, this method is only called
   //   after the navigation completes and a user action occurs so the throttle
   //   cannot be used.
   // - Async check: If the check is not able to complete before
   //   DidFinishNavigation, it won't hit the throttle.
+  // - Client side detection phishing warning: CSD check starts after the
+  //   navigation has completed, so the throttle cannot be used.
   const bool load_post_commit_error_page =
       !AsyncCheckTracker::IsMainPageResourceLoadPending(resource) ||
       resource.is_delayed_warning;
