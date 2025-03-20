@@ -1048,6 +1048,8 @@ crbug.com/1445990 external/wpt/css/css-ui/outline-color-002.html [ Failure ]
 crbug.com/1445990 external/wpt/css/css-ui/outline-color-003.html [ Failure ]
 crbug.com/1445990 external/wpt/css/css-ui/outline-color-004.html [ Failure ]
 
+crbug.com/405004975 external/wpt/css/css-ui/cursor-calc-hotspot.html [ Crash ]
+
 # [css-flexbox]
 
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
