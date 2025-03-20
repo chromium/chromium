@@ -139,18 +139,6 @@ void VideoCaptureDeviceFactoryChromeOS::GetDevicesInfo(
 }
 
 // static
-gpu::GpuMemoryBufferManager*
-VideoCaptureDeviceFactoryChromeOS::GetBufferManager() {
-  return GetGpuResources().GetBufferManager();
-}
-
-// static
-void VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
-    gpu::GpuMemoryBufferManager* buffer_manager) {
-  GetGpuResources().SetBufferManager(buffer_manager);
-}
-
-// static
 void VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
   GetGpuResources().SetGpuChannelHost(std::move(gpu_channel_host));
