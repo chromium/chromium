@@ -314,26 +314,6 @@ BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,
              "AutofillEnableSupportForHomeAndWork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Gives precedence to local heuristics if they indicate that a field is an
-// EMAIL_ADDRESS field and the server believes that it is a USERNAME or
-// SINGLE_USERNAME field.
-//
-// Imagine that  a web page has a field that admits both email address
-// and username, but the server prediction only captures the username
-// aspect.
-// With this feature disabled, we predict the overall type to be USERNAME. If
-// Password Manager has not results, it defaults to Autofill, which, in turn,
-// defaults to Autocomplete because it cannot handle the USERNAME prediction.
-// With this feature enabled, Password Manager is still given  precedence for
-// showing username suggestions if it has any. However, if it does not, Autofill
-// can now show email-related suggestions. Only if it does not have any will it
-// fall back to Autocomplete.
-//
-// TODO: crbug.com/360791229 - clean up.
-BASE_FEATURE(kAutofillGivePrecedenceToEmailOverUsername,
-             "AutofillGivePrecedenceToEmailOverUsername",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the autofill suggestion labels are more descriptive and
 // relevant.
 // TODO(crbug.com/380273791): Cleanup when launched.
