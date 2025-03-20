@@ -137,7 +137,7 @@ BASE_FEATURE(kFeatureManagementMahi,
 // Does nothing if "Mahi" and "FeatureManagementMahi" are disabled.
 BASE_FEATURE(kMahiPanelResizable,
              "MahiPanelResizable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether mahi sends url when making request to the server.
 BASE_FEATURE(kMahiSendingUrl,
@@ -153,12 +153,12 @@ BASE_FEATURE(kMahiDebugging,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the pompano feature.
-BASE_FEATURE(kPompano, "Pompano", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPompano, "Pompano", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the summary of selected text feature.
 BASE_FEATURE(kMahiSummarizeSelected,
              "MahiSummarizeSelected",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch to disable the new guest profile implementation on CrOS that is
 // consistent with desktop chrome.
