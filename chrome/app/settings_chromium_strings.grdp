@@ -88,9 +88,8 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the autofill AI button on chrome://settings/ai.">
     Chromium understands forms better and can autofill them faster for you
   </message>
-  <!-- TODO(crbug.com/395807244): Make string translateable. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the main toggle that enables/disables Autofill AI." translateable="false">
-    Chromium can understand more types of information and autofill your forms faster. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more about Chromium with AI<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using Autofill with AI, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context.">
+    Chromium understands forms better and can autofill them faster for you
   </message>
   <!-- TODO(crbug.com/395807244): Make string translateable. -->
   <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO" desc="One of the items on the Autofill AI settings page that describes what happens when Autofill AI is enabled." translateable="false">

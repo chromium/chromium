@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -247,13 +248,13 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
 //   media( <media-query> ) |
 //   style( <style-query> )
 // https://www.w3.org/TR/css-values-5/#if-notation
-static bool ConsumeIfReference(CSSParserTokenStream& stream,
-                               bool& has_references,
-                               bool& has_font_units,
-                               bool& has_root_font_units,
-                               bool& has_line_height_units,
-                               bool& has_dashed_functions,
-                               const CSSParserContext& context) {
+static bool ConsumeIf(CSSParserTokenStream& stream,
+                      bool& has_references,
+                      bool& has_font_units,
+                      bool& has_root_font_units,
+                      bool& has_line_height_units,
+                      bool& has_dashed_functions,
+                      const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
   CSSIfParser parser(context);
 
@@ -515,10 +516,13 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           if (!RuntimeEnabledFeatures::CSSInlineIfForStyleQueriesEnabled()) {
             break;
           }
-          if (!ConsumeIfReference(stream, has_references, has_font_units,
-                                  has_root_font_units, has_line_height_units,
-                                  has_dashed_functions, context)) {
+          if (!ConsumeIf(stream, has_references, has_font_units,
+                         has_root_font_units, has_line_height_units,
+                         has_dashed_functions, context)) {
             error = true;
+          }
+          if (!error) {
+            context.Count(WebDXFeature::kDRAFT_CssIf);
           }
           has_references = true;
           continue;

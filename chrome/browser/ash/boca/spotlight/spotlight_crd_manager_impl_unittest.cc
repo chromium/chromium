@@ -9,21 +9,19 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/crd_admin_session_controller.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/device_command_start_crd_session_job.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/start_crd_session_job_delegate.h"
-#include "components/policy/core/common/remote_commands/remote_command_job.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::TestFuture;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -32,24 +30,20 @@ using ::testing::WithArg;
 
 namespace ash::boca {
 namespace {
-using CallbackWithResult =
-    base::OnceCallback<void(policy::ResultType result,
-                            std::optional<std::string> payload)>;
 constexpr char kSpotlightConnectionCode[] = "123";
 constexpr char kUserEmail[] = "cat@gmail.com";
 
-class MockDeviceCommandStartCrdSessionJob
-    : public policy::DeviceCommandStartCrdSessionJob {
+class MockSharedCrdSession : public policy::SharedCrdSession {
  public:
-  explicit MockDeviceCommandStartCrdSessionJob(
-      policy::StartCrdSessionJobDelegate& delegate)
-      : policy::DeviceCommandStartCrdSessionJob(delegate, "") {}
-  MOCK_METHOD(bool,
-              ParseCommandPayload,
-              (const std::string& command_payload),
+  ~MockSharedCrdSession() override = default;
+
+  MOCK_METHOD(void,
+              StartCrdHost,
+              (const SessionParameters& parameters,
+               AccessCodeCallback success_callback,
+               ErrorCallback error_callback),
               (override));
-  MOCK_METHOD(void, TerminateImpl, (), (override));
-  MOCK_METHOD(void, RunImpl, (CallbackWithResult callback), (override));
+  MOCK_METHOD(void, TerminateSession, (), (override));
 };
 
 class SpotlightCrdManagerImplTest : public testing::Test {
@@ -58,72 +52,84 @@ class SpotlightCrdManagerImplTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({ash::features::kBocaSpotlight},
                                           /*disabled_features=*/{});
-    auto crd_job =
-        std::make_unique<NiceMock<MockDeviceCommandStartCrdSessionJob>>(
-            delegate_);
-    crd_job_ = crd_job.get();
-    manager_ = std::make_unique<SpotlightCrdManagerImpl>(std::move(crd_job));
+    auto crd_session = std::make_unique<NiceMock<MockSharedCrdSession>>();
+    crd_session_ = crd_session.get();
+    manager_ =
+        std::make_unique<SpotlightCrdManagerImpl>(std::move(crd_session));
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  policy::FakeStartCrdSessionJobDelegate delegate_;
   std::unique_ptr<SpotlightCrdManagerImpl> manager_;
-  raw_ptr<NiceMock<MockDeviceCommandStartCrdSessionJob>> crd_job_;
+  raw_ptr<NiceMock<MockSharedCrdSession>> crd_session_;
 
  private:
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(SpotlightCrdManagerImplTest, OnSessionStarted) {
-  base::Value::Dict payload;
-  payload.Set("idlenessCutoffSec", 0);
-  payload.Set("terminateUponInput", false);
-  payload.Set("ackedUserPresence", true);
-  payload.Set("crdSessionType", policy::CrdSessionType::REMOTE_SUPPORT_SESSION);
-  payload.Set("showConfirmationDialog", false);
-  payload.Set("adminEmail", kUserEmail);
-
-  std::optional<std::string> json_payload = base::WriteJson(payload);
-  EXPECT_TRUE(json_payload.has_value());
-  EXPECT_CALL(*crd_job_, ParseCommandPayload(json_payload.value())).Times(1);
+TEST_F(SpotlightCrdManagerImplTest,
+       InitiateSpotlightSessionShouldStartCrdHost) {
+  EXPECT_CALL(*crd_session_, StartCrdHost)
+      .WillOnce(WithArg<1>(
+          Invoke([&](auto callback) { std::move(callback).Run("123"); })));
+  TestFuture<const std::string&> success_future;
 
   manager_->OnSessionStarted(kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback());
+  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
+
+  EXPECT_EQ(kSpotlightConnectionCode, success_future.Get());
 }
 
-TEST_F(SpotlightCrdManagerImplTest, OnSessionEnded) {
-  EXPECT_CALL(*crd_job_, TerminateImpl).Times(1);
+TEST_F(SpotlightCrdManagerImplTest,
+       InitiateSpotlightSessionWithCrdFailureShouldRunErrorCallback) {
+  TestFuture<void> error_callback_future;
+  EXPECT_CALL(*crd_session_, StartCrdHost)
+      .WillOnce(WithArg<2>(
+          Invoke([&](auto callback) { error_callback_future.SetValue(); })));
+
+  manager_->OnSessionStarted(kUserEmail);
+  manager_->InitiateSpotlightSession(
+      base::BindOnce([](const std::string& result) {
+        GTEST_FAIL() << "Unexpected call to success callback";
+      }));
+  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
+
+  EXPECT_TRUE(error_callback_future.Wait());
+}
+
+TEST_F(SpotlightCrdManagerImplTest,
+       InitiateSpotlightSessionShouldFailIfNotInActiveSession) {
+  EXPECT_CALL(*crd_session_, StartCrdHost).Times(0);
+
+  manager_->InitiateSpotlightSession(
+      base::BindOnce([](const std::string& result) {
+        GTEST_FAIL() << "Unexpected call to success callback";
+      }));
+  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
+}
+
+TEST_F(SpotlightCrdManagerImplTest,
+       OnSessionEndedShouldClearTeacherEmailAndTerminateSession) {
+  EXPECT_CALL(*crd_session_, StartCrdHost).Times(1);
+  EXPECT_CALL(*crd_session_, TerminateSession()).Times(1);
+  TestFuture<const std::string&> success_future;
+
+  manager_->OnSessionStarted(kUserEmail);
+  manager_->InitiateSpotlightSession(success_future.GetCallback());
 
   manager_->OnSessionEnded();
-}
+  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 
-TEST_F(SpotlightCrdManagerImplTest, InitiateSpotlightSession) {
-  EXPECT_CALL(*crd_job_, RunImpl(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto callback) {
-        std::move(callback).Run(policy::ResultType::kSuccess,
-                                "{\"accessCode\":\"123\"}");
-      })));
-  base::test::TestFuture<std::optional<std::string>> future;
+  // Starting another session should end before calling crd since the
+  // teacher_email_ is now be empty.
 
-  manager_->OnSessionStarted(kUserEmail);
-  manager_->InitiateSpotlightSession(future.GetCallback());
-
-  auto result = future.Get();
-  EXPECT_EQ(kSpotlightConnectionCode, result.value());
-}
-
-TEST_F(SpotlightCrdManagerImplTest, InitiateSpotlightSessionWithCrdFailure) {
-  EXPECT_CALL(*crd_job_, RunImpl(_))
-      .WillOnce(WithArg<0>(Invoke([&](auto callback) {
-        std::move(callback).Run(policy::ResultType::kFailure, std::nullopt);
-      })));
-  base::test::TestFuture<std::optional<std::string>> future;
-
-  manager_->OnSessionStarted(kUserEmail);
-  manager_->InitiateSpotlightSession(future.GetCallback());
-
-  auto result = future.Get();
-  EXPECT_FALSE(result.has_value());
+  EXPECT_CALL(*crd_session_, StartCrdHost).Times(0);
+  manager_->InitiateSpotlightSession(
+      base::BindOnce([](const std::string& result) {
+        GTEST_FAIL() << "Unexpected call to success callback";
+      }));
+  ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 }
 
 }  // namespace

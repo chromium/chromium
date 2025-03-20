@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/shared_tab_group_data_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -25,6 +26,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/public/utils.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
@@ -33,6 +35,7 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -175,6 +178,10 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
         ->SetCollaborationAvailableForTesting(collaboration_id);
   }
 
+  GaiaId GetGaiaId() const {
+    return GetClient(0)->GetGaiaIdForDefaultTestAccount();
+  }
+
   void AddSpecificsToFakeServer(
       sync_pb::SharedTabGroupDataSpecifics shared_specifics,
       const std::string& collaboration_id) {
@@ -184,6 +191,12 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
     sync_pb::EntitySpecifics entity_specifics;
     *entity_specifics.mutable_shared_tab_group_data() =
         std::move(shared_specifics);
+    sync_pb::SyncEntity::CollaborationMetadata collaboration_metadata;
+    collaboration_metadata.set_collaboration_id(collaboration_id);
+    collaboration_metadata.mutable_creation_attribution()
+        ->set_obfuscated_gaia_id(GetGaiaId().ToString());
+    collaboration_metadata.mutable_last_update_attribution()
+        ->set_obfuscated_gaia_id(GetGaiaId().ToString());
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::
             CreateFromSharedSpecificsForTesting(
@@ -191,7 +204,7 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
                 GetClientTag(entity_specifics.shared_tab_group_data(),
                              collaboration_id),
                 entity_specifics, /*creation_time=*/0, /*last_modified_time=*/0,
-                collaboration_id));
+                collaboration_metadata));
   }
 
   void AddSavedSpecificsToFakeServer(
@@ -270,6 +283,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                        ShouldDownloadGroupsAndTabsAtInitialSync) {
   const base::Uuid group_guid = base::Uuid::GenerateRandomV4();
   const std::string collaboration_id = "collaboration";
+
+  // SetupClients() must be called to get access to IdentityManager before
+  // injecting entities to the fake server.
+  ASSERT_TRUE(SetupClients());
 
   AddSpecificsToFakeServer(
       MakeSharedTabGroupSpecifics(
@@ -456,6 +473,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
   const syncer::CollaborationId kCollaborationId("collaboration");
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
 
+  // SetupClients() must be called to get access to IdentityManager before
+  // injecting entities to the fake server.
+  ASSERT_TRUE(SetupClients());
+
   // Create a shared tab group remotely to avoid having local originating saved
   // group.
   const base::Uuid kOriginatingSavedGroupGuid = base::Uuid::GenerateRandomV4();
@@ -636,6 +657,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                        PRE_ShouldReloadDataOnBrowserRestart) {
   const base::Uuid group_guid = base::Uuid::GenerateRandomV4();
   const std::string collaboration_id = "collaboration";
+
+  // SetupClients() must be called to get access to IdentityManager before
+  // injecting entities to the fake server.
+  ASSERT_TRUE(SetupClients());
 
   AddSpecificsToFakeServer(
       MakeSharedTabGroupSpecifics(

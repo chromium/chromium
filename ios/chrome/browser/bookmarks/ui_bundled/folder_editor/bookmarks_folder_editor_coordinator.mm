@@ -84,7 +84,7 @@
 - (void)start {
   [super start];
   // TODO(crbug.com/40251259): Create a mediator.
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForProfile(profile);
   AuthenticationService* authService =

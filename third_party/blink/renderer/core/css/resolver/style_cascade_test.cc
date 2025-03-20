@@ -568,6 +568,8 @@ TEST_F(StyleCascadeTest, RegisteredPropertyFallback) {
 }
 
 TEST_F(StyleCascadeTest, RegisteredPropertyFallbackValidation) {
+  ScopedCSSTypeAgnosticVarFallbackForTest scoped_feature(false);
+
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
 
   TestCascade cascade(GetDocument());
@@ -577,6 +579,19 @@ TEST_F(StyleCascadeTest, RegisteredPropertyFallbackValidation) {
   cascade.Apply();
 
   EXPECT_EQ("pass", cascade.ComputedValue("--z"));
+}
+
+TEST_F(StyleCascadeTest, TypeAgnosticFallback) {
+  ScopedCSSTypeAgnosticVarFallbackForTest scoped_feature(true);
+
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x", "10px");
+  cascade.Add("--y", "var(--x,foo)");  // Fallback need not be a <length>.
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("--y"));
 }
 
 TEST_F(StyleCascadeTest, VarInFallback) {
@@ -4670,6 +4685,8 @@ TEST_F(StyleCascadeTest, CSSFunctionDoesNotExistInShorthand) {
 }
 
 TEST_F(StyleCascadeTest, VarFallbackValidationCounter) {
+  ScopedCSSTypeAgnosticVarFallbackForTest scoped_feature(false);
+
   RegisterProperty(GetDocument(), "--registered", "<length>", "0px",
                    /*inherited=*/false);
 

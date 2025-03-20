@@ -11,10 +11,6 @@
 #include "services/network/public/cpp/p2p_socket_type.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace rtc {
-struct PacketOptions;
-}
-
 namespace blink {
 
 class P2PSocketClientDelegate;

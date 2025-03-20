@@ -7,6 +7,7 @@
 #include <optional>
 #include <variant>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/types/pass_key.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/quirks.h"
@@ -24,7 +25,8 @@ RenditionGroup::~RenditionGroup() = default;
 ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
     base::PassKey<MultivariantPlaylist>,
     XMediaTag tag,
-    const GURL& playlist_uri) {
+    const GURL& playlist_uri,
+    uint64_t rendition_unique_id) {
   DCHECK(tag.group_id.Str() == id_);
   DCHECK(playlist_uri.is_valid());
 
@@ -45,20 +47,12 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
   }
 
   auto name = std::string(tag.name.Str());
-  if (!HLSQuirks::DeduplicateRenditionNamesInGroup() &&
-      renditions_map_.contains(name)) {
-    return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;
-  }
-
-  while (renditions_map_.contains(name)) {
-    // TODO(crbug.com/395949828): According to the spec:
-    // "All EXT-X-MEDIA tags in the same Group MUST have different NAME
-    // attributes."
-    // However, it's fairly common for this to not be the case on the web at
-    // large, and safari's implementation will accept manifests with duplicate
-    // rendition names in a single group. We don't really use the name outside
-    // of the key for storage, so we can just append a number to it and be ok.
-    name += '0';
+  if (renditions_map_.contains(MediaTrack::Id{name})) {
+    if (HLSQuirks::DeduplicateRenditionNamesInGroup()) {
+      name += base::NumberToString(renditions_map_.size());
+    } else {
+      return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;
+    }
   }
 
   std::optional<std::string> language;
@@ -71,30 +65,58 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
     associated_language = std::string(tag.associated_language->Str());
   }
 
+  // TODO(crbug.com/371024058): We might want to try figuring out Kind
+  // values, but it would have to be post-hoc with respect to the entire
+  // rendition group being parsed. We could also figure out a better label
+  // value, since that's what gets shown to the used in the track selection UX.
+  std::optional<MediaTrack> track;
+  switch (tag.type) {
+    case MediaType::kAudio: {
+      track = MediaTrack::CreateAudioTrack(
+          /*id = */ name,
+          /*kind =*/MediaTrack::AudioKind::kMain,
+          /*label = */ name,
+          /*language = */ language.value_or(""),
+          /*enabled = */ false,
+          /*stream_id =*/rendition_unique_id,
+          /*exclusive =*/true);
+      break;
+    }
+    case MediaType::kVideo: {
+      track = MediaTrack::CreateVideoTrack(
+          /*id = */ name,
+          /*kind =*/MediaTrack::VideoKind::kMain,
+          /*label = */ name,
+          /*language = */ language.value_or(""),
+          /*enabled = */ false,
+          /*stream_id =*/rendition_unique_id);
+      break;
+    }
+    default: {
+      NOTREACHED();
+    }
+  }
+
   auto& rendition = renditions_.emplace_back(
       base::PassKey<RenditionGroup>(),
       Rendition::CtorArgs{
           .uri = std::move(uri),
-          .name = name,
+          .name = std::move(name),
           .language = std::move(language),
           .associated_language = std::move(associated_language),
           .stable_rendition_id = std::move(tag.stable_rendition_id),
           .channels = std::move(tag.channels),
           .autoselect = std::move(tag.autoselect),
       });
-  renditions_map_.emplace(std::move(name), &rendition);
+
+  renditions_map_.emplace(track->track_id(),
+                          std::make_tuple(*track, &rendition));
 
   if (tag.is_default) {
     if (!default_rendition_) {
       default_rendition_ = &rendition;
-    } else {
-      // TODO(crbug.com/40057824): According to the spec there "MUST" be
-      // no more than a single rendition per-group with DEFAULT=YES, but some of
-      // Apple's own presentations break this rule. Ex:
-      // https://events-delivery.apple.com/0205eyyhwbbqexozkwmgccegwnjyrktg/m3u8/vod_index-dpyfrsVksFWjneFiptbXnAMYBtGYbXeZ.m3u8
-      // Could potentially use the CHARACTERISTICS tag as a heuristic for when
-      // to ignore this. For now, we ignore this to maximize compatibility with
-      // existing playlists.
+    } else if (!HLSQuirks::AllowMultipleDefaultRenditionsInGroup()) {
+      return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;
     }
   }
 

@@ -909,6 +909,8 @@ TEST_F(RuleFeatureSetTest, nonMatchingHost) {
   EXPECT_EQ(SelectorPreMatch::kNeverMatches, CollectFeatures(":host:hover .a"));
   EXPECT_EQ(SelectorPreMatch::kNeverMatches,
             CollectFeatures(":host:has(.b):hover .a"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            CollectFeatures(":hover:has(.b):host .a"));
 
   InvalidationLists invalidation_lists;
   CollectInvalidationSetsForClass(invalidation_lists, "a");
@@ -928,10 +930,28 @@ TEST_F(RuleFeatureSetTest, nonMatchingHostContext) {
             CollectFeatures(":host-context(div):hover .a"));
   EXPECT_EQ(SelectorPreMatch::kNeverMatches,
             CollectFeatures(":host-context(div):has(.b):hover .a"));
+  EXPECT_EQ(SelectorPreMatch::kNeverMatches,
+            CollectFeatures(":hover:has(.b):host-context(div) .a"));
 
   InvalidationLists invalidation_lists;
   CollectInvalidationSetsForClass(invalidation_lists, "a");
   EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
+}
+
+TEST_F(RuleFeatureSetTest, mayMatchHostAndHostContext) {
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(":host"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(":has(.a):host"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(":has(.a):host .b"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(":has(.a):host:has(.b) .c"));
+
+  EXPECT_EQ(SelectorPreMatch::kMayMatch, CollectFeatures(":host-context(div)"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(":has(.a):host-context(div)"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(":has(.a):host-context(div) .b"));
+  EXPECT_EQ(SelectorPreMatch::kMayMatch,
+            CollectFeatures(":has(.a):host-context(div):has(.b) .c"));
 }
 
 TEST_F(RuleFeatureSetTest, emptyIsWhere) {

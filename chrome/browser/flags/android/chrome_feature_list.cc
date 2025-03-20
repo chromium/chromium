@@ -429,7 +429,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &tab_groups::kUseAlternateHistorySyncIllustration,
     &visited_url_ranking::features::kGroupSuggestionService,
     &visited_url_ranking::features::kVisitedURLRankingService,
-    &webapps::features::kInstallMessageThrottle,
     &webapps::features::kWebApkInstallFailureNotification,
     &webapps::features::kAndroidMinimalUiLargeScreen,
     &base::features::kPostGetMyMemoryStateToBackground,

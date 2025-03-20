@@ -699,10 +699,11 @@ TEST_F(CanvasResourceProviderTest,
           provider->CreateWeakPtr());
 
   // NewOrRecycledResource() would return nullptr before an ImportResource().
-  EXPECT_TRUE(provider->ImportResource(resource));
-  EXPECT_EQ(provider->NewOrRecycledResource(), resource);
+  auto* raw_resource = resource.get();
+  EXPECT_TRUE(provider->ImportResource(std::move(resource)));
+  EXPECT_EQ(provider->NewOrRecycledResource().get(), raw_resource);
   // NewOrRecycledResource() will always return the same |resource|.
-  EXPECT_EQ(provider->NewOrRecycledResource(), resource);
+  EXPECT_EQ(provider->NewOrRecycledResource().get(), raw_resource);
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {

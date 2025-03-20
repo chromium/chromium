@@ -209,7 +209,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   bool CanMaximize() const override;
   bool CanMinimize() const override;
   bool CanActivate() const override;
-  bool WantsMouseEventsWhenInactive() const override;
   bool WidgetSizeIsClientSize() const override;
   bool IsModal() const override;
   int GetInitialShowState() const override;
@@ -356,10 +355,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin : public DesktopWindowTreeHost,
   std::unique_ptr<ui::KeyboardHook> keyboard_hook_;
 
   std::unique_ptr<wm::ScopedTooltipDisabler> tooltip_disabler_;
-
-  // Indicates if current window will receive mouse events when should not
-  // become activated.
-  bool wants_mouse_events_when_inactive_ = false;
 
   // Set to true when DesktopDragDropClientWin starts a touch-initiated drag
   // drop and false when it finishes. While in touch drag, if touch move events

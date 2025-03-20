@@ -24,6 +24,7 @@
 #include "chrome/browser/printing/printer_query.h"
 #include "chrome/browser/printing/test_print_preview_observer.h"
 #include "chrome/browser/printing/test_print_view_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"

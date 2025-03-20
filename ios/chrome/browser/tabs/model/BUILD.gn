@@ -100,6 +100,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/permissions/model:tab_helper",
     "//ios/chrome/browser/policy_url_blocking/model",
     "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/safe_browsing/model/tailored_security",

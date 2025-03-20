@@ -10,11 +10,11 @@
 
 #include <cstdint>
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "base/files/scoped_file.h"
 #include "base/types/expected.h"
+#include "remoting/host/base/loggable.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/gvariant_type.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -46,7 +46,7 @@ class GDBusFdList {
   // Attempts to dup the provided file descriptor, leaving the caller with
   // ownership of the original. If dup succeeds, stores the new descriptor and
   // returns the resulting handle. Otherwise, returns the error message.
-  base::expected<Handle, std::string> InsertDup(int fd);
+  base::expected<Handle, Loggable> InsertDup(int fd);
 
   // Get the file descriptor associated with the given handle, or nullopt if
   // there is no such file descriptor in the list. The list retains ownership of

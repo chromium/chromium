@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] Invalid values for registered properties are serialized as the empty string
   assert_equals: expected "" but got "0px"
-[FAIL] Invalid fallback doesn't invalidate var()-reference [<length>, red]
-  assert_equals: expected "40px" but got ""
-[FAIL] Invalid fallback doesn't invalidate var()-reference [<length> | none, nolength]
-  assert_equals: expected "40px" but got ""
-[FAIL] Invalid fallback doesn't invalidate var()-reference [<length>, var(--novar)]
-  assert_equals: expected "40px" but got ""
 Harness: the test ran to completion.
 

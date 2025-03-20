@@ -459,14 +459,8 @@ std::vector<uint8_t> FileVideoCaptureDevice::CropPTZRegion(
   return scale_frame;
 }
 
-FileVideoCaptureDevice::FileVideoCaptureDevice(
-    const base::FilePath& file_path,
-    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support)
-    : capture_thread_("CaptureThread"),
-      file_path_(file_path),
-      gmb_support_(gmb_support
-                       ? std::move(gmb_support)
-                       : std::make_unique<gpu::GpuMemoryBufferSupport>()) {}
+FileVideoCaptureDevice::FileVideoCaptureDevice(const base::FilePath& file_path)
+    : capture_thread_("CaptureThread"), file_path_(file_path) {}
 
 FileVideoCaptureDevice::~FileVideoCaptureDevice() {
   DCHECK(thread_checker_.CalledOnValidThread());

@@ -381,7 +381,17 @@ void BrowserCommandController::LoadingStateChanged(bool is_loading,
 }
 
 void BrowserCommandController::FindBarVisibilityChanged() {
-  if (is_locked_fullscreen_) {
+  // Block find command updates in locked fullscreen mode unless the instance is
+  // locked for OnTask (only relevant for non-web browser scenarios).
+  // TODO(crbug.com/365146870): Remove once we consolidate locked fullscreen
+  // with OnTask.
+  bool should_block_command_update = is_locked_fullscreen_;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (browser_->IsLockedForOnTask()) {
+    should_block_command_update = false;
+  }
+#endif
+  if (should_block_command_update) {
     return;
   }
   UpdateCloseFindOrStop();
@@ -1185,7 +1195,18 @@ void BrowserCommandController::RemoveCommandObserver(
 }
 
 bool BrowserCommandController::UpdateCommandEnabled(int id, bool state) {
-  if (is_locked_fullscreen_) {
+  // Block individual command updates in locked fullscreen mode unless the
+  // instance is locked for OnTask (only relevant for non-web browser
+  // scenarios).
+  // TODO(crbug.com/365146870): Remove once we consolidate locked fullscreen
+  // with OnTask.
+  bool should_block_command_update = is_locked_fullscreen_;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (browser_->IsLockedForOnTask()) {
+    should_block_command_update = false;
+  }
+#endif
+  if (should_block_command_update) {
     return false;
   }
 
@@ -1913,14 +1934,16 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
 #if DCHECK_IS_ON()
     NonAllowlistedCommandsAreDisabled(&command_updater_);
 #endif
-    // Enable commands that allow users to switch between tabs if the webapp is
-    // locked for OnTask (only relevant for non-web browser scenarios).
+    // Enable commands that allow users to switch between tabs and find content
+    // within a webpage if the webapp is locked for OnTask
+    // (only relevant for non-web browser scenarios).
     if (browser_->IsLockedForOnTask()) {
       bool supports_tabs =
           browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
       command_updater_.UpdateCommandEnabled(IDC_SELECT_NEXT_TAB, supports_tabs);
       command_updater_.UpdateCommandEnabled(IDC_SELECT_PREVIOUS_TAB,
                                             supports_tabs);
+      UpdateCommandsForFind();
     }
   } else {
     // Do an init call to re-initialize command state after the
@@ -1952,7 +1975,17 @@ void BrowserCommandController::UpdateSaveAsState() {
 
 void BrowserCommandController::UpdateReloadStopState(bool is_loading,
                                                      bool force) {
-  if (is_locked_fullscreen_) {
+  // Skip command updates when in locked fullscreen mode unless the instance is
+  // locked for OnTask (only relevant for non-web browser scenarios).
+  // TODO(crbug.com/365146870): Remove once we consolidate locked fullscreen
+  // with OnTask.
+  bool should_skip_command_updates = is_locked_fullscreen_;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (browser_->IsLockedForOnTask()) {
+    should_skip_command_updates = false;
+  }
+#endif
+  if (should_skip_command_updates) {
     return;
   }
 

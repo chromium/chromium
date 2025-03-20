@@ -8,13 +8,17 @@ static_library("fullscreen_control") {
     "fullscreen_control_popup.h",
     "fullscreen_control_view.cc",
     "fullscreen_control_view.h",
+    "fullscreen_features.cc",
+    "fullscreen_features.h",
     "subtle_notification_view.cc",
     "subtle_notification_view.h",
   ]
   deps = [
     "//base",
     "//cc/paint",
+    "//components/color:color_headers",
     "//components/strings",
+    "//components/url_formatter",
     "//components/vector_icons",
     "//skia",
     "//ui/accessibility:ax_base",
@@ -24,6 +28,18 @@ static_library("fullscreen_control") {
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
     "//ui/views",
+  ]
+}
+
+source_set("color_mixer") {
+  sources = [
+    "color_mixer.cc",
+    "color_mixer.h",
+  ]
+
+  deps = [
+    "//components/color:color_headers",
+    "//ui/color",
   ]
 }
 

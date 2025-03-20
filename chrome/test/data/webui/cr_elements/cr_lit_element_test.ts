@@ -593,6 +593,11 @@ suite('CrLitElement', function() {
         super.willUpdate(changedProperties);
         willUpdateCalls.push(changedProperties);
       }
+
+      override updated(changedProperties: PropertyValues<this>) {
+        super.updated(changedProperties);
+        updatedCalls.push(changedProperties);
+      }
     }
 
     customElements.define(
@@ -600,6 +605,8 @@ suite('CrLitElement', function() {
         CrDummyPropertiesWithAccessorElement);
 
     const willUpdateCalls:
+        Array<PropertyValues<CrDummyPropertiesWithAccessorElement>> = [];
+    const updatedCalls:
         Array<PropertyValues<CrDummyPropertiesWithAccessorElement>> = [];
 
     const element =
@@ -623,6 +630,9 @@ suite('CrLitElement', function() {
     // Check `changedProperties` in initial willUpdate call.
     assertEquals(1, willUpdateCalls.length);
     assertChangedProperties(willUpdateCalls[0]!, undefined, undefined);
+    // Check `changedProperties` in initial updated call.
+    assertEquals(1, updatedCalls.length);
+    assertChangedProperties(updatedCalls[0]!, undefined, undefined);
     // Check that initial value is reflected correctly.
     assertTrue(element.hasAttribute('prop-reflected'));
     assertFalse(element.hasAttribute('prop-non-reflected'));
@@ -635,6 +645,9 @@ suite('CrLitElement', function() {
     // Check `changedProperties` in 2nd willUpdate call.
     assertEquals(2, willUpdateCalls.length);
     assertChangedProperties(willUpdateCalls[1]!, true, true);
+    // Check `changedProperties` in 2nd updated call.
+    assertEquals(2, updatedCalls.length);
+    assertChangedProperties(updatedCalls[1]!, true, true);
     // Check property -> attribute
     assertFalse(element.hasAttribute('prop-reflected'));
     assertFalse(element.hasAttribute('prop-non-reflected'));
@@ -646,6 +659,9 @@ suite('CrLitElement', function() {
     // Check `changedProperties` in 3rd willUpdate call.
     assertEquals(3, willUpdateCalls.length);
     assertChangedProperties(willUpdateCalls[2]!, false, false);
+    // Check `changedProperties` in 3rd updated call.
+    assertEquals(3, updatedCalls.length);
+    assertChangedProperties(updatedCalls[2]!, false, false);
 
     // Check attribute -> property
     assertTrue(element.propReflected);

@@ -91,15 +91,13 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
 }
 
 void SpotlightSessionManager::OnConnectionCodeReceived(
-    std::optional<std::string> connection_code) {
-  if (!connection_code.has_value()) {
-    LOG(WARNING) << "[Boca]Failed to generate Spotlight connection code.";
-    return;
-  }
-
+    const std::string& connection_code) {
+  // TODO: dorianbrandon - Send access code immediately to teacher. This will
+  // be an optimization to decrease the waiting time on the teacher's end.
+  // Pending change handling behavior on UI.
   notification_handler_->StartSpotlightCountdownNotification(
       base::BindOnce(&SpotlightSessionManager::RegisterStudentScreen,
-                     weak_ptr_factory_.GetWeakPtr(), connection_code.value()));
+                     weak_ptr_factory_.GetWeakPtr(), connection_code));
 }
 
 void SpotlightSessionManager::RegisterStudentScreen(

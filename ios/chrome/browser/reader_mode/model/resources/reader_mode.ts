@@ -12,35 +12,13 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 interface Result {
-  opengraph: boolean;
-  url: string;
   numElements: number;
   numAnchors: number;
   numForms: number;
-  wordCount: number;
   mozScore: number;
   mozScoreAllSqrt: number;
   mozScoreAllLinear: number;
   time: number;
-}
-
-/**
- * Determines if the page has a particular tag indicating article content.
- * @return {boolean}
- */
-function hasOGArticle(): boolean {
-  const elems = document.head.querySelectorAll(
-    'meta[property="og:type"],meta[name="og:type"]',
-  );
-  for (const elem of elems) {
-      const attribute = elem.getAttribute('content');
-      if (attribute == null) {
-          continue;
-      } else if (attribute.toUpperCase() === 'ARTICLE') {
-          return true;
-      }
-    }
-  return false;
 }
 
 /**
@@ -136,26 +114,11 @@ function retrieveDOMFeatures(): void {
   }
   const pElements = document.body.getElementsByTagName('p');
   const preElements = document.body.getElementsByTagName('pre');
-  // Calculate word count in p tags.
-  let wordCount = 0;
-  for (let i = 0; i < pElements.length; i++) {
-      const pElement : HTMLElement | undefined = pElements[i];
-      if (pElement === undefined) {
-          continue;
-      }
-    const matches = pElement.innerText.match(/[\u00ff-\uffff]|\S+/g);
-    if (matches) {
-      wordCount += matches.length;
-    }
-  }
   const elementTextLengthList = getPageTextContent(pElements, preElements);
   const result: Result = {
-    'opengraph': hasOGArticle(),
-    'url': document.location.href,
     'numElements': body.getElementsByTagName('*').length,
     'numAnchors': body.getElementsByTagName('a').length,
     'numForms': body.getElementsByTagName('form').length,
-    'wordCount': wordCount,
     'mozScore': Math.min(
       6 * Math.sqrt(1000 - 140),
       calculateMozScore(elementTextLengthList, 0.5, 140),

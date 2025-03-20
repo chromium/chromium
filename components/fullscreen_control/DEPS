@@ -1,7 +1,9 @@
 include_rules = [
   "+cc/paint",
-  "+components/vector_icons",
+  "+components/color",
   "+components/strings",
+  "+components/url_formatter",
+  "+components/vector_icons",
   "+testing/gtest",
   "+third_party/skia",
   "+ui"

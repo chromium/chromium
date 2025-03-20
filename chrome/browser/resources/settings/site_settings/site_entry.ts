@@ -530,6 +530,10 @@ export class SiteEntryElement extends SiteEntryElementBase {
         'siteSettingsSiteDetailsSubpageAccessibilityLabel', target);
   }
 
+  private getOriginSubpageLabel_(origin: string): string {
+    return this.getSubpageLabel_(this.originRepresentation(origin));
+  }
+
   private getRemoveOriginButtonTitle_(origin: string): string {
     return this.i18n(
         'siteSettingsCookieRemoveSite', this.originRepresentation(origin));

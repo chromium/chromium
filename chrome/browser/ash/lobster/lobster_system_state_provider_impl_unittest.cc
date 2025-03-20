@@ -221,7 +221,7 @@ class LobsterSystemStateProviderImplGeolocationTest
     SetActiveIme("xkb:us::eng");
     SetAccountCapabilityValue(true);
     SetCountryCode(std::get<0>(GetParam()));
-    SetTabletModeState(true);
+    SetTabletModeState(false);
   }
 };
 
@@ -253,7 +253,7 @@ class LobsterSystemStateProviderImplAccountCapabilityTest
     SetActiveIme("xkb:us::eng");
     SetCountryCode("au");
     SetAccountCapabilityValue(/*satisfied=*/std::get<0>(GetParam()));
-    SetTabletModeState(true);
+    SetTabletModeState(false);
   }
 };
 
@@ -284,7 +284,7 @@ class LobsterSystemStateProviderImplTextInputFieldTest
     SetActiveIme("xkb:us::eng");
     SetCountryCode("au");
     SetAccountCapabilityValue(true);
-    SetTabletModeState(true);
+    SetTabletModeState(false);
   }
 };
 
@@ -347,7 +347,7 @@ class LobsterSystemStateProviderImplNetworkStatusTest
     SetActiveIme("xkb:us::eng");
     SetCountryCode("au");
     SetAccountCapabilityValue(true);
-    SetTabletModeState(true);
+    SetTabletModeState(false);
   }
 };
 
@@ -378,7 +378,7 @@ class LobsterSystemStateProviderImplImeTest
     SetActiveIme(std::get<0>(GetParam()));
     SetCountryCode("au");
     SetAccountCapabilityValue(true);
-    SetTabletModeState(true);
+    SetTabletModeState(false);
   }
 };
 
@@ -434,7 +434,7 @@ class LobsterSystemStateProviderImplTabletModeTest
     SetActiveIme("xkb:us::eng");
     SetCountryCode("au");
     SetAccountCapabilityValue(true);
-    SetTabletModeState(/*is_online=*/std::get<0>(GetParam()));
+    SetTabletModeState(/*is_in_tablet_mode=*/std::get<0>(GetParam()));
   }
 };
 
@@ -442,9 +442,9 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     LobsterSystemStateProviderImplTabletModeTest,
     testing::Values(std::make_tuple(/*is_in_tablet_mode=*/true,
-                                    ash::LobsterStatus::kEnabled),
+                                    ash::LobsterStatus::kBlocked),
                     std::make_tuple(/*is_in_tablet_mode=*/false,
-                                    ash::LobsterStatus::kBlocked)));
+                                    ash::LobsterStatus::kEnabled)));
 
 TEST_P(LobsterSystemStateProviderImplTabletModeTest,
        ChecksTheSystemStateStatus) {

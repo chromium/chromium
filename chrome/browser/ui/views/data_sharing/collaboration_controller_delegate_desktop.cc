@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/account_card_view.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
-#include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -98,8 +97,10 @@ void ShowSignInAndSyncUi(Profile* profile) {
 }  // namespace
 
 CollaborationControllerDelegateDesktop::CollaborationControllerDelegateDesktop(
-    Browser* browser)
+    Browser* browser,
+    std::optional<data_sharing::FlowType> flow)
     : browser_(browser),
+      flow_(flow),
       collaboration_service_(
           collaboration::CollaborationServiceFactory::GetForProfile(
               browser_->GetProfile())) {
@@ -193,12 +194,37 @@ void CollaborationControllerDelegateDesktop::ShowManageDialog(
   if (!browser_) {
     return;
   }
-  CHECK(std::holds_alternative<tab_groups::LocalTabGroupID>(either_id));
-  data_sharing::RequestInfo request_info(
-      std::get<tab_groups::LocalTabGroupID>(either_id),
-      data_sharing::FlowType::kManage);
-  DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Show(
-      request_info);
+
+  data_sharing::FlowType flow =
+      flow_.has_value() ? flow_.value() : data_sharing::FlowType::kManage;
+  if (flow == data_sharing::FlowType::kManage) {
+    // For manage flow, local tab group id is used because
+    // unsharing a group requires a local tab group id.
+    CHECK(std::holds_alternative<tab_groups::LocalTabGroupID>(either_id));
+    data_sharing::RequestInfo request_info(
+        std::get<tab_groups::LocalTabGroupID>(either_id), flow);
+    DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Show(
+        request_info);
+  } else {
+    // For leave/delete/close flows, saved tab group id is used because the
+    // group is not required to be open, hence local tab group id may not exist.
+    // TODO(crbug.com/380287432): Move leave/delete into the collaboration
+    // service code.
+    CHECK(std::holds_alternative<base::Uuid>(either_id));
+    tab_groups::TabGroupSyncService* tab_group_sync_service =
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+            browser_->GetProfile());
+    auto saved_tab_group =
+        tab_group_sync_service->GetGroup(std::get<base::Uuid>(either_id));
+    if (saved_tab_group && saved_tab_group->is_shared_tab_group()) {
+      data_sharing::GroupId id(saved_tab_group->collaboration_id()->value());
+      data_sharing::RequestInfo request_info(
+          data_sharing::GroupToken(id, /*access_token=*/""), flow);
+      DataSharingBubbleController::GetOrCreateForBrowser(browser_)->Show(
+          request_info);
+    }
+  }
+
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
 }
 

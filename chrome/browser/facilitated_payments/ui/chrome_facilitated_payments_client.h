@@ -68,6 +68,8 @@ class ChromeFacilitatedPaymentsClient
   std::optional<CoreAccountInfo> GetCoreAccountInfo() final;
   bool IsInLandscapeMode() final;
   bool IsFoldable() final;
+  optimization_guide::OptimizationGuideDecider* GetOptimizationGuideDecider()
+      final;
   void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
@@ -82,6 +84,11 @@ class ChromeFacilitatedPaymentsClient
           ui_event_listener) final;
   autofill::StrikeDatabase* GetStrikeDatabase() final;
 
+  // Register any allowlists with the OptimizationGuide framework, so that
+  // individual features can later request to check whether the current main
+  // frame URL is eligible for that feature.
+  void RegisterAllowlists();
+
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;
 
@@ -90,6 +97,11 @@ class ChromeFacilitatedPaymentsClient
 
   std::unique_ptr<FacilitatedPaymentsController>
       facilitated_payments_controller_;
+
+  // The optimization guide decider to help determine whether the current main
+  // frame URL is eligible for facilitated payments.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

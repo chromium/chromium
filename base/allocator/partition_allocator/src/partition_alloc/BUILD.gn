@@ -176,6 +176,7 @@ pa_buildflag_header("buildflags") {
     "IS_CAST_ANDROID=$is_cast_android",
     "IS_CHROMEOS=$is_chromeos",
     "IS_DEBUG=$partition_alloc_is_debug",
+    "IS_HWASAN=$is_hwasan",
     "RAW_PTR_ZERO_ON_CONSTRUCT=$raw_ptr_zero_on_construct",
     "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
     "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",

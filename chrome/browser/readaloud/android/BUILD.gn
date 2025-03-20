@@ -245,6 +245,7 @@ robolectric_library("junit") {
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_test_core_java",

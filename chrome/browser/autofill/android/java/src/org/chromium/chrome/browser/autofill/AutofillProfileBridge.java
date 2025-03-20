@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -34,17 +33,13 @@ public final class AutofillProfileBridge {
         return AutofillProfileBridgeJni.get().getDefaultCountryCode();
     }
 
-    /** @return The list of supported countries sorted by their localized display names. */
+    /**
+     * @return The list of supported countries sorted by their localized display names.
+     */
     public static List<DropdownKeyValue> getSupportedCountries() {
-        List<String> countryCodes = new ArrayList<>();
-        List<String> countryNames = new ArrayList<>();
-        List<DropdownKeyValue> countries = new ArrayList<>();
-
-        AutofillProfileBridgeJni.get().getSupportedCountries(countryCodes, countryNames);
-
-        for (int i = 0; i < countryCodes.size(); i++) {
-            countries.add(new DropdownKeyValue(countryCodes.get(i), countryNames.get(i)));
-        }
+        // Create a new list to avoid operating on an immutable collection.
+        List<DropdownKeyValue> countries =
+                new ArrayList<>(AutofillProfileBridgeJni.get().getSupportedCountries());
 
         final Collator collator = Collator.getInstance(Locale.getDefault());
         collator.setStrength(Collator.PRIMARY);
@@ -112,20 +107,14 @@ public final class AutofillProfileBridge {
                 .getAddressEditorUiInfo(countryCode, languageCode, validationType);
     }
 
-    @CalledByNative
-    private static void stringArrayToList(String[] array, List<String> list) {
-        for (String s : array) {
-            list.add(s);
-        }
-    }
-
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         @JniType("std::string")
         String getDefaultCountryCode();
 
-        void getSupportedCountries(List<String> countryCodes, List<String> countryNames);
+        @JniType("std::vector<DropdownKeyValueAndroid>")
+        List<DropdownKeyValue> getSupportedCountries();
 
         @JniType("std::vector<int>")
         int[] getRequiredFields(@JniType("std::string") String countryCode);

@@ -734,6 +734,8 @@ static_library("browser") {
       "ui/addresses/android/autofill_address_editor_ui_info_android.h",
       "ui/addresses/android/autofill_address_ui_component_android.cc",
       "ui/addresses/android/autofill_address_ui_component_android.h",
+      "ui/addresses/android/dropdown_key_value_android.cc",
+      "ui/addresses/android/dropdown_key_value_android.h",
     ]
   }
 

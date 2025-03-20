@@ -311,13 +311,7 @@ void HTMLAnchorElementBase::ParseAttribute(
     InvalidateCachedVisitedLinkHash();
     LogUpdateAttributeIfIsolatedWorldAndInDocument("a", params);
   } else if (params.name == html_names::kNameAttr) {
-    if (GetDocument().HasPendingExpectLinkElements() && isConnected() &&
-        IsFinishedParsingChildren() && !params.new_value.empty()) {
-      DCHECK(GetDocument().GetRenderBlockingResourceManager());
-      GetDocument()
-          .GetRenderBlockingResourceManager()
-          ->RemovePendingParsingElement(params.new_value, this);
-    }
+    ProcessElementRenderBlocking(params.new_value);
   } else if (params.name == html_names::kTitleAttr) {
     // Do nothing.
   } else if (params.name == html_names::kRelAttr) {
@@ -801,6 +795,9 @@ Node::InsertionNotificationRequest HTMLAnchorElementBase::InsertedInto(
     }
   }
 
+  if (FastHasAttribute(html_names::kNameAttr)) {
+    ProcessElementRenderBlocking(FastGetAttribute(html_names::kNameAttr));
+  }
   return request;
 }
 

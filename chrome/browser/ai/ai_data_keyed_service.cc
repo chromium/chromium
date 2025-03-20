@@ -484,8 +484,9 @@ void GetFormDataByFieldGlobalIdForModelPrototyping(
     std::move(continue_callback).Run(std::move(data));
     return;
   }
-  *data->mutable_form_data() =
-      autofill::ToFormDataProto(form_structure->ToFormData());
+  *data->mutable_form_data() = autofill::ToFormDataProto(
+      form_structure->ToFormData(),
+      autofill::FormDataProtoConversionReason::kExtensionAPI);
   std::move(continue_callback).Run(std::move(data));
 }
 #endif

@@ -36,6 +36,18 @@ enum OcrClientType {
   kScreenshotTextDetection,
 };
 
+// Clients of the Main Content Extraction service.
+enum MceClientType {
+  // To be used only for testing.
+  kTest,
+  // Used in the reading mode.
+  kReadingMode,
+  // Used for main node annotation.
+  kMainNode,
+  // Used for Mahi feature on ChromeOS.
+  kMahi,
+};
+
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
 struct VisualAnnotation {
   array<LineBox> lines;
@@ -146,6 +158,9 @@ interface Screen2xMainContentExtractor {
   // to identify an accurate main node for the entire page.
   IdentifyMainNode(ax.mojom.AXTreeUpdate ax_tree) =>
     (ax.mojom.AXTreeID tree_id, int32 node_id);
+
+  // Sets Mce client type for metrics.
+  SetClientType(MceClientType client_type);
 };
 
 // Provides an interface to the OCR functionality of the Screen AI service.

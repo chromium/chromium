@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "components/eye_dropper/color_mixer.h"
+#include "components/fullscreen_control/color_mixer.h"
 
 namespace color {
 
@@ -13,6 +14,9 @@ void AddComponentsColorMixers(ui::ColorProvider* provider,
                               const ui::ColorProviderKey& key) {
 #if defined(USE_AURA)
   eye_dropper::AddColorMixer(provider, key);
+#endif
+#if defined(TOOLKIT_VIEWS)
+  fullscreen::AddColorMixer(provider, key);
 #endif
 }
 

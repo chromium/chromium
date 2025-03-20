@@ -5,6 +5,7 @@
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 
 #include "base/android/build_info.h"
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
@@ -17,7 +18,10 @@
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 
@@ -27,10 +31,12 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
     : content::WebContentsUserData<ChromeFacilitatedPaymentsClient>(
           *web_contents),
       driver_factory_(web_contents,
-                      /*client=*/this,
-                      optimization_guide_decider),
+                      /*client=*/this),
       facilitated_payments_controller_(
-          std::make_unique<FacilitatedPaymentsController>(web_contents)) {}
+          std::make_unique<FacilitatedPaymentsController>(web_contents)),
+      optimization_guide_decider_(optimization_guide_decider) {
+  RegisterAllowlists();
+}
 
 ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() = default;
 
@@ -88,6 +94,11 @@ bool ChromeFacilitatedPaymentsClient::IsFoldable() {
   return base::android::BuildInfo::GetInstance()->is_foldable();
 }
 
+optimization_guide::OptimizationGuideDecider*
+ChromeFacilitatedPaymentsClient::GetOptimizationGuideDecider() {
+  return optimization_guide_decider_;
+}
+
 void ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(int64_t)> on_payment_account_selected) {
@@ -137,6 +148,20 @@ autofill::StrikeDatabase* ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
   }
 
   return autofill::StrikeDatabaseFactory::GetForProfile(profile);
+}
+
+void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {
+  if (optimization_guide_decider_) {
+    if (base::FeatureList::IsEnabled(payments::facilitated::kEwalletPayments)) {
+      optimization_guide_decider_->RegisterOptimizationTypes(
+          {optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST});
+    }
+    if (base::FeatureList::IsEnabled(
+            payments::facilitated::kEnablePixPayments)) {
+      optimization_guide_decider_->RegisterOptimizationTypes(
+          {optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST});
+    }
+  }
 }
 
 void ChromeFacilitatedPaymentsClient::

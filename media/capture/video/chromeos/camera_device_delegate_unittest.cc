@@ -184,7 +184,6 @@ class CameraDeviceDelegateTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(nullptr);
     VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(nullptr);
     camera_device_delegate_.reset();
     camera_hal_delegate_.reset();

@@ -455,8 +455,8 @@ bool ImageAnnotationWorker::ProcessNextImage() {
   DVLOG(1) << "Processing new " << image_path << " "
            << file_info->last_modified;
   annotation_storage_->Remove(image_path);
-  ImageInfo image_info({}, image_path, file_info->last_modified,
-                       file_info->size);
+  ImageInfo image_info(/*annotations=*/{}, std::move(image_path),
+                       file_info->last_modified, file_info->size);
 
   if (search_features::IsLauncherImageSearchIndexingLimitEnabled()) {
     // Early return if reaches the indexing limit. Continue the process as we

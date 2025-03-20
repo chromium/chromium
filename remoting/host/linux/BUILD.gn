@@ -118,7 +118,10 @@ source_set("gvariant") {
     "gvariant_type.cc",
     "gvariant_type.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//remoting/host/base:base",
+  ]
 }
 
 source_set("utils") {
@@ -132,6 +135,7 @@ source_set("utils") {
   deps = [
     "dbus_interfaces:interface_headers",
     "//base",
+    "//remoting/host/base:base",
     "//ui/base",
   ]
   configs += [ "//build/linux:gio_config" ]

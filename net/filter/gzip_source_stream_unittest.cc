@@ -77,9 +77,9 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
     for (size_t i = 0; i < source_data_len_; i++)
       source_data_[i] = i % 256;
 
-    encoded_data_len_ = kBigBufferSize;
-    CompressGzip(source_data_, source_data_len_, encoded_data_,
-                 &encoded_data_len_, type != SourceStreamType::kDeflate);
+    encoded_data_ =
+        CompressGzip(std::string_view(source_data_, source_data_len_),
+                     type != SourceStreamType::kDeflate);
 
     output_buffer_ =
         base::MakeRefCounted<IOBufferWithSize>(output_buffer_size_);
@@ -109,8 +109,8 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
   char* source_data() { return source_data_; }
   size_t source_data_len() { return source_data_len_; }
 
-  char* encoded_data() { return encoded_data_; }
-  size_t encoded_data_len() { return encoded_data_len_; }
+  char* encoded_data() { return reinterpret_cast<char*>(encoded_data_.data()); }
+  size_t encoded_data_len() { return encoded_data_.size(); }
   base::span<const uint8_t> encoded_span() {
     return base::as_byte_span(encoded_data_);
   }
@@ -148,8 +148,7 @@ class GzipSourceStreamTest : public ::testing::TestWithParam<GzipTestParam> {
   char source_data_[kBigBufferSize];
   size_t source_data_len_;
 
-  char encoded_data_[kBigBufferSize];
-  size_t encoded_data_len_;
+  std::vector<uint8_t> encoded_data_;
 
   scoped_refptr<IOBuffer> output_buffer_;
   const int output_buffer_size_;

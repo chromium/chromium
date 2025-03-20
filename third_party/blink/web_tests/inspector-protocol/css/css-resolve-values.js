@@ -61,6 +61,10 @@
       testRunner.log('Test invalid property name');
       await testResolveValues('.outer', testValues, "invalid");
     },
+    async function testShorthandProperty() {
+      testRunner.log('Test shorthand property');
+      await testResolveValues('.inner', lengthExpressions, "margin");
+    },
     async function testResolveValuesSimple() {
       testRunner.log('Test resolveValues for width property');
       await testResolveValues('.inner', testValues, "width");

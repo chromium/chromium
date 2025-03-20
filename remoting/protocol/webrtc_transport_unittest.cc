@@ -81,7 +81,9 @@ class TestTransportEventHandler : public WebrtcTransport::EventHandler {
       connected_callback_.Run();
     }
   }
-  void OnWebrtcTransportError(ErrorCode error) override {
+  void OnWebrtcTransportError(ErrorCode error,
+                              std::string_view error_details,
+                              const base::Location& error_location) override {
     error_callback_.Run(error);
   }
   void OnWebrtcTransportProtocolChanged() override {}

@@ -255,7 +255,8 @@ void ExclusiveAccessBubbleViews::UpdateViewContent(
   // ('|'), which should be drawn graphically as a key, not displayed literally.
   // `accelerator` is the name of the key to exit fullscreen mode.
   view_->UpdateContent(exclusive_access_bubble::GetInstructionTextForType(
-      params_.type, accelerator, params_.has_download, notify_overridden_));
+      params_.type, accelerator, params_.origin, params_.has_download,
+      notify_overridden_));
 }
 
 bool ExclusiveAccessBubbleViews::IsVisible() const {

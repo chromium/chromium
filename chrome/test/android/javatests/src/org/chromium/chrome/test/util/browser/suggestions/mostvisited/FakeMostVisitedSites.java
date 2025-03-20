@@ -5,6 +5,8 @@
 package org.chromium.chrome.test.util.browser.suggestions.mostvisited;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
@@ -21,15 +23,42 @@ import java.util.List;
 /**
  * A fake implementation of MostVisitedSites that returns a fixed list of most visited sites.
  *
- * Once the observer is set (through {@link #setObserver(Observer, int)}), updates to the data must
- * be made on the UI thread, as they can result in UI manipulations.
+ * <p>Once the observer is set (through {@link #setObserver(Observer, int)}), updates to the data
+ * must be made on the UI thread, as they can result in UI manipulations.
  */
+@NullMarked
 public class FakeMostVisitedSites implements MostVisitedSites {
     private final List<GURL> mBlocklistedUrls = new ArrayList<>();
 
     private List<SiteSuggestion> mSites = new ArrayList<>();
     private Observer mObserver;
 
+    // CustomLinkOperations -> MostVisitedSites implementation.
+    @Override
+    public boolean addCustomLink(String name, @Nullable GURL url) {
+        // TODO (crbug.com/397421764): Implement when needed by tests.
+        return false;
+    }
+
+    @Override
+    public boolean assignCustomLink(GURL keyUrl, String name, @Nullable GURL url) {
+        // TODO (crbug.com/397421764): Implement when needed by tests.
+        return false;
+    }
+
+    @Override
+    public boolean deleteCustomLink(GURL keyUrl) {
+        // TODO (crbug.com/397421764): Implement when needed by tests.
+        return false;
+    }
+
+    @Override
+    public boolean queryCustomLink(GURL keyUrl) {
+        // TODO (crbug.com/397421764): Implement when needed by tests.
+        return false;
+    }
+
+    // MostVisitedSites implementation.
     @Override
     public void destroy() {}
 
@@ -72,7 +101,7 @@ public class FakeMostVisitedSites implements MostVisitedSites {
     /**
      * Sets new tile suggestion data.
      *
-     * If there is an observer it will be notified and the call has to be made on the UI thread.
+     * <p>If there is an observer it will be notified and the call has to be made on the UI thread.
      */
     public void setTileSuggestions(List<SiteSuggestion> suggestions) {
         mSites = new ArrayList<>(suggestions);

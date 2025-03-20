@@ -10,10 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-
-namespace cricket {
-class PortAllocator;
-}  // namespace cricket
+#include "third_party/webrtc/p2p/base/port_allocator.h"
 
 namespace remoting::protocol {
 

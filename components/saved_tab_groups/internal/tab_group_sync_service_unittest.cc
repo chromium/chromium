@@ -1918,7 +1918,7 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
   EXPECT_NE(shared_group->saved_guid(), group_1_.saved_guid());
   EXPECT_TRUE(shared_group->saved_guid().is_valid());
   EXPECT_EQ(shared_group->collaboration_id(), CollaborationId("collaboration"));
-  EXPECT_EQ(shared_group->originating_tab_group_guid(),
+  EXPECT_EQ(shared_group->GetOriginatingTabGroupGuid(),
             originating_group->saved_guid());
   EXPECT_EQ(shared_group->local_group_id(), local_group_id_1_);
 
@@ -2176,7 +2176,8 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUnShareSucceeded) {
   // Verify shared tab group fields.
   EXPECT_NE(saved_group->saved_guid(), shared_group->saved_guid());
   EXPECT_TRUE(saved_group->saved_guid().is_valid());
-  EXPECT_EQ(saved_group->originating_tab_group_guid(),
+
+  EXPECT_EQ(saved_group->GetOriginatingTabGroupGuid(),
             shared_group->saved_guid());
   EXPECT_EQ(saved_group->local_group_id(), local_group_id_1_);
 
@@ -2213,7 +2214,10 @@ TEST_F(TabGroupSyncServiceTest, ShouldNotReturnOriginatingTabGroupOnRemoteAdd) {
   // Simulate remote transition to shared tab group from `group_1_`.
   SavedTabGroup shared_group = test::CreateTestSavedTabGroupWithNoTabs();
   shared_group.SetCollaborationId(CollaborationId("collaboration"));
-  shared_group.SetOriginatingTabGroupGuid(group_1_.saved_guid());
+  shared_group.SetOriginatingTabGroupGuid(
+      group_1_.saved_guid(),
+      /*use_originating_tab_group_guid=*/true);
+  shared_group.SetUpdatedByAttribution(kDefaultGaiaId);
 
   model_->AddedFromSync(shared_group);
   WaitForPostedTasks();
@@ -2469,7 +2473,10 @@ TEST_F(TabGroupSyncServiceTest,
   // Simulate remote transition to shared tab group from `group_1_`.
   SavedTabGroup shared_group = test::CreateTestSavedTabGroupWithNoTabs();
   shared_group.SetCollaborationId(CollaborationId("collaboration"));
-  shared_group.SetOriginatingTabGroupGuid(group_1_.saved_guid());
+  shared_group.SetOriginatingTabGroupGuid(
+      group_1_.saved_guid(),
+      /*use_originating_tab_group_guid=*/true);
+  shared_group.SetUpdatedByAttribution(kDefaultGaiaId);
 
   // Close the group before the shared group is added by remote.
   tab_group_sync_service_->RemoveLocalTabGroupMapping(

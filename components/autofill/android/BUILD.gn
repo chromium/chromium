@@ -267,6 +267,7 @@ generate_jni("main_autofill_jni_headers") {
     "java/src/org/chromium/components/autofill/AutofillAddressEditorUiInfo.java",
     "java/src/org/chromium/components/autofill/AutofillAddressUiComponent.java",
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
+    "java/src/org/chromium/components/autofill/DropdownKeyValue.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
 }

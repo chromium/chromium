@@ -18,6 +18,7 @@ import java.util.Set;
 public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private boolean mIsPrivacySandboxRestricted /* = false*/;
     private boolean mIsRestrictedNoticeEnabled /* = false*/;
+    private boolean mIsRwsManaged /* = false*/;
 
     private final HashMap<String, Topic> mTopics = new HashMap<>();
     private final Set<Topic> mCurrentTopTopics = new LinkedHashSet<>();
@@ -92,7 +93,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
 
     @Override
     public boolean isRelatedWebsiteSetsDataAccessEnabled(Profile profile) {
-        return false;
+        return true;
     }
 
     @Override
@@ -102,7 +103,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
 
     @Override
     public boolean isPartOfManagedRelatedWebsiteSet(Profile profile, String origin) {
-        return false;
+        return mIsRwsManaged;
     }
 
     @Override
@@ -111,6 +112,10 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     @Override
     public String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin) {
         return null;
+    }
+
+    public void setIsRwsManaged(boolean managed) {
+        mIsRwsManaged = managed;
     }
 
     public void setPrivacySandboxRestricted(boolean restricted) {

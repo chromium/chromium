@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/observer_list.h"
-#include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
