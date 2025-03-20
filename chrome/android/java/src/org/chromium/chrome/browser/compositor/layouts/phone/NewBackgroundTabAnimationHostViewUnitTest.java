@@ -78,26 +78,29 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 mTabSwitcherButton,
                 /* tabCount= */ 12,
                 /* backgroundColor= */ Color.WHITE,
-                /* isIncognito= */ false);
+                /* isIncognito= */ false,
+                /* yOffset= */ 7);
         assertFakeTabSwitcherButton(
                 NewBackgroundTabAnimationHostView.AnimationType.DEFAULT,
                 /* tabCount= */ 12,
                 /* buttonColor= */ Color.WHITE,
                 /* brandedColorScheme= */ BrandedColorScheme.APP_DEFAULT,
-                /* showNotificationIcon= */ true);
+                /* showNotificationIcon= */ true,
+                /* yOffset= */ 7);
 
         when(mTabSwitcherButton.shouldShowNotificationIcon()).thenReturn(false);
         mHostView.updateFakeTabSwitcherButton(
                 mTabSwitcherButton,
                 /* tabCount= */ 12,
                 /* backgroundColor= */ Color.WHITE,
-                /* isIncognito= */ false);
+                /* isIncognito= */ false,
+                /* yOffset= */ 7);
         assertFalse(mFakeTabSwitcherButton.getShowIconNotificationStatusForTesting());
     }
 
     @Test(expected = AssertionError.class)
     public void testGetAnimatorSet_Uninitialized() {
-        mHostView.getAnimatorSet(/* originX= */ 0, /* originY= */ 0, /* offset= */ 0);
+        mHostView.getAnimatorSet(/* originX= */ 0, /* originY= */ 0);
     }
 
     @Test
@@ -107,9 +110,9 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 mTabSwitcherButton,
                 /* tabCount= */ 9,
                 /* backgroundColor= */ Color.CYAN,
-                /* isIncognito= */ false);
-        AnimatorSet animatorSet =
-                mHostView.getAnimatorSet(/* originX= */ -1, /* originY= */ -1, /* offset= */ 0);
+                /* isIncognito= */ false,
+                /* yOffset= */ 0);
+        AnimatorSet animatorSet = mHostView.getAnimatorSet(/* originX= */ -1, /* originY= */ -1);
         assertEquals(2, animatorSet.getChildAnimations().size());
     }
 
@@ -120,7 +123,8 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 mTabSwitcherButton,
                 /* tabCount= */ 0,
                 /* backgroundColor= */ Color.WHITE,
-                /* isIncognito= */ false);
+                /* isIncognito= */ false,
+                /* yOffset= */ 0);
         assertEquals(
                 BrandedColorScheme.APP_DEFAULT,
                 mFakeTabSwitcherButton.getBrandedColorSchemeForTesting());
@@ -129,7 +133,8 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 mTabSwitcherButton,
                 /* tabCount= */ 0,
                 /* backgroundColor= */ Color.WHITE,
-                /* isIncognito= */ true);
+                /* isIncognito= */ true,
+                /* yOffset= */ 0);
         assertEquals(
                 BrandedColorScheme.INCOGNITO,
                 mFakeTabSwitcherButton.getBrandedColorSchemeForTesting());
@@ -138,7 +143,8 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 mTabSwitcherButton,
                 /* tabCount= */ 0,
                 /* backgroundColor= */ Color.GREEN,
-                /* isIncognito= */ false);
+                /* isIncognito= */ false,
+                /* yOffset= */ 0);
         assertEquals(
                 BrandedColorScheme.LIGHT_BRANDED_THEME,
                 mFakeTabSwitcherButton.getBrandedColorSchemeForTesting());
@@ -147,7 +153,8 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 mTabSwitcherButton,
                 /* tabCount= */ 0,
                 /* backgroundColor= */ Color.RED,
-                /* isIncognito= */ false);
+                /* isIncognito= */ false,
+                /* yOffset= */ 0);
         assertEquals(
                 BrandedColorScheme.DARK_BRANDED_THEME,
                 mFakeTabSwitcherButton.getBrandedColorSchemeForTesting());
@@ -169,7 +176,8 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
             int tabCount,
             @ColorInt int buttonColor,
             @BrandedColorScheme int brandedColorScheme,
-            boolean showNotificationIcon) {
+            boolean showNotificationIcon,
+            int yOffset) {
         assertEquals(animationType, mHostView.getAnimationTypeForTesting());
         assertEquals(tabCount, mFakeTabSwitcherButton.getTabCountForTesting());
 
@@ -177,6 +185,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
             FrameLayout.LayoutParams params =
                     (FrameLayout.LayoutParams) mFakeTabSwitcherButton.getLayoutParams();
             assertEquals(46, params.leftMargin);
+            assertEquals(yOffset, params.topMargin);
             assertEquals(buttonColor, mFakeTabSwitcherButton.getButtonColorForTesting());
             assertEquals(
                     brandedColorScheme, mFakeTabSwitcherButton.getBrandedColorSchemeForTesting());
