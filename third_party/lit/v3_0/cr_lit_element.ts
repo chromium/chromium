@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ReactiveElement} from '@lit/reactive-element';
 import {LitElement, PropertyValues} from 'lit/index.js';
 
 type ElementCache = Record<string, HTMLElement|SVGElement>;
@@ -118,34 +117,26 @@ export class CrLitElement extends LitElement {
     this.ensureInitialRender();
   }
 
-  // Workaround#1 for
-  // https://github.com/lit/lit/pull/4934#issuecomment-2717518391. Populate
-  // changedProperties with "undefined" on initial load (minimal repro of bug
-  // http://shortn/_5l2Q3hBfr0)
-  // TODO(dpapad): Remove this when third_party/lit is rolled to a version
-  // that includes the fix.
-  override performUpdate() {
-    if (!this.isUpdatePending) {
-      return;
-    }
-    if (!this.hasUpdated) {
-      interface WithInternalApis extends CrLitElement {
-        // minified name for _$changedProperties
-        _$AL: PropertyValues;
-        // minified name for _$changeProperty()
-        C(p: PropertyKey, v: any, options: any): void;
-      }
-
-      const {elementProperties} = this.constructor as typeof ReactiveElement;
-      for (const [p, options] of elementProperties) {
-        if ((options as {wrapped?: boolean}).wrapped === true &&
-            !(this as unknown as WithInternalApis)._$AL.has(p) &&
-            this[p as keyof this] !== undefined) {
-          (this as unknown as WithInternalApis).C(p, undefined, options);
-        }
-      }
-    }
-    super.performUpdate();
+  // Overriding '_$changeProperty'. This is a workaround for two separate but
+  // related issues, where changedProperties are incorrectly not reporting
+  // 'undefined' as the initial previous value for wrapped properties (when
+  // 'accessor' is used).
+  // 1) See https://github.com/lit/lit/pull/4934#issuecomment-2717518391 and
+  //    minimal repro at http://shortn/_5l2Q3hBfr0. This is the 1st part of this
+  //    workaround, see 2nd part in `patchPropertiesObject()` below. These are
+  //    fixed in Lit ToT and will be included in a future Lit version (greater
+  //    than v3.2.1).
+  // 2) See https://github.com/lit/lit/issues/4916 and minimal repro at
+  //    http://shortn/_Y1zls6LZjN, (similar to #1 above but happens when the
+  //    initial value is passed from the parent). This is not fixed as of this
+  //    writing, ongoing discussion.
+  //
+  //  Need to use ts-ignore because of overriding requires using the minified
+  //  internal name of '_$changeProperty' which is 'C'.
+  //  @ts-ignore
+  override C(name: PropertyKey, oldValue: any, options: any) {
+    // @ts-ignore
+    super.C(name, this.hasUpdated ? oldValue : undefined, options);
   }
 
   override willUpdate(_changedProperties: PropertyValues<this>) {
