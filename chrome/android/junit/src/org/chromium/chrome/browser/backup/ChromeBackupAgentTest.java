@@ -45,8 +45,9 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -97,6 +98,7 @@ import java.util.stream.Collectors;
         })
 @LooperMode(LooperMode.Mode.INSTRUMENTATION_TEST)
 public class ChromeBackupAgentTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
 
     /** Shadow to allow counting of dataChanged calls. */
@@ -198,7 +200,6 @@ public class ChromeBackupAgentTest {
                             }
                         });
 
-        MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         ChromeBackupAgentImplJni.setInstanceForTesting(mChromeBackupAgentJniMock);
         DictPrefBackupSerializerJni.setInstanceForTesting(mDictPrefBackupSerializerJniMock);

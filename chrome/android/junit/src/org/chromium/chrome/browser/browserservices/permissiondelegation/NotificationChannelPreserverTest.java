@@ -16,10 +16,12 @@ import static org.mockito.Mockito.when;
 import android.os.Build;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,12 +40,12 @@ public class NotificationChannelPreserverTest {
     private static final String CHANNEL_ID = "red-channel-id";
     private static final Origin ORIGIN_WITHOUT_CHANNEL = Origin.create("https://www.blue.com");
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock InstalledWebappPermissionStore mStore;
     @Mock SiteChannelsManager mSiteChannelsManager;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         SiteChannelsManager.setInstanceForTesting(mSiteChannelsManager);
         WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);

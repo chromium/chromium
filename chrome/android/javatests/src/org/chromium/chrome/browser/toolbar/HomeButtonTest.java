@@ -25,7 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -58,6 +59,7 @@ public class HomeButtonTest {
 
     private static Activity sActivity;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
     @Mock private SettingsNavigation mSettingsNavigation;
@@ -72,7 +74,6 @@ public class HomeButtonTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         // Set the default test status for homepage button tests.
         // By default, the homepage is <b>enabled</b> and with customized URL.

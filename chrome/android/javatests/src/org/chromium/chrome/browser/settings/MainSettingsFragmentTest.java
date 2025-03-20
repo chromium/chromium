@@ -65,7 +65,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
@@ -173,6 +174,8 @@ public class MainSettingsFragmentTest {
 
     // SettingsActivity needs to be initialized and destroyed with the mock
     // signin environment setup in SyncTestRule
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSyncTestRule)
@@ -205,7 +208,6 @@ public class MainSettingsFragmentTest {
     public void setup() {
         // ObservableSupplierImpl needs a Looper.
         Looper.prepare();
-        MockitoAnnotations.initMocks(this);
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);

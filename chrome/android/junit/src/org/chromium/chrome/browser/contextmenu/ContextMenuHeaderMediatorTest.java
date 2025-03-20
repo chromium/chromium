@@ -25,7 +25,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -44,6 +45,8 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextMenuHeaderMediatorTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -60,7 +63,6 @@ public class ContextMenuHeaderMediatorTest {
     @Before
     public void setUpTest() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
-        MockitoAnnotations.initMocks(this);
         LargeIconBridgeJni.setInstanceForTesting(mMockLargeIconBridgeJni);
 
         when(mMockLargeIconBridgeJni.init()).thenReturn(1L);

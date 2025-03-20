@@ -11,10 +11,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -32,6 +34,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class BrowsingHistoryBridgeTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock BrowsingHistoryBridge.Natives mNativeMocks;
     @Mock SigninPromoCoordinator mHistorySyncPromoCoordinator;
 
@@ -41,7 +44,6 @@ public class BrowsingHistoryBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         BrowsingHistoryBridgeJni.setInstanceForTesting(mNativeMocks);
         mBrowsingHistoryBridge = new BrowsingHistoryBridge(mProfile);
     }

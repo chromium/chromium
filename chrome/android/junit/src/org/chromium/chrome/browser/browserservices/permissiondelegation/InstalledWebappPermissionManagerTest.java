@@ -24,10 +24,12 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
@@ -47,13 +49,13 @@ public class InstalledWebappPermissionManagerTest {
     private static final Origin ORIGIN = Origin.create("https://www.website.com");
     private static final String PACKAGE_NAME = "com.package.name";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public InstalledWebappPermissionStore mStore;
 
     private ShadowPackageManager mShadowPackageManager;
 
     @Before
     public void setUp() throws PackageManager.NameNotFoundException {
-        MockitoAnnotations.initMocks(this);
 
         PackageManager pm = RuntimeEnvironment.application.getPackageManager();
         mShadowPackageManager = shadowOf(pm);

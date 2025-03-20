@@ -56,7 +56,8 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ServiceLoaderUtil;
@@ -171,6 +172,8 @@ public class ManageSyncSettingsTest {
 
     // SettingsActivity needs to be initialized and destroyed with the mock
     // signin environment setup in SyncTestRule
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSyncTestRule).around(mSettingsActivityTestRule);
@@ -193,7 +196,6 @@ public class ManageSyncSettingsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         UnifiedConsentServiceBridgeJni.setInstanceForTesting(mUnifiedConsentServiceBridgeMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

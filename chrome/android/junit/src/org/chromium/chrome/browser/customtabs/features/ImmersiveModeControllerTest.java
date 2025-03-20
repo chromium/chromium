@@ -18,10 +18,12 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -44,6 +46,7 @@ public class ImmersiveModeControllerTest {
     private static final boolean STICKY = true;
     private static final int LAYOUT = LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     @Mock public CustomTabActivity mActivity;
@@ -58,7 +61,6 @@ public class ImmersiveModeControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         // Wire up the Activity to the DecorView.
         when(mActivity.getWindow()).thenReturn(mWindow);

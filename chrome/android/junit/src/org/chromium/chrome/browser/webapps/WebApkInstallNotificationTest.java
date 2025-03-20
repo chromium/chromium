@@ -17,9 +17,11 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
 
@@ -43,13 +45,13 @@ public class WebApkInstallNotificationTest {
     private static final String SHORT_NAME = "webapk";
     private static final String URL = "https://test.com";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);

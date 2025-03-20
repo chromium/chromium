@@ -18,10 +18,12 @@ import android.content.pm.PackageManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -44,6 +46,7 @@ public class InstalledWebappRegistrarTest {
     private static final Origin ORIGIN = Origin.create(PAGE_URL);
     private static final Origin OTHER_ORIGIN = Origin.create("https://www.other.com/");
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PackageManager mPackageManager;
 
     private InstalledWebappRegistrar mRegistrar;
@@ -55,7 +58,6 @@ public class InstalledWebappRegistrarTest {
 
     @Before
     public void setUp() throws PackageManager.NameNotFoundException {
-        MockitoAnnotations.initMocks(this);
 
         ApplicationInfo appInfo = new ApplicationInfo();
         appInfo.uid = APP_UID;

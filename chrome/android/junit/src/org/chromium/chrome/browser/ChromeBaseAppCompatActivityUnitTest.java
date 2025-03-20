@@ -22,7 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,6 +39,8 @@ public class ChromeBaseAppCompatActivityUnitTest {
     private static final int MOCK_REAL_DISPLAY_WIDTH_PIXELS = 600;
     private static final int MOCK_REAL_DISPLAY_HEIGHT_PIXELS = 300;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
             new AutomotiveContextWrapperTestRule();
@@ -48,7 +51,6 @@ public class ChromeBaseAppCompatActivityUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mContext.getSystemService(eq(Context.WINDOW_SERVICE))).thenReturn(mWindowManager);
         when(mContext.getResources())
                 .thenReturn(ContextUtils.getApplicationContext().getResources());

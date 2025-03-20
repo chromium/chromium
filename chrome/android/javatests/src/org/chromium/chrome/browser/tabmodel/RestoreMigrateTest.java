@@ -17,10 +17,12 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -51,6 +53,7 @@ import java.util.concurrent.Callable;
 public class RestoreMigrateTest {
     private static final String TEST_DIR = "test";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
 
@@ -86,7 +89,6 @@ public class RestoreMigrateTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
         mAppContext =

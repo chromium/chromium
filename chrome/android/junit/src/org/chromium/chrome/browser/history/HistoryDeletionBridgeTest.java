@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.history;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -20,6 +22,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 @Config(manifest = Config.NONE)
 public class HistoryDeletionBridgeTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock HistoryDeletionBridge.Natives mNativeMocks;
 
     @Mock HistoryDeletionBridge.Observer mHistoryDeletionBridgeObserverOne;
@@ -34,7 +37,6 @@ public class HistoryDeletionBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         HistoryDeletionBridgeJni.setInstanceForTesting(mNativeMocks);
         mHistoryDeletionBridge = new HistoryDeletionBridge(mProfile);
     }

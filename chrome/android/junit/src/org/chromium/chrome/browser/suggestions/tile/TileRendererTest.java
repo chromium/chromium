@@ -20,11 +20,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
@@ -82,6 +84,7 @@ public class TileRendererTest {
     private static final int TITLE_LINES = 1;
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ImageFetcher mMockImageFetcher;
 
     @Mock private TileGroup.TileSetupDelegate mTileSetupDelegate;
@@ -110,7 +113,6 @@ public class TileRendererTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
 
         mPostTaskRunner = new ShadowPostTaskImpl();
