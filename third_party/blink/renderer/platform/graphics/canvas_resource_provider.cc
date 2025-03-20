@@ -891,9 +891,11 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                    ->ContextProvider()
                                    .GetCapabilities()
                                    .gpu_rasterization) {
+    CHECK(ContextProviderWrapper());
     resource_ = CanvasResourceSwapChain::Create(
         size, format, alpha_type, color_space, ContextProviderWrapper(),
         CreateWeakPtr());
+    CHECK(resource_);
   }
   ~CanvasResourceProviderSwapChain() override = default;
 
