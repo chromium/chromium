@@ -96,6 +96,13 @@ GL_EXPORT bool CheckDisplayableSupportForP010();
 // This function is thread safe.
 GL_EXPORT UINT GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT format);
 
+// Returns HDR HW capabilities information.
+GL_EXPORT void GetDirectCompositionMaxAMDHDRHwOffloadResolution(
+    bool* amd_hdr_hw_offload_supported,
+    bool* amd_platform_detected,
+    int* amd_hdr_hw_offload_max_width,
+    int* amd_hdr_hw_offload_max_height);
+
 // Returns true if swap chain tearing flag is supported.
 GL_EXPORT bool DXGISwapChainTearingSupported();
 
@@ -163,6 +170,11 @@ GL_EXPORT void SetDirectCompositionOverlayFormatUsedForTesting(
 GL_EXPORT void SetDirectCompositionMonitorInfoForTesting(
     int num_monitors,
     const gfx::Size& primary_monitor_size);
+GL_EXPORT void SetSupportsAMDHwOffloadHDRCapsForTesting(
+    bool amd_hdr_hw_offload_supported,
+    bool amd_platform_detected,
+    INT32 amd_hdr_hw_offload_max_width,
+    INT32 amd_hdr_hw_offload_max_height);
 
 class GL_EXPORT DirectCompositionOverlayCapsObserver
     : public base::CheckedObserver {
