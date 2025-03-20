@@ -2652,7 +2652,6 @@ crbug.com/402195188 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/ifram
 crbug.com/401111779 [ Mac15-arm64 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
 crbug.com/401111779 [ Mac15 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
 [ Mac14-arm64 ] wpt_internal/hid/hid_requestDevice.https.window.html [ Timeout ]
-crbug.com/401430860 external/wpt/html/rendering/widgets/field-sizing-textarea-relayout.html [ Failure ]
 [ Mac14 ] external/wpt/urlpattern/urlpattern.https.any.serviceworker.html [ Crash Failure ]
 external/wpt/webvtt/rendering/cues-with-video/processing-model/portrait.tentative.html [ Failure ]
 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/fontsize_smaller_than_container.tentative.html [ Failure ]
