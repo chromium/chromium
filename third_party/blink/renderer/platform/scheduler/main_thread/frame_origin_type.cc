@@ -22,7 +22,7 @@ FrameOriginType GetFrameOriginType(FrameScheduler* scheduler) {
   }
 }
 
-const char* FrameOriginTypeToString(FrameOriginType origin) {
+perfetto::StaticString FrameOriginTypeToString(FrameOriginType origin) {
   switch (origin) {
     case FrameOriginType::kMainFrame:
       return "main-frame";

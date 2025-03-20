@@ -30,6 +30,7 @@
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_log.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -126,7 +127,8 @@ class CONTENT_EXPORT RenderThreadImpl
     : public RenderThread,
       public ChildThreadImpl,
       public mojom::Renderer,
-      public viz::mojom::CompositingModeWatcher {
+      public viz::mojom::CompositingModeWatcher,
+      public base::trace_event::TraceLog::AsyncEnabledStateObserver {
  public:
   static RenderThreadImpl* current();
 
@@ -157,6 +159,10 @@ class CONTENT_EXPORT RenderThreadImpl
   IPC::SyncChannel* GetChannel() override;
   std::string GetLocale() override;
 
+  // base::trace_event::TraceLog::AsyncEnabledStateObserver implementation:
+  void OnTraceLogEnabled() override;
+  void OnTraceLogDisabled() override;
+
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   IPC::SyncMessageFilter* GetSyncMessageFilter() override;
   void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
@@ -177,8 +183,6 @@ class CONTENT_EXPORT RenderThreadImpl
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
   base::WaitableEvent* GetShutdownEvent() override;
   int32_t GetClientId() override;
-  void SetRendererProcessType(
-      blink::scheduler::WebRendererProcessType type) override;
   blink::WebString GetUserAgent() override;
   const blink::UserAgentMetadata& GetUserAgentMetadata() override;
   void WriteIntoTrace(
