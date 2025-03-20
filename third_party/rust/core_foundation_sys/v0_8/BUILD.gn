@@ -1,0 +1,82 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "core_foundation_sys"
+  epoch = "0.8"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/attributed_string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/bag.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/base.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/binary_heap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/bit_vector.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/bundle.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/calendar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/characterset.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/data.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/date.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/date_formatter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/dictionary.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/file_security.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/filedescriptor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/locale.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/mach_port.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/messageport.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/notification_center.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/number.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/number_formatter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/plugin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/preferences.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/propertylist.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/runloop.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/set.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/socket.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/stream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/string_tokenizer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/timezone.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/tree.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/url.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/url_enumerator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/user_notification.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/uuid.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/xml_node.rs",
+    "//third_party/rust/chromium_crates_io/vendor/core-foundation-sys-0.8.7/src/xml_parser.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "0.8.7"
+  cargo_pkg_authors = "The Servo Project Developers"
+  cargo_pkg_name = "core-foundation-sys"
+  cargo_pkg_description = "Bindings to Core Foundation for macOS"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  features = [ "link" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+}

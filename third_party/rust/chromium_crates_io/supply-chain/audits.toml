@@ -105,6 +105,12 @@ who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.1.2 -> 1.1.3"
 
+[[audits.android_system_properties]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.1.5"
+notes = "Android system API FFI"
+
 [[audits.anstyle]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -933,6 +939,12 @@ Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
 """
+
+[[audits.core-foundation-sys]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.8.7"
+notes = "OSX system APIs"
 
 [[audits.core_maths]]
 who = "Manish Goregaokar <manishearth@google.com>"
@@ -1770,6 +1782,12 @@ Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
 """
+
+[[audits.iana-time-zone]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.1.61"
+notes = "Some unsafe: interfacing with system timezone APIs"
 
 [[audits.icu_calendar]]
 who = "Manish Goregaokar <manishearth@google.com>"
@@ -3930,6 +3948,18 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 version = "0.13.1"
 notes = "Exposes unsafe codegen APIs but does not itself contain unsafe"
 
+[[audits.temporal_capi]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.0.6"
+notes = "No unsafe or crypto."
+
+[[audits.temporal_rs]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "0.0.6"
+notes = "No crypto. Minor unsafe maintaining some additional invariants that are not actually safety-critical."
+
 [[audits.termcolor]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -4140,6 +4170,12 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.1.8 -> 0.1.9"
 notes = "The delta only changes Cargo.toml."
+
+[[audits.windows-core]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.52.0"
+notes = "Implements Windows system APIs"
 
 [[audits.write16]]
 who = "Manish Goregaokar <manishearth@google.com>"

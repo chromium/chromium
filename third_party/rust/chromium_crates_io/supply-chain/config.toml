@@ -47,6 +47,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."aho-corasick:1.1.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."android_system_properties:0.1.5"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."anstyle:1.0.10"]
 criteria = ["crypto-safe", "safe-to-run"]
 
@@ -67,6 +70,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bstr:1.11.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."bumpalo:3.17.0"]
+criteria = []
 
 [policy."bytemuck:1.22.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -100,6 +106,9 @@ criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."codespan-reporting:0.11.1"]
 criteria = ["crypto-safe", "safe-to-run"]
+
+[policy."core-foundation-sys:0.8.7"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."core_maths:0.1.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -172,6 +181,12 @@ criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."hex:0.4.3"]
 criteria = ["crypto-safe", "safe-to-run"]
+
+[policy."iana-time-zone-haiku:0.1.2"]
+criteria = []
+
+[policy."iana-time-zone:0.1.61"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."icu_calendar:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -284,6 +299,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."ixdtf:0.4.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."js-sys:0.3.77"]
+criteria = []
+
 [policy."lazy_static:1.5.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -325,6 +343,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."num-traits:0.2.19"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."once_cell:1.21.1"]
+criteria = []
 
 [policy."png:0.18.0-rc"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -461,6 +482,12 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."synstructure:0.13.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."temporal_capi:0.0.6"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."temporal_rs:0.0.6"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
 [policy."termcolor:1.4.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
@@ -491,20 +518,38 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."wasi:0.11.0+wasi-snapshot-preview1"]
 criteria = []
 
+[policy."wasm-bindgen-backend:0.2.100"]
+criteria = []
+
+[policy."wasm-bindgen-macro-support:0.2.100"]
+criteria = []
+
+[policy."wasm-bindgen-macro:0.2.100"]
+criteria = []
+
+[policy."wasm-bindgen-shared:0.2.100"]
+criteria = []
+
+[policy."wasm-bindgen:0.2.100"]
+criteria = []
+
 [policy."winapi-util:0.1.9"]
 criteria = ["crypto-safe", "safe-to-run"]
+
+[policy."windows-core:0.52.0"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows-sys:0.52.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."windows-targets:0.52.6"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows_aarch64_gnullvm:0.52.6"]
 criteria = []
 
 [policy."windows_aarch64_msvc:0.52.6"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows_i686_gnu:0.52.6"]
 criteria = []
@@ -513,7 +558,7 @@ criteria = []
 criteria = []
 
 [policy."windows_i686_msvc:0.52.6"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows_x86_64_gnu:0.52.6"]
 criteria = []
@@ -522,7 +567,7 @@ criteria = []
 criteria = []
 
 [policy."windows_x86_64_msvc:0.52.6"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."writeable:0.6.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -804,7 +849,7 @@ https://crbug.com/366411886
 
 [[exemptions.zerocopy]]
 version = "0.8.23"
-criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+criteria = ["safe-to-run", "crypto-safe"]
 notes = """
 Requires unsafe review audit. Authored in Google and audit should come from there as well.
 
