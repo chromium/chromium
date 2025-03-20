@@ -184,7 +184,6 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
             .SetAccessibleRole(ax::mojom::Role::kDetails)
             .SetMultiLine(true)
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-            .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
             .Build());
   }
 
