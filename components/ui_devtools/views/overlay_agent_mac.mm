@@ -8,6 +8,7 @@
 
 #include "components/ui_devtools/views/view_element.h"
 #include "components/ui_devtools/views/widget_element.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui_devtools {
 
@@ -25,7 +26,7 @@ void OverlayAgentMac::InstallPreTargetHandler() {
   is_pretarget_handler_ = true;
   for (NSWindow* window in [NSApp windows]) {
     InstallPreTargetHandlerOnWidget(
-        views::Widget::GetWidgetForNativeWindow(window));
+        views::Widget::GetWidgetForNativeWindow(gfx::NativeWindow(window)));
   }
 }
 
@@ -33,7 +34,8 @@ void OverlayAgentMac::RemovePreTargetHandler() {
   DCHECK(is_pretarget_handler_);
   is_pretarget_handler_ = false;
   for (NSWindow* window in [NSApp windows]) {
-    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+    views::Widget* widget =
+        views::Widget::GetWidgetForNativeWindow(gfx::NativeWindow(window));
     RemovePreTargetHandlerOnWidget(widget);
   }
 }

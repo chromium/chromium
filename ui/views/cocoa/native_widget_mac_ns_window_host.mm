@@ -39,6 +39,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/native_theme_mac.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/cocoa/immersive_mode_reveal_client.h"
@@ -279,7 +280,8 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
 // static
 NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeView(
     gfx::NativeView native_view) {
-  return GetFromNativeWindow(native_view.GetNativeNSView().window);
+  return GetFromNativeWindow(
+      gfx::NativeWindow(native_view.GetNativeNSView().window));
 }
 
 // static

@@ -119,6 +119,7 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/native_theme_mac.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "url/gurl.h"
@@ -338,8 +339,9 @@ void FocusWindowSetOnCurrentSpace(const std::set<gfx::NativeWindow>& windows) {
   NSWindow* frontmost_miniaturized_window = nil;
   bool all_miniaturized = true;
   for (NSWindow* win in [[NSApp orderedWindows] reverseObjectEnumerator]) {
-    if (windows.find(win) == windows.end())
+    if (windows.find(gfx::NativeWindow(win)) == windows.end()) {
       continue;
+    }
     if ([win isMiniaturized]) {
       frontmost_miniaturized_window = win;
     } else if ([win isVisible]) {
@@ -1028,7 +1030,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 }
 
 - (void)windowDidBecomeMain:(NSNotification*)notify {
-  Browser* browser = chrome::FindBrowserWithWindow([notify object]);
+  Browser* browser =
+      chrome::FindBrowserWithWindow(gfx::NativeWindow([notify object]));
   if (!browser)
     return;
 
@@ -2093,7 +2096,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   if (!window) {
     return NO;
   }
-  Browser* browser = chrome::FindBrowserWithWindow(window);
+  Browser* browser = chrome::FindBrowserWithWindow(gfx::NativeWindow(window));
 
   return browser && browser->is_type_normal() &&
          !browser->tab_strip_model()->empty();

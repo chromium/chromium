@@ -61,6 +61,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/gfx/mac/nswindow_frame_controls.h"
+#include "ui/gfx/native_widget_types.h"
 
 using remote_cocoa::mojom::VisibilityTransition;
 using remote_cocoa::mojom::WindowVisibilityState;
@@ -81,7 +82,8 @@ constexpr auto kUIPaintTimeout = base::Milliseconds(500);
 
 // Returns the display that the specified window is on.
 display::Display GetDisplayForWindow(NSWindow* window) {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  return display::Screen::GetScreen()->GetDisplayNearestWindow(
+      gfx::NativeWindow(window));
 }
 
 }  // namespace
@@ -301,9 +303,8 @@ NativeWidgetNSWindowBridge* NativeWidgetNSWindowBridge::GetFromId(
 }
 
 // static
-NativeWidgetNSWindowBridge* NativeWidgetNSWindowBridge::GetFromNativeWindow(
-    gfx::NativeWindow native_window) {
-  NSWindow* window = native_window.GetNativeNSWindow();
+NativeWidgetNSWindowBridge* NativeWidgetNSWindowBridge::GetFromNSWindow(
+    NSWindow* window) {
   if (NativeWidgetMacNSWindow* widget_window =
           base::apple::ObjCCast<NativeWidgetMacNSWindow>(window)) {
     return GetFromId([widget_window bridgedNativeWidgetId]);

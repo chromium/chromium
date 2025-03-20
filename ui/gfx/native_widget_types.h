@@ -130,8 +130,7 @@ class COMPONENT_EXPORT(GFX) NativeView : public base::apple::WeakNSView {
   // TODO(avi): Remove the nullptr argument and make construction be explicit.
   NativeView(std::nullptr_t = nullptr);
 #ifdef __OBJC__
-  // TODO(ccameron/avi): Make this constructor explicit.
-  NativeView(NSView* ns_view);
+  explicit NativeView(NSView* ns_view);
   // This function name is verbose (that is, not just GetNSView) so that it
   // is easily grep-able.
   NSView* GetNativeNSView() const;
@@ -146,8 +145,7 @@ class COMPONENT_EXPORT(GFX) NativeWindow : public base::apple::WeakNSWindow {
   // TODO(avi): Remove the nullptr argument and make construction be explicit.
   NativeWindow(std::nullptr_t = nullptr);
 #ifdef __OBJC__
-  // TODO(ccameron/avi): Make this constructor explicit.
-  NativeWindow(NSWindow* ns_window);
+  explicit NativeWindow(NSWindow* ns_window);
   // This function name is verbose (that is, not just GetNSWindow) so that it
   // is easily grep-able.
   NSWindow* GetNativeNSWindow() const;

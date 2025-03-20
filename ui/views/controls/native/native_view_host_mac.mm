@@ -9,6 +9,7 @@
 #include "base/apple/foundation_util.h"
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/native_widget_types.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/native_widget_mac.h"
@@ -25,7 +26,8 @@ void EnsureNativeViewHasNoChildWidgets(NSView* native_view) {
   // whether those child Widgets need to be distinguished from Widgets that code
   // might want to associate with the hosted NSView instead.
   {
-    Widget::Widgets child_widgets = Widget::GetAllChildWidgets(native_view);
+    Widget::Widgets child_widgets =
+        Widget::GetAllChildWidgets(gfx::NativeView(native_view));
     CHECK_GE(1u, child_widgets.size());  // 1 (itself) or 0 if detached.
   }
 }
