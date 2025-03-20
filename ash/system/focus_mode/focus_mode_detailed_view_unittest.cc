@@ -20,6 +20,7 @@
 #include "ash/style/rounded_container.h"
 #include "ash/style/switch.h"
 #include "ash/style/system_textfield.h"
+#include "ash/style/tab_slider_button.h"
 #include "ash/system/focus_mode/focus_mode_chip_carousel.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
@@ -28,6 +29,8 @@
 #include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/focus_mode/focus_mode_task_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_view.h"
+#include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -205,6 +208,12 @@ class FocusModeDetailedViewTest : public AshTestBase {
 
   RoundedContainer* GetTaskContainerView() {
     return focus_mode_detailed_view_->task_view_container_;
+  }
+
+  FocusModeSoundsView* GetSoundsView() {
+    return static_cast<FocusModeSoundsView*>(
+        focus_mode_detailed_view_->GetViewByID(
+            FocusModeDetailedView::ViewId::kSoundView));
   }
 
   FakeDetailedViewDelegate detailed_view_delegate_;
@@ -1011,6 +1020,45 @@ TEST_F(FocusModeDetailedViewTest, ReselectAddedTask) {
   EXPECT_TRUE(controller->HasSelectedTask());
   EXPECT_EQ(controller->tasks_model().selected_task()->title,
             base::UTF16ToUTF8(new_task_title));
+}
+
+// Tests that the sounds view toggle buttons are visible and function correctly.
+// Regression test for crbug.com/402456595
+TEST_F(FocusModeDetailedViewTest, SoundsViewFunctionality) {
+  // Verify that the sounds view is present.
+  FocusModeSoundsView* sounds_view = GetSoundsView();
+  EXPECT_TRUE(sounds_view->GetVisible());
+  EXPECT_THAT(sounds_view->soundscape_views(),
+              testing::Pair(testing::NotNull(), testing::NotNull()));
+  EXPECT_THAT(sounds_view->youtube_music_views(),
+              testing::Pair(testing::NotNull(), testing::NotNull()));
+
+  TabSliderButton* soundscapes_button = sounds_view->soundscape_views().first;
+  SoundSectionView* soundscapes_section =
+      sounds_view->soundscape_views().second;
+  ash::TabSliderButton* ytm_button = sounds_view->youtube_music_views().first;
+  SoundSectionView* ytm_section = sounds_view->youtube_music_views().second;
+
+  // Check that the tab slider buttons are both showing (i.e. non-zero width),
+  // and that the soundscapes section view is shown by default.
+  EXPECT_TRUE(soundscapes_button->GetVisible());
+  EXPECT_TRUE(ytm_button->GetVisible());
+  EXPECT_GT(soundscapes_button->width(), 0);
+  EXPECT_GT(ytm_button->width(), 0);
+  EXPECT_TRUE(soundscapes_section->GetVisible());
+  EXPECT_FALSE(ytm_section->GetVisible());
+
+  // Click on the ytm button to switch to the ytm section view.
+  ScrollToBottom();
+  LeftClickOn(ytm_button);
+  EXPECT_FALSE(soundscapes_section->GetVisible());
+  EXPECT_TRUE(ytm_section->GetVisible());
+
+  // Click on the soundscapes button to switch back to the soundscapes section
+  // view.
+  LeftClickOn(soundscapes_button);
+  EXPECT_TRUE(soundscapes_section->GetVisible());
+  EXPECT_FALSE(ytm_section->GetVisible());
 }
 
 }  // namespace ash
