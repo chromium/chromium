@@ -94,7 +94,6 @@ struct PageOutputQuality {
 // The semantic capabilities and defaults used for a printer.
 // Corresponds to `printing::PrinterSemanticCapsAndDefaults` in
 // printing/backend/print_backend.h.
-[Stable]
 struct PrinterSemanticCapsAndDefaults {
   bool collate_capable = false;
   bool collate_default = false;
@@ -118,11 +117,9 @@ struct PrinterSemanticCapsAndDefaults {
 
   // Null if feature flag `kReadPrinterCapabilitiesWithXps` is disabled.
   // Null if printer doesn't have this capability.
-  [EnableIf=is_win, MinVersion=1]
+  [EnableIf=is_win]
   PageOutputQuality? page_output_quality;
 
-  [MinVersion=2]
   array<MediaType>? media_types;  // Allowed to be empty.
-  [MinVersion=2]
   MediaType? default_media_type;
 };
