@@ -247,6 +247,20 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCanAttachPanel) {
   // TODO(harringtond): Test case where the canAttachPanel returns false.
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testIsBrowserOpen) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest();
+
+  // Open a new incognito tab so that Chrome doesn't exit, and close the first
+  // browser.
+  CreateIncognitoBrowser();
+  CloseBrowserAsynchronously(browser());
+
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testEnableDragResize) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));

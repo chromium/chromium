@@ -216,6 +216,15 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(await canAttach.next());
   }
 
+  async testIsBrowserOpen() {
+    assertTrue(!!this.host.isBrowserOpen);
+    const isBrowserOpen = observeSequence(this.host.isBrowserOpen());
+    assertTrue(await isBrowserOpen.next());
+    // Close the browser.
+    await this.advanceToNextStep();
+    assertTrue(!await isBrowserOpen.next());
+  }
+
   async testEnableDragResize() {
     assertTrue(!!this.host.enableDragResize);
 
@@ -548,7 +557,7 @@ class TestRunner implements TestStepper {
       }
     } catch (e) {
       if (e instanceof Error) {
-        console.error(e.stack);
+        console.error(await improveStackTrace(e.stack ?? ''));
       }
       return `fail: ${e}`;
     }
@@ -565,6 +574,29 @@ class TestRunner implements TestStepper {
 
 let testRunner: TestRunner|undefined;
 
+// Adds js source lines to the stack trace.
+async function improveStackTrace(stack: string) {
+  const outLines = [];
+  for (const line of stack.split('\n')) {
+    const m = line.match(/^\s+at.*\((.*):(\d+):(\d+)\)$/);
+    if (m) {
+      try {
+        const [file, lineNo, column] = m.slice(1);
+        const response = await fetch(file!);
+        const text = await response.text();
+        const lines = text.split('\n');
+        const lineStr = lines[Number(lineNo) - 1];
+        outLines.push(`${line.trim()}\n- ${lineStr}\n  ${
+                                    ' '.repeat(Number(column) - 1)}^`);
+      } catch (e) {
+        outLines.push(`${line}`);
+      }
+    } else {
+      outLines.push(line);
+    }
+  }
+  return outLines.join('\n');
+}
 async function main() {
   // If no test is selected, load a client that does nothing.
   // This is present because test.html is used as a dummy test client in
