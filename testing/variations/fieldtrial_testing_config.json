@@ -18403,6 +18403,25 @@
             ]
         }
     ],
+    "PrivacySandboxRelatedWebsiteSetsUi": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxRelatedWebsiteSetsUi"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxSentimentSurvey": [
         {
             "platforms": [
