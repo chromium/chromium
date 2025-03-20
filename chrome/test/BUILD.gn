@@ -6133,6 +6133,8 @@ test("unit_tests") {
     "../browser/renderer_preferences_util_unittest.cc",
     "../browser/resource_coordinator/tab_load_tracker_unittest.cc",
     "../browser/resources_util_unittest.cc",
+    "../browser/safe_browsing/advanced_protection_status_manager_factory_unittest.cc",
+    "../browser/safe_browsing/advanced_protection_status_manager_unittest.cc",
     "../browser/safe_browsing/notification_content_detection_service_factory_unittest.cc",
     "../browser/search_engines/template_url_fetcher_unittest.cc",
     "../browser/search_engines/template_url_parser_unittest.cc",
@@ -9374,8 +9376,7 @@ test("unit_tests") {
   if (safe_browsing_mode == 1) {
     # TODO(sgurun): enable tests for safe_browsing==2.
     sources += [
-      "../browser/safe_browsing/advanced_protection_status_manager_factory_unittest.cc",
-      "../browser/safe_browsing/advanced_protection_status_manager_unittest.cc",
+      "../browser/safe_browsing/advanced_protection_status_manager_desktop_unittest.cc",
       "../browser/safe_browsing/chrome_client_side_detection_host_delegate_unittest.cc",
       "../browser/safe_browsing/chrome_password_reuse_detection_manager_client_unittest.cc",
       "../browser/safe_browsing/chrome_ping_manager_factory_unittest.cc",

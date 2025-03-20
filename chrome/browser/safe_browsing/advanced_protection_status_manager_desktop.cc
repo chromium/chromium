@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_desktop.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -37,7 +37,7 @@ const base::TimeDelta kRefreshAdvancedProtectionDelay = base::Days(1);
 const base::TimeDelta kRetryDelay = base::Minutes(5);
 const base::TimeDelta kMinimumRefreshDelay = base::Minutes(1);
 
-void RecordUMA(AdvancedProtectionStatusManager::UmaEvent event) {
+void RecordUMA(AdvancedProtectionStatusManagerDesktop::UmaEvent event) {
   base::UmaHistogramEnumeration("SafeBrowsing.AdvancedProtection.Enabled",
                                 event);
 }
@@ -45,36 +45,36 @@ void RecordUMA(AdvancedProtectionStatusManager::UmaEvent event) {
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// AdvancedProtectionStatusManager
+// AdvancedProtectionStatusManagerDesktop
 ////////////////////////////////////////////////////////////////////////////////
-AdvancedProtectionStatusManager::AdvancedProtectionStatusManager(
+AdvancedProtectionStatusManagerDesktop::AdvancedProtectionStatusManagerDesktop(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager)
-    : AdvancedProtectionStatusManager(pref_service,
-                                      identity_manager,
-                                      kMinimumRefreshDelay) {}
+    : AdvancedProtectionStatusManagerDesktop(pref_service,
+                                             identity_manager,
+                                             kMinimumRefreshDelay) {}
 
-void AdvancedProtectionStatusManager::Initialize() {
+void AdvancedProtectionStatusManagerDesktop::Initialize() {
   SubscribeToSigninEvents();
 }
 
-void AdvancedProtectionStatusManager::AddObserver(
+void AdvancedProtectionStatusManagerDesktop::AddObserver(
     StatusChangedObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void AdvancedProtectionStatusManager::RemoveObserver(
+void AdvancedProtectionStatusManagerDesktop::RemoveObserver(
     StatusChangedObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void AdvancedProtectionStatusManager::NotifyStatusChanged() {
+void AdvancedProtectionStatusManagerDesktop::NotifyStatusChanged() {
   for (StatusChangedObserver& observer : observers_) {
     observer.OnAdvancedProtectionStatusChanged(is_under_advanced_protection_);
   }
 }
 
-void AdvancedProtectionStatusManager::MaybeRefreshOnStartUp() {
+void AdvancedProtectionStatusManagerDesktop::MaybeRefreshOnStartUp() {
   // Retrieves advanced protection service status from primary account's info.
   CoreAccountInfo core_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -90,41 +90,63 @@ void AdvancedProtectionStatusManager::MaybeRefreshOnStartUp() {
   if (pref_service_->HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs)) {
     last_refreshed_ = base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
         pref_service_->GetInt64(prefs::kAdvancedProtectionLastRefreshInUs)));
-    if (is_under_advanced_protection_)
+    if (is_under_advanced_protection_) {
       ScheduleNextRefresh();
+    }
   } else {
     // User's advanced protection status is unknown, refresh in
     // |minimum_delay_|.
-    timer_.Start(
-        FROM_HERE, minimum_delay_, this,
-        &AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus);
+    timer_.Start(FROM_HERE, minimum_delay_, this,
+                 &AdvancedProtectionStatusManagerDesktop::
+                     RefreshAdvancedProtectionStatus);
   }
 }
 
-void AdvancedProtectionStatusManager::Shutdown() {
+void AdvancedProtectionStatusManagerDesktop::Shutdown() {
   CancelFutureRefresh();
   UnsubscribeFromSigninEvents();
 }
 
-AdvancedProtectionStatusManager::~AdvancedProtectionStatusManager() = default;
+AdvancedProtectionStatusManagerDesktop::
+    ~AdvancedProtectionStatusManagerDesktop() = default;
 
-void AdvancedProtectionStatusManager::SubscribeToSigninEvents() {
+bool AdvancedProtectionStatusManagerDesktop::IsUnderAdvancedProtection() const {
+  if (!pref_service_->GetBoolean(prefs::kAdvancedProtectionAllowed)) {
+    return false;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceTreatUserAsAdvancedProtection)) {
+    return true;
+  }
+
+  return is_under_advanced_protection_;
+}
+
+void AdvancedProtectionStatusManagerDesktop::
+    SetAdvancedProtectionStatusForTesting(bool enrolled) {
+  is_under_advanced_protection_ = enrolled;
+  NotifyStatusChanged();
+}
+
+void AdvancedProtectionStatusManagerDesktop::SubscribeToSigninEvents() {
   identity_manager_->AddObserver(this);
 }
 
-void AdvancedProtectionStatusManager::UnsubscribeFromSigninEvents() {
+void AdvancedProtectionStatusManagerDesktop::UnsubscribeFromSigninEvents() {
   identity_manager_->RemoveObserver(this);
 }
 
-bool AdvancedProtectionStatusManager::IsRefreshScheduled() {
+bool AdvancedProtectionStatusManagerDesktop::IsRefreshScheduled() {
   return timer_.IsRunning();
 }
 
-void AdvancedProtectionStatusManager::OnExtendedAccountInfoUpdated(
+void AdvancedProtectionStatusManagerDesktop::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   // Ignore update if the updated account is not the primary account.
-  if (!IsUnconsentedPrimaryAccount(info))
+  if (!IsUnconsentedPrimaryAccount(info)) {
     return;
+  }
 
   if (info.is_under_advanced_protection) {
     // User just enrolled into advanced protection.
@@ -135,7 +157,7 @@ void AdvancedProtectionStatusManager::OnExtendedAccountInfoUpdated(
   }
 }
 
-void AdvancedProtectionStatusManager::OnExtendedAccountInfoRemoved(
+void AdvancedProtectionStatusManagerDesktop::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // If user signed out primary account, cancel refresh.
   CoreAccountId unconsented_primary_account_id =
@@ -146,16 +168,18 @@ void AdvancedProtectionStatusManager::OnExtendedAccountInfoRemoved(
   }
 }
 
-void AdvancedProtectionStatusManager::OnPrimaryAccountChanged(
+void AdvancedProtectionStatusManagerDesktop::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
       // TODO(crbug.com/41437854): remove IdentityManager ensures that primary
       // account always has valid refresh token when it is set.
-      if (event.GetCurrentState().primary_account.is_under_advanced_protection)
+      if (event.GetCurrentState()
+              .primary_account.is_under_advanced_protection) {
         OnAdvancedProtectionEnabled();
-      else
+      } else {
         OnAdvancedProtectionDisabled();
+      }
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
@@ -166,7 +190,7 @@ void AdvancedProtectionStatusManager::OnPrimaryAccountChanged(
   }
 }
 
-void AdvancedProtectionStatusManager::OnAdvancedProtectionEnabled() {
+void AdvancedProtectionStatusManagerDesktop::OnAdvancedProtectionEnabled() {
   if (!is_under_advanced_protection_) {
     RecordUMA(UmaEvent::kEnabledAfterDisabled);
   }
@@ -176,7 +200,7 @@ void AdvancedProtectionStatusManager::OnAdvancedProtectionEnabled() {
   NotifyStatusChanged();
 }
 
-void AdvancedProtectionStatusManager::OnAdvancedProtectionDisabled() {
+void AdvancedProtectionStatusManagerDesktop::OnAdvancedProtectionDisabled() {
   if (is_under_advanced_protection_) {
     RecordUMA(UmaEvent::kDisabledAfterEnabled);
   }
@@ -186,36 +210,39 @@ void AdvancedProtectionStatusManager::OnAdvancedProtectionDisabled() {
   NotifyStatusChanged();
 }
 
-void AdvancedProtectionStatusManager::OnAccessTokenFetchComplete(
+void AdvancedProtectionStatusManagerDesktop::OnAccessTokenFetchComplete(
     CoreAccountId account_id,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
   DCHECK(access_token_fetcher_);
 
-  if (error.state() == GoogleServiceAuthError::NONE)
+  if (error.state() == GoogleServiceAuthError::NONE) {
     OnGetIDToken(account_id, token_info.id_token);
+  }
 
   access_token_fetcher_.reset();
 
   // If failure is transient, we'll retry in 5 minutes.
   if (error.IsTransientError()) {
-    timer_.Start(
-        FROM_HERE, kRetryDelay, this,
-        &AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus);
+    timer_.Start(FROM_HERE, kRetryDelay, this,
+                 &AdvancedProtectionStatusManagerDesktop::
+                     RefreshAdvancedProtectionStatus);
   }
 }
 
-void AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus() {
+void AdvancedProtectionStatusManagerDesktop::RefreshAdvancedProtectionStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CoreAccountId unconsented_primary_account_id =
       GetUnconsentedPrimaryAccountId();
-  if (!identity_manager_ || unconsented_primary_account_id.empty())
+  if (!identity_manager_ || unconsented_primary_account_id.empty()) {
     return;
+  }
 
   // If there's already a request going on, do nothing.
-  if (access_token_fetcher_)
+  if (access_token_fetcher_) {
     return;
+  }
 
   // Refresh OAuth access token. This class isn't actually interested in the
   // access token itself, but the account's "under advanced protection" status
@@ -225,17 +252,17 @@ void AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus() {
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kOAuth1LoginScope);
 
-  access_token_fetcher_ =
-      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "advanced_protection_status_manager", identity_manager_, scopes,
-          base::BindOnce(
-              &AdvancedProtectionStatusManager::OnAccessTokenFetchComplete,
-              base::Unretained(this), unconsented_primary_account_id),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          signin::ConsentLevel::kSignin);
+  access_token_fetcher_ = std::make_unique<
+      signin::PrimaryAccountAccessTokenFetcher>(
+      "advanced_protection_status_manager", identity_manager_, scopes,
+      base::BindOnce(
+          &AdvancedProtectionStatusManagerDesktop::OnAccessTokenFetchComplete,
+          base::Unretained(this), unconsented_primary_account_id),
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+      signin::ConsentLevel::kSignin);
 }
 
-void AdvancedProtectionStatusManager::ScheduleNextRefresh() {
+void AdvancedProtectionStatusManagerDesktop::ScheduleNextRefresh() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CancelFutureRefresh();
   base::Time now = base::Time::Now();
@@ -248,39 +275,28 @@ void AdvancedProtectionStatusManager::ScheduleNextRefresh() {
                      kRefreshAdvancedProtectionDelay - time_since_last_refresh);
   timer_.Start(
       FROM_HERE, delay, this,
-      &AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus);
+      &AdvancedProtectionStatusManagerDesktop::RefreshAdvancedProtectionStatus);
 }
-void AdvancedProtectionStatusManager::CancelFutureRefresh() {
-  if (timer_.IsRunning())
+void AdvancedProtectionStatusManagerDesktop::CancelFutureRefresh() {
+  if (timer_.IsRunning()) {
     timer_.Stop();
+  }
 }
 
-void AdvancedProtectionStatusManager::UpdateLastRefreshTime() {
+void AdvancedProtectionStatusManagerDesktop::UpdateLastRefreshTime() {
   last_refreshed_ = base::Time::Now();
   pref_service_->SetInt64(
       prefs::kAdvancedProtectionLastRefreshInUs,
       last_refreshed_.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
-bool AdvancedProtectionStatusManager::IsUnderAdvancedProtection() const {
-  if (!pref_service_->GetBoolean(prefs::kAdvancedProtectionAllowed))
-    return false;
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceTreatUserAsAdvancedProtection)) {
-    return true;
-  }
-
-  return is_under_advanced_protection_;
-}
-
-bool AdvancedProtectionStatusManager::IsUnconsentedPrimaryAccount(
+bool AdvancedProtectionStatusManagerDesktop::IsUnconsentedPrimaryAccount(
     const CoreAccountInfo& account_info) {
   return !account_info.account_id.empty() &&
          account_info.account_id == GetUnconsentedPrimaryAccountId();
 }
 
-void AdvancedProtectionStatusManager::OnGetIDToken(
+void AdvancedProtectionStatusManagerDesktop::OnGetIDToken(
     const CoreAccountId& account_id,
     const std::string& id_token) {
   // Skips if the ID token is not for the primary account. Or user is no longer
@@ -288,8 +304,9 @@ void AdvancedProtectionStatusManager::OnGetIDToken(
   CoreAccountId unconsented_primary_account_id =
       GetUnconsentedPrimaryAccountId();
   if (unconsented_primary_account_id.empty() ||
-      account_id != unconsented_primary_account_id)
+      account_id != unconsented_primary_account_id) {
     return;
+  }
 
   gaia::TokenServiceFlags service_flags = gaia::ParseServiceFlags(id_token);
 
@@ -309,7 +326,7 @@ void AdvancedProtectionStatusManager::OnGetIDToken(
   }
 }
 
-AdvancedProtectionStatusManager::AdvancedProtectionStatusManager(
+AdvancedProtectionStatusManagerDesktop::AdvancedProtectionStatusManagerDesktop(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     const base::TimeDelta& min_delay)
@@ -323,17 +340,11 @@ AdvancedProtectionStatusManager::AdvancedProtectionStatusManager(
   MaybeRefreshOnStartUp();
 }
 
-CoreAccountId AdvancedProtectionStatusManager::GetUnconsentedPrimaryAccountId()
-    const {
+CoreAccountId
+AdvancedProtectionStatusManagerDesktop::GetUnconsentedPrimaryAccountId() const {
   return identity_manager_ ? identity_manager_->GetPrimaryAccountId(
                                  signin::ConsentLevel::kSignin)
                            : CoreAccountId();
-}
-
-void AdvancedProtectionStatusManager::SetAdvancedProtectionStatusForTesting(
-    bool enrolled) {
-  is_under_advanced_protection_ = enrolled;
-  NotifyStatusChanged();
 }
 
 }  // namespace safe_browsing
