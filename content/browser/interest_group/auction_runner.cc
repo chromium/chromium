@@ -148,6 +148,14 @@ void AuctionRunner::ResolvedPromiseParam(
       }
       config->non_shared_params.seller_signals = std::move(new_val);
       break;
+
+    case blink::mojom::AuctionAdConfigField::kSellerTKVSignals:
+      if (!config->non_shared_params.seller_tkv_signals.is_promise()) {
+        mojo::ReportBadMessage("ResolvedPromiseParam updating non-promise");
+        return;
+      }
+      config->non_shared_params.seller_tkv_signals = std::move(new_val);
+      break;
   }
 
   NotifyPromiseResolved(auction_id.get(), config);

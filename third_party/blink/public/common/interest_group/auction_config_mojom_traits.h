@@ -298,6 +298,11 @@ struct BLINK_COMMON_EXPORT
     return params.seller_signals;
   }
 
+  static const blink::AuctionConfig::MaybePromiseJson& seller_tkv_signals(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.seller_tkv_signals;
+  }
+
   static std::optional<base::TimeDelta> seller_timeout(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.seller_timeout;
