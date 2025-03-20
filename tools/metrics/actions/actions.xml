@@ -47921,6 +47921,10 @@ should be able to be added at any place in this file.
       label="For iOSDockingPromoRemindMeLater feature"/>
   <suffix name="iOSDownloadAutoDeletion"
       label="For iOS Auto-deletion half-sheet IPH."/>
+  <suffix name="iOSFeedSwipeAnimatedFeature"
+      label="For iOSFeedSwipeAnimatedFeature feature"/>
+  <suffix name="iOSFeedSwipeStaticFeature"
+      label="For iOSFeedSwipeStaticFeature feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
   <suffix name="iOSInlineEnhancedSafeBrowsingPromoFeature"

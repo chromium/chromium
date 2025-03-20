@@ -271,6 +271,10 @@ chromium-metrics-reviews@google.com.
       summary="Showing the Docking Promo (Remind Me Later version) on iOS"/>
   <variant name="IPH_iOSDownloadAutoDeletion"
       summary="Showing the Auto Deletion IPH on iOS."/>
+  <variant name="IPH_iOSFeedSwipeAnimatedFeature"
+      summary="Showing the animated Feed Swipe IPH on iOS."/>
+  <variant name="IPH_iOSFeedSwipeStaticFeature"
+      summary="Showing the static Feed Swipe IPH on iOS."/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
   <variant name="IPH_iOSInlineEnhancedSafeBrowsingPromoFeature"

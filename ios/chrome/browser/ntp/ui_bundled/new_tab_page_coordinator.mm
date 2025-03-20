@@ -1268,6 +1268,11 @@
   [self.feedHeaderViewController updateForFeedVisibilityChanged];
 }
 
+- (void)feedDidScroll {
+  feature_engagement::TrackerFactory::GetForProfile(self.profile)
+      ->NotifyEvent(feature_engagement::events::kIOSScrolledOnFeed);
+}
+
 #pragma mark - NewTabPageDelegate
 
 - (void)updateFeedLayout {

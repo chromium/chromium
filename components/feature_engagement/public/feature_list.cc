@@ -131,6 +131,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSDefaultBrowserBadgeEligibilityFeature,
     &kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
     &kIPHiOSDownloadAutoDeletionFeature,
+    &kIPHiOSFeedSwipeAnimatedFeature,
+    &kIPHiOSFeedSwipeStaticFeature,
     &kIPHiOSLensKeyboardFeature,
     &kIPHiOSPromoAppStoreFeature,
     &kIPHiOSPromoWhatsNewFeature,

@@ -302,6 +302,12 @@ extern const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[];
 // The user has executed an action that is a trigger for the Auto-deletion IPH.
 extern const char kIOSDownloadAutoDeletionIPHCriterionMet[];
 
+// The user has scrolled on the NTP while the feed is visible.
+extern const char kIOSScrolledOnFeed[];
+
+// The user has taken action on the feed.
+extern const char kIOSActionOnFeed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.
