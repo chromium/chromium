@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/fixed_array.h"
@@ -48,7 +49,10 @@ bool IsIdLengthValid(const std::vector<uint8_t>* service_data) {
          id_length + kHeaderLength <= static_cast<int>(service_data->size());
 }
 
+// TODO(399163998): Remove deprecated code after feature launch.
 bool HasModelId(const std::vector<uint8_t>* service_data) {
+  CHECK(!features::IsFastPairAdvertisingFormat2025Enabled());
+
   return service_data != nullptr &&
          (service_data->size() == kMinModelIdLength ||
           // Header byte exists. We support only format version 0. (A different

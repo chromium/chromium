@@ -21,6 +21,7 @@ int GetVersion(const std::vector<uint8_t>* service_data);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 int GetIdLength(const std::vector<uint8_t>* service_data);
 
+// Deprecated by kFastPairAdvertisingFormat2025.
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 bool HasModelId(const std::vector<uint8_t>* service_data);
 
