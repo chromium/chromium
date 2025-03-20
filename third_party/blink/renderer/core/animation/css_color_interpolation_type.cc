@@ -66,12 +66,24 @@ void CSSColorInterpolationType::EnsureCompatibleInterpolableColorTypes(
     InterpolableList& list_b) {
   CHECK_EQ(list_a.length(), list_b.length());
   for (wtf_size_t i = 0; i < list_a.length(); i++) {
-    if (list_a.Get(i)->IsStyleColor() != list_b.Get(i)->IsStyleColor()) {
+    auto& underlying = list_a.GetMutable(i);
+    auto& other = list_b.GetMutable(i);
+
+    if (underlying->IsStyleColor() != other->IsStyleColor()) {
       // If either value is a style color then both must be.
       EnsureInterpolableStyleColor(list_a, i);
       EnsureInterpolableStyleColor(list_b, i);
     }
-    DCHECK_EQ(list_a.Get(i)->IsStyleColor(), list_b.Get(i)->IsStyleColor());
+    DCHECK_EQ(underlying->IsStyleColor(), other->IsStyleColor());
+    DCHECK_EQ(underlying->IsColor(), other->IsColor());
+
+    if (underlying->IsColor() && other->IsColor()) {
+      auto& a = To<InterpolableColor>(*underlying);
+      auto& b = To<InterpolableColor>(*other);
+      if (a.GetColor().GetColorSpace() != b.GetColor().GetColorSpace()) {
+        InterpolableColor::SetupColorInterpolationSpaces(a, b);
+      }
+    }
   }
 }
 
@@ -401,7 +413,6 @@ void CSSColorInterpolationType::Composite(
     auto& underlying =
         To<BaseInterpolableColor>(*underlying_list.GetMutable(i));
     auto& other = To<BaseInterpolableColor>(*other_list.Get(i));
-    DCHECK_EQ(underlying.IsStyleColor(), other.IsStyleColor());
     underlying.Composite(other, underlying_fraction);
   }
 }
