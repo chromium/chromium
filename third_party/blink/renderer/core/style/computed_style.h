@@ -1015,6 +1015,8 @@ class ComputedStyle final : public ComputedStyleBase {
            BorderStyleIsVisible(RowRuleStyle().GetLegacyValue());
   }
 
+  bool HasGapRule() const { return HasColumnRule() || HasRowRule(); }
+
   // Flex utility functions.
   bool ResolvedIsColumnFlexDirection() const {
     if (IsDeprecatedFlexbox()) {
