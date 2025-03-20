@@ -2904,12 +2904,6 @@ BASE_FEATURE(kAllowPasswordlessRecovery,
              "AllowPasswordlessRecovery",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// This features controls whether or not pin will be setup as timeout based
-// lockout or attempt based lockout.
-BASE_FEATURE(kAllowPinTimeoutSetup,
-             "AllowPinTimeoutSetup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This features controls whether or not we'll show the legacy WebAuthNDialog,
 // that lives in ash/in_session_auth/auth_dialog_contents_view or
 // the new dialog that's also shared with Settings and Password Manager,
@@ -4674,10 +4668,6 @@ bool IsAllowPasswordlessRecoveryEnabled() {
 
 bool IsLocalAuthenticationWithPinEnabled() {
   return base::FeatureList::IsEnabled(kLocalAuthenticationWithPin);
-}
-
-bool IsAllowPinTimeoutSetupEnabled() {
-  return base::FeatureList::IsEnabled(kAllowPinTimeoutSetup);
 }
 
 bool IsWebAuthNAuthDialogMergeEnabled() {
