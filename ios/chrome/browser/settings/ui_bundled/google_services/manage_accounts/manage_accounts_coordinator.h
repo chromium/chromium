@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol ApplicationCommands;
 class Browser;
 @protocol ManageAccountsCoordinatorDelegate;
 
@@ -21,9 +20,6 @@ class Browser;
 
 // If YES, the view will offer a sign-out button.
 @property(nonatomic, assign) BOOL showSignoutButton;
-
-// If YES, the view will offer a sign-out button. Default to YES.
-@property(nonatomic, assign) BOOL showAddAccountButton;
 
 // The delegate for the coordinator.
 @property(nonatomic, weak) id<ManageAccountsCoordinatorDelegate> delegate;
