@@ -37,6 +37,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -190,7 +191,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
     // ModalType::kWindow.
     SetModalType(ui::mojom::ModalType::kWindow);
 #endif
-    CreateDialogWidget(this, params.context, nullptr)->Show();
+    CreateDialogWidget(this, params.context, gfx::NativeView())->Show();
   }
 
   source_view_->SetBorder(

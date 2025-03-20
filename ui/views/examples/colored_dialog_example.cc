@@ -15,6 +15,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -163,7 +164,7 @@ void ColoredDialogChooser::ButtonPressed() {
   views::Widget* widget = DialogDelegate::CreateDialogWidget(
       new ColoredDialog(base::BindOnce(&ColoredDialogChooser::OnFeedbackSubmit,
                                        base::Unretained(this))),
-      nullptr, GetWidget()->GetNativeView());
+      gfx::NativeWindow(), GetWidget()->GetNativeView());
   widget->Show();
 }
 

@@ -189,7 +189,7 @@ void ParentToBrowser(Browser* browser,
   // in fullscreen cases.
   zoom_bubble->set_parent_window(
       zoom_bubble->anchor_widget()
-          ? nullptr
+          ? gfx::NativeView()
           : browser_view->GetWidget()->GetNativeView());
 
   views::BubbleDialogDelegateView::CreateBubble(zoom_bubble);

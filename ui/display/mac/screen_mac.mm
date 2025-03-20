@@ -340,7 +340,7 @@ class ScreenMac : public Screen {
       const std::set<gfx::NativeWindow>& ignore) override {
     const NSPoint ns_point = gfx::ScreenPointToNSPoint(point);
 
-    // Note: [NSApp orderedWindows] doesn't include NSPanels.
+    // Note: NSApp.orderedWindows doesn't include NSPanels.
     for (NSWindow* window in NSApp.orderedWindows) {
       if (ignore.count(gfx::NativeWindow(window))) {
         continue;
@@ -361,7 +361,7 @@ class ScreenMac : public Screen {
       }
     }
 
-    return nil;
+    return gfx::NativeWindow();
   }
 
   int GetNumDisplays() const override { return displays_mac_.size(); }

@@ -279,7 +279,7 @@ TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
         client().popup_controller(manager()).GetWeakPtr(),
         manager().external_delegate().GetWeakPtrForTest(), nullptr,
         PopupControllerCommon(std::move(bounds), base::i18n::UNKNOWN_DIRECTION,
-                              nullptr),
+                              gfx::NativeView()),
         /*form_control_ax_id=*/0);
   };
   WeakPtr<AutofillSuggestionController> controller =
@@ -348,7 +348,7 @@ TEST_F(AutofillSuggestionControllerTest, ProperlyResetController) {
           client().popup_controller(manager()).GetWeakPtr(),
           manager().external_delegate().GetWeakPtrForTest(), nullptr,
           PopupControllerCommon(gfx::RectF(), base::i18n::UNKNOWN_DIRECTION,
-                                nullptr),
+                                gfx::NativeView()),
           /*form_control_ax_id=*/0);
   EXPECT_EQ(0, controller->GetLineCount());
 }

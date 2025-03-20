@@ -53,6 +53,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -554,7 +555,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   views::Widget* widget = CreateMediaPickerDialogWidget(
       modal_dialog ? chrome::FindBrowserWithTab(params.web_contents) : nullptr,
       params.web_contents,
-      /*delegate=*/this, params.context, /*parent=*/nullptr);
+      /*delegate=*/this, params.context, /*parent=*/gfx::NativeView());
 
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 

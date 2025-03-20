@@ -297,7 +297,7 @@ void NativeViewHostMac::SetFocus() {
 
 gfx::NativeView NativeViewHostMac::GetNativeViewContainer() const {
   NOTIMPLEMENTED();
-  return nullptr;
+  return gfx::NativeView();
 }
 
 gfx::NativeViewAccessible NativeViewHostMac::GetNativeViewAccessible() {

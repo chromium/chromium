@@ -136,8 +136,9 @@ gfx::NativeView WebContentsViewMac::GetNativeView() const {
 
 gfx::NativeView WebContentsViewMac::GetContentNativeView() const {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
-  if (!rwhv)
-    return nullptr;
+  if (!rwhv) {
+    return gfx::NativeView();
+  }
   return rwhv->GetNativeView();
 }
 
@@ -149,7 +150,7 @@ gfx::NativeWindow WebContentsViewMac::GetTopLevelNativeWindow() const {
   if (delegate_) {
     return delegate_->GetNativeWindow();
   }
-  return nullptr;
+  return gfx::NativeWindow();
 }
 
 gfx::Rect WebContentsViewMac::GetContainerBounds() const {

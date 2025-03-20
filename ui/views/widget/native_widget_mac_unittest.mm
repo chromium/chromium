@@ -1908,7 +1908,7 @@ TEST_F(NativeWidgetMacTest, NativeProperties) {
 
   // Create a dialog widget (also TYPE_WINDOW), but with a DialogDelegate.
   Widget* dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::mojom::ModalType::kChild), nullptr,
+      MakeModalDialog(ui::mojom::ModalType::kChild), gfx::NativeWindow(),
       regular_widget->GetNativeView());
   EXPECT_TRUE([dialog_widget->GetNativeWindow().GetNativeNSWindow()
       canBecomeKeyWindow]);
@@ -2458,7 +2458,8 @@ NSArray* ExtractTouchBarGroupIdentifiers(NSView* view) {
 // Test TouchBar integration.
 TEST_F(NativeWidgetMacTest, TouchBar) {
   DialogDelegate* delegate = MakeModalDialog(ui::mojom::ModalType::kNone);
-  views::DialogDelegate::CreateDialogWidget(delegate, nullptr, nullptr);
+  views::DialogDelegate::CreateDialogWidget(delegate, gfx::NativeWindow(),
+                                            gfx::NativeView());
   NSView* content =
       [delegate->GetWidget()->GetNativeWindow().GetNativeNSWindow()
           contentView];

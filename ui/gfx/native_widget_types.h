@@ -127,8 +127,7 @@ using NativeEvent = base::apple::OwnedNSEvent;
 // underlying NSView or NSWindow <https://crbug.com/40597366>.
 class COMPONENT_EXPORT(GFX) NativeView : public base::apple::WeakNSView {
  public:
-  // TODO(avi): Remove the nullptr argument and make construction be explicit.
-  NativeView(std::nullptr_t = nullptr);
+  NativeView();
 #ifdef __OBJC__
   explicit NativeView(NSView* ns_view);
   // This function name is verbose (that is, not just GetNSView) so that it
@@ -142,8 +141,7 @@ class COMPONENT_EXPORT(GFX) NativeView : public base::apple::WeakNSView {
 };
 class COMPONENT_EXPORT(GFX) NativeWindow : public base::apple::WeakNSWindow {
  public:
-  // TODO(avi): Remove the nullptr argument and make construction be explicit.
-  NativeWindow(std::nullptr_t = nullptr);
+  NativeWindow();
 #ifdef __OBJC__
   explicit NativeWindow(NSWindow* ns_window);
   // This function name is verbose (that is, not just GetNSWindow) so that it

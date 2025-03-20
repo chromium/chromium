@@ -24,7 +24,7 @@ using content::BrowserThread;
 
 ExternalProcessImporterHost::ExternalProcessImporterHost()
     : headless_(false),
-      parent_window_(nullptr),
+      parent_window_(gfx::NativeWindow()),
       observer_(nullptr),
       profile_(nullptr),
       is_source_readable_(true),

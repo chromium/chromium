@@ -241,7 +241,7 @@ std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
       tab_interface_->GetBrowserWindowInterface()->TopContainer()->GetWidget();
   CHECK(host);
   return base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
-      delegate, nullptr, host->GetNativeView()));
+      delegate, gfx::NativeWindow(), host->GetNativeView()));
 }
 
 void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {

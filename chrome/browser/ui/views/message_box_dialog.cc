@@ -204,8 +204,8 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
                                 : ui::mojom::ModalType::kSystem);
     widget = constrained_window::CreateBrowserModalDialogViews(dialog, parent);
   } else {
-    widget =
-        views::DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr);
+    widget = views::DialogDelegate::CreateDialogWidget(
+        dialog, gfx::NativeWindow(), gfx::NativeView());
     // Move the dialog's widget on top so other windows do not obscure it.
     widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
   }
