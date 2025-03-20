@@ -107,6 +107,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     EXPECT_TRUE(profile_manager_->SetUp());
     HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
     safe_browsing::RegisterProfilePrefs(test_pref_service_.registry());
+    enterprise_connectors::RegisterProfilePrefs(test_pref_service_.registry());
     PlatformTest::SetUp();
 
     test_shared_loader_factory_ =
@@ -168,6 +169,14 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
             profile),
         referrer_chain_provider_.get(), &test_pref_service_);
 
+    test_pref_service_.SetInteger(
+        enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+        enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+    test_pref_service_.SetInteger(
+        enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+        policy::POLICY_SCOPE_MACHINE);
+    // ConnectorsService reads from the profile prefs until the dependency on
+    // Profile is removed.
     profile->GetPrefs()->SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
         enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
@@ -240,15 +249,18 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         safe_browsing::kLocalIpAddressInEvents);
   }
 
+  // Must be the first member to be initialized first and destroyed last.
+  content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  // TestingProfileManager owns `test_profile_` so it must be freed after all
+  // reference to the test profile are freed.
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ChromeEnterpriseRealTimeUrlLookupService>
       enterprise_rt_service_;
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
-  content::BrowserTaskEnvironment task_environment_;
   raw_ptr<TestSafeBrowsingTokenFetcher> raw_token_fetcher_ = nullptr;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   raw_ptr<TestingProfile> test_profile_;
   syncer::TestSyncService test_sync_service_;

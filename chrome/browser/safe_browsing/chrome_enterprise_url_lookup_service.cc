@@ -87,14 +87,15 @@ ChromeEnterpriseRealTimeUrlLookupService::
           /*webui_delegate=*/WebUIInfoSingleton::GetInstance()),
       profile_(profile),
       connectors_service_(connectors_service),
-      token_fetcher_(std::move(token_fetcher)) {}
+      token_fetcher_(std::move(token_fetcher)),
+      pref_service_(pref_service) {}
 
 ChromeEnterpriseRealTimeUrlLookupService::
     ~ChromeEnterpriseRealTimeUrlLookupService() = default;
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanPerformFullURLLookup() const {
   return RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
-      profile_->GetPrefs(),
+      pref_service_,
       connectors_service_->GetDMTokenForRealTimeUrlCheck().has_value(),
       profile_->IsOffTheRecord(), profile_->IsGuestSession());
 }
@@ -133,7 +134,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
   // Check database if safe browsing is enabled.
-  return safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs());
+  return safe_browsing::IsSafeBrowsingEnabled(*pref_service_);
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::

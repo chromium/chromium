@@ -111,6 +111,9 @@ class ChromeEnterpriseRealTimeUrlLookupService
   // The token fetcher used for getting access token.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
 
+  // Unowned object used for getting preference settings.
+  raw_ptr<PrefService> pref_service_;
+
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 
   base::WeakPtrFactory<ChromeEnterpriseRealTimeUrlLookupService> weak_factory_{
