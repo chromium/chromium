@@ -1047,6 +1047,13 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   }
   const base::TimeDelta real_timestamp = it->second;
 
+  if (!frame->metadata().tracking_token.has_value() ||
+      frame->metadata().tracking_token->is_empty()) {
+    VLOGF(2) << "Received a frame with a missing or invalid tracking token";
+    Stop();
+    return;
+  }
+
   // Validate protected content metadata.
   if (!initialized_for_protected_content_ &&
       (metadata_to_propagate.protected_video ||
@@ -1067,18 +1074,17 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
 
   // What follows is all the logic necessary to recycle buffers safely.
   //
-  // Note that the way we track buffers is with the gfx::GpuMemoryBufferId. In
-  // theory, this should uniquely identify GpuMemoryBuffers. In practice, we
+  // Note that the way we track buffers is with the frame's tracking token. In
+  // theory, this should uniquely identify allocated buffers. In practice, we
   // can't trust what comes from the remote decoder. A malicious decoder could
-  // send us two GpuMemoryBuffers that have the same gfx::GpuMemoryBufferId but
-  // actually refer to different dma-bufs. The solution to this is that we
-  // assume that the remote decoder is telling the truth in a sense: if we
-  // receive an incoming buffer with a gfx::GpuMemoryBufferId that we already
-  // know about (by looking it up in |received_id_to_decoded_frame_map_|), we
-  // will re-use the buffer that we know about and ignore the incoming one. The
-  // goal with the rest of the logic below is that if this assumption is
-  // violated, the worst case is a visually incorrect output but not a security
-  // problem.
+  // send us two frames that have the same tracking token, but actually refer to
+  // different dma-bufs. The solution to this is that we assume that the remote
+  // decoder is telling the truth in a sense: if we receive an incoming buffer
+  // with a tracking_token that we already know about (by looking it up in
+  // |received_token_to_decoded_frame_map_|), we will re-use the buffer that we
+  // know about and ignore the incoming one. The goal with the rest of the logic
+  // below is that if this assumption is violated, the worst case is a visually
+  // incorrect output but not a security problem.
   //
   // When something like a resolution change happens, we assume that the remote
   // decoder recreated its pool of buffers. Therefore, in those cases we can
@@ -1092,19 +1098,20 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
   const gfx::ColorSpace color_space = frame->ColorSpace();
   const std::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata();
   const VideoFrameMetadata metadata = metadata_to_propagate;
-  const gfx::GpuMemoryBufferId received_gmb_id = gmb_handle.id;
-  if (!received_id_to_decoded_frame_map_.empty()) {
+  const base::UnguessableToken received_tracking_token =
+      *frame->metadata().tracking_token;
+  if (!received_token_to_decoded_frame_map_.empty()) {
     // It doesn't matter which frame we pick to calculate the current state. All
     // of them should yield the same result.
     const VideoPixelFormat current_format =
-        received_id_to_decoded_frame_map_.cbegin()->second->format();
+        received_token_to_decoded_frame_map_.cbegin()->second->format();
     const gfx::Size& current_coded_size =
-        received_id_to_decoded_frame_map_.cbegin()->second->coded_size();
+        received_token_to_decoded_frame_map_.cbegin()->second->coded_size();
     const gfx::Size& current_visible_rect_size_from_origin =
-        GetRectSizeFromOrigin(
-            received_id_to_decoded_frame_map_.cbegin()->second->visible_rect());
+        GetRectSizeFromOrigin(received_token_to_decoded_frame_map_.cbegin()
+                                  ->second->visible_rect());
     const bool currently_uses_protected =
-        received_id_to_decoded_frame_map_.cbegin()
+        received_token_to_decoded_frame_map_.cbegin()
             ->second->metadata()
             .hw_protected;
 
@@ -1112,15 +1119,15 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
         GetRectSizeFromOrigin(visible_rect) !=
             current_visible_rect_size_from_origin ||
         metadata.hw_protected != currently_uses_protected) {
-      received_id_to_decoded_frame_map_.clear();
+      received_token_to_decoded_frame_map_.clear();
       generated_token_to_decoded_frame_map_.clear();
     }
   }
 
   scoped_refptr<FrameResource> frame_to_wrap;
   auto decoded_frame_it =
-      received_id_to_decoded_frame_map_.find(received_gmb_id);
-  if (decoded_frame_it != received_id_to_decoded_frame_map_.end()) {
+      received_token_to_decoded_frame_map_.find(received_tracking_token);
+  if (decoded_frame_it != received_token_to_decoded_frame_map_.end()) {
     frame_to_wrap = decoded_frame_it->second;
     CHECK_EQ(frame_to_wrap->format(), format);
     CHECK_EQ(frame_to_wrap->coded_size(), coded_size);
@@ -1136,18 +1143,19 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
       Stop();
       return;
     }
-    received_id_to_decoded_frame_map_[received_gmb_id] = native_pixmap_frame;
+    received_token_to_decoded_frame_map_[received_tracking_token] =
+        native_pixmap_frame;
     generated_token_to_decoded_frame_map_[native_pixmap_frame
                                               ->tracking_token()] =
         native_pixmap_frame.get();
     frame_to_wrap = std::move(native_pixmap_frame);
   }
 
-  // If |frame_to_wrap| was cached in |received_id_to_decoded_frame_map_|, then
-  // there is a possibility that |visible_rect| and |natural_size|, which are
-  // computed from |frame| are different than in |frame_to_wrap| and |frame|.
-  // Because of this, CreateWrappingFrame() is called with |visible_rect| and
-  // |natural_size|.
+  // If |frame_to_wrap| was cached in |received_token_to_decoded_frame_map_|,
+  // then there is a possibility that |visible_rect| and |natural_size|, which
+  // are computed from |frame| are different than in |frame_to_wrap| and
+  // |frame|. Because of this, CreateWrappingFrame() is called with
+  // |visible_rect| and |natural_size|.
   scoped_refptr<FrameResource> wrapped_frame =
       frame_to_wrap->CreateWrappingFrame(visible_rect, natural_size);
   if (!wrapped_frame) {
