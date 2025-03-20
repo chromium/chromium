@@ -11,6 +11,7 @@
 
 #include <cstddef>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -27,6 +28,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree_observer.h"
@@ -87,9 +89,8 @@ ReadAnythingAppModel::ReadAnythingAppModel() {
 ReadAnythingAppModel::~ReadAnythingAppModel() = default;
 
 ReadAnythingAppModel::AXTreeInfo::AXTreeInfo(
-    std::unique_ptr<ui::AXTreeManager> other) {
-  manager = std::move(other);
-}
+    std::unique_ptr<ui::AXTreeManager> manager)
+    : manager(std::move(manager)) {}
 
 ReadAnythingAppModel::AXTreeInfo::~AXTreeInfo() = default;
 
@@ -135,23 +136,22 @@ void ReadAnythingAppModel::InsertIdIfNotIgnored(
 void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing,
-    const std::string& font,
+    std::string font_name,
     double font_size,
     bool links_enabled,
     bool images_enabled,
     read_anything::mojom::Colors color) {
   line_spacing_ = line_spacing;
   letter_spacing_ = letter_spacing;
-  font_name_ = font;
+  font_name_ = std::move(font_name);
   SetFontSize(font_size);
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
   color_theme_ = color;
 }
 
-void ReadAnythingAppModel::Reset(
-    const std::vector<ui::AXNodeID>& content_node_ids) {
-  content_node_ids_ = content_node_ids;
+void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
+  content_node_ids_ = std::move(content_node_ids);
   display_node_ids_.clear();
   distillation_in_progress_ = false;
   requires_post_process_selection_ = false;
@@ -502,36 +502,33 @@ bool ReadAnythingAppModel::IsDocs() const {
   return tree_infos_.at(active_tree_id_)->is_docs;
 }
 
-void ReadAnythingAppModel::AddPendingUpdates(
-    const ui::AXTreeID& tree_id,
-    std::vector<ui::AXTreeUpdate>& updates) {
-  std::vector<ui::AXTreeUpdate>& update = pending_updates_map_[tree_id];
+void ReadAnythingAppModel::AddPendingUpdates(const ui::AXTreeID& tree_id,
+                                             Updates& updates) {
+  Updates& update = pending_updates_[tree_id];
   for (auto& item : updates) {
     update.emplace_back(std::move(item));
   }
 }
 
 void ReadAnythingAppModel::ClearPendingUpdates() {
-  pending_updates_map_.clear();
+  pending_updates_.clear();
 }
 
 void ReadAnythingAppModel::UnserializePendingUpdates(
     const ui::AXTreeID& tree_id) {
-  if (!pending_updates_map_.contains(tree_id)) {
+  if (!pending_updates_.contains(tree_id)) {
     return;
   }
   // TODO(crbug.com/40802192): Ensure there are no crashes/unexpected behavior
   // if an accessibility event is received on the same tree after
   // unserialization has begun.
-  std::vector<ui::AXTreeUpdate> update =
-      pending_updates_map_.extract(tree_id).mapped();
+  Updates update = pending_updates_.extract(tree_id).mapped();
   DCHECK(update.empty() || tree_id == active_tree_id_);
   UnserializeUpdates(update, tree_id);
 }
 
-void ReadAnythingAppModel::UnserializeUpdates(
-    std::vector<ui::AXTreeUpdate>& updates,
-    const ui::AXTreeID& tree_id) {
+void ReadAnythingAppModel::UnserializeUpdates(Updates& updates,
+                                              const ui::AXTreeID& tree_id) {
   if (updates.empty()) {
     return;
   }
@@ -543,8 +540,8 @@ void ReadAnythingAppModel::UnserializeUpdates(
   // Try to merge updates. If the updates are mergeable, MergeAXTreeUpdates will
   // return true and merge_updates_out will contain the updates. Otherwise, if
   // the updates are not mergeable, merge_updates_out will be empty.
-  const std::vector<ui::AXTreeUpdate>* merged_updates = &updates;
-  std::vector<ui::AXTreeUpdate> merge_updates_out;
+  const Updates* merged_updates = &updates;
+  Updates merge_updates_out;
   if (ui::MergeAXTreeUpdates(updates, &merge_updates_out)) {
     merged_updates = &merge_updates_out;
   }
@@ -563,9 +560,9 @@ void ReadAnythingAppModel::UnserializeUpdates(
 
 void ReadAnythingAppModel::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
-    std::vector<ui::AXTreeUpdate>& updates,
+    Updates& updates,
     std::vector<ui::AXEvent>& events,
-    const bool speech_playing) {
+    bool speech_playing) {
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   // Create a new tree if an event is received for a tree that is not yet in
   // the tree list.
@@ -633,10 +630,10 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   tree_infos_.erase(it);
 
   // Any pending updates associated with the erased tree should also be dropped.
-  pending_updates_map_.erase(tree_id);
+  pending_updates_.erase(tree_id);
 }
 
-const ukm::SourceId& ReadAnythingAppModel::UkmSourceId() {
+ukm::SourceId ReadAnythingAppModel::GetUkmSourceId() const {
   if (base::Contains(tree_infos_, active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
@@ -647,7 +644,7 @@ const ukm::SourceId& ReadAnythingAppModel::UkmSourceId() {
   return ukm::kInvalidSourceId;
 }
 
-void ReadAnythingAppModel::SetUkmSourceId(const ukm::SourceId ukm_source_id) {
+void ReadAnythingAppModel::SetUkmSourceId(ukm::SourceId ukm_source_id) {
   if (!base::Contains(tree_infos_, active_tree_id_)) {
     return;
   }
@@ -663,7 +660,7 @@ void ReadAnythingAppModel::SetUkmSourceId(const ukm::SourceId ukm_source_id) {
   }
 }
 
-int32_t ReadAnythingAppModel::NumSelections() {
+int ReadAnythingAppModel::GetNumSelections() const {
   if (base::Contains(tree_infos_, active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
@@ -674,7 +671,7 @@ int32_t ReadAnythingAppModel::NumSelections() {
   return 0;
 }
 
-void ReadAnythingAppModel::SetNumSelections(const int32_t& num_selections) {
+void ReadAnythingAppModel::SetNumSelections(int num_selections) {
   if (!base::Contains(tree_infos_, active_tree_id_)) {
     return;
   }
@@ -692,8 +689,7 @@ ui::AXNode* ReadAnythingAppModel::GetAXNode(
   return tree->GetFromId(ax_node_id);
 }
 
-bool ReadAnythingAppModel::NodeIsContentNode(
-    const ui::AXNodeID& ax_node_id) const {
+bool ReadAnythingAppModel::NodeIsContentNode(ui::AXNodeID ax_node_id) const {
   return base::Contains(content_node_ids_, ax_node_id);
 }
 
@@ -703,16 +699,6 @@ void ReadAnythingAppModel::AdjustTextSize(int increment) {
 
 void ReadAnythingAppModel::ResetTextSize() {
   SetFontSize(1.0f);
-}
-
-std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
-ReadAnythingAppModel::GetPendingUpdatesForTesting() {
-  return pending_updates_map_;
-}
-
-std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>*
-ReadAnythingAppModel::GetTreesForTesting() {
-  return &tree_infos_;
 }
 
 void ReadAnythingAppModel::OnScroll(bool on_selection,
@@ -783,8 +769,8 @@ void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {
   }
 }
 
-void ReadAnythingAppModel::SetActiveTreeId(const ui::AXTreeID& active_tree_id) {
-  active_tree_id_ = active_tree_id;
+void ReadAnythingAppModel::SetActiveTreeId(ui::AXTreeID active_tree_id) {
+  active_tree_id_ = std::move(active_tree_id);
   // If data collection mode for screen2x is enabled, begin
   // `timer_since_page_load_for_data_collection_` from here. This is a
   // one-shot timer which times 30 seconds from when the active AXTree changes.
@@ -1081,17 +1067,9 @@ void ReadAnythingAppModel::MaybeRunDataCollectionForScreen2xCallback() {
   std::move(data_collection_for_screen2x_callback_).Run();
 }
 
-void ReadAnythingAppModel::ToggleLinksEnabled() {
-  links_enabled_ = !links_enabled_;
-}
-
-void ReadAnythingAppModel::ToggleImagesEnabled() {
-  images_enabled_ = !images_enabled_;
-}
-
-void ReadAnythingAppModel::SetBaseLanguageCode(const std::string& code) {
-  DCHECK(!code.empty());
-  base_language_code_ = code;
+void ReadAnythingAppModel::SetBaseLanguageCode(std::string base_language_code) {
+  DCHECK(!base_language_code.empty());
+  base_language_code_ = std::move(base_language_code);
   supported_fonts_ = GetSupportedFonts(base_language_code_);
 }
 

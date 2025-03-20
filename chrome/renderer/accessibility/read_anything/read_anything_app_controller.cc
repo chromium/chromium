@@ -606,8 +606,8 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 }
 
 void ReadAnythingAppController::RecordNumSelections() {
-  ukm::builders::Accessibility_ReadAnything_EmptyState(model_.UkmSourceId())
-      .SetTotalNumSelections(model_.NumSelections())
+  ukm::builders::Accessibility_ReadAnything_EmptyState(model_.GetUkmSourceId())
+      .SetTotalNumSelections(model_.GetNumSelections())
       .Record(ukm_recorder_.get());
   model_.SetNumSelections(0);
 }
@@ -670,7 +670,7 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
   }
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   model_.set_distillation_in_progress(true);
-  distiller_->Distill(*tree, snapshot, model_.UkmSourceId());
+  distiller_->Distill(*tree, snapshot, model_.GetUkmSourceId());
 }
 
 void ReadAnythingAppController::OnAXTreeDistilled(
@@ -1496,12 +1496,12 @@ void ReadAnythingAppController::OnFontSizeReset() {
 }
 
 void ReadAnythingAppController::OnLinksEnabledToggled() {
-  model_.ToggleLinksEnabled();
+  model_.set_links_enabled(!model_.links_enabled());
   page_handler_->OnLinksEnabledChanged(model_.links_enabled());
 }
 
 void ReadAnythingAppController::OnImagesEnabledToggled() {
-  model_.ToggleImagesEnabled();
+  model_.set_images_enabled(!model_.images_enabled());
   page_handler_->OnImagesEnabledChanged(model_.images_enabled());
 }
 

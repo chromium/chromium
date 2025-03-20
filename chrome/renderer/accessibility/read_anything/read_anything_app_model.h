@@ -6,22 +6,20 @@
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_APP_MODEL_H_
 
 #include <map>
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
-#include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
-#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/accessibility/ax_node_position.h"
-#include "ui/accessibility/ax_position.h"
-#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
@@ -54,10 +52,10 @@ class ReadAnythingAppModel {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingEmptyState)
 
   struct AXTreeInfo {
-    explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> other);
-    ~AXTreeInfo();
-    AXTreeInfo(const AXTreeInfo& other) = delete;
+    explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> manager);
+    AXTreeInfo(const AXTreeInfo&) = delete;
     AXTreeInfo& operator=(const AXTreeInfo&) = delete;
+    ~AXTreeInfo();
 
     // Store AXTrees of web contents in the browser's tab strip as
     // AXTreeManagers.
@@ -70,7 +68,7 @@ class ReadAnythingAppModel {
     // Used to keep track of how many selections were made for the
     // ukm_source_id. Only recorded during the select-to-distill flow (when the
     // empty state page is shown).
-    int32_t num_selections = 0;
+    int num_selections = 0;
 
     // Whether URL information, namely is_docs, has been set.
     bool is_url_information_set = false;
@@ -86,83 +84,101 @@ class ReadAnythingAppModel {
     // is added.
   };
 
+  using Updates = std::vector<ui::AXTreeUpdate>;
+  using PendingUpdates = std::map<ui::AXTreeID, Updates>;
+
   static constexpr char kEmptyStateHistogramName[] =
       "Accessibility.ReadAnything.EmptyState";
 
   ReadAnythingAppModel();
-  ~ReadAnythingAppModel();
-  ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
+  ReadAnythingAppModel(const ReadAnythingAppModel&) = delete;
   ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
+  ~ReadAnythingAppModel();
 
   bool requires_distillation() const { return requires_distillation_; }
-  void set_requires_distillation(bool value) { requires_distillation_ = value; }
+  void set_requires_distillation(bool requires_distillation) {
+    requires_distillation_ = requires_distillation;
+  }
+
   bool requires_post_process_selection() const {
     return requires_post_process_selection_;
   }
-  void set_requires_post_process_selection(bool value) {
-    requires_post_process_selection_ = value;
+  void set_requires_post_process_selection(
+      bool requires_post_process_selection) {
+    requires_post_process_selection_ = requires_post_process_selection;
   }
+
   bool reset_draw_timer() const { return reset_draw_timer_; }
   void set_reset_draw_timer(bool value) { reset_draw_timer_ = value; }
 
   const ui::AXNodeID& last_expanded_node_id() const {
     return last_expanded_node_id_;
   }
-
-  void set_last_expanded_node_id(const ui::AXNodeID& node_id) {
-    last_expanded_node_id_ = node_id;
+  void set_last_expanded_node_id(const ui::AXNodeID& last_expanded_node_id) {
+    last_expanded_node_id_ = last_expanded_node_id;
   }
-
   void reset_last_expanded_node_id() {
     set_last_expanded_node_id(ui::kInvalidAXNodeID);
   }
 
   bool redraw_required() const { return redraw_required_; }
   void reset_redraw_required() { redraw_required_ = false; }
+
   bool selection_from_action() const { return selection_from_action_; }
-  void set_selection_from_action(bool value) { selection_from_action_ = value; }
+  void set_selection_from_action(bool selection_from_action) {
+    selection_from_action_ = selection_from_action;
+  }
 
   const std::string& base_language_code() const { return base_language_code_; }
-
-  void SetBaseLanguageCode(const std::string& code);
+  void SetBaseLanguageCode(std::string base_language_code);
 
   const std::vector<std::string>& supported_fonts() const {
     return supported_fonts_;
   }
 
-  // Theme
   const std::string& font_name() const { return font_name_; }
-  void set_font_name(const std::string& font) { font_name_ = font; }
+  void set_font_name(std::string font_name) {
+    font_name_ = std::move(font_name);
+  }
+
   float font_size() const { return font_size_; }
+
   bool links_enabled() const { return links_enabled_; }
+  void set_links_enabled(bool links_enabled) { links_enabled_ = links_enabled; }
+
   bool images_enabled() const { return images_enabled_; }
+  void set_images_enabled(bool images_enabled) {
+    images_enabled_ = images_enabled;
+  }
+
   read_anything::mojom::LetterSpacing letter_spacing() const {
     return letter_spacing_;
   }
   void set_letter_spacing(read_anything::mojom::LetterSpacing letter_spacing) {
     letter_spacing_ = letter_spacing;
   }
+
   read_anything::mojom::LineSpacing line_spacing() const {
     return line_spacing_;
   }
   void set_line_spacing(read_anything::mojom::LineSpacing line_spacing) {
     line_spacing_ = line_spacing;
   }
+
   read_anything::mojom::Colors color_theme() const { return color_theme_; }
   void set_color_theme(read_anything::mojom::Colors color_theme) {
     color_theme_ = color_theme;
   }
 
-  // Selection.
   bool has_selection() const { return has_selection_; }
-  const ui::AXNodeID& start_node_id() const { return start_node_id_; }
-  const ui::AXNodeID& end_node_id() const { return end_node_id_; }
-  int32_t start_offset() const { return start_offset_; }
-  int32_t end_offset() const { return end_offset_; }
+  ui::AXNodeID start_node_id() const { return start_node_id_; }
+  ui::AXNodeID end_node_id() const { return end_node_id_; }
+  int start_offset() const { return start_offset_; }
+  int end_offset() const { return end_offset_; }
 
   bool distillation_in_progress() const { return distillation_in_progress_; }
-  bool is_empty() const {
-    return display_node_ids_.empty() && selection_node_ids_.empty();
+  void set_distillation_in_progress(bool distillation_in_progress) {
+    distillation_in_progress_ = distillation_in_progress;
   }
 
   // The following methods are used for the screen2x data collection pipeline.
@@ -175,31 +191,39 @@ class ReadAnythingAppModel {
       base::OnceCallback<void()> callback);
 
   bool page_finished_loading() const { return page_finished_loading_; }
-  void set_page_finished_loading(bool value) { page_finished_loading_ = value; }
+  void set_page_finished_loading(bool page_finished_loading) {
+    page_finished_loading_ = page_finished_loading;
+  }
+
   bool requires_tree_lang() const { return requires_tree_lang_; }
-  void set_requires_tree_lang(bool value) { requires_tree_lang_ = value; }
+  void set_requires_tree_lang(bool requires_tree_lang) {
+    requires_tree_lang_ = requires_tree_lang;
+  }
 
   const std::vector<ui::AXNodeID>& content_node_ids() const {
     return content_node_ids_;
   }
+
   const std::set<ui::AXNodeID>& display_node_ids() const {
     return display_node_ids_;
   }
+
   const std::set<ui::AXNodeID>& selection_node_ids() const {
     return selection_node_ids_;
   }
 
-  const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
-  void SetActiveTreeId(const ui::AXTreeID& active_tree_id);
-
-  void set_distillation_in_progress(bool distillation) {
-    distillation_in_progress_ = distillation;
+  bool is_empty() const {
+    return display_node_ids_.empty() && selection_node_ids_.empty();
   }
 
-  const ukm::SourceId& UkmSourceId();
-  void SetUkmSourceId(const ukm::SourceId ukm_source_id);
-  int32_t NumSelections();
-  void SetNumSelections(const int32_t& num_selections);
+  const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
+  void SetActiveTreeId(ui::AXTreeID active_tree_id);
+
+  ukm::SourceId GetUkmSourceId() const;
+  void SetUkmSourceId(ukm::SourceId ukm_source_id);
+
+  int GetNumSelections() const;
+  void SetNumSelections(int num_selections);
 
   void AddUrlInformationForTreeId(const ui::AXTreeID& tree_id);
   bool IsDocs() const;
@@ -213,35 +237,41 @@ class ReadAnythingAppModel {
   void InsertIdIfNotIgnored(ui::AXNodeID id,
                             std::set<ui::AXNodeID>& non_ignored_ids);
 
-  bool NodeIsContentNode(const ui::AXNodeID& ax_node_id) const;
+  bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
+
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing,
-      const std::string& font,
+      std::string font_name,
       double font_size,
       bool links_enabled,
       bool images_enabled,
       read_anything::mojom::Colors color);
+
   void OnScroll(bool on_selection, bool from_reading_mode) const;
+
   void OnSelection(ax::mojom::EventFrom event_from);
 
-  void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
-  bool PostProcessSelection();
+  void Reset(std::vector<ui::AXNodeID> content_node_ids);
+
   // Helper functions for the rendering algorithm. Post-process the AXTree and
   // cache values before sending an `updateContent` notification to the Read
   // Anything app.ts.
-  // ComputeDisplayNodeIdsForDistilledTree computes display nodes from the
-  // content nodes. These display nodes will be displayed in Read Anything
-  // app.ts by default.
-  // ComputeSelectionNodeIds computes selection nodes from
-  // the user's selection. The selection nodes list is only populated when the
-  // user's selection contains nodes outside of the display nodes list. By
-  // keeping two separate lists of nodes, we can switch back to displaying the
-  // default distilled content without recomputing the nodes when the user
-  // clears their selection or selects content inside the distilled content.
+  //
+  // Computes selection nodes from the user's selection. The selection nodes
+  // list is only populated when the user's selection contains nodes outside of
+  // the display nodes list. By keeping two separate lists of nodes, we can
+  // switch back to displaying the default distilled content without recomputing
+  // the nodes when the user clears their selection or selects content inside
+  // the distilled content.
+  bool PostProcessSelection();
+
+  // Computes display nodes from the content nodes. These display nodes will be
+  // displayed in the Read Anything app.ts by default.
   void ComputeDisplayNodeIdsForDistilledTree();
 
   ui::AXSerializableTree* GetTreeFromId(const ui::AXTreeID& tree_id) const;
+
   void AddTree(const ui::AXTreeID& tree_id,
                std::unique_ptr<ui::AXSerializableTree> tree);
 
@@ -252,26 +282,27 @@ class ReadAnythingAppModel {
   void ClearPendingUpdates();
 
   void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
-                                  std::vector<ui::AXTreeUpdate>& updates,
+                                  Updates& updates,
                                   std::vector<ui::AXEvent>& events,
-                                  const bool speech_playing);
+                                  bool speech_playing);
 
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
 
-  std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
-  GetPendingUpdatesForTesting();
+  const PendingUpdates& pending_updates_for_testing() const {
+    return pending_updates_;
+  }
 
-  std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>*
-  GetTreesForTesting();
+  const std::map<ui::AXTreeID, std::unique_ptr<AXTreeInfo>>&
+  tree_infos_for_testing() const {
+    return tree_infos_;
+  }
 
   void AdjustTextSize(int increment);
   void ResetTextSize();
-  void ToggleLinksEnabled();
-  void ToggleImagesEnabled();
 
   // PDF handling.
-  void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }
   bool is_pdf() const { return is_pdf_; }
+  void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }
 
   void AddObserver(ModelObserver* observer);
   void RemoveObserver(ModelObserver* observer);
@@ -284,11 +315,9 @@ class ReadAnythingAppModel {
   bool SelectionInsideDisplayNodes();
   bool ContentNodesOnlyContainHeadings();
 
-  void AddPendingUpdates(const ui::AXTreeID& tree_id,
-                         std::vector<ui::AXTreeUpdate>& updates);
+  void AddPendingUpdates(const ui::AXTreeID& tree_id, Updates& updates);
 
-  void UnserializeUpdates(std::vector<ui::AXTreeUpdate>& updates,
-                          const ui::AXTreeID& tree_id);
+  void UnserializeUpdates(Updates& updates, const ui::AXTreeID& tree_id);
 
   void ProcessNonGeneratedEvents(const std::vector<ui::AXEvent>& events);
 
@@ -309,8 +338,7 @@ class ReadAnythingAppModel {
   void SetFontSize(double font_size, int increment = 0);
 
   // State.
-  std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
-      tree_infos_;
+  std::map<ui::AXTreeID, std::unique_ptr<AXTreeInfo>> tree_infos_;
 
   // The AXTreeID of the currently active web contents. For PDFs, this will
   // always be the AXTreeID of the main web contents (not the PDF iframe or its
@@ -337,7 +365,7 @@ class ReadAnythingAppModel {
 
   // A mapping of a tree ID to a queue of pending updates on the active AXTree,
   // which will be unserialized once distillation completes.
-  std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>> pending_updates_map_;
+  PendingUpdates pending_updates_;
 
   // The node IDs identified as main by the distiller. These are static text
   // nodes when generated by Screen2x. When generated by the rules-based
@@ -380,8 +408,8 @@ class ReadAnythingAppModel {
   bool has_selection_ = false;
   ui::AXNodeID start_node_id_ = ui::kInvalidAXNodeID;
   ui::AXNodeID end_node_id_ = ui::kInvalidAXNodeID;
-  int32_t start_offset_ = -1;
-  int32_t end_offset_ = -1;
+  int start_offset_ = -1;
+  int end_offset_ = -1;
   bool requires_distillation_ = false;
   bool reset_draw_timer_ = false;
   bool requires_post_process_selection_ = false;
