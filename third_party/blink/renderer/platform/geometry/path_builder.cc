@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 
+#include <numbers>
+
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
@@ -18,6 +20,10 @@
 namespace blink {
 
 namespace {
+
+constexpr float superellipse_mid_point(float curvature) {
+  return std::pow(0.5, 1 / curvature);
+}
 
 // Given a superellipse with the supplied curvature in the coordinate space
 // -1,-1,1,1, returns 3 vectors (2 control points and the end point)
@@ -46,7 +52,7 @@ std::array<gfx::Vector2dF, 3> ApproximateSuperellipseOctantAsBezierCurve(
 
   // This is the superellipse formula at t=0.5 (45 degrees),
   // the middle of the corner.
-  const float mid_point = std::pow(0.5, 1 / curvature);
+  const float mid_point = superellipse_mid_point(curvature);
 
   const gfx::Vector2dF P1(a, 1);
   const gfx::Vector2dF P2(mid_point - b, mid_point + b);
@@ -162,15 +168,32 @@ void AddCurvedCornerFromOrigin(SkPath& path,
 
   CHECK_GE(curvature, 1);
 
-  if (curvature < 2) {
+  if (curvature > 2) {
+    // For high curvatures, we change the target curvature to match a
+    // superellipse whose distance from the original corner's mid-point is the
+    // desired offset.
+    const float target_length = (target_vertex.at(VertexPoint::kEnd) -
+                                 target_vertex.at(VertexPoint::kStart))
+                                    .Length();
+    const float origin_length = (origin_vertex.at(VertexPoint::kEnd) -
+                                 origin_vertex.at(VertexPoint::kStart))
+                                    .Length();
+    const auto adjusted_length =
+        (target_length - origin_length) / std::numbers::sqrt2;
+    const float mid_point = superellipse_mid_point(curvature);
+    curvature =
+        std::log(0.5) /
+        std::log((mid_point * origin_length + adjusted_length) / target_length);
+  } else if (curvature < 2) {
     // When 1<=curvature<2, the distance at the edge is greater than the border
     // thickness, and needs to be scaled by a number between 1 and sqrt(2).
     // This formula computes this number by computing the offset that would
     // result in a superellipse whose 45deg point has a distance of 1 from
     // this superellipse.
-    // TODO(nrosenthal): adjust curvature when it's >2 to avoid a belly.
     offset.Scale(std::pow(2, 1 / curvature - 0.5));
   }
+
+  // For curvature === 2 (round) there is no adjustment to be made.
 
   const gfx::Vector2dF adjusted_offset_start = gfx::ScaleVector2d(
       gfx::NormalizeVector2d(origin_vertex.at(VertexPoint::kStart) -
