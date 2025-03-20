@@ -1707,7 +1707,7 @@ TEST_P(ManagementApiSupervisedUserTest, SetEnabled_UnsupportedRequirement) {
         SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved);
     std::string error;
     bool success = RunSetEnabledFunction(web_contents_.get(), extension->id(),
-                                         /*user_user_gesture=*/true,
+                                         /*use_user_gesture=*/true,
                                          /*accept_dialog=*/true, &error);
     EXPECT_FALSE(success);
     EXPECT_FALSE(error.empty());
