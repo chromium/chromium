@@ -2,6 +2,7 @@ include_rules = [
   "+components/bookmarks/common/android/bookmarks_jni_headers",
   "+components/favicon_base",
   "+components/keyed_service",
+  "+components/omnibox/common",
   "+components/pref_registry",
   "+components/prefs",
   "+components/query_parser",

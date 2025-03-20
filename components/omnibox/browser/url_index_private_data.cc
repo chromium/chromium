@@ -39,6 +39,7 @@
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/omnibox/common/string_cleaning.h"
 #include "components/search_engines/template_url_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
@@ -817,10 +818,12 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
   // Split URL into individual, unique words then add in the title words.
   const GURL& gurl(row.url());
   DCHECK(gurl.is_valid());
-  const std::u16string& url = bookmarks::CleanUpUrlForMatching(gurl, nullptr);
+  const std::u16string& url =
+      string_cleaning::CleanUpUrlForMatching(gurl, nullptr);
   String16Set url_words = String16SetFromString16(
       url, word_starts ? &word_starts->url_word_starts_ : nullptr);
-  const std::u16string& title = bookmarks::CleanUpTitleForMatching(row.title());
+  const std::u16string& title =
+      string_cleaning::CleanUpTitleForMatching(row.title());
   String16Set title_words = String16SetFromString16(
       title, word_starts ? &word_starts->title_word_starts_ : nullptr);
   for (const auto& word :
