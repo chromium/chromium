@@ -232,41 +232,6 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_THAT(GetNotIgnoredIds({{2, 3, 4, 5}}), UnorderedElementsAre(4));
 }
 
-TEST_F(ReadAnythingAppModelTest, ModelUpdatesTreeState) {
-  // Set up trees.
-  ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
-  ui::AXTreeID tree_id_3 = ui::AXTreeID::CreateNewAXTreeID();
-
-  model().AddTree(tree_id_2, std::make_unique<ui::AXSerializableTree>());
-  model().AddTree(tree_id_3, std::make_unique<ui::AXSerializableTree>());
-
-  ASSERT_EQ(3u, model().tree_infos_for_testing().size());
-  ASSERT_TRUE(model().ContainsTree(tree_id_2));
-  ASSERT_TRUE(model().ContainsTree(tree_id_3));
-  ASSERT_TRUE(model().ContainsTree(tree_id_));
-
-  // Remove one tree.
-  model().OnAXTreeDestroyed(tree_id_2);
-  ASSERT_EQ(2u, model().tree_infos_for_testing().size());
-  ASSERT_TRUE(model().ContainsTree(tree_id_3));
-  ASSERT_FALSE(model().ContainsTree(tree_id_2));
-  ASSERT_TRUE(model().ContainsTree(tree_id_));
-
-  // Remove the second tree.
-  model().OnAXTreeDestroyed(tree_id_);
-  ASSERT_EQ(1u, model().tree_infos_for_testing().size());
-  ASSERT_TRUE(model().ContainsTree(tree_id_3));
-  ASSERT_FALSE(model().ContainsTree(tree_id_2));
-  ASSERT_FALSE(model().ContainsTree(tree_id_));
-
-  // Remove the last tree.
-  model().OnAXTreeDestroyed(tree_id_3);
-  ASSERT_EQ(0u, model().tree_infos_for_testing().size());
-  ASSERT_FALSE(model().ContainsTree(tree_id_3));
-  ASSERT_FALSE(model().ContainsTree(tree_id_2));
-  ASSERT_FALSE(model().ContainsTree(tree_id_));
-}
-
 TEST_F(ReadAnythingAppModelTest, AddAndRemoveTrees) {
   // Create two new trees with new tree IDs.
   std::vector<ui::AXTreeID> tree_ids = {ui::AXTreeID::CreateNewAXTreeID(),

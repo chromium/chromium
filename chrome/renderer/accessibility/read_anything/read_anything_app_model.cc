@@ -443,22 +443,6 @@ bool ReadAnythingAppModel::ContainsTree(const ui::AXTreeID& tree_id) const {
   return base::Contains(tree_infos_, tree_id);
 }
 
-void ReadAnythingAppModel::AddTree(
-    const ui::AXTreeID& tree_id,
-    std::unique_ptr<ui::AXSerializableTree> tree) {
-  DCHECK(!ContainsTree(tree_id));
-
-  for (auto& observer : observers_) {
-    observer.OnTreeAdded(tree.get());
-  }
-
-  std::unique_ptr<ui::AXTreeManager> manager =
-      std::make_unique<ui::AXTreeManager>(std::move(tree));
-  std::unique_ptr<ReadAnythingAppModel::AXTreeInfo> tree_info =
-      std::make_unique<AXTreeInfo>(std::move(manager));
-  tree_infos_[tree_id] = std::move(tree_info);
-}
-
 void ReadAnythingAppModel::AddUrlInformationForTreeId(
     const ui::AXTreeID& tree_id) {
   // If the tree isn't yet created, do nothing.
@@ -567,9 +551,13 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   // Create a new tree if an event is received for a tree that is not yet in
   // the tree list.
   if (!ContainsTree(tree_id)) {
-    std::unique_ptr<ui::AXSerializableTree> new_tree =
-        std::make_unique<ui::AXSerializableTree>();
-    AddTree(tree_id, std::move(new_tree));
+    auto new_tree = std::make_unique<ui::AXSerializableTree>();
+    for (auto& observer : observers_) {
+      observer.OnTreeAdded(new_tree.get());
+    }
+    tree_infos_.emplace(
+        tree_id, std::make_unique<AXTreeInfo>(
+                     std::make_unique<ui::AXTreeManager>(std::move(new_tree))));
   }
 
   // If a tree update on the active tree is received while distillation is in

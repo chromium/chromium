@@ -272,9 +272,6 @@ class ReadAnythingAppModel {
 
   ui::AXSerializableTree* GetTreeFromId(const ui::AXTreeID& tree_id) const;
 
-  void AddTree(const ui::AXTreeID& tree_id,
-               std::unique_ptr<ui::AXSerializableTree> tree);
-
   bool ContainsTree(const ui::AXTreeID& tree_id) const;
 
   void UnserializePendingUpdates(const ui::AXTreeID& tree_id);
