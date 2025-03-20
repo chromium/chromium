@@ -3004,8 +3004,10 @@ TEST_F(PdfViewWebPluginInkTest, DrawInProgressStroke) {
 
   // Draw the canvas for the in-progress stroke.
   plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
+  const base::FilePath stroked_image_png_file =
+      GetInkTestDataFilePath("diagonal_stroke.png");
   EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
-                             GetInkTestDataFilePath("diagonal_stroke.png")));
+                             stroked_image_png_file));
 
   // Finish the stroke.  After a stroke is finished there is nothing more to
   // be drawn by PdfInkModule, as the completed stroke is provided by a
@@ -3016,6 +3018,27 @@ TEST_F(PdfViewWebPluginInkTest, DrawInProgressStroke) {
                          .CreateLeftMouseUpAtPosition(kStrokeEndingPosition)
                          .Build(),
                      blink::WebInputEventResult::kHandledApplication);
+
+  // Updating of `PdfViewWebPlugin::snapshot_` does not happen automatically
+  // on the invalidate call, but later after the tasks PaintManager posted have
+  // a chance to run.  This means painting uses the last snapshot, which does
+  // not include the last Ink stroke.  This results in the most recent stroke
+  // disappearing, causing a flash for the user unless the snapshot from the
+  // most recent stroke is reused.
+  EXPECT_TRUE(plugin_->HasInkInputsSnapshotForTesting());
+  plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
+  EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
+                             stroked_image_png_file));
+
+  // Simulate how the snapshot eventually gets updated, after all necessary
+  // tasks that normally happen from the PaintManager finally complete.  That
+  // results in a blank canvas here for this test, as PdfViewWebPlugin no
+  // longer uses the last Ink rendering snapshot for painting, and
+  // ApplyStroke() was mocked out so there is nothing to draw from the PDF
+  // engine.
+  plugin_->UpdateSnapshot(CreateSkiaImageForTesting(
+      plugin_->GetPluginRectForTesting().size(), SK_ColorWHITE));
+  EXPECT_FALSE(plugin_->HasInkInputsSnapshotForTesting());
   plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
   EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), blank_bitmap,
                                 cc::ExactPixelComparator()));
