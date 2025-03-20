@@ -255,7 +255,8 @@ SELECT
   id AS frame_id,
   'slow_input' AS tag
 FROM _chrome_janky_scroll_frames
-WHERE ABS(total_input_delta_y) <= 2.001;
+WHERE
+  abs(total_input_delta_y) <= 2.001;
 
 -- Consolidated list of tags for each janky scroll frame.
 CREATE PERFETTO TABLE chrome_tagged_janky_scroll_frames (
