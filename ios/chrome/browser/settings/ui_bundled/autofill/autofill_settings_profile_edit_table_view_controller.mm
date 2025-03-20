@@ -175,13 +175,7 @@ const CGFloat kSymbolSize = 22;
 }
 
 - (BOOL)showCancelDuringEditing {
-  SettingsNavigationController* navigationController =
-      base::apple::ObjCCast<SettingsNavigationController>(
-          self.navigationController);
-
-  return navigationController &&
-         navigationController.viewControllers.count > 0 &&
-         navigationController.viewControllers.firstObject == self;
+  return YES;
 }
 
 #pragma mark - UITableViewDataSource
