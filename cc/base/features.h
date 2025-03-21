@@ -248,6 +248,14 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kFastPathNoRaster);
 // frame.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kExportFrameTimingAfterFrameDone);
 
+// When enabled, internal begin frame source will be used in cc to reduce IPC
+// between cc and viz when there were many "did not produce frame" recently,
+// and SetAutoNeedsBeginFrame will be called on CompositorFrameSink.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kInternalBeginFrameSourceOnManyDidNotProduceFrame);
+CC_BASE_EXPORT extern const base::FeatureParam<int>
+    kNumDidNotProduceFrameBeforeInternalBeginFrameSource;
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

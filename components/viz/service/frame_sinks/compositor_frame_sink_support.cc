@@ -1555,7 +1555,8 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
     return RecordShouldSendBeginFrame("SendFrameAck", true);
   }
 
-  if (!client_needs_begin_frame_ && !layer_context_wants_begin_frames_) {
+  if (!client_needs_begin_frame_ && !layer_context_wants_begin_frames_ &&
+      frame_timing_details_.empty()) {
     return RecordShouldSendBeginFrame("StopNotRequested", false);
   }
 
