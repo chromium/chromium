@@ -3191,6 +3191,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_LEARN_MORE" desc="This string is shown in the context menu for learning more about shared highlighting.">
         Learn more...
       </message>
+      <message name="IDS_CONTEXTMENU_PIN_THIS_SHORTCUT" desc="This string is shown in the context menu to change a Top Sites Tile to a Custom Tile.">
+        Pin this shortcut
+      </message>
+      <message name="IDS_CONTEXTMENU_EDIT_SHORTCUT" desc="This string is shown in the context menu to show the dialog to modify an existing Custom Tile.">
+        Edit shortcut
+      </message>
+      <message name="IDS_CONTEXTMENU_UNPIN" desc="This string is shown in the context menu to remove an existing Custom Tile.">
+        Unpin
+      </message>
 
       <!-- Swipe refresh -->
       <message name="IDS_ACCESSIBILITY_SWIPE_REFRESH" desc="Content description for the swipe refresh action.">
@@ -5054,6 +5063,23 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_QUICK_ACTION_CAPTION_GENERIC_WEBSITE" desc="Caption displayed in the Contextual Search bar prompting the user to navigate to a web page.">
         Go to page
+      </message>
+
+      <!-- Edit Shortcut (also Add Shortcut) -->
+      <message name="IDS_EDIT_SHORTCUT_TITLE_ADD" desc="The title for Custom Links Edit Shortcut dialog (on the NTP) when adding a new shortcut.">
+        Add shortcut
+      </message>
+      <message name="IDS_EDIT_SHORTCUT_TITLE_EDIT" desc="The title for Custom Links Edit Shortcut dialog (on the NTP) when editing an existing shortcut.">
+        Edit shortcut
+      </message>
+      <message name="IDS_EDIT_SHORTCUT_HINT_NAME" desc="The hint text for Custom Links Edit Shortcut dialog name input.">
+        Name
+      </message>
+      <message name="IDS_EDIT_SHORTCUT_HINT_URL" desc="The hint text for Custom Links Edit Shortcut dialog URL input.">
+        URL
+      </message>
+      <message name="IDS_EDIT_SHORTCUT_BUTTON_SAVE" desc="The Custom Links Edit Shortcut dialog &quot;Save&quot; button.">
+        Save
       </message>
 
       <!-- Web apps -->
