@@ -34,24 +34,36 @@ namespace {
 
 constexpr std::string_view kBaseTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult";
+constexpr std::string_view kBaseTaskRetriesHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries";
 
 template <class CallbackReturnType>
 ServiceErrorOr<CallbackReturnType> ReportResultMetrics(
     BackgroundTaskType task_type,
-    ServiceErrorOr<CallbackReturnType> result) {
+    ServiceErrorOr<CallbackReturnType> result,
+    size_t retry_count) {
   ServiceError error_for_metrics =
       result.has_value() ? kNoServiceErrorForMetrics : result.error();
+  std::string_view task_type_suffix =
+      GetBackgroundTaskTypeSuffixForHistograms(task_type);
+  std::string_view success_suffix =
+      result.has_value() ? ".Success" : ".Failure";
+
   base::UmaHistogramEnumeration(
-      base::StrCat({kBaseTaskResultHistogramName,
-                    GetBackgroundTaskTypeSuffixForHistograms(task_type)}),
+      base::StrCat({kBaseTaskResultHistogramName, task_type_suffix}),
       error_for_metrics);
+  base::UmaHistogramExactLinear(
+      base::StrCat(
+          {kBaseTaskRetriesHistogramName, task_type_suffix, success_suffix}),
+      retry_count, /*exclusive_max=*/10);
+
   return result;
 }
 
 // Returns a new callback that reports result metrics and then invokes the
 // original `callback`.
 template <class CallbackReturnType>
-base::OnceCallback<void(ServiceErrorOr<CallbackReturnType>)>
+base::OnceCallback<void(ServiceErrorOr<CallbackReturnType>, size_t)>
 WrapCallbackWithMetrics(
     BackgroundTaskType task_type,
     base::OnceCallback<void(ServiceErrorOr<CallbackReturnType>)> callback) {
@@ -101,13 +113,14 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
 
   if (!key_provider) {
     std::move(callback_wrapper)
-        .Run(base::unexpected(ServiceError::kNoKeyProvider));
+        .Run(base::unexpected(ServiceError::kNoKeyProvider), /*retry_count=*/0);
     return;
   }
 
   if (!key_provider->SelectAlgorithm(acceptable_algorithms).has_value()) {
     std::move(callback_wrapper)
-        .Run(base::unexpected(ServiceError::kAlgorithmNotSupported));
+        .Run(base::unexpected(ServiceError::kAlgorithmNotSupported),
+             /*retry_count=*/0);
     return;
   }
 
@@ -131,7 +144,7 @@ void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
 
   if (!key_provider) {
     std::move(callback_wrapper)
-        .Run(base::unexpected(ServiceError::kNoKeyProvider));
+        .Run(base::unexpected(ServiceError::kNoKeyProvider), /*retry_count=*/0);
     return;
   }
 
@@ -152,7 +165,7 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
   // TODO(alexilin): convert this to a CHECK().
   if (!signing_key) {
     std::move(callback_wrapper)
-        .Run(base::unexpected(ServiceError::kKeyNotFound));
+        .Run(base::unexpected(ServiceError::kKeyNotFound), /*retry_count=*/0);
     return;
   }
 

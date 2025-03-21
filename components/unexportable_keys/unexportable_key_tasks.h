@@ -36,7 +36,7 @@ class GenerateKeyTask
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       BackgroundTaskPriority priority,
-      base::OnceCallback<void(GenerateKeyTask::ReturnType)> callback);
+      base::OnceCallback<void(GenerateKeyTask::ReturnType, size_t)> callback);
 };
 
 // A `BackgroundTask` to create a `crypto::UnexportableSigningKey` from a
@@ -49,7 +49,8 @@ class FromWrappedKeyTask
       std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
       base::span<const uint8_t> wrapped_key,
       BackgroundTaskPriority priority,
-      base::OnceCallback<void(FromWrappedKeyTask::ReturnType)> callback);
+      base::OnceCallback<void(FromWrappedKeyTask::ReturnType, size_t)>
+          callback);
 };
 
 // A `BackgroundTask` to sign data with `crypto::UnexportableSigningKey`.
@@ -60,7 +61,7 @@ class SignTask : public internal::BackgroundTaskImpl<
            base::span<const uint8_t> data,
            BackgroundTaskPriority priority,
            size_t max_retries,
-           base::OnceCallback<void(SignTask::ReturnType)> callback);
+           base::OnceCallback<void(SignTask::ReturnType, size_t)> callback);
 
  protected:
   bool ShouldRetryBasedOnResult(

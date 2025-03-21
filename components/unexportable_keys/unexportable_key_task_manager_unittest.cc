@@ -25,21 +25,32 @@
 namespace unexportable_keys {
 
 namespace {
+// Result histograms:
 constexpr std::string_view kGenerateKeyTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult.GenerateKey";
 constexpr std::string_view kFromWrappedKeyTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult.FromWrappedKey";
 constexpr std::string_view kSignTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult.Sign";
+// Retries histograms:
+constexpr std::string_view kGenerateKeyTaskRetriesSuccessHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.GenerateKey.Success";
+constexpr std::string_view kFromWrappedKeyTaskRetriesSuccessHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.FromWrappedKey.Success";
+constexpr std::string_view kSignTaskRetriesSuccessHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.Sign.Success";
+constexpr std::string_view kGenerateKeyTaskRetriesFailureHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.GenerateKey.Failure";
+constexpr std::string_view kFromWrappedKeyTaskRetriesFailureHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.FromWrappedKey.Failure";
+constexpr std::string_view kSignTaskRetriesFailureHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.Sign.Failure";
 }  // namespace
 
 class UnexportableKeyTaskManagerTest : public testing::Test {
  public:
   UnexportableKeyTaskManagerTest() = default;
   ~UnexportableKeyTaskManagerTest() override = default;
-
-  const std::string kBaseTaskResultHistogramName =
-      "Crypto.UnexportableKeys.BackgroundTaskResult";
 
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
@@ -82,6 +93,9 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kGenerateKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kGenerateKeyTaskRetriesSuccessHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest,
@@ -105,6 +119,9 @@ TEST_F(UnexportableKeyTaskManagerTest,
       histogram_tester.GetAllSamples(kGenerateKeyTaskResultHistogramName),
       testing::ElementsAre(
           base::Bucket(ServiceError::kAlgorithmNotSupported, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kGenerateKeyTaskRetriesFailureHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsyncFailureNoKeyProvider) {
@@ -124,6 +141,9 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsyncFailureNoKeyProvider) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kGenerateKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(ServiceError::kNoKeyProvider, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kGenerateKeyTaskRetriesFailureHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
@@ -163,6 +183,9 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kFromWrappedKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kFromWrappedKeyTaskRetriesSuccessHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsyncFailureEmptyKey) {
@@ -181,6 +204,9 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsyncFailureEmptyKey) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kFromWrappedKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(ServiceError::kCryptoApiFailed, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kFromWrappedKeyTaskRetriesFailureHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest,
@@ -214,6 +240,9 @@ TEST_F(UnexportableKeyTaskManagerTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kFromWrappedKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(ServiceError::kNoKeyProvider, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kFromWrappedKeyTaskRetriesFailureHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
@@ -240,6 +269,9 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
   ASSERT_OK_AND_ASSIGN(const auto signed_data, sign_future.Get());
   EXPECT_THAT(histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
               testing::ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSignTaskRetriesSuccessHistogramName),
+      testing::ElementsAre(base::Bucket(0, 1)));
 
   // Also verify that the signature was generated correctly.
   crypto::SignatureVerifier verifier;
@@ -263,6 +295,9 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsyncNullKey) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(ServiceError::kKeyNotFound, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSignTaskRetriesFailureHistogramName),
+      testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 }  // namespace unexportable_keys

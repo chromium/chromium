@@ -73,7 +73,7 @@ GenerateKeyTask::GenerateKeyTask(
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(GenerateKeyTask::ReturnType)> callback)
+    base::OnceCallback<void(GenerateKeyTask::ReturnType, size_t)> callback)
     : internal::BackgroundTaskImpl<GenerateKeyTask::ReturnType>(
           base::BindRepeating(
               &GenerateSigningKeySlowly,
@@ -91,7 +91,7 @@ FromWrappedKeyTask::FromWrappedKeyTask(
     std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
     base::span<const uint8_t> wrapped_key,
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(FromWrappedKeyTask::ReturnType)> callback)
+    base::OnceCallback<void(FromWrappedKeyTask::ReturnType, size_t)> callback)
     : internal::BackgroundTaskImpl<FromWrappedKeyTask::ReturnType>(
           base::BindRepeating(
               &FromWrappedSigningKeySlowly,
@@ -103,11 +103,12 @@ FromWrappedKeyTask::FromWrappedKeyTask(
           BackgroundTaskType::kFromWrappedKey,
           /*max_retries=*/0) {}
 
-SignTask::SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
-                   base::span<const uint8_t> data,
-                   BackgroundTaskPriority priority,
-                   size_t max_retries,
-                   base::OnceCallback<void(SignTask::ReturnType)> callback)
+SignTask::SignTask(
+    scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
+    base::span<const uint8_t> data,
+    BackgroundTaskPriority priority,
+    size_t max_retries,
+    base::OnceCallback<void(SignTask::ReturnType, size_t)> callback)
     : internal::BackgroundTaskImpl<SignTask::ReturnType>(
           base::BindRepeating(&SignSlowlyWithRefCountedKey,
                               std::move(signing_key),
