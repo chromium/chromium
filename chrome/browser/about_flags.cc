@@ -6814,11 +6814,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDoubleTapToZoomInTabletMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {flag_descriptions::kTabGroupsDeferRemoteNavigationsId,
-     flag_descriptions::kTabGroupsDeferRemoteNavigationsName,
-     flag_descriptions::kTabGroupsDeferRemoteNavigationsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(tab_groups::kTabGroupsDeferRemoteNavigations)},
-
     {flag_descriptions::kTabGroupSyncServiceDesktopMigrationId,
      flag_descriptions::kTabGroupSyncServiceDesktopMigrationName,
      flag_descriptions::kTabGroupSyncServiceDesktopMigrationDescription,

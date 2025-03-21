@@ -3717,14 +3717,6 @@ const char kDataSharingDebugLogsDescription[] =
     "Enables the data sharing infrastructure to log and save debug messages "
     "that can be shown in the internals page.";
 
-const char kTabGroupsDeferRemoteNavigationsId[] =
-    "tab-groups-defer-remote-navigations";
-const char kTabGroupsDeferRemoteNavigationsName[] =
-    "Tab Groups Defer Remote Navigations";
-const char kTabGroupsDeferRemoteNavigationsDescription[] =
-    "Prevents remote navigations from being performed when a tab is "
-    "backgrounded in a group";
-
 const char kTabGroupSyncServiceDesktopMigrationId[] =
     "tab-group-sync-service-desktop-migration";
 const char kTabGroupSyncServiceDesktopMigrationName[] =

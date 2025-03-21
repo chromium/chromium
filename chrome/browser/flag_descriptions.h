@@ -2144,10 +2144,6 @@ extern const char kCommerceDeveloperDescription[];
 extern const char kDataSharingDebugLogsName[];
 extern const char kDataSharingDebugLogsDescription[];
 
-extern const char kTabGroupsDeferRemoteNavigationsId[];
-extern const char kTabGroupsDeferRemoteNavigationsName[];
-extern const char kTabGroupsDeferRemoteNavigationsDescription[];
-
 extern const char kTabGroupSyncServiceDesktopMigrationId[];
 extern const char kTabGroupSyncServiceDesktopMigrationName[];
 extern const char kTabGroupSyncServiceDesktopMigrationDescription[];
