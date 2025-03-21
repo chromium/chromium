@@ -21,13 +21,19 @@ found in the LICENSE file.
     android:layoutDirection="locale"
     android:textDirection="locale">
 
-  <ImageView
-      android:id="@+id/start_icon"
-      android:layout_width="@dimen/account_selection_account_avatar_size"
-      android:layout_height="@dimen/account_selection_active_mode_sheet_add_account_icon_size"
-      android:layout_marginEnd="16dp"
-      android:importantForAccessibility="no"
-      android:layout_gravity="center"/>
+    <FrameLayout
+        android:layout_width="@dimen/account_selection_account_avatar_size"
+        android:layout_height="@dimen/account_selection_account_avatar_size"
+        android:layout_marginEnd="16dp">
+
+      <ImageView
+          android:id="@+id/start_icon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:importantForAccessibility="no"
+          android:layout_gravity="center"/>
+
+  </FrameLayout>
 
   <LinearLayout
       android:layout_width="0dp"
@@ -43,4 +49,13 @@ found in the LICENSE file.
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
   </LinearLayout>
+
+  <ImageView
+      android:id="@+id/end_icon"
+      android:layout_width="@dimen/account_selection_login_brand_icon_size"
+      android:layout_height="wrap_content"
+      android:importantForAccessibility="no"
+      android:layout_gravity="center"
+      android:visibility="gone"/>
+
 </LinearLayout>

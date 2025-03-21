@@ -93,6 +93,7 @@ constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kClientMetadataEndpoint[] =
     "https://idp.example/client_metadata";
 constexpr char kMetricsEndpoint[] = "https://idp.example/metrics";
+constexpr char kIdpBrandIconUrl[] = "https://idp.example/icon";
 constexpr char kIdpLoginUrl[] = "https://idp.example/login_url";
 constexpr char kIdpDisconnectUrl[] = "https://idp.example/disconnect";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
@@ -371,6 +372,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     idp_metadata.config_url = provider;
     idp_metadata.idp_login_url = GURL(config.idp_login_url);
     idp_metadata.brand_background_color = config.brand_background_color;
+    idp_metadata.brand_icon_url = GURL(kIdpBrandIconUrl);
     idp_metadata.brand_text_color = config.brand_text_color;
     idp_metadata.requested_label = config.requested_label;
     idp_metadata.types = config.types;
@@ -485,7 +487,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   void DownloadAndDecodeImage(const GURL& url,
                               ImageCallback callback) override {
     EXPECT_TRUE(url == GURL(kAccountPicture) ||
-                url == GURL(kAccountPicture404) || url == GURL(kRpBrandIconUrl))
+                url == GURL(kAccountPicture404) ||
+                url == GURL(kRpBrandIconUrl) || url == GURL(kIdpBrandIconUrl))
         << url;
     ++num_fetched_[FetchedEndpoint::PICTURE];
     if (url == GURL(kAccountPicture404)) {
@@ -640,6 +643,7 @@ class TestDialogController
       if (idp_data->has_login_status_mismatch) {
         state_->displayed_mismatch_idps.push_back(idp_data->idp_for_display);
       }
+      EXPECT_FALSE(idp_data->idp_metadata.brand_decoded_icon.IsEmpty());
       state_->brand_background_color =
           idp_data->idp_metadata.brand_background_color;
       state_->brand_text_color = idp_data->idp_metadata.brand_text_color;

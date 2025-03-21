@@ -402,7 +402,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
                 AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
                 accountsList.getAdapter().getItemViewType(1));
         assertEquals(
-                AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT,
+                AccountSelectionProperties.ITEM_TYPE_LOGIN,
                 accountsList.getAdapter().getItemViewType(2));
 
         // Check that secondary button is NOT displayed.

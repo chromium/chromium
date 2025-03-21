@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
@@ -33,6 +32,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.H
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
@@ -565,16 +565,23 @@ class AccountSelectionMediator {
                     new ListItem(AccountSelectionProperties.ITEM_TYPE_ACCOUNT, model));
         }
 
-        // TODO(crbug.com/392142580): add multi IDP mismatch UI.
         if (skipAddAccountRows) {
             return;
         }
+        boolean hasAddedLoginButton = false;
         for (IdentityProviderData identityProvider : identityProviders) {
-            if (identityProvider.getIdpMetadata().showUseDifferentAccountButton()) {
-                final PropertyModel model =
-                        createAddAccountBtnItem(identityProvider.getIdpMetadata());
+            if (identityProvider.getIdpMetadata().showUseDifferentAccountButton()
+                    || identityProvider.hasLoginStatusMismatch()) {
+                if (!hasAddedLoginButton && !accounts.isEmpty() && mRpMode == RpMode.PASSIVE) {
+                    mSheetAccountItems.add(
+                            new ListItem(
+                                    AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
+                                    new PropertyModel()));
+                }
+                final PropertyModel model = createLoginBtnItem(identityProvider);
                 mSheetAccountItems.add(
-                        new ListItem(AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT, model));
+                        new ListItem(AccountSelectionProperties.ITEM_TYPE_LOGIN, model));
+                hasAddedLoginButton = true;
             }
         }
     }
@@ -990,10 +997,8 @@ class AccountSelectionMediator {
             List<Account> accounts,
             List<IdentityProviderData> identityProviders,
             boolean areAccountsClickable) {
-        IdentityProviderMetadata firstAccountIdpMetadata =
-                !accounts.isEmpty()
-                        ? accounts.get(0).getIdentityProviderData().getIdpMetadata()
-                        : null;
+        IdentityProviderData firstAccountIdp =
+                !accounts.isEmpty() ? accounts.get(0).getIdentityProviderData() : null;
 
         boolean isSingleAccountChooser = accounts.size() == 1 && !accounts.get(0).isFilteredOut();
 
@@ -1012,8 +1017,8 @@ class AccountSelectionMediator {
                         && mRpMode == RpMode.ACTIVE
                         && mHeaderType == HeaderType.SIGN_IN
                         && areAccountsClickable
-                        && firstAccountIdpMetadata != null
-                        && firstAccountIdpMetadata.showUseDifferentAccountButton();
+                        && firstAccountIdp != null
+                        && firstAccountIdp.getIdpMetadata().showUseDifferentAccountButton();
         // We add the add account button alongside the accounts if supported in passive mode and in
         // the multi-account UI of active mode.
         updateAccounts(
@@ -1140,7 +1145,7 @@ class AccountSelectionMediator {
         mModel.set(
                 ItemProperties.ADD_ACCOUNT_BUTTON,
                 showUseDifferentAccountInSingleAccountChooserActiveMode
-                        ? createAddAccountBtnItem(firstAccountIdpMetadata)
+                        ? createLoginBtnItem(firstAccountIdp)
                         : null);
         mModel.set(
                 ItemProperties.ACCOUNT_CHIP,
@@ -1369,14 +1374,14 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createAddAccountBtnItem(IdentityProviderMetadata idpMetadata) {
-        AddAccountButtonProperties.Properties properties =
-                new AddAccountButtonProperties.Properties();
-        properties.mIdpMetadata = idpMetadata;
+    private PropertyModel createLoginBtnItem(IdentityProviderData identityProvider) {
+        LoginButtonProperties.Properties properties = new LoginButtonProperties.Properties();
+        properties.mIdentityProvider = identityProvider;
         properties.mOnClickListener = this::onLoginToIdP;
         properties.mRpMode = mRpMode;
-        return new PropertyModel.Builder(AddAccountButtonProperties.ALL_KEYS)
-                .with(AddAccountButtonProperties.PROPERTIES, properties)
+        properties.mShowIdp = mIsMultipleIdps;
+        return new PropertyModel.Builder(LoginButtonProperties.ALL_KEYS)
+                .with(LoginButtonProperties.PROPERTIES, properties)
                 .build();
     }
 
