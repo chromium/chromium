@@ -2699,6 +2699,51 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
 
+<enum name="ContextMenuOptionAndroid">
+  <summary>The item selected from a context menu on Android.</summary>
+  <int value="0" label="Open in new tab"/>
+  <int value="1" label="Open in incognito tab"/>
+  <int value="2" label="Copy link address"/>
+  <int value="3" label="Copy email address"/>
+  <int value="4" label="Copy link text"/>
+  <int value="5" label="Save link"/>
+  <int value="6" label="Save image"/>
+  <int value="7" label="Open image"/>
+  <int value="8" label="Open image in new tab"/>
+  <int value="9" label="Search by image"/>
+  <int value="10" label="Load original image"/>
+  <int value="11" label="Save video"/>
+  <int value="12" label="Share image"/>
+  <int value="13" label="Open in new/other window"/>
+  <int value="14" label="Send email"/>
+  <int value="15" label="Add to contacts"/>
+  <int value="16" label="Call"/>
+  <int value="17" label="Send text message"/>
+  <int value="18" label="Copy phone number"/>
+  <int value="19" label="Open in new Chrome tab (CCT)"/>
+  <int value="20" label="Open in Chrome incognito tab (CCT)"/>
+  <int value="21" label="Open in browser (CCT)"/>
+  <int value="22" label="Open in Chrome (Fullscreen)"/>
+  <int value="23" label="Share link"/>
+  <int value="24" label="Preview page (Ephemeral tab)"/>
+  <int value="25" label="Preview image (Ephemeral tab)"/>
+  <int value="26" label="Share Link (DirectShare)"/>
+  <int value="27" label="Share Image (DirectShare)"/>
+  <int value="28" label="Search Image with Google Lens"/>
+  <int value="29" label="Copy image"/>
+  <int value="30" label="Shop Similar Products"/>
+  <int value="31" label="Shop image with Google Lens"/>
+  <int value="32" label="Search Similar Products"/>
+  <int value="33" label="Read later"/>
+  <int value="34" label="Shop with Google Lens Chip"/>
+  <int value="35" label="Translate with Google Lens Chip"/>
+  <int value="36" label="Share an highlighted text"/>
+  <int value="37" label="Remove an highlighted text"/>
+  <int value="38" label="Learn more about the shared highlighting feature"/>
+  <int value="39" label="Open in new tab in group"/>
+  <int value="40" label="Open in new window"/>
+</enum>
+
 <!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
 
 <enum name="ConversionCreateAggregatableReportStatus">
