@@ -11,8 +11,9 @@
 
 [package]
 edition = "2021"
+rust-version = "1.60"
 name = "foldhash"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Orson Peters <orsonpeters@gmail.com>"]
 build = false
 exclude = [
@@ -39,8 +40,9 @@ categories = [
 license = "Zlib"
 repository = "https://github.com/orlp/foldhash"
 
-[profile.release]
-lto = "thin"
+[features]
+default = ["std"]
+std = []
 
 [lib]
 name = "foldhash"
@@ -70,6 +72,5 @@ version = "0.8"
 [dev-dependencies.uuid]
 version = "1.8"
 
-[features]
-default = ["std"]
-std = []
+[profile.release]
+lto = "thin"

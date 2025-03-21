@@ -1,6 +1,6 @@
 [package]
 name = "foldhash"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Orson Peters <orsonpeters@gmail.com>"]
 license = "Zlib"
 repository = "https://github.com/orlp/foldhash"
@@ -10,6 +10,7 @@ categories = ["algorithms", "no-std"]
 description = "A fast, non-cryptographic, minimally DoS-resistant hashing algorithm."
 edition = "2021"
 exclude = ["benches", "tools", "assets"]
+rust-version = "1.60"
 
 [features]
 default = ["std"]

@@ -16,20 +16,24 @@ pub trait HashMapExt {
 }
 
 impl<K, V> HashMapExt for std::collections::HashMap<K, V, RandomState> {
+    #[inline(always)]
     fn new() -> Self {
         Self::with_hasher(RandomState::default())
     }
 
+    #[inline(always)]
     fn with_capacity(capacity: usize) -> Self {
         Self::with_capacity_and_hasher(capacity, RandomState::default())
     }
 }
 
 impl<K, V> HashMapExt for std::collections::HashMap<K, V, FixedState> {
+    #[inline(always)]
     fn new() -> Self {
         Self::with_hasher(FixedState::default())
     }
 
+    #[inline(always)]
     fn with_capacity(capacity: usize) -> Self {
         Self::with_capacity_and_hasher(capacity, FixedState::default())
     }
@@ -45,20 +49,24 @@ pub trait HashSetExt {
 }
 
 impl<T> HashSetExt for std::collections::HashSet<T, RandomState> {
+    #[inline(always)]
     fn new() -> Self {
         Self::with_hasher(RandomState::default())
     }
 
+    #[inline(always)]
     fn with_capacity(capacity: usize) -> Self {
         Self::with_capacity_and_hasher(capacity, RandomState::default())
     }
 }
 
 impl<T> HashSetExt for std::collections::HashSet<T, FixedState> {
+    #[inline(always)]
     fn new() -> Self {
         Self::with_hasher(FixedState::default())
     }
 
+    #[inline(always)]
     fn with_capacity(capacity: usize) -> Self {
         Self::with_capacity_and_hasher(capacity, FixedState::default())
     }

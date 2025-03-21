@@ -1634,6 +1634,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "0.1.3 -> 0.1.4"
 notes = "No changes to safety-relevant code"
 
+[[audits.foldhash]]
+who = "Chris Palmer <palmer@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.1.4 -> 0.1.5"
+notes = "No new `unsafe`."
+
 [[audits.font-types]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]

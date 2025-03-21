@@ -81,16 +81,37 @@
 //! let random_state = RandomState::default();
 //! let hash = random_state.hash_one("hello world");
 //! ```
+//!
+//! ## Seeding
+//!
+//! Foldhash relies on a single 8-byte per-hasher seed which should be ideally
+//! be different from each instance to instance, and also a larger
+//! [`SharedSeed`] which may be shared by many different instances.
+//!
+//! To reduce overhead, this [`SharedSeed`] is typically initialized once and
+//! stored. To prevent each hashmap unnecessarily containing a reference to this
+//! value there are three kinds of [`BuildHasher`](core::hash::BuildHasher)s
+//! foldhash provides (both for [`fast`] and [`quality`]):
+//!
+//! 1. [`RandomState`](fast::RandomState), which always generates a
+//!    random per-hasher seed and implicitly stores a reference to [`SharedSeed::global_random`].
+//! 2. [`FixedState`](fast::FixedState), which by default uses a fixed
+//!    per-hasher seed and implicitly stores a reference to [`SharedSeed::global_fixed`].
+//! 3. [`SeedableRandomState`](fast::SeedableRandomState), which works like
+//!    [`RandomState`](fast::RandomState) by default but can be seeded in any manner.
+//!    This state must include an explicit reference to a [`SharedSeed`], and thus
+//!    this struct is 16 bytes as opposed to just 8 bytes for the previous two.
 
 #![cfg_attr(all(not(test), not(feature = "std")), no_std)]
 #![warn(missing_docs)]
 
-use core::hash::Hasher;
+pub mod fast;
+pub mod quality;
+mod seed;
+pub use seed::SharedSeed;
 
 #[cfg(feature = "std")]
 mod convenience;
-mod seed;
-
 #[cfg(feature = "std")]
 pub use convenience::*;
 
@@ -108,11 +129,27 @@ const ARBITRARY9: u64 = 0xd1310ba698dfb5ac;
 
 #[inline(always)]
 const fn folded_multiply(x: u64, y: u64) -> u64 {
-    #[cfg(target_pointer_width = "64")]
+    // The following code path is only fast if 64-bit to 128-bit widening
+    // multiplication is supported by the architecture. Most 64-bit
+    // architectures except SPARC64 and Wasm64 support it. However, the target
+    // pointer width doesn't always indicate that we are dealing with a 64-bit
+    // architecture, as there are ABIs that reduce the pointer width, especially
+    // on AArch64 and x86-64. WebAssembly (regardless of pointer width) supports
+    // 64-bit to 128-bit widening multiplication with the `wide-arithmetic`
+    // proposal.
+    #[cfg(any(
+        all(
+            target_pointer_width = "64",
+            not(any(target_arch = "sparc64", target_arch = "wasm64")),
+        ),
+        target_arch = "aarch64",
+        target_arch = "x86_64",
+        all(target_family = "wasm", target_feature = "wide-arithmetic"),
+    ))]
     {
         // We compute the full u64 x u64 -> u128 product, this is a single mul
         // instruction on x86-64, one mul plus one mulhi on ARM64.
-        let full = (x as u128) * (y as u128);
+        let full = (x as u128).wrapping_mul(y as u128);
         let lo = full as u64;
         let hi = (full >> 64) as u64;
 
@@ -123,214 +160,63 @@ const fn folded_multiply(x: u64, y: u64) -> u64 {
         lo ^ hi
     }
 
-    #[cfg(target_pointer_width = "32")]
+    #[cfg(not(any(
+        all(
+            target_pointer_width = "64",
+            not(any(target_arch = "sparc64", target_arch = "wasm64")),
+        ),
+        target_arch = "aarch64",
+        target_arch = "x86_64",
+        all(target_family = "wasm", target_feature = "wide-arithmetic"),
+    )))]
     {
-        // u64 x u64 -> u128 product is prohibitively expensive on 32-bit.
-        // Decompose into 32-bit parts.
+        // u64 x u64 -> u128 product is quite expensive on 32-bit.
+        // We approximate it by expanding the multiplication and eliminating
+        // carries by replacing additions with XORs:
+        //    (2^32 hx + lx)*(2^32 hy + ly) =
+        //    2^64 hx*hy + 2^32 (hx*ly + lx*hy) + lx*ly ~=
+        //    2^64 hx*hy ^ 2^32 (hx*ly ^ lx*hy) ^ lx*ly
+        // Which when folded becomes:
+        //    (hx*hy ^ lx*ly) ^ (hx*ly ^ lx*hy).rotate_right(32)
+
         let lx = x as u32;
         let ly = y as u32;
         let hx = (x >> 32) as u32;
         let hy = (y >> 32) as u32;
 
-        // u32 x u32 -> u64 the low bits of one with the high bits of the other.
-        let afull = (lx as u64) * (hy as u64);
-        let bfull = (hx as u64) * (ly as u64);
+        let ll = (lx as u64).wrapping_mul(ly as u64);
+        let lh = (lx as u64).wrapping_mul(hy as u64);
+        let hl = (hx as u64).wrapping_mul(ly as u64);
+        let hh = (hx as u64).wrapping_mul(hy as u64);
 
-        // Combine, swapping low/high of one of them so the upper bits of the
-        // product of one combine with the lower bits of the other.
-        afull ^ bfull.rotate_right(32)
+        (hh ^ ll) ^ (hl ^ lh).rotate_right(32)
     }
 }
 
-/// The foldhash implementation optimized for speed.
-pub mod fast {
-    use super::*;
-
-    pub use seed::fast::{FixedState, RandomState};
-
-    /// A [`Hasher`] instance implementing foldhash, optimized for speed.
-    ///
-    /// It can't be created directly, see [`RandomState`] or [`FixedState`].
-    #[derive(Clone)]
-    pub struct FoldHasher {
-        accumulator: u64,
-        sponge: u128,
-        sponge_len: u8,
-        fold_seed: u64,
-        expand_seed: u64,
-        expand_seed2: u64,
-        expand_seed3: u64,
+#[inline(always)]
+const fn rotate_right(x: u64, r: u32) -> u64 {
+    #[cfg(any(
+        target_pointer_width = "64",
+        target_arch = "aarch64",
+        target_arch = "x86_64",
+        target_family = "wasm",
+    ))]
+    {
+        x.rotate_right(r)
     }
 
-    impl FoldHasher {
-        #[inline]
-        pub(crate) fn with_seed(per_hasher_seed: u64, global_seed: &[u64; 4]) -> FoldHasher {
-            FoldHasher {
-                accumulator: per_hasher_seed,
-                sponge: 0,
-                sponge_len: 0,
-                fold_seed: global_seed[0],
-                expand_seed: global_seed[1],
-                expand_seed2: global_seed[2],
-                expand_seed3: global_seed[3],
-            }
-        }
-
-        #[inline(always)]
-        fn write_num<T: Into<u128>>(&mut self, x: T) {
-            let bits: usize = 8 * core::mem::size_of::<T>();
-            if self.sponge_len as usize + bits > 128 {
-                let lo = self.sponge as u64;
-                let hi = (self.sponge >> 64) as u64;
-                self.accumulator = folded_multiply(lo ^ self.accumulator, hi ^ self.fold_seed);
-                self.sponge = x.into();
-                self.sponge_len = bits as u8;
-            } else {
-                self.sponge |= x.into() << self.sponge_len;
-                self.sponge_len += bits as u8;
-            }
-        }
-    }
-
-    impl Hasher for FoldHasher {
-        #[inline(always)]
-        fn write(&mut self, bytes: &[u8]) {
-            let mut s0 = self.accumulator;
-            let mut s1 = self.expand_seed;
-            let len = bytes.len();
-            if len <= 16 {
-                // XOR the input into s0, s1, then multiply and fold.
-                if len >= 8 {
-                    s0 ^= u64::from_ne_bytes(bytes[0..8].try_into().unwrap());
-                    s1 ^= u64::from_ne_bytes(bytes[len - 8..].try_into().unwrap());
-                } else if len >= 4 {
-                    s0 ^= u32::from_ne_bytes(bytes[0..4].try_into().unwrap()) as u64;
-                    s1 ^= u32::from_ne_bytes(bytes[len - 4..].try_into().unwrap()) as u64;
-                } else if len > 0 {
-                    let lo = bytes[0];
-                    let mid = bytes[len / 2];
-                    let hi = bytes[len - 1];
-                    s0 ^= lo as u64;
-                    s1 ^= ((hi as u64) << 8) | mid as u64;
-                }
-                self.accumulator = folded_multiply(s0, s1);
-            } else if len < 256 {
-                self.accumulator = hash_bytes_medium(bytes, s0, s1, self.fold_seed);
-            } else {
-                self.accumulator = hash_bytes_long(
-                    bytes,
-                    s0,
-                    s1,
-                    self.expand_seed2,
-                    self.expand_seed3,
-                    self.fold_seed,
-                );
-            }
-        }
-
-        #[inline(always)]
-        fn write_u8(&mut self, i: u8) {
-            self.write_num(i);
-        }
-
-        #[inline(always)]
-        fn write_u16(&mut self, i: u16) {
-            self.write_num(i);
-        }
-
-        #[inline(always)]
-        fn write_u32(&mut self, i: u32) {
-            self.write_num(i);
-        }
-
-        #[inline(always)]
-        fn write_u64(&mut self, i: u64) {
-            self.write_num(i);
-        }
-
-        #[inline(always)]
-        fn write_u128(&mut self, i: u128) {
-            let lo = i as u64;
-            let hi = (i >> 64) as u64;
-            self.accumulator = folded_multiply(lo ^ self.accumulator, hi ^ self.fold_seed);
-        }
-
-        #[inline(always)]
-        fn write_usize(&mut self, i: usize) {
-            // u128 doesn't implement From<usize>.
-            #[cfg(target_pointer_width = "32")]
-            self.write_num(i as u32);
-            #[cfg(target_pointer_width = "64")]
-            self.write_num(i as u64);
-        }
-
-        #[inline(always)]
-        fn finish(&self) -> u64 {
-            if self.sponge_len > 0 {
-                let lo = self.sponge as u64;
-                let hi = (self.sponge >> 64) as u64;
-                folded_multiply(lo ^ self.accumulator, hi ^ self.fold_seed)
-            } else {
-                self.accumulator
-            }
-        }
-    }
-}
-
-/// The foldhash implementation optimized for quality.
-pub mod quality {
-    use super::*;
-
-    pub use seed::quality::{FixedState, RandomState};
-
-    /// A [`Hasher`] instance implementing foldhash, optimized for quality.
-    ///
-    /// It can't be created directly, see [`RandomState`] or [`FixedState`].
-    #[derive(Clone)]
-    pub struct FoldHasher {
-        pub(crate) inner: fast::FoldHasher,
-    }
-
-    impl Hasher for FoldHasher {
-        #[inline(always)]
-        fn write(&mut self, bytes: &[u8]) {
-            self.inner.write(bytes);
-        }
-
-        #[inline(always)]
-        fn write_u8(&mut self, i: u8) {
-            self.inner.write_u8(i);
-        }
-
-        #[inline(always)]
-        fn write_u16(&mut self, i: u16) {
-            self.inner.write_u16(i);
-        }
-
-        #[inline(always)]
-        fn write_u32(&mut self, i: u32) {
-            self.inner.write_u32(i);
-        }
-
-        #[inline(always)]
-        fn write_u64(&mut self, i: u64) {
-            self.inner.write_u64(i);
-        }
-
-        #[inline(always)]
-        fn write_u128(&mut self, i: u128) {
-            self.inner.write_u128(i);
-        }
-
-        #[inline(always)]
-        fn write_usize(&mut self, i: usize) {
-            self.inner.write_usize(i);
-        }
-
-        #[inline(always)]
-        fn finish(&self) -> u64 {
-            folded_multiply(self.inner.finish(), ARBITRARY0)
-        }
+    #[cfg(not(any(
+        target_pointer_width = "64",
+        target_arch = "aarch64",
+        target_arch = "x86_64",
+        target_family = "wasm",
+    )))]
+    {
+        // On platforms without 64-bit arithmetic rotation can be slow, rotate
+        // each 32-bit half independently.
+        let lo = (x as u32).rotate_right(r);
+        let hi = ((x >> 32) as u32).rotate_right(r);
+        ((hi as u64) << 32) | lo as u64
     }
 }
 
