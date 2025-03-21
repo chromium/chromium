@@ -33,7 +33,7 @@ struct SearchWidget: Widget {
     let kind: String = "SearchWidget"
     var body: some WidgetConfiguration {
       AppIntentConfiguration(
-        kind: kind, intent: SelectProfileIntent.self, provider: ConfigurableProvider()
+        kind: kind, intent: SelectAccountIntent.self, provider: ConfigurableProvider()
       ) { entry in
         SearchWidgetEntryView(entry: entry)
       }
