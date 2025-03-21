@@ -1027,6 +1027,11 @@ var availableTests = [
     chrome.test.assertEq([], payOverTimeIssuerList);
     chrome.test.succeed();
   },
+
+  async function optIntoAutofillAi() {
+    await chrome.autofillPrivate.setAutofillAiOptInStatus(true);
+    chrome.test.succeed();
+  },
 ];
 
 /** @const */
@@ -1086,6 +1091,7 @@ var TESTS_FOR_CONFIG = {
   'getAllAttributeTypesForEntityTypeName':
       ['getAllAttributeTypesForEntityTypeName'],
   'getEmptyPayOverTimeIssuerList': ['getEmptyPayOverTimeIssuerList'],
+  'optIntoAutofillAi': ['optIntoAutofillAi'],
 };
 
 var testConfig = window.location.search.substring(1);

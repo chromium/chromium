@@ -14,26 +14,12 @@
   }
 </style>
 <div id="topSection">
-   <!-- If the user is not eligible for Autofill with Ai, the toggle is disabled
-        and turned off regardless of the pref value.
-        If the user is eligible for Autofill with Ai, the toggle is enabled.
-        The toggle changes the value of a pref which is used for opting in and
-        out of Autofill with Ai. -->
-  <template is="dom-if" if="[[!ineligibleUser]]" restamp>
-    <settings-toggle-button
-        id="prefToggle"
-        no-extension-indicator label="$i18n{autofillAiPageTitle}"
-        sub-label="$i18n{autofillAiToggleSubLabel}"
-        pref="{{prefs.autofill.prediction_improvements.enabled}}">
-    </settings-toggle-button>
-  </template>
-  <template is="dom-if" if="[[ineligibleUser]]" restamp>
-    <settings-toggle-button
-        id="prefToggle" disabled
-        no-extension-indicator label="$i18n{autofillAiPageTitle}"
-        sub-label="$i18n{autofillAiToggleSubLabel}">
-    </settings-toggle-button>
-  </template>
+  <settings-toggle-button
+      id="prefToggle" on-settings-boolean-control-change="onOptInToggleChange_"
+      disabled="[[ineligibleUser]]" pref="{{optedIn_}}"
+      no-extension-indicator label="$i18n{autofillAiPageTitle}"
+      sub-label="$i18n{autofillAiToggleSubLabel}">
+  </settings-toggle-button>
 
   <div class="settings-columned-section">
     <div class="column">
@@ -96,9 +82,7 @@
        user opted out by switching the toggle, the user should not be able to
        add entity instances. -->
   <cr-button id="addEntityInstance" class="header-aligned-button"
-      disabled$="[[computeDisableAddButton_(ineligibleUser,
-          prefs.autofill.prediction_improvements.enabled.value)]]"
-      on-click="onAddButtonClick_">
+      disabled$="[[!optedIn_.value]]" on-click="onAddButtonClick_">
     $i18n{add}
     <cr-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></cr-icon>
   </cr-button>
