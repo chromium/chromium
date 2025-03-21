@@ -261,7 +261,7 @@ public final class TabGroupSyncLocalObserver {
                 LogUtils.log(TAG, "didMoveTabOutOfGroup, prevFilterIndex = " + prevFilterIndex);
 
                 // Remove tab from the synced group.
-                Tab prevRoot = mTabGroupModelFilter.getTabAt(prevFilterIndex);
+                Tab prevRoot = mTabGroupModelFilter.getRepresentativeTabAt(prevFilterIndex);
                 assert prevRoot != null;
                 LocalTabGroupId tabGroupId =
                         TabGroupSyncUtils.getLocalTabGroupId(

@@ -168,10 +168,10 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         doReturn(tab3).when(mTabModel).getTabById(TAB3_ID);
         doReturn(tab4).when(mTabModel).getTabById(TAB4_ID);
         doReturn(4).when(mTabModel).getCount();
-        doReturn(tab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
-        doReturn(tab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
-        doReturn(tab3).when(mTabGroupModelFilter).getTabAt(POSITION3);
-        doReturn(tab4).when(mTabGroupModelFilter).getTabAt(POSITION4);
+        doReturn(tab1).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION1);
+        doReturn(tab2).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION2);
+        doReturn(tab3).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION3);
+        doReturn(tab4).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION4);
         doReturn(TAB1_ID).when(tab1).getRootId();
         doReturn(TAB2_ID).when(tab2).getRootId();
         doReturn(TAB3_ID).when(tab3).getRootId();

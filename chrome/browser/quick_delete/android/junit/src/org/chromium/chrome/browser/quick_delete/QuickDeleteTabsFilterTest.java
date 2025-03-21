@@ -87,7 +87,6 @@ public class QuickDeleteTabsFilterTest {
         when(mProfileMock.isOffTheRecord()).thenReturn(false);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
 
-        doReturn(false).when(mTabGroupModelFilterMock).isIncognito();
         doReturn(false).when(mTabModelMock).isIncognito();
         doReturn(mTabModelMock).when(mTabGroupModelFilterMock).getTabModel();
         when(mTabModelMock.getTabRemover()).thenReturn(mTabRemoverMock);
@@ -97,7 +96,7 @@ public class QuickDeleteTabsFilterTest {
 
     @Test(expected = AssertionError.class)
     public void testIncognitoTabModel_ThrowsAssertionError() {
-        doReturn(true).when(mTabGroupModelFilterMock).isIncognito();
+        doReturn(true).when(mTabModelMock).isIncognito();
         mQuickDeleteTabsFilter = new QuickDeleteTabsFilter(mTabGroupModelFilterMock);
     }
 

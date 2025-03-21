@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -245,7 +244,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             TabGroupModelFilter filter = tabGroupModelFilterSupplier.get();
             Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
             ActionConfirmationManager actionConfirmationManager =
-                    filter.isIncognitoBranded()
+                    filter.getTabModel().isIncognitoBranded()
                             ? null
                             : new ActionConfirmationManager(
                                     profile, mActivity, mModalDialogManager);
@@ -472,15 +471,13 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      *
      * @param tabList The {@link TabList} to show tabs for.
      */
-    public void resetWithTabList(@Nullable TabList tabList) {
-        List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabList);
+    public void resetWithListOfTabs(@Nullable List<Tab> tabs) {
         mMessageManager.beforeReset();
         // Quick mode being false here ensures the selected tab's thumbnail gets updated. With Hub
         // the TabListCoordinator no longer triggers thumbnail captures so this shouldn't guard
         // against the large amount of work that is used to.
-        mTabListCoordinator.resetWithListOfTabs(
-                tabList == null ? null : tabs, /* quickMode= */ false);
-        mMessageManager.afterReset(tabs.size());
+        mTabListCoordinator.resetWithListOfTabs(tabs, /* quickMode= */ false);
+        mMessageManager.afterReset(tabs == null ? 0 : tabs.size());
         mTabListOnScrollListener.postUpdate(mTabListCoordinator.getContainerView());
         if (mTabGroupLabeller != null) {
             mTabGroupLabeller.showAll();
@@ -496,7 +493,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     public void hardCleanup() {
         // TODO(crbug.com/40946413): The pre-fork implementation resets the tab list, this seems
         // suboptimal. Consider not doing this.
-        resetWithTabList(null);
+        resetWithListOfTabs(null);
     }
 
     /**

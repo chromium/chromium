@@ -187,7 +187,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 mActionConfirmationManager.willSkipUngroupTabAttempt()
                         && !isTabInCollaboration(tabId);
         return draggingLastTabInGroup
-                && !mTabGroupModelFilter.isIncognitoBranded()
+                && !mTabGroupModelFilter.getTabModel().isIncognitoBranded()
                 && !willSkipDialog;
     }
 

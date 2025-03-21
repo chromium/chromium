@@ -128,7 +128,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             @NonNull DataSharingTabManager dataSharingTabManager) {
         assert windowAndroid != null;
         assert tabGroupModelFilter != null;
-        assert !tabGroupModelFilter.isIncognito();
+        assert !tabGroupModelFilter.getTabModel().isIncognito();
         assert dataSharingNotificationManager != null;
         assert dataSharingTabManager != null;
         mAttachList.add(

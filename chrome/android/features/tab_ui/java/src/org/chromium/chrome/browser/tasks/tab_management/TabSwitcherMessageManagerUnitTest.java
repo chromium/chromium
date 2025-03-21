@@ -273,7 +273,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Test
     public void showPriceWelcomeMessage() {
         int index = 7;
-        when(mTabGroupModelFilter.index()).thenReturn(index);
+        when(mTabGroupModelFilter.getCurrentRepresentativeTabIndex()).thenReturn(index);
         mMessageManager.showPriceWelcomeMessage(mPriceTabData);
 
         verify(mPriceWelcomeMessageReviewActionProvider).scrollToTab(index);

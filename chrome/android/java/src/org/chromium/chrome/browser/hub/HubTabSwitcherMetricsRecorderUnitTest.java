@@ -95,12 +95,14 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         when(mRegularTabGroupModelFilter.getTabModel()).thenReturn(mRegularTabModel);
         when(mRegularTabGroupModelFilter.isTabInTabGroup(regularTab0)).thenReturn(false);
         when(mRegularTabGroupModelFilter.isTabInTabGroup(regularTab1)).thenReturn(false);
-        when(mRegularTabGroupModelFilter.indexOf(regularTab0)).thenReturn(REGULAR_TAB_0_INDEX);
-        when(mRegularTabGroupModelFilter.indexOf(regularTab1)).thenReturn(REGULAR_TAB_1_INDEX);
+        when(mRegularTabGroupModelFilter.representativeIndexOf(regularTab0))
+                .thenReturn(REGULAR_TAB_0_INDEX);
+        when(mRegularTabGroupModelFilter.representativeIndexOf(regularTab1))
+                .thenReturn(REGULAR_TAB_1_INDEX);
         when(mIncognitoTabGroupModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
-        when(mIncognitoTabGroupModelFilter.indexOf(incognitoTab0))
+        when(mIncognitoTabGroupModelFilter.representativeIndexOf(incognitoTab0))
                 .thenReturn(INCOGNITO_TAB_0_INDEX);
-        when(mIncognitoTabGroupModelFilter.indexOf(incognitoTab1))
+        when(mIncognitoTabGroupModelFilter.representativeIndexOf(incognitoTab1))
                 .thenReturn(INCOGNITO_TAB_1_INDEX);
         when(mIncognitoTabGroupModelFilter.isTabInTabGroup(incognitoTab0)).thenReturn(false);
         when(mIncognitoTabGroupModelFilter.isTabInTabGroup(incognitoTab1)).thenReturn(false);

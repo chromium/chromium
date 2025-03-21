@@ -113,7 +113,7 @@ public class TabGroupModelFilterProvider {
      */
     public TabGroupModelFilter getTabGroupModelFilter(boolean isIncognito) {
         for (TabGroupModelFilter filter : mTabGroupModelFilterInternalList) {
-            if (filter.isIncognito() == isIncognito) {
+            if (filter.getTabModel().isIncognito() == isIncognito) {
                 return filter;
             }
         }

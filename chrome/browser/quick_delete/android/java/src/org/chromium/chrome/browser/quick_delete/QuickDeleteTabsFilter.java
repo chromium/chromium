@@ -47,7 +47,8 @@ class QuickDeleteTabsFilter {
      *     related changes.
      */
     QuickDeleteTabsFilter(@NonNull TabGroupModelFilter tabGroupModelFilter) {
-        assert !tabGroupModelFilter.isIncognito() : "Incognito tab model is not supported.";
+        assert !tabGroupModelFilter.getTabModel().isIncognito()
+                : "Incognito tab model is not supported.";
         mTabGroupModelFilter = tabGroupModelFilter;
     }
 

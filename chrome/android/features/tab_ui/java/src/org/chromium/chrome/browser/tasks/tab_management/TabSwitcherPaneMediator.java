@@ -85,7 +85,8 @@ public class TabSwitcherPaneMediator
                 @Override
                 public void restoreCompleted() {
                     // The tab model just finished restoring. If this pane is visible we should try
-                    // to show tabs. `resetWithTabList` will handle any necessary state complexity
+                    // to show tabs. `resetWithListOfTabs` will handle any necessary state
+                    // complexity
                     // such as incognito reauth.
                     showTabsIfVisible();
                 }
@@ -214,13 +215,15 @@ public class TabSwitcherPaneMediator
     /** Requests accessibility focus on the currently selected tab. */
     public void requestAccessibilityFocusOnCurrentTab() {
         mContainerViewModel.set(
-                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY, mTabGroupModelFilterSupplier.get().index());
+                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
+                mTabGroupModelFilterSupplier.get().getCurrentRepresentativeTabIndex());
     }
 
     /** Scrolls to the currently selected tab. */
     public void setInitialScrollIndexOffset() {
         scrollToTab(
-                mTabIndexLookup.getNthTabIndexInModel(mTabGroupModelFilterSupplier.get().index()));
+                mTabIndexLookup.getNthTabIndexInModel(
+                        mTabGroupModelFilterSupplier.get().getCurrentRepresentativeTabIndex()));
     }
 
     @Override
@@ -290,7 +293,7 @@ public class TabSwitcherPaneMediator
                 "Tabs.GridTabSwitcher.ScrollToTabById.HasTab", hasTab);
         if (!hasTab) return;
 
-        int index = filter.indexOf(tab);
+        int index = filter.representativeIndexOf(tab);
         scrollToTab(mTabIndexLookup.getNthTabIndexInModel(index));
     }
 
@@ -302,7 +305,7 @@ public class TabSwitcherPaneMediator
         hideDialogs();
 
         if (clearTabList) {
-            mResetHandler.resetWithTabList(null, false);
+            mResetHandler.resetWithListOfTabs(null);
         }
 
         mContainerView.addView(customView);
@@ -347,7 +350,8 @@ public class TabSwitcherPaneMediator
 
     private boolean ableToOpenDialog(Tab tab) {
         TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-        return filter.isIncognito() == tab.isIncognito() && filter.isTabInTabGroup(tab);
+        return filter.getTabModel().isIncognito() == tab.isIncognito()
+                && filter.isTabInTabGroup(tab);
     }
 
     public void openTabGroupDialog(int tabId) {
@@ -419,7 +423,7 @@ public class TabSwitcherPaneMediator
             newFilter.addObserver(mTabModelObserver);
             // The tab model may already be restored and `restoreCompleted` will be skipped, but
             // this pane is visible. To avoid an empty state, try to show tabs now.
-            // `resetWithTabList` will skip in the case the tab model is not initialized so this
+            // `resetWithListOfTabs` will skip in the case the tab model is not initialized so this
             // will no-op if it is racing with `restoreCompleted`. Only do this if in the
             // constructor there was no TabGroupModelFilter or it wasn't initialized.
             if (mTryToShowOnFilterChanged) {
@@ -468,7 +472,8 @@ public class TabSwitcherPaneMediator
 
     private void showTabsIfVisible() {
         if (Boolean.TRUE.equals(mIsVisibleSupplier.get())) {
-            mResetHandler.resetWithTabList(mTabGroupModelFilterSupplier.get(), false);
+            mResetHandler.resetWithListOfTabs(
+                    mTabGroupModelFilterSupplier.get().getRepresentativeTabList());
             setInitialScrollIndexOffset();
         }
     }

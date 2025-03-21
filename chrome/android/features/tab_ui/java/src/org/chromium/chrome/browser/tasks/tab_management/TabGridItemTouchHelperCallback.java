@@ -574,8 +574,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
 
     private void onTabMergeToGroup(int selectedCardIndex, int hoveredCardIndex) {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        Tab selectedCard = filter.getTabAt(selectedCardIndex);
-        Tab hoveredCard = filter.getTabAt(hoveredCardIndex);
+        Tab selectedCard = filter.getRepresentativeTabAt(selectedCardIndex);
+        Tab hoveredCard = filter.getRepresentativeTabAt(hoveredCardIndex);
         if (selectedCard == null) return;
         if (hoveredCard == null) return;
         boolean willMergingCreateNewGroup =
