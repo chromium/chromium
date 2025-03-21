@@ -3025,10 +3025,10 @@ TEST_F(PdfViewWebPluginInkTest, DrawInProgressStroke) {
   // not include the last Ink stroke.  This results in the most recent stroke
   // disappearing, causing a flash for the user unless the snapshot from the
   // most recent stroke is reused.
-  EXPECT_TRUE(plugin_->HasInkInputsSnapshotForTesting());
   plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
   EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
                              stroked_image_png_file));
+  EXPECT_TRUE(plugin_->HasInkInputsSnapshotForTesting());
 
   // Simulate how the snapshot eventually gets updated, after all necessary
   // tasks that normally happen from the PaintManager finally complete.  That
@@ -3038,10 +3038,10 @@ TEST_F(PdfViewWebPluginInkTest, DrawInProgressStroke) {
   // engine.
   plugin_->UpdateSnapshot(CreateSkiaImageForTesting(
       plugin_->GetPluginRectForTesting().size(), SK_ColorWHITE));
-  EXPECT_FALSE(plugin_->HasInkInputsSnapshotForTesting());
   plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
   EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), blank_bitmap,
                                 cc::ExactPixelComparator()));
+  EXPECT_FALSE(plugin_->HasInkInputsSnapshotForTesting());
 }
 
 class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {

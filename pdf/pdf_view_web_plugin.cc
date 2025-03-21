@@ -356,6 +356,10 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
                    InkStrokeId id,
                    const ink::Stroke& stroke) override {
     plugin_->engine_->ApplyStroke(page_index, id, stroke);
+
+    // `snapshot_` is now stale, since its content doesn't contain this newly
+    // added stroke.
+    plugin_->snapshot_needs_update_for_ink_input_ = true;
   }
 
   void StrokeFinished() override {
@@ -627,10 +631,15 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
             .TakePaintImage();
     canvas->drawImage(snapshot_ink_inputs_.value(), 0, 0);
   } else if (snapshot_ink_inputs_.has_value()) {
-    // Waiting on `snapshot_` to get refreshed to reflect the change for an
-    // added stroke, so reapply the last Ink inputs snapshot to avoid a flash
-    // of a recently added stroke temporarily disappearing.
-    canvas->drawImage(snapshot_ink_inputs_.value(), 0, 0);
+    if (snapshot_needs_update_for_ink_input_) {
+      // Still waiting on `snapshot_` to get refreshed to reflect the change
+      // for an added stroke, so reapply the last Ink inputs snapshot to avoid
+      // a flash of a recently added stroke temporarily disappearing.
+      canvas->drawImage(snapshot_ink_inputs_.value(), 0, 0);
+    } else {
+      // Now safe to discard the previous Ink inputs snapshot.
+      snapshot_ink_inputs_.reset();
+    }
   }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 }
@@ -2276,9 +2285,8 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // `paint_manager_` updates the snapshot after it has completed painting,
   // which uses `engine_` in `DoPaint()`.  Any newly added Ink stroke will now
-  // be applied in the snapshot, so there is no need to retain any prior
-  // `snapshot_ink_inputs_`.
-  snapshot_ink_inputs_.reset();
+  // be applied in the snapshot.
+  snapshot_needs_update_for_ink_input_ = false;
 #endif
 
   if (!plugin_rect_.IsEmpty())
