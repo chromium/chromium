@@ -610,6 +610,37 @@
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT" desc="This string notifies users that they can make changes to their ad topics in the “ad privacy” section of settings." formatter_data="android_java">
         You can make changes in ad privacy settings
       </message>
+      <!--Ad Topics ROW Notice v3 - Ads API UX Enhancements -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_TITLE_V3" desc="" translateable="false" formatter_data="android_java">
+        Personalize your experience while limiting what websites can learn about you
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DESCRIPTION_V3" desc="" translateable="false" formatter_data="android_java">
+        Websites and their advertising partners can use your browsing history and activity on the sites you visit to personalize content and ads. Those sites can then share limited information with other sites to help them measure the performance of their ads.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_CARD_1_V3" desc="" translateable="false" formatter_data="android_java">
+        Chrome uses privacy measures like encryption, noise, and aggregation to help limit the information shared with sites that use your topics and activity
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_CARD_2_V3" desc="" translateable="false" formatter_data="android_java">
+        Chrome regularly auto-deletes topics and sites that suggest ads for you
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_CARD_3_V3" desc="" translateable="false" formatter_data="android_java">
+        You can block specific topics and sites you don’t like at any time in Chrome settings
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_ADS_TOPIC_DESCRIPTION_V3" desc="" translateable="false" formatter_data="android_java">
+        Whether an ad or content you see is personalized can depend on many things, including these settings, your cookie settings, and if the site you’re viewing customizes your experience.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_TITLE_V3" desc="" translateable="false" formatter_data="android_java">
+        More about how Chrome personalizes content and ads
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_SETTINGS_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
+        Settings
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_GOT_IT_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
+        Got it
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
+        You can make changes in ad privacy settings
+      </message>
       <!--Site suggested ads settings page - Ads API UX Enhancement-->
       <if expr="_google_chrome">
         <then>
