@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<body>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
-<script>
+/* Any copyright is dedicated to the Public Domain.
+ * http://creativecommons.org/publicdomain/zero/1.0/ */
+
+"use strict"
 
 /**
  * Constructs a url for an intermediate "bounce" hop which represents a tracker.
@@ -18,7 +15,10 @@
  *        Clear-Site-Data header.
  * @param {(null|'cache'|'all')} [options.clear_first] - whether to send the
  *        Clear-Site-Data header on first response
- * @param {*} [options.iframe] - iframe same parameters as options (recursive)
+ * @param {string} [response] - which response to elict - defaults to "single_html". Other
+ *        options can be found in "clear-site-data-cache.py" server helper.
+ * @param {*} [options.iframe] - iframe same parameters as options (recursive). Only works on
+ *        "single_html" variation of response
  */
 function getUrl(cacheHelper, {
     subdomain = false,
@@ -26,6 +26,7 @@ function getUrl(cacheHelper, {
     cache = false,
     clear = null,
     clearFirst = null,
+    response = "single_html",
     iframe = null,
 }) {
     let url = "https://";
@@ -43,7 +44,7 @@ function getUrl(cacheHelper, {
     url = new URL(url);
     let params = new URLSearchParams();
     params.append("cache_helper", cacheHelper);
-    params.append("response", "single_html")
+    params.append("response", response)
     if (clear !== null) {
         params.append("clear", clear);
     }
@@ -130,142 +131,3 @@ function testCacheClear(test, params, assert) {
     });
 }
 
-const CLEAR_ORIGIN_CACHE = {
-    clear: "cache",
-}
-
-promise_test(test => {
-    const TEST_SITE = {
-        iframe: {
-            cache: true,
-        }
-    }
-    return testCacheClear(test, [TEST_SITE, CLEAR_ORIGIN_CACHE, TEST_SITE], assert_not_equals);
-}, "same site data also gets cleared in iframe");
-
-promise_test(test => {
-    const TEST_SITE = {
-        iframe: {
-            cache: true,
-            secondOrigin: true,
-        }
-    }
-    return testCacheClear(test, [TEST_SITE, CLEAR_ORIGIN_CACHE, TEST_SITE], assert_equals);
-}, "cross origin iframe data doesn't get cleared");
-
-promise_test(test => {
-    const TEST_SITE = {
-        cache: true,
-    }
-    const CLEAR_ORIGIN_CACHE = {
-        iframe: {
-            clear: "cache",
-            secondOrigin: true,
-        }
-    }
-    return testCacheClear(test, [TEST_SITE, CLEAR_ORIGIN_CACHE, TEST_SITE], assert_equals);
-}, "clear in cross origin iframe doesn't affect embedder");
-
-promise_test(test => {
-    const TEST_SITE = {
-        cache: true,
-        subdomain: true,
-    }
-    return testCacheClear(test, [TEST_SITE, CLEAR_ORIGIN_CACHE, TEST_SITE], assert_equals);
-}, "clearing cache doesn't affect subdomain");
-
-promise_test(test => {
-    const TEST_SITE = {
-        iframe: {
-            secondOrigin: true,
-            cache: true,
-        }
-    }
-    const TEST_SITE_CLEAR_IFRAME = {
-        iframe: {
-            secondOrigin: true,
-            clear: "all",
-        }
-    }
-    return testCacheClear(test, [TEST_SITE, TEST_SITE_CLEAR_IFRAME, TEST_SITE], assert_not_equals);
-}, "clear in cross origin iframe clears data from that iframe");
-
-promise_test(test => {
-    const TEST_SITE = {
-        cache: true
-    };
-    const TEST_SITE_CLEAR_IFRAME = {
-        secondOrigin: true,
-        iframe: {
-            clear: "cache",
-        }
-    }
-    return testCacheClear(test, [TEST_SITE, TEST_SITE_CLEAR_IFRAME, TEST_SITE], assert_equals);
-}, "clear in cross origin iframe doesn't clear unpartitioned data from that cross origin");
-
-promise_test(test => {
-    const TEST_SITE = {
-        secondOrigin: true,
-        iframe: {
-            cache: true,
-        }
-    }
-
-    const TEST_SITE_CLEAR_IFRAME = {
-        clear: "cache"
-    };
-    return testCacheClear(test, [TEST_SITE, TEST_SITE_CLEAR_IFRAME, TEST_SITE], assert_equals);
-}, "clear in unpartitioned context doesn't clear partitioned data");
-
-promise_test(test => {
-    const TEST_SITE = {
-        iframe: {
-            secondOrigin: true,
-            iframe: {
-                cache: true,
-            }
-        }
-    }
-    return testCacheClear(test, [TEST_SITE, CLEAR_ORIGIN_CACHE, TEST_SITE], assert_equals);
-}, "clear in unpartitioned context doesn't clear double partitioned data with intermediate cross origin");
-
-promise_test(test => {
-    const TEST_SITE = {
-        cache: true,
-    };
-
-    const TEST_CLEAR_IFRAME_IFRAME = {
-        iframe: {
-            secondOrigin: true,
-            iframe: {
-                clear: "cache",
-            }
-        }
-    }
-    return testCacheClear(test, [TEST_SITE, TEST_CLEAR_IFRAME_IFRAME, TEST_SITE], assert_equals);
-}, "clear in double partitioned with intermediate cross origin context doesn't clear unpartitioned data");
-
-promise_test(test => {
-    const TEST_SITE = {
-        iframe: {
-            secondOrigin: true,
-            iframe: {
-                cache: true,
-            }
-        }
-    }
-
-    const TEST_CLEAR_IFRAME_IFRAME = {
-        iframe: {
-            secondOrigin: true,
-            iframe: {
-                clear: "cache",
-            }
-        }
-    }
-    return testCacheClear(test, [TEST_SITE, TEST_CLEAR_IFRAME_IFRAME, TEST_SITE], assert_not_equals);
-}, "clear double partitioned context with intermediate cross origin clears that partitioned data");
-
-</script>
-</body>
-</html>
