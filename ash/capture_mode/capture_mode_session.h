@@ -638,6 +638,9 @@ class ASH_EXPORT CaptureModeSession
   std::unique_ptr<CaptureRegionOverlayController>
       capture_region_overlay_controller_;
 
+  // Indicates if a screenshot is taking for search.
+  bool is_capturing_for_search_ = false;
+
   // Timer for performing image search or requesting actions after a delay. This
   // is to prevent too many requests if the user needs to repeatedly adjust the
   // capture region.
