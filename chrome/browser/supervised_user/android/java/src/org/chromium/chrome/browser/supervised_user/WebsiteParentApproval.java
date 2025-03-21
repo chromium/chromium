@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -13,6 +16,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.supervised_user.android.AndroidLocalWebApprovalFlowOutcome;
 import org.chromium.chrome.browser.supervised_user.website_approval.WebsiteApprovalCoordinator;
@@ -21,34 +26,35 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** Requests approval from a parent of a supervised user to unblock navigation to a given URL. */
+@NullMarked
 class WebsiteParentApproval {
     // Favicon default specifications
     private static final int FAVICON_MIN_SOURCE_SIZE_PIXEL = 16;
 
     /** Wrapper class used to store a fetched favicon and the fallback monogram icon. */
     private static final class FaviconHelper {
-        Bitmap mFavicon;
-        Bitmap mFallbackIcon;
+        @Nullable Bitmap mFavicon;
+        @Nullable Bitmap mFallbackIcon;
 
         public void setFavicon(Bitmap favicon) {
             mFavicon = favicon;
         }
 
-        public Bitmap getFavicon() {
+        public @Nullable Bitmap getFavicon() {
             return mFavicon;
         }
 
-        public void setFallbackIcon(Bitmap fallbackIcon) {
+        public void setFallbackIcon(@Nullable Bitmap fallbackIcon) {
             mFallbackIcon = fallbackIcon;
         }
 
-        public Bitmap getFallbackIcon() {
+        public @Nullable Bitmap getFallbackIcon() {
             return mFallbackIcon;
         }
     }
 
     /** Created a fallback monogram icon from the first letter of the formatted url. */
-    private static Bitmap createFaviconFallback(Resources res, GURL url) {
+    private static @Nullable Bitmap createFaviconFallback(Resources res, GURL url) {
         int sizeWidthPx = res.getDimensionPixelSize(R.dimen.monogram_size);
         int cornerRadiusPx = res.getDimensionPixelSize(R.dimen.monogram_corner_radius);
         int textSizePx = res.getDimensionPixelSize(R.dimen.monogram_text_size);
@@ -95,12 +101,10 @@ class WebsiteParentApproval {
                     onParentAuthComplete(success, windowAndroid, url, faviconHelper, profile);
                 });
 
+        Context context = windowAndroid.getContext().get();
+        assumeNonNull(context);
         int desiredFaviconWidthPx =
-                windowAndroid
-                        .getContext()
-                        .get()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.favicon_size_width);
+                context.getResources().getDimensionPixelSize(R.dimen.favicon_size_width);
         // Trigger favicon fetching asynchronously and create fallback monoggram.
         WebsiteParentApprovalJni.get()
                 .fetchFavicon(
@@ -109,8 +113,7 @@ class WebsiteParentApproval {
                         desiredFaviconWidthPx,
                         profile,
                         (Bitmap favicon) -> faviconHelper.setFavicon(favicon));
-        faviconHelper.setFallbackIcon(
-                createFaviconFallback(windowAndroid.getContext().get().getResources(), url));
+        faviconHelper.setFallbackIcon(createFaviconFallback(context.getResources(), url));
     }
 
     /** Displays the screen giving the parent the option to approve or deny the website. */
