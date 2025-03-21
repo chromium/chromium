@@ -18255,26 +18255,6 @@
             ]
         }
     ],
-    "PrivacySandboxEqualizedPromptButtons": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxEqualizedPromptButtons"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxInternalsDevUI": [
         {
             "platforms": [
