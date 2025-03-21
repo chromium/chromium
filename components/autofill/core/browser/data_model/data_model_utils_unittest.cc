@@ -30,6 +30,7 @@ std::optional<Date> ParseDate(std::u16string_view date,
   return std::nullopt;
 }
 
+// Tests the constraints defined in the documentation of IsValidDateFormat().
 TEST(AutofillDataModelUtils, IsValidDateFormat) {
   EXPECT_TRUE(IsValidDateFormat(u"YYYY-MM-DD"));
   EXPECT_TRUE(IsValidDateFormat(u"YYYY - MM - DD"));
@@ -41,7 +42,13 @@ TEST(AutofillDataModelUtils, IsValidDateFormat) {
   EXPECT_TRUE(IsValidDateFormat(u"DD / MM / YYYY"));
   EXPECT_TRUE(IsValidDateFormat(u"MM/DD/YYYY"));
   EXPECT_TRUE(IsValidDateFormat(u"MM / DD / YYYY"));
+  EXPECT_TRUE(IsValidDateFormat(u"YYYY MM DD"));
   EXPECT_TRUE(IsValidDateFormat(u"YYYYMMDD"));
+  EXPECT_TRUE(IsValidDateFormat(u"YY.M.D"));
+  EXPECT_TRUE(IsValidDateFormat(u"D.M.YY"));
+  EXPECT_TRUE(IsValidDateFormat(u"YY.M.D"));
+  EXPECT_TRUE(IsValidDateFormat(u"YY-M"));
+  EXPECT_TRUE(IsValidDateFormat(u"D/M"));
 
   EXPECT_FALSE(IsValidDateFormat(u"DD/MM-YYYY"));
   EXPECT_FALSE(IsValidDateFormat(u" DD/MM/YYYY"));
@@ -50,6 +57,26 @@ TEST(AutofillDataModelUtils, IsValidDateFormat) {
   EXPECT_FALSE(IsValidDateFormat(u"DDMM-YYYY"));
   EXPECT_FALSE(IsValidDateFormat(u"DD-MMYYYY"));
   EXPECT_FALSE(IsValidDateFormat(u"YYDDMMYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"YYYYMMD"));
+  EXPECT_FALSE(IsValidDateFormat(u"DMMYYYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"YYYYMDD"));
+  EXPECT_FALSE(IsValidDateFormat(u"YYMMD"));
+  EXPECT_FALSE(IsValidDateFormat(u"DMMYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"YYMDD"));
+  EXPECT_FALSE(IsValidDateFormat(u"DDMYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"YYD"));
+  EXPECT_FALSE(IsValidDateFormat(u"DYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"YYM"));
+  EXPECT_FALSE(IsValidDateFormat(u"MYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"YYYYD"));
+  EXPECT_FALSE(IsValidDateFormat(u"DYYYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"YYYYM"));
+  EXPECT_FALSE(IsValidDateFormat(u"MYYYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"D.MYYYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"DM.YYYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"D.MYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"DM.YY"));
+  EXPECT_FALSE(IsValidDateFormat(u"DM"));
   EXPECT_FALSE(IsValidDateFormat(u"YYY"));
   EXPECT_FALSE(IsValidDateFormat(u"Y"));
   EXPECT_FALSE(IsValidDateFormat(u"MMM"));

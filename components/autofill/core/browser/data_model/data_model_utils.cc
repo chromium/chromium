@@ -56,18 +56,39 @@ int ConsumeNumber(std::u16string_view& input,
   return num;
 }
 
+// If `first_separator` is null, consumes an arbitrary separator and sets
+// `first_separator` to that value.
+// If `first_separator` is non-null, consumes it.
+bool ConsumeSeparator(std::u16string_view& input,
+                      const char16_t*& first_separator) {
+  if (!first_separator) {
+    for (const char16_t* separator :
+         {u" / ", u" . ", u" - ", u"/", u".", u"-", u" ", u""}) {
+      if (Consume(input, separator)) {
+        first_separator = separator;
+        return true;
+      }
+    }
+    NOTREACHED();  // Because `kSeparators` contains u"".
+  } else {
+    return Consume(input, first_separator);
+  }
+}
+
 }  // namespace
 
 bool IsValidDateFormat(std::u16string_view format) {
-  enum Category { kYear, kMonth, kDay, kMaxValue = kDay };
+  int year_width = 0;
+  int month_width = 0;
+  int day_width = 0;
+  const char16_t* first_separator = nullptr;
 
   // Consumes a year, month, or day in the format `subformat`, if no year,
   // month, or day, respectively, has been already in an earlier call.
-  auto consume_part = [&format, found = DenseSet<Category>()](
-                          std::u16string_view subformat,
-                          Category category) mutable {
-    if (!found.contains(category) && Consume(format, subformat)) {
-      found.insert(category);
+  auto consume_part = [&format](std::u16string_view subformat,
+                                int& width) mutable {
+    if (Consume(format, subformat) && width == 0) {
+      width = subformat.size();
       return true;
     }
     return false;
@@ -75,36 +96,34 @@ bool IsValidDateFormat(std::u16string_view format) {
 
   // Consumes a year, month, or day, if no year, month, or day, respectively,
   // has been consumed in an earlier call.
-  auto consume_any_part = [&consume_part]() {
-    return consume_part(u"YYYY", kYear) || consume_part(u"YY", kYear) ||
-           consume_part(u"MM", kMonth) || consume_part(u"M", kMonth) ||
-           consume_part(u"DD", kDay) || consume_part(u"D", kDay);
+  auto consume_any_part = [&]() {
+    return consume_part(u"YYYY", year_width) ||
+           consume_part(u"YY", year_width) ||
+           consume_part(u"MM", month_width) ||
+           consume_part(u"M", month_width) || consume_part(u"DD", day_width) ||
+           consume_part(u"D", day_width);
   };
 
   // Consumes a separator. Subsequent calls only accept the separator that was
   // matched in the first call.
-  auto consume_separator =
-      [&format, separator = static_cast<const char16_t*>(nullptr)]() mutable {
-        if (!separator) {
-          for (const char16_t* token :
-               {u" / ", u" . ", u" - ", u"/", u".", u"-", u" ", u""}) {
-            if (Consume(format, token)) {
-              separator = token;
-              return true;
-            }
-          }
-          NOTREACHED();
-        } else {
-          return Consume(format, separator);
-        }
-      };
+  auto consume_separator = [&format, &first_separator]() mutable {
+    return ConsumeSeparator(format, first_separator);
+  };
 
-  // Matches at least one and at most three part, which must be of distinct
-  // categories. The parts may be separated by the same separator.
-  return consume_any_part() &&
-         (format.empty() || (consume_separator() && consume_any_part())) &&
-         (format.empty() || (consume_separator() && consume_any_part())) &&
-         format.empty();
+  return
+      // At least one and at most three parts of distinct categories must be
+      // present (e.g., YYYY-MM-MM are YYYY-MM/DD are not valid).
+      consume_any_part() &&
+      (format.empty() || (consume_separator() && consume_any_part())) &&
+      (format.empty() || (consume_separator() && consume_any_part())) &&
+      format.empty() &&
+      // If both are present, month and day must agree on the width (e.g.,
+      // YYYY-MM-D and YYYY-M-DD are not valid).
+      (month_width == 0 || day_width == 0 || month_width == day_width) &&
+      // If month or day are not alone and they're not long, there must be a
+      // non-empty separator (e.g., DM and YYYYM are not valid).
+      (month_width == 2 || day_width == 2 || !first_separator ||
+       first_separator[0] != '\0');
 }
 
 bool ParseDate(std::u16string_view date,
