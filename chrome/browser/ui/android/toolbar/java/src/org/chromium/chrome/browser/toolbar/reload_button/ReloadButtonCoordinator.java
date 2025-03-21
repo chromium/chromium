@@ -98,6 +98,15 @@ public class ReloadButtonCoordinator {
     }
 
     /**
+     * Sets a listeners that allows parent to intercept key events.
+     *
+     * @param listener a callback that is invoked when hardware key is pressed.
+     */
+    public void setOnKeyListener(View.OnKeyListener listener) {
+        mMediator.setOnKeyListener(listener);
+    }
+
+    /**
      * Prepares the view for fade animation and returns an alpha animator.
      *
      * @param shouldShow indicated fade in or out animation type.

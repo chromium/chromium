@@ -227,7 +227,7 @@ public class ToolbarTablet extends ToolbarLayout
                     }
                 });
 
-        mReloadButton.setOnKeyListener(
+        mReloadButtonCoordinator.setOnKeyListener(
                 new KeyboardNavigationListener() {
                     @Override
                     public View getNextFocusForward() {

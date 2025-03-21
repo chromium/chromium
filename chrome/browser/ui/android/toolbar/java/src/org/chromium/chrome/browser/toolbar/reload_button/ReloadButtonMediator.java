@@ -9,13 +9,13 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -144,16 +144,19 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     }
 
     /**
-     * Sets a listeners that allows parent to intercept keyboard navigation events.
+     * Sets a listeners that allows parent to intercept key events.
      *
-     * @param listener {@link KeyboardNavigationListener}
+     * @param listener a callback that is invoked when hardware key is pressed.
      */
-    public void setKeyboardNavigationListener(KeyboardNavigationListener listener) {}
+    public void setOnKeyListener(View.OnKeyListener listener) {
+        mModel.set(ReloadButtonProperties.KEY_LISTENER, listener);
+    }
 
     public void destroy() {
         mModel.set(ReloadButtonProperties.TOUCH_LISTENER, null);
         mModel.set(ReloadButtonProperties.CLICK_LISTENER, null);
         mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, null);
+        mModel.set(ReloadButtonProperties.KEY_LISTENER, null);
 
         mThemeColorProvider.removeTintObserver(this);
     }

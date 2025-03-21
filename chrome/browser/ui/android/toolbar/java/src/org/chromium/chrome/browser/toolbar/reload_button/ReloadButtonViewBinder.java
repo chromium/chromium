@@ -37,6 +37,9 @@ class ReloadButtonViewBinder {
         } else if (key == ReloadButtonProperties.TOUCH_LISTENER) {
             final Callback<MotionEvent> listener = model.get(ReloadButtonProperties.TOUCH_LISTENER);
             setTouchListener(button, listener);
+        } else if (key == ReloadButtonProperties.KEY_LISTENER) {
+            final View.OnKeyListener listener = model.get(ReloadButtonProperties.KEY_LISTENER);
+            button.setOnKeyListener(listener);
         } else if (key == ReloadButtonProperties.CONTENT_DESCRIPTION) {
             button.setContentDescription(model.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
         } else if (key == ReloadButtonProperties.DRAWABLE_LEVEL) {
