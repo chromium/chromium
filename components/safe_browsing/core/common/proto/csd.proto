@@ -179,6 +179,8 @@ message IntelligentScanInfo {
     // Client cannot infer the brand and intent because there is no text on the
     // page.
     EMPTY_TEXT = 1;
+    // Allowlisted by high confidence allowlist.
+    ALLOWLISTED = 2;
   }
   optional NoInfoReason no_info_reason = 3;
 }

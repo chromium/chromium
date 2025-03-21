@@ -2099,6 +2099,15 @@ class ClientSideDetectionHostScamDetectionTest
         /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
         mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
   }
+
+  void PhishingDetectionDoneWithHighConfidenceAllowlistMatch(
+      mojo_base::ProtoWrapper verdict,
+      ClientSideDetectionType type) {
+    csd_host_->PhishingDetectionDone(
+        type,
+        /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/true,
+        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
+  }
 };
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
@@ -2281,6 +2290,56 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       verdict_sent->intelligent_scan_info();
   EXPECT_EQ(intelligent_scan_info.no_info_reason(),
             IntelligentScanInfo::EMPTY_TEXT);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       AllowlistedOnHCDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  csd_service_->SetOnDeviceAvailabilityForTesting(true);
+
+  base::HistogramTester histogram_tester;
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(0.0f);
+  verdict.set_is_phishing(false);
+
+  // Because the URL is on the HC allowlist, we will NOT inquire the
+  // on-device model.
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _, _)).Times(0);
+
+  // We can expect the token fetcher to occur as usual because ESB preference is
+  // enabled.
+  std::unique_ptr<ClientPhishingRequest> verdict_sent;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_keyboard_lock"))
+      .WillOnce(MoveArg<0>(&verdict_sent));
+
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  PhishingDetectionDoneWithHighConfidenceAllowlistMatch(
+      mojo_base::ProtoWrapper(verdict),
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token_keyboard_lock");
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  IntelligentScanInfo intelligent_scan_info =
+      verdict_sent->intelligent_scan_info();
+  EXPECT_EQ(intelligent_scan_info.no_info_reason(),
+            IntelligentScanInfo::ALLOWLISTED);
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
