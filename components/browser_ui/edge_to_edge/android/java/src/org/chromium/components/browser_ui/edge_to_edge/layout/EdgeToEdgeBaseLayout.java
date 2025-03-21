@@ -44,6 +44,7 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
     private final Rect mCutoutRectTop = new Rect();
     private final Rect mCutoutRectLeft = new Rect();
     private final Rect mCutoutRectRight = new Rect();
+    private final Rect mCaptionBarRect = new Rect();
 
     private final Rect mStatusBarRectDebug = new Rect(); // Draws at 50% width of the actual rect.
     private final Rect mNavBarRectDebug = new Rect(); // Draws at 50% width of the actual rect.
@@ -59,6 +60,7 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
     private Insets mCutoutInsetsTop = Insets.NONE;
     private Insets mCutoutInsetsLeft = Insets.NONE;
     private Insets mCutoutInsetsRight = Insets.NONE;
+    private Insets mCaptionBarInsets = Insets.NONE;
 
     private boolean mIsDebugging;
 
@@ -80,6 +82,8 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
     public void onDraw(Canvas canvas) {
         // Draw colors over its padding.
         colorRectOnDraw(canvas, mStatusBarRect, mStatusBarPaint);
+        // Reuse the status bar color for the caption bar color.
+        colorRectOnDraw(canvas, mCaptionBarRect, mStatusBarPaint);
         colorRectOnDraw(canvas, mNavBarRect, mNavBarPaint);
         colorRectOnDraw(canvas, mCutoutRectTop, mDisplayCutoutPaint);
         colorRectOnDraw(canvas, mCutoutRectLeft, mDisplayCutoutPaint);
@@ -106,11 +110,18 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
         mViewRect.set(getLeft(), getTop(), getRight(), getBottom());
         mStatusBarRect.set(WindowInsetsUtils.toRectInWindow(mViewRect, mStatusBarInsets));
         mNavBarRect.set(WindowInsetsUtils.toRectInWindow(mViewRect, mNavigationBarInsets));
+        mCaptionBarRect.set(WindowInsetsUtils.toRectInWindow(mViewRect, mCaptionBarInsets));
 
         // In landscape mode, status bar can intersect with nav bar.
         if (Rect.intersects(mStatusBarRect, mNavBarRect)) {
             mStatusBarRect.left += mNavigationBarInsets.left;
             mStatusBarRect.right -= mNavigationBarInsets.right;
+        }
+        // In landscape mode, caption bar can intersect with nav bar. The caption bar often
+        // intersects with the status bar, but that's alright since it will share the same color.
+        if (Rect.intersects(mCaptionBarRect, mNavBarRect)) {
+            mCaptionBarRect.left += mNavigationBarInsets.left;
+            mCaptionBarRect.right -= mNavigationBarInsets.right;
         }
         // TODO(crbug.com/400517589): Cleanup display cutout Rects.
         mCutoutRectTop.set(WindowInsetsUtils.toRectInWindow(mViewRect, mCutoutInsetsTop));
@@ -124,6 +135,12 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
             }
             if (Rect.intersects(mStatusBarRect, mCutoutRectRight)) {
                 mStatusBarRect.right -= mCutoutInsetsRight.right;
+            }
+            if (Rect.intersects(mCaptionBarRect, mCutoutRectLeft)) {
+                mCaptionBarRect.left += mCutoutInsetsLeft.left;
+            }
+            if (Rect.intersects(mCaptionBarRect, mCutoutRectRight)) {
+                mCaptionBarRect.right -= mCutoutInsetsRight.right;
             }
             if (Rect.intersects(mNavBarRect, mCutoutRectLeft)) {
                 mNavBarRect.left += mCutoutInsetsLeft.left;
@@ -155,6 +172,10 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
     void setDisplayCutoutTop(Insets insets) {
         assert insets.top > 0 || Insets.NONE.equals(insets);
         mCutoutInsetsTop = insets;
+    }
+
+    void setCaptionBarInsets(Insets insets) {
+        mCaptionBarInsets = insets;
     }
 
     void setDisplayCutoutInsetLeft(Insets insets) {
@@ -207,6 +228,10 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
 
     Rect getStatusBarRectForTesting() {
         return mStatusBarRect;
+    }
+
+    Rect getCaptionBarRectForTesting() {
+        return mCaptionBarRect;
     }
 
     Rect getNavigationBarRectForTesting() {
