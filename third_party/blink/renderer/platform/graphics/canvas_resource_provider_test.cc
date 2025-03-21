@@ -700,7 +700,7 @@ TEST_F(CanvasResourceProviderTest,
 
   // NewOrRecycledResource() would return nullptr before an ImportResource().
   auto* raw_resource = resource.get();
-  EXPECT_TRUE(provider->ImportResource(std::move(resource)));
+  provider->ImportResource(std::move(resource));
   EXPECT_EQ(provider->NewOrRecycledResource().get(), raw_resource);
   // NewOrRecycledResource() will always return the same |resource|.
   EXPECT_EQ(provider->NewOrRecycledResource().get(), raw_resource);

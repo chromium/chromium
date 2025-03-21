@@ -211,7 +211,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Subclasses implementing import of external canvas resources must override
   // this method.
-  virtual bool ImportResource(scoped_refptr<ExternalCanvasResource>&&) {
+  virtual void ImportResource(scoped_refptr<ExternalCanvasResource>&&) {
     NOTREACHED();
   }
 
