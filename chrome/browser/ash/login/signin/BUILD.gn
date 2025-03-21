@@ -158,6 +158,7 @@ source_set("unit_tests") {
     "offline_signin_limiter_unittest.cc",
     "signin_error_notifier_unittest.cc",
     "token_handle_checker_unittest.cc",
+    "token_handle_store_unittest.cc",
   ]
 
   deps = [
