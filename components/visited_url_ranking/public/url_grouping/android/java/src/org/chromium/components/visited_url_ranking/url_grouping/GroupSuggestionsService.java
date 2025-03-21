@@ -17,7 +17,6 @@ public interface GroupSuggestionsService {
     /** Delegate class to show the suggestions in UI. */
     interface Delegate {
         /** Gets called when backend has a suggestion ready to show. */
-        // TODO(yuezhanggg): Add response callback in Java.
         default void showSuggestion(
                 GroupSuggestions groupSuggestions, Callback<UserResponseMetadata> callback) {}
 
