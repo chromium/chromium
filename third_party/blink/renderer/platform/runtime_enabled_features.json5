@@ -1216,7 +1216,7 @@
     // progress()
     {
       name: "CSSProgressNotation",
-      status: "stable",
+      status: "experimental",
     },
     {
       // For ::column pseudo element for fragment styling.
