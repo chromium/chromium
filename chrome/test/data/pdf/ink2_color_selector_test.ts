@@ -139,11 +139,11 @@ chrome.test.runTests([
   },
 
   // Test that when the color button in the first column is selected, pressing
-  // 'ArrowLeft' will select the color button in the last column in the same
+  // 'ArrowLeft' will select the color button in the last column in the previous
   // row.
   // Test that when the color button in the last column is selected,
   // pressing 'ArrowRight' will select the color button in the first column in
-  // the same row.
+  // the next row.
   async function testArrowKeysChangeColorFirstLastColumn() {
     const selector = createSelector();
     const colorButtons = getColorButtons(selector);
@@ -157,11 +157,11 @@ chrome.test.runTests([
 
     await testColorKeyboardEvent(
         colorButtons, colorButtons[5]!, 'ArrowLeft',
-        /*expectedButtonIndex=*/ 9);
+        /*expectedButtonIndex=*/ 4);
 
     await testColorKeyboardEvent(
         colorButtons, colorButtons[9]!, 'ArrowRight',
-        /*expectedButtonIndex=*/ 5);
+        /*expectedButtonIndex=*/ 10);
 
     chrome.test.succeed();
   },
