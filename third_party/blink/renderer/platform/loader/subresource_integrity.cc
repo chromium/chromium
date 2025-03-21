@@ -199,29 +199,22 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     return true;
   }
 
-  // 3.  Let |hash-metadata| be the result of executing [Get the strongest
-  //     metadata from set] on |parsedMetadata|["hashes"].
-  // 4.  Let |signature-metadata| be the result of executing [Get the strongest
-  //     metadata from set] on |parsedMetadata|["signatures"].
+  // 3.  Let |hash-match| be `true` if |hash-metadata| is empty, and `false`
+  //     otherwise.
   //
-  //     (We're doing these in a slightly different order, breaking the hashing
-  //      work into the `CheckHashesImpl()` block below, and likewise the
-  //      signature work into `CheckSignaturesImp()`.
-
-  //
-  // Verify the hash-based integrity constraints:
-  //
+  //     (We're doing this in a slightly different order, breaking the hashing
+  //      work into the `CheckHashesImpl()` block below.)
   if (!CheckHashesImpl(parsed_metadata.hashes, buffer, resource_url,
                        feature_context, integrity_report, computed_hashes)) {
     return false;
   }
 
   //
-  // And the signature-based constraints (iff the relevant runtime-enabled
-  // feature is enabled).
+  // 6.  Let |signature-match| be `true` if |signature-metadata| is empty, and
+  //     `false` otherwise.
   //
   if (RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(feature_context) &&
-      !CheckSignaturesImpl(parsed_metadata.signatures, resource_url,
+      !CheckSignaturesImpl(parsed_metadata.public_keys, resource_url,
                            raw_headers, integrity_report)) {
     return false;
   }
@@ -235,21 +228,21 @@ bool SubresourceIntegrity::CheckHashesImpl(
     const FeatureContext* feature_context,
     IntegrityReport& integrity_report,
     HashMap<HashAlgorithm, String>* computed_hashes) {
-  // This implements steps 3, 5, and 7 of
+  // This implements steps 3 and 5 of
   // https://wicg.github.io/signature-based-sri/#matching.
 
-  // 5.  Let |hash-match| be `true` if |hash-metadata| is empty, and `false`
-  //     otherwise.
   if (hashes.empty()) {
     return true;
   }
 
-  // This is more or less step 3 (at least, it is in combination with the
-  // checks in the loop below that ignore non-matching algorithms). We run it
-  // after 5, as `FindBestAlgorithm` assumes that |hashes| is not empty.
+  // 3.  Let |hash-metadata| be the result of executing [Get the strongest
+  //     metadata from set] on |parsedMetadata|["hashes"].
+  //
+  //     (We're doing this in a slightly different order, breaking the hashing
+  //      work into the `CheckHashesImpl()` block below.)
   IntegrityAlgorithm strongest_algorithm = FindBestAlgorithm(hashes);
 
-  // 7.3. Let |actualValue| be the result of [Apply algorithm to bytes] on
+  // 5.  Let |actualValue| be the result of [Apply algorithm to bytes] on
   //      `algorithm` and `bytes`.
   //
   // To implement this, we precalculate |buffer|'s digest using the strongest
@@ -277,7 +270,7 @@ bool SubresourceIntegrity::CheckHashesImpl(
     DigestValue expected_value;
     expected_value.AppendSpan(base::as_byte_span(decoded_metadata));
 
-    // 7.4. If actualValue is a case-sensitive match for expectedValue, return
+    // 5.4. If actualValue is a case-sensitive match for expectedValue, return
     // true set hash-match to true and break.
     if (actual_value == expected_value) {
       integrity_report.AddUseCount(
@@ -314,15 +307,9 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
     const KURL& resource_url,
     const String& raw_headers,
     IntegrityReport& integrity_report) {
-  // This implements steps 6 and 8 of
+  // This implements steps 6 and 8.3 of
   // https://wicg.github.io/signature-based-sri/#matching.
   //
-  // (For the moment we're skipping step 4, as we only have one signature
-  // type, so a list of the "strongest" obviously includes all of them.)
-  //
-  //
-  // 6.  Let |signature-match| be `true` if |signature-metadata| is empty, and
-  //     `false` otherwise.
   if (integrity_pairs.empty()) {
     return true;
   }
@@ -544,7 +531,7 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
       if (integrity_report) {
         integrity_report->AddUseCount(WebFeature::kSRIPublicKeyAssertion);
       }
-      metadata_set.signatures.insert(integrity_metadata.ToPair());
+      metadata_set.public_keys.insert(integrity_metadata.ToPair());
     }
   }
 }
@@ -594,7 +581,7 @@ bool SubresourceIntegrity::VerifyInlineIntegrity(
     }
     semantically_valid_signatures++;
 
-    for (const auto& key : integrity_metadata.signatures) {
+    for (const auto& key : integrity_metadata.public_keys) {
       Vector<char> decoded_key;
       if (!Base64Decode(key.first, decoded_key) || decoded_key.size() != 32u) {
         // TODO(391907163): Log an error for invalid public key digests.

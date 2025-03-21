@@ -44,7 +44,7 @@ HashAlgorithm GetHashAlgorithm(IntegrityAlgorithm integrity) {
 
 UnencodedDigest::UnencodedDigest(IntegrityMetadataSet integrity_metadata)
     : integrity_metadata_(integrity_metadata) {
-  CHECK(integrity_metadata.signatures.empty());
+  CHECK(integrity_metadata.public_keys.empty());
 }
 
 std::optional<UnencodedDigest> UnencodedDigest::Create(

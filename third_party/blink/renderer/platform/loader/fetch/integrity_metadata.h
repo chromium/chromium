@@ -25,12 +25,13 @@ using IntegrityMetadataPair = std::pair<String, IntegrityAlgorithm>;
 // https://wicg.github.io/signature-based-sri/#abstract-opdef-parse-metadata
 struct IntegrityMetadataSet {
   IntegrityMetadataSet() {}
-  bool empty() const { return hashes.empty() && signatures.empty(); }
+  bool empty() const { return hashes.empty() && public_keys.empty(); }
   WTF::HashSet<IntegrityMetadataPair> hashes;
-  WTF::HashSet<IntegrityMetadataPair> signatures;
+  WTF::HashSet<IntegrityMetadataPair> public_keys;
 
   bool operator==(const IntegrityMetadataSet& other) const {
-    return this->hashes == other.hashes && this->signatures == other.signatures;
+    return this->hashes == other.hashes &&
+           this->public_keys == other.public_keys;
   }
 };
 
