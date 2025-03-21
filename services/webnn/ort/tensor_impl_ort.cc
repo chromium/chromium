@@ -4,6 +4,8 @@
 
 #include "services/webnn/ort/tensor_impl_ort.h"
 
+#include <cstring>
+
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/error_ort.h"
@@ -48,6 +50,15 @@ TensorImplOrt::Create(
                                               "Failed to create tensor."));
   }
   CHECK(tensor.get());
+
+  // Initialize the tensor with zeros, otherwise, reading uninitialized memory
+  // will get random values.
+  void* ort_tensor_raw_data = nullptr;
+  CHECK_STATUS(
+      GetOrtApi()->GetTensorMutableData(tensor.get(), &ort_tensor_raw_data));
+  CHECK(ort_tensor_raw_data);
+  size_t tensor_size = tensor_info->descriptor.PackedByteLength();
+  std::memset(ort_tensor_raw_data, 0, tensor_size);
 
   auto buffer_content = std::make_unique<BufferContentOrt>(std::move(tensor));
   auto buffer_state =
