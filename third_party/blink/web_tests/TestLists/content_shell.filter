@@ -496,7 +496,6 @@ external/wpt/dom/events/webkit-animation-iteration-event.html
 external/wpt/dom/nodes/moveBefore/select-option-optgroup.html
 external/wpt/dom/nodes/moveBefore/selection-preserve.html
 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-*
-external/wpt/dom/nodes/remove-from-shadow-host-and-adopt-into-iframe.html
 external/wpt/editing/crashtests/contenteditable-will-be-blurred-by-focus-event-listener.html
 external/wpt/editing/crashtests/designMode-document-will-be-blurred-by-focus-event-listener.html
 external/wpt/editing/crashtests/insertorderedlist-in-focused-inline-editing-host.html
@@ -546,7 +545,6 @@ external/wpt/gyroscope/Gyroscope-iframe-access.https.html
 external/wpt/html-aam/names.html
 external/wpt/html-aam/roles.html
 external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/inflight-fetch-redirects.html
-external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/before-load-hash-twice.html
 external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-push-navigation-hidden-document.html
 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-with-user-activation-in-parent.window.html
 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/redirect-to-unparseable-url.html
