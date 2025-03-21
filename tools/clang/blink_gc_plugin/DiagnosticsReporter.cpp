@@ -85,6 +85,17 @@ const char kGCedVar[] =
     "[blink-gc] Using GC managed class %1 as variable %0 is not allowed "
     "(Allocate with MakeGarbageCollected and use raw pointer instead):";
 
+const char kRedundantTraceDispatchMethod[] =
+    "[blink-gc] Class %1 inherits from a hierarchy that uses "
+    "TraceAfterDispatch to dispatch tracing. Only the hierarchy base class %0 "
+    "should declare a Trace method. Remove the extra Trace method:";
+
+const char kRedundantFinalizeDispatchMethod[] =
+    "[blink-gc] Class %1 inherits from a hierarchy that uses "
+    "FinalizeGarbageCollectedObject to dispatch object finalization. Only the "
+    "hierarchy base class %0 should declare a FinalizeGarbageCollectedObject "
+    "method. Remove the extra FinalizeGarbageCollectedObject method:";
+
 const char kTaskRunnerInGCManagedClassNote[] =
     "[blink-gc] TaskRunnerTimer field %0 used within a garbage collected "
     "context. "
@@ -336,6 +347,10 @@ DiagnosticsReporter::DiagnosticsReporter(
       diagnostic_.getCustomDiagID(getErrorLevel(), kWeakPtrToGCManagedClass);
   diag_gced_field_ = diagnostic_.getCustomDiagID(getErrorLevel(), kGCedField);
   diag_gced_var_ = diagnostic_.getCustomDiagID(getErrorLevel(), kGCedVar);
+  diag_redundant_trace_dispatch_method_ = diagnostic_.getCustomDiagID(
+      getErrorLevel(), kRedundantTraceDispatchMethod);
+  diag_redundant_finalize_dispatch_method_ = diagnostic_.getCustomDiagID(
+      getErrorLevel(), kRedundantFinalizeDispatchMethod);
   // Register note messages.
   diag_base_requires_tracing_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kBaseRequiresTracingNote);
@@ -713,6 +728,20 @@ void DiagnosticsReporter::TraceMethodForStackAllocatedClass(
   ReportDiagnostic(trace->getBeginLoc(),
                    diag_trace_method_of_stack_allocated_parent_)
       << info->record();
+}
+
+void DiagnosticsReporter::RedundantTraceDispatchMethod(RecordInfo* derived,
+                                                       CXXRecordDecl* base) {
+  ReportDiagnostic(derived->GetExtraTraceDispatchMethod()->getBeginLoc(),
+                   diag_redundant_trace_dispatch_method_)
+      << base << derived->record();
+}
+
+void DiagnosticsReporter::RedundantFinalizeDispatchMethod(RecordInfo* derived,
+                                                          CXXRecordDecl* base) {
+  ReportDiagnostic(derived->GetExtraFinalizeDispatchMethod()->getBeginLoc(),
+                   diag_redundant_finalize_dispatch_method_)
+      << base << derived->record();
 }
 
 void DiagnosticsReporter::NoteManualDispatchMethod(CXXMethodDecl* dispatch) {
