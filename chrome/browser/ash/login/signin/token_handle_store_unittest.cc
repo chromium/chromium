@@ -165,4 +165,35 @@ TEST_F(TokenHandleStoreTest,
   EXPECT_EQ(is_recently_checked, false);
 }
 
+TEST_F(TokenHandleStoreTest,
+       TokenHandleIsStoredWithCorrectStatusAndLastCheckedTime) {
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  auto injected_known_user =
+      std::make_unique<user_manager::KnownUser>(&local_state_);
+  base::ScopedMockClockOverride mock_clock;
+  base::Time previous_last_checked = base::Time::Now();
+  injected_known_user->SetPath(account_id, kTokenHandleLastCheckedPref,
+                               base::TimeToValue(previous_last_checked));
+  base::TimeDelta delta = base::Seconds(1);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      std::make_unique<TokenHandleStoreImpl>(std::move(injected_known_user));
+  mock_clock.Advance(delta);
+
+  token_handle_store->StoreTokenHandle(account_id, kFakeToken);
+
+  auto known_user = std::make_unique<user_manager::KnownUser>(&local_state_);
+  EXPECT_EQ(kFakeToken,
+            *known_user->FindStringPath(account_id, kTokenHandlePref));
+  EXPECT_EQ(kTokenHandleStatusValid,
+            *known_user->FindStringPath(account_id, kTokenHandleStatusPref));
+  base::Time expected_last_checked_time = previous_last_checked + delta;
+  base::Time actual_last_checked_time =
+      base::ValueToTime(
+          *known_user->FindPath(account_id, kTokenHandleLastCheckedPref))
+          .value();
+  EXPECT_NEAR(expected_last_checked_time.InMillisecondsSinceUnixEpoch(),
+              actual_last_checked_time.InMillisecondsSinceUnixEpoch(),
+              (delta / 2).InMilliseconds());
+}
+
 }  // namespace ash

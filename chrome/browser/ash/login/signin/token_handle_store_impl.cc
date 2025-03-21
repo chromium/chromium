@@ -17,6 +17,7 @@ constexpr char kTokenHandlePref[] = "PasswordTokenHandle";
 constexpr char kTokenHandleStatusPref[] = "TokenHandleStatus";
 constexpr char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
 constexpr char kTokenHandleStatusInvalid[] = "invalid";
+constexpr char kTokenHandleStatusValid[] = "valid";
 constexpr base::TimeDelta kCacheStatusTime = base::Hours(1);
 
 }  // namespace
@@ -60,7 +61,13 @@ void TokenHandleStoreImpl::IsReauthRequired(
     TokenValidationCallback callback) {}
 
 void TokenHandleStoreImpl::StoreTokenHandle(const AccountId& account_id,
-                                            const std::string& handle) {}
+                                            const std::string& handle) {
+  known_user_->SetStringPref(account_id, kTokenHandlePref, handle);
+  known_user_->SetStringPref(account_id, kTokenHandleStatusPref,
+                             kTokenHandleStatusValid);
+  known_user_->SetPath(account_id, kTokenHandleLastCheckedPref,
+                       base::TimeToValue(base::Time::Now()));
+}
 
 bool TokenHandleStoreImpl::HasTokenStatusInvalid(
     const AccountId& account_id) const {
