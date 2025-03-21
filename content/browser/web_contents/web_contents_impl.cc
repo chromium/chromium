@@ -235,6 +235,7 @@
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "ui/android/event_forwarder.h"
 #include "ui/android/view_android.h"
 #include "ui/base/device_form_factor.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -11714,6 +11715,13 @@ WebContentsImpl::GetRenderInputRouterDelegateRemote() {
   }
   return rir_delegate_remote_.get();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+float WebContentsImpl::GetCurrentTouchSequenceYOffset() {
+  ui::ViewAndroid* view_android = GetNativeView();
+  return view_android->event_forwarder()->GetCurrentTouchSequenceYOffset();
+}
+#endif
 
 std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
     const GURL& prefetch_url,

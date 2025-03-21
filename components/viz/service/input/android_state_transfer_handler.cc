@@ -226,19 +226,10 @@ void AndroidStateTransferHandler::HandleTouchEvent(
     return;
   }
 
-  const float viz_y_offset_pix =
-      AMotionEvent_getY(input_event.a_input_event(), /*pointer_index=*/0) -
-      AMotionEvent_getRawY(input_event.a_input_event(), /*pointer_index=*/0);
-  // Offset added to points in Android's view coordinate system to convert them
-  // into coordinates relative to web contents. This is used to accommodate for
-  // browser top controls when visible.
-  const float web_contents_y_offset_pix =
-      state_for_curr_sequence_->transfer_state->raw_y_offset - viz_y_offset_pix;
-  CHECK_LE(web_contents_y_offset_pix, 0);
   auto event = ui::MotionEventAndroidNative::Create(
       std::move(input_event),
       1.f / state_for_curr_sequence_->transfer_state->dip_scale,
-      web_contents_y_offset_pix);
+      state_for_curr_sequence_->transfer_state->web_contents_y_offset_pix);
 
   state_for_curr_sequence_->rir_support->OnTouchEvent(
       *event.get(), /* emit_histograms= */ true);

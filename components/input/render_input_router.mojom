@@ -37,10 +37,10 @@ struct TouchTransferState {
   // FrameSinkId of root widget which was being touched at the time of transfer.
   viz.mojom.FrameSinkId root_widget_frame_sink_id;
 
-  // Raw y offset added to raw screen coordinates to get coordinates relative to
-  // root widget. This will be used to account for top controls height when
-  // creating MotionEventAndroid on Viz side.
-  int32 raw_y_offset;
+  // Y offset to be added to points received from Android to get coordinates
+  // relative to root widget. This will be used to account for top controls
+  // height when creating MotionEventAndroid on Viz side.
+  float web_contents_y_offset_pix;
 
   // Device scale factor being used to create MotionEventAndroid objects for
   // converting device pixels to device independent pixels.
