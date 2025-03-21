@@ -483,18 +483,13 @@ suite('HistoryClustersFocusTest', () => {
 
   test('Scroll to load more clusters', async () => {
     const clustersElement = await setupScrollableClustersElement();
-    const scrollTarget = document.body.querySelector('div');
-    assertTrue(!!scrollTarget);
 
-    // Set up some test data. Load up enough clusters to fill the entire
-    // viewport and then an additional 600px of clusters to scroll.
-    const itemSize = clustersElement.$.clusters.itemSize;
-    assertTrue(!!itemSize);
-    const itemsToFillView = Math.ceil(scrollTarget.offsetHeight / itemSize);
-    const itemsToScroll = Math.ceil(600 / itemSize);
-    const totalItems = itemsToFillView + itemsToScroll;
-
-    const clusters = [...Array(totalItems)].map(() => cluster1);
+    // Set up some test data. We intentionally load a lot of clusters for this
+    // test so that the scroll height will be much larger than 300px.
+    const clusters = [];
+    for (let i = 0; i < 10; i++) {
+      clusters.push(...[cluster1, cluster2, cluster3]);
+    }
     callbackRouterRemote.onClustersQueryResult({
       query: '',
       clusters: clusters,
@@ -503,6 +498,8 @@ suite('HistoryClustersFocusTest', () => {
     });
     await new Promise(resolve => requestIdleCallback(resolve));
 
+    const scrollTarget = document.body.querySelector('div');
+    assertTrue(!!scrollTarget);
     // This check ensures the line below actually scrolls.
     assertGT(scrollTarget.scrollHeight, scrollTarget.offsetHeight + 600);
     // Scroll to just under the threshold to make sure more clusters don't load.
