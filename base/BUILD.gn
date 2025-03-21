@@ -2525,6 +2525,18 @@ rust_static_library("rust_logger") {
   deps = [
     ":logging_log_severity_bindgen",
     "//third_party/rust/log/v0_4:lib",
+
+    # Needed because of circular dependency: base depends on this target and by
+    # extension the cxx-generated C++ code, but the cxx-generated code includes
+    # base headers and calls base code. This seems to generally not cause
+    # issues, except for partition_alloc which applies configs when depended on.
+    #
+    # This allows the generated C++ code to transitively include partition alloc
+    # headers without issue.
+    #
+    # TODO(collinbaker): determine how to handle these cxx bindings-induced
+    # circular dependencies more robustly.
+    "//base/allocator/partition_allocator:raw_ptr",
   ]
   visibility = [ ":base" ]
   sources = [ "logging/rust_logger.rs" ]
