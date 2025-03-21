@@ -11520,6 +11520,7 @@ from previous Chrome versions.
       label="ResamplingScrollEventsExperimentalPrediction:enabled"/>
   <int value="-1037620891"
       label="EnableWebUsbOnExtensionServiceWorker:enabled"/>
+  <int value="-1037568482" label="WebAppEnableUpdateTokenParsing:disabled"/>
   <int value="-1037128156" label="HomeLauncherGestures:disabled"/>
   <int value="-1035705204" label="PwaUpdateDialogForName:disabled"/>
   <int value="-1035498688" label="TabStripStartupRefactoring:disabled"/>
@@ -11858,6 +11859,7 @@ from previous Chrome versions.
   <int value="-901418755" label="TrafficCountersForWiFiTesting:enabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
   <int value="-899969457" label="ReadAloudBackgroundPlayback:disabled"/>
+  <int value="-899966044" label="WebAppEnableUpdateTokenParsing:enabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
   <int value="-899881954"
       label="StorageAccessApiFollowsSameOriginPolicy:enabled"/>

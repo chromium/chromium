@@ -1019,6 +1019,13 @@ BASE_FEATURE(kUserMediaCaptureOnFocus,
              "UserMediaCaptureOnFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// A feature to enable using the update token in the manifest or icon url
+// changes to detect app updates. When this is enabled, automatic icon
+// downloading is disabled.
+BASE_FEATURE(kWebAppEnableUpdateTokenParsing,
+             "WebAppEnableUpdateTokenParsing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This is intended as a kill switch for the WebOTP Service feature. To enable
 // this feature, the experimental web platform features flag should be set.
 BASE_FEATURE(kWebOTP, "WebOTP", base::FEATURE_ENABLED_BY_DEFAULT);

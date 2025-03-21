@@ -4133,6 +4133,13 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-web-app-update-token-parsing",
+    "owners": [
+      "pwa-team@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-web-bluetooth",
     "owners": [ "web-bluetooth@google.com" ],
     "expiry_milestone": 150

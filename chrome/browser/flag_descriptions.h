@@ -1032,6 +1032,9 @@ extern const char kEnableResamplingScrollEventsExperimentalPredictionName[];
 extern const char
     kEnableResamplingScrollEventsExperimentalPredictionDescription[];
 
+extern const char kEnableWebAppUpdateTokenParsingName[];
+extern const char kEnableWebAppUpdateTokenParsingDescription[];
+
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorName[];
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];
 

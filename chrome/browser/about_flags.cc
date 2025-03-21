@@ -11911,6 +11911,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kIsPaintableChecksResourceProviderInsteadOfBridge)},
+    {"enable-web-app-update-token-parsing",
+     flag_descriptions::kEnableWebAppUpdateTokenParsingName,
+     flag_descriptions::kEnableWebAppUpdateTokenParsingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kWebAppEnableUpdateTokenParsing)},
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {"root-scrollbar-follows-browser-theme",
