@@ -203,6 +203,8 @@ class ASH_EXPORT CaptureModeSession
   void ShowActionContainerError(const std::u16string& error_message) override;
   gfx::Rect GetFeedbackWidgetScreenBounds() const override;
   void OnSearchResultsPanelCreated(views::Widget* panel_widget) override;
+  bool TakeFocusForSearchResultsPanel(bool reverse) override;
+  void ClearPseudoFocus() override;
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;

@@ -137,9 +137,6 @@ constexpr base::TimeDelta kImageSearchRequestStartDelay = base::Seconds(1);
 // button cannot fit inside.
 constexpr int kSmallRegionEdgeLength = 20;
 
-// The number of focusable points for the search results panel.
-constexpr int kSearchResultsPanelFocusCount = 2;
-
 // TODO: crbug.com/402548933 - Update this to work when the Lens Web API
 // integration is enabled.
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
@@ -2438,18 +2435,28 @@ TEST_F(SunfishTest, KeyboardNavigationSunfishSession) {
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
-  ASSERT_TRUE(controller->search_results_panel_widget());
+  auto* panel_widget = controller->search_results_panel_widget();
+  ASSERT_TRUE(panel_widget);
 
-  // Pressing tab should now focus the highlightable views in the search results
-  // panel.
-  for (int i = 0; i < kSearchResultsPanelFocusCount; ++i) {
-    SendKey(ui::VKEY_TAB, event_generator);
-    ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSearchResultsPanel,
-              session_test_api.GetCurrentFocusGroup());
-  }
+  // Pressing tab should now focus the close button in the search results panel.
+  SendKey(ui::VKEY_TAB, event_generator);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSearchResultsPanel,
+            session_test_api.GetCurrentFocusGroup());
 
-  // Pressing tab should now focus on the region adjustment points and their
-  // center.
+  // Press enter to close the panel so we can test the rest of the session
+  // elements. Focus should be restored to the session close button.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  views::test::WidgetDestroyedWaiter(panel_widget).Wait();
+  ASSERT_FALSE(controller->search_results_panel_widget());
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSettingsClose,
+            session_test_api.GetCurrentFocusGroup());
+
+  // Pressing tab should cycle back to no elements being focused.
+  SendKey(ui::VKEY_TAB, event_generator);
+  ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kNone,
+            session_test_api.GetCurrentFocusGroup());
+
+  // The capture region should now be available for focus.
   for (int i = 0; i < kRegionFocusCount; ++i) {
     SendKey(ui::VKEY_TAB, event_generator);
     ASSERT_EQ(CaptureModeSessionFocusCycler::FocusGroup::kSelection,

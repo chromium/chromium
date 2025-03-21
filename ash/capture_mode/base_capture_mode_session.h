@@ -223,6 +223,15 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // observed by the session focus cycler.
   virtual void OnSearchResultsPanelCreated(views::Widget* panel_widget) = 0;
 
+  // Called when the renderer for the search results panel web contents asks us
+  // to take focus back (i.e., it has iterated past the last focusable
+  // element on the page). Returns true if the focus cycler successfully handled
+  // it, and false otherwise.
+  virtual bool TakeFocusForSearchResultsPanel(bool reverse) = 0;
+
+  // Clears the focus ring from any currently pseudo focused item if possible.
+  virtual void ClearPseudoFocus() = 0;
+
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
 

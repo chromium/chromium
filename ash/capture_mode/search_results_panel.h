@@ -50,6 +50,9 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
   std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
   GetHighlightableItems() const;
 
+  // Gets the inner `WebView` to receive focus events.
+  views::View* GetWebViewForFocus();
+
   // Sets the search box URL, image thumbnail, and text.
   virtual void Navigate(const GURL& url);
   virtual void SetSearchBoxImage(const gfx::ImageSkia& image);

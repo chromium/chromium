@@ -1813,6 +1813,20 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
+  // If the search results panel is visible, and the textfield has
+  // pseudo focus or the panel is actually focused, we will let the search
+  // results panel handle key events (i.e., pressing Enter/Return to make a
+  // multimodal search) until it calls `TakeFocus` to return focus back to the
+  // focus cycler. As an exception, pressing ESC can still be used to exit the
+  // session.
+  ui::KeyboardCode key_code = event->key_code();
+  if (controller_->IsSearchResultsPanelVisible() &&
+      (controller_->GetSearchResultsPanel()->IsTextfieldPseudoFocused() ||
+       controller_->GetSearchResultsPanel()->HasFocus()) &&
+      key_code != ui::VKEY_ESCAPE) {
+    return;
+  }
+
   auto* camera_preview_view =
       controller_->camera_controller()->camera_preview_view();
   if (camera_preview_view && camera_preview_view->MaybeHandleKeyEvent(event)) {
@@ -1834,7 +1848,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 
   auto* capture_source_view = capture_mode_bar_view_->GetCaptureSourceView();
   const bool is_in_count_down = IsInCountDownAnimation();
-  ui::KeyboardCode key_code = event->key_code();
   switch (key_code) {
     case ui::VKEY_ESCAPE: {
       event->StopPropagation();
@@ -1856,16 +1869,6 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     }
 
     case ui::VKEY_RETURN: {
-      // If the search results panel is visible, and the textfield has
-      // pseudo focus or the panel is actually focused, we will let the search
-      // results panel handle key events (i.e., pressing Enter/Return to make a
-      // multimodal search).
-      if (controller_->IsSearchResultsPanelVisible() &&
-          (controller_->GetSearchResultsPanel()->IsTextfieldPseudoFocused() ||
-           controller_->GetSearchResultsPanel()->HasFocus())) {
-        return;
-      }
-
       event->StopPropagation();
       if (!is_in_count_down) {
         // Pressing enter while an item is focused should behave exactly like
@@ -4056,6 +4059,15 @@ gfx::Rect CaptureModeSession::GetFeedbackWidgetScreenBounds() const {
 void CaptureModeSession::OnSearchResultsPanelCreated(
     views::Widget* panel_widget) {
   focus_cycler_->OnSearchResultsPanelCreated(panel_widget);
+}
+
+bool CaptureModeSession::TakeFocusForSearchResultsPanel(bool reverse) {
+  focus_cycler_->AdvanceFocusAfterSearchResultsPanel(reverse);
+  return true;
+}
+
+void CaptureModeSession::ClearPseudoFocus() {
+  focus_cycler_->ClearFocus();
 }
 
 }  // namespace ash

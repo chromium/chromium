@@ -159,4 +159,10 @@ gfx::Rect NullCaptureModeSession::GetFeedbackWidgetScreenBounds() const {
 void NullCaptureModeSession::OnSearchResultsPanelCreated(
     views::Widget* panel_widget) {}
 
+bool NullCaptureModeSession::TakeFocusForSearchResultsPanel(bool reverse) {
+  return false;
+}
+
+void NullCaptureModeSession::ClearPseudoFocus() {}
+
 }  // namespace ash

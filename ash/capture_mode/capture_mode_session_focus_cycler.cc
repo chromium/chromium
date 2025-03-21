@@ -516,8 +516,11 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
           FocusGroup::kNone, FocusGroup::kStartRecordingButton,
           FocusGroup::kCameraPreview, FocusGroup::kSettingsMenu,
           FocusGroup::kSettingsClose},
-      groups_for_sunfish_{FocusGroup::kNone, FocusGroup::kSearchResultsPanel,
-                          FocusGroup::kSelection, FocusGroup::kActionButtons,
+      groups_for_sunfish_{FocusGroup::kNone,
+                          FocusGroup::kSearchResultsPanel,
+                          FocusGroup::kSearchResultsPanelWebContents,
+                          FocusGroup::kSelection,
+                          FocusGroup::kActionButtons,
                           FocusGroup::kSettingsClose},
       session_(session),
       scoped_a11y_overrider_(
@@ -579,8 +582,19 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
   if (reverse)
     MaybeFocusHighlightableWindow(current_views);
 
-  // Focus the new item.
-  if (!current_views.empty()) {
+  // Focus the new item. If it's the web view, then we want to request actual
+  // focus so the user can properly use the keyboard like they would with a
+  // regular search page.
+  if (current_focus_group_ == FocusGroup::kSearchResultsPanelWebContents) {
+    SearchResultsPanel* panel =
+        CaptureModeController::Get()->GetSearchResultsPanel();
+    if (panel) {
+      views::View* web_view = panel->GetWebViewForFocus();
+      CHECK(web_view);
+      web_view->AboutToRequestFocusFromTabTraversal(reverse);
+      web_view->RequestFocus();
+    }
+  } else if (!current_views.empty()) {
     DCHECK_LT(focus_index_, current_views.size());
     current_views[focus_index_]->PseudoFocus();
   }
@@ -808,6 +822,24 @@ void CaptureModeSessionFocusCycler::OnDisclaimerWidgetClosed() {
   GetGroupItems(current_focus_group_)[focus_index_]->PseudoFocus();
 }
 
+void CaptureModeSessionFocusCycler::AdvanceFocusAfterSearchResultsPanel(
+    bool reverse) {
+  // Fully remove focus from the web view if available.
+  SearchResultsPanel* panel =
+      CaptureModeController::Get()->GetSearchResultsPanel();
+  if (panel) {
+    views::FocusManager* focus_manager = panel->GetFocusManager();
+    focus_manager->SetStoredFocusView(nullptr);
+    focus_manager->ClearFocus();
+  }
+
+  // Override the current focus parameters in case we did not naturally cycle
+  // focus to the web view before.
+  current_focus_group_ = FocusGroup::kSearchResultsPanelWebContents;
+  focus_index_ = 0u;
+  AdvanceFocus(reverse);
+}
+
 void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {
   OnWidgetDestroying(widget);
 }
@@ -991,6 +1023,9 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
     case FocusGroup::kSearchResultsPanel: {
       return CaptureModeController::Get()->IsSearchResultsPanelVisible();
     }
+    case FocusGroup::kSearchResultsPanelWebContents: {
+      return CaptureModeController::Get()->IsSearchResultsPanelVisible();
+    }
   }
 }
 
@@ -1008,6 +1043,9 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
     case FocusGroup::kSelection:
     case FocusGroup::kPendingSettings:
     case FocusGroup::kPendingRecordingType:
+    // The web contents does not contain any highlightable views, as we want its
+    // `FocusManager` to handle tab traversal and focus.
+    case FocusGroup::kSearchResultsPanelWebContents:
       break;
     case FocusGroup::kTypeSource: {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
@@ -1151,6 +1189,7 @@ aura::Window* CaptureModeSessionFocusCycler::GetA11yOverrideWindow() const {
     case FocusGroup::kActionButtons:
       return session_->action_container_widget()->GetNativeWindow();
     case FocusGroup::kSearchResultsPanel:
+    case FocusGroup::kSearchResultsPanelWebContents:
       return CaptureModeController::Get()
           ->search_results_panel_widget()
           ->GetNativeWindow();
