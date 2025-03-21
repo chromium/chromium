@@ -25,6 +25,7 @@
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
+#include "components/search_engines/regional_settings.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -70,88 +71,50 @@ std::string GetHostFromTemplateURLData(const TemplateURLData& data) {
   return TemplateURL(data).url_ref().GetHost(SearchTermsData());
 }
 
-const int kAllCountryIds[] = {'A' << 8 | 'D', 'A' << 8 | 'E', 'A' << 8 | 'F',
-                              'A' << 8 | 'G', 'A' << 8 | 'I', 'A' << 8 | 'L',
-                              'A' << 8 | 'M', 'A' << 8 | 'N', 'A' << 8 | 'O',
-                              'A' << 8 | 'Q', 'A' << 8 | 'R', 'A' << 8 | 'S',
-                              'A' << 8 | 'T', 'A' << 8 | 'U', 'A' << 8 | 'W',
-                              'A' << 8 | 'X', 'A' << 8 | 'Z', 'B' << 8 | 'A',
-                              'B' << 8 | 'B', 'B' << 8 | 'D', 'B' << 8 | 'E',
-                              'B' << 8 | 'F', 'B' << 8 | 'G', 'B' << 8 | 'H',
-                              'B' << 8 | 'I', 'B' << 8 | 'J', 'B' << 8 | 'M',
-                              'B' << 8 | 'N', 'B' << 8 | 'O', 'B' << 8 | 'R',
-                              'B' << 8 | 'S', 'B' << 8 | 'T', 'B' << 8 | 'V',
-                              'B' << 8 | 'W', 'B' << 8 | 'Y', 'B' << 8 | 'Z',
-                              'C' << 8 | 'A', 'C' << 8 | 'C', 'C' << 8 | 'D',
-                              'C' << 8 | 'F', 'C' << 8 | 'G', 'C' << 8 | 'H',
-                              'C' << 8 | 'I', 'C' << 8 | 'K', 'C' << 8 | 'L',
-                              'C' << 8 | 'M', 'C' << 8 | 'N', 'C' << 8 | 'O',
-                              'C' << 8 | 'Q', 'C' << 8 | 'R', 'C' << 8 | 'U',
-                              'C' << 8 | 'V', 'C' << 8 | 'X', 'C' << 8 | 'Y',
-                              'C' << 8 | 'Z', 'D' << 8 | 'E', 'D' << 8 | 'J',
-                              'D' << 8 | 'K', 'D' << 8 | 'M', 'D' << 8 | 'O',
-                              'D' << 8 | 'Z', 'E' << 8 | 'C', 'E' << 8 | 'E',
-                              'E' << 8 | 'G', 'E' << 8 | 'R', 'E' << 8 | 'S',
-                              'E' << 8 | 'T', 'F' << 8 | 'I', 'F' << 8 | 'J',
-                              'F' << 8 | 'K', 'F' << 8 | 'M', 'F' << 8 | 'O',
-                              'F' << 8 | 'R', 'G' << 8 | 'A', 'G' << 8 | 'B',
-                              'G' << 8 | 'D', 'G' << 8 | 'E', 'G' << 8 | 'F',
-                              'G' << 8 | 'G', 'G' << 8 | 'H', 'G' << 8 | 'I',
-                              'G' << 8 | 'L', 'G' << 8 | 'M', 'G' << 8 | 'N',
-                              'G' << 8 | 'P', 'G' << 8 | 'Q', 'G' << 8 | 'R',
-                              'G' << 8 | 'S', 'G' << 8 | 'T', 'G' << 8 | 'U',
-                              'G' << 8 | 'W', 'G' << 8 | 'Y', 'H' << 8 | 'K',
-                              'H' << 8 | 'M', 'H' << 8 | 'N', 'H' << 8 | 'R',
-                              'H' << 8 | 'T', 'H' << 8 | 'U', 'I' << 8 | 'D',
-                              'I' << 8 | 'E', 'I' << 8 | 'L', 'I' << 8 | 'M',
-                              'I' << 8 | 'N', 'I' << 8 | 'O', 'I' << 8 | 'P',
-                              'I' << 8 | 'Q', 'I' << 8 | 'R', 'I' << 8 | 'S',
-                              'I' << 8 | 'T', 'J' << 8 | 'E', 'J' << 8 | 'M',
-                              'J' << 8 | 'O', 'J' << 8 | 'P', 'K' << 8 | 'E',
-                              'K' << 8 | 'G', 'K' << 8 | 'H', 'K' << 8 | 'I',
-                              'K' << 8 | 'M', 'K' << 8 | 'N', 'K' << 8 | 'P',
-                              'K' << 8 | 'R', 'K' << 8 | 'W', 'K' << 8 | 'Y',
-                              'K' << 8 | 'Z', 'L' << 8 | 'A', 'L' << 8 | 'B',
-                              'L' << 8 | 'C', 'L' << 8 | 'I', 'L' << 8 | 'K',
-                              'L' << 8 | 'R', 'L' << 8 | 'S', 'L' << 8 | 'T',
-                              'L' << 8 | 'U', 'L' << 8 | 'V', 'L' << 8 | 'Y',
-                              'M' << 8 | 'A', 'M' << 8 | 'C', 'M' << 8 | 'D',
-                              'M' << 8 | 'E', 'M' << 8 | 'G', 'M' << 8 | 'H',
-                              'M' << 8 | 'K', 'M' << 8 | 'L', 'M' << 8 | 'M',
-                              'M' << 8 | 'N', 'M' << 8 | 'O', 'M' << 8 | 'P',
-                              'M' << 8 | 'Q', 'M' << 8 | 'R', 'M' << 8 | 'S',
-                              'M' << 8 | 'T', 'M' << 8 | 'U', 'M' << 8 | 'V',
-                              'M' << 8 | 'W', 'M' << 8 | 'X', 'M' << 8 | 'Y',
-                              'M' << 8 | 'Z', 'N' << 8 | 'A', 'N' << 8 | 'C',
-                              'N' << 8 | 'E', 'N' << 8 | 'F', 'N' << 8 | 'G',
-                              'N' << 8 | 'I', 'N' << 8 | 'L', 'N' << 8 | 'O',
-                              'N' << 8 | 'P', 'N' << 8 | 'R', 'N' << 8 | 'U',
-                              'N' << 8 | 'Z', 'O' << 8 | 'M', 'P' << 8 | 'A',
-                              'P' << 8 | 'E', 'P' << 8 | 'F', 'P' << 8 | 'G',
-                              'P' << 8 | 'H', 'P' << 8 | 'K', 'P' << 8 | 'L',
-                              'P' << 8 | 'M', 'P' << 8 | 'N', 'P' << 8 | 'R',
-                              'P' << 8 | 'S', 'P' << 8 | 'T', 'P' << 8 | 'W',
-                              'P' << 8 | 'Y', 'Q' << 8 | 'A', 'R' << 8 | 'E',
-                              'R' << 8 | 'O', 'R' << 8 | 'S', 'R' << 8 | 'U',
-                              'R' << 8 | 'W', 'S' << 8 | 'A', 'S' << 8 | 'B',
-                              'S' << 8 | 'C', 'S' << 8 | 'D', 'S' << 8 | 'E',
-                              'S' << 8 | 'G', 'S' << 8 | 'H', 'S' << 8 | 'I',
-                              'S' << 8 | 'J', 'S' << 8 | 'K', 'S' << 8 | 'L',
-                              'S' << 8 | 'M', 'S' << 8 | 'N', 'S' << 8 | 'O',
-                              'S' << 8 | 'R', 'S' << 8 | 'T', 'S' << 8 | 'V',
-                              'S' << 8 | 'Y', 'S' << 8 | 'Z', 'T' << 8 | 'C',
-                              'T' << 8 | 'D', 'T' << 8 | 'F', 'T' << 8 | 'G',
-                              'T' << 8 | 'H', 'T' << 8 | 'J', 'T' << 8 | 'K',
-                              'T' << 8 | 'L', 'T' << 8 | 'M', 'T' << 8 | 'N',
-                              'T' << 8 | 'O', 'T' << 8 | 'R', 'T' << 8 | 'T',
-                              'T' << 8 | 'V', 'T' << 8 | 'W', 'T' << 8 | 'Z',
-                              'U' << 8 | 'A', 'U' << 8 | 'G', 'U' << 8 | 'M',
-                              'U' << 8 | 'S', 'U' << 8 | 'Y', 'U' << 8 | 'Z',
-                              'V' << 8 | 'A', 'V' << 8 | 'C', 'V' << 8 | 'E',
-                              'V' << 8 | 'G', 'V' << 8 | 'I', 'V' << 8 | 'N',
-                              'V' << 8 | 'U', 'W' << 8 | 'F', 'W' << 8 | 'S',
-                              'Y' << 8 | 'E', 'Y' << 8 | 'T', 'Z' << 8 | 'A',
-                              'Z' << 8 | 'M', 'Z' << 8 | 'W', -1};
+// Helper function creating a country code from string literal.
+// Input string literal includes trailing \0, thus is 3 characters long.
+// TODO(b:404850650): migrate this to strict CountryId when ready.
+constexpr int Cc(const char (&cc)[3]) {
+  return cc[0] << 8 | cc[1];
+}
+
+const int kAllCountryIds[] = {
+    Cc("AD"), Cc("AE"), Cc("AF"), Cc("AG"), Cc("AI"), Cc("AL"), Cc("AM"),
+    Cc("AN"), Cc("AO"), Cc("AQ"), Cc("AR"), Cc("AS"), Cc("AT"), Cc("AU"),
+    Cc("AW"), Cc("AX"), Cc("AZ"), Cc("BA"), Cc("BB"), Cc("BD"), Cc("BE"),
+    Cc("BF"), Cc("BG"), Cc("BH"), Cc("BI"), Cc("BJ"), Cc("BL"), Cc("BM"),
+    Cc("BN"), Cc("BO"), Cc("BR"), Cc("BS"), Cc("BT"), Cc("BV"), Cc("BW"),
+    Cc("BY"), Cc("BZ"), Cc("CA"), Cc("CC"), Cc("CD"), Cc("CF"), Cc("CG"),
+    Cc("CH"), Cc("CI"), Cc("CK"), Cc("CL"), Cc("CM"), Cc("CN"), Cc("CO"),
+    Cc("CQ"), Cc("CR"), Cc("CU"), Cc("CV"), Cc("CX"), Cc("CY"), Cc("CZ"),
+    Cc("DE"), Cc("DJ"), Cc("DK"), Cc("DM"), Cc("DO"), Cc("DZ"), Cc("EA"),
+    Cc("EC"), Cc("EE"), Cc("EG"), Cc("EH"), Cc("ER"), Cc("ES"), Cc("ET"),
+    Cc("FI"), Cc("FJ"), Cc("FK"), Cc("FM"), Cc("FO"), Cc("FR"), Cc("GA"),
+    Cc("GB"), Cc("GD"), Cc("GE"), Cc("GF"), Cc("GG"), Cc("GH"), Cc("GI"),
+    Cc("GL"), Cc("GM"), Cc("GN"), Cc("GP"), Cc("GQ"), Cc("GR"), Cc("GS"),
+    Cc("GT"), Cc("GU"), Cc("GW"), Cc("GY"), Cc("HK"), Cc("HM"), Cc("HN"),
+    Cc("HR"), Cc("HT"), Cc("HU"), Cc("IC"), Cc("ID"), Cc("IE"), Cc("IL"),
+    Cc("IM"), Cc("IN"), Cc("IO"), Cc("IQ"), Cc("IR"), Cc("IS"), Cc("IT"),
+    Cc("JE"), Cc("JM"), Cc("JO"), Cc("JP"), Cc("KE"), Cc("KG"), Cc("KH"),
+    Cc("KI"), Cc("KM"), Cc("KN"), Cc("KP"), Cc("KR"), Cc("KW"), Cc("KY"),
+    Cc("KZ"), Cc("LA"), Cc("LB"), Cc("LC"), Cc("LI"), Cc("LK"), Cc("LR"),
+    Cc("LS"), Cc("LT"), Cc("LU"), Cc("LV"), Cc("LY"), Cc("MA"), Cc("MC"),
+    Cc("MD"), Cc("ME"), Cc("MF"), Cc("MG"), Cc("MH"), Cc("MK"), Cc("ML"),
+    Cc("MM"), Cc("MN"), Cc("MO"), Cc("MP"), Cc("MQ"), Cc("MR"), Cc("MS"),
+    Cc("MT"), Cc("MU"), Cc("MV"), Cc("MW"), Cc("MX"), Cc("MY"), Cc("MZ"),
+    Cc("NA"), Cc("NC"), Cc("NE"), Cc("NF"), Cc("NG"), Cc("NI"), Cc("NL"),
+    Cc("NO"), Cc("NP"), Cc("NR"), Cc("NU"), Cc("NZ"), Cc("OM"), Cc("PA"),
+    Cc("PE"), Cc("PF"), Cc("PG"), Cc("PH"), Cc("PK"), Cc("PL"), Cc("PM"),
+    Cc("PN"), Cc("PR"), Cc("PS"), Cc("PT"), Cc("PW"), Cc("PY"), Cc("QA"),
+    Cc("RE"), Cc("RO"), Cc("RS"), Cc("RU"), Cc("RW"), Cc("SA"), Cc("SB"),
+    Cc("SC"), Cc("SD"), Cc("SE"), Cc("SG"), Cc("SH"), Cc("SI"), Cc("SJ"),
+    Cc("SK"), Cc("SL"), Cc("SM"), Cc("SN"), Cc("SO"), Cc("SR"), Cc("ST"),
+    Cc("SV"), Cc("SY"), Cc("SZ"), Cc("TC"), Cc("TD"), Cc("TF"), Cc("TG"),
+    Cc("TH"), Cc("TJ"), Cc("TK"), Cc("TL"), Cc("TM"), Cc("TN"), Cc("TO"),
+    Cc("TR"), Cc("TT"), Cc("TV"), Cc("TW"), Cc("TZ"), Cc("UA"), Cc("UG"),
+    Cc("UM"), Cc("US"), Cc("UY"), Cc("UZ"), Cc("VA"), Cc("VC"), Cc("VE"),
+    Cc("VG"), Cc("VI"), Cc("VN"), Cc("VU"), Cc("WF"), Cc("WS"), Cc("YE"),
+    Cc("YT"), Cc("ZA"), Cc("ZM"), Cc("ZW"), Cc("ZZ")};
 
 void CheckUrlIsEmptyOrSecure(const std::string url) {
   ASSERT_TRUE(url.empty() || url.starts_with("{google:") ||
@@ -745,6 +708,40 @@ TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
               testing::IsEmpty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(TemplateURLPrepopulateDataTest, GeneratedDataAgreesWithExistingData) {
+  // Confirmation check.
+  ASSERT_EQ(std::size(kAllCountryIds),
+            TemplateURLPrepopulateData::kRegionalSettings.size());
+
+  for (const int country_code : kAllCountryIds) {
+    std::string country = country_codes::CountryIDToCountryString(country_code);
+
+    const auto new_settings_iter =
+        TemplateURLPrepopulateData::kRegionalSettings.find(country);
+    ASSERT_NE(new_settings_iter,
+              TemplateURLPrepopulateData::kRegionalSettings.end());
+
+    const auto& new_settings = new_settings_iter->second;
+    const auto& old_settings =
+        TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
+            country_code);
+
+    auto old_engines_iter = old_settings.begin();
+    for (const auto& new_top_engine : new_settings->search_engines.top) {
+      ASSERT_EQ(new_top_engine, old_engines_iter->get());
+      ++old_engines_iter;
+    }
+
+    for (const auto& new_remaining_engine :
+         new_settings->search_engines.remaining) {
+      ASSERT_EQ(new_remaining_engine, old_engines_iter->get());
+      ++old_engines_iter;
+    }
+
+    ASSERT_EQ(old_engines_iter, old_settings.end());
+  }
+}
 
 struct UpdateRequirementsTestParams {
   std::string test_case_name;
