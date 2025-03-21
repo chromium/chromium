@@ -5291,6 +5291,7 @@ targets.bundle(
         "crashpad_tests",
         "crypto_unittests",
         "google_apis_unittests",
+        "gwp_asan_unittests",
         "ios_components_unittests",
         "ios_net_unittests",
         "ios_testing_unittests",

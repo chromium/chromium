@@ -1018,6 +1018,102 @@
           "iPad Air (5th generation)",
           "--version",
           "18.4",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "16e5129f",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gwp_asan_unittests iPad Air (5th generation) 18.4",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_18_4",
+              "path": "Runtime-ios-18.4"
+            },
+            {
+              "name": "xcode_ios_16e5129f",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gwp_asan_unittests",
+        "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/",
+        "variant_id": "iPad Air (5th generation) 18.4"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "18.4",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "16e5129f",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gwp_asan_unittests iPhone 14 18.4",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_18_4",
+              "path": "Runtime-ios-18.4"
+            },
+            {
+              "name": "xcode_ios_16e5129f",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gwp_asan_unittests",
+        "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/",
+        "variant_id": "iPhone 14 18.4"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPad Air (5th generation)",
+          "--version",
+          "18.4",
           "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only",
