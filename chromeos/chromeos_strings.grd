@@ -2556,6 +2556,9 @@
         <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_LEARN_MORE" desc="Label for the link to learn more about the currently selected wallpaper.">
           Learn more
         </message>
+        <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_LEARN_MORE_ARIA_LABEL" desc="Aria label for the link to learn more about the currently selected wallpaper.">
+          Learn more about the selected wallpaper
+        </message>
         <message name="IDS_PERSONALIZATION_APP_WALLPAPER_DESCRIPTION_DIALOG_CLOSE" desc="Label for the close button on wallpaper description dialog">
           Close
         </message>
