@@ -412,6 +412,12 @@ gn_args.config(
 gn_args.config(
     name = "cronet_android",
     args = {
+        # PLEASE TRY TO AVOID ADDING NEW GN ARGS HERE. Special snowflake gn args
+        # are a pain to maintain; see https://crbug.com/40287068. Instead, try
+        # to change the GN build rules so that the default value for the arg
+        # is derived from the `is_cronet_build` gn arg.
+        # TODO: https://crbug.com/40287068 - clean up this list. Ideally it
+        # should be empty.
         # LINT.IfChange(cronet_android)
         "use_partition_alloc": False,
         "enable_reporting": True,
@@ -445,6 +451,12 @@ gn_args.config(
 gn_args.config(
     name = "cronet_common",
     args = {
+        # PLEASE TRY TO AVOID ADDING NEW GN ARGS HERE. Special snowflake gn args
+        # are a pain to maintain; see https://crbug.com/40287068. Instead, try
+        # to change the GN build rules so that the default value for the arg
+        # is derived from the `is_cronet_build` gn arg.
+        # TODO: https://crbug.com/40287068 - clean up this list. Ideally it
+        # should contain `is_cronet_build` and nothing else.
         # LINT.IfChange(cronet_common)
         "disable_file_support": True,
         "enable_websockets": False,
