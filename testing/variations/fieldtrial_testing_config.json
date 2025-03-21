@@ -3238,22 +3238,6 @@
             ]
         }
     ],
-    "BatteryStatusAndPowerSavingBroadcastReceiversInBackground": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BatteryStatusManagerBroadcastReceiverInBackground",
-                        "PowerSavingModeBroadcastReceiverInBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "BiometricAuthPwdFillAndroid": [
         {
             "platforms": [
