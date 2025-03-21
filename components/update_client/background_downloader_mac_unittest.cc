@@ -11,6 +11,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -65,7 +66,8 @@ constexpr char kDownloadSessionIdSwitchName[] = "download-session-id";
 int ParseRangeHeader(const std::string& header) {
   int lower_range = 0;
   // TODO(crbug.com/40285933): Don't use sscanf.
-  EXPECT_EQ(std::sscanf(header.c_str(), "bytes=%d-", &lower_range), 1);
+  EXPECT_EQ(UNSAFE_TODO(std::sscanf(header.c_str(), "bytes=%d-", &lower_range)),
+            1);
   return lower_range;
 }
 

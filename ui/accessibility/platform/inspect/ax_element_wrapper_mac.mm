@@ -13,6 +13,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback.h"
@@ -279,7 +280,7 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
     base::apple::ScopedCFTypeRef<CFTypeRef> parameter_ref(
         CFBridgingRetain(parameter));
     if ([parameter isKindOfClass:[NSValue class]] &&
-        !strcmp([parameter objCType], @encode(NSRange))) {
+        !UNSAFE_TODO(strcmp([parameter objCType], @encode(NSRange)))) {
       NSRange range = [parameter rangeValue];
       parameter_ref.reset(AXValueCreate(kAXValueTypeCFRange, &range));
     }

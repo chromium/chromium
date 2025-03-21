@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -314,8 +315,9 @@ HRESULT DeckLinkCaptureDelegate::VideoInputFrameArrived(
 HRESULT DeckLinkCaptureDelegate::QueryInterface(REFIID iid, void** ppv) {
   DCHECK(thread_checker_.CalledOnValidThread());
   CFUUIDBytes iunknown = CFUUIDGetUUIDBytes(IUnknownUUID);
-  if (memcmp(&iid, &iunknown, sizeof(REFIID)) == 0 ||
-      memcmp(&iid, &IID_IDeckLinkInputCallback, sizeof(REFIID)) == 0) {
+  if (UNSAFE_TODO(memcmp(&iid, &iunknown, sizeof(REFIID))) == 0 ||
+      UNSAFE_TODO(memcmp(&iid, &IID_IDeckLinkInputCallback, sizeof(REFIID))) ==
+          0) {
     *ppv = static_cast<IDeckLinkInputCallback*>(this);
     AddRef();
     return S_OK;

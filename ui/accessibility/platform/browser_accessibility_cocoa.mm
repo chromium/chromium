@@ -18,6 +18,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -500,7 +501,7 @@ AXTextEdit::~AXTextEdit() = default;
 
 bool ui::IsNSRange(id value) {
   return [value isKindOfClass:[NSValue class]] &&
-         0 == strcmp([value objCType], @encode(NSRange));
+         0 == UNSAFE_TODO(strcmp([value objCType], @encode(NSRange)));
 }
 
 @implementation BrowserAccessibilityCocoa {
