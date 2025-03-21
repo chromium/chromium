@@ -2281,6 +2281,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.ServerAuction.Request.UnpaddedSize"
+    units="bytes" expires_after="2025-08-31">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Measures the serialized size of the Bidding and Auction Service request
+    after compression but before encryption. Recorded when the request is
+    created.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Update.AuctionExecutionMode"
     enum="InterestGroupAdAuctionExecutionMode" expires_after="2025-09-14">
   <owner>behamilton@google.com</owner>
