@@ -237,6 +237,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ApplyRootScrollOffsetChanged(const gfx::PointF& root_scroll_offset,
                                     bool force);
   void UpdateFrameBounds();
+  void ComputeDisplayFeature();
 
   blink::mojom::FrameWidgetInputHandler*
   GetFrameWidgetInputHandlerForFocusedWidget();
@@ -270,6 +271,12 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   // This stores the underlying view bounds. The UIView might change size but
   // we do not change its size during scroll.
   gfx::Rect view_bounds_;
+
+  // Represents a feature of the physical display whose offset and mask_length
+  // are expressed in DIPs relative to the view. See display_feature.h for more
+  // details.
+  std::optional<DisplayFeature> display_feature_;
+  bool display_feature_overridden_for_emulation_ = false;
 
   std::unique_ptr<BrowserCompositorIOS> browser_compositor_;
   std::unique_ptr<UIViewHolder> ui_view_;
