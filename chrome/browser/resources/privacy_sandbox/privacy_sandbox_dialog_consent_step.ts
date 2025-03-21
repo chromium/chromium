@@ -39,14 +39,6 @@ export class PrivacySandboxDialogConsentStepElement extends
       },
 
       /**
-       * If true, the privacy policy text is hyperlinked.
-       */
-      isPrivacyPolicyLinkEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * If true, the consent notice page is hidden.
        * On load, this page should not be hidden.
        */
@@ -68,16 +60,9 @@ export class PrivacySandboxDialogConsentStepElement extends
         computed:
             'computeConsentContentV2FirstDescription_(shouldShowAdTopicsContentParity_)',
       },
-
-      learnMoreBulletDescriptionNoLink_: {
-        type: String,
-        computed:
-            'computeLearnMoreBulletDescriptionNoLink_(shouldShowAdTopicsContentParity_)',
-      },
     };
   }
 
-  private isPrivacyPolicyLinkEnabled_: boolean;
   private hideConsentNoticePage_: boolean;
   private shouldShowAdTopicsContentParity_: boolean;
 
@@ -104,22 +89,7 @@ export class PrivacySandboxDialogConsentStepElement extends
   }
 
   private onConsentLearnMoreExpanded_(newValue: boolean, oldValue: boolean) {
-    this.loadPrivacyPolicyOnExpand_(newValue, oldValue);
     this.onConsentLearnMoreExpandedChanged(newValue, oldValue);
-  }
-
-  private loadPrivacyPolicyOnExpand_(newValue: boolean, oldValue: boolean) {
-    // When the expand is triggered, if the iframe hasn't been loaded yet,
-    // load it the first time the learn more expand section is clicked.
-    if (newValue && !oldValue) {
-      if (!this.shadowRoot!.querySelector('#privacyPolicyDialog')) {
-        PrivacySandboxDialogBrowserProxy.getInstance()
-            .shouldShowPrivacySandboxPrivacyPolicy()
-            .then(isPrivacyPolicyLinkEnabled => {
-              this.isPrivacyPolicyLinkEnabled_ = isPrivacyPolicyLinkEnabled;
-            });
-      }
-    }
   }
 
   private onBackButtonClicked_() {
@@ -145,13 +115,6 @@ export class PrivacySandboxDialogConsentStepElement extends
         this.shouldShowAdTopicsContentParity_ ?
             'm1ConsentDescription1ContentParity' :
             'm1ConsentDescription2V2');
-  }
-
-  private computeLearnMoreBulletDescriptionNoLink_(): string {
-    return this.i18n(
-        this.shouldShowAdTopicsContentParity_ ?
-            'm1ConsentLearnMoreBullet2DescriptionNoLinkContentParity' :
-            'm1ConsentLearnmoreBullet2DescriptionNoLink');
   }
 }
 
