@@ -207,6 +207,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
+import org.chromium.chrome.browser.tab_group_suggestion.GroupSuggestionsPromotionCoordinator;
+import org.chromium.chrome.browser.tab_group_suggestion.SuggestionEventObserver;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleBuilder;
 import org.chromium.chrome.browser.tab_ui.TabGridIphDialogCoordinator;
@@ -543,6 +545,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
     private OneshotSupplierImpl<SystemBarColorHelper> mBottomChinSupplier =
             new OneshotSupplierImpl<>();
+
+    private SuggestionEventObserver mSuggestionEventObserver;
+    private GroupSuggestionsPromotionCoordinator mGroupSuggestionsPromotionCoordinator;
 
     /**
      * This class is used to warm up the chrome split ClassLoader. See SplitChromeApplication for
@@ -1318,6 +1323,19 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
 
             getSnackbarManager().setEdgeToEdgeSupplier(getEdgeToEdgeSupplier().get());
+
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
+                mSuggestionEventObserver =
+                        new SuggestionEventObserver(
+                                mTabModelSelector.getModel(false), mHubManagerSupplier);
+                mGroupSuggestionsPromotionCoordinator =
+                        new GroupSuggestionsPromotionCoordinator(
+                                this,
+                                mRootUiCoordinator.getBottomSheetController(),
+                                mTabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(false));
+            }
         }
     }
 
@@ -3711,6 +3729,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             mXrLayoutStateObserver.destroy();
             mXrLayoutStateObserver = null;
+        }
+
+        if (mSuggestionEventObserver != null) {
+            mSuggestionEventObserver.destroy();
+            mSuggestionEventObserver = null;
+        }
+
+        if (mGroupSuggestionsPromotionCoordinator != null) {
+            mGroupSuggestionsPromotionCoordinator.destroy();
+            mGroupSuggestionsPromotionCoordinator = null;
         }
 
         super.onDestroyInternal();
