@@ -35,6 +35,7 @@ source_set("model") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:browser_agent",
     "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

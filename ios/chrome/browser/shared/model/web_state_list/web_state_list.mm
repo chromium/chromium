@@ -1219,19 +1219,18 @@ void WebStateList::DeleteGroupIfEmpty(const TabGroup* group) {
     return;
   }
 
-    // Notify observers of the imminent deletion of the group.
-    // The deletion doesn't change the active WebState.
-    web::WebState* const active_web_state = GetActiveWebState();
-    const WebStateListStatus status = {
-        .old_active_web_state = active_web_state,
-        .new_active_web_state = active_web_state};
-    const WebStateListChangeGroupDelete group_delete_change(group);
-    for (auto& observer : observers_) {
-      observer.WebStateListDidChange(this, group_delete_change, status);
-    }
+  // Notify observers of the imminent deletion of the group.
+  // The deletion doesn't change the active WebState.
+  web::WebState* const active_web_state = GetActiveWebState();
+  const WebStateListStatus status = {.old_active_web_state = active_web_state,
+                                     .new_active_web_state = active_web_state};
+  const WebStateListChangeGroupDelete group_delete_change(group);
+  for (auto& observer : observers_) {
+    observer.WebStateListDidChange(this, group_delete_change, status);
+  }
 
-    // Actually delete the group.
-    groups_.erase(iter);
+  // Actually delete the group.
+  groups_.erase(iter);
 }
 
 void WebStateList::SetActiveIndex(int active_index) {

@@ -51,6 +51,24 @@ source_set("model") {
   ]
 }
 
+source_set("tab_group_service") {
+  sources = [
+    "tab_group_service.h",
+    "tab_group_service.mm",
+    "tab_group_service_factory.h",
+    "tab_group_service_factory.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/collaboration/model:features",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/web_state_list",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
