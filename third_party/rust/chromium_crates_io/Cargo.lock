@@ -151,7 +151,6 @@ dependencies = [
  "read-fonts",
  "regex",
  "rstest",
- "rstest_reuse",
  "rustc-demangle-capi",
  "rustversion",
  "serde",
@@ -1163,16 +1162,6 @@ dependencies = [
  "rustc_version",
  "syn",
  "unicode-ident",
-]
-
-[[package]]
-name = "rstest_reuse"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "quote",
- "rand",
- "syn",
 ]
 
 [[package]]
