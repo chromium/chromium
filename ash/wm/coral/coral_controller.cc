@@ -398,6 +398,12 @@ void CoralController::OnTemplateCreated(
         std::make_unique<app_restore::RestoreData>());
   }
 
+  // To limit the memory usage, only save the first
+  // `kMaxItemsForCoralSuppressionContext` items to build the suppression
+  // context.
+  const int entities_size = tab_app_entities.size();
+  tab_app_entities.resize(
+      std::min(entities_size, kMaxItemsForCoralSuppressionContext));
   new_template->set_coral_tab_app_entities(std::move(tab_app_entities));
 
   auto* shell = Shell::Get();
