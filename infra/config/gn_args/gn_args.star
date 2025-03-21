@@ -420,7 +420,6 @@ gn_args.config(
         # should be empty.
         # LINT.IfChange(cronet_android)
         "use_partition_alloc": False,
-        "enable_reporting": True,
         "use_hashed_jni_names": True,
         "default_min_sdk_version": 23,
         "clang_use_default_sample_profile": False,

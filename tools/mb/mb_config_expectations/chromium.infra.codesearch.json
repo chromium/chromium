@@ -35,7 +35,6 @@
       "debuggable_apks": false,
       "default_min_sdk_version": 23,
       "enable_kythe_annotations": true,
-      "enable_reporting": true,
       "enable_resource_allowlist_generation": false,
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
