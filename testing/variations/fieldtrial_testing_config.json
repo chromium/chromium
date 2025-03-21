@@ -12724,10 +12724,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithSettings",
-                    "params": {
-                        "identity-disc-account-menu-with-settings-button": "true"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "IdentityConfirmationSnackbar",
                         "IdentityDiscAccountMenu"
