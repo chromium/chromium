@@ -418,6 +418,11 @@ interface FrameWidgetInputHandler {
   // Requests the renderer to stop autoscroll.
   [EnableIf=is_ios]
   StopAutoscroll();
+
+  // Get the rect in screen coordinates (DIPs) for a range of characters in the
+  // currently focused editable field.
+  [EnableIf=is_ios]
+  RectForEditFieldChars(gfx.mojom.Range range) => (gfx.mojom.Rect rect);
 };
 
 // An enumeration describing the active and focus states. If a widget is

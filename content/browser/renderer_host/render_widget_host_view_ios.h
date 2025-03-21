@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_IOS_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_IOS_H_
 
-#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
-
 #include <string>
 #include <vector>
 
@@ -17,6 +15,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 
@@ -216,6 +215,11 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
 
   void StartAutoscrollForSelectionToPoint(const gfx::PointF& point);
   void StopAutoscroll();
+
+  void RectForEditFieldChars(
+      const gfx::Range& range,
+      blink::mojom::FrameWidgetInputHandler::RectForEditFieldCharsCallback
+          callback);
 
  private:
   friend class MockPointerLockRenderWidgetHostView;

@@ -104,6 +104,9 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
 #if BUILDFLAG(IS_IOS)
   void StartAutoscrollForSelectionToPoint(const gfx::PointF& point) override;
   void StopAutoscroll() override;
+
+  void RectForEditFieldChars(const gfx::Range& range,
+                             RectForEditFieldCharsCallback callback) override;
 #endif  // BUILDFLAG(IS_IOS)
 
  private:
