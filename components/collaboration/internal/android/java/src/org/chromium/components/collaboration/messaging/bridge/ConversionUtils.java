@@ -110,31 +110,6 @@ class ConversionUtils {
     }
 
     @CalledByNative
-    private static ArrayList<InstantMessage> createInstantMessageList() {
-        return new ArrayList<InstantMessage>();
-    }
-
-    @CalledByNative
-    private static InstantMessage createInstantMessageAndMaybeAddToList(
-            @Nullable ArrayList<InstantMessage> list,
-            MessageAttribution attribution,
-            @CollaborationEvent int collaborationEvent,
-            @InstantNotificationLevel int level,
-            @InstantNotificationType int type) {
-        InstantMessage message = new InstantMessage();
-        message.attribution = attribution;
-        message.collaborationEvent = collaborationEvent;
-        message.level = level;
-        message.type = type;
-
-        if (list != null) {
-            list.add(message);
-        }
-
-        return message;
-    }
-
-    @CalledByNative
     private static InstantMessage createInstantMessage(
             MessageAttribution attribution,
             @CollaborationEvent int collaborationEvent,

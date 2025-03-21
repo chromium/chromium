@@ -39,8 +39,8 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
     private MessagingBackendService.InstantMessageDelegate mInstantMessageDelegate =
             mock(MessagingBackendService.InstantMessageDelegate.class);
 
-    private ArgumentCaptor<List<InstantMessage>> mInstantMessageCaptor =
-            ArgumentCaptor.forClass(List.class);
+    private ArgumentCaptor<InstantMessage> mInstantMessageCaptor =
+            ArgumentCaptor.forClass(InstantMessage.class);
     private ArgumentCaptor<Callback> mInstantMessageCallbackCaptor =
             ArgumentCaptor.forClass(Callback.class);
 
@@ -149,9 +149,7 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         verify(mInstantMessageDelegate)
                 .displayInstantaneousMessage(
                         mInstantMessageCaptor.capture(), mInstantMessageCallbackCaptor.capture());
-        List<InstantMessage> messages = mInstantMessageCaptor.getValue();
-        Assert.assertEquals(1, messages.size());
-        InstantMessage message = messages.get(0);
+        InstantMessage message = mInstantMessageCaptor.getValue();
         Assert.assertEquals(InstantNotificationLevel.SYSTEM, message.level);
         Assert.assertEquals(InstantNotificationType.CONFLICT_TAB_REMOVED, message.type);
         Assert.assertEquals(CollaborationEvent.TAB_REMOVED, message.collaborationEvent);

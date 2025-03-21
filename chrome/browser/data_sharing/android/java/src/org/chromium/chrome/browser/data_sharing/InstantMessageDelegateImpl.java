@@ -149,9 +149,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     @Override
     public void displayInstantaneousMessage(
-            List<InstantMessage> messages, Callback<Boolean> successCallback) {
-        assert messages.size() == 1 : "Instant message batching isn't supported yet";
-        InstantMessage message = messages.get(0);
+            InstantMessage message, Callback<Boolean> successCallback) {
         @Nullable AttachedWindowInfo attachedWindowInfo = getAttachedWindowInfo(message);
         if (attachedWindowInfo == null) {
             successCallback.onResult(false);

@@ -121,22 +121,6 @@ ScopedJavaLocalRef<jobject> CreatePersistentMessageAndMaybeAddToListHelper(
 
   return jmessage;
 }
-
-// Helper method to provide a consistent way to create a InstantMessage
-// across multiple entry points.
-ScopedJavaLocalRef<jobject> CreateInstantMessageAndMaybeAddToListHelper(
-    JNIEnv* env,
-    ScopedJavaLocalRef<jobject> jlist,
-    const InstantMessage& message) {
-  ScopedJavaLocalRef<jobject> jmessage =
-      Java_ConversionUtils_createInstantMessageAndMaybeAddToList(
-          env, jlist, MessageAttributionToJava(env, message.attribution),
-          static_cast<int>(message.collaboration_event),
-          static_cast<int>(message.level), static_cast<int>(message.type));
-
-  return jmessage;
-}
-
 }  // namespace
 
 ScopedJavaLocalRef<jobject> PersistentMessageToJava(
@@ -165,19 +149,6 @@ ScopedJavaLocalRef<jobject> InstantMessageToJava(
       env, MessageAttributionToJava(env, message.attribution),
       static_cast<int>(message.collaboration_event),
       static_cast<int>(message.level), static_cast<int>(message.type));
-}
-
-ScopedJavaLocalRef<jobject> InstantMessagesToJava(
-    JNIEnv* env,
-    const std::vector<InstantMessage>& messages) {
-  ScopedJavaLocalRef<jobject> jlist =
-      Java_ConversionUtils_createInstantMessageList(env);
-
-  for (const auto& message : messages) {
-    CreateInstantMessageAndMaybeAddToListHelper(env, jlist, message);
-  }
-
-  return jlist;
 }
 
 ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(
