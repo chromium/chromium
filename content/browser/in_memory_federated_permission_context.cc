@@ -242,15 +242,26 @@ std::optional<bool> InMemoryFederatedPermissionContext::GetIdpSigninStatus(
   }
 }
 
-std::vector<blink::common::webid::LoginStatusAccount>
-InMemoryFederatedPermissionContext::GetAccountProfiles(
-    const url::Origin& idp_origin) {
+// TODO(crbug.com/405194067) Clean up account types in Lightweight FedCM.
+std::vector<scoped_refptr<IdentityRequestAccount>>
+InMemoryFederatedPermissionContext::GetAccounts(const url::Origin& idp_origin) {
   auto options = idp_login_status_options_.find(idp_origin.Serialize());
-
-  if (options != idp_login_status_options_.end()) {
-    return options->second.accounts;
+  if (options == idp_login_status_options_.end()) {
+    return {};
   }
-  return {};
+  const std::vector<blink::common::webid::LoginStatusAccount>&
+      login_status_accounts = options->second.accounts;
+  std::vector<scoped_refptr<IdentityRequestAccount>> request_accounts;
+
+  request_accounts.reserve(request_accounts.size());
+  std::transform(login_status_accounts.begin(), login_status_accounts.end(),
+                 std::inserter(request_accounts, request_accounts.begin()),
+                 [](const auto& login_status_account) {
+                   return base::MakeRefCounted<IdentityRequestAccount>(
+                       login_status_account);
+                 });
+
+  return request_accounts;
 }
 
 void InMemoryFederatedPermissionContext::SetIdpSigninStatus(

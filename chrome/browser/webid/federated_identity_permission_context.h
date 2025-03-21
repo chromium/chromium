@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/object_permission_context_base.h"
@@ -19,10 +20,10 @@
 
 namespace content {
 class BrowserContext;
-}
+class IdentityRequestAccount;
+}  // namespace content
 
 namespace blink::common::webid {
-struct LoginStatusAccount;
 struct LoginStatusOptions;
 }  // namespace blink::common::webid
 
@@ -80,7 +81,7 @@ class FederatedIdentityPermissionContext
       const std::string& account_id) override;
   std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override;
-  std::vector<blink::common::webid::LoginStatusAccount> GetAccountProfiles(
+  std::vector<scoped_refptr<content::IdentityRequestAccount>> GetAccounts(
       const url::Origin& identity_provider) override;
   void SetIdpSigninStatus(
       const url::Origin& idp_origin,
