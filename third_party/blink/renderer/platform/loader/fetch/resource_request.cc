@@ -465,13 +465,13 @@ void ResourceRequestHead::SetFetchIntegrity(
   IntegrityMetadataSet metadata;
   SubresourceIntegrity::ParseIntegrityAttribute(integrity, metadata,
                                                 feature_context);
-  SetExpectedSignatures(metadata);
+  SetExpectedPublicKeys(metadata);
 }
 
-void ResourceRequestHead::SetExpectedSignatures(
+void ResourceRequestHead::SetExpectedPublicKeys(
     const IntegrityMetadataSet& metadata) {
-  for (const auto& signature : metadata.signatures) {
-    expected_signatures_.push_back(signature.first);
+  for (const auto& public_key : metadata.signatures) {
+    expected_public_keys_.push_back(public_key.first);
   }
 }
 

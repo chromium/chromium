@@ -78,7 +78,7 @@ MaybeBlockResponseForSRIMessageSignature(
 COMPONENT_EXPORT(NETWORK_CPP)
 void MaybeSetAcceptSignatureHeader(
     net::URLRequest*,
-    const std::vector<std::string>& expected_signatures);
+    const std::vector<std::string>& expected_public_keys);
 
 }  // namespace network
 
