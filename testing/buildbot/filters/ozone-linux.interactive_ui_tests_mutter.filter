@@ -56,12 +56,9 @@
 ########################################################
 
 # TODO(crbug.com/391903220) Now flaky on mutter
+-AppMenuFullscreenInteractiveTest.ContextMenu
 -AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/WithoutContentSettingView_WithoutBackToTabButton
 -AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/WithoutContentSettingView_WithBackToTabButton
 -PictureInPictureBrowserFrameViewTest.RespectsUserLocationChangesAfterChildDialogCloses
 # Pointer lock tests are unstable and some crash on exit
 -FullscreenControllerInteractiveTest.*PointerLock*
-
-# TODO(crbug.com/391903220) Now failing due to 1920x1200 display size
--AppMenuFullscreenInteractiveTest.ContextMenu
--CrElementsFocusTest.CrActionMenu
