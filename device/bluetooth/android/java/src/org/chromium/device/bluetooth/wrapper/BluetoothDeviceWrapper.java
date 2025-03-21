@@ -21,8 +21,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 /** Wraps android.bluetooth.BluetoothDevice. */
 @NullMarked
@@ -91,6 +93,17 @@ public class BluetoothDeviceWrapper {
     public ParcelUuid[] getUuids() {
         assumeNonNull(mDevice);
         return mDevice.getUuids();
+    }
+
+    public BluetoothSocketWrapper createRfcommSocketToServiceRecord(UUID uuid) throws IOException {
+        assumeNonNull(mDevice);
+        return new BluetoothSocketWrapper(mDevice.createRfcommSocketToServiceRecord(uuid));
+    }
+
+    public BluetoothSocketWrapper createInsecureRfcommSocketToServiceRecord(UUID uuid)
+            throws IOException {
+        assumeNonNull(mDevice);
+        return new BluetoothSocketWrapper(mDevice.createInsecureRfcommSocketToServiceRecord(uuid));
     }
 
     @Override
