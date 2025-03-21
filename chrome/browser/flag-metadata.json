@@ -2795,6 +2795,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-cros-separate-geo-api-key",
+    "owners": [ "zauri@google.com", "cros-privacy-features-dev@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-cros-system-japanese-physical-typing",
     "owners": [ "jhtin@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 136

@@ -7490,6 +7490,12 @@ const char kCrosMallUrlDescription[] =
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 
+const char kCrosSeparateGeoApiKeyName[] =
+    "Use ChromeOS-specific API keys for location resolution";
+const char kCrosSeparateGeoApiKeyDescription[] =
+    "If enabled, ChromeOS system services and Chrome-on-ChromeOS will use "
+    "different API keys and GCP endpoint to resolve location.";
+
 const char kDisableIdleSocketsCloseOnMemoryPressureName[] =
     "Disable closing idle sockets on memory pressure";
 const char kDisableIdleSocketsCloseOnMemoryPressureDescription[] =
