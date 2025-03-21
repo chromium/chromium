@@ -11,6 +11,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
@@ -19,7 +20,10 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -36,6 +40,7 @@ enum class AuthenticationFlowInProfileState {
   kFetchUserPolicyIfNeeded,
   kFetchCapabilitiesIfNeeded,
   kCompletionWithSuccess,
+  kSwitchBackToPersonalProfileIfNeeded,
   kCompletionWithFailure,
   kCleanupBeforeDone,
   kDone,
@@ -49,6 +54,7 @@ enum class AuthenticationFlowInProfileState {
 @implementation AuthenticationFlowInProfile {
   // State machine tracking for sign-in flow.
   AuthenticationFlowInProfileState _state;
+  BOOL _didSignIn;
   // This AuthenticationFlowInProfile keeps a reference to `self` while a
   // sign-in flow is is in progress to ensure it outlives until the last step.
   AuthenticationFlowInProfile* _selfRetainer;
@@ -102,8 +108,12 @@ enum class AuthenticationFlowInProfileState {
   CHECK(completion);
   _selfRetainer = self;
   _signInCompletion = completion;
-  _performer = [[AuthenticationFlowPerformer alloc] initWithDelegate:self
-                                                changeProfileHandler:nil];
+  id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
+      _browser->GetSceneState().profileState.appState.appCommandDispatcher,
+      ChangeProfileCommands);
+  _performer = [[AuthenticationFlowPerformer alloc]
+          initWithDelegate:self
+      changeProfileHandler:changeProfileHandler];
   // Make sure -[AuthenticationFlow startSignInWithCompletion:] doesn't call
   // the completion block synchronously.
   // Related to http://crbug.com/1246480.
@@ -151,9 +161,14 @@ enum class AuthenticationFlowInProfileState {
     case AuthenticationFlowInProfileState::kRegisterForUserPolicyIfNeeded:
     case AuthenticationFlowInProfileState::kFetchUserPolicyIfNeeded:
     case AuthenticationFlowInProfileState::kFetchCapabilitiesIfNeeded:
+      return AuthenticationFlowInProfileState::
+          kSwitchBackToPersonalProfileIfNeeded;
+    case AuthenticationFlowInProfileState::kCompletionWithSuccess:
+      // This state should not be reached in error cases.
+      NOTREACHED();
+    case AuthenticationFlowInProfileState::kSwitchBackToPersonalProfileIfNeeded:
       return AuthenticationFlowInProfileState::kCompletionWithFailure;
     case AuthenticationFlowInProfileState::kCompletionWithFailure:
-    case AuthenticationFlowInProfileState::kCompletionWithSuccess:
       return AuthenticationFlowInProfileState::kCleanupBeforeDone;
     case AuthenticationFlowInProfileState::kCleanupBeforeDone:
     case AuthenticationFlowInProfileState::kDone:
@@ -179,8 +194,12 @@ enum class AuthenticationFlowInProfileState {
     case AuthenticationFlowInProfileState::kFetchCapabilitiesIfNeeded:
       return AuthenticationFlowInProfileState::kCompletionWithSuccess;
     case AuthenticationFlowInProfileState::kCompletionWithSuccess:
-    case AuthenticationFlowInProfileState::kCompletionWithFailure:
       return AuthenticationFlowInProfileState::kCleanupBeforeDone;
+    case AuthenticationFlowInProfileState::kSwitchBackToPersonalProfileIfNeeded:
+    case AuthenticationFlowInProfileState::kCompletionWithFailure:
+      // These states should not be reached because `error_` should be set in
+      // those cases.
+      NOTREACHED();
     case AuthenticationFlowInProfileState::kCleanupBeforeDone:
     case AuthenticationFlowInProfileState::kDone:
       return AuthenticationFlowInProfileState::kDone;
@@ -209,6 +228,9 @@ enum class AuthenticationFlowInProfileState {
       return;
     case AuthenticationFlowInProfileState::kCompletionWithSuccess:
       [self successCompleteFlowStep];
+      return;
+    case AuthenticationFlowInProfileState::kSwitchBackToPersonalProfileIfNeeded:
+      [self switchBackToPersonalProfileIfNeededStep];
       return;
     case AuthenticationFlowInProfileState::kCompletionWithFailure:
       [self failureCompleteFlowStep];
@@ -250,6 +272,8 @@ enum class AuthenticationFlowInProfileState {
                      &CoreAccountInfo::gaia);
   if (!isValidIdentityInProfile) {
     _error = YES;
+    // TODO(crbug.com/375605482): Show an error to the user via
+    // `[_performer showAuthenticationError:...]`.
     [self continueFlow];
     return;
   }
@@ -261,6 +285,7 @@ enum class AuthenticationFlowInProfileState {
     [_performer signInIdentity:_identityToSignIn
                  atAccessPoint:_accessPoint
                 currentProfile:profile];
+    _didSignIn = YES;
   } else {
     CHECK([currentIdentity isEqual:_identityToSignIn],
           base::NotFatalUntil::M138);
@@ -334,10 +359,34 @@ enum class AuthenticationFlowInProfileState {
   [self continueFlow];
 }
 
+- (void)switchBackToPersonalProfileIfNeededStep {
+  // Note: It's theoretically possible that the originating profile was not the
+  // personal one, but rather another managed profile. In that case, switching
+  // back to that managed profile would be "more correct". However, that would
+  // be significantly more complicated (e.g. what if that profile doesn't exist
+  // anymore), and this is a supposedly-impossible error case anyway.
+  std::string personalProfileName = GetApplicationContext()
+                                        ->GetProfileManager()
+                                        ->GetProfileAttributesStorage()
+                                        ->GetPersonalProfileName();
+  bool inPersonalProfile =
+      personalProfileName == [self originalProfile]->GetProfileName();
+  if (inPersonalProfile) {
+    // Already in the personal profile, no switching necessary.
+    [self continueFlow];
+    return;
+  }
+  SceneState* sceneState = _browser->GetSceneState();
+  [_performer switchToProfileWithName:personalProfileName
+                           sceneState:sceneState];
+}
+
 - (void)failureCompleteFlowStep {
-  // TODO(crbug.com/375605482): Need to switch back to the personal profile
-  // (if the current profile is a managed profile), sign out (if the personal
-  // profile is signed in), and display an error.
+  // None of the steps after signin can fail. If any failable steps after the
+  // signin step get added in the future, then a call to
+  // `[_performer signOutImmediatelyFromProfile:...]` should be added here.
+  CHECK(!_didSignIn);
+
   signin_ui::SigninCompletionCallback signInCompletion = _signInCompletion;
   _signInCompletion = nil;
   // If the sign-in failed, the result is `SigninCoordinatorResultInterrupted`.
@@ -403,7 +452,13 @@ enum class AuthenticationFlowInProfileState {
 
 - (void)didSwitchToProfileWithSuccess:(BOOL)success
                     newProfileBrowser:(Browser*)newProfileBrowser {
-  NOTREACHED();
+  // This class only ever switches (back) to the personal profile, which should
+  // never fail.
+  CHECK(success);
+  CHECK(newProfileBrowser);
+
+  // After the profile switch, `_browser` is not valid anymore.
+  _browser = nullptr;
 }
 
 - (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
