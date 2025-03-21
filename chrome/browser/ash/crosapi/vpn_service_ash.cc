@@ -66,38 +66,6 @@ AdaptCallback(SuccessOrFailureCallback callback) {
 
 namespace crosapi {
 
-VpnProvidersObserver::VpnProvidersObserver(
-    VpnProvidersObserver::Delegate* delegate)
-    : delegate_(delegate) {
-  ash::GetNetworkConfigService(
-      cros_network_config_.BindNewPipeAndPassReceiver());
-  cros_network_config_->AddObserver(
-      cros_network_config_observer_.BindNewPipeAndPassRemote());
-}
-
-VpnProvidersObserver::~VpnProvidersObserver() = default;
-
-void VpnProvidersObserver::OnVpnProvidersChanged() {
-  cros_network_config_->GetVpnProviders(base::BindOnce(
-      &VpnProvidersObserver::OnGetVpnProviders, weak_factory_.GetWeakPtr()));
-}
-
-void VpnProvidersObserver::OnGetVpnProviders(
-    std::vector<chromeos::network_config::mojom::VpnProviderPtr>
-        vpn_providers) {
-  if (!delegate_) {
-    return;
-  }
-  base::flat_set<std::string> vpn_extensions;
-  for (const auto& vpn_provider : vpn_providers) {
-    if (vpn_provider->type ==
-        chromeos::network_config::mojom::VpnType::kExtension) {
-      vpn_extensions.insert(vpn_provider->app_id);
-    }
-  }
-  delegate_->OnVpnExtensionsChanged(std::move(vpn_extensions));
-}
-
 class VpnConfigurationImpl
     : public VpnServiceForExtensionAsh::VpnConfiguration {
  public:
@@ -559,7 +527,7 @@ VpnServiceAsh::VpnServiceAsh() {
   network_state_handler_observer_.Observe(
       ash::NetworkHandler::Get()->network_state_handler());
 
-  vpn_providers_observer_ = std::make_unique<VpnProvidersObserver>(this);
+  vpn_providers_observer_ = std::make_unique<ash::VpnProvidersObserver>(this);
 }
 
 VpnServiceAsh::~VpnServiceAsh() = default;
