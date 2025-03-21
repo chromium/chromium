@@ -80,9 +80,7 @@ class CC_EXPORT TextureLayer : public Layer {
     bool is_lost_ = false;
   };
 
-  // Used when mailbox names are specified instead of texture IDs.
-  static scoped_refptr<TextureLayer> CreateForMailbox(
-      TextureLayerClient* client);
+  static scoped_refptr<TextureLayer> Create(TextureLayerClient* client);
 
   TextureLayer(const TextureLayer&) = delete;
   TextureLayer& operator=(const TextureLayer&) = delete;

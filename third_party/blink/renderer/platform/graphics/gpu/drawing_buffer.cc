@@ -1196,7 +1196,7 @@ bool DrawingBuffer::CopyToVideoFrame(
 
 cc::Layer* DrawingBuffer::CcLayer() {
   if (!layer_) {
-    layer_ = cc::TextureLayer::CreateForMailbox(this);
+    layer_ = cc::TextureLayer::Create(this);
     if (client_) {
       client_->DrawingBufferClientInitializeLayer(layer_.get());
     }
