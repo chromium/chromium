@@ -534,18 +534,17 @@ class TabResumptionMediatorProxy {
 
   const synced_sessions::DistantSession* session = nullptr;
   const synced_sessions::DistantTab* tab = nullptr;
-  auto const syncedSessions =
-      std::make_unique<synced_sessions::SyncedSessions>(_sessionSyncService);
-    LastActiveDistantTab lastDistantTab = GetLastActiveDistantTab(
-        syncedSessions.get(), TabResumptionForXDevicesTimeThreshold());
-    if (lastDistantTab.tab) {
-      tab = lastDistantTab.tab;
-      if (_lastDistinctItemURL != tab->virtual_url) {
-        _lastDistinctItemURL = tab->virtual_url;
-        session = lastDistantTab.session;
-        lastSyncedTabSyncedTime = tab->last_active_time;
-      }
+  const synced_sessions::SyncedSessions syncedSessions(_sessionSyncService);
+  LastActiveDistantTab lastDistantTab = GetLastActiveDistantTab(
+      syncedSessions, TabResumptionForXDevicesTimeThreshold());
+  if (lastDistantTab.tab) {
+    tab = lastDistantTab.tab;
+    if (_lastDistinctItemURL != tab->virtual_url) {
+      _lastDistinctItemURL = tab->virtual_url;
+      session = lastDistantTab.session;
+      lastSyncedTabSyncedTime = tab->last_active_time;
     }
+  }
 
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   bool canShowMostRecentItem =
