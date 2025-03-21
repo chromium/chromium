@@ -43,6 +43,7 @@
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_client.h"
+#include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -1524,10 +1525,12 @@ bool HistoryService::Init(
 
   // Unit tests can inject `backend_task_runner_` before this is called.
   if (!backend_task_runner_) {
-    backend_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::WithBaseSyncPrimitives(),
-         base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+    backend_task_runner_ =
+        base::ThreadPool::CreateSequencedTaskRunnerForResource(
+            {base::MayBlock(), base::WithBaseSyncPrimitives(),
+             base::TaskPriority::USER_BLOCKING,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+            history_dir_.Append(kHistoryFilename));
   }
 
   // Create the history backend.
