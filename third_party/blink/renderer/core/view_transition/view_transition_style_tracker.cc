@@ -182,6 +182,13 @@ const String& StaticUAStyles() {
   return kStaticUAStyles;
 }
 
+const String& StaticUAStylesScoped() {
+  DEFINE_STATIC_LOCAL(
+      String, kStaticUAStylesScoped,
+      (UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_SCOPED_CSS)));
+  return kStaticUAStylesScoped;
+}
+
 const String& AnimationUAStyles() {
   DEFINE_STATIC_LOCAL(
       String, kAnimationUAStyles,
@@ -2024,7 +2031,9 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
   const bool add_animations = state_ == State::kStarted;
 
   ViewTransitionStyleBuilder builder;
-  builder.AddUAStyle(StaticUAStyles());
+  builder.AddUAStyle(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
+                         ? StaticUAStylesScoped()
+                         : StaticUAStyles());
   if (add_animations)
     builder.AddUAStyle(AnimationUAStyles());
 

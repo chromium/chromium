@@ -144,12 +144,12 @@ The test verifies functionality of querying style information for view-transitio
                                         specificity : {
                                             a : 0
                                             b : 0
-                                            c : 2
+                                            c : 1
                                         }
-                                        text : html::view-transition
+                                        text : ::view-transition
                                     }
                                 ]
-                                text : html::view-transition
+                                text : ::view-transition
                             }
                             startingStyles : [
                             ]
@@ -157,7 +157,7 @@ The test verifies functionality of querying style information for view-transitio
                                 cssProperties : [
                                     [0] : {
                                         name : position
-                                        value : fixed
+                                        value : absolute
                                     }
                                     [1] : {
                                         name : top
@@ -181,6 +181,51 @@ The test verifies functionality of querying style information for view-transitio
                                         name : inset
                                         value : 0px
                                     }
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            ruleTypes : [
+                            ]
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : :root::view-transition
+                                    }
+                                ]
+                                text : :root::view-transition
+                            }
+                            startingStyles : [
+                            ]
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : fixed
+                                    }
+                                ]
+                                shorthandEntries : [
                                 ]
                             }
                             supports : [
@@ -214,12 +259,12 @@ The test verifies functionality of querying style information for view-transitio
                                         specificity : {
                                             a : 0
                                             b : 0
-                                            c : 1
+                                            c : 0
                                         }
-                                        text : html::view-transition-group(*)
+                                        text : ::view-transition-group(*)
                                     }
                                 ]
-                                text : html::view-transition-group(*)
+                                text : ::view-transition-group(*)
                             }
                             startingStyles : [
                             ]
@@ -456,12 +501,12 @@ The test verifies functionality of querying style information for view-transitio
                                         specificity : {
                                             a : 0
                                             b : 0
-                                            c : 1
+                                            c : 0
                                         }
-                                        text : html::view-transition-group(*)
+                                        text : ::view-transition-group(*)
                                     }
                                 ]
-                                text : html::view-transition-group(*)
+                                text : ::view-transition-group(*)
                             }
                             startingStyles : [
                             ]
@@ -2069,12 +2114,12 @@ Dumping styles for : ::view-transition with id undefined{
                                 specificity : {
                                     a : 0
                                     b : 0
-                                    c : 2
+                                    c : 1
                                 }
-                                text : html::view-transition
+                                text : ::view-transition
                             }
                         ]
-                        text : html::view-transition
+                        text : ::view-transition
                     }
                     startingStyles : [
                     ]
@@ -2082,7 +2127,7 @@ Dumping styles for : ::view-transition with id undefined{
                         cssProperties : [
                             [0] : {
                                 name : position
-                                value : fixed
+                                value : absolute
                             }
                             [1] : {
                                 name : top
@@ -2106,6 +2151,51 @@ Dumping styles for : ::view-transition with id undefined{
                                 name : inset
                                 value : 0px
                             }
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    ruleTypes : [
+                    ]
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : :root::view-transition
+                            }
+                        ]
+                        text : :root::view-transition
+                    }
+                    startingStyles : [
+                    ]
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : fixed
+                            }
+                        ]
+                        shorthandEntries : [
                         ]
                     }
                     supports : [
@@ -2185,12 +2275,12 @@ Dumping styles for : ::view-transition-group with id root{
                                 specificity : {
                                     a : 0
                                     b : 0
-                                    c : 1
+                                    c : 0
                                 }
-                                text : html::view-transition-group(*)
+                                text : ::view-transition-group(*)
                             }
                         ]
-                        text : html::view-transition-group(*)
+                        text : ::view-transition-group(*)
                     }
                     startingStyles : [
                     ]
@@ -3268,12 +3358,12 @@ Dumping styles for : ::view-transition-group with id shared{
                                 specificity : {
                                     a : 0
                                     b : 0
-                                    c : 1
+                                    c : 0
                                 }
-                                text : html::view-transition-group(*)
+                                text : ::view-transition-group(*)
                             }
                         ]
-                        text : html::view-transition-group(*)
+                        text : ::view-transition-group(*)
                     }
                     startingStyles : [
                     ]
