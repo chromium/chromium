@@ -481,6 +481,11 @@ Element* ScrollMarkerGroupData::ChooseMarkerRecursively() {
         targets.push_back(To<Element>(target_scroller));
       }
     }
+    // Stop if `active` does not contain scroll target elements targeted by
+    // group.
+    if (targets.empty()) {
+      break;
+    }
     LayoutBox* scroller_box = scroller->GetLayoutBox();
     DCHECK(scroller_box);
     ScrollableArea* scrollable_area = scroller_box->GetScrollableArea();
