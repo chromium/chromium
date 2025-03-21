@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
@@ -282,6 +283,10 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
 #else  // !BUILDFLAG(IS_CHROMEOS)
       {"focusHighlightLabel",
        IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION},
+      {"toastAlertLevelTitle",
+       IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_TITLE},
+      {"toastAlertLevelDescription",
+       IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_DESCRIPTION},
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
       {"overscrollHistoryNavigationTitle",

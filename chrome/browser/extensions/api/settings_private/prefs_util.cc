@@ -104,6 +104,10 @@
 #include "ui/events/ash/pref_names.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/toasts/toast_features.h"  // nogncheck
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -563,6 +567,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 #if defined(USE_AURA)
   (*s_allowlist)[::prefs::kOverscrollHistoryNavigationEnabled] =
       settings_api::PrefType::kBoolean;
+#endif
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(toast_features::kToastRefinements)) {
+    (*s_allowlist)[::prefs::kToastAlertLevel] = settings_api::PrefType::kNumber;
+  }
 #endif
 
   (*s_allowlist)[::prefs::kCaretBrowsingEnabled] =

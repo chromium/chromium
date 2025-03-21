@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ToastAlertLevel">
+  <int value="0" label="All"/>
+  <int value="1" label="Actionable"/>
+</enum>
+
 <enum name="ToastCloseReason">
   <int value="0" label="Auto Dismissed"/>
   <int value="1" label="Action Button"/>
