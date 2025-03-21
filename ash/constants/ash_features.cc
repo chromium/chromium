@@ -453,6 +453,11 @@ BASE_FEATURE(kCoralFeatureAllowed,
              "CoralFeatureAllowed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the coral feature supports multi-language.
+BASE_FEATURE(kCoralFeatureMultiLanguage,
+             "CoralFeatureMultiLanguage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables execution of routine for copying client keys and certs from NSS DB to
 // software backed Chaps slot. It's only respected if the
 // EnableNssDbClientCertsRollback feature flag is disabled.
