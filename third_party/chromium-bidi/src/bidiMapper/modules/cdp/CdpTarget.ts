@@ -21,7 +21,6 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {Bluetooth} from '../../../protocol/chromium-bidi.js';
 import {type ChromiumBidi, Session} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/Deferred.js';
-import {EventEmitter} from '../../../utils/EventEmitter.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {LogType} from '../../../utils/log.js';
 import type {Result} from '../../../utils/result.js';
@@ -34,15 +33,12 @@ import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
-import {type TargetEventMap, TargetEvents} from './TargetEvents.js';
-
 interface FetchStages {
   request: boolean;
   response: boolean;
   auth: boolean;
 }
-
-export class CdpTarget extends EventEmitter<TargetEventMap> {
+export class CdpTarget {
   readonly #id: Protocol.Target.TargetID;
   readonly #cdpClient: CdpClient;
   readonly #browserCdpClient: CdpClient;
@@ -121,7 +117,6 @@ export class CdpTarget extends EventEmitter<TargetEventMap> {
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn,
   ) {
-    super();
     this.#id = targetId;
     this.#cdpClient = cdpClient;
     this.#browserCdpClient = browserCdpClient;
@@ -413,15 +408,6 @@ export class CdpTarget extends EventEmitter<TargetEventMap> {
   }
 
   #setEventListeners() {
-    this.#cdpClient.on('Network.requestWillBeSent', (eventParams) => {
-      if (eventParams.loaderId === eventParams.requestId) {
-        this.emit(TargetEvents.FrameStartedNavigating, {
-          loaderId: eventParams.loaderId,
-          url: eventParams.request.url,
-          frameId: eventParams.frameId,
-        });
-      }
-    });
     this.#cdpClient.on('*', (event, params) => {
       // We may encounter uses for EventEmitter other than CDP events,
       // which we want to skip.
