@@ -486,6 +486,12 @@ void ConvertFrameData(
   ConvertFrameInteractionInfo(
       *mojom_frame_data.frame_interaction_info,
       proto_frame_data->mutable_frame_interaction_info());
+  if (render_frame_info.url.SchemeIsHTTPOrHTTPS()) {
+    proto_frame_data->set_url(render_frame_info.url.spec());
+  }
+  if (mojom_frame_data.title) {
+    proto_frame_data->set_title(mojom_frame_data.title.value());
+  }
   AddDocumentIdentifier(render_frame_info.global_frame_token, frame_token_set,
                         render_frame_info.serialized_server_token,
                         proto_frame_data);

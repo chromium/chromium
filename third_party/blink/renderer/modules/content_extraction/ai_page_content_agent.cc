@@ -968,6 +968,7 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
     mojom::blink::AIPageContentFrameData& frame_data) {
   frame_data.frame_interaction_info =
       mojom::blink::AIPageContentFrameInteractionInfo::New();
+  frame_data.title = frame.GetDocument()->title();
   AddFrameInteractionInfo(frame, *frame_data.frame_interaction_info);
   AddMetaData(frame, frame_data.meta_data);
 }

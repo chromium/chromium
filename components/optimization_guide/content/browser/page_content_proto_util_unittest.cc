@@ -30,6 +30,7 @@ blink::mojom::AIPageContentPtr CreatePageContent() {
   page_content->root_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
   page_content->frame_data = blink::mojom::AIPageContentFrameData::New();
+  page_content->frame_data->title = "Page Title";
   page_content->frame_data->frame_interaction_info =
       blink::mojom::AIPageContentFrameInteractionInfo::New();
   return page_content;
@@ -359,6 +360,14 @@ TEST(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Anchor) {
 
   AIPageContentResult page_content;
   EXPECT_FALSE(ConvertAIPageContentToProto(root_content, page_content));
+}
+
+TEST(PageContentProtoUtilTest, TitleSet) {
+  auto root_content = CreatePageContent();
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, page_content));
+  EXPECT_EQ("Page Title", page_content.proto.main_frame_data().title());
 }
 
 TEST(PageContentProtoUtilTest, ConvertTableData) {
