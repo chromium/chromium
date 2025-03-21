@@ -3560,7 +3560,7 @@
           Generative AI is experimental, in early development, and currently has limited availability.
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG_CONTENT" desc="The content of the introduction dialog when freeform is enabled.">
-          When you select “Create your own,” write a custom prompt. Or you can select “Choose a theme” and then select the underlined words to personalize your AI wallpaper.
+          When you select "Create your own," you can write a custom prompt. You can also select "Choose a theme" and then select the underlined words to personalize your AI wallpaper.
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           <ph name="LINE_BREAK">&lt;br&gt;</ph>
           Select "Inspire me" to get more unique and varied AI images options.
