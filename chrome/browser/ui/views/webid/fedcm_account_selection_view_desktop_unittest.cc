@@ -66,7 +66,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     kError,
     kRequestPermission,
     kLoading,
-    kSingleReturningAccount
   };
 
   ~TestAccountSelectionView() override = default;
@@ -77,11 +76,8 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
-      bool show_back_button,
-      bool is_choose_an_account) override {
-    CHECK(!is_choose_an_account || show_back_button);
+      bool show_back_button) override {
     show_back_button_ = show_back_button;
-    is_choose_an_account_ = is_choose_an_account;
     sheet_type_ = SheetType::kAccountPicker;
 
     account_ids_.clear();
@@ -95,13 +91,11 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     sheet_type_ = SheetType::kVerifying;
     account_ids_ = {account->id};
     show_back_button_ = false;
-    is_choose_an_account_ = false;
   }
 
   void ShowSingleAccountConfirmDialog(const IdentityRequestAccountPtr& account,
                                       bool show_back_button) override {
     show_back_button_ = show_back_button;
-    is_choose_an_account_ = false;
     sheet_type_ = SheetType::kConfirmAccount;
     account_ids_ = {account->id};
   }
@@ -112,7 +106,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     sheet_type_ = SheetType::kFailure;
     account_ids_ = {};
     show_back_button_ = false;
-    is_choose_an_account_ = false;
   }
 
   void ShowErrorDialog(const std::u16string& idp_for_display,
@@ -121,33 +114,18 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     sheet_type_ = SheetType::kError;
     account_ids_ = {};
     show_back_button_ = false;
-    is_choose_an_account_ = false;
   }
 
   void ShowRequestPermissionDialog(
       const IdentityRequestAccountPtr& account) override {
     show_back_button_ = true;
-    is_choose_an_account_ = false;
     sheet_type_ = SheetType::kRequestPermission;
     account_ids_ = {account->id};
-  }
-
-  void ShowSingleReturningAccountDialog(
-      const std::vector<IdentityRequestAccountPtr>& accounts,
-      const std::vector<IdentityProviderDataPtr>& idp_list) override {
-    show_back_button_ = false;
-    is_choose_an_account_ = false;
-    sheet_type_ = SheetType::kSingleReturningAccount;
-    CHECK(!accounts.empty());
-    CHECK_EQ(accounts[0]->login_state.value_or(LoginState::kSignUp),
-             LoginState::kSignIn);
-    account_ids_ = {accounts[0]->id};
   }
 
   std::string GetDialogTitle() const override { return std::string(); }
 
   bool show_back_button_{false};
-  bool is_choose_an_account_{false};
   std::optional<SheetType> sheet_type_{SheetType::kLoading};
   std::vector<std::string> account_ids_;
 };
@@ -1648,9 +1626,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpWithOneIdpMismatch) {
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
-  histogram_tester_->ExpectTotalCount(
-      "Blink.FedCm.ChooseAnAccountSelected.Desktop", 0);
-  EXPECT_FALSE(controller->GetTestView()->is_choose_an_account_);
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest,
@@ -1667,16 +1642,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
                             blink::mojom::RpMode::kPassive);
 
   EXPECT_FALSE(controller->GetTestView()->show_back_button_);
-  EXPECT_FALSE(controller->GetTestView()->is_choose_an_account_);
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kSingleReturningAccount,
-            controller->GetTestView()->sheet_type_);
-  EXPECT_THAT(controller->GetTestView()->account_ids_,
-              testing::ElementsAre(kAccountId1));
-
-  // Simulate 'Choose an account' button being clicked.
-  controller->OnChooseAnAccountClicked();
-  EXPECT_TRUE(controller->GetTestView()->show_back_button_);
-  EXPECT_TRUE(controller->GetTestView()->is_choose_an_account_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
@@ -1688,25 +1653,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId2));
-  EXPECT_FALSE(controller->GetTestView()->is_choose_an_account_);
 
-  // Simulate 'back' clicked: now in 'choose an account'.
+  // Simulate 'back' clicked: now in multi account picker.
   controller->OnBackButtonClicked();
-  EXPECT_TRUE(controller->GetTestView()->show_back_button_);
-  EXPECT_TRUE(controller->GetTestView()->is_choose_an_account_);
+  EXPECT_FALSE(controller->GetTestView()->show_back_button_);
   EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
-
-  // Simulate 'back' clicked again: now in 'single returning account'.
-  controller->OnBackButtonClicked();
-  EXPECT_FALSE(controller->GetTestView()->show_back_button_);
-  EXPECT_FALSE(controller->GetTestView()->is_choose_an_account_);
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kSingleReturningAccount,
-            controller->GetTestView()->sheet_type_);
-  EXPECT_THAT(controller->GetTestView()->account_ids_,
-              testing::ElementsAre(kAccountId1));
 
   // Simulate account picked
   controller->OnAccountSelected(accounts[0], CreateMouseEvent());
@@ -1714,12 +1668,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             controller->GetTestView()->sheet_type_);
   EXPECT_THAT(controller->GetTestView()->account_ids_,
               testing::ElementsAre(kAccountId1));
-  histogram_tester_->ExpectUniqueSample(
-      "Blink.FedCm.ChooseAnAccountSelected.Desktop", 1, 1);
 }
 
-// Tests that closing the dialog when the single returning account UI is shown
-// does not cause a crash.
+// Tests that closing the dialog when a single returning account is shown does
+// not cause a crash.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        MultiIdpWithSingleReturningAccountClose) {
   std::vector<IdentityProviderDataPtr> idp_list = {
@@ -1732,7 +1684,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowMultiIdp(idp_list, accounts, SignInMode::kExplicit,
                             blink::mojom::RpMode::kPassive);
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kSingleReturningAccount,
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
             controller->GetTestView()->sheet_type_);
 
   // Simulate the dialog being closed.

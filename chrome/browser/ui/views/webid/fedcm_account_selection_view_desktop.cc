@@ -150,8 +150,6 @@ bool FedCmAccountSelectionView::Show(
   idp_list_ = idp_list;
   accounts_ = accounts;
   new_accounts_ = new_accounts;
-  started_as_single_returning_account_ = false;
-  last_multi_account_is_choose_an_account_ = false;
 
   size_t accounts_or_mismatches_size = accounts.size();
   bool supports_add_account = false;
@@ -171,12 +169,6 @@ bool FedCmAccountSelectionView::Show(
     rp_context = identity_provider->rp_context;
   }
 
-  size_t returning_accounts_size =
-      std::count_if(accounts.begin(), accounts.end(), [](const auto& account) {
-        return !account->is_filtered_out &&
-               account->login_state ==
-                   content::IdentityRequestAccount::LoginState::kSignIn;
-      });
   bool has_filtered_out_accounts = false;
   for (const auto& account : accounts) {
     if (account->is_filtered_out) {
@@ -275,8 +267,7 @@ bool FedCmAccountSelectionView::Show(
         // exposure of extra UI surfaces and to work around the account picker
         // not having a back button.
         ShowMultiAccountPicker(accounts_, idp_list_,
-                               /*show_back_button=*/false,
-                               /*is_choose_an_account=*/false);
+                               /*show_back_button=*/false);
       }
     } else {
       if (new_accounts_.size() == 1u) {
@@ -289,8 +280,7 @@ bool FedCmAccountSelectionView::Show(
         ShowMultiAccountPicker(
             new_accounts_, {new_accounts_[0]->identity_provider},
             /*show_back_button=*/accounts_or_mismatches_size >
-                new_accounts_.size(),
-            /*is_choose_an_account=*/false);
+                new_accounts_.size());
         // Override the state to NEWLY_LOGGED_IN_ACCOUNT_PICKER so the back
         // button works correctly.
         state_ = State::NEWLY_LOGGED_IN_ACCOUNT_PICKER;
@@ -301,26 +291,16 @@ bool FedCmAccountSelectionView::Show(
         (supports_add_account || has_filtered_out_accounts)) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
-      ShowMultiAccountPicker(accounts_, idp_list_, /*show_back_button=*/false,
-                             /*is_choose_an_account=*/false);
+      ShowMultiAccountPicker(accounts_, idp_list_, /*show_back_button=*/false);
     } else {
       state_ = State::SINGLE_ACCOUNT_PICKER;
       account_selection_view_->ShowSingleAccountConfirmDialog(
           accounts_[0],
           /*show_back_button=*/false);
     }
-  } else if (idp_list_.size() > 1u && returning_accounts_size == 1u) {
-    // For now we only highlight the single returning account in the multi IDP
-    // case, but in the future we may want to do so in the single IDP case as
-    // well.
-    state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
-    started_as_single_returning_account_ = true;
-    account_selection_view_->ShowSingleReturningAccountDialog(accounts_,
-                                                              idp_list_);
   } else {
     ShowMultiAccountPicker(accounts_, idp_list_,
-                           /*show_back_button=*/false,
-                           /*is_choose_an_account=*/false);
+                           /*show_back_button=*/false);
   }
   UpdateDialogVisibilityAndPosition();
 
@@ -625,19 +605,8 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     UpdateDialogPosition();
     return;
   }
-  // If the back button was clicked while on the multi account picker, go back
-  // to the single returning account.
-  if (state_ == State::MULTI_ACCOUNT_PICKER) {
-    state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
-    account_selection_view_->ShowSingleReturningAccountDialog(accounts_,
-                                                              idp_list_);
-    UpdateDialogPosition();
-    return;
-  }
-  ShowMultiAccountPicker(
-      accounts_, idp_list_,
-      /*show_back_button=*/started_as_single_returning_account_,
-      /*is_choose_an_account=*/last_multi_account_is_choose_an_account_);
+  ShowMultiAccountPicker(accounts_, idp_list_,
+                         /*show_back_button=*/false);
   UpdateDialogPosition();
 }
 
@@ -800,15 +769,6 @@ content::WebContents* FedCmAccountSelectionView::GetRpWebContents() {
   NOTREACHED();
 }
 
-void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
-  ShowMultiAccountPicker(accounts_, idp_list_,
-                         /*show_back_button=*/true,
-                         /*is_choose_an_account=*/true);
-  UpdateDialogPosition();
-  base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
-                            true);
-}
-
 bool FedCmAccountSelectionView::CanFitInWebContents() {
   CHECK(web_contents() && dialog_widget_);
 
@@ -927,7 +887,6 @@ SheetType FedCmAccountSelectionView::GetSheetType() {
     case State::SINGLE_ACCOUNT_PICKER:
     case State::MULTI_ACCOUNT_PICKER:
     case State::REQUEST_PERMISSION:
-    case State::SINGLE_RETURNING_ACCOUNT_PICKER:
     case State::NEWLY_LOGGED_IN_ACCOUNT_PICKER:
       return SheetType::ACCOUNT_SELECTION;
 
@@ -1077,12 +1036,10 @@ void FedCmAccountSelectionView::TabWillEnterBackground(
 void FedCmAccountSelectionView::ShowMultiAccountPicker(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list,
-    bool show_back_button,
-    bool is_choose_an_account) {
+    bool show_back_button) {
   state_ = State::MULTI_ACCOUNT_PICKER;
-  last_multi_account_is_choose_an_account_ = is_choose_an_account;
-  account_selection_view_->ShowMultiAccountPicker(
-      accounts, idp_list, show_back_button, is_choose_an_account);
+  account_selection_view_->ShowMultiAccountPicker(accounts, idp_list,
+                                                  show_back_button);
 }
 
 void FedCmAccountSelectionView::OnOcclusionStateChanged(bool occluded) {
