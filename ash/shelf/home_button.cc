@@ -154,13 +154,15 @@ class HomeButton::ButtonImageView : public views::View {
 
     gfx::PointF circle_center(gfx::Rect(size()).CenterPoint());
 
-    const bool is_assistant_available =
-        button_controller_->IsAssistantAvailable();
+    const bool is_long_press_action_available =
+        button_controller_->IsLongPressActionAvailable();
     // Paint a white ring as the foreground for the app list circle. The
     // ceil/dsf math assures that the ring draws sharply and is centered at all
     // scale factors.
-    const float ring_outer_radius_dp = is_assistant_available ? 8.0f : 7.0f;
-    const float ring_thickness_dp = is_assistant_available ? 1.0f : 1.5f;
+    const float ring_outer_radius_dp =
+        is_long_press_action_available ? 8.0f : 7.0f;
+    const float ring_thickness_dp =
+        is_long_press_action_available ? 1.0f : 1.5f;
     {
       gfx::ScopedCanvas scoped_canvas(canvas);
       const float dsf = canvas->UndoDeviceScaleFactor();
@@ -170,7 +172,7 @@ class HomeButton::ButtonImageView : public views::View {
       fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
       fg_flags.setColor(GetColorProvider()->GetColor(GetIconColorId()));
 
-      if (is_assistant_available) {
+      if (is_long_press_action_available) {
         // active: 100% alpha, inactive: 54% alpha
         fg_flags.setAlphaf(button_controller_->IsAssistantVisible()
                                ? kAssistantVisibleAlpha / 255.0f
@@ -184,7 +186,7 @@ class HomeButton::ButtonImageView : public views::View {
       // Make sure the center of the circle lands on pixel centers.
       canvas->DrawCircle(circle_center, radius, fg_flags);
 
-      if (is_assistant_available) {
+      if (is_long_press_action_available) {
         fg_flags.setAlphaf(1.0f);
         const float kCircleRadiusDp = 5.f;
         fg_flags.setStyle(cc::PaintFlags::kFill_Style);

@@ -128,15 +128,20 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-bool HomeButtonController::IsAssistantAvailable() {
-  AssistantStateBase* state = AssistantState::Get();
-  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
-         state->settings_enabled().value_or(false);
+bool HomeButtonController::IsLongPressActionAvailable() {
+  // TODO: crbug.com/402237553 - Call `IsSunfishOrScannerAvailable` here.
+  return IsAssistantAvailable();
 }
 
 bool HomeButtonController::IsAssistantVisible() {
   return AssistantUiController::Get()->GetModel()->visibility() ==
          AssistantVisibility::kVisible;
+}
+
+bool HomeButtonController::IsAssistantAvailable() {
+  AssistantStateBase* state = AssistantState::Get();
+  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
+         state->settings_enabled().value_or(false);
 }
 
 bool HomeButtonController::IsSunfishOrScannerAvailable() const {
@@ -180,7 +185,7 @@ void HomeButtonController::OnUiVisibilityChanged(
 
 void HomeButtonController::OnSunfishScannerFeatureStatesChanged(
     SunfishScannerFeatureWatcher& source) {
-  // TODO: crbug.com/391909810 - Update the button's icon here.
+  // TODO: crbug.com/402237553 - Update the button's icon here.
 }
 
 void HomeButtonController::StartAssistantAnimation() {
