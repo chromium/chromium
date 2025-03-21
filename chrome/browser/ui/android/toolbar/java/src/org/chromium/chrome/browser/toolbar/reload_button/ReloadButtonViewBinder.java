@@ -50,6 +50,9 @@ class ReloadButtonViewBinder {
             button.setAlpha(model.get(ReloadButtonProperties.ALPHA));
         } else if (key == ReloadButtonProperties.TINT_LIST) {
             ImageViewCompat.setImageTintList(button, model.get(ReloadButtonProperties.TINT_LIST));
+        } else if (key == ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE) {
+            button.setBackgroundResource(
+                    model.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE));
         } else if (key == ReloadButtonProperties.LONG_CLICK_LISTENER) {
             final var listener = model.get(ReloadButtonProperties.LONG_CLICK_LISTENER);
             button.setOnLongClickListener(

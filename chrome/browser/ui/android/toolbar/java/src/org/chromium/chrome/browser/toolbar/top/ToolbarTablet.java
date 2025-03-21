@@ -505,7 +505,6 @@ public class ToolbarTablet extends ToolbarLayout
         mHomeButton.setBackgroundResource(toolbarIconRippleId);
         mBackButton.setBackgroundResource(toolbarIconRippleId);
         mForwardButton.setBackgroundResource(toolbarIconRippleId);
-        mReloadButton.setBackgroundResource(toolbarIconRippleId);
         getTabSwitcherButtonCoordinator()
                 .getContainerView()
                 .setBackgroundResource(toolbarIconRippleId);
