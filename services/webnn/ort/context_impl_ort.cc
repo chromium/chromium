@@ -110,6 +110,15 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
         /*config_value=*/"1"));
   }
 
+  // Enable strict shape type inference check. All inconsistencies encountered
+  // will expose errors during session creation. For example, if the graph
+  // output shape set by WebNN is different from ONNX shape inference result,
+  // the session creation will fail.
+  CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+      session_options.get(),
+      /*config_key=*/kOrtSessionOptionsConfigStrictShapeTypeInference,
+      /*config_value=*/"1"));
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtUseOpenvino)) {
     std::vector<const char*> provider_options_keys;
