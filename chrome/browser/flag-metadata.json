@@ -8596,8 +8596,8 @@
   },
   {
     "name": "tab-grid-new-transitions",
-    "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 134
+    "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 142
   },
   {
     "name": "tab-group-indicator",
