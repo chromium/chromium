@@ -122,7 +122,11 @@ describe('NavigationTracker', () => {
           initialNavigationId,
         );
 
-        navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+        navigationTracker.frameStartedNavigating(
+          ANOTHER_URL,
+          LOADER_ID,
+          'differentDocument',
+        );
 
         assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
@@ -140,7 +144,22 @@ describe('NavigationTracker', () => {
 
         assertNoNavigationEvents();
         assert.equal(navigation.url, ANOTHER_URL);
-        assert.equal(navigationTracker.url, ANOTHER_URL);
+        assert.equal(navigationTracker.url, INITIAL_URL);
+        assert.equal(
+          navigationTracker.currentNavigationId,
+          navigation.navigationId,
+        );
+
+        navigationTracker.frameNavigated(YET_ANOTHER_URL, LOADER_ID);
+
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          navigation.navigationId,
+          YET_ANOTHER_URL,
+        );
+
+        assert.equal(navigation.url, YET_ANOTHER_URL);
+        assert.equal(navigationTracker.url, YET_ANOTHER_URL);
         assert.equal(
           navigationTracker.currentNavigationId,
           navigation.navigationId,
@@ -162,7 +181,11 @@ describe('NavigationTracker', () => {
 
     it('canceled by script-initiated navigation', async () => {
       const navigation = navigationTracker.createPendingNavigation(SOME_URL);
-      navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+      navigationTracker.frameStartedNavigating(
+        ANOTHER_URL,
+        LOADER_ID,
+        'differentDocument',
+      );
 
       assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
@@ -170,7 +193,11 @@ describe('NavigationTracker', () => {
         ANOTHER_URL,
       );
 
-      navigationTracker.frameRequestedNavigation(YET_ANOTHER_URL);
+      navigationTracker.frameStartedNavigating(
+        YET_ANOTHER_URL,
+        ANOTHER_LOADER_ID,
+        'differentDocument',
+      );
 
       assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
@@ -182,18 +209,31 @@ describe('NavigationTracker', () => {
         (await navigation.finished).eventName,
         NavigationEventName.NavigationFailed,
       );
-      assert.equal(navigationTracker.currentNavigationId, initialNavigationId);
+      // Current navigation is one to `YET_ANOTHER_URL`. It should be not the initial one.
+      assert.notEqual(
+        navigationTracker.currentNavigationId,
+        initialNavigationId,
+      );
+      // The last committed navigation is still the initial one.
       assert.equal(navigationTracker.url, INITIAL_URL);
     });
 
     it('aborted by script-initiated navigation', async () => {
       const navigation = navigationTracker.createPendingNavigation(SOME_URL);
-      navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+      navigationTracker.frameStartedNavigating(
+        ANOTHER_URL,
+        LOADER_ID,
+        'differentDocument',
+      );
       navigationTracker.frameNavigated(ANOTHER_URL, LOADER_ID);
 
       eventManager.registerEvent.reset();
 
-      navigationTracker.frameRequestedNavigation(YET_ANOTHER_URL);
+      navigationTracker.frameStartedNavigating(
+        YET_ANOTHER_URL,
+        ANOTHER_LOADER_ID,
+        'differentDocument',
+      );
       navigationTracker.frameNavigated(YET_ANOTHER_URL, ANOTHER_LOADER_ID);
 
       assertNavigationEvent(
@@ -210,7 +250,11 @@ describe('NavigationTracker', () => {
 
     it('failed command', async () => {
       const navigation = navigationTracker.createPendingNavigation(SOME_URL);
-      navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+      navigationTracker.frameStartedNavigating(
+        ANOTHER_URL,
+        LOADER_ID,
+        'differentDocument',
+      );
 
       assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
@@ -240,7 +284,11 @@ describe('NavigationTracker', () => {
 
     it('failed network', async () => {
       const navigation = navigationTracker.createPendingNavigation(SOME_URL);
-      navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+      navigationTracker.frameStartedNavigating(
+        ANOTHER_URL,
+        LOADER_ID,
+        'differentDocument',
+      );
 
       assertNavigationEvent(
         ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
@@ -285,8 +333,6 @@ describe('NavigationTracker', () => {
 
     describe('cross-document navigation', () => {
       it('started', () => {
-        navigationTracker.frameRequestedNavigation(SOME_URL);
-
         assertNoNavigationEvents();
         assert.equal(
           navigationTracker.currentNavigationId,
@@ -294,7 +340,11 @@ describe('NavigationTracker', () => {
         );
         assert.equal(navigationTracker.url, INITIAL_URL);
 
-        navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+        navigationTracker.frameStartedNavigating(
+          ANOTHER_URL,
+          LOADER_ID,
+          'differentDocument',
+        );
 
         assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
@@ -324,8 +374,6 @@ describe('NavigationTracker', () => {
       });
 
       it('canceled by script-initiated navigation', () => {
-        navigationTracker.frameRequestedNavigation(SOME_URL);
-
         assertNoNavigationEvents();
         assert.equal(
           navigationTracker.currentNavigationId,
@@ -333,7 +381,11 @@ describe('NavigationTracker', () => {
         );
         assert.equal(navigationTracker.url, INITIAL_URL);
 
-        navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+        navigationTracker.frameStartedNavigating(
+          ANOTHER_URL,
+          LOADER_ID,
+          'differentDocument',
+        );
 
         assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
@@ -341,23 +393,31 @@ describe('NavigationTracker', () => {
           ANOTHER_URL,
         );
 
-        navigationTracker.frameRequestedNavigation(YET_ANOTHER_URL);
+        navigationTracker.frameStartedNavigating(
+          YET_ANOTHER_URL,
+          ANOTHER_LOADER_ID,
+          'differentDocument',
+        );
 
         assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
           sinon.match.any,
           ANOTHER_URL,
         );
-        assert.equal(
+        assert.notEqual(
           navigationTracker.currentNavigationId,
           initialNavigationId,
         );
+        // The initial navigation is still the last committed one.
         assert.equal(navigationTracker.url, INITIAL_URL);
       });
 
       it('canceled by command navigation', () => {
-        navigationTracker.frameRequestedNavigation(SOME_URL);
-        navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+        navigationTracker.frameStartedNavigating(
+          ANOTHER_URL,
+          LOADER_ID,
+          'differentDocument',
+        );
 
         assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
@@ -380,8 +440,11 @@ describe('NavigationTracker', () => {
       });
 
       it('failed network', () => {
-        navigationTracker.frameRequestedNavigation(SOME_URL);
-        navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
+        navigationTracker.frameStartedNavigating(
+          ANOTHER_URL,
+          LOADER_ID,
+          'differentDocument',
+        );
 
         assertNavigationEvent(
           ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
