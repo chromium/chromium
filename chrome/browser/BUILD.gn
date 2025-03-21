@@ -1021,6 +1021,8 @@ static_library("browser") {
     "performance_manager/metrics/metrics_provider_common.h",
     "performance_manager/observers/page_load_metrics_observer.cc",
     "performance_manager/observers/page_load_metrics_observer.h",
+    "performance_manager/policies/discard_eligibility_policy.cc",
+    "performance_manager/policies/discard_eligibility_policy.h",
     "performance_manager/policies/frame_throttling_policy.cc",
     "performance_manager/policies/frame_throttling_policy.h",
     "performance_manager/policies/keep_alive_dse_policy.cc",

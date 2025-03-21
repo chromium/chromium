@@ -22,7 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
@@ -129,6 +129,7 @@ class CpuHealthTrackerTestHelper {
     CpuHealthTracker* health_tracker = CpuHealthTracker::GetFromGraph(graph);
     health_tracker->cpu_probe_timer_.Stop();
 
+    graph->PassToGraph(std::make_unique<policies::DiscardEligibilityPolicy>());
     auto page_discarding_helper =
         std::make_unique<policies::PageDiscardingHelper>();
     page_discarding_helper->SetMockDiscarderForTesting(
@@ -340,10 +341,10 @@ class CpuHealthTrackerBrowserTest : public BrowserWithTestWindowTest,
     manager_.reset(new PerformanceDetectionManager());
     SetUpGraphObjects();
     Graph* graph = PerformanceManager::GetGraph();
-    policies::PageDiscardingHelper* const discard_helper =
-        policies::PageDiscardingHelper::GetFromGraph(graph);
-    CHECK(discard_helper);
-    discard_helper->SetNoDiscardPatternsForProfile(
+    policies::DiscardEligibilityPolicy* const eligibility_policy =
+        policies::DiscardEligibilityPolicy::GetFromGraph(graph);
+    CHECK(eligibility_policy);
+    eligibility_policy->SetNoDiscardPatternsForProfile(
         browser()->profile()->UniqueId(), {});
 
     helper_ = std::make_unique<ProfileDiscardOptOutListHelper>();
@@ -678,7 +679,7 @@ TEST_F(CpuHealthTrackerBrowserTest, ActionableTabsIgnoreIncognitoTabs) {
   // This is usually called when the profile is created. Fake it here since it
   // doesn't happen in tests.
   Graph* graph = PerformanceManager::GetGraph();
-  policies::PageDiscardingHelper::GetFromGraph(graph)
+  policies::DiscardEligibilityPolicy::GetFromGraph(graph)
       ->SetNoDiscardPatternsForProfile(incognito_profile->UniqueId(), {});
 
   resource_attribution::PageContext default_page_context =
