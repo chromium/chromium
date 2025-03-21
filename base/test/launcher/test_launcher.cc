@@ -328,9 +328,9 @@ void KillSpawnedTestProcesses() {
 // returning it in |result|.  Returns true on success.
 bool TakeInt32FromEnvironment(const char* const var, int32_t* result) {
   std::unique_ptr<Environment> env(Environment::Create());
-  std::string str_val;
+  std::optional<std::string> str_val = env->GetVar(var);
 
-  if (!env->GetVar(var, &str_val)) {
+  if (!str_val.has_value()) {
     return true;
   }
 
@@ -339,7 +339,7 @@ bool TakeInt32FromEnvironment(const char* const var, int32_t* result) {
     return false;
   }
 
-  if (!StringToInt(str_val, result)) {
+  if (!StringToInt(str_val.value(), result)) {
     LOG(ERROR) << "Invalid environment: " << var << " is not an integer.\n";
     return false;
   }
@@ -351,8 +351,7 @@ bool TakeInt32FromEnvironment(const char* const var, int32_t* result) {
 // Also returns true if the variable just doesn't exist.
 bool UnsetEnvironmentVariableIfExists(const std::string& name) {
   std::unique_ptr<Environment> env(Environment::Create());
-  std::string str_val;
-  if (!env->GetVar(name, &str_val)) {
+  if (!env->HasVar(name)) {
     return true;
   }
   return env->UnSetVar(name);
