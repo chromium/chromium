@@ -14,7 +14,7 @@ steps:
     - '-c'
     - |
         apt update -y 
-        install -y git \
+        apt install -y git \
                    python3 \
                    curl \
                    ninja-build \ 
