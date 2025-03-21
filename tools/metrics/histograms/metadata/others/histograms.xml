@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="BootVariant">
+  <variant name="FirstBoot"
+      summary="first boot after ChromeOS has been updated"/>
+  <variant name="RegularBoot" summary="subsequent boot after first boot"/>
+</variants>
+
 <variants name="DemoModeAppName">
   <variant name="Browser"/>
   <variant name="GooglePhoto"/>
@@ -2831,6 +2837,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BootTime.Chrome.{Type}" units="ms" expires_after="2025-09-12">
+  <owner>takayas@google.com</owner>
+  <owner>uekawa@google.com</owner>
+  <summary>
+    Time from chrome binary exec to login UI ready on ChromeOS. This variant
+    will only track the time taken on {Type}. This is recorded from the platform
+    side after send-boot-metrics.conf script receives login-ui-visible event at
+    the end of the boot.
+
+    The identification of boot type and actual recording is done by the
+    send-boot-metrics.sh script.
+  </summary>
+  <token key="Type" variants="BootVariant"/>
+</histogram>
+
 <histogram name="BootTime.Firmware" units="ms" expires_after="never">
 <!-- expires-never: This is a primary metric for ChromeOS boot time. -->
 
@@ -2845,6 +2866,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BootTime.Firmware.{Type}" units="ms"
+    expires_after="2025-09-12">
+  <owner>takayas@google.com</owner>
+  <owner>uekawa@google.com</owner>
+  <summary>
+    Time from power on to kernel start (ChromeOS). This variant will only track
+    the time taken on {Type}. This is recorded from the platform side after
+    send-boot-metrics.conf script receives login-ui-visible event at the end of
+    the boot.
+
+    The identification of boot type and actual recording is done by the
+    send-boot-metrics.sh script.
+  </summary>
+  <token key="Type" variants="BootVariant"/>
+</histogram>
+
 <histogram name="BootTime.Kernel" units="ms" expires_after="never">
 <!-- expires-never: This is a primary metric for ChromeOS boot time. -->
 
@@ -2857,6 +2894,21 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from M83 to M105; data may be missing.
   </summary>
+</histogram>
+
+<histogram name="BootTime.Kernel.{Type}" units="ms" expires_after="2025-09-12">
+  <owner>takayas@google.com</owner>
+  <owner>uekawa@google.com</owner>
+  <summary>
+    Time from kernel start to system code being called (ChromeOS). This variant
+    will only track the time taken on {Type}. This is recorded from the platform
+    side after send-boot-metrics.conf script receives login-ui-visible event at
+    the end of the boot.
+
+    The identification of boot type and actual recording is done by the
+    send-boot-metrics.sh script.
+  </summary>
+  <token key="Type" variants="BootVariant"/>
 </histogram>
 
 <histogram name="BootTime.Login2" units="ms" expires_after="never">
@@ -2942,6 +2994,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BootTime.System.{Type}" units="ms" expires_after="2025-09-12">
+  <owner>takayas@google.com</owner>
+  <owner>uekawa@google.com</owner>
+  <summary>
+    Time from system code being called to starting Chrome (ChromeOS). This
+    variant will only track the time taken on {Type}. This is recorded from the
+    platform side after send-boot-metrics.conf script receives login-ui-visible
+    event at the end of the boot.
+
+    The identification of boot type and actual recording is done by the
+    send-boot-metrics.sh script.
+  </summary>
+  <token key="Type" variants="BootVariant"/>
+</histogram>
+
 <histogram name="BootTime.Total2" units="ms" expires_after="never">
 <!-- expires-never: This is a primary metric for the ChromeOS total boot time. -->
 
@@ -2956,6 +3023,21 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2022-04-03 to M105; data may be
     missing.
   </summary>
+</histogram>
+
+<histogram name="BootTime.Total2.{Type}" units="ms" expires_after="2025-09-12">
+  <owner>takayas@google.com</owner>
+  <owner>uekawa@google.com</owner>
+  <summary>
+    Time from power on to login UI ready on ChromeOS. This variant will only
+    track the time taken on {Type}. This is recorded from the platform side
+    after send-boot-metrics.conf script receives login-ui-visible event at the
+    end of the boot.
+
+    The identification of boot type and actual recording is done by the
+    send-boot-metrics.sh script.
+  </summary>
+  <token key="Type" variants="BootVariant"/>
 </histogram>
 
 <histogram name="BootTime.TPMOwn-StartAfterUserProfileGotten" units="ms"
