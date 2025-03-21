@@ -117,7 +117,8 @@ class ExtensionPopupInteractiveUiTest : public extensions::ExtensionApiTest {
  public:
   // Create a dialog widget as a child of `parent` widget.
   static views::UniqueWidgetPtr CreateTestDialogWidget(views::Widget* parent) {
-    auto dialog_delegate = std::make_unique<views::DialogDelegateView>();
+    auto dialog_delegate = std::make_unique<views::DialogDelegateView>(
+        views::DialogDelegateView::CreatePassKey());
     return std::unique_ptr<views::Widget>(
         views::DialogDelegate::CreateDialogWidget(dialog_delegate.release(),
                                                   gfx::NativeWindow(),
@@ -450,7 +451,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
       OpenExtensionPopup(browser(), extension);
 
   // Show a web dialog.
-  auto web_dialog = std::make_unique<views::DialogDelegateView>();
+  auto web_dialog = std::make_unique<views::DialogDelegateView>(
+      views::DialogDelegateView::CreatePassKey());
   web_dialog->SetPreferredSize(gfx::Size(100, 100));
   web_dialog->SetModalType(ui::mojom::ModalType::kChild);
   web_dialog->SetCanActivate(true);

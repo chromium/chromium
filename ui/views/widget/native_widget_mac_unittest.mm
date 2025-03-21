@@ -179,7 +179,8 @@ class NativeWidgetMacTest : public WidgetTest {
   // TODO(ellyjones): Once DialogDelegate::CreateDialogWidget can accept a
   // unique_ptr, return unique_ptr here.
   static DialogDelegateView* MakeModalDialog(ui::mojom::ModalType modal_type) {
-    auto dialog = std::make_unique<DialogDelegateView>();
+    auto dialog = std::make_unique<DialogDelegateView>(
+        DialogDelegateView::CreatePassKey());
     dialog->SetModalType(modal_type);
     return dialog.release();
   }
