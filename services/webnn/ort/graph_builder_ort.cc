@@ -1467,14 +1467,36 @@ GraphBuilderOrt::AddGatherOperation(const mojom::Gather& gather) {
   const std::string indices = GetOperandNameById(gather.indices_operand_id);
   const std::string output = GetOperandNameById(gather.output_operand_id);
 
+  std::string cast_indices;
+  OperandDataType indices_data_type =
+      GetOperand(gather.indices_operand_id).descriptor.data_type();
+
+  // ONNX Gather only supports int32 and int64 indices.
+  switch (indices_data_type) {
+    case OperandDataType::kInt32:
+    case OperandDataType::kInt64: {
+      cast_indices = indices;
+      break;
+    }
+    case OperandDataType::kUint32: {
+      indices_data_type = OperandDataType::kInt64;
+      cast_indices = GenerateNextOperandName();
+      AppendCast(
+          indices, cast_indices,
+          ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
+      break;
+    }
+    default:
+      NOTREACHED() << "[WebNN] Gather only supports int32, uint32 and "
+                      "int64 indices.";
+  }
+
   // Clamp the indices operand to ensure it won't be out-of-bound.
   base::span<const uint32_t> input_shape =
       GetOperand(gather.input_operand_id).descriptor.shape();
-  const OperandDataType indices_data_type =
-      GetOperand(gather.indices_operand_id).descriptor.data_type();
-  ASSIGN_OR_RETURN(
-      std::string clamped_indices,
-      ClampIndices(indices, indices_data_type, input_shape.at(gather.axis)));
+  ASSIGN_OR_RETURN(std::string clamped_indices,
+                   ClampIndices(cast_indices, indices_data_type,
+                                input_shape.at(gather.axis)));
 
   int64_t axis = static_cast<int64_t>(gather.axis);
   std::vector<ScopedOrtOpAttr> attributes;
@@ -1500,13 +1522,35 @@ GraphBuilderOrt::AddGatherElementsOperation(
   const std::string output =
       GetOperandNameById(gather_elements.output_operand_id);
 
+  std::string cast_indices;
+  OperandDataType indices_data_type =
+      GetOperand(gather_elements.indices_operand_id).descriptor.data_type();
+
+  // ONNX GatherElements only supports int32 and int64 indices.
+  switch (indices_data_type) {
+    case OperandDataType::kInt32:
+    case OperandDataType::kInt64: {
+      cast_indices = indices;
+      break;
+    }
+    case OperandDataType::kUint32: {
+      indices_data_type = OperandDataType::kInt64;
+      cast_indices = GenerateNextOperandName();
+      AppendCast(
+          indices, cast_indices,
+          ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64);
+      break;
+    }
+    default:
+      NOTREACHED() << "[WebNN] Gather only supports int32, uint32 and "
+                      "int64 indices.";
+  }
+
   // Clamp the indices operand to ensure it won't be out-of-bound.
   base::span<const uint32_t> input_shape =
       GetOperand(gather_elements.input_operand_id).descriptor.shape();
-  const OperandDataType indices_data_type =
-      GetOperand(gather_elements.indices_operand_id).descriptor.data_type();
   ASSIGN_OR_RETURN(std::string clamped_indices,
-                   ClampIndices(indices, indices_data_type,
+                   ClampIndices(cast_indices, indices_data_type,
                                 input_shape.at(gather_elements.axis)));
 
   int64_t axis = static_cast<int64_t>(gather_elements.axis);
