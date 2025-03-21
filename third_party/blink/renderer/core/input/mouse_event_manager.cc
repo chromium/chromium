@@ -509,11 +509,7 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
         element->IsShadowHostWithDelegatesFocus()) {
       break;
     }
-    if (RuntimeEnabledFeatures::MouseFocusFlatTreeParentEnabled()) {
-      element = FlatTreeTraversal::ParentElement(*element);
-    } else {
-      element = element->ParentOrShadowHostElement();
-    }
+    element = FlatTreeTraversal::ParentElement(*element);
   }
   DCHECK(!element || element->IsMouseFocusable() ||
          element->IsShadowHostWithDelegatesFocus());
@@ -558,10 +554,7 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // default behavior).
   if (element && !element->IsMouseFocusable() &&
       SlideFocusOnShadowHostIfNecessary(*element)) {
-    return RuntimeEnabledFeatures::
-                   SelectionOnShadowDOMWithDelegatesFocusEnabled()
-               ? WebInputEventResult::kNotHandled
-               : WebInputEventResult::kHandledSystem;
+    return WebInputEventResult::kNotHandled;
   }
 
   // We call setFocusedElement even with !element in order to blur

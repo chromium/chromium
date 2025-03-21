@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Clicking on non-focusable slot inside focusable div will make the flat-tree focusable ancestor get focused
-  assert_equals: expected Element node <div id="container"><span id="slottedSpan">Slotted text t... but got Element node <body><div id="normalDiv" tabindex="0"><span id="normalSp...
-[FAIL] Select on non-focusable slot inside focusable div will select text
-  assert_equals: expected Element node <div id="container"><span id="slottedSpan">Slotted text t... but got Element node <body><div id="normalDiv" tabindex="0"><span id="normalSp...
-Harness: the test ran to completion.
-
