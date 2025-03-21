@@ -9,7 +9,6 @@
 
 namespace blink {
 class WebGestureEvent;
-class WebMouseWheelEvent;
 }
 
 namespace ui {
@@ -145,8 +144,6 @@ enum RecognitionState {
 // NSEventTypeScrollWheel. We look at the phase to determine whether to trigger
 // history swiping
 - (BOOL)handleEvent:(NSEvent*)event;
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed;
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed;
 
@@ -189,4 +186,4 @@ enum RecognitionState {
 + (void)resetMagicMouseState;
 @end
 
-#endif // CHROME_BROWSER_RENDERER_HOST_CHROME_RENDER_WIDGET_HOST_VIEW_MAC_HISTORY_SWIPER_H_
+#endif  // CHROME_BROWSER_RENDERER_HOST_CHROME_RENDER_WIDGET_HOST_VIEW_MAC_HISTORY_SWIPER_H_

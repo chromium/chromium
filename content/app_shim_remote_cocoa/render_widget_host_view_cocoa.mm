@@ -184,8 +184,6 @@ void ExtractUnderlines(NSAttributedString* string,
 @property(getter=isAutomaticDashSubstitutionEnabled)
     BOOL automaticDashSubstitutionEnabled;
 
-- (void)processedWheelEvent:(const blink::WebMouseWheelEvent&)event
-                   consumed:(BOOL)consumed;
 - (void)keyEvent:(NSEvent*)theEvent wasKeyEquivalent:(BOOL)equiv;
 - (void)windowDidChangeScreenOrBackingProperties:(NSNotification*)notification;
 - (void)windowChangedGlobalFrame:(NSNotification*)notification;
@@ -721,11 +719,6 @@ void ExtractUnderlines(NSAttributedString* string,
 - (void)resetCursorRects {
   if (_currentCursor)
     [self addCursorRect:[self visibleRect] cursor:_currentCursor];
-}
-
-- (void)processedWheelEvent:(const blink::WebMouseWheelEvent&)event
-                   consumed:(BOOL)consumed {
-  [_responderDelegate rendererHandledWheelEvent:event consumed:consumed];
 }
 
 - (void)processedGestureScrollEvent:(const blink::WebGestureEvent&)event
