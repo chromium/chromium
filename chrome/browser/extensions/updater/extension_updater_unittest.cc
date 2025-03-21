@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/fake_crx_installer.h"
 #include "chrome/browser/extensions/mock_crx_installer.h"
@@ -163,6 +164,13 @@ int kExpectedLoadFlagsForDownloadWithCookies = net::LOAD_DISABLE_CACHE;
 // Fake authentication constants
 const char kFakeOAuth2Token[] = "ce n'est pas un jeton";
 
+// Manifest key used to make multiple extensions with the same ID.
+constexpr char kExtensionManifestKey[] =
+    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDowC9B4+K6zbl4PnALNyOUgra/"
+    "MPdD8gZ39Fk/IAJWt03qrN7vz1gd/"
+    "mmrBg0EEIsyLRmUmfyVEfvcIUOZxFqn4A9D2aaRSvNHy9qkasZMBDEql8Nt2iNZm/"
+    "kGS7sizidDV6Bc/vyLNiH1gKOXBQ42JIxKjgtrmnhGV2giw2vJGwIDAQAB";
+
 // Extracts the integer value of the |authuser| query parameter. Returns 0 if
 // the parameter is not set.
 int GetAuthUserQueryValue(const GURL& url) {
@@ -262,23 +270,33 @@ class MockService : public TestExtensionService {
   const CoreAccountId& account_id() { return account_info_.account_id; }
 
   // Creates test extensions and inserts them into list. The name and
-  // version are all based on their index. If |update_url| is non-null, it
-  // will be used as the update_url for each extension.
-  // The |id| is used to distinguish extension names and make sure that
+  // version are all based on their index. If `update_url` is non-null, it
+  // will be used as the update_url for each extension. If `key` is non-null,
+  // it will be used as manifest_keys::kKey to force an extension to have a
+  // particular ID. `key` is only valid if `count` is 1.
+  // The `id` is used to distinguish extension names and make sure that
   // no two extensions share the same name.
   void CreateTestExtensions(int id,
                             int count,
                             ExtensionList* list,
                             const std::string* update_url,
-                            ManifestLocation location) {
+                            ManifestLocation location,
+                            std::optional<std::string> key = std::nullopt) {
+    if (key.has_value()) {
+      CHECK_EQ(count, 1) << "Can't create two extensions with the same key";
+    }
     for (int i = 1; i <= count; i++) {
       base::Value::Dict manifest;
       manifest.Set(manifest_keys::kVersion, base::StringPrintf("%d.0.0.0", i));
       manifest.Set(manifest_keys::kName,
                    base::StringPrintf("Extension %d.%d", id, i));
       manifest.Set(manifest_keys::kManifestVersion, 2);
-      if (update_url)
+      if (update_url) {
         manifest.Set(manifest_keys::kUpdateURL, *update_url);
+      }
+      if (key.has_value()) {
+        manifest.Set(manifest_keys::kKey, *key);
+      }
       scoped_refptr<Extension> e =
           prefs_->AddExtensionWithManifest(manifest, location);
       ASSERT_TRUE(e.get() != nullptr);
@@ -373,6 +391,8 @@ void SetupPendingExtensionManagerForTest(
   }
 }
 
+// TODO(crbug.com/404943906): Delete this class. It doesn't override any methods
+// so it's just providing helper functions.
 class ServiceForManifestTests : public MockService {
  public:
   explicit ServiceForManifestTests(
@@ -385,11 +405,6 @@ class ServiceForManifestTests : public MockService {
 
   PendingExtensionManager* pending_extension_manager() {
     return PendingExtensionManager::Get(profile());
-  }
-
-  const Extension* GetPendingExtensionUpdate(
-      const std::string& id) const override {
-    return nullptr;
   }
 
   void set_extensions(ExtensionList extensions,
@@ -2630,6 +2645,8 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
 }
 
 TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
+  // TODO(crbug.com/404943906): Delete this class. It doesn't override any
+  // methods so it's just providing helper functions.
   class ServiceForPendingVersionTests : public MockService {
    public:
     explicit ServiceForPendingVersionTests(
@@ -2638,12 +2655,15 @@ TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
         : MockService(prefs, url_loader_factory),
           registry_(ExtensionRegistry::Get(profile())) {
       base::Value::Dict manifest;
+      manifest.Set(manifest_keys::kKey, kExtensionManifestKey);
       manifest.Set(manifest_keys::kName, "Fake extension");
       manifest.Set(manifest_keys::kVersion, "1.0.0.1");
       manifest.Set(manifest_keys::kManifestVersion, 2);
       manifest.Set(manifest_keys::kDifferentialFingerprint, "fingerprint");
-      pending_update_ = prefs_->AddExtensionWithManifest(
-          manifest, ManifestLocation::kInternal);
+      scoped_refptr<Extension> pending_update =
+          prefs_->AddExtensionWithManifest(manifest,
+                                           ManifestLocation::kInternal);
+      DelayedInstallManager::Get(profile())->Insert(pending_update);
     }
 
     void SetExtensions(const ExtensionList& extensions) {
@@ -2653,14 +2673,8 @@ TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
       }
     }
 
-    const Extension* GetPendingExtensionUpdate(
-        const std::string& id) const override {
-      return pending_update_.get();
-    }
-
    private:
     raw_ptr<ExtensionRegistry> registry_;
-    scoped_refptr<Extension> pending_update_;
   };
 
   ExtensionDownloaderTestHelper helper;
@@ -2674,8 +2688,9 @@ TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
   OverrideUpdateService(&updater, &update_service);
 
   ExtensionList enabled_extensions;
+  std::string extension_key(kExtensionManifestKey);
   service.CreateTestExtensions(1, 1, &enabled_extensions, nullptr,
-                               ManifestLocation::kInternal);
+                               ManifestLocation::kInternal, extension_key);
   ASSERT_EQ(1u, enabled_extensions.size());
   ASSERT_EQ(enabled_extensions[0]->VersionString(), "1.0.0.0");
 
