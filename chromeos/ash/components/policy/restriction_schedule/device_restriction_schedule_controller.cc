@@ -93,8 +93,6 @@ void DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(
       chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification,
       false);
-  registry->RegisterTimePref(
-      chromeos::prefs::kDeviceRestrictionScheduleHighestSeenTime, base::Time());
 }
 
 bool DeviceRestrictionScheduleController::RestrictionScheduleEnabled() const {

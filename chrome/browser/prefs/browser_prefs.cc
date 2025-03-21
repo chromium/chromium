@@ -1101,6 +1101,12 @@ inline constexpr char kShouldRetrieveDeviceState[] =
 inline constexpr char kAutoEnrollmentPowerLimit[] = "AutoEnrollmentPowerLimit";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 03/2025.
+inline constexpr char kDeviceRestrictionScheduleHighestSeenTime[] =
+    "device_restriction_schedule_highest_seen_time";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1204,6 +1210,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kShouldRetrieveDeviceState, false);
   registry->RegisterBooleanPref(kShouldAutoEnroll, false);
   registry->RegisterIntegerPref(kAutoEnrollmentPowerLimit, -1);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 03/2025.
+  registry->RegisterTimePref(kDeviceRestrictionScheduleHighestSeenTime,
+                             base::Time());
 #endif
 }
 
@@ -2448,6 +2460,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kShouldRetrieveDeviceState);
   local_state->ClearPref(kShouldAutoEnroll);
   local_state->ClearPref(kAutoEnrollmentPowerLimit);
+#endif
+
+  // Added 03/2025.
+#if BUILDFLAG(IS_CHROMEOS)
+  local_state->ClearPref(kDeviceRestrictionScheduleHighestSeenTime);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
