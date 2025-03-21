@@ -22,6 +22,7 @@ source_set("browser_tests") {
     "kiosk_iwa_browsertest.cc",
     "kiosk_iwa_device_attributes_browsertest.cc",
     "kiosk_iwa_permissions_browsertest.cc",
+    "kiosk_misconfigured_user_browsertest.cc",
     "kiosk_multi_chrome_app_browsertest.cc",
     "kiosk_self_hosted_chrome_app_browsertest.cc",
     "kiosk_settings_browsertest.cc",
