@@ -10069,10 +10069,13 @@ void RenderFrameHostImpl::ForwardFencedFrameEventAndUserActivationToEmbedder(
   }
 
   if (!IsActive()) {
+    RecordNotifyEventOutcome(blink::NotifyEventOutcome::kNotActive);
     return;
   }
 
   if (!HasTransientUserActivation()) {
+    RecordNotifyEventOutcome(
+        blink::NotifyEventOutcome::kNoTransientUserActivation);
     return;
   }
 
@@ -10103,6 +10106,7 @@ void RenderFrameHostImpl::ForwardFencedFrameEventAndUserActivationToEmbedder(
   GetProxyToOuterDelegate()
       ->GetAssociatedRemoteFrame()
       ->ForwardFencedFrameEventToEmbedder(event_type);
+  RecordNotifyEventOutcome(blink::NotifyEventOutcome::kSuccess);
 }
 
 // TODO(crbug.com/40250533): Move SendFencedFrameReportingBeacon into a separate

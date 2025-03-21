@@ -4761,6 +4761,9 @@ enum WebFeature {
   kAriaLabeledByAlternativeSpelling = 5375,
   kCanvasTextNg = 5376,
   kDOMWindowOpenPopup = 5377,
+  kFencedFrameDisableUntrustedNetwork = 5378,
+  kFencedFrameNotifyEvent = 5379,
+  kSharedStorageGetInFencedFrame = 5380,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

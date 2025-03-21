@@ -5981,6 +5981,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5375" label="AriaLabeledByAlternativeSpelling"/>
   <int value="5376" label="CanvasTextNg"/>
   <int value="5377" label="DOMWindowOpenPopup"/>
+  <int value="5378" label="FencedFrameDisableUntrustedNetwork"/>
+  <int value="5379" label="FencedFrameNotifyEvent"/>
+  <int value="5380" label="SharedStorageGetInFencedFrame"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6554,6 +6557,29 @@ Called by update_permissions_policy_enum.py.-->
       label="Supports-Loading-Mode response header 'fenced-frame' not
              opted-in"/>
 </enum>
+
+<!-- LINT.IfChange(FencedFrameDisableUntrustedNetworkOutcome) -->
+
+<enum name="FencedFrameDisableUntrustedNetworkOutcome">
+  <int value="0" label="Network disabled and promise resolved"/>
+  <int value="1" label="Document not fully active"/>
+  <int value="2" label="Not allowed to disable network"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/common/fenced_frame/fenced_frame_utils.h:DisableUntrustedNetworkOutcome) -->
+
+<!-- LINT.IfChange(FencedFrameNotifyEventOutcome) -->
+
+<enum name="FencedFrameNotifyEventOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Document not active"/>
+  <int value="2" label="Not called from a fenced frame root"/>
+  <int value="3" label="Invalid event passed in"/>
+  <int value="4" label="Unsupported event type passed in"/>
+  <int value="5" label="No transient user activation"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/common/fenced_frame/fenced_frame_utils.h:NotifyEventOutcome) -->
 
 <!-- LINT.IfChange(FirstCookieRequest) -->
 
@@ -7589,6 +7615,21 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Immediate"/>
   <int value="7" label="ForceDefer (Deprecated 2023)"/>
 </enum>
+
+<!-- LINT.IfChange(SharedStorageGetInFencedFrameOutcome) -->
+
+<enum name="SharedStorageGetInFencedFrameOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Called from an insecure context"/>
+  <int value="2" label="Fenced storage read is disabled"/>
+  <int value="3" label="Untrusted network not disabled"/>
+  <int value="4" label="Shared Storage key not found"/>
+  <int value="5" label="Error calling get()"/>
+  <int value="6" label="Unpartitioned data access feature disabled"/>
+  <int value="7" label="Unpartitioned data access permission disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/common/fenced_frame/fenced_frame_utils.h:SharedStorageGetInFencedFrameOutcome) -->
 
 <enum name="SmsParsingStatus">
   <int value="0" label="Parsed"/>

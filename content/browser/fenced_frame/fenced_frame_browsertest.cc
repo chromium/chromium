@@ -48,6 +48,7 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/resource_load_observer.h"
@@ -1587,6 +1588,13 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
   EXPECT_EQ(fenced_frame_root_node->current_frame_host()->GetLastCommittedURL(),
             current_url);
   EXPECT_EQ(console_observer.messages().size(), 1u);
+
+  // Check that a histogram was logged for the network disabling.
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectTotalCount(blink::kDisableUntrustedNetworkOutcome, 1);
+  histogram_tester_.ExpectBucketCount(
+      blink::kDisableUntrustedNetworkOutcome,
+      blink::DisableUntrustedNetworkOutcome::kResolved, 1);
 }
 
 // Tests that in a fenced frame the frame's isolation info correctly identifies
@@ -2789,6 +2797,8 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
       EXPECT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
     }
   }
+
+  base::HistogramTester histogram_tester_;
 
  private:
   void AdditionalSetup() override {
@@ -5548,6 +5558,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                                  DisableUntrustedNetworkStatus::kNotStarted);
   EXPECT_FALSE(
       EvalJs(first_fenced_frame, "ff1_promise_resolved").ExtractBool());
+  // No histograms should log because the promise has not resolved yet.
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectTotalCount(blink::kDisableUntrustedNetworkOutcome, 0);
 
   // Call disable untrusted network on the second fenced frame. This one should
   // resolve and cause the first fenced frame to have full network cutoff.
@@ -5564,6 +5577,14 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
       second_fenced_frame,
       DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
   EXPECT_TRUE(EvalJs(first_fenced_frame, "ff1_promise_resolved").ExtractBool());
+
+  // Now that both fenced frames have resolved their promises, the histograms
+  // should be logged as well.
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectTotalCount(blink::kDisableUntrustedNetworkOutcome, 2);
+  histogram_tester_.ExpectBucketCount(
+      blink::kDisableUntrustedNetworkOutcome,
+      blink::DisableUntrustedNetworkOutcome::kResolved, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
@@ -6506,6 +6527,43 @@ IN_PROC_BROWSER_TEST_F(
       DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
 }
 
+// Verify that a child frame that is cross-origin to the root fenced frame's
+// mapped URL cannot call disableUntrustedNetwork().
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       DisableUntrustedNetworkFailsInCrossOriginSubframe) {
+  // Navigate to a page that contains a fenced frame with a cross-origin
+  // subframe.
+  const GURL main_url = https_server()->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test(a.test{fenced}(b.test))");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Get the relevant render frame hosts.
+  RenderFrameHostImpl* fenced_frame_rfh =
+      primary_main_frame_host()->GetFencedFrames().at(0)->GetInnerRoot();
+  RenderFrameHostImpl* cross_origin_sub_rfh =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(fenced_frame_rfh, 0));
+
+  // The cross-origin iframe should not be allowed to disable its parent fenced
+  // frame's untrusted network.
+  EXPECT_FALSE(ExecJs(cross_origin_sub_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  VerifyFencedFrameNetworkStatus(fenced_frame_rfh,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+
+  // The histograms are logged on the renderer side. We call this so that the
+  // browser is made aware of them.
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectTotalCount(blink::kDisableUntrustedNetworkOutcome, 1);
+  histogram_tester_.ExpectBucketCount(
+      blink::kDisableUntrustedNetworkOutcome,
+      blink::DisableUntrustedNetworkOutcome::kNotAllowed, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        ClearNonceFromNetworkContextAfterFencedFrameIsRemoved) {
   // Create main frame.
@@ -6620,6 +6678,56 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_FALSE(console_observer.messages().empty());
   EXPECT_EQ(console_observer.messages().size(), 1u);
   EXPECT_EQ(main_url, web_contents()->GetLastCommittedURL());
+}
+
+// Android builds have issues with processing mouse input events, so we only
+// test this on desktop platforms.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NotifyEventHistogram DISABLED_NotifyEventHistogram
+#else
+#define MAYBE_NotifyEventHistogram NotifyEventHistogram
+#endif
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       MAYBE_NotifyEventHistogram) {
+  // Navigate to a page that contains a fenced frame.
+  const GURL main_url = https_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Get the fenced render frame host.
+  RenderFrameHostImpl* fenced_frame_rfh =
+      primary_main_frame_host()->GetFencedFrames().at(0)->GetInnerRoot();
+
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    document.addEventListener('click', (e) => {
+      window.fence.notifyEvent(e);
+    });
+  )"));
+  WaitForHitTestData(fenced_frame_rfh);
+
+  // Clicking in the fenced frame will cause a notifyEvent() signal to be sent.
+  int x = content::EvalJs(primary_main_frame_host(),
+                          "var bounds = document.querySelector('fencedframe')"
+                          ".getBoundingClientRect();"
+                          "Math.floor(bounds.left + bounds.width / 2);")
+              .ExtractInt();
+  int y = content::EvalJs(primary_main_frame_host(),
+                          "var bounds = document.querySelector('fencedframe')"
+                          ".getBoundingClientRect();"
+                          "Math.floor(bounds.top + bounds.height / 2);")
+              .ExtractInt();
+  gfx::Point fenced_frame_point(x, y);
+  SimulateMouseClickAt(web_contents(), 0, blink::WebMouseEvent::Button::kLeft,
+                       fenced_frame_point);
+  RunUntilInputProcessed(fenced_frame_rfh->GetRenderWidgetHost());
+
+  // The histograms are logged on the renderer side. We call
+  // FetchHistogramsFromChildProcesses() so that the browser is made aware of
+  // them.
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectTotalCount(blink::kNotifyEventOutcome, 1);
+  histogram_tester_.ExpectBucketCount(blink::kNotifyEventOutcome,
+                                      blink::NotifyEventOutcome::kSuccess, 1);
 }
 
 class FencedFrameReportEventBrowserTest
