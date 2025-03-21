@@ -317,10 +317,14 @@ public class HubToolbarViewUnitTest {
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testHubSearchEnabledState() {
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
+        assertFalse(mSearchBox.isEnabled());
         assertFalse(mSearchBoxText.isEnabled());
+        assertFalse(mSearchLoupe.isEnabled());
 
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, true);
+        assertTrue(mSearchBox.isEnabled());
         assertTrue(mSearchBoxText.isEnabled());
+        assertTrue(mSearchLoupe.isEnabled());
     }
 
     @Test
