@@ -28,7 +28,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.GroupInfo;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIntegrationTestHelper.TabInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
@@ -56,10 +57,11 @@ import java.util.List;
 })
 @Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabGroupSyncLocalToRemoteTest {
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    public SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    ChromeTabbedActivityPublicTransitEntryPoints mTransitEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(mSyncTestRule);
+    @Rule
+    public FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.wrapTestRule(mSyncTestRule);
 
     private TabGroupSyncIntegrationTestHelper mHelper;
 
@@ -76,7 +78,7 @@ public class TabGroupSyncLocalToRemoteTest {
     @Feature({"Sync"})
     @DisabledTest(message = "crbug.com/353952795")
     public void testCreateTabGroup() {
-        WebPageStation firstPage = mTransitEntryPoints.alreadyStartedOnBlankPageNonBatched();
+        WebPageStation firstPage = mCtaTestRule.alreadyStartedOnBlankPage();
         Tab firstTab = firstPage.getLoadedTab();
         int firstTabId = firstTab.getId();
         String firstTabTitle = ChromeTabUtils.getTitleOnUiThread(firstTab);
