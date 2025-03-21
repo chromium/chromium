@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/hash/hash.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -153,23 +154,15 @@ int GetDeduplicationProviderPreferenceScore(
   return it != kProviderPrefMap.end() ? it->second : 0;
 }
 
-// Implementation of boost::hash_combine
-// http://www.boost.org/doc/libs/1_43_0/doc/html/hash/reference.html#boost.hash_combine
-template <typename T>
-inline void hash_combine(std::size_t& seed, const T& value) {
-  std::hash<T> hasher;
-  seed ^= hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
-
 }  // namespace
 
 template <typename... Args>
 size_t ACMatchKeyHash<Args...>::operator()(
     const ACMatchKey<Args...>& key) const {
   size_t seed = 0;
-  // Compute a hash by applying hash_combine to each element of the "key" tuple.
-  std::apply([&seed](auto&&... args) { ((hash_combine(seed, args)), ...); },
-             key);
+  // Compute a hash by applying `HashCombine` to each element of the "key" tuple.
+  std::apply(
+      [&seed](auto&&... args) { ((base::HashCombine(seed, args)), ...); }, key);
   return seed;
 }
 
