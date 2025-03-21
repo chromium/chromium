@@ -23,6 +23,7 @@
 #include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
+#include "components/saved_tab_groups/internal/shared_tab_group_account_data_sync_bridge.h"
 #include "components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_coordinator.h"
@@ -56,6 +57,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::unique_ptr<SavedTabGroupModel> model,
       std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
       std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
+      std::unique_ptr<SyncDataTypeConfiguration>
+          shared_tab_group_account_configuration,
       PrefService* pref_service,
       std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
@@ -160,6 +163,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   GetSavedTabGroupControllerDelegate() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetSharedTabGroupAccountControllerDelegate() override;
 
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
@@ -340,6 +345,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // Sync bridges and data storage for both saved and shared tab group data.
   std::unique_ptr<TabGroupSyncBridgeMediator> sync_bridge_mediator_;
+
+  // Sync bridge for shared tab group account data.
+  std::unique_ptr<SharedTabGroupAccountDataSyncBridge>
+      shared_tab_group_account_data_bridge_;
 
   // The UI coordinator to apply changes between local tab groups and the
   // TabGroupSyncService.

@@ -118,6 +118,8 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   GetSavedTabGroupControllerDelegate() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetSharedTabGroupAccountControllerDelegate() override;
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
   void GetURLRestriction(

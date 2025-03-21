@@ -326,6 +326,11 @@ TabGroupSyncServiceProxy::GetSharedTabGroupControllerDelegate() {
   return service_->GetSharedTabGroupControllerDelegate();
 }
 
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+TabGroupSyncServiceProxy::GetSharedTabGroupAccountControllerDelegate() {
+  return service_->GetSharedTabGroupAccountControllerDelegate();
+}
+
 std::unique_ptr<ScopedLocalObservationPauser>
 TabGroupSyncServiceProxy::CreateScopedLocalObserverPauser() {
   return service_->CreateScopedLocalObserverPauser();

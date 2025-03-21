@@ -171,6 +171,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SavedTabGroupModel> model,
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
+    std::unique_ptr<SyncDataTypeConfiguration>
+        shared_tab_group_account_configuration,
     PrefService* pref_service,
     std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
@@ -189,6 +191,11 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
       logger_(logger),
       pref_service_(pref_service),
       opt_guide_(optimization_guide_decider) {
+  if (shared_tab_group_account_configuration) {
+    shared_tab_group_account_data_bridge_ =
+        std::make_unique<SharedTabGroupAccountDataSyncBridge>(
+            std::move(shared_tab_group_account_configuration));
+  }
   collaboration_finder_->SetClient(this);
   model_->AddObserver(this);
   if (opt_guide_) {
@@ -306,6 +313,13 @@ TabGroupSyncServiceImpl::GetSavedTabGroupControllerDelegate() {
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
   return sync_bridge_mediator_->GetSharedTabGroupControllerDelegate();
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+TabGroupSyncServiceImpl::GetSharedTabGroupAccountControllerDelegate() {
+  CHECK(shared_tab_group_account_data_bridge_);
+  return shared_tab_group_account_data_bridge_->change_processor()
+      ->GetControllerDelegate();
 }
 
 void TabGroupSyncServiceImpl::SetTabGroupSyncDelegate(

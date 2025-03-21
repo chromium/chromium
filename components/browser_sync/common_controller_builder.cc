@@ -892,18 +892,22 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 #endif
 
   if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA) &&
-      base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
-    // TODO(crbug.com/397767033): In CL #4, register the type, i.e. instantiate
-    // the DataTypeController. There is more than one way to go about it,
-    // but one option is:
-    // - Create a trivial implementation of DataTypeSyncBridge which lives in
-    //   your feature's directory. It should have synchronous access to your
-    //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
-    //   CoolKeyedService (often the model itself).
-    // - Expose CoolKeyedService::GetControllerDelegate() which calls
-    //   bridge->change_processor()->GetControllerDelegate().
-    // - Inject CoolKeyedService in this class and call GetControllerDelegate()
-    //   on it to create the DataTypeController.
+      base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData) &&
+      tab_group_sync_service_.value() && data_sharing_enabled) {
+    syncer::DataTypeControllerDelegate* delegate =
+        tab_group_sync_service_.value()
+            ->GetSharedTabGroupAccountControllerDelegate()
+            .get();
+
+    controllers.push_back(std::make_unique<syncer::DataTypeController>(
+        syncer::SHARED_TAB_GROUP_ACCOUNT_DATA,
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            delegate)));
+
     // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
   }
 

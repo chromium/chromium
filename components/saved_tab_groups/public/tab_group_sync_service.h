@@ -354,6 +354,8 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   GetSavedTabGroupControllerDelegate() = 0;
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() = 0;
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetSharedTabGroupAccountControllerDelegate() = 0;
 
   // Helper method to pause / resume local observer.
   virtual std::unique_ptr<ScopedLocalObservationPauser>

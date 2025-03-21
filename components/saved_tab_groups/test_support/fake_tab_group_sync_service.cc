@@ -401,6 +401,11 @@ FakeTabGroupSyncService::GetSharedTabGroupControllerDelegate() {
   return base::WeakPtr<syncer::DataTypeControllerDelegate>();
 }
 
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+FakeTabGroupSyncService::GetSharedTabGroupAccountControllerDelegate() {
+  return base::WeakPtr<syncer::DataTypeControllerDelegate>();
+}
+
 std::unique_ptr<ScopedLocalObservationPauser>
 FakeTabGroupSyncService::CreateScopedLocalObserverPauser() {
   return std::make_unique<ScopedLocalObservationPauser>();
