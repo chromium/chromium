@@ -48,6 +48,36 @@ struct TestResultPart {
   std::string message;
 };
 
+// Manually reported additional test result.
+// A TestResult may have any number of SubTestResults.
+struct SubTestResult {
+  SubTestResult();
+
+  SubTestResult(const SubTestResult& other);
+  SubTestResult& operator=(const SubTestResult& other);
+  SubTestResult(SubTestResult&& other) noexcept;
+  SubTestResult& operator=(SubTestResult&& other) noexcept;
+
+  ~SubTestResult();
+
+  // Fully qualified name containing `classname`, `name`, and `subname`.
+  // Constructed to match the regular expression for GTest names.
+  std::string FullName() const;
+
+  // GTest test suite name.
+  std::string classname;
+
+  // GTest test name.
+  std::string name;
+
+  // Custom third name field defined by test author.
+  std::string subname;
+
+  // Failure message that is passed along to CI. If nullopt, this SubTestResult
+  // is interpreted as successful.
+  std::optional<std::string> failure_message;
+};
+
 // Structure containing result of a single test.
 struct TestResult {
   enum Status {
@@ -86,6 +116,9 @@ struct TestResult {
   // Add tag in the xml output.
   // See more in gtest_tags.h.
   void AddTag(const std::string& name, const std::string& value);
+
+  // Add an additional test result.
+  void AddSubTestResult(SubTestResult sub_test_result);
 
   // Add property in the xml output.
   void AddProperty(const std::string& name, const std::string& value);
@@ -134,6 +167,9 @@ struct TestResult {
 
   // The key is tag name.
   std::map<std::string, std::vector<std::string>> tags;
+
+  // Collection of SubTestResults reported within this test.
+  std::vector<SubTestResult> sub_test_results;
 };
 
 }  // namespace base
