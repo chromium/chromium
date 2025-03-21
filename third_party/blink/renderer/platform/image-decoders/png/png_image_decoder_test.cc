@@ -369,15 +369,7 @@ TEST_P(AnimatedPNGTests, EmptyFrame) {
   ASSERT_NE(nullptr, frame);
   EXPECT_EQ(ImageFrame::kFrameEmpty, frame->GetStatus());
 
-  if (skia::IsRustyPngEnabled()) {
-    // `SkiaImageDecoderBase` doesn't report an overall failure, unless *all*
-    // frames fail.  This is by design - see
-    // https://crbug.com/371592786#comment3.
-    ASSERT_FALSE(decoder->Failed());
-    EXPECT_EQ(decoder->FrameCount(), 2u);
-  } else {
-    ASSERT_TRUE(decoder->Failed());
-  }
+  ASSERT_TRUE(decoder->Failed());
 }
 
 TEST_P(AnimatedPNGTests, ByteByByteSizeAvailable) {
