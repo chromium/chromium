@@ -735,15 +735,6 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     return false;
   }
 
-  // The max tree depth is the mojo kMaxRecursionDepth minus a buffer to leave
-  // room for the root node, attributes of the final node, and mojo wrappers
-  // used in message creation.
-  static const int kMaxTreeDepth = kMaxRecursionDepth - 8;
-  if (stack_depth_ > kMaxTreeDepth) {
-    // TODO(gklassen): Add a metric for this.
-    return false;
-  }
-
   bool has_visible_content = false;
   for (auto* child = object.SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -759,22 +750,12 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
         child_content_node->content_attributes->attribute_type ==
             mojom::blink::AIPageContentAttributeType::kIframe) {
       // If the child is an iframe, it does its own tree walk.
-      // TODO(crbug.com/405173553): Moving ProcessIframe here might simplify
-      // tree construction and keep stack depth counting in one place.
     } else {
-      if (child_content_node) {
-        stack_depth_++;
-      }
-
       auto& node_for_child =
           child_content_node ? *child_content_node : content_node;
       child_has_visible_content =
           WalkChildren(*child, node_for_child, document_style);
       has_visible_content |= child_has_visible_content;
-
-      if (child_content_node) {
-        stack_depth_--;
-      }
     }
 
     const bool should_add_node_for_child =
@@ -826,10 +807,8 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
     // We could consider removing an iframe with no visible content. But this is
     // likely not common and should be done in the browser so it's consistently
     // done for local and remote frames.
-    stack_depth_++;
     WalkChildren(*child_layout_view, *child_content_node,
                  *child_layout_view->Style());
-    stack_depth_--;
     content_node.children_nodes.emplace_back(std::move(child_content_node));
   }
 }
