@@ -7776,6 +7776,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "root-scrollbar-follows-browser-theme",
+    "owners": [
+      "gastonr@microsoft.com",
+      "gerchiko@microsoft.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "rounded-windows",
     "owners": [
       "zoraiznaeem@chromium.org",

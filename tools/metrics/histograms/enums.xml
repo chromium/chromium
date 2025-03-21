@@ -11047,6 +11047,7 @@ from previous Chrome versions.
   <int value="-1206337150"
       label="OmniboxUIExperimentHideSuggestionUrlScheme:disabled"/>
   <int value="-1205391766" label="SupervisedUserProfileSigninIPH:disabled"/>
+  <int value="-1205386917" label="RootScrollbarFollowsBrowserTheme:disabled"/>
   <int value="-1205293795" label="NotificationImageDrag:disabled"/>
   <int value="-1205076560" label="EnableSearchBoxSelection:disabled"/>
   <int value="-1204523106"
@@ -19125,6 +19126,7 @@ from previous Chrome versions.
   <int value="1927572319" label="OmniboxShortcutExpanding:enabled"/>
   <int value="1928193837" label="WebNNCoreML:enabled"/>
   <int value="1928641476" label="enable-builtin-hls:disabled"/>
+  <int value="1928797262" label="RootScrollbarFollowsBrowserTheme:enabled"/>
   <int value="1928944156" label="ReadLaterNewBadgePromo:disabled"/>
   <int value="1929174284" label="ChromeManagementPageAndroid:disabled"/>
   <int value="1929326462" label="UseAnnotatedAccountId:disabled"/>

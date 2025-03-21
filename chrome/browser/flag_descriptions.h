@@ -1927,6 +1927,11 @@ extern const char kRetainOmniboxOnFocusName[];
 extern const char kRetainOmniboxOnFocusDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+extern const char kRootScrollbarFollowsTheme[];
+extern const char kRootScrollbarFollowsThemeDescription[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
 extern const char kRoundedWindows[];
 extern const char kRoundedWindowsDescription[];
 

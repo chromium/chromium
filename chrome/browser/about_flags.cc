@@ -11895,6 +11895,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kIsPaintableChecksResourceProviderInsteadOfBridge)},
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+    {"root-scrollbar-follows-browser-theme",
+     flag_descriptions::kRootScrollbarFollowsTheme,
+     flag_descriptions::kRootScrollbarFollowsThemeDescription,
+     kOsLinux | kOsWin,
+     FEATURE_VALUE_TYPE(blink::features::kRootScrollbarFollowsBrowserTheme)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"scanner-disclaimer-debug-override",
      flag_descriptions::kScannerDisclaimerDebugOverrideName,

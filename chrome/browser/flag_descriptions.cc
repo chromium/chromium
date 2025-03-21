@@ -3362,6 +3362,12 @@ const char kRetainOmniboxOnFocusDescription[] =
     "exhibit a change in behavior.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+const char kRootScrollbarFollowsTheme[] = "Make scrollbar follow theme";
+const char kRootScrollbarFollowsThemeDescription[] =
+    "If enabled makes the root scrollbar follow the browser's theme color.";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
 const char kRoundedWindows[] = "Use rounded windows";
 const char kRoundedWindowsDescription[] =
     "Specifies the radius of rounded windows in DIPs (Device Independent "
