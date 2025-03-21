@@ -69,6 +69,8 @@ namespace extensions {
 
 namespace {
 
+constexpr char kUninstallSourceHistogramName[] = "Extensions.UninstallSource";
+
 std::unique_ptr<KeyedService> BuildManagementApi(
     content::BrowserContext* context) {
   return std::make_unique<ManagementAPI>(context);
@@ -370,7 +372,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
     EXPECT_FALSE(registry()->GetExtensionById(extension_id,
                                               ExtensionRegistry::EVERYTHING));
     tester.ExpectBucketCount(
-        "Extensions.UninstallSource",
+        kUninstallSourceHistogramName,
         extensions::UNINSTALL_SOURCE_CHROME_EXTENSIONS_PAGE, 1);
   }
 
@@ -393,7 +395,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
                                              extension_id),
               function->GetError());
     tester.ExpectBucketCount(
-        "Extensions.UninstallSource",
+        kUninstallSourceHistogramName,
         extensions::UNINSTALL_SOURCE_CHROME_EXTENSIONS_PAGE, 2);
 
     // Try again, using showConfirmDialog: false.
@@ -411,7 +413,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
                                              extension_id),
               function->GetError());
     tester.ExpectBucketCount(
-        "Extensions.UninstallSource",
+        kUninstallSourceHistogramName,
         extensions::UNINSTALL_SOURCE_CHROME_EXTENSIONS_PAGE, 3);
 
     // If we have the extension uninstall itself, the uninstall should succeed
@@ -458,7 +460,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
     EXPECT_EQ(ErrorUtils::FormatErrorMessage(constants::kUninstallCanceledError,
                                              extension_id),
               function->GetError());
-    tester.ExpectBucketCount("Extensions.UninstallSource",
+    tester.ExpectBucketCount(kUninstallSourceHistogramName,
                              extensions::UNINSTALL_SOURCE_CHROME_WEBSTORE, 1);
   }
 
@@ -480,7 +482,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
     // The extension should be uninstalled.
     EXPECT_EQ(nullptr, registry()->GetInstalledExtension(extension_id));
     EXPECT_TRUE(did_show);
-    tester.ExpectBucketCount("Extensions.UninstallSource",
+    tester.ExpectBucketCount(kUninstallSourceHistogramName,
                              extensions::UNINSTALL_SOURCE_CHROME_WEBSTORE, 2);
 
     // Reset the callback.
@@ -514,7 +516,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallNewWebstore) {
   // The extension should be uninstalled.
   EXPECT_EQ(nullptr, registry()->GetInstalledExtension(extension_id));
   EXPECT_TRUE(did_show);
-  tester.ExpectBucketCount("Extensions.UninstallSource",
+  tester.ExpectBucketCount(kUninstallSourceHistogramName,
                            extensions::UNINSTALL_SOURCE_CHROME_WEBSTORE, 1);
 
   // Reset the callback.
@@ -549,7 +551,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallProgramatic) {
     // The extension should be uninstalled.
     EXPECT_EQ(nullptr, registry()->GetInstalledExtension(extension_id));
     EXPECT_TRUE(did_show);
-    tester.ExpectBucketCount("Extensions.UninstallSource",
+    tester.ExpectBucketCount(kUninstallSourceHistogramName,
                              extensions::UNINSTALL_SOURCE_EXTENSION, 1);
 
     // Reset the callback.
