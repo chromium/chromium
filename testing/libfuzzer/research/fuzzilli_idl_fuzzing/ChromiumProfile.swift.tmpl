@@ -139,6 +139,87 @@ let js{{identifier}} = ObjectGroup(
 {{define_group(interface.identifier, inter[1])}}
 {% endfor -%}
 
+let fastCallables : [(group: ILType, method: String)] = [
+{%- for interface in database.interfaces -%}
+{%- for operation in interface.operations -%}
+{%- if operation.is_static == False -%}
+{%- if 'NoAllocDirectCall' in operation.extended_attributes %}
+  (group: js{{interface.identifier}}, method: "{{operation.identifier}}"),
+{%- endif %}
+{%- endif -%}
+{%- endfor -%}
+{%- endfor %}
+]
+
+fileprivate let FastApiCallFuzzer = ProgramTemplate("FastApiCallFuzzer") { b in
+    b.buildPrefix()
+    b.build(n: 20)
+    let parameterCount = probability(0.5) ? 0 : Int.random(in: 1...4)
+
+    let f = b.buildPlainFunction(with: .parameters(n: parameterCount)) { args in
+        b.build(n: 10)
+        let target = fastCallables.randomElement()!
+        let apiObj = b.findOrGenerateType(target.group)
+        let functionSig = chooseUniform(from: b.methodSignatures(of: target.method, on: target.group))
+        let apiCall = b.callMethod(target.method, on: apiObj, withArgs: b.findOrGenerateArguments(forSignature: functionSig), guard: true)
+        b.doReturn(apiCall)
+    }
+
+    let args = b.randomVariables(n: Int.random(in: 0...5))
+    b.callFunction(f, withArgs: args)
+
+    b.eval("%PrepareFunctionForOptimization(%@)", with: [f]);
+
+    b.callFunction(f, withArgs: args)
+    b.callFunction(f, withArgs: args)
+
+    b.eval("%OptimizeFunctionOnNextCall(%@)", with: [f]);
+
+    b.callFunction(f, withArgs: args)
+
+    b.build(n: 10)
+}
+
+let WasmFastCallFuzzer = WasmProgramTemplate("WasmFastCallFuzzer") { b in
+    b.buildPrefix()
+    b.build(n: 10)
+    let target = fastCallables.randomElement()!
+    let apiObj = b.findOrGenerateType(target.group)
+
+    // Bind the API function so that it can be called from WebAssembly.
+    let wrapped = b.bindMethod(target.method, on: apiObj)
+
+    let functionSig = chooseUniform(from: b.methodSignatures(of: target.method, on: target.group))
+    let wrappedSig = Signature(expects: [.plain(b.type(of: apiObj))] + functionSig.parameters, returns: functionSig.outputType)
+
+    let m = b.buildWasmModule { m in
+        let allWasmTypes: WeightedList<ILType> = WeightedList([(.wasmi32, 1), (.wasmi64, 1), (.wasmf32, 1), (.wasmf64, 1), (.wasmExternRef, 1), (.wasmFuncRef, 1)])
+        let wasmSignature = ProgramBuilder.convertJsSignatureToWasmSignature(wrappedSig, availableTypes: allWasmTypes)
+        m.addWasmFunction(with: wasmSignature) {fbuilder, _  in
+            let args = b.randomWasmArguments(forWasmSignature: wasmSignature)
+            if let args {
+                let maybeRet = fbuilder.wasmJsCall(function: wrapped, withArgs: args, withWasmSignature: wasmSignature)
+                if let ret = maybeRet {
+                  fbuilder.wasmReturn(ret)
+                }
+            } else {
+                logger.error("Arguments should have been generated")
+            }
+        }
+    }
+
+    let exports = m.loadExports()
+
+    for (methodName, _) in m.getExportedMethods() {
+        let exportedMethod = b.getProperty(methodName, of: exports)
+        b.eval("%WasmTierUpFunction(%@)", with: [exportedMethod])
+        let args = b.findOrGenerateArguments(forSignature: wrappedSig)
+        b.callMethod(methodName, on: exports, withArgs: args)
+    }
+}
+
+
+
 let chromiumProfile = Profile(
     processArgs: { _ in
         var args: [String] = []
@@ -175,6 +256,8 @@ let chromiumProfile = Profile(
     ],
 
     additionalProgramTemplates: WeightedList<ProgramTemplate>([
+        (FastApiCallFuzzer,      5),
+        (WasmFastCallFuzzer,     5),
     ]),
 
     disabledCodeGenerators: [],
