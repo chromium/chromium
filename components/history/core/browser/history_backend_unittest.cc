@@ -3752,6 +3752,8 @@ TEST_F(InMemoryHistoryBackendTest, OnURLsDeletedWithSearchTerms) {
 }
 
 TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_TRUE(backend_.get());
 
   // Pairs from page transitions to consider_for_ntp_most_visited.
@@ -3772,6 +3774,7 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
   }
 
   MostVisitedURLList most_visited = backend_->QueryMostVisitedURLs(100);
+  histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
 
   const std::u16string kSomeTitle;  // Ignored by equality operator.
   EXPECT_THAT(
@@ -3781,6 +3784,8 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
 }
 
 TEST_F(HistoryBackendTest, ExpireSegmentData) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_TRUE(backend_.get());
 
   {
@@ -3806,6 +3811,7 @@ TEST_F(HistoryBackendTest, ExpireSegmentData) {
   EXPECT_THAT(backend_->QueryMostVisitedURLs(100),
               ElementsAre(MostVisitedURL(GURL("http://example2.com"),
                                          std::u16string())));
+  histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 2);
 }
 
 TEST_F(HistoryBackendTest, QueryMostRepeatedQueriesForKeyword) {
