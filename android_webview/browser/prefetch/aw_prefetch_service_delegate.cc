@@ -142,6 +142,14 @@ bool AwPrefetchServiceDelegate::IsContaminationExempt(
   return false;
 }
 
+bool AwPrefetchServiceDelegate::IsContaminationExemptPerOrigin(
+    const url::Origin& referring_origin) {
+  // WebView app initiated prefetching does not use an isolated network context.
+  // However, if WebView ever adds support for non-app triggered prefetching, we
+  // may need to revisit the value returned here.
+  return false;
+}
+
 void AwPrefetchServiceDelegate::OnPrefetchLikely(
     content::WebContents* web_contents) {
   // Only used for renderer initiated prefetching which WebView doesn't

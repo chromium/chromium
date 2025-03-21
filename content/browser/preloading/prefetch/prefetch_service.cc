@@ -881,14 +881,26 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
     // The cookie eligibility check just happened, and we might proceed anyway.
     // We might therefore need to delay further processing to the extent
     // required to obscure the outcome of this check from the current site.
-    // TODO(crbug.com/40946257): Currently browser-initiated prefetch will
-    // always be marked as cross-site contaminated since there is no initiator
-    // rfh. Revisit and add proper handlings.
     auto* initiator_rfh = RenderFrameHost::FromID(
         prefetch_container->GetReferringRenderFrameHostId());
-    const bool is_contamination_exempt =
-        delegate_ && initiator_rfh &&
-        delegate_->IsContaminationExempt(initiator_rfh->GetLastCommittedURL());
+    const bool is_contamination_exempt = [&] {
+      if (!prefetch_container->IsRendererInitiated()) {
+        // When browser-initiated prefetches, we can calculates prefetch's
+        // contamination exemption from the referring origin. Currently CCT
+        // prefetch is only the case hitting this, so the callee will check
+        // whether it is behind the feature flag tentatively.
+        // TODO(crbug.com/40946257): Migrate to use this in all cases.
+        return delegate_ &&
+               prefetch_container->GetReferringOrigin().has_value() &&
+               delegate_->IsContaminationExemptPerOrigin(
+                   prefetch_container->GetReferringOrigin().value());
+      } else {
+        return delegate_ && initiator_rfh &&
+               delegate_->IsContaminationExempt(
+                   initiator_rfh->GetLastCommittedURL());
+      }
+    }();
+
     if (!is_contamination_exempt) {
       prefetch_container->MarkCrossSiteContaminated();
     }
