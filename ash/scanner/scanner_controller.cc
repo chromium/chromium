@@ -5,6 +5,7 @@
 #include "ash/scanner/scanner_controller.h"
 
 #include <cstddef>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -33,6 +34,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
@@ -430,9 +432,17 @@ std::unique_ptr<manta::proto::ScannerOutput> CreateMockScannerOutput(
 }
 }  // namespace
 
-ScannerController::ScannerController(std::unique_ptr<ScannerDelegate> delegate,
-                                     SessionControllerImpl& session_controller)
-    : delegate_(std::move(delegate)), session_controller_(session_controller) {}
+ScannerController::ScannerController(
+    std::unique_ptr<ScannerDelegate> delegate,
+    SessionControllerImpl& session_controller,
+    const ScreenPinningController* screen_pinning_controller)
+    : delegate_(std::move(delegate)),
+      session_controller_(session_controller),
+      screen_pinning_controller_(screen_pinning_controller) {
+  if (screen_pinning_controller_ == nullptr) {
+    CHECK_IS_TEST();
+  }
+}
 
 ScannerController::~ScannerController() = default;
 
@@ -479,6 +489,16 @@ void ScannerController::OnActiveUserSessionChanged(
 }
 
 bool ScannerController::CanShowUi() {
+  if (screen_pinning_controller_ == nullptr) {
+    CHECK_IS_TEST();
+  } else if (screen_pinning_controller_->IsPinned()) {
+    // TODO: crbug.com/403423199 - Record a metric here that `CanShowUi`
+    // returned false due to being in pinned mode.
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalse);
+    return false;
+  }
+
   // Check enterprise policy.
   const AccountId& account_id = session_controller_->GetActiveAccountId();
   PrefService* prefs =
@@ -586,6 +606,14 @@ bool ScannerController::CanShowUi() {
 }
 
 bool ScannerController::CanShowFeatureSettingsToggle() {
+  if (screen_pinning_controller_ == nullptr) {
+    CHECK_IS_TEST();
+  } else if (screen_pinning_controller_->IsPinned()) {
+    return false;
+  }
+  // Intentionally ignore enterprise policy here, as we still want to show the
+  // settings toggle (as disabled).
+
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
 
@@ -607,6 +635,11 @@ bool ScannerController::CanShowFeatureSettingsToggle() {
 }
 
 bool ScannerController::CanStartSession() {
+  if (screen_pinning_controller_ == nullptr) {
+    CHECK_IS_TEST();
+  } else if (screen_pinning_controller_->IsPinned()) {
+    return false;
+  }
   // Check enterprise policy.
   const AccountId& account_id = session_controller_->GetActiveAccountId();
   PrefService* prefs =

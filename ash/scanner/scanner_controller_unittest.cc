@@ -12,8 +12,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_feedback_info.h"
@@ -32,8 +34,11 @@
 #include "ash/system/toast/toast_overlay.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
+#include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_split.h"
@@ -65,6 +70,7 @@
 #include "ui/message_center/fake_message_center.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/view_utils.h"
+#include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -270,6 +276,22 @@ TEST_F(ScannerControllerTest,
   EXPECT_FALSE(scanner_controller->StartNewSession());
 }
 
+TEST_F(ScannerControllerTest, CannotStartSessionInPinnedMode) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
+  ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+
+  EXPECT_FALSE(scanner_controller->CanStartSession());
+  EXPECT_FALSE(scanner_controller->StartNewSession());
+}
+
 TEST_F(ScannerControllerTest, CanShowFeatureSettingsToggleIfNoChecksFail) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
@@ -278,6 +300,21 @@ TEST_F(ScannerControllerTest, CanShowFeatureSettingsToggleIfNoChecksFail) {
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
 
   EXPECT_TRUE(scanner_controller->CanShowFeatureSettingsToggle());
+}
+
+TEST_F(ScannerControllerTest, DoesNotShowFeatureSettingsToggleInPinnedMode) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
+  ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+
+  EXPECT_FALSE(scanner_controller->CanShowFeatureSettingsToggle());
 }
 
 TEST_F(ScannerControllerTest, CanShowUiIfConsentNotAcceptedOnly) {
@@ -372,6 +409,42 @@ TEST_F(ScannerControllerDisabledTest, CanShowUiForShellFalseWhenNoController) {
   EXPECT_FALSE(ScannerController::CanShowUiForShell());
 }
 
+TEST_F(ScannerControllerTest, CannotShowUiInPinnedMode) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
+  ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+
+  EXPECT_FALSE(scanner_controller->CanShowUi());
+  EXPECT_FALSE(ScannerController::CanShowUiForShell());
+}
+
+TEST_F(ScannerControllerTest, CanShowUiAfterExitingPinnedMode) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
+  ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+  ASSERT_FALSE(ScannerController::CanShowUiForShell());
+
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kUnpin, {});
+
+  EXPECT_TRUE(scanner_controller->CanShowUi());
+  EXPECT_TRUE(ScannerController::CanShowUiForShell());
+}
+
 TEST(ScannerControllerNoFixtureTest, CanShowUiForShellFalseWhenNoShellMetrics) {
   base::HistogramTester histogram_tester;
 
@@ -402,6 +475,27 @@ TEST_F(ScannerControllerDisabledTest,
       ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
 }
 
+TEST_F(ScannerControllerTest, CanShowUiForShellFalseWhenPinnedMetrics) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
+  ASSERT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+  // This must be after pinning, as `SunfishScannerFeatureWatcher` may
+  // automatically call `CanShowUi` when the pinned state changes.
+  base::HistogramTester histogram_tester;
+
+  ASSERT_FALSE(scanner_controller->CanShowUi());
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
+}
+
 TEST(ScannerControllerNoFixtureTest,
      CanShowUiFalseWhenNoProfileScopedDelegateMetrics) {
   base::HistogramTester histogram_tester;
@@ -410,7 +504,8 @@ TEST(ScannerControllerNoFixtureTest,
   EXPECT_CALL(*mock_delegate, GetProfileScopedDelegate())
       .WillRepeatedly(Return(nullptr));
   ScannerController scanner_controller(std::move(mock_delegate),
-                                       session_controller);
+                                       session_controller,
+                                       /*screen_pinning_controller=*/nullptr);
 
   ASSERT_FALSE(scanner_controller.CanShowUi());
 
@@ -1566,7 +1661,8 @@ TEST(ScannerControllerNoFixtureTest, RunningNewContactActionOpensUrl) {
                       _, _))
       .Times(1);
   ScannerController scanner_controller(std::make_unique<FakeScannerDelegate>(),
-                                       session_controller);
+                                       session_controller,
+                                       /*screen_pinning_controller=*/nullptr);
   ScannerSession* session = scanner_controller.StartNewSession();
   ASSERT_TRUE(session);
   FakeScannerProfileScopedDelegate& delegate =
