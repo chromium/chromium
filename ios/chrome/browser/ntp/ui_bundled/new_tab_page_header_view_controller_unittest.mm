@@ -42,6 +42,27 @@ class NewTabPageHeaderViewControllerUnitTest : public PlatformTest {
 };
 
 // Tests the header view when the user is signed out.
+TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOutWithoutAvatar) {
+  base::test::ScopedFeatureList feature_list(kSignInButtonNoAvatar);
+
+  [view_controller_ loadViewIfNeeded];
+
+  EXPECT_NE(nil, view_controller_.identityDiscButton);
+  EXPECT_NE(nil, view_controller_.headerView.customizationMenuButton);
+
+  // Checks that the identity disc's title is correctly set without avatar.
+  [view_controller_ setSignedOutAccountImage];
+  EXPECT_NSEQ([view_controller_.identityDiscButton
+                  attributedTitleForState:UIControlStateNormal]
+                  .string,
+              l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT));
+
+  EXPECT_NSEQ(
+      [view_controller_.identityDiscButton imageForState:UIControlStateNormal],
+      nil);
+}
+
+// Tests the header view when the user is signed out.
 TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOut) {
   [view_controller_ loadViewIfNeeded];
 

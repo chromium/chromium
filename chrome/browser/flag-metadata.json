@@ -8269,6 +8269,14 @@
     "expiry_milestone" : 150
   },
   {
+    "name": "sign-in-button-no-avatar",
+    "owners": [
+      "pabouchard@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "signature-based-sri",
     "owners": [ "mkwst@chromium.org" ],
     "expiry_milestone": 150

@@ -738,6 +738,9 @@ extern const char kShareInWebContextMenuIOSDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
+extern const char kSignInButtonNoAvatarName[];
+extern const char kSignInButtonNoAvatarDescription[];
+
 extern const char kSpotlightNeverRetainIndexName[];
 extern const char kSpotlightNeverRetainIndexDescription[];
 

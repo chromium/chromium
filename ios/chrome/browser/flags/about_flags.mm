@@ -1436,6 +1436,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::test::kAutofillShowTypePredictions)},
+    {"sign-in-button-no-avatar", flag_descriptions::kSignInButtonNoAvatarName,
+     flag_descriptions::kSignInButtonNoAvatarDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kSignInButtonNoAvatar)},
     {"fullscreen-promos-manager-skip-internal-limits",
      flag_descriptions::kFullscreenPromosManagerSkipInternalLimitsName,
      flag_descriptions::kFullscreenPromosManagerSkipInternalLimitsDescription,
