@@ -54,7 +54,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
-import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.CancelLongPressTabItemEventListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
@@ -118,7 +118,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 }
             };
 
-    private final TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener
+    private final TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener
             mLongPressItemEventListener = this::onLongPressOnTabCard;
     private final Activity mActivity;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;

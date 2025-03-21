@@ -1225,7 +1225,7 @@ class TabListMediator implements TabListNotificationHandler {
      */
     public void setOnLongPressTabItemEventListener(
             @Nullable
-                    TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener
+                    TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener
                             onLongPressTabItemEventListener) {
         mTabGridItemTouchHelperCallback.setOnLongPressTabItemEventListener(
                 onLongPressTabItemEventListener);

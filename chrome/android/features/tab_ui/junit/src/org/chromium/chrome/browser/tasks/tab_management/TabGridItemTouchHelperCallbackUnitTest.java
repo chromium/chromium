@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -68,7 +69,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TabGridItemTouchHelperCallback}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -111,9 +111,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     @Mock private TabGroupColorViewProvider mTabGroupColorViewProvider;
 
-    @Mock
-    private TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener
-            mOnLongPressTabItemEventListener;
+    @Mock private OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
+    @Mock private TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
 
     private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
@@ -220,8 +219,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         "",
                         !isDialog,
                         TabListMode.GRID);
-        mItemTouchHelperCallback.setOnLongPressTabItemEventListener(
-                mOnLongPressTabItemEventListener);
         mItemTouchHelperCallback.setupCallback(THRESHOLD, MERGE_AREA_THRESHOLD, THRESHOLD);
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
     }
@@ -965,58 +962,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_SWITCHER_CONTEXT_MENU_ANDROID)
-    public void onLongPress_triggerListener() {
-        // Simulate the selection of card#1 in TabListModel.
-        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
-
-        mItemTouchHelperCallback.onSelectedChanged(
-                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
-
-        verify(mOnLongPressTabItemEventListener).onLongPressEvent(eq(TAB1_ID), any());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_SWITCHER_CONTEXT_MENU_ANDROID)
-    public void onLongPress_cancelLongPress() {
-        AtomicBoolean longPressCancelled = new AtomicBoolean(false);
-        when(mOnLongPressTabItemEventListener.onLongPressEvent(anyInt(), any()))
-                .thenReturn(() -> longPressCancelled.set(true));
-        // Simulate the selection of card#1 in TabListModel.
-        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
-
-        mItemTouchHelperCallback.onSelectedChanged(
-                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
-
-        verify(mOnLongPressTabItemEventListener).onLongPressEvent(eq(TAB1_ID), any());
-
-        mItemTouchHelperCallback.onChildDraw(
-                mCanvas,
-                mRecyclerView,
-                mMockViewHolder1,
-                1000.f,
-                1000.f,
-                ItemTouchHelper.ACTION_STATE_IDLE,
-                true);
-        assertTrue(longPressCancelled.get());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TAB_SWITCHER_CONTEXT_MENU_ANDROID)
-    public void onLongPress_preventTriggerListener() {
-        // Simulate the selection of card#1 in TabListModel.
-        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
-
-        // Simulate hovering on card#2.
-        mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
-
-        mItemTouchHelperCallback.onSelectedChanged(
-                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
-
-        verify(mOnLongPressTabItemEventListener, never()).onLongPressEvent(anyInt(), any());
-    }
-
-    @Test
     public void onTabMergeToGroup_willMergingCreateNewGroup() {
         doReturn(true).when(mTabGroupModelFilter).willMergingCreateNewGroup(any());
 
@@ -1032,6 +977,79 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         verify(mTabGroupModelFilter).mergeTabsToGroup(TAB1_ID, TAB2_ID);
         verify(mTabGroupCreationDialogManager)
                 .showDialog(mTabModel.getTabById(TAB2_ID).getTabGroupId(), mTabGroupModelFilter);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
+    public void orchestratorCreatedOnParityEnabled() {
+        mItemTouchHelperCallback = spy(mItemTouchHelperCallback);
+        mItemTouchHelperCallback.setOnLongPressTabItemEventListener((a, b) -> () -> {});
+        verify(mItemTouchHelperCallback)
+                .setTabGridItemLongPressOrchestrator(any(TabGridItemLongPressOrchestrator.class));
+    }
+
+    @Test(expected = AssertionError.class)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
+    public void orchestratorNotCreatedTwice() {
+        mItemTouchHelperCallback = spy(mItemTouchHelperCallback);
+        mItemTouchHelperCallback.setOnLongPressTabItemEventListener((a, b) -> () -> {});
+        mItemTouchHelperCallback.setOnLongPressTabItemEventListener((a, b) -> () -> {});
+        verify(mItemTouchHelperCallback)
+                .setTabGridItemLongPressOrchestrator(any(TabGridItemLongPressOrchestrator.class));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
+    public void orchestratorNotCreatedOnParityDisabled() {
+        mItemTouchHelperCallback = spy(mItemTouchHelperCallback);
+        mItemTouchHelperCallback.setOnLongPressTabItemEventListener((a, b) -> () -> {});
+        verify(mItemTouchHelperCallback, never())
+                .setTabGridItemLongPressOrchestrator(any(TabGridItemLongPressOrchestrator.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
+    public void orchestratorTriggeredOnSelectedChanged() {
+        mItemTouchHelperCallback.setTabGridItemLongPressOrchestrator(
+                mTabGridItemLongPressOrchestrator);
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+        verify(mTabGridItemLongPressOrchestrator)
+                .onSelectedChanged(
+                        mMockViewHolder1.getBindingAdapterPosition(),
+                        ItemTouchHelper.ACTION_STATE_IDLE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
+    public void orchestratorTriggeredOnChildDraw() {
+        mItemTouchHelperCallback.setTabGridItemLongPressOrchestrator(
+                mTabGridItemLongPressOrchestrator);
+        float displacement = 2.f;
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                displacement,
+                displacement,
+                ItemTouchHelper.ACTION_STATE_IDLE,
+                true);
+        float displacementSquared = displacement * displacement;
+        verify(mTabGridItemLongPressOrchestrator)
+                .processChildDisplacement(displacementSquared + displacementSquared);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
+    public void orchestratorCancelledOnClearView() {
+        mItemTouchHelperCallback.setTabGridItemLongPressOrchestrator(
+                mTabGridItemLongPressOrchestrator);
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+        verify(mTabGridItemLongPressOrchestrator)
+                .onSelectedChanged(
+                        mMockViewHolder1.getBindingAdapterPosition(),
+                        ItemTouchHelper.ACTION_STATE_IDLE);
     }
 
     private void verifyDrag(
@@ -1114,6 +1132,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         ViewHolder viewHolder = spy(new ViewHolder(itemView, /* binder= */ null));
         when(viewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
         when(viewHolder.getAdapterPosition()).thenReturn(position);
+        when(viewHolder.getBindingAdapterPosition()).thenReturn(position);
         viewHolder.model = model;
         return viewHolder;
     }
