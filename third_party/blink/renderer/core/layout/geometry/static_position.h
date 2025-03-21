@@ -19,10 +19,13 @@ struct PhysicalStaticPosition;
 // Represents the static-position of an OOF-positioned descendant, in the
 // logical coordinate space.
 //
-// |offset| is the position of the descandant's |inline_edge|, and |block_edge|.
+// `offset` is the position of the descandant's `inline_edge`, and `block_edge`.
+// `align_self_direction` represents what direction 'align-self' applies in,
+// with 'justify-self' applying in the opposite direction.
 struct CORE_EXPORT LogicalStaticPosition {
   enum InlineEdge { kInlineStart, kInlineCenter, kInlineEnd };
   enum BlockEdge { kBlockStart, kBlockCenter, kBlockEnd };
+  enum LogicalAlignmentDirection { kBlock, kInline };
 
   inline PhysicalStaticPosition ConvertToPhysical(
       const WritingModeConverter& converter) const;
@@ -30,16 +33,19 @@ struct CORE_EXPORT LogicalStaticPosition {
   LogicalOffset offset;
   InlineEdge inline_edge;
   BlockEdge block_edge;
+  LogicalAlignmentDirection align_self_direction;
 };
 
-// Similar to |LogicalStaticPosition| but in the physical coordinate space.
+// Similar to `LogicalStaticPosition` but in the physical coordinate space.
 struct CORE_EXPORT PhysicalStaticPosition {
   enum HorizontalEdge { kLeft, kHorizontalCenter, kRight };
   enum VerticalEdge { kTop, kVerticalCenter, kBottom };
+  enum PhysicalAlignmentDirection { kHorizontal, kVertical };
 
   PhysicalOffset offset;
   HorizontalEdge horizontal_edge;
   VerticalEdge vertical_edge;
+  PhysicalAlignmentDirection align_self_direction;
 
   LogicalStaticPosition ConvertToLogical(
       const WritingModeConverter& converter) const {
@@ -48,9 +54,12 @@ struct CORE_EXPORT PhysicalStaticPosition {
 
     using InlineEdge = LogicalStaticPosition::InlineEdge;
     using BlockEdge = LogicalStaticPosition::BlockEdge;
+    using LogicalAlignmentDirection =
+        LogicalStaticPosition::LogicalAlignmentDirection;
 
     InlineEdge inline_edge;
     BlockEdge block_edge;
+    LogicalAlignmentDirection logical_align_self_direction;
 
     switch (converter.GetWritingMode()) {
       case WritingMode::kHorizontalTb:
@@ -84,7 +93,8 @@ struct CORE_EXPORT PhysicalStaticPosition {
         break;
     }
 
-    // Adjust for uncommon "center" static-positions.
+    // Adjust for uncommon "center" static-positions and convert the alignment
+    // direction.
     switch (converter.GetWritingMode()) {
       case WritingMode::kHorizontalTb:
         inline_edge = (horizontal_edge == kHorizontalCenter)
@@ -93,6 +103,9 @@ struct CORE_EXPORT PhysicalStaticPosition {
         block_edge = (vertical_edge == kVerticalCenter)
                          ? BlockEdge::kBlockCenter
                          : block_edge;
+        logical_align_self_direction = (align_self_direction == kHorizontal)
+                                           ? LogicalAlignmentDirection::kInline
+                                           : LogicalAlignmentDirection::kBlock;
         break;
       case WritingMode::kVerticalRl:
       case WritingMode::kSidewaysRl:
@@ -104,10 +117,14 @@ struct CORE_EXPORT PhysicalStaticPosition {
         block_edge = (horizontal_edge == kHorizontalCenter)
                          ? BlockEdge::kBlockCenter
                          : block_edge;
+        logical_align_self_direction = (align_self_direction == kHorizontal)
+                                           ? LogicalAlignmentDirection::kBlock
+                                           : LogicalAlignmentDirection::kInline;
         break;
     }
 
-    return {logical_offset, inline_edge, block_edge};
+    return {logical_offset, inline_edge, block_edge,
+            logical_align_self_direction};
   }
 };
 
@@ -118,9 +135,12 @@ inline PhysicalStaticPosition LogicalStaticPosition::ConvertToPhysical(
 
   using HorizontalEdge = PhysicalStaticPosition::HorizontalEdge;
   using VerticalEdge = PhysicalStaticPosition::VerticalEdge;
+  using PhysicalAlignmentDirection =
+      PhysicalStaticPosition::PhysicalAlignmentDirection;
 
   HorizontalEdge horizontal_edge;
   VerticalEdge vertical_edge;
+  PhysicalAlignmentDirection physical_align_self_direction;
 
   switch (converter.GetWritingMode()) {
     case WritingMode::kHorizontalTb:
@@ -154,7 +174,8 @@ inline PhysicalStaticPosition LogicalStaticPosition::ConvertToPhysical(
       break;
   }
 
-  // Adjust for uncommon "center" static-positions.
+  // Adjust for uncommon "center" static-positions and convert the alignment
+  // direction.
   switch (converter.GetWritingMode()) {
     case WritingMode::kHorizontalTb:
       horizontal_edge = (inline_edge == kInlineCenter)
@@ -163,6 +184,10 @@ inline PhysicalStaticPosition LogicalStaticPosition::ConvertToPhysical(
       vertical_edge = (block_edge == kBlockCenter)
                           ? VerticalEdge::kVerticalCenter
                           : vertical_edge;
+      physical_align_self_direction =
+          (align_self_direction == kInline)
+              ? PhysicalAlignmentDirection::kHorizontal
+              : PhysicalAlignmentDirection::kVertical;
       break;
     case WritingMode::kVerticalRl:
     case WritingMode::kSidewaysRl:
@@ -174,10 +199,15 @@ inline PhysicalStaticPosition LogicalStaticPosition::ConvertToPhysical(
       vertical_edge = (inline_edge == kInlineCenter)
                           ? VerticalEdge::kVerticalCenter
                           : vertical_edge;
+      physical_align_self_direction =
+          (align_self_direction == kInline)
+              ? PhysicalAlignmentDirection::kVertical
+              : PhysicalAlignmentDirection::kHorizontal;
       break;
   }
 
-  return {physical_offset, horizontal_edge, vertical_edge};
+  return {physical_offset, horizontal_edge, vertical_edge,
+          physical_align_self_direction};
 }
 
 }  // namespace blink
