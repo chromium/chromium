@@ -6121,6 +6121,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="127" label="FencedUnpartitionedStorageRead"/>
   <int value="128" label="DeferredFetchMinimal"/>
   <int value="129" label="ClientHintUAHighEntropyValues"/>
+  <int value="130" label="Summarizer"/>
+  <int value="131" label="Writer"/>
+  <int value="132" label="Rewriter"/>
+  <int value="133" label="Translator"/>
+  <int value="134" label="LanguageDetector"/>
 </enum>
 
 <enum name="FedCmAccountChooserResult">
