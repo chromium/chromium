@@ -37,7 +37,7 @@ const HIGHLIGHTER_COLORS: ColorOption[] = [
   // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:HighlighterColors)
 ];
 
-const PEN_COLORS: ColorOption[] = [
+export const PEN_COLORS: ColorOption[] = [
   // LINT.IfChange(PenColors)
   // Row 1:
   {label: 'annotationColorBlack', color: '#000000'},
@@ -177,6 +177,13 @@ export class InkColorSelectorElement extends InkColorSelectorElementBase {
     assert(newColorButton);
     this.setBrushColor_(newColorButton);
     newColorButton.focus();
+  }
+
+  override focus() {
+    const selectedButton =
+        this.shadowRoot.querySelector<HTMLElement>('input[checked]');
+    assert(selectedButton);
+    selectedButton.focus();
   }
 
   protected isCurrentColor_(hex: string): boolean {
