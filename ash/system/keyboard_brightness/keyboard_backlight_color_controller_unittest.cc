@@ -69,12 +69,11 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
 };
 }  // namespace
 
-class KeyboardBacklightColorControllerTest : public AshTestBase {
+class KeyboardBacklightColorControllerTest : public NoSessionAshTestBase {
  public:
   KeyboardBacklightColorControllerTest() {
     scoped_feature_list_.InitWithFeatures({features::kMultiZoneRgbKeyboard},
                                           {});
-    set_start_session(false);
   }
 
   KeyboardBacklightColorControllerTest(
@@ -86,7 +85,7 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
 
     controller_ =
         std::make_unique<KeyboardBacklightColorController>(local_state());
@@ -96,7 +95,7 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
 
   void TearDown() override {
     controller_.reset();
-    AshTestBase::TearDown();
+    NoSessionAshTestBase::TearDown();
   }
 
  protected:

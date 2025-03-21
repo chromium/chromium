@@ -91,7 +91,8 @@ class TabDragDropDelegateTest : public AshTestBase {
 
     auto mock_shell_delegate = std::make_unique<NiceMock<MockShellDelegate>>();
     mock_shell_delegate_ = mock_shell_delegate.get();
-    AshTestBase::SetUp(std::move(mock_shell_delegate));
+    set_shell_delegate(std::move(mock_shell_delegate));
+    AshTestBase::SetUp();
     ash::TabletModeControllerTestApi().EnterTabletMode();
 
     // Create a dummy window and exit overview mode since drags can't be

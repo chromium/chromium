@@ -174,7 +174,8 @@ class ScannerControllerTest : public AshTestBase {
     auto shell_delegate = std::make_unique<TestShellDelegate>();
     shell_delegate->SetSendSpecializedFeatureFeedbackCallback(
         mock_send_specialized_feature_feedback_.Get());
-    AshTestBase::SetUp(std::move(shell_delegate));
+    set_shell_delegate(std::move(shell_delegate));
+    AshTestBase::SetUp();
   }
 
   base::MockCallback<TestShellDelegate::SendSpecializedFeatureFeedbackCallback>&

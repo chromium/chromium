@@ -464,7 +464,8 @@ class DragDropControllerTest : public AshTestBase {
   void SetUp() override {
     auto mock_shell_delegate = std::make_unique<NiceMock<MockShellDelegate>>();
     mock_shell_delegate_ = mock_shell_delegate.get();
-    AshTestBase::SetUp(std::move(mock_shell_delegate));
+    set_shell_delegate(std::move(mock_shell_delegate));
+    AshTestBase::SetUp();
 
     drag_drop_controller_ = std::make_unique<TestDragDropController>();
     drag_drop_controller_->set_should_block_during_drag_drop(false);

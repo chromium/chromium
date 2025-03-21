@@ -1014,7 +1014,8 @@ class UnifiedSystemTrayAccessibilityTest : public AshTestBase {
     std::unique_ptr<TestShellDelegate> shell_delegate =
         std::make_unique<TestShellDelegate>();
     shell_delegate->set_channel(version_info::Channel::BETA);
-    AshTestBase::SetUp(std::move(shell_delegate));
+    set_shell_delegate(std::move(shell_delegate));
+    AshTestBase::SetUp();
 
     scoped_fake_power_status_ = std::make_unique<ScopedFakePowerStatus>();
 
