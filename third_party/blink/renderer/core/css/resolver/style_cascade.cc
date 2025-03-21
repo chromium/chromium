@@ -1343,7 +1343,7 @@ const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
                                                  CascadeResolver& resolver) {
   const CascadePriority* p = map_.FindRevertLayer(
       property.GetCSSPropertyName(), priority.ForLayerComparison());
-  if (!p) {
+  if (!p || !p->HasOrigin()) {
     origin = CascadeOrigin::kNone;
     return cssvalue::CSSUnsetValue::Create();
   }
