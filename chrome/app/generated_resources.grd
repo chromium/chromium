@@ -11507,6 +11507,18 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_SEARCH_TAB_NAME" desc="The tab title for tab search in the tab search bubble">
         Search
       </message>
+      <if expr="use_titlecase">
+        <then>
+          <message name="IDS_TAB_SEARCH_MENU" desc="In Title Case: The text label for the tab search app menu item">
+            Tab Search
+          </message>
+        </then>
+        <else>
+          <message name="IDS_TAB_SEARCH_MENU" desc="The text label for the tab search menu item">
+            Tab search
+          </message>
+        </else>
+      </if>
       <message name="IDS_TAB_ORGANIZATION_TAB_NAME" desc="The tab title for tab organization in the tab search bubble">
         Organize
       </message>
