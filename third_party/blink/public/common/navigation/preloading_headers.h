@@ -31,6 +31,10 @@ inline constexpr char kSecPurposePrefetchPrerenderPreviewHeaderValue[] =
 // The Chromium specific header equivalent for 'Sec-Purpose':
 inline constexpr char kPurposeHeaderName[] = "Purpose";
 
+// For more info see
+// https://wicg.github.io/nav-speculation/prefetch.html#sec-speculation-tags-header
+inline constexpr char kSecSpeculationTagsHeaderName[] = "Sec-Speculation-Tags";
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_NAVIGATION_PRELOADING_HEADERS_H_

@@ -4230,6 +4230,10 @@
       name: "SpeculationRulesPrefetchWithSubresources",
     },
     {
+      name: "SpeculationRulesTag",
+      status: "experimental",
+    },
+    {
       // Enables to run prerendering for new tabs (e.g., target="_blank").
       // See https://crbug.com/1350676.
       name: "SpeculationRulesTargetHint",

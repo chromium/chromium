@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
 #include "content/common/features.h"
 #include "content/public/browser/document_user_data.h"
@@ -71,6 +72,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
                    const PrefetchType& prefetch_type,
                    const PreloadingPredictor& enacting_predictor,
                    const blink::mojom::Referrer& referrer,
+                   SpeculationRulesTags&& speculation_rules_tags,
                    const network::mojom::NoVarySearchPtr& no_vary_search_hint,
                    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info);
 

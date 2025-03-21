@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
 
@@ -18,7 +18,8 @@ SpeculationRule::SpeculationRule(
     std::optional<network::mojom::ReferrerPolicy> referrer_policy,
     mojom::blink::SpeculationEagerness eagerness,
     network::mojom::blink::NoVarySearchPtr no_vary_search_hint,
-    mojom::blink::SpeculationInjectionType injection_type)
+    mojom::blink::SpeculationInjectionType injection_type,
+    std::optional<AtomicString> tag)
     : urls_(std::move(urls)),
       predicate_(predicate),
       requires_anonymous_client_ip_(requires_anonymous_client_ip),
@@ -26,7 +27,8 @@ SpeculationRule::SpeculationRule(
       referrer_policy_(referrer_policy),
       eagerness_(eagerness),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
-      injection_type_(injection_type) {}
+      injection_type_(injection_type),
+      tag_(std::move(tag)) {}
 
 SpeculationRule::~SpeculationRule() = default;
 
