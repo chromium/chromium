@@ -141,11 +141,13 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       FontSelectionRange wght_range = {
           FontSelectionValue(wght_parameters->min),
           FontSelectionValue(wght_parameters->max)};
-      weight_coordinate = {
-          kWghtTag,
-          SkFloatToScalar(wght_range.clampToRange(selection_request.weight))};
-      synthetic_bold = bold && wght_range.maximum < kBoldThreshold &&
-                       selection_request.weight >= kBoldThreshold;
+      if (wght_range.IsValid()) {
+        weight_coordinate = {
+            kWghtTag,
+            SkFloatToScalar(wght_range.clampToRange(selection_request.weight))};
+        synthetic_bold = bold && wght_range.maximum < kBoldThreshold &&
+                         selection_request.weight >= kBoldThreshold;
+      }
     }
 
     SkFontArguments::VariationPosition::Coordinate width_coordinate = {
@@ -157,9 +159,11 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       FontSelectionRange wdth_range = {
           FontSelectionValue(wdth_parameters->min),
           FontSelectionValue(wdth_parameters->max)};
-      width_coordinate = {
-          kWdthTag,
-          SkFloatToScalar(wdth_range.clampToRange(selection_request.width))};
+      if (wdth_range.IsValid()) {
+        width_coordinate = {
+            kWdthTag,
+            SkFloatToScalar(wdth_range.clampToRange(selection_request.width))};
+      }
     }
     // CSS and OpenType have opposite definitions of direction of slant
     // angle. In OpenType positive values turn counter-clockwise, negative
@@ -175,11 +179,13 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
       FontSelectionRange slnt_range = {
           FontSelectionValue(slnt_parameters->min),
           FontSelectionValue(slnt_parameters->max)};
-      slant_coordinate = {
-          kSlntTag,
-          SkFloatToScalar(slnt_range.clampToRange(-selection_request.slope))};
-      synthetic_italic = italic && slnt_range.maximum < kItalicSlopeValue &&
-                         selection_request.slope >= kItalicSlopeValue;
+      if (slnt_range.IsValid()) {
+        slant_coordinate = {
+            kSlntTag,
+            SkFloatToScalar(slnt_range.clampToRange(-selection_request.slope))};
+        synthetic_italic = italic && slnt_range.maximum < kItalicSlopeValue &&
+                           selection_request.slope >= kItalicSlopeValue;
+      }
     }
 
     variation.push_back(weight_coordinate);
