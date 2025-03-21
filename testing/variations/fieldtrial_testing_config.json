@@ -11791,6 +11791,22 @@
             ]
         }
     ],
+    "IOSChromnientEscapeHatch": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_iOSLensOverlayEscapeHatchTip",
+                        "LensOverlayEnableLVFEscapeHatch"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSCriteriaExperimentEnabled": [
         {
             "platforms": [
