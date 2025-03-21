@@ -46,6 +46,7 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
@@ -187,10 +188,10 @@ void ManagementApiUnitTest::TearDown() {
 // Test the basic parts of management.setEnabled.
 TEST_F(ManagementApiUnitTest, ManagementSetEnabled) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   scoped_refptr<const Extension> source_extension =
       ExtensionBuilder("Test").Build();
-  service()->AddExtension(source_extension.get());
+  registrar()->AddExtension(source_extension.get());
   const ExtensionId& extension_id = extension->id();
   auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
   function->set_extension(source_extension);
@@ -248,11 +249,11 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {
                       .SetLocation(ManifestLocation::kInternal)
                       .Build();
 
-  service()->AddExtension(component.get());
-  service()->AddExtension(component2.get());
-  service()->AddExtension(policy.get());
-  service()->AddExtension(policy2.get());
-  service()->AddExtension(internal.get());
+  registrar()->AddExtension(component.get());
+  registrar()->AddExtension(component2.get());
+  registrar()->AddExtension(policy.get());
+  registrar()->AddExtension(policy2.get());
+  registrar()->AddExtension(internal.get());
 
   auto extension_can_disable_extension =
       [this](scoped_refptr<const Extension> source_extension,
@@ -302,10 +303,10 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
                       .SetLocation(ManifestLocation::kInternal)
                       .Build();
 
-  service()->AddExtension(component.get());
-  service()->AddExtension(policy.get());
-  service()->AddExtension(policy2.get());
-  service()->AddExtension(internal.get());
+  registrar()->AddExtension(component.get());
+  registrar()->AddExtension(policy.get());
+  registrar()->AddExtension(policy2.get());
+  registrar()->AddExtension(internal.get());
   service()->DisableExtensionWithSource(
       component.get(), policy->id(), disable_reason::DISABLE_BLOCKED_BY_POLICY);
 
@@ -343,7 +344,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
   // To test default behavior we test calling from a WebUI context, akin to what
   // we would get from the extension management page.
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   const ExtensionId& extension_id = extension->id();
 
   base::Value::List uninstall_args;
@@ -383,7 +384,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
         ScopedTestDialogAutoConfirm::CANCEL);
     ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
 
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     scoped_refptr<ExtensionFunction> function =
         base::MakeRefCounted<ManagementUninstallFunction>();
     function->set_source_context_type(mojom::ContextType::kWebUi);
@@ -438,7 +439,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
   scoped_refptr<const Extension> triggering_extension =
       ExtensionBuilder("Test").SetID(extensions::kWebStoreAppId).Build();
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   const ExtensionId& extension_id = extension->id();
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
@@ -493,7 +494,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
 // Tests management.uninstall from the new Webstore domain.
 TEST_F(ManagementApiUnitTest, ManagementUninstallNewWebstore) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   const ExtensionId& extension_id = extension->id();
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
@@ -529,7 +530,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallProgramatic) {
   scoped_refptr<const Extension> triggering_extension =
       ExtensionBuilder("Triggering Extension").SetID("123").Build();
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   const ExtensionId& extension_id = extension->id();
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
@@ -561,7 +562,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallProgramatic) {
 // Tests uninstalling a blocklisted extension via management.uninstall.
 TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   const ExtensionId& id = extension->id();
 
   service()->BlocklistExtensionForTest(id);
@@ -580,7 +581,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
 
 TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlocklisted) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   const ExtensionId& id = extension->id();
 
   service()->BlocklistExtensionForTest(id);
@@ -614,7 +615,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
   using ExtensionInfo = api::management::ExtensionInfo;
 
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   const std::string args =
       base::StringPrintf("[\"%s\"]", extension->id().c_str());
@@ -685,7 +686,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
   using ExtensionInfo = api::management::ExtensionInfo;
 
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   const std::string args =
       base::StringPrintf("[\"%s\"]", extension->id().c_str());
@@ -901,7 +902,7 @@ TEST_F(ManagementApiUnitTestMV2DisableWithReEnableUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test").SetManifestVersion(2).Build();
   const ExtensionId& extension_id = extension->id();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   service()->DisableExtension(
       extension_id, disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
 
@@ -1818,7 +1819,7 @@ class ManagementApiSupervisedUserTestWithSetup
 
     // Add a generic extension.
     extension_ = ExtensionBuilder("Test").Build();
-    service()->AddExtension(extension_.get());
+    registrar()->AddExtension(extension_.get());
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_->id()));
   }
 

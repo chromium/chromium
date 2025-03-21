@@ -71,6 +71,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_error_test_util.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_util.h"
@@ -209,12 +210,12 @@ void RemoveUserSpecifiedSites(Profile* profile,
 }
 
 void AddExtensionAndGrantPermissions(Profile* profile,
-                                     ExtensionService* service,
+                                     ExtensionRegistrar* registrar,
                                      const Extension& extension) {
   PermissionsUpdater updater(profile);
   updater.InitializePermissions(&extension);
   updater.GrantActivePermissions(&extension);
-  service->AddExtension(&extension);
+  registrar->AddExtension(&extension);
 }
 
 void RunAddHostPermission(Profile* profile,
@@ -521,7 +522,7 @@ const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
           .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(id)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   return extension.get();
 }
 
@@ -1776,7 +1777,7 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileUserScript) {
 TEST_F(DeveloperPrivateApiUnitTest, GrantHostPermission) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
@@ -1829,7 +1830,7 @@ TEST_F(DeveloperPrivateApiUnitTest, GrantHostPermission) {
 TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
@@ -1903,7 +1904,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
 TEST_F(DeveloperPrivateApiUnitTest, UpdateHostAccess) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser()->profile());
@@ -1923,7 +1924,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_SpecificSitesRemovedOnTransitionToOnClick) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
 
@@ -1969,7 +1970,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_SpecificSitesRemovedOnTransitionToAllSites) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
 
@@ -1998,7 +1999,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_BroadPermissionsRemovedOnTransitionToSpecificSites) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
 
@@ -2043,7 +2044,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_GrantScopeGreaterThanRequestedScope) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("http://*/*").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
 
@@ -2105,7 +2106,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
        UpdateHostAccess_UnrequestedHostsDispatchUpdateEvents) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("http://google.com/*").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
 
@@ -2516,8 +2517,8 @@ TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
           .AddHostPermission("http://www.asdf.com/")
           .AddHostPermission("http://localhost:8080/")
           .Build();
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_1);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_2);
 
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
@@ -2593,9 +2594,9 @@ TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
 
   scoped_refptr<const Extension> extension_3 =
       ExtensionBuilder("all_urls").AddHostPermission("<all_urls>").Build();
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_3);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_1);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_2);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_3);
 
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateGetUserAndExtensionSitesByEtldFunction>();
@@ -2649,7 +2650,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
        DeveloperPrivateGetUserAndExtensionSitesByEtld_RuntimeGrantedHosts) {
   scoped_refptr<const Extension> extension_1 =
       ExtensionBuilder("runtime_hosts").AddHostPermission("<all_urls>").Build();
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_1);
 
   auto get_user_and_extension_sites = [this](const std::string& expected_json) {
     auto function = base::MakeRefCounted<
@@ -2687,7 +2688,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   scoped_refptr<const Extension> extension_2 =
       ExtensionBuilder("test").AddHostPermission(kExampleCom).Build();
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_2);
 
   get_user_and_extension_sites(R"([{
     "etldPlusOne": "example.com",
@@ -2773,8 +2774,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
       ExtensionBuilder("test_2")
           .AddHostPermission("*://images.google.com/")
           .Build();
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_1);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_2);
 
   std::vector<developer::MatchingExtensionInfo> infos;
   GetMatchingExtensionsForSite(profile(), "http://none.com/", &infos);
@@ -2809,7 +2810,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
-  AddExtensionAndGrantPermissions(profile(), service(), *extension);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension);
 
   std::vector<developer::MatchingExtensionInfo> infos;
   GetMatchingExtensionsForSite(profile(), "http://example.com/", &infos);
@@ -2857,7 +2858,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
           .AddHostPermission("*://b.example.com/*")
           .AddHostPermission("http://google.com/*")
           .Build();
-  AddExtensionAndGrantPermissions(profile(), service(), *extension);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension);
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
@@ -2920,7 +2921,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
           .AddHostPermission("*://*.example.com/*")
           .AddHostPermission("*://*.google.com/*")
           .Build();
-  AddExtensionAndGrantPermissions(profile(), service(), *extension);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension);
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension));
@@ -2997,8 +2998,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
       ExtensionBuilder("test_1").AddHostPermission("<all_urls>").Build();
   scoped_refptr<const Extension> extension_2 =
       ExtensionBuilder("test_2").AddHostPermission("<all_urls>").Build();
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_1);
-  AddExtensionAndGrantPermissions(profile(), service(), *extension_2);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_1);
+  AddExtensionAndGrantPermissions(profile(), registrar(), *extension_2);
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   EXPECT_FALSE(permissions_manager->HasWithheldHostPermissions(*extension_1));
@@ -3026,8 +3027,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveMultipleExtensions) {
       ExtensionBuilder("test_1").Build();
   scoped_refptr<const Extension> extension_2 =
       ExtensionBuilder("test_2").Build();
-  service()->AddExtension(extension_1.get());
-  service()->AddExtension(extension_2.get());
+  registrar()->AddExtension(extension_1.get());
+  registrar()->AddExtension(extension_2.get());
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_1->id()));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_2->id()));
 
@@ -3056,8 +3057,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
       ExtensionBuilder("test_1").Build();
   scoped_refptr<const Extension> extension_2 =
       ExtensionBuilder("test_2").Build();
-  service()->AddExtension(extension_1.get());
-  service()->AddExtension(extension_2.get());
+  registrar()->AddExtension(extension_1.get());
+  registrar()->AddExtension(extension_2.get());
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_1->id()));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_2->id()));
 
@@ -3087,8 +3088,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveComponentExtensions) {
           .Build();
   scoped_refptr<const Extension> test_extension =
       ExtensionBuilder("test_extension").Build();
-  service()->AddExtension(component_extension.get());
-  service()->AddExtension(test_extension.get());
+  registrar()->AddExtension(component_extension.get());
+  registrar()->AddExtension(test_extension.get());
 
   EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
 
@@ -3128,8 +3129,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
           .Build();
   scoped_refptr<const Extension> test_extension =
       ExtensionBuilder("test_extension").Build();
-  service()->AddExtension(enterprise_extension.get());
-  service()->AddExtension(test_extension.get());
+  registrar()->AddExtension(enterprise_extension.get());
+  registrar()->AddExtension(test_extension.get());
 
   EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
 
@@ -3178,7 +3179,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   TestEventRouterObserver test_observer(event_router);
 
   scoped_refptr<const Extension> extension = ExtensionBuilder("test").Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
 
   // The event router fetches icons from a blocking thread when sending the
@@ -3376,7 +3377,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
   // Add an extension that is affected by the MV2 deprecation.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("ext").SetManifestVersion(2).Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
@@ -3402,7 +3403,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
   // Add an extension that is not affected by the MV2 deprecation.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("ext").SetManifestVersion(3).Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
   auto dismiss_notice_function = base::MakeRefCounted<
@@ -3446,7 +3447,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,
   // Add an extension that is affected by the MV2 deprecation.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("ext").SetManifestVersion(2).Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
@@ -3522,7 +3523,7 @@ class DeveloperPrivateApiTransportModeUnitTest
             .SetLocation(mojom::ManifestLocation::kInternal)
             .Build();
     EXPECT_TRUE(sync_util::ShouldSync(profile(), syncable_extension.get()));
-    service()->AddExtension(syncable_extension.get());
+    registrar()->AddExtension(syncable_extension.get());
 
     return syncable_extension;
   }
@@ -3594,7 +3595,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
           .SetLocation(mojom::ManifestLocation::kUnpacked)
           .Build();
   EXPECT_FALSE(sync_util::ShouldSync(profile(), unsyncable_extension.get()));
-  service()->AddExtension(unsyncable_extension.get());
+  registrar()->AddExtension(unsyncable_extension.get());
 
   // Sign the user in without full sync.
   signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());

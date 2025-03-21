@@ -194,6 +194,7 @@
 #include "extensions/browser/app_window/app_window_contents.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -562,6 +563,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     extension_service_->Init();
 
     DCHECK(profile());
+    extension_registrar_ = extensions::ExtensionRegistrar::Get(profile());
     extension_registry_ = extensions::ExtensionRegistry::Get(profile());
     app_service_test_.SetUp(profile());
     app_registry_cache_observer_.Observe(
@@ -609,7 +611,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     arc_support_host_ = Extension::Create(
         base::FilePath(), ManifestLocation::kUnpacked, manifest,
         Extension::NO_FLAGS, arc::kPlayStoreAppId, &error);
-    extension_service_->AddExtension(extension_chrome_.get());
+    extension_registrar_->AddExtension(extension_chrome_.get());
 
     if (StartWebAppProviderForMainProfile()) {
       StartWebAppProvider(profile());
@@ -678,13 +680,13 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     // Assume all applications have been added already.
     AddWebApp(ash::kGoogleDocsAppId);
     AddWebApp(ash::kGmailAppId);
-    extension_service_->AddExtension(extension1_.get());
-    extension_service_->AddExtension(extension2_.get());
-    extension_service_->AddExtension(extension5_.get());
-    extension_service_->AddExtension(extension6_.get());
-    extension_service_->AddExtension(extension7_.get());
-    extension_service_->AddExtension(extension8_.get());
-    extension_service_->AddExtension(extension_platform_app_.get());
+    extension_registrar_->AddExtension(extension1_.get());
+    extension_registrar_->AddExtension(extension2_.get());
+    extension_registrar_->AddExtension(extension5_.get());
+    extension_registrar_->AddExtension(extension6_.get());
+    extension_registrar_->AddExtension(extension7_.get());
+    extension_registrar_->AddExtension(extension8_.get());
+    extension_registrar_->AddExtension(extension_platform_app_.get());
     // There should be nothing in the list by now.
     EXPECT_EQ("Chrome", GetPinnedAppStatus());
 
@@ -1211,7 +1213,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   // Add extension.
   void AddExtension(const Extension* extension) {
-    extension_service_->AddExtension(extension);
+    extension_registrar_->AddExtension(extension);
   }
 
   // Uninstall extension.
@@ -1341,6 +1343,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   // |item_delegate_manager_| owns |test_controller_|.
   raw_ptr<ash::ShelfItemDelegate, DanglingUntriaged> test_controller_ = nullptr;
+
+  raw_ptr<extensions::ExtensionRegistrar, DanglingUntriaged>
+      extension_registrar_ = nullptr;
 
   raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged>
       extension_registry_ = nullptr;
@@ -1759,7 +1764,7 @@ TEST_F(ChromeShelfControllerTest, PreinstalledApps) {
 
   // Pinning the non-preinstalled app. It should appear at the end. No
   // preinstalled app is currently installed.
-  extension_service_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension1_.get());
   PinAppWithIDToShelf(extension1_->id());
   EXPECT_EQ("Chrome, App1", GetPinnedAppStatus());
 
@@ -1812,8 +1817,8 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
 
   InitShelfController();
 
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension2_.get());
   AddWebApp(ash::kGmailAppId);
 
   // extension 1, 3 are pinned by user
@@ -1951,8 +1956,8 @@ TEST_F(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
       });
 
   InstallExternalWebApp(GetWebAppUrl(ash::kGmailAppId));
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension5_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension5_.get());
   // extension 1, 3 are pinned by user
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, extension1_->id());
@@ -2723,7 +2728,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcWindowRecreation) {
 // test verifies that dynamic change of app item controllers is safe. See more
 // crbug.com/770005.
 TEST_F(ChromeShelfControllerWithArcTest, OverrideAppItemController) {
-  extension_service_->AddExtension(arc_support_host_.get());
+  extension_registrar_->AddExtension(arc_support_host_.get());
 
   InitShelfController();
 
@@ -2830,8 +2835,8 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPin) {
       ArcAppTest::GetAppId(*arc_test_.fake_apps()[0]);
 
   SendListOfArcApps();
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension2_.get());
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
 
@@ -2888,8 +2893,8 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinOptOutOptIn) {
       ArcAppTest::GetAppId(*arc_test_.fake_apps()[1]);
 
   SendListOfArcApps();
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension2_.get());
 
   PinAppWithIDToShelf(extension1_->id());
   PinAppWithIDToShelf(arc_app_id2);
@@ -3466,7 +3471,7 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   // Install some apps.
   InstallSystemWebApp(std::make_unique<CameraSystemAppDelegate>(profile()));
 
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension2_.get());
 
   AddWebApp(ash::kYoutubeAppId);
 
@@ -3558,7 +3563,7 @@ TEST_F(ChromeShelfControllerTest, UnpinWithUninstall) {
 }
 
 TEST_F(ChromeShelfControllerTest, SyncUpdates) {
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension2_.get());
   AddWebApp(ash::kGmailAppId);
   AddWebApp(ash::kGoogleDocsAppId);
 
@@ -3626,7 +3631,7 @@ TEST_F(ChromeShelfControllerTest, SyncUpdates) {
 }
 
 TEST_F(ChromeShelfControllerTest, PendingInsertionOrder) {
-  extension_service_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension1_.get());
   AddWebApp(ash::kGmailAppId);
 
   InitShelfController();
@@ -4174,7 +4179,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
       multi_user_util::GetAccountIdFromProfile(profile2));
 
   const std::string app_id = extension1_->id();
-  extension_service_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension1_.get());
 
   EXPECT_EQ(1, model_->item_count());
   EXPECT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
@@ -4589,7 +4594,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ArcManaged) {
-  extension_service_->AddExtension(arc_support_host_.get());
+  extension_registrar_->AddExtension(arc_support_host_.get());
   // Test enables ARC, so turn it off for initial values.
   EnablePlayStore(false);
 
@@ -4814,7 +4819,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, MAYBE_DefaultApps) {
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
   // Add ARC host app to enable Play Store default app.
-  extension_service_->AddExtension(arc_support_host_.get());
+  extension_registrar_->AddExtension(arc_support_host_.get());
   arc_test_.SetUp(profile());
   ArcAppListPrefs* const prefs = arc_test_.arc_app_list_prefs();
   EXPECT_TRUE(prefs->IsRegistered(arc::kPlayStoreAppId));
@@ -4840,7 +4845,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
 }
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
-  extension_service_->AddExtension(arc_support_host_.get());
+  extension_registrar_->AddExtension(arc_support_host_.get());
   arc_test_.SetUp(profile());
   ArcAppListPrefs* const prefs = arc_test_.arc_app_list_prefs();
 
@@ -4894,7 +4899,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
 }
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
-  extension_service_->AddExtension(arc_support_host_.get());
+  extension_registrar_->AddExtension(arc_support_host_.get());
   arc_test_.SetUp(profile());
 
   InitShelfController();
@@ -4936,7 +4941,7 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
 // Tests that the Play Store is not visible in AOSP image and visible in default
 // images.
 TEST_P(ChromeShelfControllerPlayStoreAvailabilityTest, Visible) {
-  extension_service_->AddExtension(arc_support_host_.get());
+  extension_registrar_->AddExtension(arc_support_host_.get());
   arc_test_.SetUp(profile());
 
   InitShelfController();
@@ -4956,8 +4961,8 @@ TEST_P(ChromeShelfControllerPlayStoreAvailabilityTest, Visible) {
 TEST_F(ChromeShelfControllerTest, CheckPositionConflict) {
   InitShelfController();
 
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension2_.get());
   AddWebApp(ash::kGmailAppId);
 
   syncer::SyncChangeList sync_list;
@@ -5006,8 +5011,8 @@ TEST_F(ChromeShelfControllerTest, CheckPositionConflict) {
 TEST_F(ChromeShelfControllerTest, SyncOffLocalUpdate) {
   InitShelfController();
 
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension2_.get());
 
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, app_constants::kChromeAppId);
@@ -5094,8 +5099,8 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
 
   InitShelfControllerWithBrowser();
 
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension2_.get());
 
   arc::mojom::AppInfoPtr appinfo =
       CreateAppInfo("Some App", "SomeActivity", "com.example.app");
@@ -5147,8 +5152,8 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
 
   InitShelfControllerWithBrowser();
 
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension2_.get());
 
   arc::mojom::AppInfoPtr appinfo =
       CreateAppInfo("Some App", "SomeActivity", "com.example.app");
@@ -5278,8 +5283,8 @@ TEST_F(ChromeShelfControllerWithArcTest, ReplacePinnedItem) {
   const std::string arc_app_id2 =
       ArcAppTest::GetAppId(*arc_test_.fake_apps()[1]);
 
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension2_.get());
 
   PinAppWithIDToShelf(extension1_->id());
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
@@ -5327,8 +5332,8 @@ TEST_F(ChromeShelfControllerWithArcTest, PinAtIndex) {
   const std::string arc_app_id2 =
       ArcAppTest::GetAppId(*arc_test_.fake_apps()[1]);
 
-  extension_service_->AddExtension(extension1_.get());
-  extension_service_->AddExtension(extension2_.get());
+  extension_registrar_->AddExtension(extension1_.get());
+  extension_registrar_->AddExtension(extension2_.get());
 
   int index = 0;
   shelf_controller_->PinAppAtIndex(extension1_->id(), index);
