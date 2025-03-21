@@ -257,6 +257,13 @@ SyncStatusLabels GetSyncStatusLabelsForSettings(
     const syncer::SyncService* service) {
   // Check to see if sync has been disabled via the dashboard and needs to be
   // set up once again.
+  if (!service) {
+    // This can happen if Sync is disabled via the command line.
+    return {SyncStatusMessageType::kPreSynced, IDS_SYNC_EMPTY_STRING,
+            IDS_SYNC_EMPTY_STRING, IDS_SYNC_EMPTY_STRING,
+            SyncStatusActionType::kNoAction};
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (service->GetUserSettings()->IsSyncFeatureDisabledViaDashboard()) {
     return {SyncStatusMessageType::kSyncError,
