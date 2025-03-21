@@ -78,6 +78,11 @@ enum class AuthenticationFlowInProfileState {
   NSArray<NSString*>* _userAffiliationIDs;
   // Capabilities fetcher for the subsequent History Sync Opt-In screen.
   HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
+
+  // The lifetime of this ScopedClosureRunner denotes a batch of primary account
+  // changes. UI listens to batched changes to avoid visual artifacts during an
+  // account switch.
+  base::ScopedClosureRunner _accountSwitchingBatchClosureRunner;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -254,6 +259,10 @@ enum class AuthenticationFlowInProfileState {
       AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin);
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(profile);
+    _accountSwitchingBatchClosureRunner =
+        identityManager->StartBatchOfPrimaryAccountChanges();
     [_performer signOutForAccountSwitchWithProfile:profile];
     return;
   }
@@ -395,6 +404,7 @@ enum class AuthenticationFlowInProfileState {
 }
 
 - (void)cleanupBeforeDoneStep {
+  _accountSwitchingBatchClosureRunner.RunAndReset();
   // Clean up asynchronously to ensure that `self` does not die while
   // the flow is running.
   CHECK([NSThread isMainThread], base::NotFatalUntil::M138);
