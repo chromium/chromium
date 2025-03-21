@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.messages;
+package org.chromium.ui.util;
 
 import static org.mockito.Mockito.verify;
 
@@ -19,16 +19,16 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 
-/** Unit tests for {@link MessageAutoDismissTimer}. */
+/** Unit tests for {@link RunnableTimer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class MessageAutoDismissTimerTest {
+public class RunnableTimerTest {
     /** Ensure Runnable has been called by an active timer. */
     @Test
     @SmallTest
     public void testStartTimer() throws Exception {
         CallbackHelper callbackHelper = new CallbackHelper();
         long duration = 1;
-        MessageAutoDismissTimer timer = new MessageAutoDismissTimer();
+        RunnableTimer timer = new RunnableTimer();
         timer.startTimer(duration, callbackHelper::notifyCalled);
         // Not flushing will make the looper blocked.
         Robolectric.flushForegroundThreadScheduler();
@@ -41,7 +41,7 @@ public class MessageAutoDismissTimerTest {
     public void testCancelTimer() {
         Handler h = Mockito.mock(Handler.class);
         long duration = 1;
-        MessageAutoDismissTimer timer = new MessageAutoDismissTimer();
+        RunnableTimer timer = new RunnableTimer();
         timer.setHandlerForTesting(h);
         Runnable r = () -> {};
         timer.startTimer(duration, r);
@@ -61,7 +61,7 @@ public class MessageAutoDismissTimerTest {
     public void testResetTimer() {
         Handler h = Mockito.mock(Handler.class);
         long duration = 1;
-        MessageAutoDismissTimer timer = new MessageAutoDismissTimer();
+        RunnableTimer timer = new RunnableTimer();
         timer.setHandlerForTesting(h);
         Runnable r = () -> {};
         timer.startTimer(duration, r);

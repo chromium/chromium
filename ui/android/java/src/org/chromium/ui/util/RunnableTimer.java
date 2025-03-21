@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.messages;
+package org.chromium.ui.util;
 
 import android.os.Handler;
 
@@ -10,20 +10,22 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** Auto dismiss timer for messages. */
+/**
+ * A timer that executes a {@link Runnable} after a specified duration. The timer can be reset to
+ * postpone the execution or cancelled to prevent it.
+ */
 @NullMarked
-class MessageAutoDismissTimer {
+public class RunnableTimer {
     private long mDuration;
     private @Nullable Runnable mRunnableOnTimeUp;
     private Handler mAutoDismissTimer;
 
-    /** @param duration Duration in mills. */
-    public MessageAutoDismissTimer() {
+    public RunnableTimer() {
         mAutoDismissTimer = new Handler(ThreadUtils.getUiThreadLooper());
     }
 
     /** Reset the timer. Do nothing if this timer has been cancelled already. */
-    void resetTimer() {
+    public void resetTimer() {
         if (mRunnableOnTimeUp == null) return;
         Runnable runnable = mRunnableOnTimeUp;
         cancelTimer();
@@ -31,14 +33,22 @@ class MessageAutoDismissTimer {
     }
 
     /** Cancel the timer. The registered runnable will not be run. */
-    void cancelTimer() {
+    public void cancelTimer() {
         if (mRunnableOnTimeUp == null) return;
         mAutoDismissTimer.removeCallbacksAndMessages(null);
         mRunnableOnTimeUp = null;
     }
 
-    /** @param runnableOnTimeUp Runnable called when time is up. */
-    void startTimer(long duration, Runnable runnableOnTimeUp) {
+    /**
+     * Starts the timer.
+     *
+     * <p>The provided {@link Runnable} will be executed after the specified duration. If a timer
+     * was already running, it will be cancelled before the new one starts.
+     *
+     * @param duration The time (in milliseconds) to wait.
+     * @param runnableOnTimeUp Executed when the timer expires.
+     */
+    public void startTimer(long duration, Runnable runnableOnTimeUp) {
         mDuration = duration;
         assert mDuration > 0;
         mRunnableOnTimeUp = runnableOnTimeUp;

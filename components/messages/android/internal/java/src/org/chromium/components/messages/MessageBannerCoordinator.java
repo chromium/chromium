@@ -19,6 +19,7 @@ import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.RunnableTimer;
 
 /** Coordinator responsible for creating a message banner. */
 @MockedInTests
@@ -27,7 +28,7 @@ class MessageBannerCoordinator {
     private final MessageBannerMediator mMediator;
     private final MessageBannerView mView;
     private final PropertyModel mModel;
-    private final MessageAutoDismissTimer mTimer;
+    private final RunnableTimer mTimer;
     private final Supplier<Long> mAutodismissDurationMs;
     private final Runnable mOnTimeUp;
 
@@ -71,7 +72,7 @@ class MessageBannerCoordinator {
                         messageDismissed,
                         swipeAnimationHandler);
         mAutodismissDurationMs = autodismissDurationMs;
-        mTimer = new MessageAutoDismissTimer();
+        mTimer = new RunnableTimer();
         mOnTimeUp = onTimeUp;
         view.setSwipeHandler(mMediator);
         view.setPopupMenuShownListener(
@@ -81,14 +82,14 @@ class MessageBannerCoordinator {
     /**
      * Creates a {@link PopupMenuShownListener} to handle secondary button popup menu events on the
      * message banner.
-     * @param timer The {@link MessageAutoDismissTimer} controlling the message banner dismiss
-     *         duration.
+     *
+     * @param timer The {@link RunnableTimer} controlling the message banner dismiss duration.
      * @param duration The auto dismiss duration for the message banner.
      * @param onTimeUp A {@link Runnable} that will run if and when the auto dismiss timer is up.
      */
     @VisibleForTesting
     PopupMenuShownListener createPopupMenuShownListener(
-            MessageAutoDismissTimer timer, long duration, Runnable onTimeUp) {
+            RunnableTimer timer, long duration, Runnable onTimeUp) {
         return new PopupMenuShownListener() {
             @Override
             public void onPopupMenuShown() {
