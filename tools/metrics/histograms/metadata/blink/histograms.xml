@@ -4314,6 +4314,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4335,6 +4337,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4357,6 +4361,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4380,6 +4386,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4401,6 +4409,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4422,6 +4432,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4443,6 +4455,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4465,6 +4479,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4488,6 +4504,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4509,6 +4527,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4530,6 +4550,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4552,6 +4574,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
