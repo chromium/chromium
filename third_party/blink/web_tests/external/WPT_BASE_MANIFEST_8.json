@@ -132824,6 +132824,136 @@
          ],
          {}
         ]
+       ],
+       "grid-gap-decorations-006.html": [
+        "7b1187c4e44bed68af665462107fa34d7a2cfc4a",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-006-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-007.html": [
+        "adc98e4bc03dd1305402ab33ed1c146f7f4c5718",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-007-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-008.html": [
+        "f8dc0df36e2d7a4a30576e60180647bf7b2edb94",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-008-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-009.html": [
+        "0756b9294be1daae5af190bf27235fdc23f9c5f8",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-009-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-010.html": [
+        "d9201b51cea33053cdab2d55ddb10b06acc7f629",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-010-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-011.html": [
+        "c0540398d0533e66d2f86a3aa15cf4998a4e74f4",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-011-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-012.html": [
+        "26ba45a14ff9b1526bfe44e480171e0f95a0e8a7",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-012-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-013.html": [
+        "4a056134089e58169ae0769633c30ed1ca160478",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-013-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-014.html": [
+        "97ad626e1f24cd489a4470c84118d1161b4c46e2",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-014-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-015.html": [
+        "e575c134353b2c97e16a1440e25fc5d6a28cadc9",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/tentative/grid/grid-gap-decorations-015-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       }
      }
@@ -327808,8 +327938,24 @@
       "40ccc2b044b3da3be44582522d99e5a138b6f354",
       []
      ],
+     "anchor-center-htb-htb-expected.txt": [
+      "5799ee5845acc13101d71801616a014765345350",
+      []
+     ],
+     "anchor-center-htb-vrl-expected.txt": [
+      "3791ea205c53053c9d6894003f60ea5a25b38328",
+      []
+     ],
      "anchor-center-scroll-ref.html": [
       "d2638491cef23e0c1a788801aec9a4ec848b78d4",
+      []
+     ],
+     "anchor-center-vrl-htb-expected.txt": [
+      "5799ee5845acc13101d71801616a014765345350",
+      []
+     ],
+     "anchor-center-vrl-vrl-expected.txt": [
+      "3791ea205c53053c9d6894003f60ea5a25b38328",
       []
      ],
      "anchor-name-multicol-003-expected.txt": [
@@ -327872,6 +328018,14 @@
      ],
      "position-anchor-target-with-children-ref.html": [
       "dd922b0bb218311665711ca9d14d60bdfb72ba98",
+      []
+     ],
+     "position-area-anchor-outside-expected.txt": [
+      "3b2365b84ed71f12fe4a53d0e9f0359d3361e79a",
+      []
+     ],
+     "position-area-anchor-partially-outside-expected.txt": [
+      "f361b814189209683b825dad4b8a6843a429b10f",
       []
      ],
      "position-area-inline-container-ref.html": [
@@ -345196,6 +345350,46 @@
        ],
        "grid-gap-decorations-005-ref.html": [
         "aebfba5a20e97e826e27e27c0ce962f6f675eba2",
+        []
+       ],
+       "grid-gap-decorations-006-ref.html": [
+        "f77ec2a9d43899e971dea9ee1596595561fe2bf8",
+        []
+       ],
+       "grid-gap-decorations-007-ref.html": [
+        "9d74fa00f41fd5599f8c9d4c6d32b5b69363d42b",
+        []
+       ],
+       "grid-gap-decorations-008-ref.html": [
+        "200a2621a2181d52e1a16fc6919f944ee08f0b36",
+        []
+       ],
+       "grid-gap-decorations-009-ref.html": [
+        "11d8267235b8a24a9118b0b638a9a0519e69b784",
+        []
+       ],
+       "grid-gap-decorations-010-ref.html": [
+        "747391cfedc88bd46f3a13ca8895d5bc6101a6d2",
+        []
+       ],
+       "grid-gap-decorations-011-ref.html": [
+        "c49eb95f72eff1e8ed657fbead3243abd57af908",
+        []
+       ],
+       "grid-gap-decorations-012-ref.html": [
+        "ded98fa1c8d314be49ed7a2d3159fea2d7efe0d7",
+        []
+       ],
+       "grid-gap-decorations-013-ref.html": [
+        "bd8456f525ef3cc6406658db68b893baa0352301",
+        []
+       ],
+       "grid-gap-decorations-014-ref.html": [
+        "25a930a51af81d12ebc8e5fa4dcedff31510c0dc",
+        []
+       ],
+       "grid-gap-decorations-015-ref.html": [
+        "0937a62da6f153b1df1facb3ad8b472d57339784",
         []
        ]
       }
@@ -428931,7 +429125,7 @@
     },
     "resources": {
      "utils.js": [
-      "70c97a8454cdd95ad9af78702cafb0dcc7515986",
+      "f5802aa11375a28e54ff693057b4f9c15112fe7f",
       []
      ],
      "utils_validation.js": [
@@ -486329,14 +486523,14 @@
       ]
      ],
      "anchor-center-htb-htb.html": [
-      "50fc09061073a7bcd16d9669b3fd6ad85234e783",
+      "88e01619cafad8a51e5dcea6bbb565e8cdae14e2",
       [
        null,
        {}
       ]
      ],
      "anchor-center-htb-vrl.html": [
-      "eba72d649133da882a9fa095f0433f426b54bf8e",
+      "f777a2caf8803f77283d9fe667ca29c7ecdf4fa0",
       [
        null,
        {}
@@ -486350,14 +486544,14 @@
       ]
      ],
      "anchor-center-vrl-htb.html": [
-      "8f7af0414edd4eb606e7be3437f81468696522b9",
+      "595f7ea1ecdc6fb52e86624fa6dccc7861563aa7",
       [
        null,
        {}
       ]
      ],
      "anchor-center-vrl-vrl.html": [
-      "d8e90057dc3372c5ccca659132e708c678678a56",
+      "e22391a8192e1c0909a7983b08c450f9bff219e3",
       [
        null,
        {}
@@ -487243,21 +487437,21 @@
       ]
      ],
      "position-area-anchor-outside.html": [
-      "d8fb5dbc98fa90513e339487b6e8284ca2db92bc",
+      "9b0c74170aa0f44821b28c7899011128c18c896e",
       [
        null,
        {}
       ]
      ],
      "position-area-anchor-partially-outside.html": [
-      "e23cea474787b1f613a87fdddf306aec40fb93b1",
+      "3dd537d26e09fb43bbf0fd3cd3dd30efd8b55e94",
       [
        null,
        {}
       ]
      ],
      "position-area-basic.html": [
-      "6cbaf8e50145b19a3e761f91abb7adcdb30d400d",
+      "2a568cc80281489fb54da4c48e55400d816718ab",
       [
        null,
        {}
@@ -757701,7 +757895,7 @@
       ]
      ],
      "clamp.https.any.js": [
-      "d6fa68eb19d7c7c1a28f5ce9cfade0e73e4f4e8a",
+      "b3ccdcddca306b018f64011210da3036ee66cf6f",
       [
        "webnn/conformance_tests/clamp.https.any.html?cpu",
        {
@@ -758700,7 +758894,7 @@
       ]
      ],
      "elu.https.any.js": [
-      "6b789e6308c3f289b3f290e95cb7f05f8eb3e664",
+      "09cb0a99115f4089aa82ea6bcb978e9ff6c3c853",
       [
        "webnn/conformance_tests/elu.https.any.html?cpu",
        {
@@ -760365,7 +760559,7 @@
       ]
      ],
      "hard_sigmoid.https.any.js": [
-      "cfa033ba4b024abbde8bfa154d8ba81180c0b501",
+      "b5f6fd0c97aa71d8bb75b466dd72526724681060",
       [
        "webnn/conformance_tests/hard_sigmoid.https.any.html?cpu",
        {
@@ -760476,7 +760670,7 @@
       ]
      ],
      "hard_swish.https.any.js": [
-      "6bd054b326e8fbd86856fdd9913db37db41f3416",
+      "e49ea6fd719f17aea3c58c7ed78c0bbad3685399",
       [
        "webnn/conformance_tests/hard_swish.https.any.html?cpu",
        {
@@ -761679,7 +761873,7 @@
       ]
      ],
      "leaky_relu.https.any.js": [
-      "fe950c0ed4d88cb6ca0e84d59106a22713008be3",
+      "03c8985c6c64e12b8aca59caf071493c7daefa61",
       [
        "webnn/conformance_tests/leaky_relu.https.any.html?cpu",
        {
@@ -764334,7 +764528,7 @@
       ]
      ],
      "prelu.https.any.js": [
-      "a3612715805db9f55fee1ee36dde77318900d75b",
+      "b89de832d3e4c583b13d12a29c92a62f0c01a95e",
       [
        "webnn/conformance_tests/prelu.https.any.html?cpu",
        {
@@ -765777,7 +765971,7 @@
       ]
      ],
      "relu.https.any.js": [
-      "30b797637db06896df52f95e2f735b792e41316f",
+      "16cc2a3fa67b4ffa77f2555b94e91d8d398e87ff",
       [
        "webnn/conformance_tests/relu.https.any.html?cpu",
        {
@@ -767241,7 +767435,7 @@
       ]
      ],
      "sigmoid.https.any.js": [
-      "a925f0c611076884905531ef9a3d4e52c4b118e5",
+      "287568a390ab8d49ccf0a1422c551ab79b57c1cd",
       [
        "webnn/conformance_tests/sigmoid.https.any.html?cpu",
        {
@@ -767685,7 +767879,7 @@
       ]
      ],
      "softmax.https.any.js": [
-      "f289f081b16ac90241af68566630199057fdbd4f",
+      "33c2e1db9efd23499a0ea12826916b8a8b8a69b7",
       [
        "webnn/conformance_tests/softmax.https.any.html?cpu",
        {
@@ -767796,7 +767990,7 @@
       ]
      ],
      "softplus.https.any.js": [
-      "52fce910dfebe5ac0bb9d27d8eb6303f7ed4db10",
+      "36386c03378eabe3dd2baecb2cf6c46d92cadcc1",
       [
        "webnn/conformance_tests/softplus.https.any.html?cpu",
        {
@@ -767907,7 +768101,7 @@
       ]
      ],
      "softsign.https.any.js": [
-      "21eeb6c5d817bcaf695e06f05d0ebaa65d54e554",
+      "cf06bbc4fdb8c5e57d247955ba53a5dca7597941",
       [
        "webnn/conformance_tests/softsign.https.any.html?cpu",
        {
@@ -768897,7 +769091,7 @@
       ]
      ],
      "tanh.https.any.js": [
-      "1b38d7707e859a2f8f1fdb90093dc0235a7d3e31",
+      "63b8668644a10c0f13ab8b3c19cb9a9edf29be2b",
       [
        "webnn/conformance_tests/tanh.https.any.html?cpu",
        {
