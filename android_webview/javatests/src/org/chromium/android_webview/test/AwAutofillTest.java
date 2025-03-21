@@ -3440,6 +3440,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "crbug.com/404869375")
     public void testLabelChange() throws Throwable {
         loadHTML(
                 """
