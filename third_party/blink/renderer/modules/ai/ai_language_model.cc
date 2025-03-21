@@ -19,9 +19,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_ailanguagemodelpromptdict_string.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
@@ -29,8 +29,8 @@
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_source_util.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
-#include "third_party/blink/renderer/modules/shapedetection/shape_detector.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -250,7 +250,7 @@ ToMojo(V8ImageBitmapSource* bitmap,
        ScriptState* script_state,
        ExceptionState& exception_state) {
   std::optional<SkBitmap> skia_bitmap =
-      ShapeDetector::GetBitmapFromSource(script_state, bitmap, exception_state);
+      GetBitmapFromV8ImageBitmapSource(script_state, bitmap, exception_state);
   if (!skia_bitmap) {
     return base::unexpected(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSyntaxError,

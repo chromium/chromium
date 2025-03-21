@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Transfer"/>
   <int value="19" label="Printing"/>
   <int value="20" label="WebGPU external image"/>
-  <int value="21" label="Shape detector"/>
+  <int value="21" label="Copy to SkBitmap"/>
   <int value="22" label="WebGL texture upload"/>
   <int value="23" label="CreatePattern"/>
   <int value="24" label="Copy to clipboard"/>
