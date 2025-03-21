@@ -24,6 +24,7 @@ Chromium also uses these languages to a lesser degree:
 *   [Jinja style guide](https://sites.google.com/a/chromium.org/dev/developers/jinja#TOC-Style)
     for [Jinja](https://sites.google.com/a/chromium.org/dev/developers/jinja)
     templates.
+*   [SQLite SQL style](../sql/README.md#SQL-style) for storage of cookies, etc.
 
 Regardless of the language used, please keep code
 [inclusive for all contributors](inclusive_code.md).
