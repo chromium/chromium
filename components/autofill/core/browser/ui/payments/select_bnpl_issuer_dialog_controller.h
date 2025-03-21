@@ -18,6 +18,42 @@ struct TextWithLink {
   gfx::Range offset;
 };
 
+// An enum indicating the elgibility of a BNPL issuer on the current page for
+// the Select BNPL issuer dialog.
+enum class BnplIssuerEligibilityForPage {
+  kUndefined = 0,
+  kIsEligible = 1,
+  // Note: If an issuer is not eligible due to checkout amount and lack of
+  // merchant support, then lack of merchant support takes precedence.
+  kNotEligibleIssuerDoesNotSupportMerchant = 2,
+  kNotEligibleCheckoutAmountTooLow = 3,
+  kNotEligibleCheckoutAmountTooHigh = 4,
+  kMaxValue = kNotEligibleCheckoutAmountTooHigh
+};
+
+// A struct containing a BNPL issuer and the context necessary to display it in
+// the Select BNPL issuer dialog.
+struct BnplIssuerContext {
+ public:
+  BnplIssuerContext();
+  BnplIssuerContext(BnplIssuer issuer,
+                    BnplIssuerEligibilityForPage eligibility);
+  BnplIssuerContext(const BnplIssuerContext& other);
+  BnplIssuerContext(BnplIssuerContext&&);
+  BnplIssuerContext& operator=(const BnplIssuerContext& other);
+  BnplIssuerContext& operator=(BnplIssuerContext&&);
+  ~BnplIssuerContext();
+  bool operator==(const BnplIssuerContext&) const;
+
+  // The BNPL issuer to display in the dialog.
+  BnplIssuer issuer;
+
+  // The eligibility of the BNPL issuer on the current page for the Select BNPL
+  // issuer dialog.
+  BnplIssuerEligibilityForPage eligibility =
+      BnplIssuerEligibilityForPage::kUndefined;
+};
+
 // Interface that exposes controller functionality to the
 // SelectBnplIssuerDialogView.
 class SelectBnplIssuerDialogController {
@@ -31,10 +67,10 @@ class SelectBnplIssuerDialogController {
   virtual std::u16string GetTitle() const = 0;
   virtual std::u16string GetSelectionOptionText(
       std::string_view issuer_id) const = 0;
-
-  // List of issuers to be displayed.
-  virtual const std::vector<BnplIssuer>& GetIssuers() const = 0;
-  virtual bool IssuerEligible(std::string_view issuer_id) const = 0;
+  // List of issuers with their corresponding contexts to be displayed on the
+  // Select BNPL issuer dialog.
+  virtual const std::vector<BnplIssuerContext>& GetIssuerContexts() const = 0;
+  virtual const std::string& GetAppLocale() const = 0;
 
  protected:
   virtual ~SelectBnplIssuerDialogController() = default;
