@@ -188,7 +188,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 .setSuggestionType(suggestionType)
                 .setIsDeletable(isDeletable)
                 .setIsMultiLineLabel(false)
-                .setIsBoldLabel(false)
                 .setFeatureForIph(featureForIph)
                 .setIphDescriptionText(iphDescriptionText)
                 .setCustomIconUrl(customIconUrl)
