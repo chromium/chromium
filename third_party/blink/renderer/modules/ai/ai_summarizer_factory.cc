@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
+#include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -59,7 +59,7 @@ mojom::blink::AISummarizerLength ToMojoSummarizerLength(
 
 class CreateSummarizerClient
     : public GarbageCollected<CreateSummarizerClient>,
-      public AIMojoClient<AISummarizer>,
+      public AIContextObserver<AISummarizer>,
       public mojom::blink::AIManagerCreateSummarizerClient {
  public:
   explicit CreateSummarizerClient(
@@ -69,7 +69,7 @@ class CreateSummarizerClient
       AbortSignal* signal,
       AISummarizerCreateOptions* options,
       scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : AIMojoClient(script_state, ai, resolver, signal),
+      : AIContextObserver(script_state, ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         options_(options) {
@@ -103,7 +103,7 @@ class CreateSummarizerClient
   }
 
   void Trace(Visitor* visitor) const override {
-    AIMojoClient::Trace(visitor);
+    AIContextObserver::Trace(visitor);
     visitor->Trace(ai_);
     visitor->Trace(receiver_);
     visitor->Trace(options_);

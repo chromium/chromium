@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_MOJO_CLIENT_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_MOJO_CLIENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CONTEXT_OBSERVER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CONTEXT_OBSERVER_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -15,17 +15,17 @@
 
 namespace blink {
 
-// AIMojoClient is a base class for the renderer to send a mojo IPC to the AI
-// component. It adds observers for the execution context lifecycle and the
+// AIContextObserver is a base class for the renderer to send a mojo IPC to the
+// AI component. It adds observers for the execution context lifecycle and the
 // abort signal. The resources will be freed when the execution context gets
 // destroyed or the user explicitly aborts.
 template <typename V8SessionObjectType>
-class AIMojoClient : public ContextLifecycleObserver {
+class AIContextObserver : public ContextLifecycleObserver {
  public:
-  AIMojoClient(ScriptState* script_state,
-               ExecutionContextClient* context_client,
-               ScriptPromiseResolver<V8SessionObjectType>* resolver,
-               AbortSignal* abort_signal)
+  AIContextObserver(ScriptState* script_state,
+                    ExecutionContextClient* context_client,
+                    ScriptPromiseResolver<V8SessionObjectType>* resolver,
+                    AbortSignal* abort_signal)
       : script_state_(script_state),
         context_client_(context_client),
         resolver_(resolver),
@@ -34,8 +34,8 @@ class AIMojoClient : public ContextLifecycleObserver {
     SetContextLifecycleNotifier(context_client_->GetExecutionContext());
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
-      abort_handle_ = abort_signal_->AddAlgorithm(
-          WTF::BindOnce(&AIMojoClient::OnAborted, WrapWeakPersistent(this)));
+      abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
+          &AIContextObserver::OnAborted, WrapWeakPersistent(this)));
     }
   }
 
@@ -49,7 +49,7 @@ class AIMojoClient : public ContextLifecycleObserver {
     visitor->Trace(abort_handle_);
   }
 
-  ~AIMojoClient() override = default;
+  ~AIContextObserver() override = default;
 
  protected:
   ScriptState* GetScriptState() { return script_state_; }
@@ -86,9 +86,9 @@ class AIMojoClient : public ContextLifecycleObserver {
   Member<ScriptPromiseResolver<V8SessionObjectType>> resolver_;
   Member<AbortSignal> abort_signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
-  SelfKeepAlive<AIMojoClient> keep_alive_{this};
+  SelfKeepAlive<AIContextObserver> keep_alive_{this};
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_MOJO_CLIENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CONTEXT_OBSERVER_H_
