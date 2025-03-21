@@ -712,23 +712,19 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   // Also note that if this node is ignored due to a display lock for focus
   // activation reason, we simply return false to avoid updating style & layout
   // tree for this node.
-  if (update_behavior == UpdateBehavior::kStyleAndLayout) {
-    // This update is needed in the case that this element is inside a
-    // content-visibility:hidden element which hasn't gotten a
-    // DisplayLockContext created for it yet. Without this DisplayLockContext,
-    // DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock won't find the
-    // content-visibility:hidden ancestor and will erroneously tell us that
-    // there is no DisplayLocked ancestor, which will make this method return
-    // true instead of false.
-    GetDocument().UpdateStyleAndLayoutTree();
-  }
   if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
           *this, DisplayLockActivationReason::kUserFocus)) {
     return false;
   }
   if (update_behavior == UpdateBehavior::kStyleAndLayout) {
     GetDocument().UpdateStyleAndLayoutTreeForElement(
-        this, DocumentUpdateReason::kFocus);
+        this, DocumentUpdateReason::kFocus, /*only_cv_auto=*/true);
+    // Look for ancestors with DisplayLockContext again since the previous
+    // update to style and layout may have created one.
+    if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+            *this, DisplayLockActivationReason::kUserFocus)) {
+      return false;
+    }
   } else {
     DCHECK(!NeedsStyleRecalc()) << this;
   }

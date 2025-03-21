@@ -2600,7 +2600,8 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
 }
 
 void Document::UpdateStyleAndLayoutTreeForElement(const Element* element,
-                                                  DocumentUpdateReason) {
+                                                  DocumentUpdateReason,
+                                                  bool only_cv_auto) {
   DCHECK(element);
   if (!element->InActiveDocument()) {
     // If |node| is not in the active document, we can't update its style or
@@ -2615,7 +2616,8 @@ void Document::UpdateStyleAndLayoutTreeForElement(const Element* element,
   }
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
-      element, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
+      element, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree,
+      /*include_self=*/false, /*only_cv_auto=*/only_cv_auto);
   ElementLayoutUpgrade upgrade(*element);
   UpdateStyleAndLayoutTree(upgrade);
 }
