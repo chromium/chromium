@@ -7,9 +7,19 @@ options:
 
 steps:
 # 1. Install Dependencies
-- name: 'gcr.io/cloud-builders/apt'
+- name: 'ubuntu'
   id: 'install-deps'
-  args: ['install', '-y', 'git', 'python3', 'curl', 'ninja-build', 'pkg-config', 'libnss3-dev', 'libssl-dev']
+  args:
+    - '-c'
+    - |
+        apt update -y 
+        install -y git \
+                   python3 \
+                   curl \
+                   ninja-build \ 
+                   pkg-config \
+                   libnss3-dev \
+                   libssl-dev
 
 # 2. Install Depot Tools
 - name: 'gcr.io/cloud-builders/git'
