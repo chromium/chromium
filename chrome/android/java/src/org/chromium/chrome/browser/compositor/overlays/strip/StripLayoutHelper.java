@@ -2004,31 +2004,23 @@ public class StripLayoutHelper
      * @param y The y coordinate of the position of the press event.
      */
     public void onLongPress(float x, float y) {
-        StripLayoutView stripView = getViewAtPositionX(x, true);
-        if (stripView == null || stripView instanceof StripLayoutTab) {
-            StripLayoutTab clickedTab = stripView != null ? (StripLayoutTab) stripView : null;
-            if (clickedTab != null && clickedTab.checkCloseHitTest(x, y)) {
-                clickedTab.setClosePressed(false, 0);
-                mRenderHost.requestRender();
-                showTabMenu(clickedTab);
-            } else {
-                resetResizeTimeout(false);
-
-                if (clickedTab != null
-                        && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)) {
-                    showTabContextMenu(clickedTab);
-                    mDelayedReorderView = clickedTab;
-                    mDelayedReorderInitialX = x;
-                } else {
-                    startReorderMode(x, y, clickedTab, ReorderType.START_DRAG_DROP);
-                }
-            }
-        } else {
-            StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) stripView;
-            showTabGroupContextMenu(groupTitle, /* shouldWaitForUpdate= */ false);
-            mDelayedReorderView = groupTitle;
+        resetResizeTimeout(false);
+        StripLayoutView stripView = determineClickedView(x, y, /* buttons= */ 0);
+        // If long-pressed on tab (not on close button) or group, mark for delayed reorder during
+        // drag.
+        if ((stripView instanceof StripLayoutTab clickedTab
+                        && !clickedTab.checkCloseHitTest(x, y)
+                        && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU))
+                || stripView instanceof StripLayoutGroupTitle) {
+            mDelayedReorderView = stripView;
             mDelayedReorderInitialX = x;
+        } else if (stripView == null
+                || (stripView instanceof StripLayoutTab
+                        && !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.TAB_STRIP_CONTEXT_MENU))) {
+            startReorderMode(x, y, stripView, ReorderType.START_DRAG_DROP);
         }
+        showContextMenu(stripView);
     }
 
     /**
@@ -2648,7 +2640,11 @@ public class StripLayoutHelper
         resetResizeTimeout(false);
         StripLayoutView clickedView = determineClickedView(x, y, buttons);
         if (clickedView == null) return;
-        clickedView.handleClick(time);
+        if (MotionEventUtils.isSecondaryClick(buttons)) {
+            showContextMenu(clickedView);
+        } else {
+            clickedView.handleClick(time);
+        }
     }
 
     /**
@@ -2684,6 +2680,18 @@ public class StripLayoutHelper
             } else if (button.getType() == ButtonType.TAB_CLOSE) {
                 handleCloseButtonClick((StripLayoutTab) button.getParentView(), time);
             }
+        }
+    }
+
+    private void showContextMenu(StripLayoutView clickedView) {
+        if (clickedView instanceof StripLayoutTab clickedTab
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)) {
+            showTabContextMenu(clickedTab);
+        } else if (clickedView instanceof CompositorButton button
+                && button.getType() == ButtonType.TAB_CLOSE) {
+            showTabMenu((StripLayoutTab) button.getParentView());
+        } else if (clickedView instanceof StripLayoutGroupTitle groupTitle) {
+            showTabGroupContextMenu(groupTitle, /* shouldWaitForUpdate= */ false);
         }
     }
 

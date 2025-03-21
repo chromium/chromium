@@ -2086,8 +2086,10 @@ public class StripLayoutHelperTest {
         // Initialize.
         initializeTest(false, false, 0);
         groupTabs(0, 1);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        // NTB is after group indicator and tabs.
+        mStripLayoutHelper.getNewTabButton().setDrawX(TAB_WIDTH_1 + tabs.length * TAB_WIDTH_1);
         setupForGroupContextMenu();
 
         // Long press on group title.
@@ -2152,6 +2154,9 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0);
         groupTabs(0, 1);
         setupForGroupContextMenu();
+        // NTB is after group indicator and tabs.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        mStripLayoutHelper.getNewTabButton().setDrawX(views.length * views[0].getWidth());
 
         // Long press on group title and verify drag with context menu does not start a scroll.
         // Long press on group title.
@@ -2189,6 +2194,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_CONTEXT_MENU})
     public void testOnLongPress_OnCloseButton() {
         // Initialize.
         initializeTest(false, false, 0);
@@ -2201,7 +2207,11 @@ public class StripLayoutHelperTest {
         when(mModel.getTabAt(1).getView()).thenReturn(tabView);
 
         // Long press on second tab's close button.
+        TintedCompositorButton closeButton = mock(TintedCompositorButton.class);
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
+        when(tabs[1].getCloseButton()).thenReturn(closeButton);
+        when(closeButton.getParentView()).thenReturn(tabs[1]);
+        when(closeButton.getType()).thenReturn(ButtonType.TAB_CLOSE);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
         mStripLayoutHelper.onLongPress(150f, 0f);
 
@@ -5025,6 +5035,56 @@ public class StripLayoutHelperTest {
         verify(mTabGroupModelFilter).setTabGroupCollapsed(0, false);
         // Verify we record the correct metric.
         histogramWatcher.assertExpected("Should record false, since we're expanding.");
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_CONTEXT_MENU)
+    public void testSecondaryClick() {
+        initializeTest(false, false, 0, 4);
+        // Update layout to set view draw properties
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        // Group all tabs
+        groupTabs(0, 3);
+        mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
+                mTabGroupContextMenuCoordinator);
+        mStripLayoutHelper.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+        StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // Secondary click on group indicator - show menu.
+        float viewMidX =
+                stripViews[0].getTouchTargetBounds().left
+                        + (stripViews[0].getTouchTargetBounds().right
+                                        - stripViews[0].getTouchTargetBounds().left)
+                                / 2;
+        mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY);
+        verify(mTabGroupContextMenuCoordinator).showMenu(any(), any());
+
+        // Secondary click on tab - show menu.
+        viewMidX =
+                stripViews[1].getTouchTargetBounds().left
+                        + (stripViews[1].getTouchTargetBounds().right
+                                        - stripViews[1].getTouchTargetBounds().left)
+                                / 2;
+        mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY);
+        verify(mTabContextMenuCoordinator).showMenu(any(), anyInt());
+
+        // Secondary click on tab close - show menu.
+        // Mock tab's view.
+        View tabView = new View(mActivity);
+        tabView.setLayoutParams(new MarginLayoutParams(150, 50));
+        when(mModel.getTabAt(0).getView()).thenReturn(tabView);
+        CompositorButton tabCloseButton = ((StripLayoutTab) stripViews[1]).getCloseButton();
+        viewMidX =
+                tabCloseButton.getTouchTargetBounds().left
+                        + (tabCloseButton.getTouchTargetBounds().right
+                                        - tabCloseButton.getTouchTargetBounds().left)
+                                / 2;
+        mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY);
+        assertTrue(
+                "Should show tab menu after secondary click on tab close.",
+                mStripLayoutHelper.isTabMenuShowingForTesting());
     }
 
     @Test
