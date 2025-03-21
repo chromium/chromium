@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/unexportable_keys/background_task_impl.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/service_error.h"
 #include "crypto/signature_verifier.h"
 
 namespace crypto {
@@ -26,8 +27,9 @@ namespace unexportable_keys {
 class RefCountedUnexportableSigningKey;
 
 // A `BackgroundTask` to generate a new `crypto::UnexportableSigningKey`.
-class GenerateKeyTask : public internal::BackgroundTaskImpl<
-                            std::unique_ptr<crypto::UnexportableSigningKey>> {
+class GenerateKeyTask
+    : public internal::BackgroundTaskImpl<
+          ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>> {
  public:
   GenerateKeyTask(
       std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
@@ -41,7 +43,7 @@ class GenerateKeyTask : public internal::BackgroundTaskImpl<
 // wrapped key.
 class FromWrappedKeyTask
     : public internal::BackgroundTaskImpl<
-          std::unique_ptr<crypto::UnexportableSigningKey>> {
+          ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>> {
  public:
   FromWrappedKeyTask(
       std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
@@ -51,8 +53,8 @@ class FromWrappedKeyTask
 };
 
 // A `BackgroundTask` to sign data with `crypto::UnexportableSigningKey`.
-class SignTask
-    : public internal::BackgroundTaskImpl<std::optional<std::vector<uint8_t>>> {
+class SignTask : public internal::BackgroundTaskImpl<
+                     ServiceErrorOr<std::vector<uint8_t>>> {
  public:
   SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
            base::span<const uint8_t> data,
@@ -62,7 +64,7 @@ class SignTask
 
  protected:
   bool ShouldRetryBasedOnResult(
-      const std::optional<std::vector<uint8_t>>& result) const override;
+      const ServiceErrorOr<std::vector<uint8_t>>& result) const override;
 };
 
 }  // namespace unexportable_keys

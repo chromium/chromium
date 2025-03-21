@@ -35,25 +35,6 @@ namespace {
 constexpr std::string_view kBaseTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult";
 
-ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
-MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
-  if (!key) {
-    return base::unexpected(ServiceError::kCryptoApiFailed);
-  }
-
-  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(key), UnexportableKeyId());
-}
-
-ServiceErrorOr<std::vector<uint8_t>> OptionalToServiceErrorOr(
-    std::optional<std::vector<uint8_t>> result) {
-  if (!result) {
-    return base::unexpected(ServiceError::kCryptoApiFailed);
-  }
-
-  return result.value();
-}
-
 template <class CallbackReturnType>
 ServiceErrorOr<CallbackReturnType> ReportResultMetrics(
     BackgroundTaskType task_type,
@@ -130,10 +111,9 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
     return;
   }
 
-  auto task = std::make_unique<GenerateKeyTask>(
-      std::move(key_provider), acceptable_algorithms, priority,
-      base::BindOnce(&MakeSigningKeyRefCounted)
-          .Then(std::move(callback_wrapper)));
+  auto task = std::make_unique<GenerateKeyTask>(std::move(key_provider),
+                                                acceptable_algorithms, priority,
+                                                std::move(callback_wrapper));
   task_scheduler_.PostTask(std::move(task));
 }
 
@@ -155,10 +135,9 @@ void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
     return;
   }
 
-  auto task = std::make_unique<FromWrappedKeyTask>(
-      std::move(key_provider), wrapped_key, priority,
-      base::BindOnce(&MakeSigningKeyRefCounted)
-          .Then(std::move(callback_wrapper)));
+  auto task = std::make_unique<FromWrappedKeyTask>(std::move(key_provider),
+                                                   wrapped_key, priority,
+                                                   std::move(callback_wrapper));
   task_scheduler_.PostTask(std::move(task));
 }
 
@@ -180,10 +159,9 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
   // TODO(b/263249728): deduplicate tasks with the same parameters.
   // TODO(b/263249728): implement a cache of recent signings.
   // TODO(crbug.com/400903525): expose `max_retries` as a parameter.
-  auto task = std::make_unique<SignTask>(
-      std::move(signing_key), data, priority, /*max_retries=*/0,
-      base::BindOnce(&OptionalToServiceErrorOr)
-          .Then(std::move(callback_wrapper)));
+  auto task = std::make_unique<SignTask>(std::move(signing_key), data, priority,
+                                         /*max_retries=*/0,
+                                         std::move(callback_wrapper));
   task_scheduler_.PostTask(std::move(task));
 }
 
