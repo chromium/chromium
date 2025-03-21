@@ -2087,9 +2087,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(tab_strip2->GetWidget()->HasCapture());
 }
 
-class TestDialog : public views::DialogDelegateView {
+class TabDragControllerTestDialog : public views::DialogDelegateView {
  public:
-  TestDialog() {
+  TabDragControllerTestDialog() {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetModalType(ui::mojom::ModalType::kChild);
     // Dialogs that take focus must have a name and role to pass accessibility
@@ -2099,10 +2099,11 @@ class TestDialog : public views::DialogDelegateView {
                                    ax::mojom::NameFrom::kAttribute);
   }
 
-  TestDialog(const TestDialog&) = delete;
-  TestDialog& operator=(const TestDialog&) = delete;
+  TabDragControllerTestDialog(const TabDragControllerTestDialog&) = delete;
+  TabDragControllerTestDialog& operator=(const TabDragControllerTestDialog&) =
+      delete;
 
-  ~TestDialog() override = default;
+  ~TabDragControllerTestDialog() override = default;
 
   views::View* GetInitiallyFocusedView() override { return this; }
 };
@@ -2124,7 +2125,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   // Create a web modal dialog on the first tab.
   views::Widget* dialog = constrained_window::ShowWebModalDialogViews(
-      new TestDialog, browser()->tab_strip_model()->GetWebContentsAt(0));
+      new TabDragControllerTestDialog,
+      browser()->tab_strip_model()->GetWebContentsAt(0));
 
   // Capture the initial offset of the dialog relative to the browser before
   // dragging.
