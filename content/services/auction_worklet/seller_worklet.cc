@@ -577,9 +577,9 @@ void SellerWorklet::ScoreAd(
   base::UmaHistogramCounts1000(
       "Ads.InterestGroup.Auction.NumberOfPendingScoreAdTasks",
       score_ad_tasks_.size());
-  score_ad_tasks_.emplace_front();
 
-  auto score_ad_task = score_ad_tasks_.begin();
+  // Add to end of list to make best effort attempt to maintain task order.
+  auto score_ad_task = score_ad_tasks_.emplace(score_ad_tasks_.end());
   score_ad_task->ad_metadata_json = ad_metadata_json;
   score_ad_task->bid = bid;
   score_ad_task->bid_currency = bid_currency;
@@ -760,10 +760,9 @@ void SellerWorklet::ReportResult(
                 browser_signals_other_seller->is_top_level_seller(),
             !browser_signals_component_auction_report_result_params.is_null());
 
-  report_result_tasks_.emplace_front();
-
-  auto report_result_task = report_result_tasks_.begin();
-
+  // Add to end of list to make best effort attempt to maintain task order.
+  auto report_result_task =
+      report_result_tasks_.emplace(report_result_tasks_.end());
   report_result_task->auction_ad_config_non_shared_params =
       auction_ad_config_non_shared_params;
   report_result_task->browser_signals_other_seller =
