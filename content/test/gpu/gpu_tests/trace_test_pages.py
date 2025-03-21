@@ -6,7 +6,7 @@
 # pylint: disable=too-many-lines
 
 import functools
-from typing import Any, Dict, List
+from typing import Any
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
@@ -18,7 +18,7 @@ import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 # Can be changed to functools.cache on Python 3.9+.
 @functools.lru_cache(maxsize=None)
-def _GetWebGpuCacheTestBrowserArgs() -> List[str]:
+def _GetWebGpuCacheTestBrowserArgs() -> list[str]:
   browser_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
       cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
       '--enable-features=WebGPUBlobCache',
@@ -39,10 +39,10 @@ class WebGpuCacheTracingTest():
   first_load_page: str
   # List of URLs that should be both re-navigated and/or reloaded in a
   # restarted browser to expect some cache condition.
-  cache_pages: List[str]
+  cache_pages: list[str]
   # Additional arguments to start the browser with. Defaults to the return value
   # of _GetWebGpuCacheTestBrowserArgs().
-  browser_args: List[str] = dataclasses.field(
+  browser_args: list[str] = dataclasses.field(
       default_factory=_GetWebGpuCacheTestBrowserArgs)
 
 
@@ -53,9 +53,9 @@ class SimpleTracingTest:
   # The URL to load.
   url: str
   # Additional args to start the browser with.
-  browser_args: List[str] = ct.EmptyList()
+  browser_args: list[str] = ct.EmptyList()
   # Additional test harness arguments.
-  other_args: Dict[str, Any] = ct.EmptyDict()
+  other_args: dict[str, Any] = ct.EmptyDict()
 
 
 # Inherits from PixelTestPages since a number of trace tests are just
@@ -83,7 +83,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
   ]
 
   @staticmethod
-  def WebGpuLoadReloadCachingTests(prefix: str) -> List[WebGpuCacheTracingTest]:
+  def WebGpuLoadReloadCachingTests(prefix: str) -> list[WebGpuCacheTracingTest]:
     # WebGPU load and reload caching tests.
     #   These tests load the |first_load_url|, records the number of cache
     #   entries written, then both re-navigates and restarts the browser for
@@ -165,7 +165,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
     ]
 
   @staticmethod
-  def WebGpuIncognitoCachingTests(prefix: str) -> List[WebGpuCacheTracingTest]:
+  def WebGpuIncognitoCachingTests(prefix: str) -> list[WebGpuCacheTracingTest]:
     # WebGPU incognito mode caching tests
     #   These tests load the |first_load_url| (which runs the same WebGPU code
     #   multiple times) in incognito mode, verifies that the pages had some
@@ -189,7 +189,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
 
   @staticmethod
   def WebGpuDifferentOriginCachingTests(
-      prefix: str) -> List[WebGpuCacheTracingTest]:
+      prefix: str) -> list[WebGpuCacheTracingTest]:
     # WebGPU different origin caching tests
     #   These tests load the |first_load_url| on the default origin, making sure
     #   that the load populates on-disk entries. The tests then restart the
@@ -210,7 +210,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
 
   @staticmethod
   def WebGpuCrossOriginCacheMissTests(
-      prefix: str) -> List[WebGpuCacheTracingTest]:
+      prefix: str) -> list[WebGpuCacheTracingTest]:
     # WebGPU cross origin cache miss tests.
     #   These tests load the |first_load_url| and ensure that the load
     #   populates on-disk entries. The tests then restart the browser for
@@ -233,7 +233,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
     ]
 
   @staticmethod
-  def RootSwapChainTests(prefix: str) -> List[SimpleTracingTest]:
+  def RootSwapChainTests(prefix: str) -> list[SimpleTracingTest]:
     return [
         # Check that the root swap chain claims to be opaque. A root swap chain
         # with a premultiplied alpha mode has a large negative battery impact
@@ -247,7 +247,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
 
   @staticmethod
   def MediaFoundationD3D11VideoCaptureTests(
-      prefix: str) -> List[SimpleTracingTest]:
+      prefix: str) -> list[SimpleTracingTest]:
     return [
         # Check what MediaFoundationD3D11VideoCapture works
         SimpleTracingTest(

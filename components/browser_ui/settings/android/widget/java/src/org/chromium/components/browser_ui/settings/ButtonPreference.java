@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -44,12 +42,12 @@ public class ButtonPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         Button button = (Button) holder.findViewById(R.id.button_preference);
-        assumeNonNull(button);
         button.setText(getTitle());
         button.setOnClickListener(
                 v -> {
-                    if (getOnPreferenceClickListener() != null) {
-                        getOnPreferenceClickListener().onPreferenceClick(ButtonPreference.this);
+                    var listener = getOnPreferenceClickListener();
+                    if (listener != null) {
+                        listener.onPreferenceClick(ButtonPreference.this);
                     }
                 });
     }

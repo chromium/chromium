@@ -8464,6 +8464,7 @@ domain Page
       interest-cohort
       join-ad-interest-group
       keyboard-map
+      language-detector
       local-fonts
       magnetometer
       media-playback-while-not-visible
@@ -8478,6 +8479,7 @@ domain Page
       private-state-token-redemption
       publickey-credentials-create
       publickey-credentials-get
+      rewriter
       run-ad-auction
       screen-wake-lock
       serial
@@ -8488,7 +8490,9 @@ domain Page
       speaker-selection
       storage-access
       sub-apps
+      summarizer
       sync-xhr
+      translator
       unload
       usb
       usb-unrestricted
@@ -8497,6 +8501,7 @@ domain Page
       web-printing
       web-share
       window-management
+      writer
       xr-spatial-tracking
 
   # Reason for a permissions policy feature to be disabled.

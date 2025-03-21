@@ -60,7 +60,7 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
   static std::unique_ptr<MotionEventAndroid> Create(
       base::android::ScopedInputEvent input_event,
       float pix_to_dip,
-      int y_offset_pix);
+      float y_offset_pix);
 
  private:
   MotionEventAndroidNative(base::android::ScopedInputEvent input_event,
@@ -85,11 +85,11 @@ class EVENTS_EXPORT MotionEventAndroidNative : public MotionEventAndroid {
                            bool for_touch_handle,
                            const Pointer* const pointer0,
                            const Pointer* const pointer1,
-                           int y_offset);
+                           float y_offset_pix);
 
   const base::android::ScopedInputEvent native_event_;
   // Amount of value to offset Y axis values by to accommodate for top controls.
-  int y_offset_pix_;
+  float y_offset_pix_;
 };
 
 }  // namespace ui

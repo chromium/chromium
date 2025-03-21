@@ -114,7 +114,10 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
       // browser windows, as it gets created in the new window and destroyed in
       // the old window. In these cases, tracking must be paused, as otherwise
       // the saved group will get emptied out during the move.
-      CHECK(local_tab_group_listeners_.at(change.group).IsTrackingPaused());
+      if (change.GetCreateChange()->reason() ==
+          TabGroupChange::TabGroupCreationReason::kNewGroupCreated) {
+        CHECK(local_tab_group_listeners_.at(change.group).IsTrackingPaused());
+      }
       return;
     }
 

@@ -267,6 +267,7 @@
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1175914831232945926">數字</translation>
 <translation id="1176471985365269981">不允許編輯裝置上的檔案或資料夾</translation>
+<translation id="1176864681932214421">使用 AI 製圖</translation>
 <translation id="1177073277575830464">Android 快速設定已完成。在你的 <ph name="DEVICE_TYPE" /> 上繼續設定。</translation>
 <translation id="1177440945615690056">你可在「設定」中連線至任何符合資格的流動網絡</translation>
 <translation id="1177548198167638471">不要再詢問</translation>
@@ -616,7 +617,6 @@
 <translation id="142655739075382478">已封鎖「<ph name="APP_NAME" />」</translation>
 <translation id="1427179946227469514">「文字轉語音」音調</translation>
 <translation id="1427269577154060167">國家/地區</translation>
-<translation id="1427506552622340174">按一下右鍵即可更自信地寫作、總結內容、取得定義等。此功能目前僅供部分使用者使用。</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> 授權已過期</translation>
 <translation id="1428373049397869723">您可在「搜尋工具」或其他應用程式中，透過此應用程式開啟及編輯支援的檔案。如要控制在此應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
 <translation id="1428657116642077141">你儲存咗呢個網站某個密碼嘅備註。如果要睇嗰個備註，請喺搜尋同網址列入面揀「管理密碼」。</translation>
@@ -3594,6 +3594,7 @@
 <translation id="3503995387997205657">您可還原先前的應用程式</translation>
 <translation id="3505100368357440862">購物建議</translation>
 <translation id="3507132249039706973">已開啟「標準保護功能」</translation>
+<translation id="3507650052590605702">管理密碼</translation>
 <translation id="3507888235492474624">重新掃瞄藍牙裝置</translation>
 <translation id="3508492320654304609">無法刪除您的登入資料</translation>
 <translation id="3508920295779105875">選擇另一個資料夾…</translation>
@@ -3696,6 +3697,7 @@
 <translation id="3582057310199111521">曾在欺詐網站上輸入，並於資料外洩事件中發現</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
+<translation id="3586741240886978899">你曾用於此網站</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
 <translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587279952965197737">長度不得超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
@@ -9356,6 +9358,7 @@
 <translation id="7650582458329409456">{COUNT,plural, =1{已設定 1 個指紋}other{已設定 {COUNT} 個指紋}}</translation>
 <translation id="7650677314924139716">目前嘅數據用量設定係「只限 Wi-Fi」</translation>
 <translation id="7650920359639954963">未啟用：<ph name="REASON" /></translation>
+<translation id="7651182181030187705">如要在所有裝置上使用此書籤，請驗證身分</translation>
 <translation id="7651400349472467012">有可用的即時熱點</translation>
 <translation id="7651784568388208829">Phone Hub 工作接續</translation>
 <translation id="765293928828334535">無法從這個網站新增應用程式、擴充程式及使用者指令碼</translation>
@@ -9394,6 +9397,7 @@
 <translation id="7670434942695515800">如要獲得最佳效能，請升級至最新版本。建議您在升級前先備份檔案，避免系統無法完成升級。升級開始後，Linux 將會關機。請先儲存開啟的檔案再執行後續操作。<ph name="LINK_START" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">字幕</translation>
 <translation id="7671130400130574146">使用系統標題列及邊界</translation>
+<translation id="7671139479636735732">按一下右鍵即可輕鬆將概念視覺化</translation>
 <translation id="767127784612208024">輕觸即可確認重設</translation>
 <translation id="7671472752213333268">「<ph name="EXTENSION_NAME" />」要求使用「<ph name="SCANNER_NAME" />」掃瞄。</translation>
 <translation id="7672504401554182757">選擇哪一部裝置有 <ph name="APP_NAME" /> 的密鑰</translation>
@@ -9413,6 +9417,7 @@
 <translation id="7680416688940118410">觸控螢幕校正</translation>
 <translation id="7681095912841365527">網站可以使用藍牙</translation>
 <translation id="7681597159868843240">網站通常會使用裝置的動作感應器，以提供虛擬實境或追蹤健身狀況等功能</translation>
+<translation id="7681757571815416227">如要配合 <ph name="DOMAIN" /> 設定檔使用你的裝置，機構需要取得裝置相關資料。這類資料可能包括已安裝的軟件、檔案、瀏覽器、裝置作業系統和 IP 位址等相關資料。</translation>
 <translation id="7683373461016844951">如要繼續操作，請按一下 [確定]，然後按一下 [新增使用者]，即可為您的 <ph name="DOMAIN" /> 電郵地址建立新的設定檔。</translation>
 <translation id="7683834360226457448">低視力顯示工具</translation>
 <translation id="7684212569183643648">已由管理員安裝</translation>
@@ -10194,6 +10199,7 @@
 <translation id="8217399928341212914">繼續禁止自動下載多個檔案</translation>
 <translation id="8219785583603399823">查看此商店的評分</translation>
 <translation id="822050276545350872">從此無需再等</translation>
+<translation id="8221942262855134126">管理密碼</translation>
 <translation id="8222112516148944758">分頁群組會自動儲存並同步至所有裝置</translation>
 <translation id="8222674561049363989">此檔案不是有效的文件</translation>
 <translation id="822347941086490485">正在尋找 HID 裝置…</translation>
@@ -10530,7 +10536,6 @@
 <translation id="8452105022015742247">從 Android 手機傳輸 Google 帳戶資料</translation>
 <translation id="8455775311562941553">已連接至 <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">設定預設瀏覽器</translation>
-<translation id="8456200178779628126">Google AI 可以幫手讀寫</translation>
 <translation id="845702320058262034">無法連線。請確保手機已開啟藍牙。</translation>
 <translation id="8457251154056341970">此頁面不會再顯示<ph name="MODULE_NAME" /></translation>
 <translation id="8457451314607652708">匯入書籤</translation>
@@ -10985,6 +10990,7 @@
 <translation id="8767069439158587614">顯示所有關於 <ph name="QUERY_CLUSTER_NAME" /> 嘅搜尋結果</translation>
 <translation id="8767621466733104912">自動為所有使用者更新 Chrome</translation>
 <translation id="8768049274922835860">所有人</translation>
+<translation id="8769047324653576116">如要配合機構設定檔使用裝置，機構需要取得裝置相關資料。這類資料可能包括已安裝的軟件、檔案、瀏覽器、裝置作業系統和 IP 位址等相關資料。</translation>
 <translation id="876956356450740926">執行 Developer Tools、IDE 和編輯器。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">擴充程式根目錄</translation>
 <translation id="8773535891252326047">已複製連結並突顯文字</translation>
@@ -11423,7 +11429,6 @@
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9074836595010225693">已連接 USB 滑鼠</translation>
 <translation id="9075413375877487220">「強化安全瀏覽」不信任此擴充程式。</translation>
-<translation id="9075985558450420812">輸入自訂提示或醒目顯示文字，即可製作圖像。</translation>
 <translation id="9076523132036239772">抱歉，系統無法驗證您的電郵或密碼，請先連線至網絡。</translation>
 <translation id="9076821103818989526">側面板</translation>
 <translation id="9076977315710973122">SMB 共用</translation>

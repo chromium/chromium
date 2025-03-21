@@ -160,7 +160,6 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmExtraArg) {
 TEST(MiscellaneousOperationsTest, CreateAlgorithmPassOneArg) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  v8::MaybeLocal<v8::Value> extra_arg;
   v8::Local<v8::Value> argv[] = {v8::Number::New(scope.GetIsolate(), 10)};
   EXPECT_TRUE(CreateFromFunctionAndGetSuccess(
       &scope, "(...args) => args.length === 1 && args[0] === 10",

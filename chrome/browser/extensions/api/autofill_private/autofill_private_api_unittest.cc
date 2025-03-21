@@ -363,4 +363,12 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
   ASSERT_TRUE(RunAutofillSubtest("getEmptyPayOverTimeIssuerList"));
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, SetAutofillAiOptIn) {
+  EXPECT_FALSE(autofill_client()->GetPrefs()->GetBoolean(
+      autofill::prefs::kAutofillPredictionImprovementsEnabled));
+  ASSERT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
+  EXPECT_TRUE(autofill_client()->GetPrefs()->GetBoolean(
+      autofill::prefs::kAutofillPredictionImprovementsEnabled));
+}
+
 }  // namespace

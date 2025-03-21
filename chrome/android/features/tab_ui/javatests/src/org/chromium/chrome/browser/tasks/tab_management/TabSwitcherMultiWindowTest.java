@@ -174,13 +174,13 @@ public class TabSwitcherMultiWindowTest {
                 mCta1.getTabModelSelector()
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(true)
-                        .getCount(),
+                        .getIndividualTabAndGroupCount(),
                 is(0));
         assertThat(
                 mCta2.getTabModelSelector()
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(true)
-                        .getCount(),
+                        .getIndividualTabAndGroupCount(),
                 is(1));
     }
 

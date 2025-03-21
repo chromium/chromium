@@ -215,6 +215,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1679841710523778799">Skru op for lysstyrken</translation>
 <translation id="1680659827022803830">Videoopkaldsknapper</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Du kan til enhver tid deaktivere denne funktion under Indstillinger. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Timer på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adresse: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Det aktive vindue er fastgjort til venstre.</translation>
@@ -967,6 +968,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installeret app, sat på pause</translation>
 <translation id="4228078597006700451">Styringselementerne er ikke konfigureret</translation>
 <translation id="4230560241506423345">Ny</translation>
+<translation id="4236726631849783264">En påmindelse om foreslåede handlinger</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Oversigtstilstand</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
@@ -983,7 +985,6 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4275663329226226506">Medier</translation>
 <translation id="4279490309300973883">Spejling</translation>
 <translation id="4280601795273309128">Sikkerhedsopdateringerne er afsluttet. Opgrader din enhed.</translation>
-<translation id="4281739221820540368">Opret Google-dokument</translation>
 <translation id="4283888303416325161">Angiv adgangskode som ekstra sikkerhed</translation>
 <translation id="4285498937028063278">Frigør</translation>
 <translation id="428715201724021596">Der oprettes forbindelse til profilen. Dette kan tage et par minutter.</translation>
@@ -1044,6 +1045,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4471354919263203780">Downloader talegenkendelsesfiler... <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Genstart enheden nu}=1{Genstart enheden inden for 1 sekund}one{Genstart enheden inden for # sekund}other{Genstart enheden inden for # sekunder}}</translation>
 <translation id="4472575034687746823">Kom godt i gang</translation>
+<translation id="4473489370276014885">Google Kontakter</translation>
 <translation id="4477350412780666475">Næste nummer</translation>
 <translation id="4477751544736611934">Dette kan medføre datagebyrer.
 1 enhed er forbundet.</translation>
@@ -1070,6 +1072,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4545950850562423083">Gem den aktuelle side som bogmærke</translation>
 <translation id="4548482551627849548">Flyt det aktive vindue til skrivebordet til venstre</translation>
 <translation id="4552748006424994716">Lyt kun til din mikrofon i høretelefoner med ledning for at undgå ekko.</translation>
+<translation id="4556953949326137018">Når du bruger foreslåede handlinger som f.eks. "Føj til Kalender" eller "Opret Google-dokument", sendes indholdet fra det valgte område til Google-servere for at foreslå handlinger, der er underlagt <ph name="LINK_TO_SERVICE_TERMS" />. Medtag ikke personlige, følsomme eller fortrolige oplysninger.</translation>
 <translation id="4560576029703263363">Til</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Skjul adgangskode</translation>
@@ -1153,6 +1156,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="481455355267255546">Næste</translation>
 <translation id="481749895090480684">Opgaveliste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kameraet og mikrofonen</translation>
+<translation id="4828935196674083554">Tilføjer…</translation>
 <translation id="482908187605862807">Tilgængelige apps fra Play Butik</translation>
 <translation id="4831034276697007977">Er du sikker på, at du vil deaktivere automatiske klik?</translation>
 <translation id="4835677468087803981">Skjul pinkode</translation>
@@ -1650,6 +1654,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="641817663353603351">Page Up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Ryd alle notifikationer</translation>
+<translation id="6426905245930183644">Opretter…</translation>
 <translation id="6430225033895752525">Vis indstillinger for fokus</translation>
 <translation id="643147933154517414">Færdig</translation>
 <translation id="6431865393913628856">Skærmoptagelse</translation>
@@ -1716,7 +1721,6 @@ Installeret for nylig</translation>
 <translation id="6612889377159412215">underopgave</translation>
 <translation id="6613765291890844037">Der anvendes <ph name="STORAGE_IN_USE_SIZE" /> lagerplads | <ph name="STORAGE_TOTAL_SIZE" /> i alt</translation>
 <translation id="6614169507485700968">Privatlivsskærmen er slået til</translation>
-<translation id="6618277154885124991">Opret Google-regneark</translation>
 <translation id="6622679827379792051">Konfigurer visning af din telefons apps</translation>
 <translation id="662279009180869175">Brug venstrepil og højrepil til at tilpasse størrelsen på den opdelte skærm</translation>
 <translation id="6624493541160101248">Aktuelt skrivebord: <ph name="DESK_NAME" /> Skrivebord <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>

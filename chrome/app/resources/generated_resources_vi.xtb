@@ -617,7 +617,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="142655739075382478">Đã chặn <ph name="APP_NAME" /></translation>
 <translation id="1427179946227469514">Cao độ giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="1427269577154060167">Quốc gia</translation>
-<translation id="1427506552622340174">Nhấp chuột phải để viết lách tự tin hơn, tóm tắt nội dung, tra định nghĩa và làm nhiều việc khác. Tính năng này hiện được cung cấp có giới hạn.</translation>
 <translation id="142765311413773645">Giấy phép của <ph name="APP_NAME" /> đã hết hạn</translation>
 <translation id="1428373049397869723">Bạn có thể dùng ứng dụng này trên Finder hoặc các ứng dụng khác để mở và chỉnh sửa các tệp được hỗ trợ. Để kiểm soát loại tệp mở được ứng dụng này theo mặc định, hãy <ph name="BEGIN_LINK" />tìm hiểu cách đặt ứng dụng mặc định trên thiết bị<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Bạn đã lưu một ghi chú về mật khẩu trên trang web này. Để xem ghi chú đó, hãy chọn Quản lý mật khẩu trong thanh địa chỉ và tìm kiếm.</translation>
@@ -10548,7 +10547,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8452105022015742247">Đang chuyển thông tin Tài khoản Google từ điện thoại Android của bạn</translation>
 <translation id="8455775311562941553">Đã kết nối với <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Đặt trình duyệt mặc định</translation>
-<translation id="8456200178779628126">Dùng AI của Google để được trợ giúp đọc và viết</translation>
 <translation id="845702320058262034">Không thể kết nối. Hãy đảm bảo bạn đã bật Bluetooth trên điện thoại.</translation>
 <translation id="8457251154056341970">Bạn sẽ không thấy <ph name="MODULE_NAME" /> trên trang này nữa</translation>
 <translation id="8457451314607652708">Nhập dấu trang</translation>
@@ -11443,7 +11441,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Đã kết nối chuột USB</translation>
 <translation id="9075413375877487220">Tiện ích này không được tính năng Duyệt web an toàn có tăng cường bảo vệ tin cậy.</translation>
-<translation id="9075985558450420812">Nhập một câu lệnh tuỳ chỉnh hoặc đánh dấu văn bản để tạo hình ảnh.</translation>
 <translation id="9076523132036239772">Rất tiếc, email hoặc mật khẩu của bạn không thể xác minh được. Trước tiên hãy thử kết nối với một mạng.</translation>
 <translation id="9076821103818989526">Bảng điều khiển bên</translation>
 <translation id="9076977315710973122">Chia sẻ qua SMB</translation>

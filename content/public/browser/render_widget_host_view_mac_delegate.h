@@ -51,10 +51,6 @@ enum AcceptMouseEventsOption {
 - (void)touchesCancelledWithEvent:(NSEvent*)event;
 - (void)touchesEndedWithEvent:(NSEvent*)event;
 
-// The browser process received an ACK from the renderer after it processed
-// |event|.
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed;
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed;
 - (void)rendererHandledOverscrollEvent:(const ui::DidOverscrollParams&)params;

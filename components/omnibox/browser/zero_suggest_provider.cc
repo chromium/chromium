@@ -295,6 +295,39 @@ ZeroSuggestProvider* ZeroSuggestProvider::Create(
 }
 
 // static
+AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
+    AutocompleteProvider* provider,
+    AutocompleteProviderClient* client,
+    const SearchSuggestionParser::NavigationResult& navigation) {
+  AutocompleteMatch match(provider, navigation.relevance(), false,
+                          navigation.type());
+  match.destination_url = navigation.url();
+
+  match.fill_into_edit +=
+      AutocompleteInput::FormattedStringWithEquivalentMeaning(
+          navigation.url(), url_formatter::FormatUrl(navigation.url()),
+          client->GetSchemeClassifier(), nullptr);
+
+  // Zero suggest results should always omit protocols and never appear bold.
+  auto format_types = AutocompleteMatch::GetFormatTypes(false, false);
+  match.contents = url_formatter::FormatUrl(navigation.url(), format_types,
+                                            base::UnescapeRule::SPACES, nullptr,
+                                            nullptr, nullptr);
+  match.contents_class = ClassifyTermMatches({}, match.contents.length(), 0,
+                                             ACMatchClassification::URL);
+
+  match.description =
+      AutocompleteMatch::SanitizeString(navigation.description());
+  match.description_class = ClassifyTermMatches({}, match.description.length(),
+                                                0, ACMatchClassification::NONE);
+  match.suggest_type = navigation.suggest_type();
+  for (const int subtype : navigation.subtypes()) {
+    match.subtypes.insert(SuggestSubtypeForNumber(subtype));
+  }
+  return match;
+}
+
+// static
 void ZeroSuggestProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(omnibox::kZeroSuggestCachedResults,
                                std::string());
@@ -644,36 +677,6 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
   prefetch_loader->reset();
 }
 
-AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
-    const SearchSuggestionParser::NavigationResult& navigation) {
-  AutocompleteMatch match(this, navigation.relevance(), false,
-                          navigation.type());
-  match.destination_url = navigation.url();
-
-  match.fill_into_edit +=
-      AutocompleteInput::FormattedStringWithEquivalentMeaning(
-          navigation.url(), url_formatter::FormatUrl(navigation.url()),
-          client()->GetSchemeClassifier(), nullptr);
-
-  // Zero suggest results should always omit protocols and never appear bold.
-  auto format_types = AutocompleteMatch::GetFormatTypes(false, false);
-  match.contents = url_formatter::FormatUrl(navigation.url(), format_types,
-                                            base::UnescapeRule::SPACES, nullptr,
-                                            nullptr, nullptr);
-  match.contents_class = ClassifyTermMatches({}, match.contents.length(), 0,
-                                             ACMatchClassification::URL);
-
-  match.description =
-      AutocompleteMatch::SanitizeString(navigation.description());
-  match.description_class = ClassifyTermMatches({}, match.description.length(),
-                                                0, ACMatchClassification::NONE);
-  match.suggest_type = navigation.suggest_type();
-  for (const int subtype : navigation.subtypes()) {
-    match.subtypes.insert(SuggestSubtypeForNumber(subtype));
-  }
-  return match;
-}
-
 void ZeroSuggestProvider::ConvertSuggestResultsToAutocompleteMatches(
     const SearchSuggestionParser::Results& results,
     const AutocompleteInput& input) {
@@ -716,7 +719,7 @@ void ZeroSuggestProvider::ConvertSuggestResultsToAutocompleteMatches(
   const SearchSuggestionParser::NavigationResults& nav_results(
       results.navigation_results);
   for (const auto& nav_result : nav_results) {
-    matches_.push_back(NavigationToMatch(nav_result));
+    matches_.push_back(NavigationToMatch(this, client(), nav_result));
   }
 
   // Update the suggestion groups information from the server response.

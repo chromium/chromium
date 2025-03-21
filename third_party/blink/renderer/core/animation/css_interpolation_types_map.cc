@@ -171,6 +171,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kRowGap:
       case CSSPropertyID::kColumnRuleWidth:
       case CSSPropertyID::kColumnWidth:
+      case CSSPropertyID::kColumnHeight:
       case CSSPropertyID::kWebkitPerspectiveOriginX:
       case CSSPropertyID::kWebkitPerspectiveOriginY:
       case CSSPropertyID::kWebkitTransformOriginX:

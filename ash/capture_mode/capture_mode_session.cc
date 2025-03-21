@@ -1473,10 +1473,19 @@ void CaptureModeSession::OnPerformCaptureForSearchStarting(
       HideWidgetImmediately(widget);
     }
   }
+
+  is_capturing_for_search_ = true;
+  // Repaint the layer to hide the capture region border and affordance circles.
+  RepaintRegion();
 }
 
 void CaptureModeSession::OnPerformCaptureForSearchEnded(
     PerformCaptureType capture_type) {
+  is_capturing_for_search_ = false;
+  // Repaint the layer to reveal the capture region border and affordance
+  // circles.
+  RepaintRegion();
+
   if (!active_behavior_->ShouldReShowUisAtPerformingCapture(capture_type)) {
     return;
   }
@@ -2303,6 +2312,12 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   region.Inset(-capture_mode::kCaptureRegionBorderStrokePx);
   canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
 
+  // If a screenshot is being taken for search, do not paint the region border
+  // and affordance circles to avoid including them in the screenshot.
+  if (is_capturing_for_search_) {
+    return;
+  }
+
   // Draw the region border.
   cc::PaintFlags border_flags;
   border_flags.setColor(capture_mode::kRegionBorderColor);
@@ -2404,10 +2419,10 @@ void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
   canvas->DrawRoundRect(region, kSunfishModeCaptureRegionRadiusDp,
                         region_mask_flags);
 
-  // Draw the region border if the user is currently selecting a capture region.
-  // Note that this doesn't include fine tune phases where the user adjusts the
-  // capture region.
-  if (is_selecting_region_) {
+  // Draw the region border if the user is currently selecting a capture region
+  // and not taking a screenshot. Note that this doesn't include fine tune
+  // phases where the user adjusts the capture region.
+  if (is_selecting_region_ && !is_capturing_for_search_) {
     cc::PaintFlags border_flags;
     border_flags.setShader(gfx::CreateGradientShader(
         region.origin(), region.top_right(),
@@ -2421,9 +2436,11 @@ void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
                           border_flags);
   }
 
-  // If the user is currently selecting or adjusting the capture region, there
-  // is no need to paint drag handles so we can early return.
-  if (is_selecting_region_ || fine_tune_position_ != FineTunePosition::kNone) {
+  // If the user is currently selecting or adjusting the capture region or
+  // taking a screenshot, there is no need to paint drag handles so we can early
+  // return.
+  if (is_selecting_region_ || fine_tune_position_ != FineTunePosition::kNone ||
+      is_capturing_for_search_) {
     return;
   }
 

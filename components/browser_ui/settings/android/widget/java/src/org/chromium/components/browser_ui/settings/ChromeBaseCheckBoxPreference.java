@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
@@ -48,7 +46,7 @@ public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        ((TextView) assumeNonNull(holder.findViewById(android.R.id.title))).setSingleLine(false);
+        ((TextView) holder.findViewById(android.R.id.title)).setSingleLine(false);
         ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, holder.itemView);
     }
 

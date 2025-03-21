@@ -851,6 +851,13 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
   bool IsSingleBuffered() const override { return true; }
 
  private:
+  void ImportResource(
+      scoped_refptr<ExternalCanvasResource>&& resource) override {
+    // Drop a previously-imported resource (if any), as it is now stale.
+    ClearRecycledResources();
+    RegisterUnusedResource(std::move(resource));
+  }
+
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) final {
     return NewOrRecycledResource();
   }
@@ -896,6 +903,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
         size, format, alpha_type, color_space, ContextProviderWrapper(),
         CreateWeakPtr());
     CHECK(resource_);
+    RegisterUnusedResource(resource_);
   }
   ~CanvasResourceProviderSwapChain() override = default;
 
@@ -914,11 +922,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
   void WillDraw() override {
     needs_present_ = true;
     needs_flush_ = true;
-  }
-
-  scoped_refptr<CanvasResource> CreateResource() final {
-    TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::CreateResource");
-    return resource_;
   }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(
@@ -1953,16 +1956,6 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::NewOrRecycledResource() {
   canvas_resources_.pop_back();
   DCHECK(resource->HasOneRef());
   return resource;
-}
-
-bool CanvasResourceProvider::ImportResource(
-    scoped_refptr<ExternalCanvasResource>&& resource) {
-  if (!IsSingleBuffered()) {
-    return false;
-  }
-  canvas_resources_.clear();
-  RegisterUnusedResource(std::move(resource));
-  return true;
 }
 
 scoped_refptr<CanvasResource> CanvasResourceProvider::GetImportedResource()

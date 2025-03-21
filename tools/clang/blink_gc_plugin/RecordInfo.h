@@ -99,6 +99,22 @@ class RecordInfo {
   clang::CXXMethodDecl* GetTraceDispatchMethod();
   clang::CXXMethodDecl* GetFinalizeDispatchMethod();
 
+  bool HasMultipleTraceDispatchMethods() const {
+    return extra_trace_dispatch_method_ != nullptr;
+  }
+  bool HasMultipleFinalizeDispatchMethods() const {
+    return extra_finalize_dispatch_method_ != nullptr;
+  }
+
+  clang::CXXMethodDecl* GetExtraTraceDispatchMethod() {
+    assert(determined_trace_methods_);
+    return extra_trace_dispatch_method_;
+  }
+  clang::CXXMethodDecl* GetExtraFinalizeDispatchMethod() {
+    assert(determined_trace_methods_);
+    return extra_finalize_dispatch_method_;
+  }
+
   bool GetTemplateArgs(size_t count, TemplateArgs* output_args);
 
   bool IsHeapAllocatedCollection();
@@ -162,6 +178,8 @@ class RecordInfo {
   clang::CXXMethodDecl* trace_method_ = nullptr;
   clang::CXXMethodDecl* trace_dispatch_method_ = nullptr;
   clang::CXXMethodDecl* finalize_dispatch_method_ = nullptr;
+  clang::CXXMethodDecl* extra_trace_dispatch_method_ = nullptr;
+  clang::CXXMethodDecl* extra_finalize_dispatch_method_ = nullptr;
 
   bool is_gc_derived_ = false;
 

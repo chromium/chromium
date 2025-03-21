@@ -414,6 +414,11 @@ void BrowserAccessibilityManagerAuraLinux::FireAriaNotificationEvent(
   if (base::Version(atk_get_version()).CompareTo(base::Version("2.50.0")) >= 0) {
     ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnAriaNotificationPosted(
         announcement, priority_property);
+  } else {
+    ToBrowserAccessibilityAuraLinux(node)
+        ->GetExtraAnnouncementNode(priority_property)
+        ->GetNode()
+        ->OnAriaNotificationPosted(announcement, priority_property);
   }
 }
 

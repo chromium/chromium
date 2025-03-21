@@ -1195,7 +1195,15 @@ void X11Window::SetWorkspaceExtensionDelegate(
 }
 
 bool X11Window::IsSyncExtensionAvailable() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Chrome for ChromeOS can be run with X11 on a Linux desktop. In this case,
+  // NotifySwapAfterResize is never called as the compositor does not notify
+  // about swaps after resize. Thus, simply disable usage of XSyncCounter on
+  // ChromeOS builds.
+  return false;
+#else
   return connection_->sync_version() > std::pair<uint32_t, uint32_t>{0, 0};
+#endif
 }
 
 bool X11Window::IsWmTiling() const {

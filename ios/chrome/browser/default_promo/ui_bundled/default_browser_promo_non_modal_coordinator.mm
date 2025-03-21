@@ -134,8 +134,7 @@
 
   if (IsNonModalPromoMigrationEnabled()) {
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(
-            self.browser->GetProfile());
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
     tracker->Dismissed(GetFeatureForPromoReason(_promoReason));
   }
 
@@ -154,9 +153,8 @@
 
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
-  ProfileIOS* profile = self.browser->GetProfile();
   LogToFETDefaultBrowserPromoShown(
-      feature_engagement::TrackerFactory::GetForProfile(profile));
+      feature_engagement::TrackerFactory::GetForProfile(self.profile));
 }
 
 // Returns the default subtitle for the browser's non-modal window based on the

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_FRE_GLIC_FRE_UI_H_
 #define CHROME_BROWSER_GLIC_FRE_GLIC_FRE_UI_H_
 
-#include "chrome/browser/glic/glic_fre.mojom.h"
+#include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"

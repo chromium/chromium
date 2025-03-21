@@ -16,15 +16,15 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
-import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, GetTabContextOptionsMojoType as TabContextOptionsMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabContextMojoType as TabContextMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import type {FocusedTabData as FocusedTabDataMojo, GetTabContextOptionsMojoType as TabContextOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabContextMojoType as TabContextMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {WebClientHandlerRemote, WebClientMode, WebClientReceiver, WebClientSizingMode} from '../glic.mojom-webui.js';
 import type {ActInFocusedTabParams, DraggableArea, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
-import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
+import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, ScrollToErrorReason} from '../glic_api/glic_api.js';
 
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
-import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
+import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
 import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
@@ -289,16 +289,11 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   async glicBrowserGetContextFromFocusedTab(
       request: {options: TabContextOptions}, extras: ResponseExtras):
       Promise<{tabContextResult: TabContextResultPrivate}> {
-    const {
-      result: {errorReason, tabContext},
-    } =
+    const {result: {errorReason, tabContext}} =
         await this.handler.getContextFromFocusedTab(
             tabContextOptionsFromClient(request.options));
     if (!tabContext) {
-      throw new ErrorWithReasonImpl(
-          'tabContext',
-          (errorReason as GetTabContextErrorReason | undefined) ??
-              GetTabContextErrorReason.UNKNOWN);
+      throw new Error(`tabContext failed: ${errorReason}`);
     }
     const tabContextResult = tabContextToClient(tabContext, extras);
 
@@ -819,6 +814,10 @@ function originToClient(origin: Origin): string {
   return originBase;
 }
 
+function tabDataToClient(
+    tabData: TabDataMojo, extras: ResponseExtras): TabDataPrivate;
+function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
+    TabDataPrivate|undefined;
 function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
     TabDataPrivate|undefined {
   if (!tabData) {
@@ -843,59 +842,25 @@ function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
   };
 }
 
-function focusedTabCandidateToClient(
-    focusedTabCandidate: FocusedTabCandidateMojo,
-    extras: ResponseExtras): FocusedTabCandidatePrivate {
-  const focusedTabCandidateData =
-      tabDataToClient(focusedTabCandidate.focusedTabCandidateData, extras);
-  const invalidCandidateError =
-      invalidCandidateErrorToClient(focusedTabCandidate.invalidCandidateError);
-  return {
-    focusedTabCandidateData,
-    invalidCandidateError,
-  };
-}
-
 function focusedTabDataToClient(
     focusedTabData: FocusedTabDataMojo,
     extras: ResponseExtras): FocusedTabDataPrivate {
   if (focusedTabData.focusedTab) {
     return {
-      focusedTab: tabDataToClient(focusedTabData.focusedTab, extras),
+      hasFocus: {tabData: tabDataToClient(focusedTabData.focusedTab, extras)},
     };
   }
-  if (focusedTabData.focusedTabCandidate) {
+  if (focusedTabData.noFocusedTabData) {
     return {
-      focusedTabCandidate: focusedTabCandidateToClient(
-          focusedTabData.focusedTabCandidate, extras),
+      hasNoFocus: {
+        tabFocusCandidateData: tabDataToClient(
+            focusedTabData.noFocusedTabData.activeTabData, extras),
+        noFocusReason: focusedTabData.noFocusedTabData.noFocusReason,
+      },
     };
   }
-  if (focusedTabData.noCandidateTabError) {
-    return {
-      noCandidateTabError:
-          noCandidateTabErrorToClient(focusedTabData.noCandidateTabError),
-    };
-  }
-  return {noCandidateTabError: NoCandidateTabError.UNKNOWN};
-}
-
-function invalidCandidateErrorToClient(
-    mojoReason: MojoInvalidCandidateError|null): InvalidCandidateError|
-    undefined {
-  if (!mojoReason) {
-    return undefined;
-  }
-  return (mojoReason.valueOf() as InvalidCandidateError | undefined) ??
-      InvalidCandidateError.UNKNOWN;
-}
-
-function noCandidateTabErrorToClient(mojoReason: MojoNoCandidateTabError|null):
-    NoCandidateTabError|undefined {
-  if (!mojoReason) {
-    return undefined;
-  }
-  return (mojoReason.valueOf() as NoCandidateTabError) ??
-      NoCandidateTabError.UNKNOWN;
+  console.error('Invalid FocusedTabDataMojo');
+  return {};
 }
 
 function getArrayBufferFromBigBuffer(bigBuffer: BigBuffer): ArrayBuffer|

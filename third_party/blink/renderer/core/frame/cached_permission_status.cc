@@ -116,8 +116,16 @@ void CachedPermissionStatus::RegisterPermissionObserver(
 }
 
 void CachedPermissionStatus::OnPermissionStatusChange(PermissionStatus status) {
-  permission_status_map_.Set(permission_observer_receivers_.current_context(),
-                             status);
+  auto permission_name = permission_observer_receivers_.current_context();
+  permission_status_map_.Set(permission_name, status);
+  auto it = clients_.find(permission_name);
+  if (it == clients_.end()) {
+    return;
+  }
+  const auto client_set = it->value;
+  for (auto const& client : client_set) {
+    client->OnPermissionStatusChange(permission_name, status);
+  }
 }
 
 PermissionService* CachedPermissionStatus::GetPermissionService() {

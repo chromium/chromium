@@ -30,7 +30,7 @@ class PLATFORM_EXPORT UnencodedDigest {
   // `Unencoded-Digest` header is present, and `std::nullopt` otherwise.
   static std::optional<UnencodedDigest> Create(const HTTPHeaderMap&);
 
-  const WTF::HashSet<IntegrityMetadataPair>& digests() const {
+  const WTF::Vector<IntegrityMetadataPair>& digests() const {
     return integrity_metadata_.hashes;
   }
 

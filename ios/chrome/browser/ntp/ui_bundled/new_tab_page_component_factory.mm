@@ -72,8 +72,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   return discoverFeedService->GetFeedMetricsRecorder();
 }
 
-- (NewTabPageHeaderViewController*)headerViewControllerForBrowser:
-    (Browser*)browser {
+- (NewTabPageHeaderViewController*)headerViewController {
   PrefService* localState = GetApplicationContext()->GetLocalState();
   NSInteger lensNewBadgeShowCount =
       localState->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount);

@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">متبادل</translation>
 <translation id="1264974993859112054">کھیل</translation>
 <translation id="1268480293435976622">‏Chinese #7 لفافہ</translation>
+<translation id="1269045546668906972">‏مزید فیلڈز کو خودکار طور پر پُر کرنے کے لیے AI کے ساتھ آٹو فل آن کریں</translation>
 <translation id="1269516672602708785">‏Google Sites میں تیزی سے نئی سائٹ تخلیق کریں</translation>
 <translation id="1270328905573953738">منتقلی اور تبدیلیٔ مقام</translation>
 <translation id="1270502636509132238">پِک اپ کا طریقہ</translation>
@@ -1138,6 +1139,7 @@
 <translation id="3005723025932146533">محفوظ کردہ کاپی دکھائیں</translation>
 <translation id="300580149047131921">حال ہی میں استعمال شدہ</translation>
 <translation id="3009036448238594149">‏<ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />، دستیاب کارروائیوں کو براؤز کرنے کے لیے ٹیب دبائیں، پھر منتخب کارروائی کو رو بہ عمل لانے کے لیے Enter دبائیں۔</translation>
+<translation id="3010991137650052245">اس سائٹ پر اپنا <ph name="PERMISSION" /> استعمال کرنے کے لیے، <ph name="SHORT_PRODUCT_NAME" /> کو رسائی فراہم کریں</translation>
 <translation id="3013711734159931232">گھریلو سپلائیز</translation>
 <translation id="3014553260345122294">کاروباری خبریں</translation>
 <translation id="3014726756341138577">پرنٹر کی جدید ترین خصوصیات</translation>
@@ -1789,6 +1791,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">پالیسی کا دائرۂ کار تعاون یافتہ نہیں ہے۔</translation>
+<translation id="411918202192379658">آٹو فل اب بہتر ہو گئی ہے</translation>
 <translation id="4121428309786185360">میعاد کا اختتام</translation>
 <translation id="4123572138124678573">نیچے تین سوراخ</translation>
 <translation id="412601465078863288">اپ لوڈ کرنے کا وقت ختم ہو گیا</translation>
@@ -2177,6 +2180,7 @@
 <translation id="4819347708020428563">ڈیفالٹ منظر میں تشریحات میں ترمیم کریں؟</translation>
 <translation id="4822493756793346865">عام قیمتیں پچھلے 90 دن میں ویب پر موجود اسٹورز پر مبنی ہیں۔</translation>
 <translation id="4822922322149719535">خرابی کے لاگ کا جائزہ لیں</translation>
+<translation id="4823699521959851389">‫<ph name="SHORT_PRODUCT_NAME" /> کو آپ کے آلے کے <ph name="PERMISSION" /> تک رسائی درکار ہے</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />، تیزی سے ایک نئی Google Sheet تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
 <translation id="4827283332383516812">کارڈ حذف کریں</translation>

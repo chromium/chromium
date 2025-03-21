@@ -6,7 +6,7 @@ import json
 import logging
 import os
 import time
-from typing import Any, List, Optional
+from typing import Any
 
 import bs4  # pylint: disable=import-error
 
@@ -126,7 +126,7 @@ class SkiaGoldHeartbeatTestCase(sgitb.SkiaGoldTestCase):
   def __init__(self,
                name: str,
                *args,
-               test_actions: Optional[List[TestAction]] = None,
+               test_actions: list[TestAction] | None = None,
                **kwargs):
     super().__init__(name, *args, **kwargs)
     if test_actions:
@@ -144,7 +144,7 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
   using an iframe.
   """
 
-  websocket_server: Optional[wss.WebsocketServer] = None
+  websocket_server: wss.WebsocketServer | None = None
   page_loaded = False
   reload_page_for_next_navigation = False
 

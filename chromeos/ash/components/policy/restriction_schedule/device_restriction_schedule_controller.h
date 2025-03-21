@@ -87,10 +87,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   // ash::LoginState::Observer:
   void LoggedInStateChanged() override;
 
-  void LoadHighestSeenTime();
-  void UpdateAndSaveHighestSeenTime(base::Time current_time);
-  bool HasTimeBeenTamperedWith(const base::Time current_time) const;
-
   void OnPolicyUpdated();
   void Run();
 
@@ -117,15 +113,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   std::vector<WeeklyTimeIntervalChecked> intervals_;
   State state_ = State::kRegular;
   std::optional<base::Time> next_run_time_;
-
-  // Represents the highest observed system time by this class. Updated on every
-  // run of the `Run` function which is when the policy is updated and then
-  // every time the state changes between regular and restricted schedule.
-  // Used to only guard against changing the time by removing the CMOS battery;
-  // that resets the system time to the UNIX epoch, but early ChromeOS startup
-  // code detects this and updates the time to Jan 1 of the current year (baked
-  // in during compile time).
-  std::optional<base::Time> highest_seen_time_;
 
   base::WallClockTimer run_timer_;
   base::WallClockTimer notification_timer_;

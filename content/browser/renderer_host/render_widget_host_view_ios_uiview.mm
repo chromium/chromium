@@ -91,6 +91,23 @@ static void* kObservingContext = &kObservingContext;
 }
 @end
 
+#pragma mark - BETextSelectionRect
+@interface BETextSelectionRect : UITextSelectionRect {
+  CGRect rect_;
+}
+- (instancetype)initWithCGRect:(CGRect)rect;
+@end
+
+@implementation BETextSelectionRect
+- (instancetype)initWithCGRect:(CGRect)rect {
+  rect_ = rect;
+  return [self init];
+}
+- (CGRect)rect {
+  return rect_;
+}
+@end
+
 @interface BlinkExtendedTextInputTraits : NSObject <BEExtendedTextInputTraits>
 @property(nonatomic) UITextAutocapitalizationType autocapitalizationType;
 @property(nonatomic) UITextAutocorrectionType autocorrectionType;
@@ -481,11 +498,34 @@ static void* kObservingContext = &kObservingContext;
             withCompletionHandler:
                 (void (^)(NSArray<UITextSelectionRect*>* rects))
                     completionHandler {
-  // TODO: bug 388320178 - need to implement this.
-  // During the input process, there are instances where the text system will
-  // continuously wait for the completionHandler to be called; if not, the
-  // on-screen keyboard will become unresponsive.
-  completionHandler(@[]);
+  auto* state = [self editState];
+  if (!state || !state->selection.is_empty()) {
+    completionHandler(@[]);
+    return;
+  }
+
+  NSRange range =
+      [[self editText] rangeOfString:input
+                             options:NSLiteralSearch
+                               range:NSMakeRange(0, state->selection.start())];
+  if (range.location == NSNotFound) {
+    completionHandler(@[]);
+    return;
+  }
+
+  _view->RectForEditFieldChars(
+      gfx::Range(range),
+      base::BindOnce(
+          [](void (^completionHandler)(NSArray<UITextSelectionRect*>* rects),
+             const gfx::Rect& rect) {
+            if (rect.IsEmpty()) {
+              completionHandler(@[]);
+              return;
+            }
+            completionHandler(@[ [[BETextSelectionRect alloc]
+                initWithCGRect:rect.ToCGRect()] ]);
+          },
+          completionHandler));
 }
 
 - (void)requestPreferredArrowDirectionForEditMenuWithCompletionHandler:

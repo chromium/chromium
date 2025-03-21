@@ -207,6 +207,9 @@ struct AIPageContentFrameData {
   // Meta elements which are direct children of the head element. Limited to
   // max_meta_elements in AIPageContentOptions, default is 0.
   array<AIPageContentMeta> meta_data;
+
+  // The title of the document.
+  string? title;
 };
 
 // Provides metadata for frames (local and remote) accessible from the

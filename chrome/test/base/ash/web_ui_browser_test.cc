@@ -65,12 +65,11 @@ base::LazyInstance<std::vector<std::string>>::DestructorAtExit
 
 // Intercepts all log messages.
 bool LogHandler(int severity,
-                const char* file,
+                std::string_view file,
                 int line,
                 size_t message_start,
                 const std::string& str) {
-  if (severity == logging::LOGGING_ERROR && file &&
-      std::string("CONSOLE") == file) {
+  if (severity == logging::LOGGING_ERROR && file == "CONSOLE") {
     g_error_messages.Get().push_back(str);
   }
 

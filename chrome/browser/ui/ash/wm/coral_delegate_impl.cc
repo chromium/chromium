@@ -319,10 +319,8 @@ bool CoralDelegateImpl::GetGenAILocationAvailability() {
   return ash::IsGenerativeAiAllowedForCountry(GetCountryCode());
 }
 
-bool CoralDelegateImpl::GetLanguageAvailability() {
-  // TODO(zxdan|hcyang): adjust the allow list as needed.
-  return l10n_util::GetLanguage(g_browser_process->GetApplicationLocale()) ==
-         std::string("en");
+std::string CoralDelegateImpl::GetSystemLanguage() {
+  return l10n_util::GetLanguage(g_browser_process->GetApplicationLocale());
 }
 
 void CoralDelegateImpl::OnIdentityManagerShutdown(

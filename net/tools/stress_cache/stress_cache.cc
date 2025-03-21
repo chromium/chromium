@@ -386,7 +386,7 @@ bool StartCrashThread() {
   return true;
 }
 
-void CrashHandler(const char* file,
+void CrashHandler(std::string_view file,
                   int line,
                   std::string_view str,
                   std::string_view stack_trace) {

@@ -32,8 +32,6 @@ PlainTextPainter& PlainTextPainter::Shared() {
 
 const PlainTextNode& PlainTextPainter::SegmentAndShape(const TextRun& run,
                                                        const Font& font) {
-  DCHECK(RuntimeEnabledFeatures::CanvasTextNgEnabled() ||
-         RuntimeEnabledFeatures::PlainTextPainterEnabled());
   // This function doesn't support DirectionOverride because there are no such
   // callers.
   DCHECK(!run.DirectionalOverride());

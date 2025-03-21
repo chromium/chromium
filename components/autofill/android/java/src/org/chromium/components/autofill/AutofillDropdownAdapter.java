@@ -144,7 +144,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
             labelView.setPaddingRelative(existingStart, mLabelMargin, existingEnd, mLabelMargin);
         }
 
-        if (item.isGroupHeader() || item.isBoldLabel()) {
+        if (item.isGroupHeader()) {
             labelView.setTypeface(null, Typeface.BOLD);
             if (secondaryLabelView != null) {
                 secondaryLabelView.setTypeface(null, Typeface.BOLD);

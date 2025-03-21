@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -38,12 +39,12 @@ class ListenerDeferredTest : public InProcessBrowserTest,
   ListenerDeferredTest() {
     if (GetParam()) {
       features_.InitWithFeatures(
-          {tab_groups::kTabGroupsDeferRemoteNavigations,
+          {data_sharing::features::kDataSharingFeature,
            tab_groups::kTabGroupSyncServiceDesktopMigration},
           {});
     } else {
       features_.InitWithFeatures(
-          {tab_groups::kTabGroupsDeferRemoteNavigations},
+          {data_sharing::features::kDataSharingFeature},
           {tab_groups::kTabGroupSyncServiceDesktopMigration});
     }
   }

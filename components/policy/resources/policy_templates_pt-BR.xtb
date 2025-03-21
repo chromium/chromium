@@ -1591,12 +1591,6 @@ Se for deixada sem definição, a Tradução instantânea ficará desativada ini
       Se você desativar essa configuração, o <ph name="PRODUCT_NAME" /> não detectará quando uma janela for coberta por outras.
 
       Se esta política não for definida, a detecção de oclusão será ativada.</translation>
-<translation id="2132424782557550556">Configurar políticas de relatórios de nuvem.
-
-      Quando a <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> não for definida ou for desativada, estas políticas serão ignoradas.
-
-      Estas políticas só são eficazes quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
-      Para o <ph name="PRODUCT_OS_NAME" />, estas políticas sempre são eficazes.</translation>
 <translation id="2134437727173969994">Autorizar bloqueio da tela</translation>
 <translation id="2135335181634291106">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> especificará o URL de ícone favorito do provedor de pesquisa padrão.
 

@@ -26,6 +26,16 @@ namespace storage {
 
 namespace {
 
+// The given path should not contain any '..' and should be absolute.
+bool IsPathValid(const base::FilePath& path) {
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    return true;
+  }
+#endif
+  return !path.ReferencesParent() && path.IsAbsolute();
+}
+
 base::FilePath::StringType GetRegisterNameForPath(const base::FilePath& path) {
   // If it's not a root path simply return a base name.
   if (path.DirName() != path)
@@ -65,9 +75,9 @@ IsolatedContext::FileInfoSet::~FileInfoSet() = default;
 
 bool IsolatedContext::FileInfoSet::AddPath(const base::FilePath& path,
                                            std::string* registered_name) {
-  // The given path should not contain any '..' and should be absolute.
-  if (path.ReferencesParent() || !path.IsAbsolute())
+  if (!IsPathValid(path)) {
     return false;
+  }
   base::FilePath::StringType name = GetRegisterNameForPath(path);
   std::string utf8name = base::FilePath(name).AsUTF8Unsafe();
   base::FilePath normalized_path = path.NormalizePathSeparators();
@@ -94,9 +104,9 @@ bool IsolatedContext::FileInfoSet::AddPath(const base::FilePath& path,
 
 bool IsolatedContext::FileInfoSet::AddPathWithName(const base::FilePath& path,
                                                    const std::string& name) {
-  // The given path should not contain any '..' and should be absolute.
-  if (path.ReferencesParent() || !path.IsAbsolute())
+  if (!IsPathValid(path)) {
     return false;
+  }
   return fileset_.insert(MountPointInfo(name, path.NormalizePathSeparators()))
       .second;
 }
@@ -274,8 +284,9 @@ IsolatedContext::ScopedFSHandle IsolatedContext::RegisterFileSystemForPath(
     const base::FilePath& path_in,
     std::string* register_name) {
   base::FilePath path(path_in.NormalizePathSeparators());
-  if (path.ReferencesParent() || !path.IsAbsolute())
+  if (!IsPathValid(path)) {
     return ScopedFSHandle();
+  }
   std::string name;
   if (register_name && !register_name->empty()) {
     name = *register_name;

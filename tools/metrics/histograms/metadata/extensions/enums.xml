@@ -2814,6 +2814,7 @@ Called by update_extension_histograms.py.-->
       label="AUTOFILLPRIVATE_GETALLATTRIBUTETYPESFORENTITYTYPENAME"/>
   <int value="1930" label="AUTOFILLPRIVATE_GETENTITYINSTANCEBYGUID"/>
   <int value="1931" label="AUTOFILLPRIVATE_GETPAYOVERTIMEISSUERLIST"/>
+  <int value="1932" label="AUTOFILLPRIVATE_SETAUTOFILLAIOPTINSTATUS"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

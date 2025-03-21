@@ -53,6 +53,12 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   static ZeroSuggestProvider* Create(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener);
 
+  // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
+  static AutocompleteMatch NavigationToMatch(
+      AutocompleteProvider* provider,
+      AutocompleteProviderClient* client,
+      const SearchSuggestionParser::NavigationResult& navigation);
+
   // Registers a preference used to cache the zero suggest response.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -124,10 +130,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Called by `debouncer_`.
   void RunZeroSuggestPrefetch(const AutocompleteInput& input,
                               const ResultType result_type);
-
-  // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
-  AutocompleteMatch NavigationToMatch(
-      const SearchSuggestionParser::NavigationResult& navigation);
 
   // Called either in Start() with |results| populated from the cached response,
   // where |matches_| are empty; or in OnURLLoadComplete() with |results|

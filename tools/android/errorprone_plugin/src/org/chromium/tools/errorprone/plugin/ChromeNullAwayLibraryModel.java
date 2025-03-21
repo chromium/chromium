@@ -68,7 +68,10 @@ public class ChromeNullAwayLibraryModel implements LibraryModels {
 
     @Override
     public ImmutableSet<MethodRef> nonNullReturns() {
-        return ImmutableSet.of();
+        return ImmutableSet.of(
+                methodRef("androidx.appcompat.app.AppCompatDelegate", "findViewById(int)"),
+                methodRef("androidx.appcompat.app.AppCompatDialog", "findViewById(int)"),
+                methodRef("androidx.preference.PreferenceViewHolder", "findViewById(int)"));
     }
 
     @Override

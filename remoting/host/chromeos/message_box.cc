@@ -23,28 +23,29 @@
 
 namespace remoting {
 
-// MessageBox::Core creates the dialog using the views::DialogWidget.  The
+// MessageBoxCore creates the dialog using the views::DialogWidget.  The
 // DialogWidget is created by the caller but its lifetime is managed by the
 // NativeWidget.  The DialogWidget communicates with the caller using the
 // DialogDelegateView interface, which must remain valid until DeleteDelegate()
 // is called, at which the DialogDelegateView deletes itself.
 //
-// The Core class is introduced to abstract this awkward ownership model.  The
-// Core and the MessageBox hold a raw references to each other, which is
-// invalidated when either side are destroyed.
-class MessageBox::Core : public views::DialogDelegateView {
-  METADATA_HEADER(Core, views::DialogDelegateView)
+// The MessageBoxCore class is introduced to abstract this awkward ownership
+// model.  The MessageBoxCore and the MessageBox hold raw references to each
+// other, which are invalidated when either side is destroyed.
+class MessageBoxCore : public views::DialogDelegateView {
+  METADATA_HEADER(MessageBoxCore, views::DialogDelegateView)
 
  public:
-  Core(const std::u16string& title_label,
-       const std::u16string& message_label,
-       const std::u16string& ok_label,
-       const std::u16string& cancel_label,
-       const std::optional<ui::ImageModel> icon,
-       ResultCallback result_callback,
-       MessageBox* message_box);
-  Core(const Core&) = delete;
-  Core& operator=(const Core&) = delete;
+  MessageBoxCore(const std::u16string& title_label,
+                 const std::u16string& message_label,
+                 const std::u16string& ok_label,
+                 const std::u16string& cancel_label,
+                 const std::optional<ui::ImageModel> icon,
+                 MessageBox::ResultCallback result_callback,
+                 MessageBox* message_box);
+  MessageBoxCore(const MessageBoxCore&) = delete;
+  MessageBoxCore& operator=(const MessageBoxCore&) = delete;
+  ~MessageBoxCore() override;
 
   void Show(gfx::NativeView parent);
   void Hide();
@@ -60,12 +61,12 @@ class MessageBox::Core : public views::DialogDelegateView {
 
   void SetMessageLabel(const std::u16string& message_label);
 
-  // Called by MessageBox::Core when it is destroyed.
+  // Called by MessageBox when it is destroyed.
   void OnMessageBoxDestroyed();
 
  private:
   const std::u16string title_label_;
-  ResultCallback result_callback_;
+  MessageBox::ResultCallback result_callback_;
   raw_ptr<MessageBox> message_box_;
 
   bool is_shown_ = false;
@@ -74,13 +75,13 @@ class MessageBox::Core : public views::DialogDelegateView {
   raw_ptr<views::MessageBoxView> message_box_view_;
 };
 
-MessageBox::Core::Core(const std::u16string& title_label,
-                       const std::u16string& message_label,
-                       const std::u16string& ok_label,
-                       const std::u16string& cancel_label,
-                       const std::optional<ui::ImageModel> icon,
-                       ResultCallback result_callback,
-                       MessageBox* message_box)
+MessageBoxCore::MessageBoxCore(const std::u16string& title_label,
+                               const std::u16string& message_label,
+                               const std::u16string& ok_label,
+                               const std::u16string& cancel_label,
+                               const std::optional<ui::ImageModel> icon,
+                               MessageBox::ResultCallback result_callback,
+                               MessageBox* message_box)
     : title_label_(title_label),
       result_callback_(std::move(result_callback)),
       message_box_(message_box),
@@ -94,20 +95,21 @@ MessageBox::Core::Core(const std::u16string& title_label,
     SetShowIcon(true);
   }
 
-  auto run_callback = [](MessageBox::Core* core, Result result) {
+  auto run_callback = [](MessageBoxCore* core, MessageBox::Result result) {
     if (core->result_callback_) {
       std::move(core->result_callback_).Run(result);
     }
   };
-  SetAcceptCallback(base::BindOnce(run_callback, base::Unretained(this), OK));
+  SetAcceptCallback(
+      base::BindOnce(run_callback, base::Unretained(this), MessageBox::OK));
   SetCancelCallback(
-      base::BindOnce(run_callback, base::Unretained(this), CANCEL));
+      base::BindOnce(run_callback, base::Unretained(this), MessageBox::CANCEL));
   SetCloseCallback(
-      base::BindOnce(run_callback, base::Unretained(this), CANCEL));
+      base::BindOnce(run_callback, base::Unretained(this), MessageBox::CANCEL));
   RegisterDeleteDelegateCallback(base::BindOnce(
-      [](Core* dialog) {
+      [](MessageBoxCore* dialog) {
         if (dialog->message_box_) {
-          dialog->message_box_->core_ = nullptr;
+          dialog->message_box_->OnMessageBoxCoreDestroying();
         }
       },
       this));
@@ -117,7 +119,9 @@ MessageBox::Core::Core(const std::u16string& title_label,
   SetOwnedByWidget(true);
 }
 
-void MessageBox::Core::Show(gfx::NativeView parent) {
+MessageBoxCore::~MessageBoxCore() = default;
+
+void MessageBoxCore::Show(gfx::NativeView parent) {
   CHECK(!is_shown_) << "Show() should only be called once.";
   is_shown_ = true;
 
@@ -131,51 +135,51 @@ void MessageBox::Core::Show(gfx::NativeView parent) {
   }
 }
 
-void MessageBox::Core::ChangeParentContainer(gfx::NativeView parent) {
+void MessageBoxCore::ChangeParentContainer(gfx::NativeView parent) {
   if (GetWidget()) {
     views::Widget::ReparentNativeView(GetWidget()->GetNativeView(),
                                       /*new_parent=*/parent);
   }
 }
 
-void MessageBox::Core::Hide() {
+void MessageBoxCore::Hide() {
   if (GetWidget()) {
     GetWidget()->Close();
   }
 }
 
-ui::mojom::ModalType MessageBox::Core::GetModalType() const {
+ui::mojom::ModalType MessageBoxCore::GetModalType() const {
   return ui::mojom::ModalType::kSystem;
 }
 
-std::u16string MessageBox::Core::GetWindowTitle() const {
+std::u16string MessageBoxCore::GetWindowTitle() const {
   return title_label_;
 }
 
-views::View* MessageBox::Core::GetContentsView() {
+views::View* MessageBoxCore::GetContentsView() {
   return message_box_view_;
 }
 
-views::Widget* MessageBox::Core::GetWidget() {
+views::Widget* MessageBoxCore::GetWidget() {
   return message_box_view_->GetWidget();
 }
 
-const views::Widget* MessageBox::Core::GetWidget() const {
+const views::Widget* MessageBoxCore::GetWidget() const {
   return message_box_view_->GetWidget();
 }
 
-void MessageBox::Core::SetMessageLabel(const std::u16string& message_label) {
+void MessageBoxCore::SetMessageLabel(const std::u16string& message_label) {
   message_box_view_->SetMessageLabel(message_label);
 }
 
-void MessageBox::Core::OnMessageBoxDestroyed() {
+void MessageBoxCore::OnMessageBoxDestroyed() {
   DCHECK(message_box_);
   message_box_ = nullptr;
   // The callback should not be invoked after MessageBox is destroyed.
   result_callback_.Reset();
 }
 
-BEGIN_METADATA(MessageBox, Core)
+BEGIN_METADATA(MessageBoxCore)
 END_METADATA
 
 MessageBox::MessageBox(const std::u16string& title_label,
@@ -184,13 +188,13 @@ MessageBox::MessageBox(const std::u16string& title_label,
                        const std::u16string& cancel_label,
                        const std::optional<ui::ImageModel> icon,
                        ResultCallback result_callback)
-    : core_(new Core(title_label,
-                     message_label,
-                     ok_label,
-                     cancel_label,
-                     std::move(icon),
-                     std::move(result_callback),
-                     this)) {}
+    : core_(new MessageBoxCore(title_label,
+                               message_label,
+                               ok_label,
+                               cancel_label,
+                               std::move(icon),
+                               std::move(result_callback),
+                               this)) {}
 
 void MessageBox::Show() {
   core_->Show(nullptr);
@@ -210,6 +214,10 @@ void MessageBox::SetMessageLabel(const std::u16string& message_label) {
 
 views::DialogDelegate& MessageBox::GetDialogDelegate() {
   return CHECK_DEREF(core_->AsDialogDelegate());
+}
+
+void MessageBox::OnMessageBoxCoreDestroying() {
+  core_ = nullptr;
 }
 
 MessageBox::~MessageBox() {

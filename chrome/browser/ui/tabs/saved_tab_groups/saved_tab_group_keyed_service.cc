@@ -47,6 +47,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_local_change_processor.h"
@@ -118,6 +119,28 @@ MaybeCreateSyncConfigurationForSharedTabGroupData(
       CreateSharedTabGroupDataChangeProcessor(), std::move(store_factory));
 }
 
+std::unique_ptr<syncer::DataTypeLocalChangeProcessor>
+CreateSharedTabGroupAccountDataChangeProcessor() {
+  return std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+      syncer::SHARED_TAB_GROUP_ACCOUNT_DATA,
+      base::BindRepeating(&syncer::ReportUnrecoverableError,
+                          chrome::GetChannel()));
+}
+
+std::unique_ptr<SyncDataTypeConfiguration>
+MaybeCreateSyncConfigurationForSharedTabGroupAccountData(
+    syncer::OnceDataTypeStoreFactory store_factory) {
+  if (!base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature) ||
+      !base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
+    return nullptr;
+  }
+
+  return std::make_unique<SyncDataTypeConfiguration>(
+      CreateSharedTabGroupAccountDataChangeProcessor(),
+      std::move(store_factory));
+}
+
 }  // anonymous namespace
 
 SavedTabGroupKeyedService::SavedTabGroupKeyedService(
@@ -140,6 +163,14 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
               GetStoreFactory()))),
       metrics_logger_(std::make_unique<TabGroupSyncMetricsLoggerImpl>(
           device_info_tracker)) {
+  std::unique_ptr<SyncDataTypeConfiguration> shared_tab_account_configuration =
+      MaybeCreateSyncConfigurationForSharedTabGroupAccountData(
+          GetStoreFactory());
+  if (shared_tab_account_configuration) {
+    shared_tab_group_account_data_bridge_ =
+        std::make_unique<SharedTabGroupAccountDataSyncBridge>(
+            std::move(shared_tab_account_configuration));
+  }
   model_->AddObserver(this);
 
   metrics_timer_.Start(
@@ -166,6 +197,13 @@ SavedTabGroupKeyedService::GetSavedTabGroupControllerDelegate() {
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 SavedTabGroupKeyedService::GetSharedTabGroupControllerDelegate() {
   return sync_bridge_mediator_->GetSharedTabGroupControllerDelegate();
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+SavedTabGroupKeyedService::GetSharedTabGroupAccountControllerDelegate() {
+  CHECK(shared_tab_group_account_data_bridge_);
+  return shared_tab_group_account_data_bridge_->change_processor()
+      ->GetControllerDelegate();
 }
 
 void SavedTabGroupKeyedService::ConnectRestoredGroupToSaveId(

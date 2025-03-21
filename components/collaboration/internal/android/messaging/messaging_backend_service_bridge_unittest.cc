@@ -106,7 +106,7 @@ class MessagingBackendServiceBridgeTest : public testing::Test {
   void DisplayInstantaneousMessage(InstantMessage message,
                                    bool expected_success_value) {
     bridge()->DisplayInstantaneousMessage(
-        {message},
+        message,
         base::BindOnce(
             &MessagingBackendServiceBridgeTest::OnInstantMessageCallbackResult,
             base::Unretained(this), expected_success_value));

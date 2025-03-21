@@ -255,33 +255,15 @@ async function focusedTabChangedV2(focusedTabData: FocusedTabData|undefined) {
     return;
   }
 
-  if (focusedTabData.noCandidateTabError &&
-      !focusedTabData.focusedTabCandidate?.invalidCandidateError) {
-    $.focusedTabLogsV2.innerText = `No Candidate Tab Error: ${
-        JSON.stringify(focusedTabData.noCandidateTabError)}`;
+  if (focusedTabData.hasNoFocus) {
+    $.focusedTabLogsV2.innerText = `No focus reason: ${
+        focusedTabData.hasNoFocus.noFocusReason} active tab url: ${
+        focusedTabData.hasNoFocus.tabFocusCandidateData?.url}`;
     return;
   }
 
-  if (focusedTabData.focusedTabCandidate?.invalidCandidateError) {
-    $.focusedTabLogsV2.innerText = `Focus Invalid For Extraction Error: ${
-        JSON.stringify(
-            focusedTabData.focusedTabCandidate.invalidCandidateError)}`;
-    const candidateData =
-        focusedTabData.focusedTabCandidate.focusedTabCandidateData;
-    if (candidateData) {
-      $.focusedUrlV2.value = candidateData.url || '';
-      if (candidateData.favicon) {
-        const fav = await candidateData.favicon();
-        if (fav) {
-          $.focusedFaviconV2.src = URL.createObjectURL(fav);
-        }
-      }
-    }
-    return;
-  }
-
-  if (focusedTabData.focusedTab) {
-    const focusedTab = focusedTabData.focusedTab;
+  if (focusedTabData.hasFocus) {
+    const focusedTab = focusedTabData.hasFocus.tabData;
     $.focusedTabLogsV2.innerText =
         'Focused Tab State Changed: TabData available';
     $.focusedUrlV2.value = focusedTab.url || '';

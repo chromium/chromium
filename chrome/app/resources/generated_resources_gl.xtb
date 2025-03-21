@@ -616,7 +616,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="142655739075382478">A aplicación <ph name="APP_NAME" /> está bloqueada</translation>
 <translation id="1427179946227469514">Ton da conversión de texto a voz</translation>
 <translation id="1427269577154060167">País</translation>
-<translation id="1427506552622340174">Fai clic co botón dereito para escribir textos con máis confianza, resumir contido, obter definicións e moito máis. De momento, a dispoñibilidade desta opción é limitada.</translation>
 <translation id="142765311413773645">Caducou a licenza de <ph name="APP_NAME" /></translation>
 <translation id="1428373049397869723">Podes abrir e editar ficheiros compatibles con esta aplicación desde Finder ou outras aplicacións. Para controlar os ficheiros que se abren nesta aplicación de forma predeterminada, consulta <ph name="BEGIN_LINK" />como definir aplicacións predeterminadas no teu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Gardaches unha nota dun contrasinal neste sitio. Para vela, na barra de busca e de enderezos selecciona a opción Xestionar os teus contrasinais.</translation>
@@ -1879,6 +1878,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">O ficheiro non estaba dispoñible no sitio</translation>
 <translation id="2300383962156589922">Personaliza e controla <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Declaracións de certificados cualificados</translation>
 <translation id="2301382460326681002">O directorio raíz da extensión non é válido.</translation>
 <translation id="2301402091755573488">Pestana compartida</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Funcións de depuración<ph name="END_H3" />
@@ -10525,7 +10525,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8452105022015742247">Transferindo información da Conta de Google desde o teu teléfono Android</translation>
 <translation id="8455775311562941553">Conexión con: <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Define o teu navegador predeterminado</translation>
-<translation id="8456200178779628126">Usa a IA de Google para obter axuda ao ler e escribir</translation>
 <translation id="845702320058262034">Non se puido establecer conexión. Asegúrate de que o Bluetooth do teléfono estea activado.</translation>
 <translation id="8457251154056341970">Non volverás ver <ph name="MODULE_NAME" /> nesta páxina</translation>
 <translation id="8457451314607652708">Importar marcadores</translation>
@@ -11420,7 +11419,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Rato USB conectado</translation>
 <translation id="9075413375877487220">A función Navegación segura mellorada non confía nesta extensión.</translation>
-<translation id="9075985558450420812">Escribe unha solicitude personalizada ou destaca texto para crear unha imaxe.</translation>
 <translation id="9076523132036239772">Non se puido verificar o teu correo electrónico ou contrasinal. Primeiro tenta conectarte a unha rede.</translation>
 <translation id="9076821103818989526">Panel lateral</translation>
 <translation id="9076977315710973122">Ficheiros compartidos por SMB</translation>

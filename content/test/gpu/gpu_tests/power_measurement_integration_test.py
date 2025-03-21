@@ -28,7 +28,7 @@ import os
 import posixpath
 import sys
 import time
-from typing import Any, List, Optional
+from typing import Any
 import unittest
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
@@ -218,18 +218,18 @@ class _PowerMeasurementTestArguments():
   test_func: str
   repeat: int
   bypass_ipg: bool
-  underlay: Optional[bool] = None
-  fullscreen: Optional[bool] = None
-  outliers: Optional[int] = None
-  ipg_logdir: Optional[str] = None
-  ipg_duration: Optional[int] = None
-  ipg_delay: Optional[int] = None
-  ipg_resolution: Optional[int] = None
+  underlay: bool | None = None
+  fullscreen: bool | None = None
+  outliers: int | None = None
+  ipg_logdir: str | None = None
+  ipg_duration: int | None = None
+  ipg_delay: int | None = None
+  ipg_resolution: int | None = None
 
 
 class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
-  _url_mode: Optional[bool] = None
+  _url_mode: bool | None = None
 
   @classmethod
   def Name(cls) -> str:
@@ -382,7 +382,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     getattr(self, prefixed_test_func_name)(test_path, test_params)
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -536,7 +536,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       logging.info('Summary: %s', str(summary))
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',

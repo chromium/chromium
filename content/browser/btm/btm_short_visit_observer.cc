@@ -9,6 +9,7 @@
 #include <set>
 #include <variant>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
@@ -373,7 +374,7 @@ void BtmShortVisitObserver::OnCookiesAccessed(
 void BtmShortVisitObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const CookieAccessDetails& details) {
-  if (!IsInPrimaryPage(navigation_handle)) {
+  if (!IsInPrimaryPage(*navigation_handle)) {
     return;
   }
 

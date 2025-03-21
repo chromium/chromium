@@ -12,60 +12,60 @@ class ElementGeneratorTest(unittest.TestCase):
     lines = [];
     GenerateFieldContent('', {'type': 'int', 'default': 5}, None, lines, '  ',
                          {})
-    self.assertEquals(['  5,'], lines)
+    self.assertEqual(['  5,'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'int', 'default': 5}, 12, lines, '  ', {})
-    self.assertEquals(['  12,'], lines)
+    self.assertEqual(['  12,'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'int'}, -3, lines, '  ', {})
-    self.assertEquals(['  -3,'], lines)
+    self.assertEqual(['  -3,'], lines)
 
   def testGenerateStringFieldContent(self):
     lines = [];
     GenerateFieldContent('', {'type': 'string', 'default': 'foo_bar'}, None,
                          lines, '  ', {})
-    self.assertEquals(['  "foo_bar",'], lines)
+    self.assertEqual(['  "foo_bar",'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'string', 'default': 'foo'}, 'bar\n',
                          lines, '  ', {})
-    self.assertEquals(['  "bar\\n",'], lines)
+    self.assertEqual(['  "bar\\n",'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'string'}, None, lines, '  ', {})
-    self.assertEquals(['  nullptr,'], lines)
+    self.assertEqual(['  nullptr,'], lines)
     lines = []
     GenerateFieldContent('', {'type': 'string'}, 'foo', lines, '  ', {})
-    self.assertEquals(['  "foo",'], lines)
+    self.assertEqual(['  "foo",'], lines)
 
   def testGenerateString16FieldContent(self):
     lines = [];
     GenerateFieldContent('', {'type': 'string16',
                               'default': u'f\u00d8\u00d81a'},
                          None, lines, '  ', {})
-    self.assertEquals(['  u"f\\x00d8" u"\\x00d8" u"1a",'], lines)
+    self.assertEqual(['  u"f\\x00d8" u"\\x00d8" u"1a",'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'string16', 'default': 'foo'},
                          u'b\uc3a5r', lines, '  ', {})
-    self.assertEquals(['  u"b\\xc3a5" u"r",'], lines)
+    self.assertEqual(['  u"b\\xc3a5" u"r",'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'string16'}, None, lines, '  ', {})
-    self.assertEquals(['  nullptr,'], lines)
+    self.assertEqual(['  nullptr,'], lines)
     lines = []
     GenerateFieldContent('', {'type': 'string16'}, u'foo\\u1234', lines, '  ',
                          {})
-    self.assertEquals(['  u"foo\\\\u1234",'], lines)
+    self.assertEqual(['  u"foo\\\\u1234",'], lines)
 
   def testGenerateEnumFieldContent(self):
     lines = [];
     GenerateFieldContent('', {'type': 'enum', 'default': 'RED'}, None, lines,
                          '  ', {})
-    self.assertEquals(['  RED,'], lines)
+    self.assertEqual(['  RED,'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'enum', 'default': 'RED'}, 'BLACK', lines,
                          '  ', {})
-    self.assertEquals(['  BLACK,'], lines)
+    self.assertEqual(['  BLACK,'], lines)
     lines = [];
     GenerateFieldContent('', {'type': 'enum'}, 'BLUE', lines, '  ', {})
-    self.assertEquals(['  BLUE,'], lines)
+    self.assertEqual(['  BLUE,'], lines)
 
   def testGenerateClassFieldContent(self):
     lines = []
@@ -73,22 +73,22 @@ class ElementGeneratorTest(unittest.TestCase):
         'type': 'class',
         'default': 'std::nullopt'
     }, None, lines, '  ', {})
-    self.assertEquals(['  std::nullopt,'], lines)
+    self.assertEqual(['  std::nullopt,'], lines)
     lines = []
     GenerateFieldContent('', {
         'type': 'class',
         'default': 'std::nullopt'
     }, 'true', lines, '  ', {})
-    self.assertEquals(['  true,'], lines)
+    self.assertEqual(['  true,'], lines)
     lines = []
     GenerateFieldContent('', {'type': 'class'}, 'false', lines, '  ', {})
-    self.assertEquals(['  false,'], lines)
+    self.assertEqual(['  false,'], lines)
 
   def testGenerateArrayFieldContent(self):
     lines = ['STRUCT BEGINS'];
     GenerateFieldContent('test', {'type': 'array', 'contents': {'type': 'int'}},
                          None, lines, '  ', {})
-    self.assertEquals(['STRUCT BEGINS', '  {},'], lines)
+    self.assertEqual(['STRUCT BEGINS', '  {},'], lines)
     lines = ['STRUCT BEGINS']
     GenerateFieldContent('test', {
         'field': 'my_array',
@@ -97,7 +97,7 @@ class ElementGeneratorTest(unittest.TestCase):
             'type': 'int'
         }
     }, [3, 4], lines, '  ', {})
-    self.assertEquals(
+    self.assertEqual(
         'const int array_test_my_array[] = {\n' + '  3,\n' + '  4,\n' + '};\n' +
         'STRUCT BEGINS\n' + '  array_test_my_array,', '\n'.join(lines))
     lines = ['STRUCT BEGINS']
@@ -108,7 +108,7 @@ class ElementGeneratorTest(unittest.TestCase):
             'type': 'int'
         }
     }, [3, 4], lines, '  ', {'array_test_my_array': 1})
-    self.assertEquals(
+    self.assertEqual(
         'const int array_test_my_array_1[] = {\n' + '  3,\n' + '  4,\n' +
         '};\n' + 'STRUCT BEGINS\n' + '  array_test_my_array_1,',
         '\n'.join(lines))
@@ -168,7 +168,7 @@ class ElementGeneratorTest(unittest.TestCase):
         '  "foo",\n'
         '  SURE,\n'
         '  {},\n'
-        '  {0},\n'
+        '  {},\n'
         '  {},\n'
         '};\n',
         'elem1':
@@ -177,7 +177,7 @@ class ElementGeneratorTest(unittest.TestCase):
         '  "bar",\n'
         '  NOWAY,\n'
         '  {},\n'
-        '  {0},\n'
+        '  {},\n'
         '  {},\n'
         '};\n',
         'elem2':
@@ -190,7 +190,7 @@ class ElementGeneratorTest(unittest.TestCase):
         '  "foo_bar",\n'
         '  MAYBE,\n'
         '  array_elem2_f3,\n'
-        '  {0},\n'
+        '  {},\n'
         '  {},\n'
         '};\n',
         'elem3':
@@ -216,7 +216,7 @@ class ElementGeneratorTest(unittest.TestCase):
         '  "foo",\n'
         '  MAYBE,\n'
         '  {},\n'
-        '  {0},\n'
+        '  {},\n'
         '  array_elem4_f5,\n'
         '};\n'
     }
@@ -230,7 +230,7 @@ class ElementGeneratorTest(unittest.TestCase):
     expected += '\n'.join(elements)
 
     result = GenerateElements('MyType', schema, description)
-    self.assertEquals(expected, result)
+    self.assertEqual(expected, result)
 
   def testGenerateElementsMissingMandatoryField(self):
     schema = [

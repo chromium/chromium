@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">სიკაშკაშის მომატება</translation>
 <translation id="1680659827022803830">ვიდეოზარის სამართავი საშუალებები</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">ამ ფუნქციის გამორთვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-იანი ტაიმერი · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 მისამართი: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">აქტიური ფანჯარა ჩამაგრებულია მარცხნივ.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, დაინსტალირებული აპი, დაპაუზებული</translation>
 <translation id="4228078597006700451">მართვის დაუყენებელი საშუალებები</translation>
 <translation id="4230560241506423345">ახალი</translation>
+<translation id="4236726631849783264">შეხსენება შემოთავაზებული მოქმედებების შესახებ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">მიმოხილვის რეჟიმი</translation>
 <translation id="4242533952199664413">პარამეტრების გახსნა</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">მედია</translation>
 <translation id="4279490309300973883">არეკვლა</translation>
 <translation id="4280601795273309128">უსაფრთხოების განახლებები აღარ მოგეწოდებათ. განაახლეთ თქვენი მოწყობილობა.</translation>
-<translation id="4281739221820540368">Google Docs-ის შექმნა</translation>
 <translation id="4283888303416325161">დამატებითი უსაფრთხოებისთვის შეიყვანეთ პაროლი</translation>
 <translation id="4285498937028063278">ჩამაგრების მოხსნა</translation>
 <translation id="428715201724021596">მიმდინარეობს პროფილთან დაკავშირება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">მიმდინარეობს მეტყველების ამოცნობის ფაილების ჩამოტვირთვა... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{განაახლეთ მოწყობილობა ახლავე}=1{განაახლეთ მოწყობილობა 1 წამის განმავლობაში}other{განაახლეთ მოწყობილობა # წამის განმავლობაში}}</translation>
 <translation id="4472575034687746823">დაწყება</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">შემდეგი ჩანაწერი</translation>
 <translation id="4477751544736611934">ამის გამო, შესაძლოა, მობილური ინტერნეტის საფასურის გადახდა მოგიწიოთ.
 დაკავშირებულია 1 მოწყობილობა.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">მიმდინარე გვერდის შენახვა სანიშნეს სახით</translation>
 <translation id="4548482551627849548">აქტიური ფანჯრის გადატანა სამუშაო მაგიდაზე მარცხნივ</translation>
 <translation id="4552748006424994716">ექოს თავიდან ასაცილებლად მოუსმინეთ თქვენს მიკროფონს მხოლოდ სადენიანი ყურსასმენებით.</translation>
+<translation id="4556953949326137018">როცა იყენებთ შემოთავაზებულ მოქმედებებს, როგორიცაა „Calendar-ში დამატება“ ან „Google Docs-ის შექმნა“, მონიშნულ არეალზე არსებული კონტენტი გაეგზავნება Google სერვერებს, რომ შემოგთავაზოთ მოქმედებები. აღნიშნულზე ვრცელდება <ph name="LINK_TO_SERVICE_TERMS" />. ნუ მიუთითებთ პერსონალურ, სენსიტიურ და კონფიდენციალურ ინფორმაციას.</translation>
 <translation id="4560576029703263363">ჩართვა</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">პაროლის დამალვა</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">მომავალი</translation>
 <translation id="481749895090480684">ამოცანების სია: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">კამერა და მიკროფონი</translation>
+<translation id="4828935196674083554">მიმდინარეობს დამატება...</translation>
 <translation id="482908187605862807">ხელმისაწვდომი აპები Play Store-იდან</translation>
 <translation id="4831034276697007977">ნამდვილად გსურთ, გამორთოთ ავტომატური დაწკაპუნებები?</translation>
 <translation id="4835677468087803981">PIN-კოდის დამალვა</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ყველა შეტყობინების გასუფთავება</translation>
+<translation id="6426905245930183644">იქმნება…</translation>
 <translation id="6430225033895752525">ფოკუსირების რეჟიმის პარამეტრების ჩვენება</translation>
 <translation id="643147933154517414">ყველაფერი მზად არის</translation>
 <translation id="6431865393913628856">ეკრანის ჩანაწერი</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">ქვეამოცანა</translation>
 <translation id="6613765291890844037">გამოიყენება მეხსიერების <ph name="STORAGE_IN_USE_SIZE" /> | სულ ხელმისაწვდომია <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">კონფიდენციალურობის ეკრანი ჩართულია</translation>
-<translation id="6618277154885124991">Google Sheets-ის შექმნა</translation>
 <translation id="6622679827379792051">თქვენი ტელეფონის აპების ნახვის დაყენება</translation>
 <translation id="662279009180869175">გაყოფილი ეკრანის ზომის შესაცვლელად გამოიყენეთ კლავიშები მარცხნივ და მარჯვნივ მიმართული ისრით</translation>
 <translation id="6624493541160101248">ამჟამინდელი სამუშაო მაგიდა: <ph name="DESK_NAME" />. სამუშაო მაგიდა <ph name="DESK_INDEX" /> / <ph name="DESK_COUNT" />-დან.</translation>

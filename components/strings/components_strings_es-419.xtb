@@ -158,6 +158,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1264309058268477500">Alternativa</translation>
 <translation id="1264974993859112054">Deportes</translation>
 <translation id="1268480293435976622">Sobre chino n.º 7</translation>
+<translation id="1269045546668906972">Activa la función de Autocompletar con IA para completar automáticamente más campos</translation>
 <translation id="1269516672602708785">Crea un sitio nuevo en Google Sites rápidamente</translation>
 <translation id="1270328905573953738">Mudanzas y traslados</translation>
 <translation id="1270502636509132238">Método de retiro</translation>
@@ -603,6 +604,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2040894699575719559">Ubicación bloqueada</translation>
 <translation id="2041788246978549610">Usar los micrófonos disponibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
+<translation id="2043896419861982462">Para ocultar las opciones de pago en cuotas, ve a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Sobre Personal</translation>
 <translation id="2046951263634619614">Librerías</translation>
 <translation id="2048261947532620704">Traduciendo página</translation>
@@ -760,6 +762,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2293443924986248631">Cuando esta opción está activada, los sitios no pueden usar cookies para rastrearte en la Web. Es posible que las características de algunos sitios no funcionen de forma adecuada.</translation>
 <translation id="2295831393422400053">Activa el parámetro de configuración Mejorar las búsquedas y la navegación para usar la función Ayúdame a escribir</translation>
 <translation id="2296244067976588032">Llave de acceso • llavero de iCloud</translation>
+<translation id="2296331629987861142">Paga en cuotas sencillas (sujeto a elegibilidad; se aplican tarifas)</translation>
 <translation id="2300306941146563769">No se subió</translation>
 <translation id="2301098101308036335">Qué sitios web se visitan y cuándo.</translation>
 <translation id="230286397113210245">Botón Abrir ventana de incógnito: actívalo para abrir una nueva ventana de incógnito y así navegar de forma privada</translation>
@@ -1019,6 +1022,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2775884851269838147">Primera página de impresión</translation>
 <translation id="2781185443919227679">Islas y playas</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781799097551205934">Preparando la confirmación de la compra</translation>
 <translation id="2782088940970074970">Alquileres de automóviles</translation>
 <translation id="278436560439594386">Electrodomésticos</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -1046,6 +1050,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2859383374160668142">Puedes ver reducciones de precios de los productos que sigues en cualquier momento.</translation>
 <translation id="2859806420264540918">Este sitio muestra anuncios intrusivos o engañosos.</translation>
 <translation id="28618371182701850">Vehículos eléctricos y enchufables</translation>
+<translation id="287387905105155974">Cuadro de ayuda</translation>
 <translation id="28761159517501904">Películas</translation>
 <translation id="2876489322757410363">Saldrás del modo Incógnito para pagar mediante una aplicación externa. ¿Deseas continuar?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar tu Navegación segura y más en la configuración de Chrome</translation>
@@ -1105,6 +1110,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2959274854674276289">Cocina vegetariana</translation>
 <translation id="2961809451460302960">Seguro de vida</translation>
 <translation id="2962073860865348475">30.48 × 45.72 cm</translation>
+<translation id="2965779286557330949">Solo unos segundos más…</translation>
 <translation id="2967082089043584472">Se agregó a <ph name="SET" /></translation>
 <translation id="2967098518029543669">guárdala en tu Cuenta de Google</translation>
 <translation id="297173220375858963">Autoedición</translation>
@@ -1133,6 +1139,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3005723025932146533">Mostrar copia guardada</translation>
 <translation id="300580149047131921">Se usó recientemente</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab para explorar las acciones disponibles y, luego, presiona Intro para ejecutar la acción seleccionada.</translation>
+<translation id="3010991137650052245">Para usar tu <ph name="PERMISSION" /> en este sitio, otorga acceso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Productos para el hogar</translation>
 <translation id="3014553260345122294">Noticias de negocios</translation>
 <translation id="3014726756341138577">Funciones avanzadas de la impresora</translation>
@@ -1479,6 +1486,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3600106876108433070">Obtén más información sobre las tablas de comparación</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botón Administrar la configuración de privacidad de Google: actívalo para visitar la configuración de privacidad de tu Cuenta de Google</translation>
+<translation id="3602695245205338770">Elige un proveedor de pago a plazos</translation>
 <translation id="3603507503523709">El administrador bloqueó la aplicación</translation>
 <translation id="3605899229568538311">12.7 × 12.7 cm (5 × 5 in)</translation>
 <translation id="3606917451836803637">Programas de TV</translation>
@@ -1783,6 +1791,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">No se admite el alcance de la política.</translation>
+<translation id="411918202192379658">Autocompletar ahora es mejor</translation>
 <translation id="4121428309786185360">Vence el</translation>
 <translation id="4123572138124678573">Perforación triple en la parte inferior</translation>
 <translation id="412601465078863288">Se agotó el tiempo de espera para subir tus archivos</translation>
@@ -2171,6 +2180,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4819347708020428563">¿Quieres editar anotaciones en la vista predeterminada?</translation>
 <translation id="4822493756793346865">Los precios típicos se basan en las tiendas de toda la Web durante los últimos 90 días.</translation>
 <translation id="4822922322149719535">Revisar registro de errores</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> necesita acceso a tu <ph name="PERMISSION" /> en tu dispositivo</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva hoja de cálculo de Google rápidamente</translation>
 <translation id="4826588772550366629">cámara y micrófono</translation>
 <translation id="4827283332383516812">Borrar tarjeta</translation>
@@ -2275,6 +2285,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5002932099480077015">Si se habilita esta opción, Chrome almacenará una copia de la tarjeta en el dispositivo para llenar más rápidamente los formularios.</translation>
 <translation id="5007392906805964215">Revisar</translation>
+<translation id="5010599530303458903">Paga de forma mensual o en 4 cuotas sin intereses (sujeto a elegibilidad)</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
 <translation id="5015510746216210676">Nombre de la máquina:</translation>
 <translation id="5017554619425969104">Texto que copiaste</translation>
@@ -3242,6 +3253,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6706005862292023715">Cortinas y tratamientos de ventana</translation>
 <translation id="6706210727756204531">Alcance</translation>
 <translation id="6706678697074905703">No se pudo guardar este IBAN en tu Cuenta de Google. Se guardó en Chrome en este dispositivo.</translation>
+<translation id="6707388108229299854">Para obtener esta dirección en todos tus dispositivos, verifica tu identidad</translation>
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Escribe el término de búsqueda&gt;</translation>
@@ -3920,6 +3932,7 @@ Detalles adicionales:
 <translation id="7887885240995164102">Ingresar al modo de pantalla en pantalla</translation>
 <translation id="7888575728750733395">Propósito de conversión para impresión</translation>
 <translation id="7890748547282909375">Accede a Microsoft OneDrive para guardar la captura de pantalla</translation>
+<translation id="7892865709991296481">configuración de pagos</translation>
 <translation id="7894280532028510793">Si no hay errores, <ph name="BEGIN_LINK" />prueba ejecutar el diagnóstico de red<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Sobre de 17.7 × 22.8 cm</translation>
 <translation id="7905064834449738336">Cuando usas una contraseña, Chromium te advierte si se publicó en línea. Si lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>

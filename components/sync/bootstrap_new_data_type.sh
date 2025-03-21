@@ -75,11 +75,11 @@ if [[ "$?" -ne 0 ]]; then
 fi
 
 echo 'Cherry-picking template CL'
-git cl patch 5739234 &>/dev/null
+git cl patch 6382102 &>/dev/null
 # Avoid people uploading to the template CL.
 git cl issue 0 &>/dev/null
 if [[ "$?" -ne 0 ]]; then
-  echo 'Cherry-picking template CL (https://crrev.com/c/5739234) failed,
+  echo 'Cherry-picking template CL (https://crrev.com/c/6382102) failed,
   aborting. If the CL is healthy, rebase-update your checkout. Otherwise, ask
   components/sync/OWNERS to fix the CL'
   # Delete the new branch and go back to the previous one.

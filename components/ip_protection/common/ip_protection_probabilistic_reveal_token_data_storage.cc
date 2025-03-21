@@ -20,22 +20,23 @@
 namespace {
 
 // Version number of the database.
-const int kCurrentVersionNumber = 1;
+const int kCurrentVersionNumber = 2;
 
 // clang-format off
 static constexpr char kCreateProbabilisticRevealTokensTableSql[] =
   "CREATE TABLE IF NOT EXISTS tokens("
       "version INTEGER NOT NULL,"
-      "u TEXT NOT NULL,"
-      "e TEXT NOT NULL,"
+      "u BLOB NOT NULL,"
+      "e BLOB NOT NULL,"
+      "epoch_id BLOB NOT NULL,"
       "expiration INTEGER NOT NULL,"
       "num_tokens_with_signal INTEGER NOT NULL,"
-      "public_key TEXT NOT NULL)";
+      "public_key BLOB NOT NULL)";
 
 static constexpr char kInsertProbabilisticRevealTokenSql[] =
   "INSERT INTO tokens("
-      "version,u,e,expiration,num_tokens_with_signal,public_key) "
-      "VALUES(?,?,?,?,?,?)";
+      "version,u,e,epoch_id,expiration,num_tokens_with_signal,public_key) "
+      "VALUES(?,?,?,?,?,?,?)";
 // clang-format on
 
 }  // namespace
@@ -182,11 +183,12 @@ void IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome(
       return;
     }
     statement.BindInt64(0, token.version);
-    statement.BindString(1, token.u);
-    statement.BindString(2, token.e);
-    statement.BindInt64(3, outcome.expiration_time_seconds);
-    statement.BindInt64(4, outcome.num_tokens_with_signal);
-    statement.BindString(5, outcome.public_key);
+    statement.BindBlob(1, token.u);
+    statement.BindBlob(2, token.e);
+    statement.BindBlob(3, token.epoch_id);
+    statement.BindInt64(4, outcome.expiration_time_seconds);
+    statement.BindInt64(5, outcome.num_tokens_with_signal);
+    statement.BindBlob(6, outcome.public_key);
 
     if (!statement.Run()) {
       DLOG(ERROR) << "Could not insert Probabilistic Reveal Token: "

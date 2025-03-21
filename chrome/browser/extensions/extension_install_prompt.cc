@@ -635,12 +635,22 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/397754565): Implement a real dialog. This function always
+// accepts the install. On other platforms the implementation lives in the
+// directory //chrome/browser/ui/views/extensions.
+void AlwaysAcceptDialogCallback(
+    std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
+    ExtensionInstallPrompt::DoneCallback done_callback,
+    std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
+  NOTIMPLEMENTED() << "AlwaysAcceptDialogCallback";
+  std::move(done_callback)
+      .Run(ExtensionInstallPrompt::DoneCallbackPayload(
+          ExtensionInstallPrompt::Result::ACCEPTED));
+}
+
 // static
 ExtensionInstallPrompt::ShowDialogCallback
 ExtensionInstallPrompt::GetDefaultShowDialogCallback() {
-  // TODO(crbug.com/397754565): Implement this function. On other platforms
-  // the implementation lives in //chrome/browser/ui/views/extensions.
-  NOTIMPLEMENTED() << "GetDefaultShowDialogCallback";
-  return base::DoNothing();
+  return base::BindRepeating(&AlwaysAcceptDialogCallback);
 }
 #endif

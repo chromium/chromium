@@ -79,10 +79,13 @@ bool ArcDlcInstaller::IsDlcRequired() {
     return false;
   }
 
-  bool device_flex_arc_preload_enabled_allowed;
-
-  CHECK(cros_settings_->GetBoolean(ash::kDeviceFlexArcPreloadEnabled,
-                                   &device_flex_arc_preload_enabled_allowed));
+  bool device_flex_arc_preload_enabled_allowed = false;
+  if (!cros_settings_->GetBoolean(ash::kDeviceFlexArcPreloadEnabled,
+                                  &device_flex_arc_preload_enabled_allowed)) {
+    VLOG(1) << "Failed to get DeviceFlexArcPreloadEnabled policy; defaulting "
+               "to disabled.";
+    return false;
+  }
 
   if (!device_flex_arc_preload_enabled_allowed) {
     VLOG(1) << "Reven device cannot install arcvm images because the "

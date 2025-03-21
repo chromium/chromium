@@ -45,8 +45,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
-      bool show_back_button,
-      bool is_choose_an_account) override;
+      bool show_back_button) override;
   void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
                           const std::u16string& title) override;
 
@@ -63,10 +62,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   void ShowRequestPermissionDialog(
       const IdentityRequestAccountPtr& account) override;
-
-  void ShowSingleReturningAccountDialog(
-      const std::vector<IdentityRequestAccountPtr>& accounts,
-      const std::vector<IdentityProviderDataPtr>& idp_list) override;
 
   std::string GetDialogTitle() const override;
 
@@ -102,13 +97,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // Invoked whenever the expandable account chooser is scrolled.
   void OnExpandableAccountsScrolled();
-
-  // Returns a View containing a single returning account as well as a button to
-  // 'choose an account' which will show all accounts and IDPs that are
-  // available.
-  std::unique_ptr<views::View> CreateSingleReturningAccountChooser(
-      const std::vector<IdentityRequestAccountPtr>& accounts,
-      const std::vector<IdentityProviderDataPtr>& idp_list);
 
   // Returns a view containing a button for the user to login to an IDP for
   // which there was a login status mismatch, to be used in the multiple account

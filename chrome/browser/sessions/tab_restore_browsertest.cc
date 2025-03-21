@@ -54,6 +54,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/content_test_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -621,6 +622,72 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroup) {
       browser()->tab_strip_model()->group_model();
   EXPECT_EQ(group_model->GetTabGroup(restored_group_id)->ListTabs(),
             gfx::Range(2, 4));
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       PRE_RestoringAllTabsInWindowRemovesEntryFromService) {
+  AddFileSchemeTabs(browser(), 1);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       RestoringAllTabsInWindowRemovesEntryFromService) {
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(service);
+  EXPECT_EQ(1u, service->entries().size());
+
+  sessions::tab_restore::Entry* entry = service->entries().front().get();
+  ASSERT_EQ(sessions::tab_restore::WINDOW, entry->type);
+
+  auto* window = static_cast<sessions::tab_restore::Window*>(entry);
+  ASSERT_EQ(2u, window->tabs.size());
+
+  SessionID tab_1_id = window->tabs[0]->id;
+  SessionID tab_2_id = window->tabs[1]->id;
+
+  // Restoring the first tab from the window should keep the window entry.
+  service->RestoreEntryById(browser()->live_tab_context(), tab_1_id,
+                            WindowOpenDisposition::NEW_WINDOW);
+  EXPECT_EQ(1u, service->entries().size());
+
+  // Restoring the last tab from the window should remove the window entry.
+  service->RestoreEntryById(browser()->live_tab_context(), tab_2_id,
+                            WindowOpenDisposition::NEW_WINDOW);
+  EXPECT_EQ(0u, service->entries().size());
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       RestoringAllTabsInGroupRemovesEntryFromService) {
+  AddFileSchemeTabs(browser(), 3);
+
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  CloseGroup(group);
+
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(service);
+  EXPECT_EQ(1u, service->entries().size());
+
+  sessions::tab_restore::Entry* entry = service->entries().front().get();
+  ASSERT_EQ(sessions::tab_restore::GROUP, entry->type);
+
+  auto* tab_group = static_cast<sessions::tab_restore::Group*>(entry);
+  ASSERT_EQ(2u, tab_group->tabs.size());
+
+  SessionID tab_1_id = tab_group->tabs[0]->id;
+  SessionID tab_2_id = tab_group->tabs[1]->id;
+
+  // Restoring the first tab from the group should keep the group entry.
+  service->RestoreEntryById(browser()->live_tab_context(), tab_1_id,
+                            WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_EQ(1u, service->entries().size());
+
+  // Restoring the last tab from the group should remove the group entry.
+  service->RestoreEntryById(browser()->live_tab_context(), tab_2_id,
+                            WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_EQ(0u, service->entries().size());
 }
 
 // Verifies that restoring a grouped tab in a browser that does not support tab
@@ -1677,7 +1744,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroupInNewWindow) {
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
   CloseTab(closed_tab_index);
-  chrome::MoveTabsToNewWindow(browser(), {0}, group);
+  chrome::MoveGroupToNewWindow(browser(), group);
 
   // Expect the tab to be restored to the new window, inside the group.
   ASSERT_NO_FATAL_FAILURE(RestoreTab(1, closed_tab_index));

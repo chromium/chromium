@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,8 @@
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/pickle.h"
+#include "net/base/pickle_traits.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_response_headers.h"
@@ -171,6 +174,19 @@ TEST_P(NoVarySearchCacheTest, InsertLookupErase) {
   EXPECT_TRUE(cache().IsTopLevelMapEmptyForTesting());
 }
 
+TEST_P(NoVarySearchCacheTest, MoveConstruct) {
+  Insert("a=b", "key-order");
+
+  NoVarySearchCache new_cache = std::move(cache());
+
+  EXPECT_TRUE(new_cache.Lookup(TestRequest("a=b")));
+
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(cache().GetSizeForTesting(), 0u);
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(cache().IsTopLevelMapEmptyForTesting());
+}
+
 // An asan build will find leaks, but this test works on any build.
 TEST_P(NoVarySearchCacheTest, QueryNotLeaked) {
   std::optional<NoVarySearchCache::LookupResult> result;
@@ -185,10 +201,16 @@ TEST_P(NoVarySearchCacheTest, QueryNotLeaked) {
   EXPECT_TRUE(result->erase_handle.IsGoneForTesting());
 }
 
+std::string QueryWithIParameter(size_t i) {
+  return "i=" + base::NumberToString(i);
+}
+
+constexpr std::string_view kVaryOnIParameter = "params, except=(\"i\")";
+
 TEST_P(NoVarySearchCacheTest, OldestItemIsEvicted) {
   for (size_t i = 0; i < kMaxSize + 1; ++i) {
-    std::string query = "i=" + base::NumberToString(i);
-    Insert(query, "params, except=(\"i\")");
+    std::string query = QueryWithIParameter(i);
+    Insert(query, kVaryOnIParameter);
     EXPECT_TRUE(Exists(query));
   }
 
@@ -199,8 +221,8 @@ TEST_P(NoVarySearchCacheTest, OldestItemIsEvicted) {
 
 TEST_P(NoVarySearchCacheTest, RecentlyUsedItemIsNotEvicted) {
   for (size_t i = 0; i < kMaxSize + 1; ++i) {
-    std::string query = "i=" + base::NumberToString(i);
-    Insert(query, "params, except=(\"i\")");
+    std::string query = QueryWithIParameter(i);
+    Insert(query, kVaryOnIParameter);
     EXPECT_TRUE(Exists(query));
     // Exists() calls Lookup(), which makes an entry "used".
     EXPECT_TRUE(Exists("i=0"));
@@ -213,11 +235,10 @@ TEST_P(NoVarySearchCacheTest, RecentlyUsedItemIsNotEvicted) {
 }
 
 TEST_P(NoVarySearchCacheTest, MostRecentlyUsedItemIsNotEvicted) {
-  static constexpr char kNoVarySearchValue[] = "params, except=(\"i\")";
-  const auto query = [](int i) { return "i=" + base::NumberToString(i); };
+  const auto query = QueryWithIParameter;
   // Fill the cache.
   for (size_t i = 0; i < kMaxSize; ++i) {
-    Insert(query(i), kNoVarySearchValue);
+    Insert(query(i), kVaryOnIParameter);
   }
   EXPECT_EQ(cache().GetSizeForTesting(), kMaxSize);
 
@@ -226,7 +247,7 @@ TEST_P(NoVarySearchCacheTest, MostRecentlyUsedItemIsNotEvicted) {
 
   // Evict kMaxSize - 1 items.
   for (size_t i = kMaxSize; i < kMaxSize * 2 - 1; ++i) {
-    Insert(query(i), kNoVarySearchValue);
+    Insert(query(i), kVaryOnIParameter);
     EXPECT_TRUE(Exists(query(i)));
   }
 
@@ -236,11 +257,10 @@ TEST_P(NoVarySearchCacheTest, MostRecentlyUsedItemIsNotEvicted) {
 }
 
 TEST_P(NoVarySearchCacheTest, LeastRecentlyUsedItemIsEvicted) {
-  static constexpr char kNoVarySearchValue[] = "params, except=(\"i\")";
-  const auto query = [](int i) { return "i=" + base::NumberToString(i); };
+  const auto query = QueryWithIParameter;
   // Fill the cache.
   for (size_t i = 0; i < kMaxSize; ++i) {
-    Insert(query(i), kNoVarySearchValue);
+    Insert(query(i), kVaryOnIParameter);
   }
   EXPECT_EQ(cache().GetSizeForTesting(), kMaxSize);
 
@@ -250,7 +270,7 @@ TEST_P(NoVarySearchCacheTest, LeastRecentlyUsedItemIsEvicted) {
   }
 
   // Evict one item.
-  Insert(query(kMaxSize), kNoVarySearchValue);
+  Insert(query(kMaxSize), kVaryOnIParameter);
 
   // Verify it was the least-recently-used item.
   EXPECT_FALSE(Exists(query(kMaxSize - 1)));
@@ -319,8 +339,7 @@ TEST_P(NoVarySearchCacheTest, InsertWithBaseURLMatchingEvicted) {
   cache().MaybeInsert(my_test_request("will-be-evicted"),
                       TestHeaders("key-order"));
   for (size_t i = 1; i < kMaxSize; ++i) {
-    std::string query = "i=" + base::NumberToString(i);
-    Insert(query, "params, except=(\"i\")");
+    Insert(QueryWithIParameter(i), kVaryOnIParameter);
   }
   EXPECT_EQ(cache().GetSizeForTesting(), kMaxSize);
 
@@ -336,8 +355,7 @@ TEST_P(NoVarySearchCacheTest, InsertWithBaseURLMatchingEvicted) {
 TEST_P(NoVarySearchCacheTest, InsertWithNoVarySearchValueMatchingEvicted) {
   Insert("will-be-evicted", "params=(\"ignored\")");
   for (size_t i = 1; i < kMaxSize; ++i) {
-    std::string query = "i=" + base::NumberToString(i);
-    Insert(query, "params, except=(\"i\")");
+    Insert(QueryWithIParameter(i), kVaryOnIParameter);
   }
   EXPECT_EQ(cache().GetSizeForTesting(), kMaxSize);
 
@@ -744,6 +762,114 @@ TEST_P(NoVarySearchCacheTest, ClearDataNoMatch) {
   EXPECT_FALSE(cleared);
   EXPECT_EQ(cache().GetSizeForTesting(), 1u);
   EXPECT_TRUE(Exists("a=1"));
+}
+
+std::optional<NoVarySearchCache> TestPickleRoundTrip(
+    const NoVarySearchCache& cache) {
+  base::Pickle pickle;
+  WriteToPickle(pickle, cache);
+  // The estimate of PickeSize should always be correct.
+  EXPECT_EQ(EstimatePickleSize(cache), pickle.payload_size());
+  auto maybe_cache = ReadValueFromPickle<NoVarySearchCache>(pickle);
+  if (!maybe_cache) {
+    return std::nullopt;
+  }
+
+  EXPECT_EQ(cache.GetSizeForTesting(), maybe_cache->GetSizeForTesting());
+  return maybe_cache;
+}
+
+TEST_P(NoVarySearchCacheTest, SerializeDeserializeEmpty) {
+  EXPECT_TRUE(TestPickleRoundTrip(cache()));
+}
+
+TEST_P(NoVarySearchCacheTest, SerializeDeserializeSimple) {
+  Insert("b=1", "key-order");
+  Insert("c&d", "key-order");
+  Insert("f=3", "params=(\"a\")");
+
+  auto new_cache = TestPickleRoundTrip(cache());
+  ASSERT_TRUE(new_cache);
+
+  const auto lookup = [&](std::string_view params) {
+    return new_cache->Lookup(TestRequest(params));
+  };
+
+  auto maybe_handle1 = lookup("b=1");
+  auto maybe_handle2 = lookup("d&c");
+  auto maybe_handle3 = lookup("f=3&a=7");
+
+  ASSERT_TRUE(maybe_handle1);
+  ASSERT_TRUE(maybe_handle2);
+  ASSERT_TRUE(maybe_handle3);
+
+  new_cache->Erase(std::move(maybe_handle1->erase_handle));
+  new_cache->Erase(std::move(maybe_handle2->erase_handle));
+  new_cache->Erase(std::move(maybe_handle3->erase_handle));
+
+  EXPECT_EQ(new_cache->GetSizeForTesting(), 0u);
+  EXPECT_TRUE(new_cache->IsTopLevelMapEmptyForTesting());
+}
+
+TEST_P(NoVarySearchCacheTest, SerializeDeserializeFull) {
+  for (size_t i = 0; i < kMaxSize; ++i) {
+    Insert(QueryWithIParameter(i), kVaryOnIParameter);
+  }
+
+  auto new_cache = TestPickleRoundTrip(cache());
+  ASSERT_TRUE(new_cache);
+
+  for (size_t i = 0; i < kMaxSize; ++i) {
+    EXPECT_TRUE(new_cache->Lookup(TestRequest(QueryWithIParameter(i))));
+  }
+}
+
+TEST_P(NoVarySearchCacheTest, DeserializeBadSizes) {
+  struct TestCase {
+    std::string_view test_description;
+    int size;
+    int max_size;
+    int map_size;
+  };
+  static constexpr auto kTestCases = std::to_array<TestCase>({
+      {"Negative size", -1, 1, 0},
+      {"Size larger than max_size", 2, 1, 0},
+      {"Size bigger than map contents", 1, 1, 0},
+      {"Negative max_size", 0, -1, 0},
+      {"Zero max_size", 0, 0, 0},
+      {"Negative map size", 0, 1, -1},
+      {"Map size larger than map contents", 0, 1, 1},
+  });
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.test_description);
+    base::Pickle pickle;
+    // This uses the fact that containers use an integer for size.
+    WriteToPickle(pickle, test_case.size, test_case.max_size,
+                  test_case.map_size);
+    EXPECT_FALSE(ReadValueFromPickle<NoVarySearchCache>(pickle));
+  }
+}
+
+// A truncated Pickle should never deserialize to a NoVarySearchCache object.
+// This tests covers many different checks for bad data during deserialization.
+TEST_P(NoVarySearchCacheTest, TruncatedPickle) {
+  Insert("a=9&b=1", "params=(\"a\")");
+  Insert("a=8&b=2", "params=(\"a\")");
+  Insert("f=3", "params, except=(\"f\")");
+  Insert("", "params, except=(\"f\")");
+
+  base::Pickle pickle;
+  WriteToPickle(pickle, cache());
+
+  // Go up in increments of 4 bytes because a Pickle with a size that is not a
+  // multiple of 4 is invalid in a way that is not interesting to this test.
+  for (size_t bytes = 4u; bytes < pickle.payload_size(); bytes += 4) {
+    SCOPED_TRACE(bytes);
+    base::Pickle truncated;
+    truncated.WriteBytes(pickle.payload_bytes().first(bytes));
+    EXPECT_FALSE(ReadValueFromPickle<NoVarySearchCache>(truncated));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

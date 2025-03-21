@@ -50,12 +50,12 @@ export class CrRadioGroupElement extends CrLitElement {
     };
   }
 
-  disabled: boolean = false;
-  selected?: string;
-  selectableElements: string =
+  accessor disabled: boolean = false;
+  accessor selected: string|undefined;
+  accessor selectableElements: string =
       'cr-radio-button, cr-card-radio-button, controlled-radio-button';
-  nestedSelectable: boolean = false;
-  private selectableRegExp_: RegExp = new RegExp('');
+  accessor nestedSelectable: boolean = false;
+  private accessor selectableRegExp_: RegExp = new RegExp('');
 
   private buttons_: CrRadioButtonElement[]|null = null;
   private buttonEventTracker_: EventTracker = new EventTracker();

@@ -51,7 +51,7 @@ MotionEventAndroidNative::MotionEventAndroidNative(
     bool for_touch_handle,
     const Pointer* const pointer0,
     const Pointer* const pointer1,
-    int y_offset_pix)
+    float y_offset_pix)
     : MotionEventAndroid(pix_to_dip,
                          ticks_x,
                          ticks_y,
@@ -82,7 +82,7 @@ MotionEventAndroidNative::MotionEventAndroidNative(
 std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
     base::android::ScopedInputEvent input_event,
     float pix_to_dip,
-    int y_offset_pix) {
+    float y_offset_pix) {
   const AInputEvent* event = input_event.a_input_event();
 
   CHECK(event != nullptr);

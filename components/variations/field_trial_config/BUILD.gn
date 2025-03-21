@@ -8,6 +8,7 @@ action("field_trial_testing_config_action") {
 
   source = "//testing/variations/fieldtrial_testing_config.json"
   inputs = [
+    "//tools/json_to_struct/aggregation.py",
     "//tools/json_to_struct/element_generator.py",
     "//tools/json_to_struct/java_element_generator.py",
     "//tools/json_to_struct/json_to_struct.py",

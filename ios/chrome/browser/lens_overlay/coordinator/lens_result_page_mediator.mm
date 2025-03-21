@@ -532,7 +532,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   _webState->AddObserver(_webStateObserverBridge.get());
   _policyDeciderBridge =
       std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
-  AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
+  AttachTabHelpers(_webState.get(), TabHelperFilter::kLensOverlay);
   id<CRWWebViewProxy> webViewProxy = _webState->GetWebViewProxy();
   webViewProxy.allowsBackForwardNavigationGestures = NO;
   // Allow the scrollView to cover the safe area.

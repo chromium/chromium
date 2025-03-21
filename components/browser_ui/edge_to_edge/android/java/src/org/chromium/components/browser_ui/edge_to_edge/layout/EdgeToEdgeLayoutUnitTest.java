@@ -271,6 +271,11 @@ public class EdgeToEdgeLayoutUnitTest {
         measureAndLayoutRootView(400, 600);
         assertPaddings(/* left= */ 0, /* top= */ CAPTION_BAR_SIZE, /* right= */ 0, /* bottom= */ 0);
 
+        assertEquals(
+                "Caption bar rect should be showing.",
+                new Rect(0, 0, 400, CAPTION_BAR_SIZE),
+                mEdgeToEdgeLayout.getCaptionBarRectForTesting());
+
         // Both status bar and navigation bar should be empty.
         assertEquals(
                 "Status bar insets should be empty.",

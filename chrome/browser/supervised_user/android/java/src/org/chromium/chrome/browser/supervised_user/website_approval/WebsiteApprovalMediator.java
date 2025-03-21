@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.supervised_user.website_approval;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -17,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Contains the logic for the WebsiteApproval component. It sets the state of the model and reacts
  * to events like clicks.
  */
+@NullMarked
 class WebsiteApprovalMediator {
     private final WebsiteApprovalCoordinator.CompletionCallback mCompletionCallback;
     private final BottomSheetController mBottomSheetController;
@@ -61,6 +65,7 @@ class WebsiteApprovalMediator {
         // use the full account email address.
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
+        assumeNonNull(identityManager);
         String childEmail =
                 CoreAccountInfo.getEmailFrom(
                         identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));

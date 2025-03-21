@@ -45,15 +45,13 @@ class MessagingBackendService : public KeyedService,
     using SuccessCallback = base::OnceCallback<void(bool)>;
 
     // Invoked when the frontend needs to display an instant message.
-    // If `messages` contains more than one message, then it means that they are
-    // of the same type and are meant to be aggregated to be shown as a
-    // single message in the UI. When a decision has been made whether it
-    // can be displayed or not, invoke `success_callback` with `true` if it was
-    // displayed, and `false` otherwise. This enables the backend to either:
+    // When a decision has been made whether it can be displayed or not, invoke
+    // `success_callback` with `true` if it was displayed, and `false`
+    // otherwise. This enables the backend to either:
     // *   Success: Clear the message from internal storage.
     // *   Failure: Prepare the message to be redelivered at a later time.
     virtual void DisplayInstantaneousMessage(
-        const std::vector<InstantMessage>& messages,
+        InstantMessage message,
         SuccessCallback success_callback) = 0;
   };
 

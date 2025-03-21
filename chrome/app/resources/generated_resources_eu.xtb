@@ -616,7 +616,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="142655739075382478">Blokeatuta dago <ph name="APP_NAME" /></translation>
 <translation id="1427179946227469514">Testua ahots bihurtzeko eginbidearen tonua</translation>
 <translation id="1427269577154060167">Herrialdea</translation>
-<translation id="1427506552622340174">Egin klik eskuineko botoiarekin konfiantza handiagoz idazteko, edukia laburbiltzeko, definizioak lortzeko eta abar. Oraingoz, erabilgarritasun mugatua du.</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> aplikazioaren lizentzia iraungi egin da</translation>
 <translation id="1428373049397869723">Onartzen diren fitxategiak aplikazio honekin ireki ditzakezu Finder-etik edo beste aplikazio batzuetatik. Aplikazio hau modu lehenetsian zein fitxategik irekitzen duten kontrolatzeko, <ph name="BEGIN_LINK" />lortu gailuaren aplikazio lehenetsiak ezartzeko argibideak<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Webgune honetako pasahitz bati buruzko ohar bat gorde duzu. Hura ikusteko, joan bilaketa- eta helbide-barrara eta hautatu Kudeatu pasahitzak.</translation>
@@ -1880,6 +1879,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Fitxategia ez zegoen eskuragarri webgunean</translation>
 <translation id="2300383962156589922">Pertsonalizatu eta kontrolatu <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Ziurtagiri osoen adierazpenak</translation>
 <translation id="2301382460326681002">Luzapenaren erro-direktorioak ez du balio.</translation>
 <translation id="2301402091755573488">Partekatutako fitxa</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Arazketa-eginbideak<ph name="END_H3" />
@@ -10518,7 +10518,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8452105022015742247">Android-eko telefonotik Google-ko kontuaren informazioa transferitzen</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> gailura konektatuta</translation>
 <translation id="8456067150616457342">Ezarri arakatzaile lehenetsia</translation>
-<translation id="8456200178779628126">Erabili Google-ren AA irakurtzeko eta idazteko laguntza jasotzeko</translation>
 <translation id="845702320058262034">Ezin da konektatu. Ziurtatu telefonoaren Bluetootha aktibatuta dagoela.</translation>
 <translation id="8457251154056341970">Utzi egingo diozu orri honetan <ph name="MODULE_NAME" /> ikusteari</translation>
 <translation id="8457451314607652708">Inportatu laster-markak</translation>
@@ -11413,7 +11412,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9074739597929991885">Bluetootha</translation>
 <translation id="9074836595010225693">USB sagua konektatu da</translation>
 <translation id="9075413375877487220">"Arakatze seguru hobetua" eginbideak ez du jotzen fidagarritzat luzapena.</translation>
-<translation id="9075985558450420812">Idatzi eskaera-mezu pertsonalizatu bat edo nabarmendu testua irudi bat sortzeko.</translation>
 <translation id="9076523132036239772">Ezin izan da helbide elektronikoa edo pasahitza egiaztatu. Saiatu sare batera konektatzen lehendabizi.</translation>
 <translation id="9076821103818989526">Alboko panela</translation>
 <translation id="9076977315710973122">SMB bidez partekatzea</translation>

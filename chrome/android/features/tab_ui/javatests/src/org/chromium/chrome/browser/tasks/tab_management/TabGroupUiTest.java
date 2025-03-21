@@ -327,7 +327,7 @@ public class TabGroupUiTest {
                                     .getTabGroupModelFilterProvider()
                                     .getTabGroupModelFilter(false);
                     filter.mergeListOfTabsToGroup(
-                            List.of(tab), filter.getTabAt(0), /* notify= */ false);
+                            List.of(tab), filter.getRepresentativeTabAt(0), /* notify= */ false);
                 });
         ViewUtils.waitForVisibleView(
                 allOf(

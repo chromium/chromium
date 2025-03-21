@@ -145,23 +145,18 @@ AshTestBase::~AshTestBase() {
 }
 
 void AshTestBase::SetUp() {
-  SetUp(nullptr);
-}
-
-void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   // At this point, the task APIs should already be provided by
   // |task_environment_|.
   CHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
   CHECK(base::ThreadPoolInstance::Get());
 
   setup_called_ = true;
-
-  init_params_.delegate = std::move(delegate);
-  init_params_.local_state = local_state();
+  CHECK(!init_params_->local_state) << "local state can not be overridden";
+  init_params_->local_state = local_state();
   // AshTestBase destroys the Screen instance at the destructor,
   // because some of the tests verifies the screen instance
   // after the ash::Shell destroyed in AshTestHelper::TearDown().
-  init_params_.destroy_screen = false;
+  init_params_->destroy_screen = false;
 
   // Prepare for a pixel test if having pixel init params.
   std::optional<pixel_test::InitParams> pixel_test_init_params =
@@ -176,7 +171,8 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
       std::make_unique<ui::TestContextFactories>(/*enable_pixel_output=*/false);
   ash_test_helper_ = std::make_unique<AshTestHelper>(
       test_context_factories_->GetContextFactory());
-  ash_test_helper_->SetUp(std::move(init_params_));
+  ash_test_helper_->SetUp(std::move(*init_params_));
+  init_params_.reset();
 
   // Call `StabilizeUI()` after the user session is activated (if any) in the
   // test setup.

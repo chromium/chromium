@@ -250,4 +250,16 @@ BASE_FEATURE(kExportFrameTimingAfterFrameDone,
              "ExportFrameTimingAfterFrameDone",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kInternalBeginFrameSourceOnManyDidNotProduceFrame,
+             "InternalBeginFrameSourceOnManyDidNotProduceFrame",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// By default, internal begin frame source will be used when 4 consecutive
+// "did not produce frame" are observed. It stops using internal begin frame
+// source when there's a submitted compositor frame.
+const base::FeatureParam<int>
+    kNumDidNotProduceFrameBeforeInternalBeginFrameSource{
+        &kInternalBeginFrameSourceOnManyDidNotProduceFrame,
+        "num_did_not_produce_frame_before_internal_begin_frame_source", 4};
+
 }  // namespace features

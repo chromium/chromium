@@ -148,9 +148,9 @@ TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupRemovedFromLocal) {
 
 TEST_F(TabGroupSyncCoordinatorTest, ReconcileGroupsToSync) {
   group_1_.SetLocalGroupId(local_group_id_1_);
-  std::vector<SavedTabGroup> groups = {group_1_};
+  std::vector<const SavedTabGroup*> groups = {&group_1_};
 
-  EXPECT_CALL(*service_, GetAllGroups()).WillRepeatedly(Return(groups));
+  EXPECT_CALL(*service_, ReadAllGroups()).WillRepeatedly(Return(groups));
   EXPECT_CALL(*service_, GetGroup(group_1_.saved_guid()))
       .WillRepeatedly(Return(group_1_));
 
@@ -162,8 +162,8 @@ TEST_F(TabGroupSyncCoordinatorTest, ReconcileGroupsToSync) {
 TEST_F(TabGroupSyncCoordinatorTest,
        SaveUnsavedLocalGroupsOnStartupForFirstTimeFeatureLaunch) {
   pref_service_.SetBoolean(prefs::kDidSyncTabGroupsInLastSession, false);
-  EXPECT_CALL(*service_, GetAllGroups())
-      .WillRepeatedly(Return(std::vector<SavedTabGroup>()));
+  EXPECT_CALL(*service_, ReadAllGroups())
+      .WillRepeatedly(Return(std::vector<const SavedTabGroup*>()));
 
   LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
   EXPECT_CALL(*service_,
@@ -181,8 +181,8 @@ TEST_F(TabGroupSyncCoordinatorTest,
 
 TEST_F(TabGroupSyncCoordinatorTest, CloseUnsavedLocalGroupsOnStartup) {
   pref_service_.SetBoolean(prefs::kDidSyncTabGroupsInLastSession, true);
-  EXPECT_CALL(*service_, GetAllGroups())
-      .WillRepeatedly(Return(std::vector<SavedTabGroup>()));
+  EXPECT_CALL(*service_, ReadAllGroups())
+      .WillRepeatedly(Return(std::vector<const SavedTabGroup*>()));
 
   LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
   EXPECT_CALL(*service_,

@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/test/kiosk_session_initialized_waiter.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -39,6 +39,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -171,7 +173,7 @@ class WebKioskCrashRestoreTest : public KioskCrashRestoreTest {
 
 IN_PROC_BROWSER_TEST_F(WebKioskCrashRestoreTest, ShouldRelaunchCrashedWebApp) {
   // Wait for the kiosk app to launch (through the crash recovery flow).
-  KioskSessionInitializedWaiter().Wait();
+  ASSERT_TRUE(WaitKioskLaunched());
   // Check there was no launch error.
   EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
 }

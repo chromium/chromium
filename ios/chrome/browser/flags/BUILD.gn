@@ -65,7 +65,6 @@ source_set("flags") {
     "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_store_rating/ui_bundled:features",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/credential_provider/model:features",

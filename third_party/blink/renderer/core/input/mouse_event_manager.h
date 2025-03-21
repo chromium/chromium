@@ -171,11 +171,6 @@ class CORE_EXPORT MouseEventManager final
     const WebMouseEvent* web_mouse_event_;
   };
 
-  // If the given element is a shadow host and its root has delegatesFocus=false
-  // flag, slide focus to its inner element. Returns true if the resulting focus
-  // is different from the given element.
-  bool SlideFocusOnShadowHostIfNecessary(const Element&);
-
   bool DragThresholdExceeded(const gfx::Point&) const;
   bool HandleDrag(const MouseEventWithHitTestResults&, DragInitiator);
   bool TryStartDrag(const MouseEventWithHitTestResults&);

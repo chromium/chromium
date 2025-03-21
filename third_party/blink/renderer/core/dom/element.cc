@@ -712,23 +712,19 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   // Also note that if this node is ignored due to a display lock for focus
   // activation reason, we simply return false to avoid updating style & layout
   // tree for this node.
-  if (update_behavior == UpdateBehavior::kStyleAndLayout) {
-    // This update is needed in the case that this element is inside a
-    // content-visibility:hidden element which hasn't gotten a
-    // DisplayLockContext created for it yet. Without this DisplayLockContext,
-    // DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock won't find the
-    // content-visibility:hidden ancestor and will erroneously tell us that
-    // there is no DisplayLocked ancestor, which will make this method return
-    // true instead of false.
-    GetDocument().UpdateStyleAndLayoutTree();
-  }
   if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
           *this, DisplayLockActivationReason::kUserFocus)) {
     return false;
   }
   if (update_behavior == UpdateBehavior::kStyleAndLayout) {
     GetDocument().UpdateStyleAndLayoutTreeForElement(
-        this, DocumentUpdateReason::kFocus);
+        this, DocumentUpdateReason::kFocus, /*only_cv_auto=*/true);
+    // Look for ancestors with DisplayLockContext again since the previous
+    // update to style and layout may have created one.
+    if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+            *this, DisplayLockActivationReason::kUserFocus)) {
+      return false;
+    }
   } else {
     DCHECK(!NeedsStyleRecalc()) << this;
   }
@@ -3772,6 +3768,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
       data->ClearPseudoElements();
       data->ClearContainerQueryData();
       data->ClearOutOfFlowData();
+      data->RemoveScrollMarkerGroupData();
     } else if (data->GetOutOfFlowData()) {
       GetDocument()
           .GetStyleEngine()
@@ -4538,6 +4535,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
       }
       data->SetContainerQueryEvaluator(nullptr);
       data->ClearPseudoElements();
+      data->RemoveScrollMarkerGroupData();
     }
   }
   SetComputedStyle(new_style);
@@ -4553,6 +4551,15 @@ StyleRecalcChange Element::RecalcOwnStyle(
       (old_style && new_style &&
        old_style->ContainsStyle() != new_style->ContainsStyle())) {
     GetDocument().GetStyleEngine().MarkCountersDirty();
+  }
+
+  if (new_style && !new_style->ScrollMarkerContainNone()) {
+    GetDocument().AddScrollMarkerGroup(&EnsureScrollMarkerGroupData());
+  }
+
+  if (old_style && !old_style->ScrollMarkerContainNone() && new_style &&
+      new_style->ScrollMarkerContainNone()) {
+    RemoveScrollMarkerGroupData();
   }
 
   bool old_style_has_scroll_marker_group =
@@ -10957,8 +10964,7 @@ void Element::RebuildTransitionPseudoLayoutTree(
       [&whitespace_attacher](PseudoElement* pseudo_element) {
         pseudo_element->RebuildLayoutTree(whitespace_attacher);
       };
-  ViewTransitionUtils::ForEachTransitionPseudo(GetDocument(),
-                                               rebuild_pseudo_tree);
+  ViewTransitionUtils::ForEachTransitionPseudo(*this, rebuild_pseudo_tree);
 }
 
 bool Element::IsInertRoot() const {
@@ -11435,6 +11441,35 @@ void Element::RemoveAnchorPositionScrollData() {
 AnchorPositionScrollData* Element::GetAnchorPositionScrollData() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->GetAnchorPositionScrollData();
+  }
+  return nullptr;
+}
+
+ScrollMarkerGroupData& Element::EnsureScrollMarkerGroupData() {
+  return EnsureElementRareData().EnsureScrollMarkerGroupData(this);
+}
+
+void Element::RemoveScrollMarkerGroupData() {
+  if (ElementRareDataVector* data = GetElementRareData()) {
+    GetDocument().RemoveScrollMarkerGroup(data->GetScrollMarkerGroupData());
+    data->RemoveScrollMarkerGroupData();
+  }
+}
+
+ScrollMarkerGroupData* Element::GetScrollMarkerGroupData() const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetScrollMarkerGroupData();
+  }
+  return nullptr;
+}
+
+void Element::SetScrollMarkerGroupContainerData(ScrollMarkerGroupData* data) {
+  return EnsureElementRareData().SetScrollMarkerGroupContainerData(data);
+}
+
+ScrollMarkerGroupData* Element::GetScrollMarkerGroupContainerData() const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetScrollMarkerGroupContainerData();
   }
   return nullptr;
 }

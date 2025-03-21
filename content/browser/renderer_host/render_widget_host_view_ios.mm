@@ -926,6 +926,18 @@ void RenderWidgetHostViewIOS::StopAutoscroll() {
   input_handler->StopAutoscroll();
 }
 
+void RenderWidgetHostViewIOS::RectForEditFieldChars(
+    const gfx::Range& range,
+    blink::mojom::FrameWidgetInputHandler::RectForEditFieldCharsCallback
+        callback) {
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+  if (!input_handler) {
+    std::move(callback).Run(gfx::Rect());
+    return;
+  }
+  input_handler->RectForEditFieldChars(range, std::move(callback));
+}
+
 gfx::Size RenderWidgetHostViewIOS::GetCompositorViewportPixelSize() {
   return gfx::ScaleToCeiledSize(
       IsTesting() ? GetRequestedRendererSize() : GetScreenInfo().rect.size(),

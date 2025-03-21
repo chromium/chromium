@@ -1580,12 +1580,6 @@ Se questa policy non viene configurata, inizialmente Traduzione dal Vivo sarà d
       Se questa impostazione viene disattivata, <ph name="PRODUCT_NAME" /> non rileverà quando una finestra è coperta da altre finestre.
 
       Se questa policy non viene impostata, il rilevamento della copertura della finestra verrà attivato.</translation>
-<translation id="2132424782557550556">Configura le policy del reporting su cloud.
-
-      Se la policy <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurata o viene disattivata, queste policy vengono ignorate.
-
-      Le policy vengono applicate solo se la macchina è registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
-      Le policy vengono sempre applicate per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2134437727173969994">Consenti blocco dello schermo</translation>
 <translation id="2135335181634291106">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'assegnazione di un valore alla policy <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> consente di specificare l'URL dell'icona preferita del provider di ricerca predefinito.
 

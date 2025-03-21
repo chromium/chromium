@@ -267,6 +267,7 @@
 <translation id="1175572348579024023">スクロール</translation>
 <translation id="1175914831232945926">1 桁ずつ</translation>
 <translation id="1176471985365269981">デバイスのファイルやフォルダの編集を許可しないサイト</translation>
+<translation id="1176864681932214421">AI で画像を作成</translation>
 <translation id="1177073277575830464">Android のクイック セットアップが完了しました。<ph name="DEVICE_TYPE" /> で設定を続行してください。</translation>
 <translation id="1177440945615690056">[設定] で、有効なモバイル ネットワークであればどれでも接続できます</translation>
 <translation id="1177548198167638471">今後表示しない</translation>
@@ -616,7 +617,6 @@
 <translation id="142655739075382478"><ph name="APP_NAME" /> はブロックされています</translation>
 <translation id="1427179946227469514">テキスト読み上げの音声の高さ</translation>
 <translation id="1427269577154060167">国</translation>
-<translation id="1427506552622340174">右クリックで確実な文章を作成したり、内容を要約したり、定義を取得したりできます。現在、限定的にご利用いただけます。</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> のライセンスの有効期限が切れています</translation>
 <translation id="1428373049397869723">Finder からこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />デバイスでデフォルトのアプリを設定する方法<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="1428657116642077141">このサイトでパスワードのメモを保存しました。メモを表示するには、検索バーとアドレスバーでパスワードの管理を選択します。</translation>
@@ -3576,6 +3576,7 @@
 <translation id="3503995387997205657">前回のアプリを復元できます</translation>
 <translation id="3505100368357440862">おすすめのショッピング情報</translation>
 <translation id="3507132249039706973">標準保護機能がオンになっています</translation>
+<translation id="3507650052590605702">パスワードを管理</translation>
 <translation id="3507888235492474624">Bluetooth デバイスを再スキャン</translation>
 <translation id="3508492320654304609">ログインデータを削除できませんでした</translation>
 <translation id="3508920295779105875">別のフォルダを選択...</translation>
@@ -3677,6 +3678,7 @@
 <translation id="3582057310199111521">不正なサイトで入力、データ侵害で漏洩</translation>
 <translation id="3582299299336701326">明るい画面が暗くなり、暗い画面が明るくなります。色反転のオンとオフを切り替えるには、検索+Ctrl+H キーを押します。</translation>
 <translation id="3584169441612580296">パソコンからの写真、音楽、その他のメディアの読み取りと変更</translation>
+<translation id="3586741240886978899">このサイトで使用</translation>
 <translation id="3586806079541226322">このファイルを開けません</translation>
 <translation id="3586931643579894722">詳細を非表示</translation>
 <translation id="3587279952965197737"><ph name="MAX_CHARACTER_COUNT" /> 文字以下にしてください</translation>
@@ -9337,6 +9339,7 @@
 <translation id="7650582458329409456">{COUNT,plural, =1{1 件の指紋が設定されています}other{{COUNT} 件の指紋が設定されています}}</translation>
 <translation id="7650677314924139716">現在のデータ使用設定は「Wi-Fi のみ」です</translation>
 <translation id="7650920359639954963">無効: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">すべてのデバイスでこのブックマークを使用するには、本人確認を行ってください</translation>
 <translation id="7651400349472467012">インスタント アクセス ポイントを利用できます</translation>
 <translation id="7651784568388208829">スマートフォン ハブの作業の継続</translation>
 <translation id="765293928828334535">このウェブサイトからアプリ、拡張機能、ユーザー スクリプトを追加することはできません</translation>
@@ -9375,6 +9378,7 @@
 <translation id="7670434942695515800">最適なパフォーマンスで使用するには、最新バージョンにアップグレードしてください。アップグレードを完了できない場合に備えて、ファイルをバックアップしておくことをおすすめします。アップグレードが始まると、Linux はシャットダウンされます。続行する前に開いているファイルを保存してください。<ph name="LINK_START" />詳細<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">字幕</translation>
 <translation id="7671130400130574146">システム タイトル バーと枠線の使用</translation>
+<translation id="7671139479636735732">右クリックでアイデアを簡単に視覚化</translation>
 <translation id="767127784612208024">リセットを確定するにはタップしてください</translation>
 <translation id="7671472752213333268">「<ph name="EXTENSION_NAME" />」が「<ph name="SCANNER_NAME" />」のスキャンをリクエストしています。</translation>
 <translation id="7672504401554182757"><ph name="APP_NAME" /> のパスキーがあるデバイスを選択してください</translation>
@@ -9394,6 +9398,9 @@
 <translation id="7680416688940118410">タッチスクリーンの調整</translation>
 <translation id="7681095912841365527">サイトに Bluetooth の使用が許可されています</translation>
 <translation id="7681597159868843240">多くのサイトは、バーチャル リアリティやフィットネス トラッキングなどの機能にデバイスのモーション センサーを使用します</translation>
+<translation id="7681757571815416227"><ph name="DOMAIN" /> プロフィールでデバイスを使用するには、デバイスに関する情報を組織に提供する必要があります。
+
+これには、インストールしたソフトウェア、ファイル、ブラウザ、デバイスのオペレーティング システム、IP アドレスに関する情報が含まれます。</translation>
 <translation id="7683373461016844951">利用を続けるには、[OK]、[ユーザーを追加] の順にクリックして、<ph name="DOMAIN" /> のメールアドレス用の新しいプロフィールを作成してください。</translation>
 <translation id="7683834360226457448">ロービジョン表示ツール</translation>
 <translation id="7684212569183643648">管理者によりインストールされています</translation>
@@ -10174,6 +10181,7 @@
 <translation id="8217399928341212914">複数ファイルの自動ダウンロードを今後もブロックする</translation>
 <translation id="8219785583603399823">このショップの評価を確認</translation>
 <translation id="822050276545350872">今後は待つ必要はありません</translation>
+<translation id="8221942262855134126">パスワードを管理</translation>
 <translation id="8222112516148944758">タブグループは自動的に保存され、すべてのデバイスで更新されます。</translation>
 <translation id="8222674561049363989">ファイルは有効なドキュメントではありません</translation>
 <translation id="822347941086490485">HID デバイスを検出しています...</translation>
@@ -10510,7 +10518,6 @@
 <translation id="8452105022015742247">Android スマートフォンから Google アカウント情報を転送しています</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> に接続しました</translation>
 <translation id="8456067150616457342">既定のブラウザの設定</translation>
-<translation id="8456200178779628126">Google AI による文書作成や読み取りのサポートを使用する</translation>
 <translation id="845702320058262034">接続できません。スマートフォンの Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="8457251154056341970">今後このページで <ph name="MODULE_NAME" /> は表示されません</translation>
 <translation id="8457451314607652708">ブックマークをインポート</translation>
@@ -10965,6 +10972,9 @@
 <translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> のすべての検索を表示</translation>
 <translation id="8767621466733104912">すべてのユーザーに対して Chrome を自動的に更新</translation>
 <translation id="8768049274922835860">全員</translation>
+<translation id="8769047324653576116">組織のプロフィールでデバイスを使用するには、デバイスに関する情報を組織に提供する必要があります。
+
+これには、インストールしたソフトウェア、ファイル、ブラウザ、デバイスのオペレーティング システム、IP アドレスに関する情報が含まれます。</translation>
 <translation id="876956356450740926">デベロッパー ツール、IDE、エディタを実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">拡張機能のルート ディレクトリ</translation>
 <translation id="8773535891252326047">選択箇所にリンクをコピーしました</translation>
@@ -11405,7 +11415,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB マウスが接続されました</translation>
 <translation id="9075413375877487220">この拡張機能は、セーフ ブラウジング保護強化機能で信頼されていません。</translation>
-<translation id="9075985558450420812">カスタムのプロンプトを入力するかテキストをハイライト表示して画像を作成します。</translation>
 <translation id="9076523132036239772">メール アドレスまたはパスワードを確認できませんでした。まずネットワークに接続してください。</translation>
 <translation id="9076821103818989526">サイドパネル</translation>
 <translation id="9076977315710973122">SMB 共有</translation>

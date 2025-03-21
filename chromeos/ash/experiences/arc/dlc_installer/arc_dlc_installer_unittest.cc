@@ -36,6 +36,9 @@ class ArcDlcInstallerTest : public testing::Test {
         std::make_unique<ash::FakeCrosSettingsProvider>(base::DoNothing());
     fake_provider_ = provider.get();
     cros_settings_->AddSettingsProvider(std::move(provider));
+    // TODO(b/405341089): Update fake provider to accept unset value for
+    // specific path.
+    fake_provider_->Set(ash::kDeviceFlexArcPreloadEnabled, base::Value());
     arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>(
         std::move(fake_factory), std::move(fake_hardware_checker),
         cros_settings_.get());
@@ -86,9 +89,23 @@ TEST_F(ArcDlcInstallerTest, MaybeEnableArc_UnmanagedDevice) {
       base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
 }
 
+// Verify that the hardware check is not run to install
+// the ARCVM DLC image when the kDeviceFlexArcPreloadEnabled policy is unset.
+TEST_F(ArcDlcInstallerTest, MaybeEnableArc_WithPolicyUnset) {
+  test_install_attributes_.Get()->SetCloudManaged("example.com",
+                                                  "fake-device-id");
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kRevenBranding);
+  // Add arcvm-dlc command flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVmDlc);
+  arc_dlc_installer_->PrepareArc(
+      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
+}
+
 // Verify that the hardware check is not being run to install
 // the arcvm DLC image when kDeviceFlexArcPreloadEnabled policy is off.
-TEST_F(ArcDlcInstallerTest, MaybeEnableArc_WithFlagOff) {
+TEST_F(ArcDlcInstallerTest, MaybeEnableArc_WithPolicyOff) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(

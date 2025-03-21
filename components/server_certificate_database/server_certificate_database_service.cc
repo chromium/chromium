@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/server_certificate_database/server_certificate_database.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/metrics/histogram_functions.h"
@@ -38,9 +39,10 @@ ServerCertificateDatabaseService::ServerCertificateDatabaseService(
 #endif
 {
   server_cert_database_ = base::SequenceBound<net::ServerCertificateDatabase>(
-      base::ThreadPool::CreateSequencedTaskRunner(
+      base::ThreadPool::CreateSequencedTaskRunnerForResource(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+          profile_path_.Append(kServerCertificateDatabaseName)),
       profile_path_);
 }
 

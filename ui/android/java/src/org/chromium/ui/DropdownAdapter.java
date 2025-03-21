@@ -123,7 +123,7 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
         }
 
         labelView.setEnabled(item.isEnabled());
-        if (item.isGroupHeader() || item.isBoldLabel()) {
+        if (item.isGroupHeader()) {
             labelView.setTypeface(null, Typeface.BOLD);
         } else {
             labelView.setTypeface(null, Typeface.NORMAL);

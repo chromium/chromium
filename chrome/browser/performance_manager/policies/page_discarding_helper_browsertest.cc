@@ -51,7 +51,7 @@ namespace performance_manager::policies {
 
 namespace {
 
-using DiscardReason = PageDiscardingHelper::DiscardReason;
+using DiscardReason = DiscardEligibilityPolicy::DiscardReason;
 
 class FaviconWatcher final : public content::WebContentsObserver {
  public:
@@ -245,11 +245,12 @@ class PageDiscardingHelperBrowserTest
     base::WeakPtr<PageNode> page_node = GetPageNodeAtIndex(index);
 
     ASSERT_TRUE(page_node);
-    auto* helper = PageDiscardingHelper::GetFromGraph(page_node->GetGraph());
-    ASSERT_TRUE(helper);
+    auto* eligibility_policy =
+        DiscardEligibilityPolicy::GetFromGraph(page_node->GetGraph());
+    ASSERT_TRUE(eligibility_policy);
     EXPECT_EQ(
-        helper->IsPageOptedOutOfDiscarding(page_node->GetBrowserContextID(),
-                                           page_node->GetMainFrameUrl()),
+        eligibility_policy->IsPageOptedOutOfDiscarding(
+            page_node->GetBrowserContextID(), page_node->GetMainFrameUrl()),
         expect_opted_out);
     EXPECT_EQ(
         freezing_opt_out_checker.IsPageOptedOutOfFreezing(
@@ -265,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
   // Test urgent and proactive discards in a loop to avoid the overhead of
   // starting a new browser every time.
   // TODO(crbug.com/40899366): Add tests for all the other heuristics in
-  // PageDiscardingHelper::CanDiscard().
+  // DiscardEligibilityPolicy::CanDiscard().
   for (auto discard_reason :
        {DiscardReason::EXTERNAL, DiscardReason::URGENT,
         DiscardReason::PROACTIVE, DiscardReason::SUGGESTED,
@@ -358,14 +359,15 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, NoDiscardPatterns) {
     base::test::TestFuture<std::string_view> policy_changed_future;
     auto policy_changed_callback = policy_changed_future.GetRepeatingCallback();
 
-    auto* helper =
-        PageDiscardingHelper::GetFromGraph(PerformanceManager::GetGraph());
-    ASSERT_TRUE(helper);
+    auto* eligibility_policy =
+        DiscardEligibilityPolicy::GetFromGraph(PerformanceManager::GetGraph());
+    ASSERT_TRUE(eligibility_policy);
     std::unique_ptr<FreezingOptOutChecker> freezing_opt_out_checker =
-        std::make_unique<FreezingOptOutChecker>(helper->GetWeakPtr());
+        std::make_unique<FreezingOptOutChecker>(
+            eligibility_policy->GetWeakPtr());
 
-    helper->SetNoDiscardPatternsForProfile(default_browser_context_id,
-                                           {base_url_pattern});
+    eligibility_policy->SetNoDiscardPatternsForProfile(
+        default_browser_context_id, {base_url_pattern});
 
     // The callback wasn't set during SetNoDiscardPatternsForProfile(),
     // which should safely do nothing. Future calls should notify the
@@ -393,7 +395,8 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, NoDiscardPatterns) {
     }
 
     // Empty pattern list.
-    helper->SetNoDiscardPatternsForProfile(default_browser_context_id, {});
+    eligibility_policy->SetNoDiscardPatternsForProfile(
+        default_browser_context_id, {});
 
     EXPECT_EQ(policy_changed_future.Take(), default_browser_context_id);
 
@@ -405,7 +408,8 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, NoDiscardPatterns) {
     ExpectImmediateDiscard(index2, discard_reason, true);
 
     // Delete pattern list.
-    helper->ClearNoDiscardPatternsForProfile(default_browser_context_id);
+    eligibility_policy->ClearNoDiscardPatternsForProfile(
+        default_browser_context_id);
 
     EXPECT_EQ(policy_changed_future.Take(), default_browser_context_id);
 
@@ -444,11 +448,14 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
     base::WeakPtr<PageNode> discard_target_page_node = GetPageNodeAtIndex(1);
     ASSERT_TRUE(discard_target_page_node);
     Graph* graph = PerformanceManager::GetGraph();
+    auto* eligibility_policy = DiscardEligibilityPolicy::GetFromGraph(graph);
+    ASSERT_TRUE(eligibility_policy);
+    EXPECT_EQ(CanDiscardResult::kEligible,
+              eligibility_policy->CanDiscard(discard_target_page_node.get(),
+                                             DiscardReason::URGENT,
+                                             base::TimeDelta()));
     auto* helper = PageDiscardingHelper::GetFromGraph(graph);
     ASSERT_TRUE(helper);
-    EXPECT_EQ(CanDiscardResult::kEligible,
-              helper->CanDiscard(discard_target_page_node.get(),
-                                 DiscardReason::URGENT, base::TimeDelta()));
     std::optional<base::TimeTicks> first_discarded_at =
         helper->DiscardAPage(DiscardReason::URGENT, base::TimeDelta());
 
@@ -510,11 +517,14 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
     base::WeakPtr<PageNode> discard_target_page_node = GetPageNodeAtIndex(1);
     ASSERT_TRUE(discard_target_page_node);
     Graph* graph = PerformanceManager::GetGraph();
+    auto* eligibility_policy = DiscardEligibilityPolicy::GetFromGraph(graph);
+    ASSERT_TRUE(eligibility_policy);
+    EXPECT_EQ(CanDiscardResult::kEligible,
+              eligibility_policy->CanDiscard(discard_target_page_node.get(),
+                                             DiscardReason::URGENT,
+                                             base::TimeDelta()));
     auto* helper = PageDiscardingHelper::GetFromGraph(graph);
     ASSERT_TRUE(helper);
-    EXPECT_EQ(CanDiscardResult::kEligible,
-              helper->CanDiscard(discard_target_page_node.get(),
-                                 DiscardReason::URGENT, base::TimeDelta()));
     std::optional<base::TimeTicks> first_discarded_at =
         helper->DiscardAPage(DiscardReason::URGENT, base::TimeDelta());
 

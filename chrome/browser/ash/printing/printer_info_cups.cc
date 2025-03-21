@@ -96,8 +96,14 @@ void OnPrinterQueried(ash::PrinterInfoCallback callback,
       printer_info.document_formats, IsAutoconf(printer_info),
       {.oauth_server = printer_info.oauth_server,
        .oauth_scope = printer_info.oauth_scope},
-      {printer_info.document_formats, printer_info.document_format_default,
-       printer_info.document_format_preferred});
+      {/*document_formats=*/printer_info.document_formats,
+       /*document_format_default=*/printer_info.document_format_default,
+       /*document_format_preferred=*/printer_info.document_format_preferred,
+       /*urf_supported=*/printer_info.urf_supported,
+       /*pdf_versions=*/printer_info.pdf_versions,
+       /*ipp_features=*/printer_info.ipp_features,
+       /*mopria_certified=*/printer_info.mopria_certified,
+       /*printer_kind=*/printer_info.printer_kind});
 }
 
 }  // namespace

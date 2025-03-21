@@ -94,4 +94,10 @@ struct SpeculationCandidate {
 
   // The way in which the speculation rules were injected.
   SpeculationInjectionType injection_type = kNone;
+
+  // A list of string tags which are associated with the speculation candidate,
+  // and it is optional as both null and empty are valid values. Null and empty
+  // string will be stored as they are into the vector.
+  // Explainer: https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
+  array<string?> tags;
 };

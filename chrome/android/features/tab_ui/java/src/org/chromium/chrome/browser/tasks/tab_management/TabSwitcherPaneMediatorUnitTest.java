@@ -105,6 +105,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     private Tab mUngroupedTab;
     private Tab mGroupedTab1;
     private Tab mGroupedTab2;
+    private List<Tab> mTabList;
     private TabSwitcherPaneMediator mMediator;
 
     @Before
@@ -125,6 +126,8 @@ public class TabSwitcherPaneMediatorUnitTest {
         mUngroupedTab.setRootId(UNGROUPED_TAB_ID);
         mGroupedTab1.setRootId(GROUPED_TAB_1_ID);
         mGroupedTab2.setRootId(GROUPED_TAB_1_ID);
+        mTabList = List.of(mUngroupedTab, mGroupedTab1);
+        when(mTabGroupModelFilter.getRepresentativeTabList()).thenReturn(mTabList);
         when(mTabGroupModelFilter.getRelatedTabList(UNGROUPED_TAB_ID))
                 .thenReturn(List.of(mUngroupedTab));
         when(mTabGroupModelFilter.getRelatedTabList(GROUPED_TAB_1_ID))
@@ -133,9 +136,9 @@ public class TabSwitcherPaneMediatorUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(mGroupedTab1)).thenReturn(true);
         when(mTabGroupModelFilter.isTabInTabGroup(mGroupedTab2)).thenReturn(true);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.indexOf(mUngroupedTab)).thenReturn(0);
-        when(mTabGroupModelFilter.indexOf(mGroupedTab1)).thenReturn(1);
-        when(mTabGroupModelFilter.indexOf(mGroupedTab2)).thenReturn(1);
+        when(mTabGroupModelFilter.representativeIndexOf(mUngroupedTab)).thenReturn(0);
+        when(mTabGroupModelFilter.representativeIndexOf(mGroupedTab1)).thenReturn(1);
+        when(mTabGroupModelFilter.representativeIndexOf(mGroupedTab2)).thenReturn(1);
 
         when(mTabGridDialogController.getHandleBackPressChangedSupplier())
                 .thenReturn(mDialogBackPressChangedSupplier);
@@ -267,7 +270,7 @@ public class TabSwitcherPaneMediatorUnitTest {
         // When the filter is set we need to show tabs when visible if the restore already finished.
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         verify(mTabGroupModelFilter, times(2)).addObserver(mTabModelObserverCaptor.capture());
-        verify(mResetHandler).resetWithTabList(mTabGroupModelFilter, false);
+        verify(mResetHandler).resetWithListOfTabs(mTabList);
     }
 
     @Test
@@ -275,7 +278,7 @@ public class TabSwitcherPaneMediatorUnitTest {
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         observer.restoreCompleted();
-        verify(mResetHandler).resetWithTabList(mTabGroupModelFilter, false);
+        verify(mResetHandler).resetWithListOfTabs(mTabList);
     }
 
     @Test
@@ -304,7 +307,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Test
     public void testRequestAccessibilityFocusOnCurrentTab() {
         int index = 5;
-        when(mTabGroupModelFilter.index()).thenReturn(index);
+        when(mTabGroupModelFilter.getCurrentRepresentativeTabIndex()).thenReturn(index);
         mMediator.requestAccessibilityFocusOnCurrentTab();
 
         assertEquals(index, mModel.get(FOCUS_TAB_INDEX_FOR_ACCESSIBILITY).intValue());
@@ -378,7 +381,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Test
     public void testScrollToTab() {
         int index = 5;
-        when(mTabGroupModelFilter.index()).thenReturn(index);
+        when(mTabGroupModelFilter.getCurrentRepresentativeTabIndex()).thenReturn(index);
 
         mMediator.setInitialScrollIndexOffset();
         assertEquals(index, mModel.get(INITIAL_SCROLL_INDEX).intValue());
@@ -409,7 +412,7 @@ public class TabSwitcherPaneMediatorUnitTest {
 
         mMediator.addCustomView(
                 mCustomView, mCustomViewBackPressRunnable, /* clearTabList= */ true);
-        verify(mResetHandler).resetWithTabList(null, false);
+        verify(mResetHandler).resetWithListOfTabs(null);
         verify(mContainerView).addView(mCustomView);
         verify(mTabListEditorController).hide();
         when(mTabListEditorController.isVisible()).thenReturn(false);
@@ -429,7 +432,7 @@ public class TabSwitcherPaneMediatorUnitTest {
 
         mMediator.addCustomView(
                 mCustomView, mCustomViewBackPressRunnable, /* clearTabList= */ false);
-        verify(mResetHandler, never()).resetWithTabList(null, false);
+        verify(mResetHandler, never()).resetWithListOfTabs(null);
         verify(mContainerView).addView(mCustomView);
         verify(mTabGridDialogController).hideDialog(false);
         when(mTabGridDialogController.isVisible()).thenReturn(false);

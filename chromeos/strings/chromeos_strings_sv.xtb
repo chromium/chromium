@@ -5,6 +5,7 @@
 <translation id="1014750484722996375">Skrivbord</translation>
 <translation id="1018219910092211213">Det gick inte att matcha DNS</translation>
 <translation id="1018656279737460067">Avbröts</translation>
+<translation id="1019971142067430077">Det går inte att skapa inspelningstitlar för det här innehållet</translation>
 <translation id="1020274983236703756">Exklusiva <ph name="PRODUCT_NAME" />-tillgångar är nu tillgängliga</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="102432830749687801">Se till att använda appen Innehållsöverföring från Google för att flytta data från ditt skolkonto till ditt personliga konto innan du förlorar åtkomsten.</translation>
@@ -101,6 +102,7 @@
 <translation id="1418991483994088776">orkidé</translation>
 <translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Jag har ett nyckelpar</translation>
+<translation id="1422912431241997307">Titeln har redigerats</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> har inte tryckts ned</translation>
 <translation id="1432110487435300883">Om du vill ha ett ungefärligt resultat dividerar du värdet för <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Dataanvändningen återställs automatiskt den angivna dagen i månaden</translation>
@@ -342,6 +344,7 @@
 <translation id="2418150275289244458">Öppna i inställningarna</translation>
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="242825218556404975">Inget tal har identifierats</translation>
+<translation id="2438248248625638801">Skapar inspelningstitlar</translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2468124392950503650">Välj en prompt för att skapa eller läs <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptguiden<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
@@ -420,6 +423,7 @@
 <translation id="2873483161362553159">Webbläsarnavigering</translation>
 <translation id="2874939134665556319">Föregående spår</translation>
 <translation id="2875812231449496375">Aktivera detta för bästa resultat med den här bakgrunden. Du kan inaktivera den här inställningen när som helst.</translation>
+<translation id="2878126681324394319">Ladda ned modell för sammanfattning och skapande av titlar</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> urladdat på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="2880569433548999039">Skärmsläckare med moln</translation>
 <translation id="2882230315487799269">Anpassa AI-prompt</translation>
@@ -492,6 +496,7 @@
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>
 <translation id="3305294846493618482">mer</translation>
 <translation id="3310640316857623290">DNS-latensen är avsevärt högre än det godtagbara tröskelvärdet</translation>
+<translation id="3316495615885967552">Nedladdning av modell för sammanfattning och skapande av titlar har slutförts</translation>
 <translation id="3321030238473337787">Uppspelningshastighet</translation>
 <translation id="3327613592010997943">Du kan använda enheten igen <ph name="DAY" /> kl. <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Testet körs</translation>
@@ -582,6 +587,7 @@
 <translation id="3767737419527918477">Sök efter inspelningsfiler</translation>
 <translation id="3771294271822695279">Videofiler</translation>
 <translation id="3771694256347217732">Googles användarvillkor</translation>
+<translation id="3772164567520167489">Det går inte att skapa inspelningstitlar för det här transkriptionsspråket</translation>
 <translation id="3780740315729837296">Tilldela en tangent</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="3785643128701396311">pixelkonst</translation>
@@ -596,6 +602,7 @@
 <translation id="3845880861638660475">Tryck på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> för att stänga dialogrutan.</translation>
 <translation id="3848280697030027394">mörkare tangentbord</translation>
 <translation id="385051799172605136">Föregående</translation>
+<translation id="3852931845120288955">Titel (A till Ö)</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3862598938296403232">Beskrivning krävs</translation>
 <translation id="386280020966669610">Inspirera mig</translation>
@@ -650,6 +657,7 @@
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Spara testinformation</translation>
 <translation id="409469431304488632">Experiment</translation>
+<translation id="4095155732125588500">Nedladdning av modell för sammanfattning och skapande av titlar pågår</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Välj detta album: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-styrplatta</translation>
@@ -674,6 +682,7 @@
 <translation id="4171077696775491955">minska ljusstyrkan</translation>
 <translation id="4176463684765177261">Inaktiverad</translation>
 <translation id="4176659219503619100">Kontrollpanel</translation>
+<translation id="4192913637640303603">Det går inte att skapa inspelningstitlar</translation>
 <translation id="4193496492959950834">Inställningar för Ljudinspelare</translation>
 <translation id="4198398257084619072">pandor</translation>
 <translation id="420283545744377356">Inaktivera skärmsläckare</translation>
@@ -956,6 +965,7 @@
 <translation id="550600468576850160">en äng</translation>
 <translation id="551689408806449779">Enheten har kopplats från. Försök att återansluta för att testa</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="552644173505433109">Läs mer om sammanfattning och skapandet av titlar</translation>
 <translation id="5527146180235316490">Mikrofonalternativ</translation>
 <translation id="5534900277405737921">Terräng</translation>
 <translation id="554067135846762198">korallrött och beige</translation>
@@ -1054,6 +1064,7 @@
 <translation id="5982621672636444458">Sorteringsalternativ</translation>
 <translation id="5984145644188835034">Standardbakgrund</translation>
 <translation id="5996832681196460718">siden</translation>
+<translation id="6016750809509395299">Genererade titlar:</translation>
 <translation id="6017514345406065928">Grön</translation>
 <translation id="6019566113895157499">Kortkommandon</translation>
 <translation id="6034694447310538551">Aktivera automatisk månadsåterställning</translation>
@@ -1091,6 +1102,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">Det går inte att ansluta till internet</translation>
 <translation id="6156030503438652198">rödbrunt och rosa</translation>
+<translation id="6163318050265152852">Det går inte att skapa titlar. Prova med en kortare transkription.</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6185263894115593524">Återställ för att förhindra att andra använder din mikrofon eller kamera. Bevilja endast behörigheter till webbplatser som du litar på.</translation>
@@ -1170,6 +1182,7 @@
 <translation id="6500818810472529210">Visa resultat på Google Sök</translation>
 <translation id="650266656685499220">Besök Google Foto om du vill skapa album</translation>
 <translation id="6505750420152840539">Morgon till kväll</translation>
+<translation id="6515056490985026110">Det går inte att skapa titlar. Testa med en längre transkription.</translation>
 <translation id="6516990319416533844">Om du vill testa batteriets laddningshastighet låter du det laddas ur under en kortare period</translation>
 <translation id="6517239166834772319">Utforska</translation>
 <translation id="6526200165918397681">Matcha bakgrund</translation>
@@ -1255,11 +1268,13 @@
 <translation id="6910312834584889076">Skannerns lucka är öppen. Stäng luckan och försök igen.</translation>
 <translation id="6910845598686542904">Sammanställ modeller av rösterna som identifieras i inspelningen</translation>
 <translation id="6911383237894364323">Det gick inte att ansluta till medieservrarna</translation>
+<translation id="6926069762081461162">Inspelningstitel</translation>
 <translation id="6930242544192836755">Varaktighet</translation>
 <translation id="6930597342185648547">Om bakgrunden</translation>
 <translation id="6939766318048400022">Kafé</translation>
 <translation id="6942253772720771875">Ge feedback eller beskriv problemet</translation>
 <translation id="6943893908656559156">Fjärridentitet (valfritt)</translation>
+<translation id="694981048020558038">Sök efter inspelningstitel</translation>
 <translation id="6953137545147683679">guldig</translation>
 <translation id="6957231940976260713">Namn på tjänsten</translation>
 <translation id="695776212669661671">högerpil</translation>
@@ -1334,6 +1349,7 @@
 <translation id="7216409898977639127">Mobiloperatör</translation>
 <translation id="7223952304612664117">Detta gör att systemtjänster kan använda Platsangivelsens exakthet för att fastställa din plats. Platsangivelsens exakthet använder information om trådlösa signaler och sensorer för att beräkna enhetens plats.</translation>
 <translation id="7233782086689993269">Genvägen har återställts</translation>
+<translation id="723419678599947502">Skapa en titel med Google AI</translation>
 <translation id="725133483556299729">Välj e-postadress</translation>
 <translation id="7255187042098209569">rosa och lila</translation>
 <translation id="7267918995585557751">Återställ för att kontrollera att standardstartfliken inte är en nätfiskewebbplats. Använd bara webbplatser som du litar på.</translation>
@@ -1482,6 +1498,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7897043345768902965">gångväg</translation>
 <translation id="7902285181767404769">Stäng av aviseringsljud under inspelning</translation>
 <translation id="7903695460270716054">Välj handplockade konstverk och bilder</translation>
+<translation id="7908543555831145677">Inspelningstitlar har skapats</translation>
 <translation id="7912005977894000746">Tillbaka till huvudsidan</translation>
 <translation id="7915220255123750251">Hantera APN-inställningar för nätverket. APN upprättar en anslutning mellan ett mobilnätverk och internet.</translation>
 <translation id="7915759923880480519">Återställ för att skydda data som skickas via dina nätverk. Använd endast nätverk du litar på.</translation>
@@ -1566,6 +1583,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8262870577632766028">1 timme</translation>
 <translation id="827422111966801947">Indigoblå</translation>
+<translation id="8280687443902283243">Redigera titel</translation>
 <translation id="8286154143153872371">Anslut till ett nätverk och läs in sidan igen för att se bakgrunden.</translation>
 <translation id="8291967909914612644">Hemleverantörens land</translation>
 <translation id="8294431847097064396">Källa</translation>
@@ -1573,6 +1591,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8308787307410010965">Inställningar för webbplatsinnehåll</translation>
 <translation id="8312330582793120272">spela upp media</translation>
 <translation id="8318753676953949627">Inga bilder</translation>
+<translation id="8319809980370328428">Sammanfatta och ge titlar till inspelningar</translation>
 <translation id="8320910311642849813">en skog</translation>
 <translation id="8322464149031882595">Klicka för att gå vidare</translation>
 <translation id="8329018942023753850">appen kalkylator</translation>

@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +31,6 @@
 #include "services/image_annotation/image_annotation_service.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/platform/ax_platform.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
@@ -196,7 +196,7 @@ bool AccessibilityLabelsService::IsEnabled() {
 
 void AccessibilityLabelsService::EnableLabelsServiceOnce(
     content::WebContents* web_contents) {
-  if (!ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
+  if (!accessibility_state_utils::IsScreenReaderEnabled()) {
     return;
   }
 

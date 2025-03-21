@@ -1048,6 +1048,23 @@ TEST_P(ThreadPoolImplTest, FlushAsyncNoTasks) {
   EXPECT_TRUE(called_back);
 }
 
+TEST_P(ThreadPoolImplTest, CreateSequencedTaskRunnerForResource) {
+  StartThreadPool();
+
+  scoped_refptr<SequencedTaskRunner> task_runner1 =
+      thread_pool_->CreateSequencedTaskRunnerForResource(
+          {}, base::FilePath(FILE_PATH_LITERAL("Resource1")));
+  scoped_refptr<SequencedTaskRunner> task_runner2 =
+      thread_pool_->CreateSequencedTaskRunnerForResource(
+          {}, base::FilePath(FILE_PATH_LITERAL("Resource2")));
+  scoped_refptr<SequencedTaskRunner> task_runner3 =
+      thread_pool_->CreateSequencedTaskRunnerForResource(
+          {}, base::FilePath(FILE_PATH_LITERAL("Resource1")));
+
+  EXPECT_NE(task_runner1, task_runner2);
+  EXPECT_EQ(task_runner1, task_runner3);
+}
+
 namespace {
 
 // Verifies that all strings passed as argument are found on the current stack.

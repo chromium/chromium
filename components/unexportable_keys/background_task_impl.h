@@ -31,9 +31,9 @@ class BackgroundTaskImpl : public BackgroundTask {
   // `task` is a callback that runs on the background thread and returns a
   // value.
   // `reply` is invoked on the posting thread with the return result of
-  // `task`.
+  // `task` and the number or retries it took to compute this result.
   BackgroundTaskImpl(base::RepeatingCallback<ReturnType()> task,
-                     base::OnceCallback<void(ReturnType)> reply,
+                     base::OnceCallback<void(ReturnType, size_t)> reply,
                      BackgroundTaskPriority priority,
                      BackgroundTaskType type,
                      size_t max_retries)
@@ -63,7 +63,7 @@ class BackgroundTaskImpl : public BackgroundTask {
 
   void ReplyWithResult() override {
     CHECK(result_.has_value());
-    std::move(reply_).Run(std::move(result_).value());
+    std::move(reply_).Run(std::move(result_).value(), retries_);
   }
 
   void ResetStateBeforeRetry() override {
@@ -124,7 +124,7 @@ class BackgroundTaskImpl : public BackgroundTask {
   }
 
   base::RepeatingCallback<ReturnType()> task_;
-  base::OnceCallback<void(ReturnType)> reply_;
+  base::OnceCallback<void(ReturnType, size_t)> reply_;
 
   size_t retries_ = 0;
   std::optional<ReturnType> result_;

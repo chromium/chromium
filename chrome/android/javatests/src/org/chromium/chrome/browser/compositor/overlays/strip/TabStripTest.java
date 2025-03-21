@@ -396,7 +396,7 @@ public class TabStripTest {
                 1,
                 sActivityTestRule.getActivity().getCurrentTabModel().index());
 
-        // 2. Display tab menu on first tab
+        // 2. Display "close all tabs" menu on first tab
         int tabSelectionId =
                 sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0).getId();
         longPressCloseTab(false, tabSelectionId);
@@ -418,7 +418,8 @@ public class TabStripTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                            .clickTabMenuItemForTesting(StripLayoutHelper.ID_CLOSE_ALL_TABS);
+                            .clickCloseButtonMenuItemForTesting(
+                                    StripLayoutHelper.ID_CLOSE_ALL_TABS);
                 });
 
         // 4. Ensure all tabs were closed
@@ -428,7 +429,10 @@ public class TabStripTest {
                 sActivityTestRule.getActivity().getCurrentTabModel().getCount());
     }
 
-    /** Tests that the tab menu is dismissed when the orientation changes and no tabs are closed. */
+    /**
+     * Tests that the "close all tabs" menu is dismissed when the orientation changes and no tabs
+     * are closed.
+     */
     @Test
     @LargeTest
     @Restriction({DeviceFormFactor.TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
@@ -441,20 +445,20 @@ public class TabStripTest {
                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        // 2. Open tab menu
+        // 2. Open "close all tabs" menu
         int tabSelectionId =
                 sActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0).getId();
         longPressCloseTab(false, tabSelectionId);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        // 3. Set orientation to landscape and assert tab menu is not showing
+        // 3. Set orientation to landscape and assert "close all tabs" menu is not showing
         sActivityTestRule
                 .getActivity()
                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertFalse(
                 TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                        .isTabMenuShowingForTesting());
+                        .isCloseButtonMenuShowingForTesting());
         Assert.assertEquals(
                 "Expected 1 tab to be present",
                 1,
@@ -562,7 +566,7 @@ public class TabStripTest {
                 2,
                 sActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount());
 
-        // 2. Open tab menu
+        // 2. Open "close all tabs" menu
         int tabSelectionId =
                 TabModelUtils.getCurrentTab(
                                 sActivityTestRule
@@ -577,7 +581,8 @@ public class TabStripTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                            .clickTabMenuItemForTesting(StripLayoutHelper.ID_CLOSE_ALL_TABS);
+                            .clickCloseButtonMenuItemForTesting(
+                                    StripLayoutHelper.ID_CLOSE_ALL_TABS);
                 });
 
         // 4. Ensure all incognito tabs were closed and TabStrip is switched to normal
@@ -1397,7 +1402,7 @@ public class TabStripTest {
 
     /**
      * Simulates a long press on the close button of a tab. Asserts that the tab is selected and the
-     * tab menu is showing.
+     * "close all tabs" menu is showing.
      *
      * @param incognito Whether or not this tab is in the incognito or normal stack.
      * @param id The id of the tab to click.
@@ -1420,7 +1425,7 @@ public class TabStripTest {
                 });
         Assert.assertTrue(
                 TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity())
-                        .isTabMenuShowingForTesting());
+                        .isCloseButtonMenuShowingForTesting());
     }
 
     /**

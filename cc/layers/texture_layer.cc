@@ -23,8 +23,7 @@
 
 namespace cc {
 
-scoped_refptr<TextureLayer> TextureLayer::CreateForMailbox(
-    TextureLayerClient* client) {
+scoped_refptr<TextureLayer> TextureLayer::Create(TextureLayerClient* client) {
   return scoped_refptr<TextureLayer>(new TextureLayer(client));
 }
 

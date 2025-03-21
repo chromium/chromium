@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AnnotatedPageData, ActInFocusedTabParams, ActInFocusedTabResult, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -411,18 +411,10 @@ export enum ImageColorType {
 }
 
 // FocusedTabData data for postMessage transport.
-export declare interface FocusedTabDataPrivate extends Omit<
-    FocusedTabData, 'focusedTab'|'focusedTabCandidate'|'noCandidateTabError'> {
-  focusedTab?: TabDataPrivate;
-  focusedTabCandidate?: FocusedTabCandidatePrivate;
-  noCandidateTabError?: NoCandidateTabError;
-}
-
-// FocusedTabDataCandidate data for postMessage transport.
-export declare interface FocusedTabCandidatePrivate extends Omit<
-    FocusedTabCandidate, 'focusedTabCandidateData'|'invalidCandidateError'> {
-  focusedTabCandidateData?: TabDataPrivate;
-  invalidCandidateError?: InvalidCandidateError;
+export declare interface FocusedTabDataPrivate {
+  hasFocus?: Omit<FocusedTabDataHasFocus, 'tabData'>&{tabData: TabDataPrivate};
+  hasNoFocus?: Omit<FocusedTabDataHasNoFocus, 'tabFocusCandidateData'>&
+      {tabFocusCandidateData?: TabDataPrivate};
 }
 
 // TabContextResult data for postMessage transport.

@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">Жарыктыгын көбөйтүү</translation>
 <translation id="1680659827022803830">Видео чалууларды башкаруу</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Бул функцияны каалаган убакта Параметрлерден өчүрө аласыз.<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> таймер · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 дареги: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Активдүү терезе сол жакка бекитилди.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Орнотулган колдонмо, Тындырылды</translation>
 <translation id="4228078597006700451">Башкаруу элементтери туураланган жок</translation>
 <translation id="4230560241506423345">Жаңы</translation>
+<translation id="4236726631849783264">Cунушталган аракеттер боюнча эстеткич</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Сереп салуу режими</translation>
 <translation id="4242533952199664413">Параметрлерди ачуу</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">Медиа</translation>
 <translation id="4279490309300973883">Чагылыштыруу</translation>
 <translation id="4280601795273309128">Коопсуздук тутуму жаңырды. Түзмөгүңүздү жаңыртыңыз.</translation>
-<translation id="4281739221820540368">Google Документтерди түзүү</translation>
 <translation id="4283888303416325161">Коопсуздукту бекемдөө үчүн сырсөздү киргизиңиз</translation>
 <translation id="4285498937028063278">Бошотуу</translation>
 <translation id="428715201724021596">Профилге туташууда. Бир нече мүнөткө созулушу мүмкүн.</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">Кепти таануу файлдары жүктөлүп алынууда... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Түзмөктү азыр жаңыртыңыз}=1{Түзмөктү 1 секунддун ичинде жаңыртыңыз}other{Түзмөктү # секунддун ичинде жаңыртыңыз}}</translation>
 <translation id="4472575034687746823">Баштоо</translation>
+<translation id="4473489370276014885">Google Байланыштар</translation>
 <translation id="4477350412780666475">Кийинки трек</translation>
 <translation id="4477751544736611934">Дайындарды өткөрүү үчүн акы алынышы мүмкүн.
 1 түзмөк туташты.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">Учурдагы баракты кыстарма катары сактоо</translation>
 <translation id="4548482551627849548">Жигердүү терезени сол жактагы иш тактага жылдыруу</translation>
 <translation id="4552748006424994716">Жаңыруунун алдын алуу үчүн микрофонду зымдуу гарнитура менен гана угуңуз.</translation>
+<translation id="4556953949326137018">"Жылнаамага кошуу" же "Google Документтерди түзүү" сыяктуу сунушталган аракеттерди колдонгонуңузда, тандалган аймактагы нерселер <ph name="LINK_TO_SERVICE_TERMS" /> ылайык аракеттерди сунуштоо үчүн Google серверлерине жөнөтүлөт. Жеке же купуя нерселерди кошпоңуз.</translation>
 <translation id="4560576029703263363">Күйүк</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Сырсөздү жашыруу</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">Кийинки</translation>
 <translation id="481749895090480684">Жасалчу иштер тизмеси: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камера менен микрофонду</translation>
+<translation id="4828935196674083554">Кошулууда…</translation>
 <translation id="482908187605862807">Play Store'до жеткиликтүү колдонмолор</translation>
 <translation id="4831034276697007977">Автоматтык түрдө чыкылдатууларды чын эле өчүргүңүз келеби?</translation>
 <translation id="4835677468087803981">PIN кодду жашыруу</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Бардык билдирмелерди өчүрүү</translation>
+<translation id="6426905245930183644">Түзүлүүдө...</translation>
 <translation id="6430225033895752525">Ынтаа коюу режиминин параметрлери көрсөтүлсүн</translation>
 <translation id="643147933154517414">Баары даяр</translation>
 <translation id="6431865393913628856">Экранды жаздыруу</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">кошумча иш</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> сактагыч колдонулуп жатат | Жалпы көлөмү: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Купуялык экраны күйүк</translation>
-<translation id="6618277154885124991">Google Таблицаларды түзүү</translation>
 <translation id="6622679827379792051">Телефонуңуздагы колдонмолорду көрүү параметрин тууралоо</translation>
 <translation id="662279009180869175">Бөлүнгөн экрандын өлчөмүн өзгөртүү үчүн солго жана оңго жебелерди колдонуңуз</translation>
 <translation id="6624493541160101248">Учурдагы иш такта: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> иш тактанын ичинен <ph name="DESK_INDEX" />-иш такта.</translation>

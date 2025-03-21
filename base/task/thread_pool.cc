@@ -113,4 +113,12 @@ scoped_refptr<SingleThreadTaskRunner> ThreadPool::CreateCOMSTATaskRunner(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+// static
+scoped_refptr<SequencedTaskRunner>
+ThreadPool::CreateSequencedTaskRunnerForResource(const TaskTraits& traits,
+                                                 const base::FilePath& path) {
+  return GetThreadPoolImpl()->CreateSequencedTaskRunnerForResource(traits,
+                                                                   path);
+}
+
 }  // namespace base

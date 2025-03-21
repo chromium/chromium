@@ -53,6 +53,10 @@ class ASH_EXPORT CoralRequest {
     return suppression_context_;
   }
 
+  void set_language(const std::string& language) { language_ = language; }
+
+  std::string language() const { return language_; }
+
   std::string ToString() const;
 
  private:
@@ -63,6 +67,9 @@ class ASH_EXPORT CoralRequest {
 
   // Original tab/app content of the workspace.
   std::vector<ContentItem> suppression_context_;
+
+  // The language code, e.g., "en" for English.
+  std::string language_;
 };
 
 // `CoralResponse` contains 0-2 groups in order of relevance.

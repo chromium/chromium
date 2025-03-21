@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.method.LinkMovementMethod;
@@ -48,10 +46,9 @@ public class CardPreference extends TextMessagePreference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        mDescriptionView =
-                (TextViewWithClickableSpans) assumeNonNull(holder.findViewById(R.id.summary));
-        mIcon = (ChromeImageView) assumeNonNull(holder.findViewById(R.id.icon));
-        mCloseIcon = (ChromeImageView) assumeNonNull(holder.findViewById(R.id.close_icon));
+        mDescriptionView = (TextViewWithClickableSpans) holder.findViewById(R.id.summary);
+        mIcon = (ChromeImageView) holder.findViewById(R.id.icon);
+        mCloseIcon = (ChromeImageView) holder.findViewById(R.id.close_icon);
 
         mDescriptionView.setText(mSummary);
         mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -67,7 +64,7 @@ public class CardPreference extends TextMessagePreference {
         mCloseIcon.setVisibility(mCloseIconVisibility);
         mCloseIcon.setOnClickListener(mOnCloseClickListener);
 
-        TextView titleView = (TextView) assumeNonNull(holder.findViewById(android.R.id.title));
+        TextView titleView = (TextView) holder.findViewById(android.R.id.title);
         titleView.setTextAppearance(R.style.TextAppearance_Headline2Thick);
     }
 

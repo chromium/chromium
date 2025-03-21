@@ -54,6 +54,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
 
     @VisibleForTesting static final int MAX_IMPRESSIONS = 10;
 
+    private boolean mIsCreatedInCct;
     private final String mPromoShowCountPreferenceName;
     private @PromoState int mPromoState = PromoState.NONE;
 
@@ -61,9 +62,11 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
             Context context,
             Profile profile,
             SigninAndHistorySyncActivityLauncher launcher,
-            Runnable onPromoStateChange) {
+            Runnable onPromoStateChange,
+            boolean isCreatedInCct) {
         super(context, profile, launcher, onPromoStateChange);
 
+        mIsCreatedInCct = isCreatedInCct;
         mPromoShowCountPreferenceName =
                 ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                         SigninPreferencesManager.SigninPromoAccessPointId.HISTORY_PAGE);
@@ -151,6 +154,13 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     private @PromoState int computePromoState() {
+        // The history page promo should always be hidden in CCT for privacy concern: it's hard to
+        // clarify that the history sync promo affect only Chrome and not the app that launched the
+        // CCT.
+        if (mIsCreatedInCct) {
+            return PromoState.NONE;
+        }
+
         if (ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_DECLINED, false)) {
             return PromoState.NONE;

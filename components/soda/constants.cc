@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial_params.h"
@@ -24,6 +25,26 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace speech {
+namespace {
+
+// If `language_name` is Chinese variant, then return the master locale.
+// Otherwise, return `language_name`.
+const std::string MaybeMapToChineseLocale(const std::string& language_name) {
+  const base::flat_map<std::string, std::string> chinese_locale_map = {
+      {"cmn-hans-cn", "cmn-hans-cn"}, {"cmn-hant-tw", "cmn-hant-tw"},
+      {"zh-cn", "cmn-hans-cn"},       {"zh-hans-cn", "cmn-hans-cn"},
+      {"zh-hant-tw", "cmn-hant-tw"},  {"zh-tw", "cmn-hant-tw"},
+  };
+  auto chinese_locale =
+      chinese_locale_map.find(base::ToLowerASCII(language_name));
+  if (chinese_locale != chinese_locale_map.end()) {
+    return chinese_locale->second;
+  }
+
+  return language_name;
+}
+
+}  // namespace
 const char kUsEnglishLocale[] = "en-US";
 
 const char kEnglishLocaleNoCountry[] = "en";
@@ -147,10 +168,11 @@ std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
 
 std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     const std::string& language_name) {
+  auto locale = MaybeMapToChineseLocale(language_name);
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
     if (base::ToLowerASCII(config.language_name) ==
-        base::ToLowerASCII(language_name)) {
+        base::ToLowerASCII(locale)) {
       return config;
     }
   }
@@ -161,6 +183,12 @@ std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
 std::optional<SodaLanguagePackComponentConfig>
 GetLanguageComponentConfigMatchingLanguageSubtag(
     const std::string& language_name) {
+  // Use full locale to get Chinese variant config.
+  auto locale = MaybeMapToChineseLocale(language_name);
+  if (locale.substr(0, 3) == kChineseLocaleNoCountry) {
+    return GetLanguageComponentConfig(locale);
+  }
+
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
     if (l10n_util::GetLanguage(base::ToLowerASCII(config.language_name)) ==

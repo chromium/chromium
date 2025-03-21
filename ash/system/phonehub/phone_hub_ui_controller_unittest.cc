@@ -36,22 +36,21 @@ constexpr char kScreenOnOpenedMetric[] =
     "PhoneHub.BubbleOpened.Connectable.Page";
 constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 
-class PhoneHubUiControllerTest : public AshTestBase,
+class PhoneHubUiControllerTest : public NoSessionAshTestBase,
                                  public PhoneHubUiController::Observer {
  public:
   PhoneHubUiControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    set_start_session(false);
-  }
+      : NoSessionAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   ~PhoneHubUiControllerTest() override { controller_->RemoveObserver(this); }
 
-  // AshTestBase:
+  // NoSessionAshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {features::kEcheSWA, features::kEcheNetworkConnectionState}, {});
 
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
 
     handler_ = std::make_unique<eche_app::EcheConnectionStatusHandler>();
     phone_hub_manager_.set_host_last_seen_timestamp(std::nullopt);

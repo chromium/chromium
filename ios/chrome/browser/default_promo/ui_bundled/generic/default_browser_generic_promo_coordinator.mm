@@ -48,8 +48,7 @@ using base::UserMetricsAction;
   [super start];
   [self recordVideoDefaultBrowserPromoShown];
 
-  ProfileIOS* profile = self.browser->GetProfile();
-  _tracker = feature_engagement::TrackerFactory::GetForProfile(profile);
+  _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
   _mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
 
   [self showPromo];
@@ -119,7 +118,7 @@ using base::UserMetricsAction;
         feature_engagement::events::kDefaultBrowserPromoRemindMeLater);
   }
   PromosManager* promosManager =
-      PromosManagerFactory::GetForProfile(self.browser->GetProfile());
+      PromosManagerFactory::GetForProfile(self.profile);
   promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::DefaultBrowserRemindMeLater);
 

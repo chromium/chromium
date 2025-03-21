@@ -215,6 +215,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1679841710523778799">Gwneud yn fwy llachar</translation>
 <translation id="1680659827022803830">Rheolyddion galwadau fideo</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Gallwch ddiffodd y nodwedd hon unrhyw bryd yn y Gosodiadau. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Amserydd <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Cyfeiriad IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Mae'r ffenestr weithredol wedi'i docio ar y chwith.</translation>
@@ -967,6 +968,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Gosodwyd Ap, Seibiwyd</translation>
 <translation id="4228078597006700451">Rheolyddion heb eu gosod</translation>
 <translation id="4230560241506423345">Newydd</translation>
+<translation id="4236726631849783264">Atgoffwr am y camau gweithredu a awgrymir</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modd trosolwg</translation>
 <translation id="4242533952199664413">Agor y gosodiadau</translation>
@@ -983,7 +985,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4275663329226226506">Cyfryngau</translation>
 <translation id="4279490309300973883">Adlewyrchu</translation>
 <translation id="4280601795273309128">Daeth diweddariadau diogelwch i ben. Uwchraddio'ch dyfais.</translation>
-<translation id="4281739221820540368">Creu Google Docs</translation>
 <translation id="4283888303416325161">Rhowch gyfrinair i gael rhagor o ddiogelwch</translation>
 <translation id="4285498937028063278">Dad-binio</translation>
 <translation id="428715201724021596">Wrthi'n cysylltu â'r proffil. Gallai hyn gymryd ychydig funudau.</translation>
@@ -1044,6 +1045,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4471354919263203780">Wrthi'n lawrlwytho ffeiliau adnabod llais… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Diweddarwch y ddyfais nawr}=1{Diweddarwch y ddyfais o fewn 1 eiliad}two{Diweddarwch y ddyfais o fewn # eiliad}few{Diweddarwch y ddyfais o fewn # eiliad}many{Diweddarwch y ddyfais o fewn # eiliad}other{Diweddarwch y ddyfais o fewn # eiliad}}</translation>
 <translation id="4472575034687746823">Cychwyn arni</translation>
+<translation id="4473489370276014885">Cysylltiadau Google</translation>
 <translation id="4477350412780666475">Trac Nesaf</translation>
 <translation id="4477751544736611934">Gall hyn arwain at gost data.
 Mae 1 ddyfais yn gysylltiedig.</translation>
@@ -1070,6 +1072,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4545950850562423083">Cadw'r dudalen bresennol fel nod tudalen</translation>
 <translation id="4548482551627849548">Symud y ffenestr weithredol i'r ddesg ar y chwith</translation>
 <translation id="4552748006424994716">Er mwyn osgoi atsain, dim ond gyda chlustffon â gwifrau y gallwch chi wrando ar eich meicroffon.</translation>
+<translation id="4556953949326137018">Pan fyddwch yn defnyddio camau gweithredu a awgrymir fel "ychwanegu at Calendar" neu "creu Google Docs," mae'r cynnwys o'r ardal a ddewiswyd yn cael ei anfon at weinyddion Google i awgrymu camau gweithredu, yn amodol ar <ph name="LINK_TO_SERVICE_TERMS" />. Peidiwch â chynnwys unrhyw beth personol, sensitif neu gyfrinachol.</translation>
 <translation id="4560576029703263363">Ymlaen</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Cuddio'r cyfrinair</translation>
@@ -1153,6 +1156,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="481455355267255546">Nesaf</translation>
 <translation id="481749895090480684">Rhestr tasgau: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">camera a meicroffon</translation>
+<translation id="4828935196674083554">Wrthi'n ychwanegu...</translation>
 <translation id="482908187605862807">Apiau sydd ar gael o'r Play Store</translation>
 <translation id="4831034276697007977">Ydych chi'n siŵr eich bod am ddiffodd cliciau awtomatig?</translation>
 <translation id="4835677468087803981">Cuddio'r PIN</translation>
@@ -1650,6 +1654,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="641817663353603351">tudalen i fyny</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Clirio'r holl hysbysiadau</translation>
+<translation id="6426905245930183644">Wrthi'n creu...</translation>
 <translation id="6430225033895752525">Dangos gosodiadau Ffocysu</translation>
 <translation id="643147933154517414">Popeth wedi'i orffen</translation>
 <translation id="6431865393913628856">Recordio'r sgrîn</translation>
@@ -1716,7 +1721,6 @@ Gosodiad newydd</translation>
 <translation id="6612889377159412215">is-dasg</translation>
 <translation id="6613765291890844037">Mae storfa <ph name="STORAGE_IN_USE_SIZE" /> yn cael ei defnyddio | <ph name="STORAGE_TOTAL_SIZE" /> mewn cyfanswm</translation>
 <translation id="6614169507485700968">Mae'r sgrîn preifatrwydd ymlaen</translation>
-<translation id="6618277154885124991">Creu Google Sheets</translation>
 <translation id="6622679827379792051">Gosod gweld apiau eich ffôn</translation>
 <translation id="662279009180869175">Defnyddiwch y saeth chwith a'r saeth dde i newid maint y sgrîn hollt</translation>
 <translation id="6624493541160101248">Desg bresennol: <ph name="DESK_NAME" />. Desg <ph name="DESK_INDEX" /> o <ph name="DESK_COUNT" />.</translation>

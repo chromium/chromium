@@ -1211,4 +1211,25 @@ AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction::Run() {
           result)));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateSetAutofillAiOptInStatusFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateSetAutofillAiOptInStatusFunction::Run() {
+  std::optional<autofill_private::SetAutofillAiOptInStatus::Params> parameters =
+      autofill_private::SetAutofillAiOptInStatus::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+  PrefService* prefs = autofill_client()->GetPrefs();
+  if (!prefs) {
+    return RespondNow(Error(kErrorAutofillAiUnavailable));
+  }
+
+  // TODO(crbug.com/404485362): Write to GAIA-id keyed account-level pref
+  // instead.
+  prefs->SetBoolean(autofill::prefs::kAutofillPredictionImprovementsEnabled,
+                    parameters->opted_in);
+  // TODO(crbug.com/402367669): Mark feature as used to avoid IPH showing again.
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">ተለዋጭ</translation>
 <translation id="1264974993859112054">ሰፖርቶች</translation>
 <translation id="1268480293435976622">#7 የቻይና ፖስታ</translation>
+<translation id="1269045546668906972">ተጨማሪ መስኮችን በራስ-ሰር ለመሙላት ራስ-ሙላን በሰው ሠራሽ አስተውሎት ያብሩ</translation>
 <translation id="1269516672602708785">በGoogle ጣቢያዎች ውስጥ አዲስ ጣቢያን በፍጥነት ፍጠር</translation>
 <translation id="1270328905573953738">ቤት እና ሰፈር መቀየር</translation>
 <translation id="1270502636509132238">የመውሰጃ ስልት</translation>
@@ -1138,6 +1139,7 @@
 <translation id="3005723025932146533">የተቀመጠ ቅጂ አሳይ</translation>
 <translation id="300580149047131921">በቅርቡ ጥቅም ላይ የዋለ</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የሚገኙ እርምጃዎችን ለማሰስ Tabን በመቀጠል የተመረጠውን እርምጃ ለመፈጸም Enterን ይጫኑ።</translation>
+<translation id="3010991137650052245">በዚህ ጣቢያ ላይ የእርስዎን <ph name="PERMISSION" /> ለመጠቀም ለ<ph name="SHORT_PRODUCT_NAME" /> መዳረሻ ይስጡ</translation>
 <translation id="3013711734159931232">የቤት ውስጥ ዕቃዎች</translation>
 <translation id="3014553260345122294">የንግድ ዜና</translation>
 <translation id="3014726756341138577">የላቁ የአታሚ ባህሪያት</translation>
@@ -1787,6 +1789,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">የመመሪያ ወሰን አይደገፍም።</translation>
+<translation id="411918202192379658">ራስ-ሙላ አሁን ይበልጥ የተሻለ ሆኗል</translation>
 <translation id="4121428309786185360">ጊዜው የሚያልፍበት</translation>
 <translation id="4123572138124678573">ከታች ሦስቴ ብስ</translation>
 <translation id="412601465078863288">የእረፍት ጊዜን በመስቀል ላይ</translation>
@@ -2175,6 +2178,7 @@
 <translation id="4819347708020428563">በነባሪ ዕይታ ውስጥ ማብራሪያዎችን ያርትዑ?</translation>
 <translation id="4822493756793346865">የተለመዱ ዋጋዎች ባለፉት 90 ቀናት በመላው ድር ላይ ባሉ መደብሮች ላይ የተመሠረቱ ናቸው።</translation>
 <translation id="4822922322149719535">የስህተት ምዝግብ ማስታወሻን ገምግም</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> የመሣሪያዎ <ph name="PERMISSION" /> መዳረሻ ያስፈልገዋል</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ አዲስ Google ሉህ በፍጥነት ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="4826588772550366629">ካሜራ እና ማይክሮፎን</translation>
 <translation id="4827283332383516812">ካርድ ይሰርዙ</translation>

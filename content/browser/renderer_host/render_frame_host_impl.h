@@ -2973,8 +2973,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // from the browser process, this may be different.
   // |is_payment_credential_creation| indicates whether MakeCredential is making
   // a payment credential.
-  // |remote_desktop_client_override| optionally contains a
-  // RemoteDesktopClientOverride client extension for the request.
+  // |remote_desktop_client_override_origin| is the origin from the
+  // RemoteDesktopClientOverride client extension for this request, if present.
   // |PerformGetAssertionWebAuthSecurityChecks| returns a security check result
   // and a boolean representing whether the given origin is cross-origin with
   // any frame in this frame's ancestor chain. This extra cross-origin bit is
@@ -2983,12 +2983,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& relying_party_id,
       const url::Origin& effective_origin,
       bool is_payment_credential_get_assertion,
+      const std::optional<url::Origin>& remote_desktop_client_override_origin,
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
           callback);
   void PerformMakeCredentialWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin,
       bool is_payment_credential_creation,
+      const std::optional<url::Origin>& remote_desktop_client_override_origin,
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
           callback);
 #endif

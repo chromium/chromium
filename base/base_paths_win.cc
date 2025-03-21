@@ -80,15 +80,16 @@ bool PathProviderWin(int key, FilePath* result) {
       if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64() ||
           base::win::OSInfo::GetInstance()->IsWowX86OnARM64()) {
         std::unique_ptr<base::Environment> env(base::Environment::Create());
-        std::string programfiles_w6432;
         // 32-bit process running in WOW64 sets ProgramW6432 environment
         // variable. See
         // https://msdn.microsoft.com/library/windows/desktop/aa384274.aspx.
-        if (!env->GetVar("ProgramW6432", &programfiles_w6432)) {
+        std::optional<std::string> programfiles_w6432 =
+            env->GetVar("ProgramW6432");
+        if (!programfiles_w6432.has_value()) {
           return false;
         }
         // GetVar returns UTF8 - convert back to Wide.
-        cur = FilePath(UTF8ToWide(programfiles_w6432));
+        cur = FilePath(UTF8ToWide(programfiles_w6432.value()));
         break;
       }
 #endif

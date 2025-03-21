@@ -23,12 +23,12 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 CHROMIUM_DIR="$SCRIPT_DIR/../.."
 VENDOR_DIR="$CHROMIUM_DIR/third_party/rust/chromium_crates_io/vendor"
 
-CRATE_NAME="$1"
-if [[ -z "$CRATE_NAME" ]]; then
-  echo "ERROR: No crate name has been specified..."
+if [[ "$#" -ne 1 ]]; then
+  echo "Expecting exactly 1 command-line argument ($# found)."
   usage
   exit -1
 fi
+CRATE_NAME="$1"
 
 CRATE_DIR=$( find "${VENDOR_DIR}" -maxdepth 1 \
                                   -type d \

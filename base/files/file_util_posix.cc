@@ -783,8 +783,8 @@ bool SetPosixFilePermissions(const FilePath& path, int mode) {
 
 bool ExecutableExistsInPath(Environment* env,
                             const FilePath::StringType& executable) {
-  std::string path;
-  if (!env->GetVar("PATH", &path)) {
+  std::string path = env->GetVar("PATH").value_or("");
+  if (path.empty()) {
     LOG(ERROR) << "No $PATH variable. Assuming no " << executable << ".";
     return false;
   }

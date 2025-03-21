@@ -586,7 +586,7 @@ void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
   // Turn off accessibility on the renderer side by resetting the AXMode.
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
-  accessibility_state->DisableProcessAccessibility();
+  accessibility_state->ResetAccessibilityMode();
 }
 
 void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
@@ -2209,7 +2209,7 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
     // When the browser is not yet accessible, then set the AXMode to
     // |ui::kAXModeComplete| for all web contents.
     if (!accessibility_state->IsAccessibleBrowser()) {
-      accessibility_state->EnableProcessAccessibility();
+      accessibility_state->OnScreenReaderDetected();
     }
     return;
   }

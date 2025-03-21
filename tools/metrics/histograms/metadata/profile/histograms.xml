@@ -638,7 +638,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstProfileTime.FirstWebContentsFinishReason"
-    enum="StartupProfilingFinishReason" expires_after="2025-04-13">
+    enum="StartupProfilingFinishReason" expires_after="2025-09-07">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -669,9 +669,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstRun.DefaultBrowser"
-    enum="FirstRunDefaultBrowserChoice" expires_after="2025-08-24">
+    enum="FirstRunDefaultBrowserChoice" expires_after="2025-09-07">
   <owner>dgn@chromium.org</owner>
-  <owner>gabolvr@google.com</owner>
   <owner>for-you-fre@google.com</owner>
   <summary>
     Records the user's choice for the prompt asking if they want to set Chrome
@@ -705,7 +704,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="ProfilePicker.FirstRun.OrganizationAvailableTiming" units="ms"
     expires_after="2025-06-08">
   <owner>dgn@chromium.org</owner>
-  <owner>jyammine@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the time between the first run of Chrome on Desktop is loaded and
@@ -716,9 +714,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstRun.PolicyStoreState"
-    enum="FirstRunCloudPolicyStoreState" expires_after="2025-04-13">
+    enum="FirstRunCloudPolicyStoreState" expires_after="2025-09-07">
   <owner>dgn@chromium.org</owner>
-  <owner>jyammine@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the loading state of the clould policy store when it is loaded or
@@ -730,7 +727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstRun.ServiceCreated" enum="BooleanCreated"
-    expires_after="2025-04-13">
+    expires_after="2025-09-07">
   <owner>dgn@chromium.org</owner>
   <owner>for-you-fre@google.com</owner>
   <summary>

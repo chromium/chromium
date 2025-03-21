@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 """Helper module to store class-independent, common type hinting."""
 
-from typing import Any, Callable, Generator, Optional, Tuple
+from collections.abc import Callable, Generator
+from typing import Any
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
@@ -11,10 +12,10 @@ from telemetry.internal.browser import tab
 from telemetry.internal.browser import browser
 
 TestArgs = list
-GeneratedTest = Tuple[str, str, TestArgs]
+GeneratedTest = tuple[str, str, TestArgs]
 TestGenerator = Generator[GeneratedTest, None, None]
 
-TagConflictChecker = Optional[Callable[[str, str], bool]]
+TagConflictChecker = Callable[[str, str], bool] | None
 
 # Will hopefully eventually be replaced by argparses' equivalents once Telemetry
 # finally switches off optparse.

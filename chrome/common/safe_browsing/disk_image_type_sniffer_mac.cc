@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
+
+#include "base/compiler_specific.h"
 #include "base/threading/scoped_blocking_call.h"
 
 namespace safe_browsing {
@@ -48,8 +50,8 @@ bool DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(
   const base::span<const uint8_t> subspan =
       trailer.last(kSizeKolySignatureInBytes);
 
-  return (memcmp(subspan.data(), kKolySignature, kSizeKolySignatureInBytes) ==
-          0);
+  return UNSAFE_TODO(memcmp(subspan.data(), kKolySignature,
+                            kSizeKolySignatureInBytes)) == 0;
 }
 
 DiskImageTypeSnifferMac::~DiskImageTypeSnifferMac() = default;

@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.content.webid.IdentityRequestDialogDisclosureField;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -30,7 +31,8 @@ import java.util.function.Consumer;
 /** Properties defined here reflect the state of the AccountSelection-components. */
 class AccountSelectionProperties {
     public static final int ITEM_TYPE_ACCOUNT = 1;
-    public static final int ITEM_TYPE_ADD_ACCOUNT = 2;
+    public static final int ITEM_TYPE_LOGIN = 2;
+    public static final int ITEM_TYPE_SEPARATOR = 3;
 
     /**
      * The data needed for a button in the AccountSelection sheet. It may be a continue button for
@@ -176,14 +178,14 @@ class AccountSelectionProperties {
     }
 
     /**
-     * Properties defined here reflect the state of the add account button in the AccountSelection
-     * sheet.
+     * Properties defined here reflect the state of a login button in the AccountSelection sheet.
      */
-    static class AddAccountButtonProperties {
+    static class LoginButtonProperties {
         static class Properties {
-            public IdentityProviderMetadata mIdpMetadata;
+            public IdentityProviderData mIdentityProvider;
             public Callback<ButtonData> mOnClickListener;
             public @RpMode.EnumType int mRpMode;
+            public boolean mShowIdp;
         }
 
         static final ReadableObjectPropertyKey<Properties> PROPERTIES =
@@ -191,7 +193,7 @@ class AccountSelectionProperties {
 
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};
 
-        private AddAccountButtonProperties() {}
+        private LoginButtonProperties() {}
     }
 
     /**

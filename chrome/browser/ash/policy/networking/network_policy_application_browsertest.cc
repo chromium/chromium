@@ -68,6 +68,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/label_button.h"
@@ -86,6 +87,7 @@ namespace {
 
 namespace network_mojom = ::chromeos::network_config::mojom;
 using ::base::test::DictionaryHasValue;
+using ::base::test::DictionaryHasValues;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::IsEmpty;
@@ -1084,17 +1086,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       shill_service_client_test_->FindServiceMatchingGUID(
           "{device-policy-for-Wifi1}");
   ASSERT_TRUE(wifi_service);
-  {
-    const base::Value::Dict* wifi_service_properties =
-        shill_service_client_test_->GetServiceProperties(wifi_service.value());
-    ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(
-        *wifi_service_properties,
-        DictionaryHasValue(shill::kAutoConnectProperty, base::Value(true)));
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kProfileProperty,
-                                   base::Value(kSharedProfilePath)));
-  }
+  EXPECT_THAT(
+      shill_service_client_test_->GetServiceProperties(wifi_service.value()),
+      Pointee(DictionaryHasValues(
+          base::Value::Dict()
+              .Set(shill::kAutoConnectProperty, true)
+              .Set(shill::kProfileProperty, kSharedProfilePath))));
 
   // Manually connect to the other network.
   ConnectToService(kServiceWifi2);
@@ -1162,48 +1159,33 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       ElementsAre(kServiceWifi1, kServiceWifi2));
 
   // Expect that the same service path now has the user policy GUID.
-  {
-    const base::Value::Dict* wifi_service_properties =
-        shill_service_client_test_->GetServiceProperties(wifi_service.value());
-    ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kGuidProperty,
-                                   base::Value("{user-policy-for-Wifi1}")));
-    EXPECT_THAT(
-        *wifi_service_properties,
-        DictionaryHasValue(shill::kAutoConnectProperty, base::Value(false)));
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kProfileProperty,
-                                   base::Value(kUserProfilePath)));
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kStateProperty,
-                                   base::Value(shill::kStateIdle)));
-  }
+  EXPECT_THAT(
+      shill_service_client_test_->GetServiceProperties(wifi_service.value()),
+      Pointee(DictionaryHasValues(
+          base::Value::Dict()
+              .Set(shill::kGuidProperty, "{user-policy-for-Wifi1}")
+              .Set(shill::kProfileProperty, kUserProfilePath)
+              .Set(shill::kStateProperty, shill::kStateIdle))));
 
   std::optional<std::string> wifi2_service =
       shill_service_client_test_->FindServiceMatchingGUID(
           "{user-policy-for-Wifi2}");
   ASSERT_TRUE(wifi2_service);
-  {
-    const base::Value::Dict* wifi_service_properties =
-        shill_service_client_test_->GetServiceProperties(wifi2_service.value());
-    ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(
-        *wifi_service_properties,
-        DictionaryHasValue(shill::kAutoConnectProperty, base::Value(true)));
-    // This service is still connected. This is an important check in this
-    // regression test:
-    // In https://crbug.com/936677, AutoConnectHandler was already running
-    // (because OnPoliciesApplied was already triggered) when the NetworkState
-    // for a policy-managed network was not marked managed yet (because shill
-    // has not reflected the property changes yet). As a consequence,
-    // AutoConnectHandler disconnected the current network because of the global
-    // AllowOnlyPolicyNetworksToAutoconnect policy. Verify that this has not
-    // happened in this test.
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kStateProperty,
-                                   base::Value(shill::kStateOnline)));
-  }
+  // This service is still connected. This is an important check in this
+  // regression test:
+  // In https://crbug.com/936677, AutoConnectHandler was already running
+  // (because OnPoliciesApplied was already triggered) when the NetworkState
+  // for a policy-managed network was not marked managed yet (because shill
+  // has not reflected the property changes yet). As a consequence,
+  // AutoConnectHandler disconnected the current network because of the global
+  // AllowOnlyPolicyNetworksToAutoconnect policy. Verify that this has not
+  // happened in this test.
+  EXPECT_THAT(
+      shill_service_client_test_->GetServiceProperties(wifi2_service.value()),
+      Pointee(DictionaryHasValues(
+          base::Value::Dict()
+              .Set(shill::kAutoConnectProperty, true)
+              .Set(shill::kStateProperty, shill::kStateOnline))));
 }
 
 // Verify that AllowOnlyPolicyNetworksToConnect is working correctly , so
@@ -1750,14 +1732,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     })";
   SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
 
-  {
-    const base::Value::Dict* wifi_service_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi2);
-    ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(
-        *wifi_service_properties,
-        DictionaryHasValue(shill::kGuidProperty, base::Value("{same_guid}")));
-  }
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi2),
+              Pointee(DictionaryHasValue(shill::kGuidProperty,
+                                         base::Value("{same_guid}"))));
 
   // Same GUID for a different SSID.
   const char kDeviceONC2[] = R"(
@@ -1784,14 +1761,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     ASSERT_TRUE(wifi_service_properties);
     EXPECT_FALSE(wifi_service_properties->Find(shill::kGuidProperty));
   }
-  {
-    const base::Value::Dict* wifi_service_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
-    ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(
-        *wifi_service_properties,
-        DictionaryHasValue(shill::kGuidProperty, base::Value("{same_guid}")));
-  }
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
+              Pointee(DictionaryHasValue(shill::kGuidProperty,
+                                         base::Value("{same_guid}"))));
 }
 
 // Tests that application of policy settings does not wipe an already-configured
@@ -1864,21 +1836,15 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                                   /*identity=*/"${DEVICE_SERIAL_NUMBER}"),
       /*wait_applied=*/true);
 
-  {
-    const base::Value::Dict* wifi_service_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
-    ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kGuidProperty,
-                                   base::Value("{DeviceLevelWifiGuid}")));
-    // Expect that the EAP.Identity has been replaced
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kEapIdentityProperty,
-                                   base::Value(kSerialNumber)));
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
+              Pointee(DictionaryHasValues(
+                  base::Value::Dict()
+                      .Set(shill::kGuidProperty, "{DeviceLevelWifiGuid}")
+                      // Expect that the EAP.Identity has been replaced
+                      .Set(shill::kEapIdentityProperty, kSerialNumber))));
 
-    // TODO(b/209084821): Also test DEVICE_ASSET_ID when it's easily
-    // configurable in a browsertest.
-  }
+  // TODO(b/209084821): Also test DEVICE_ASSET_ID when it's easily
+  // configurable in a browsertest.
 }
 
 // Configures a network that uses variable expansions with variables based on a
@@ -1909,18 +1875,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                               shill::kEapCertIdProperty)
       .WaitForNonEmptyValue();
 
-  {
-    const base::Value::Dict* wifi_service_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
-    ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kGuidProperty,
-                                   base::Value("{DeviceLevelWifiGuid}")));
-    // Expect that the EAP.Identity has been replaced
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kEapIdentityProperty,
-                                   base::Value(kExpectedIdentity)));
-  }
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
+              Pointee(DictionaryHasValues(
+                  base::Value::Dict()
+                      .Set(shill::kGuidProperty, "{DeviceLevelWifiGuid}")
+                      // Expect that the EAP.Identity has been replaced
+                      .Set(shill::kEapIdentityProperty, kExpectedIdentity))));
 }
 
 // Configures a user-specific network that uses variable expansions
@@ -1948,19 +1908,13 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                                   /*identity=*/"${LOGIN_EMAIL}"),
       /*wait_applied=*/true);
 
-  {
-    const base::Value::Dict* wifi_service_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
-    ASSERT_TRUE(wifi_service_properties);
-    EXPECT_THAT(*wifi_service_properties,
-                DictionaryHasValue(shill::kGuidProperty,
-                                   base::Value("{UserLevelWifiGuid}")));
-    // Expect that the EAP.Identity has been replaced
-    EXPECT_THAT(
-        *wifi_service_properties,
-        DictionaryHasValue(shill::kEapIdentityProperty,
-                           base::Value(test_account_id_.GetUserEmail())));
-  }
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
+              Pointee(DictionaryHasValues(
+                  base::Value::Dict()
+                      .Set(shill::kGuidProperty, "{UserLevelWifiGuid}")
+                      // Expect that the EAP.Identity has been replaced
+                      .Set(shill::kEapIdentityProperty,
+                           test_account_id_.GetUserEmail()))));
 }
 
 // Tests that re-applying Ethernet policy retains a manually-set IP address.
@@ -1998,14 +1952,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
                                       /*wait_applied=*/true);
   }
 
-  {
-    const base::Value::Dict* eth_service_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(eth_service_properties);
-    EXPECT_THAT(
-        *eth_service_properties,
-        DictionaryHasValue(shill::kGuidProperty, base::Value(kEthernetGuid)));
-  }
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceEth),
+              Pointee(DictionaryHasValue(shill::kGuidProperty,
+                                         base::Value(kEthernetGuid))));
 
   // Check that IP address is modifiable and policy-recommended.
   {
@@ -2462,14 +2411,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   // Verify that the recommended EAP.Identity of the managed wifi service has
   // not been wiped.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(*shill_properties,
-                DictionaryHasValue(shill::kEapIdentityProperty,
-                                   base::Value(kUserIdentity)));
-  }
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
+              Pointee(DictionaryHasValue(shill::kEapIdentityProperty,
+                                         base::Value(kUserIdentity))));
 
   // Verify that the unmanaged wifi service has not been wiped.
   EXPECT_TRUE(shill_profile_client_test_->HasService(kServiceWifi2));
@@ -2576,14 +2520,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsEnabledTest,
   // Verify that the recommended EAP.Identity of the managed wifi service has
   // not been wiped because the "ephemeral actions" don't apply within active
   // sessions.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(*new_service_path);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(*shill_properties,
-                DictionaryHasValue(shill::kEapIdentityProperty,
-                                   base::Value("user_identity")));
-  }
+  EXPECT_THAT(
+      shill_service_client_test_->GetServiceProperties(*new_service_path),
+      Pointee(DictionaryHasValue(shill::kEapIdentityProperty,
+                                 base::Value("user_identity"))));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2747,14 +2687,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsDisabledTest,
 
   // Verify that the recommended EAP.Identity of the managed wifi service has
   // not been wiped.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(*shill_properties,
-                DictionaryHasValue(shill::kEapIdentityProperty,
-                                   base::Value(kUserIdentity)));
-  }
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
+              Pointee(DictionaryHasValue(shill::kEapIdentityProperty,
+                                         base::Value(kUserIdentity))));
 
   // Verify that the unmanaged wifi service has not been wiped.
   EXPECT_TRUE(shill_profile_client_test_->HasService(kServiceWifi2));
@@ -2804,14 +2739,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsKillSwitchTest,
 
   // Verify that the recommended EAP.Identity of the managed wifi service has
   // not been wiped.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(*shill_properties,
-                DictionaryHasValue(shill::kEapIdentityProperty,
-                                   base::Value(kUserIdentity)));
-  }
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
+              Pointee(DictionaryHasValue(shill::kEapIdentityProperty,
+                                         base::Value(kUserIdentity))));
 
   // Verify that the unmanaged wifi service has not been wiped.
   EXPECT_TRUE(shill_profile_client_test_->HasService(kServiceWifi2));
@@ -2897,28 +2827,17 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   // Verify that the CheckCaptivePortal of the managed Wi-Fi services are set
   // correctly.
-  {
-    const base::Value::Dict* shill_properties1 =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
-    ASSERT_TRUE(shill_properties1);
-    EXPECT_THAT(
-        *shill_properties1,
-        DictionaryHasValue(shill::kCheckPortalProperty, base::Value("true")));
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
+              Pointee(DictionaryHasValue(shill::kCheckPortalProperty,
+                                         base::Value("true"))));
 
-    const base::Value::Dict* shill_properties2 =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi2);
-    ASSERT_TRUE(shill_properties2);
-    EXPECT_THAT(
-        *shill_properties2,
-        DictionaryHasValue(shill::kCheckPortalProperty, base::Value("false")));
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi2),
+              Pointee(DictionaryHasValue(shill::kCheckPortalProperty,
+                                         base::Value("false"))));
 
-    const base::Value::Dict* shill_properties3 =
-        shill_service_client_test_->GetServiceProperties(kServiceWifi3);
-    ASSERT_TRUE(shill_properties3);
-    EXPECT_THAT(*shill_properties3,
-                DictionaryHasValue(shill::kCheckPortalProperty,
-                                   base::Value("http-only")));
-  }
+  EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi3),
+              Pointee(DictionaryHasValue(shill::kCheckPortalProperty,
+                                         base::Value("http-only"))));
 }
 
 // Tests that when

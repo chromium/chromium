@@ -23,6 +23,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
@@ -67,13 +68,15 @@ class TabGroupModelFactory {
 // container of the collection_ so client does not need to worry or deal with
 // the collection object.
 struct DetachedTabGroup {
-  explicit DetachedTabGroup(
-      std::unique_ptr<tabs::TabGroupTabCollection> collection);
+  DetachedTabGroup(std::unique_ptr<tabs::TabGroupTabCollection> collection,
+                   std::optional<int> active_index);
   DetachedTabGroup(const DetachedTabGroup&) = delete;
   DetachedTabGroup& operator=(const DetachedTabGroup&) = delete;
   ~DetachedTabGroup();
   DetachedTabGroup(DetachedTabGroup&&);
   std::unique_ptr<tabs::TabGroupTabCollection> collection_;
+  // Store the index of tab that was active in the detached group.
+  std::optional<int> active_index_ = std::nullopt;
 };
 
 // Holds state for a tab that has been detached from the tab strip.

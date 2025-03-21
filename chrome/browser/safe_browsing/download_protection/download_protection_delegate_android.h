@@ -21,6 +21,8 @@ class DownloadItem;
 
 namespace safe_browsing {
 
+class ClientDownloadRequest;
+
 class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
  public:
   DownloadProtectionDelegateAndroid();
@@ -31,6 +33,8 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
   bool ShouldCheckClientDownload(download::DownloadItem* item) const override;
   bool IsSupportedDownload(download::DownloadItem& item,
                            const base::FilePath& target_path) const override;
+  void PreSerializeRequest(const download::DownloadItem* item,
+                           ClientDownloadRequest& request_proto) override;
   const GURL& GetDownloadRequestUrl() const override;
   net::NetworkTrafficAnnotationTag
   CompleteClientDownloadRequestTrafficAnnotation(

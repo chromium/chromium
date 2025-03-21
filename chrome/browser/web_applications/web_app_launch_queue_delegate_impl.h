@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_LAUNCH_QUEUE_DELEGATE_IMPL_H_
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/web_applications/web_app_launch_queue_delegate.h"
+#include "components/webapps/browser/launch_queue/launch_queue_delegate.h"
 
 class GURL;
 
@@ -22,12 +22,17 @@ struct PathInfo;
 
 }  // namespace content
 
+namespace webapps {
+
+struct LaunchParams;
+
+}
+
 namespace web_app {
 
-struct WebAppLaunchParams;
 class WebAppRegistrar;
 
-class LaunchQueueDelegateImpl final : public LaunchQueueDelegate {
+class LaunchQueueDelegateImpl final : public webapps::LaunchQueueDelegate {
  public:
   explicit LaunchQueueDelegateImpl(const WebAppRegistrar& registrar);
 
@@ -36,13 +41,13 @@ class LaunchQueueDelegateImpl final : public LaunchQueueDelegate {
 
   ~LaunchQueueDelegateImpl() override = default;
 
-  bool IsInScope(const WebAppLaunchParams& launch_params,
+  bool IsInScope(const webapps::LaunchParams& launch_params,
                  const GURL& current_url) const override;
 
   content::PathInfo GetPathInfo(
       const base::FilePath& entry_path) const override;
 
-  bool IsValidLaunchParams(const WebAppLaunchParams& params) const override;
+  bool IsValidLaunchParams(const webapps::LaunchParams& params) const override;
 
  private:
   const raw_ref<const WebAppRegistrar> registrar_;

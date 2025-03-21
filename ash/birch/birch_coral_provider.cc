@@ -11,6 +11,7 @@
 #include "ash/birch/birch_model.h"
 #include "ash/birch/coral_item_remover.h"
 #include "ash/birch/coral_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -33,6 +34,8 @@
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
@@ -263,6 +266,17 @@ PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
+// Checks if the given `language` is supported by Coral.
+bool IsLanguageSupported(std::string_view language) {
+  static constexpr auto kSupportedLanguages =
+      base::MakeFixedFlatSet<std::string_view>({"en", "ja", "de", "fr"});
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kCoralFeatureMultiLanguage)) {
+    return language == "en";
+  }
+  return base::Contains(kSupportedLanguages, language);
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -438,7 +452,7 @@ void BirchCoralProvider::RemoveObserver(Observer* observer) {
 
 bool BirchCoralProvider::IsCoralServiceAvailable() {
   return coral_util::IsCoralAllowedByPolicy(GetPrefService()) &&
-         GetLanguageAvailability() && GetGenAIAvailability();
+         GetAndCheckLanguageAvailability() && GetGenAIAvailability();
 }
 
 void BirchCoralProvider::RequestBirchDataFetch() {
@@ -593,7 +607,7 @@ void BirchCoralProvider::OnSessionStateChanged(
     Reset();
     is_gen_ai_age_availability_checked_ = false;
     is_gen_ai_location_allow_.reset();
-    is_language_allow_.reset();
+    system_language_.reset();
   }
 }
 
@@ -602,7 +616,7 @@ void BirchCoralProvider::OnActiveUserSessionChanged(
   Reset();
   is_gen_ai_age_availability_checked_ = false;
   is_gen_ai_location_allow_.reset();
-  is_language_allow_.reset();
+  system_language_.reset();
 }
 
 void BirchCoralProvider::OverrideCoralResponseForTest(
@@ -642,15 +656,24 @@ bool BirchCoralProvider::GetGenAIAvailability() {
          GetPrefService()->GetBoolean(prefs::kCoralGenAIAgeAllowed);
 }
 
-bool BirchCoralProvider::GetLanguageAvailability() {
-  if (!is_language_allow_.has_value()) {
-    is_language_allow_ =
-        Shell::Get()->coral_delegate()->GetLanguageAvailability();
-    if (!(*is_language_allow_)) {
+bool BirchCoralProvider::GetAndCheckLanguageAvailability() {
+  // Use "en" as system language for test.
+  auto* current_process = base::CommandLine::ForCurrentProcess();
+  if (current_process->HasSwitch(switches::kForceBirchFakeCoralBackend) ||
+      current_process->HasSwitch(switches::kForceBirchFakeCoralGroup)) {
+    system_language_ = "en";
+    return true;
+  }
+
+  if (!system_language_.has_value()) {
+    system_language_ = Shell::Get()->coral_delegate()->GetSystemLanguage();
+    // Only output log on first checking.
+    if (!IsLanguageSupported(*system_language_)) {
       VLOG(1) << "Current language is not supported by Coral.";
+      return false;
     }
   }
-  return *is_language_allow_;
+  return IsLanguageSupported(*system_language_);
 }
 
 bool BirchCoralProvider::HasValidPostLoginData() const {
@@ -688,6 +711,8 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
   FilterCoralContentItems(&tab_app_data, CoralSource::kPostLogin);
   request_.set_source(CoralSource::kPostLogin);
   request_.set_content(std::move(tab_app_data));
+  CHECK(system_language_.has_value());
+  request_.set_language(*system_language_);
   Shell::Get()->coral_controller()->GenerateContentGroups(
       request_, BindRemote(),
       base::BindOnce(&BirchCoralProvider::HandlePostLoginCoralResponse,
@@ -716,6 +741,10 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
   request_.set_content(std::move(active_tab_app_data));
   request_.set_suppression_context(
       mojo::Clone(DesksController::Get()->active_desk()->tab_app_entities()));
+  if (!system_language_.has_value()) {
+    GetAndCheckLanguageAvailability();
+  }
+  request_.set_language(*system_language_);
   Shell::Get()->coral_controller()->GenerateContentGroups(
       request_, BindRemote(),
       base::BindOnce(&BirchCoralProvider::HandleInSessionCoralResponse,

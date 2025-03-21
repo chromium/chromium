@@ -7,8 +7,8 @@ package com.android.webview.chromium;
 import android.webkit.ServiceWorkerClient;
 import android.webkit.WebResourceResponse;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwServiceWorkerClient;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**

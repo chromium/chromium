@@ -52,10 +52,20 @@ IppPrinterInfo::IppPrinterInfo(const IppPrinterInfo& other) = default;
 
 IppPrinterInfo::IppPrinterInfo(const std::vector<std::string>& document_formats,
                                const std::string& document_format_default,
-                               const std::string& document_format_preferred) {
+                               const std::string& document_format_preferred,
+                               const std::vector<std::string>& urf_supported,
+                               const std::vector<std::string>& pdf_versions,
+                               const std::vector<std::string>& ipp_features,
+                               const std::string& mopria_certified,
+                               const std::vector<std::string>& printer_kind) {
   this->document_formats = document_formats;
   this->document_format_default = document_format_default;
   this->document_format_preferred = document_format_preferred;
+  this->urf_supported = urf_supported;
+  this->pdf_versions = pdf_versions;
+  this->ipp_features = ipp_features;
+  this->mopria_certified = mopria_certified;
+  this->printer_kind = printer_kind;
 }
 
 IppPrinterInfo::~IppPrinterInfo() = default;

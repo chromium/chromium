@@ -1,62 +1,67 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  const {session, dp, page} = await testRunner.startBlank(
+  const {session, dp, page} = await testRunner.startHTML(
+      `<div>
+         <img>
+       </div>
+       <div>
+         text
+       </div>`,
       'Tests the data of invalidation tracking trace events');
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
   const Phase = TracingHelper.Phase;
   let tracingHelper = new TracingHelper(testRunner, session);
-  let scheduleStyleInvalidationTracking;
-  let styleRecalcInvalidationTracking;
-  let styleInvalidatorInvalidationTracking;
-  let styleResolverResolveStyle;
-  let layoutInvalidationTracking;
-  let layout;
 
-  const MAX_ATTEMPTS = 3;
-  for (let attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
-    await tracingHelper.startTracing(
-        'disabled-by-default-devtools.timeline.invalidationTracking,devtools.timeline,disabled-by-default-devtools.timeline.stack');
-    await dp.Page.navigate({
-      url: 'http://127.0.0.1:8000/inspector-protocol/resources/web-vitals.html'
-    });
+  await tracingHelper.startTracing(
+      'disabled-by-default-devtools.timeline.invalidationTracking,devtools.timeline,disabled-by-default-devtools.timeline.stack');
 
-    // Wait for trace events.
-    await session.evaluateAsync(`
+  // Wait for trace events.
+  const traceEventsPromise = session.evaluateAsync(`
       new Promise((res) => {
         (new PerformanceObserver(res)).observe({entryTypes: ['layout-shift']});
       })`);
-
-    await tracingHelper.stopTracing(
-        /(disabled-by-default-)?devtools\.timeline(\.invalidationTracking|stack)?/);
-
-    scheduleStyleInvalidationTracking = tracingHelper.findEvents(
-        'ScheduleStyleInvalidationTracking', Phase.INSTANT)[0];
-    styleRecalcInvalidationTracking = tracingHelper.findEvents(
-        'StyleRecalcInvalidationTracking', Phase.INSTANT);
-    styleInvalidatorInvalidationTracking = tracingHelper.findEvents(
-        'StyleInvalidatorInvalidationTracking', Phase.INSTANT)[0];
-    styleResolverResolveStyle = tracingHelper.findEvents(
-        'StyleResolver::ResolveStyle', Phase.INSTANT);
-    layoutInvalidationTracking = tracingHelper.findEvents(
-        'LayoutInvalidationTracking', Phase.INSTANT)[0];
-    layout = tracingHelper.findEvents(
-          'Layout', Phase.COMPLETE, e => e.args?.beginData?.stackTrace)[0];
-
-    if (scheduleStyleInvalidationTracking && styleRecalcInvalidationTracking &&
-        styleInvalidatorInvalidationTracking && layoutInvalidationTracking) {
-      break;
+  await session.evaluate(`
+      function invalidateStyle() {
+        const img = document.querySelector('img');
+        img.setAttribute('src', './resources/big-image.png');
+        const newStyle = document.createElement('style');
+        newStyle.textContent = \`
+      div {
+        margin: 1px;
+      }
+      \`;
+        document.head.appendChild(newStyle);
+        testRunner.setAnimationRequiresRaster(true);
     }
-  }
+    function forceLayout() {
+        const img = document.querySelector('img');
+        const unused = img.offsetHeight;
+    }
 
-  testRunner.log('ScheduleStyleInvalidationTracking');
-  tracingHelper.logEventShape(scheduleStyleInvalidationTracking);
+    function performActions() {
+        invalidateStyle();
+        forceLayout();
+    }
+
+    performActions();`);
+
+  await traceEventsPromise;
+
+  await tracingHelper.stopTracing(
+      /(disabled-by-default-)?devtools\.timeline(\.invalidationTracking|stack)?/);
+
+  const styleRecalcInvalidationTracking = tracingHelper.findEvents(
+      'StyleRecalcInvalidationTracking', Phase.INSTANT);
+  const styleResolverResolveStyle =
+      tracingHelper.findEvents('StyleResolver::ResolveStyle', Phase.INSTANT);
+  const layoutInvalidationTracking =
+      tracingHelper.findEvents('LayoutInvalidationTracking', Phase.INSTANT)[0];
+  const layout = tracingHelper.findEvents(
+      'Layout', Phase.COMPLETE, e => e.args?.beginData?.stackTrace);
 
   testRunner.log('StyleRecalcInvalidationTracking');
   tracingHelper.logEventShape(styleRecalcInvalidationTracking);
-
-  testRunner.log('StyleInvalidatorInvalidationTracking');
-  tracingHelper.logEventShape(styleInvalidatorInvalidationTracking);
 
   testRunner.log('LayoutInvalidationTracking');
   tracingHelper.logEventShape(layoutInvalidationTracking);
@@ -64,14 +69,14 @@
   testRunner.log('Number of StyleResolver::ResolveStyle events:');
   testRunner.log(styleResolverResolveStyle.length);
 
-  // styleRecalcInvalidationTracking[0] was logged during initial insertion of
-  // nodes into the tree at page load and thus has no stack trace.
-  // Use styleRecalcInvalidationTracking[1] for testing instead.
   testRunner.log('Style recalc initiator:');
-  testRunner.log(styleRecalcInvalidationTracking[1].args?.data?.stackTrace[0].functionName);
+  testRunner.log(
+      styleRecalcInvalidationTracking[0]
+          .args?.data?.stackTrace[0]
+          .functionName);
 
   testRunner.log('Layout initiator:');
-  testRunner.log(layout.args?.beginData?.stackTrace[0].functionName);
+  testRunner.log(layout[0]?.args?.beginData?.stackTrace[0].functionName);
 
   testRunner.completeTest();
 })

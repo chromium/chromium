@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
 
+#include "base/time/time.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -252,10 +253,13 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
   }
 
   if (IsTracingEnabled()) {
+    bool end_time_is_now_time = !end && !duration.has_value();
     base::TimeTicks unsafe_start_time =
         GetPerformanceMarkUnsafeTimeForTraces(start_time, start);
     base::TimeTicks unsafe_end_time =
-        GetPerformanceMarkUnsafeTimeForTraces(end_time, end);
+        end_time_is_now_time
+            ? base::TimeTicks::Now()
+            : GetPerformanceMarkUnsafeTimeForTraces(end_time, end);
     unsigned hash = WTF::GetHash(measure_name);
     WTF::AddFloatToHash(hash, start_time);
     WTF::AddFloatToHash(hash, end_time);

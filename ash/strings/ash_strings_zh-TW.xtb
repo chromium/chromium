@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">調高亮度</translation>
 <translation id="1680659827022803830">視訊通話控制</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">你隨時可以前往「設定」關閉這項功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />的計時器 · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 位址：<ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">讓使用中的視窗固定在畫面左側。</translation>
@@ -964,6 +965,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安裝的應用程式，已暫停</translation>
 <translation id="4228078597006700451">未設定控制選項</translation>
 <translation id="4230560241506423345">新增</translation>
+<translation id="4236726631849783264">「建議的動作」注意事項</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">總覽模式</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -980,7 +982,6 @@
 <translation id="4275663329226226506">媒體</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4280601795273309128">安全性更新已終止，請升級裝置。</translation>
-<translation id="4281739221820540368">建立 Google 文件</translation>
 <translation id="4283888303416325161">基於安全考量，請輸入密碼</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428715201724021596">正在連線至設定檔。請稍候片刻。</translation>
@@ -1041,6 +1042,7 @@
 <translation id="4471354919263203780">正在下載語音辨識檔案...<ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{請立即更新裝置}=1{請在 1 秒內更新裝置}other{請在 # 秒內更新裝置}}</translation>
 <translation id="4472575034687746823">開始使用</translation>
+<translation id="4473489370276014885">Google 聯絡人</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
 <translation id="4477751544736611934">這種情況可能需要支付數據傳輸費用。
 已連線到 1 部裝置。</translation>
@@ -1067,6 +1069,7 @@
 <translation id="4545950850562423083">將目前網頁儲存為書籤</translation>
 <translation id="4548482551627849548">將使用中的視窗移至左側桌面</translation>
 <translation id="4552748006424994716">為避免產生回音，可以設定僅限使用有線耳機聆聽麥克風的聲音。</translation>
+<translation id="4556953949326137018">使用「新增至 Google 日曆」或「建立 Google 文件」這類建議的動作時，系統會將所選區域的內容傳送到 Google 伺服器以建議相關動作，過程中會遵守《<ph name="LINK_TO_SERVICE_TERMS" />》的規定。請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="4560576029703263363">開啟</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
@@ -1150,6 +1153,7 @@
 <translation id="481455355267255546">即將到來的活動</translation>
 <translation id="481749895090480684">工作清單：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
+<translation id="4828935196674083554">新增中...</translation>
 <translation id="482908187605862807">Play 商店提供的應用程式</translation>
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
 <translation id="4835677468087803981">隱藏 PIN 碼</translation>
@@ -1647,6 +1651,7 @@
 <translation id="641817663353603351">page up 鍵</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">清除所有通知</translation>
+<translation id="6426905245930183644">建立中...</translation>
 <translation id="6430225033895752525">顯示專注模式設定</translation>
 <translation id="643147933154517414">沒有通知</translation>
 <translation id="6431865393913628856">螢幕畫面錄製</translation>
@@ -1712,7 +1717,6 @@
 <translation id="6612889377159412215">子工作</translation>
 <translation id="6613765291890844037">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的儲存空間 | 共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已啟用隱私保護畫面</translation>
-<translation id="6618277154885124991">建立 Google 試算表</translation>
 <translation id="6622679827379792051">配置以下設定：查看手機的應用程式</translation>
 <translation id="662279009180869175">使用向左和向右鍵調整分割畫面大小</translation>
 <translation id="6624493541160101248">目前的桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>

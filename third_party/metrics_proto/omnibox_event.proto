@@ -327,6 +327,10 @@ message OmniboxEventProto {
 
     // Most visited sites suggestions.
     MOST_VISITED_SITES = 32;
+
+    // Contextual search autocomplete provider for the '@page' keyword mode of
+    // the omnibox.
+    CONTEXTUAL_SEARCH_PROVIDER = 33;
   }
 
   // The result set displayed on the completion popup

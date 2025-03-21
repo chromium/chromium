@@ -103,6 +103,7 @@ if (is_android) {
     ]
 
     deps = [
+      "//base:base_java",
       "//base:callback_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",

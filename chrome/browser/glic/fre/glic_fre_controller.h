@@ -7,7 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/glic_fre.mojom.h"
+#include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
@@ -112,6 +112,8 @@ class GlicFreController {
 
   void CreateView();
 
+  void RecordMetricsIfDialogIsShowingAndReady();
+
   raw_ptr<Profile> profile_;
   std::unique_ptr<views::Widget> fre_widget_;
   raw_ptr<GlicFreDialogView> fre_view_;
@@ -125,6 +127,9 @@ class GlicFreController {
   // List of callbacks to be notified when webui state has changed.
   base::RepeatingCallbackList<void(mojom::FreWebUiState)>
       webui_state_callback_list_;
+
+  // The timestamp when the FRE window is shown.
+  base::TimeTicks show_start_time_;
 
   base::WeakPtrFactory<GlicFreController> weak_ptr_factory_{this};
 };

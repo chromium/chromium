@@ -169,8 +169,9 @@ std::unique_ptr<TabGroupModel> TabGroupModelFactory::Create(
 }
 
 DetachedTabGroup::DetachedTabGroup(
-    std::unique_ptr<tabs::TabGroupTabCollection> collection)
-    : collection_(std::move(collection)) {}
+    std::unique_ptr<tabs::TabGroupTabCollection> collection,
+    std::optional<int> active_index)
+    : collection_(std::move(collection)), active_index_(active_index) {}
 
 DetachedTabGroup::~DetachedTabGroup() = default;
 DetachedTabGroup::DetachedTabGroup(DetachedTabGroup&&) = default;
@@ -542,7 +543,12 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
 
   OnChange(change, selection);
 
-  return std::make_unique<DetachedTabGroup>(std::move(group_collection));
+  std::optional<int> active_index_in_group =
+      active_tab_removed
+          ? group_collection->GetIndexOfTabRecursive(active_tab_model)
+          : std::nullopt;
+  return std::make_unique<DetachedTabGroup>(std::move(group_collection),
+                                            active_index_in_group);
 }
 
 void TabStripModel::InsertDetachedTabGroupImpl(
@@ -569,7 +575,10 @@ void TabStripModel::InsertDetachedTabGroupImpl(
 
   TabStripSelectionChange selection(GetActiveTab(), selection_model_);
 
-  if (empty()) {
+  if (detached_group->active_index_.has_value()) {
+    selection_model_.SetSelectedIndex(index +
+                                      detached_group->active_index_.value());
+  } else if (empty()) {
     selection_model_.SetSelectedIndex(index);
   }
 
@@ -3822,14 +3831,16 @@ std::optional<int> TabStripModel::DetermineNewSelectedIndex(
   new_selected_index =
       GetIndexOfNextWebContentsOpenedByOpenerOf(removed_group_id);
 
-  if (new_selected_index != TabStripModel::kNoTab) {
+  if (new_selected_index != TabStripModel::kNoTab &&
+      !IsTabCollapsed(new_selected_index)) {
     return GetTabIndexAfterClosing(new_selected_index, removed_group_id);
   }
 
   // third preference is the group's opener.
   for (size_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
     tabs::TabInterface* opener = GetTabModelAtIndex(i)->opener();
-    if (opener && opener->GetGroup() != removed_group_id) {
+    if (opener && opener->GetGroup() != removed_group_id &&
+        !IsTabCollapsed(GetIndexOfTab(opener))) {
       new_selected_index = GetIndexOfTab(opener);
       return GetTabIndexAfterClosing(new_selected_index, removed_group_id);
     }

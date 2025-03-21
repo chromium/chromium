@@ -31,40 +31,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace storage {
-
 namespace {
-
-// Sets permissions on directory at |dir_path| based on the target platform.
-// Returns true on success, or false otherwise.
-//
-// TODO(benchan): Find a better place outside webkit to host this function.
-bool SetPlatformSpecificDirectoryPermissions(const base::FilePath& dir_path) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // System daemons on ChromeOS may run as a user different than the Chrome
-  // process but need to access files under the directories created here.
-  // Because of that, grant the execute permission on the created directory
-  // to group and other users. Also chronos-access group should have read
-  // access to the directory.
-  if (HANDLE_EINTR(chmod(dir_path.value().c_str(),
-                         S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH)) != 0) {
-    return false;
-  }
-  struct group grp, *result = nullptr;
-  std::vector<char> buffer(16384);
-  // HANDLE_EINTR is not suitable for use with getgrnam_r, as it returns the
-  // error rather than setting errno.
-  while (getgrnam_r("chronos-access", &grp, buffer.data(), buffer.size(),
-                    &result) == EINTR) {
-  }
-  // Ignoring as the group might not exist in tests.
-  if (result &&
-      HANDLE_EINTR(chown(dir_path.value().c_str(), -1, grp.gr_gid)) != 0) {
-    return false;
-  }
-#endif
-  // Keep the directory permissions unchanged on non-Chrome OS platforms.
-  return true;
-}
 
 // Copies a file |from| to |to|, and ensure the written content is synced to
 // the disk. This is essentially base::CopyFile followed by fsync().
@@ -241,46 +208,36 @@ base::File::Error NativeFileUtil::CreateDirectory(const base::FilePath& path,
                                                   bool recursive) {
 #if !BUILDFLAG(IS_ANDROID)
   // If parent dir of file doesn't exist.
-  if (!recursive && !base::PathExists(path.DirName()))
+  if (!recursive && !base::PathExists(path.DirName())) {
     return base::File::FILE_ERROR_NOT_FOUND;
+  }
 #endif
 
   bool path_exists = base::PathExists(path);
-  if (exclusive && path_exists)
+  if (exclusive && path_exists) {
     return base::File::FILE_ERROR_EXISTS;
+  }
+
+  if (base::DirectoryExists(path)) {
+    return base::File::FILE_OK;
+  }
 
   // If file exists at the path.
-  bool directory_exists = base::DirectoryExists(path);
-  if (path_exists && !directory_exists) {
+  if (path_exists) {
     return base::File::FILE_ERROR_NOT_A_DIRECTORY;
   }
 
-  if (!directory_exists) {
 #if BUILDFLAG(IS_ANDROID)
-    if (path.IsContentUri()) {
-      base::FilePath result =
-          base::ContentUriGetDocumentFromQuery(path, /*create=*/true);
-      if (result.empty()) {
-        return base::File::FILE_ERROR_FAILED;
-      }
-    } else if (!base::CreateDirectory(path)) {
-      return base::File::FILE_ERROR_FAILED;
-    }
-#else
-    if (!base::CreateDirectory(path)) {
-      return base::File::FILE_ERROR_FAILED;
-    }
+  if (path.IsContentUri()) {
+    const base::FilePath result =
+        base::ContentUriGetDocumentFromQuery(path, /*create=*/true);
+    return result.empty() ? base::File::FILE_ERROR_FAILED : base::File::FILE_OK;
+  }
 #endif
-  }
 
-  if (!SetPlatformSpecificDirectoryPermissions(path)) {
-    // Since some file systems don't support permission setting, we do not treat
-    // an error from the function as the failure of copying. Just log it.
-    LOG(WARNING) << "Setting directory permission failed: "
-                 << path.AsUTF8Unsafe();
-  }
-
-  return base::File::FILE_OK;
+  base::File::Error error;
+  return base::CreateDirectoryAndGetError(path, &error) ? base::File::FILE_OK
+                                                        : error;
 }
 
 base::File::Error NativeFileUtil::GetFileInfo(const base::FilePath& path,

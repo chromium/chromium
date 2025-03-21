@@ -73,9 +73,9 @@ namespace {
 
 // An app to test local fs data persistence across app update. V1 app writes
 // data into local fs. V2 app reads and verifies the data.
-// Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/abbjjkefakmllanciinhgjgjamdmlbdg
+// Webstore itemsnippet proto mock is in
+//   chrome/test/data/chromeos/app_mode/webstore/itemsnippet/
+//       abbjjkefakmllanciinhgjgjamdmlbdg.textproto
 // The version 1.0.0 installed is in
 //   chrome/test/data/chromeos/app_mode/webstore/downloads/
 //       abbjjkefakmllanciinhgjgjamdmlbdg.crx
@@ -185,8 +185,6 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
     embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 
     // Log the response code for WebstoreDataFetcher instance if it is not 200.
-    // TODO(crbug.com/325314721): Use a mock FetchItemSnippetResponse instead
-    // when the old item JSON API used for fetching webstore data is removed.
     extensions::WebstoreDataFetcher::SetLogResponseCodeForTesting(true);
 
     // Don't spin up the IO thread yet since no threads are allowed while
@@ -638,8 +636,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, BadApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, GoodApp) {
-  // Webstore data json is in
-  //   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/detail/app_1
+  // Mock Webstore itemsnippets proto is in
+  //   chrome/test/data/chromeos/app_mode/webstore/itemsnippet/app_1.textproto
   const char kAppId[] = "app_1";
   fake_cws()->SetNoUpdate(kAppId);
   AppDataLoadWaiter waiter(manager());
@@ -654,9 +652,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, GoodApp) {
 
 IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
                        AppWithRequiredPlatformVersion) {
-  // Webstore data json is in
-  //   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/detail/
-  //     app_with_required_platform_version
+  // Mock Webstore itemsnippets proto is in
+  //   chrome/test/data/chromeos/app_mode/webstore/itemsnippet/
+  //     app_with_required_platform_version.textproto
   const char kAppId[] = "app_with_required_platform_version";
   fake_cws()->SetNoUpdate(kAppId);
   AppDataLoadWaiter waiter(manager());
@@ -671,9 +669,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
                        AppWithBadRequiredPlatformVersion) {
-  // Webstore data json is in
-  //   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/detail/
-  //     app_with_bad_required_platform_version
+  // Mock Webstore itemsnippets proto is in
+  //   chrome/test/data/chromeos/app_mode/webstore/itemsnippet/
+  //     app_with_bad_required_platform_version.textproto
   const char kAppId[] = "app_with_bad_required_platform_version";
   fake_cws()->SetNoUpdate(kAppId);
   AppDataLoadWaiter waiter(manager());

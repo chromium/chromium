@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_suggestion;
 
+import android.view.View.OnClickListener;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -19,7 +21,11 @@ public class GroupSuggestionsPromotionProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> ACCEPT_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<OnClickListener> ACCEPT_BUTTON_LISTENER =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> REJECT_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<OnClickListener> REJECT_BUTTON_LISTENER =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
@@ -29,6 +35,8 @@ public class GroupSuggestionsPromotionProperties {
                 SUGGESTED_NAME,
                 GROUP_CONTENT_STRING,
                 ACCEPT_BUTTON_TEXT,
-                REJECT_BUTTON_TEXT
+                REJECT_BUTTON_TEXT,
+                ACCEPT_BUTTON_LISTENER,
+                REJECT_BUTTON_LISTENER
             };
 }

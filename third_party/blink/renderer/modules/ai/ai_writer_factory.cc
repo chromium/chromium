@@ -8,7 +8,7 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_create_options.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/ai_writer.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -56,13 +56,16 @@ mojom::blink::AIWriterLength ToMojoAIWriterLength(V8AIWriterLength length) {
 
 class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
                            public mojom::blink::AIManagerCreateWriterClient,
-                           public AIMojoClient<AIWriter> {
+                           public AIContextObserver<AIWriter> {
  public:
   CreateWriterClient(ScriptState* script_state,
                      AI* ai,
                      ScriptPromiseResolver<AIWriter>* resolver,
                      AIWriterCreateOptions* options)
-      : AIMojoClient(script_state, ai, resolver, options->getSignalOr(nullptr)),
+      : AIContextObserver(script_state,
+                          ai,
+                          resolver,
+                          options->getSignalOr(nullptr)),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         options_(options) {
@@ -88,7 +91,7 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
   CreateWriterClient& operator=(const CreateWriterClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
-    AIMojoClient::Trace(visitor);
+    AIContextObserver::Trace(visitor);
     visitor->Trace(ai_);
     visitor->Trace(options_);
     visitor->Trace(receiver_);

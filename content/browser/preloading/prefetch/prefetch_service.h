@@ -177,6 +177,11 @@ class CONTENT_EXPORT PrefetchService {
       network::mojom::NetworkContext* network_context);
 
   // Set a callback for injecting delay for eligibility check in tests.
+  //
+  // Make sure to call
+  // `SetDelayEligibilityCheckForTesting(base::NullCallback())` at the end of an
+  // unit test that used this method, as this sets a global variable and it is
+  // shared in unit tests.
   using DelayEligibilityCheckForTesting =
       base::RepeatingCallback<void(base::OnceClosure)>;
   static void SetDelayEligibilityCheckForTesting(

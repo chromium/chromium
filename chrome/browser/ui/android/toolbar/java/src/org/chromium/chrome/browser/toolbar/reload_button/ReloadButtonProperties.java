@@ -32,6 +32,8 @@ class ReloadButtonProperties {
     public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<CharSequence> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey BACKGROUND_HIGHLIGHT_RESOURCE =
+            new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<ColorStateList> TINT_LIST =
             new WritableObjectPropertyKey<>();
 
@@ -47,6 +49,7 @@ class ReloadButtonProperties {
                 IS_VISIBLE,
                 CONTENT_DESCRIPTION,
                 TINT_LIST,
+                BACKGROUND_HIGHLIGHT_RESOURCE
             };
 
     private ReloadButtonProperties() {}

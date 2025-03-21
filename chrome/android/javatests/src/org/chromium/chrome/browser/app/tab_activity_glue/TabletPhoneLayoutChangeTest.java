@@ -28,10 +28,12 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -42,6 +44,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "This class tests activity restart behavior and thus cannot be batched.")
+@Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1302618.
 public class TabletPhoneLayoutChangeTest {
     private static final long TIMEOUT_MS = 10000;
 
@@ -56,7 +59,6 @@ public class TabletPhoneLayoutChangeTest {
 
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1302618.
     public void testIsRecreatedOnLayoutChange() throws TimeoutException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         boolean isTestOnTablet = cta.isTablet();
@@ -92,15 +94,10 @@ public class TabletPhoneLayoutChangeTest {
 
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1302618.
     @MinAndroidSdkLevel(Build.VERSION_CODES.Q) // See crbug.com/404979701.
     public void testUrlBarStateRetention() throws TimeoutException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         ToolbarManager toolbarManager = cta.getToolbarManager();
-        boolean isTestOnTablet = cta.isTablet();
-        CallbackHelper helper = new CallbackHelper();
-        Configuration config = cta.getSavedConfigurationForTesting();
-        Configuration newConfig = new Configuration(config);
         String urlBarText = "hello";
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -116,7 +113,62 @@ public class TabletPhoneLayoutChangeTest {
                 TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
-        // Pretend the device is in another mode.
+        simulateTabletModeChange();
+        ChromeTabbedActivity newCta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean doesOmniboxStateMatch =
+                            newCta.getToolbarManager() != null
+                                    && newCta.getToolbarManager().isUrlBarFocused()
+                                    && urlBarText.equals(
+                                            newCta.getToolbarManager()
+                                                    .getUrlBarTextWithoutAutocomplete());
+                    Criteria.checkThat(doesOmniboxStateMatch, Matchers.is(true));
+                },
+                TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.Q) // See crbug.com/404979701.
+    public void testTabSwitcherStateRetention() throws TimeoutException {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    cta.findViewById(R.id.tab_switcher_button).performClick();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean isTabSwitcherShown =
+                            cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER);
+                    Criteria.checkThat(isTabSwitcherShown, Matchers.is(true));
+                },
+                TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        simulateTabletModeChange();
+        ChromeTabbedActivity newCta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean isTabSwitcherShown =
+                            newCta.getCompositorViewHolderSupplier().get() != null
+                                    && newCta.getLayoutManager() != null
+                                    && newCta.getLayoutManager()
+                                            .isLayoutVisible(LayoutType.TAB_SWITCHER);
+                    Criteria.checkThat(isTabSwitcherShown, Matchers.is(true));
+                },
+                TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private void simulateTabletModeChange() throws TimeoutException {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        boolean isTestOnTablet = cta.isTablet();
+        CallbackHelper helper = new CallbackHelper();
+        Configuration config = cta.getSavedConfigurationForTesting();
+        Configuration newConfig = new Configuration(config);
         config.smallestScreenWidthDp =
                 DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + (isTestOnTablet ? -1 : 1);
         ThreadUtils.runOnUiThreadBlocking(
@@ -135,18 +187,5 @@ public class TabletPhoneLayoutChangeTest {
                 });
         mActivityTestRule.recreateActivity();
         helper.waitForOnly("Wait for old Activity being destroyed.");
-        ChromeTabbedActivity newCta = mActivityTestRule.getActivity();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    boolean doesOmniboxStateMatch =
-                            newCta.getToolbarManager() != null
-                                    && newCta.getToolbarManager().isUrlBarFocused()
-                                    && urlBarText.equals(
-                                            newCta.getToolbarManager()
-                                                    .getUrlBarTextWithoutAutocomplete());
-                    Criteria.checkThat(doesOmniboxStateMatch, Matchers.is(true));
-                },
-                TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }

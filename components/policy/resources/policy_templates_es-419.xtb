@@ -1590,12 +1590,6 @@ Si no la estableces, la Traducción instantánea estará inicialmente inhabilita
       Si inhabilitas esta configuración, <ph name="PRODUCT_NAME" /> no detectará cuando una ventana quede cubierta por otras.
 
       Si no estableces esta política, se habilitará la detección de oclusión.</translation>
-<translation id="2132424782557550556">Configura las políticas que controlan los informes en la nube.
-
-      Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorarán estas políticas.
-
-      Estas políticas solo serán válidas si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
-      Estas políticas siempre serán válidas para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2134437727173969994">Permite bloquear la pantalla</translation>
 <translation id="2135335181634291106">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> especificará la URL del ícono favorito del proveedor de búsqueda predeterminado.
 

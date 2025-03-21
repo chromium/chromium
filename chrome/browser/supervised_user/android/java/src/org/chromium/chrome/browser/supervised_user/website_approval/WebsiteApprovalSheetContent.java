@@ -13,12 +13,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.DialogTitle;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.supervised_user.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -27,6 +27,7 @@ import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
 
 /** Bottom sheet content for the screen which allows a parent to approve or deny a website. */
+@NullMarked
 class WebsiteApprovalSheetContent implements BottomSheetContent {
     private static final String ELLIPSIS = "...";
     static final int MAX_HOST_SIZE = 256;
@@ -100,7 +101,7 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.parent_website_approval_content_description);
     }
 

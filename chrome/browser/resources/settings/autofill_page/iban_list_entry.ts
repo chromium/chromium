@@ -122,6 +122,12 @@ export class SettingsIbanListEntryElement extends
     return this.i18n('a11yIbanDescription', lastFourDigits);
   }
 
+  private getIbanImageSrc_(): string {
+    return this.showNewFopDisplayEnabled_ ?
+        'chrome://settings/images/iban.svg' :
+        'chrome://settings/images/iban_old.svg';
+  }
+
   private getLabel_(iban: chrome.autofillPrivate.IbanEntry): string {
     if (this.showNewFopDisplayEnabled_ && iban.nickname) {
       return iban.nickname;

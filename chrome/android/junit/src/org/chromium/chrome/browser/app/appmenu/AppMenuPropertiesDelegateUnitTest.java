@@ -1146,8 +1146,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void testSelectTabsOption_IsEnabledOneTab_InRegularMode_IndependentOfIncognitoReauth() {
         setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getCount()).thenReturn(1);
         when(mTabModel.getCount()).thenReturn(1);
         Tab mockTab1 = mock(Tab.class);
         when(mTabModel.getTabAt(0)).thenReturn(mockTab1);
@@ -1860,7 +1858,6 @@ public class AppMenuPropertiesDelegateUnitTest {
      */
     private void prepareMocksForGroupTabsOnTabModel(@NonNull TabModel tabmodel) {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(tabmodel);
-        when(mTabGroupModelFilter.getCount()).thenReturn(2);
         when(tabmodel.getCount()).thenReturn(2);
         Tab mockTab1 = mock(Tab.class);
         Tab mockTab2 = mock(Tab.class);

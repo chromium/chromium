@@ -112,45 +112,43 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
     }                                                                          \
   } while (0)
 
-#define EXPECT_LOG_ERROR_WITH_FILENAME(expected_file, expected_line, expr,     \
-                                       msg)                                    \
-  do {                                                                         \
-    static bool got_log_message = false;                                       \
-    ASSERT_EQ(logging::GetLogMessageHandler(), nullptr);                       \
-    logging::SetLogMessageHandler([](int severity, const char* file, int line, \
-                                     size_t message_start,                     \
-                                     const std::string& str) {                 \
-      EXPECT_FALSE(got_log_message);                                           \
-      got_log_message = true;                                                  \
-      EXPECT_EQ(severity, logging::LOGGING_ERROR);                             \
-      EXPECT_EQ(str.substr(message_start), (msg));                             \
-      if (std::string_view(expected_file) != "") {                             \
-        EXPECT_STREQ(expected_file, file);                                     \
-      }                                                                        \
-      if (expected_line != -1) {                                               \
-        EXPECT_EQ(expected_line, line);                                        \
-      }                                                                        \
-      return true;                                                             \
-    });                                                                        \
-    expr;                                                                      \
-    EXPECT_TRUE(got_log_message);                                              \
-    logging::SetLogMessageHandler(nullptr);                                    \
+#define EXPECT_LOG_ERROR_WITH_FILENAME(expected_file, expected_line, expr, \
+                                       msg)                                \
+  do {                                                                     \
+    static bool got_log_message = false;                                   \
+    ASSERT_EQ(logging::GetLogMessageHandler(), nullptr);                   \
+    logging::SetLogMessageHandler([](int severity, std::string_view file,  \
+                                     int line, size_t message_start,       \
+                                     const std::string& str) {             \
+      EXPECT_FALSE(got_log_message);                                       \
+      got_log_message = true;                                              \
+      EXPECT_EQ(severity, logging::LOGGING_ERROR);                         \
+      EXPECT_EQ(str.substr(message_start), (msg));                         \
+      EXPECT_EQ(std::string_view(expected_file), file);                    \
+      if (expected_line != -1) {                                           \
+        EXPECT_EQ(expected_line, line);                                    \
+      }                                                                    \
+      return true;                                                         \
+    });                                                                    \
+    expr;                                                                  \
+    EXPECT_TRUE(got_log_message);                                          \
+    logging::SetLogMessageHandler(nullptr);                                \
   } while (0)
 
 #define EXPECT_LOG_ERROR(expected_line, expr, msg) \
   EXPECT_LOG_ERROR_WITH_FILENAME(__FILE__, expected_line, expr, msg)
 
-#define EXPECT_NO_LOG(expr)                                                    \
-  do {                                                                         \
-    ASSERT_EQ(logging::GetLogMessageHandler(), nullptr);                       \
-    logging::SetLogMessageHandler([](int severity, const char* file, int line, \
-                                     size_t message_start,                     \
-                                     const std::string& str) {                 \
-      EXPECT_TRUE(false) << "Unexpected log: " << str;                         \
-      return true;                                                             \
-    });                                                                        \
-    expr;                                                                      \
-    logging::SetLogMessageHandler(nullptr);                                    \
+#define EXPECT_NO_LOG(expr)                                               \
+  do {                                                                    \
+    ASSERT_EQ(logging::GetLogMessageHandler(), nullptr);                  \
+    logging::SetLogMessageHandler([](int severity, std::string_view file, \
+                                     int line, size_t message_start,      \
+                                     const std::string& str) {            \
+      EXPECT_TRUE(false) << "Unexpected log: " << str;                    \
+      return true;                                                        \
+    });                                                                   \
+    expr;                                                                 \
+    logging::SetLogMessageHandler(nullptr);                               \
   } while (0)
 
 #if defined(OFFICIAL_BUILD)

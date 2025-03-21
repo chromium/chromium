@@ -267,6 +267,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1175572348579024023">Desplazamiento</translation>
 <translation id="1175914831232945926">Dígitos</translation>
 <translation id="1176471985365269981">No pueden editar archivos ni carpetas del dispositivo</translation>
+<translation id="1176864681932214421">Crea imágenes con IA</translation>
 <translation id="1177073277575830464">Se completó la configuración rápida de Android; continúa con la configuración en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1177440945615690056">En Configuración, puedes conectarte a cualquier red móvil apta</translation>
 <translation id="1177548198167638471">No volver a preguntar</translation>
@@ -616,7 +617,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="142655739075382478">Se bloqueó <ph name="APP_NAME" /></translation>
 <translation id="1427179946227469514">Tono para texto a voz</translation>
 <translation id="1427269577154060167">País</translation>
-<translation id="1427506552622340174">Haz clic con el botón derecho para escribir con más confianza, resumir contenido, obtener definiciones y mucho más. Actualmente tiene disponibilidad limitada.</translation>
 <translation id="142765311413773645">Caducó la licencia de <ph name="APP_NAME" /></translation>
 <translation id="1428373049397869723">Puedes abrir y editar los archivos compatibles con esta app desde Buscador o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Guardaste una nota para una contraseña de este sitio. Para verla, selecciona la opción para administrar tus contraseñas en la barra de direcciones y de búsqueda.</translation>
@@ -1877,6 +1877,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">El archivo no se encontraba disponible en el sitio.</translation>
 <translation id="2300383962156589922">Personaliza y controla <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Declaraciones de certificados calificados</translation>
 <translation id="2301382460326681002">El directorio de raíz de la extensión no es válido.</translation>
 <translation id="2301402091755573488">Pestaña compartida</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Funciones de depuración<ph name="END_H3" />
@@ -3682,6 +3683,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3582057310199111521">Se ingresó en un sitio engañoso y se encontró en una violación de la seguridad de los datos</translation>
 <translation id="3582299299336701326">Oscurece las pantallas claras y aclara las oscuras. Presiona Búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
+<translation id="3586741240886978899">La usaste en este sitio</translation>
 <translation id="3586806079541226322">No se puede abrir este archivo.</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587279952965197737">Debe tener un máximo de <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
@@ -9351,6 +9353,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7650582458329409456">{COUNT,plural, =1{Se configuró 1 huella digital}other{Se configuraron {COUNT} huellas digitales}}</translation>
 <translation id="7650677314924139716">La configuración de uso de datos actual es Solo Wi-Fi</translation>
 <translation id="7650920359639954963">No habilitada: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">Para obtener este favorito en todos tus dispositivos, verifica tu identidad</translation>
 <translation id="7651400349472467012">Hotspot instantáneo disponible</translation>
 <translation id="7651784568388208829">Continuación de tareas con Phone Hub</translation>
 <translation id="765293928828334535">Las apps, extensiones y secuencias de comandos de usuario no se pueden agregar desde este sitio web</translation>
@@ -9389,6 +9392,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7670434942695515800">Para obtener el mejor rendimiento, actualiza Linux y usa la versión más reciente. Te recomendamos realizar una copia de seguridad de tus archivos en caso de que la actualización no pueda completarse. Cuando empiece la actualización, se apagará Linux. Guarda los archivos que estén abiertos antes de continuar. <ph name="LINK_START" />Más información<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Subtítulos</translation>
 <translation id="7671130400130574146">Usar la barra de título y los bordes del sistema</translation>
+<translation id="7671139479636735732">Haz clic con el botón derecho para visualizar tus ideas fácilmente</translation>
 <translation id="767127784612208024">Toca para confirmar que quieres restablecer la llave</translation>
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" quiere escanear con "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Elige qué dispositivo tiene la llave de acceso para <ph name="APP_NAME" /></translation>
@@ -10525,7 +10529,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8452105022015742247">Transfiriendo la información de la Cuenta de Google desde tu teléfono Android</translation>
 <translation id="8455775311562941553">Conectado con <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Establece tu navegador predeterminado</translation>
-<translation id="8456200178779628126">Usa la IA de Google para obtener ayuda con la lectura y la escritura</translation>
 <translation id="845702320058262034">No se puede establecer la conexión. Asegúrate de que la conexión Bluetooth del teléfono esté activada.</translation>
 <translation id="8457251154056341970">No volverás a ver <ph name="MODULE_NAME" /> en esta página</translation>
 <translation id="8457451314607652708">Importar favoritos</translation>
@@ -11420,7 +11423,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB conectado</translation>
 <translation id="9075413375877487220">La Navegación segura mejorada no confía en esta extensión.</translation>
-<translation id="9075985558450420812">Ingresa una instrucción personalizada o destaca texto para crear una imagen.</translation>
 <translation id="9076523132036239772">Lo sentimos, no pudimos verificar tu correo electrónico o contraseña. Intenta conectándote a una red.</translation>
 <translation id="9076821103818989526">Panel lateral</translation>
 <translation id="9076977315710973122">Elementos compartidos con SMB</translation>

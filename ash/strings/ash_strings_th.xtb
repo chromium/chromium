@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">เพิ่มความสว่าง</translation>
 <translation id="1680659827022803830">การควบคุมวิดีโอคอล</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">คุณปิดฟีเจอร์นี้ได้ทุกเมื่อในการตั้งค่า <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">ตัวจับเวลา <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">ที่อยู่ IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ตรึงหน้าต่างที่ใช้งานไว้ทางด้านซ้ายแล้ว</translation>
@@ -962,6 +963,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, หยุดชั่วคราว</translation>
 <translation id="4228078597006700451">ยังไม่ได้ตั้งค่าการควบคุม</translation>
 <translation id="4230560241506423345">ใหม่</translation>
+<translation id="4236726631849783264">การช่วยเตือนเกี่ยวกับการดำเนินการที่แนะนำ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">โหมดภาพรวม</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
@@ -978,7 +980,6 @@
 <translation id="4275663329226226506">สื่อ</translation>
 <translation id="4279490309300973883">กำลังแสดงผล</translation>
 <translation id="4280601795273309128">การอัปเดตความปลอดภัยสิ้นสุดแล้ว โปรดอัปเกรดอุปกรณ์</translation>
-<translation id="4281739221820540368">สร้าง Google เอกสาร</translation>
 <translation id="4283888303416325161">ป้อนรหัสผ่านเพื่อความปลอดภัยมากขึ้น</translation>
 <translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="428715201724021596">กำลังเชื่อมต่อโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
@@ -1039,6 +1040,7 @@
 <translation id="4471354919263203780">กำลังดาวน์โหลดไฟล์การจดจำคำพูด... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{อัปเดตอุปกรณ์ทันที}=1{อัปเดตอุปกรณ์ภายใน 1 วินาที}other{อัปเดตอุปกรณ์ภายใน # วินาที}}</translation>
 <translation id="4472575034687746823">เริ่มต้น</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">แทร็กถัดไป</translation>
 <translation id="4477751544736611934">ซึ่งอาจมีค่าบริการอินเทอร์เน็ต
 มีอุปกรณ์ที่เชื่อมต่ออยู่ 1 เครื่อง</translation>
@@ -1065,6 +1067,7 @@
 <translation id="4545950850562423083">บันทึกหน้าปัจจุบันเป็นบุ๊กมาร์ก</translation>
 <translation id="4548482551627849548">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังเดสก์ทางด้านซ้าย</translation>
 <translation id="4552748006424994716">คุณสามารถฟังเสียงจากไมค์เท่านั้นด้วยหูฟังแบบมีสายเพื่อหลีกเลี่ยงเสียงก้อง</translation>
+<translation id="4556953949326137018">เมื่อคุณใช้การดำเนินการที่แนะนำ เช่น "เพิ่มในปฏิทิน" หรือ "สร้างเอกสารใน Google เอกสาร" ระบบจะส่งเนื้อหาจากพื้นที่ที่เลือกไปยังเซิร์ฟเวอร์ของ Google เพื่อแนะนำการดำเนินการ ทั้งนี้จะขึ้นอยู่กับ<ph name="LINK_TO_SERVICE_TERMS" /> อย่าระบุสิ่งที่เป็นเรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ</translation>
 <translation id="4560576029703263363">เปิด</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ซ่อนรหัสผ่าน</translation>
@@ -1148,6 +1151,7 @@
 <translation id="481455355267255546">กิจกรรมถัดไป</translation>
 <translation id="481749895090480684">รายการงาน: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
+<translation id="4828935196674083554">กำลังเพิ่ม...</translation>
 <translation id="482908187605862807">แอปที่พร้อมใช้งานจาก Play Store</translation>
 <translation id="4831034276697007977">แน่ใจไหมว่าต้องการปิดการคลิกอัตโนมัติ</translation>
 <translation id="4835677468087803981">ซ่อน PIN</translation>
@@ -1645,6 +1649,7 @@
 <translation id="641817663353603351">Page Up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ล้างการแจ้งเตือนทั้งหมด</translation>
+<translation id="6426905245930183644">กำลังสร้าง...</translation>
 <translation id="6430225033895752525">แสดงการตั้งค่าโหมดโฟกัส</translation>
 <translation id="643147933154517414">เสร็จเรียบร้อย</translation>
 <translation id="6431865393913628856">บันทึกหน้าจอ</translation>
@@ -1711,7 +1716,6 @@
 <translation id="6612889377159412215">งานย่อย</translation>
 <translation id="6613765291890844037">พื้นที่เก็บข้อมูลใช้งานอยู่ <ph name="STORAGE_IN_USE_SIZE" /> | ทั้งหมด <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">หน้าจอส่วนตัวเปิดอยู่</translation>
-<translation id="6618277154885124991">สร้าง Google ชีต</translation>
 <translation id="6622679827379792051">ตั้งค่าการดูแอปของโทรศัพท์</translation>
 <translation id="662279009180869175">ใช้ลูกศรซ้ายและขวาเพื่อปรับขนาดการแยกหน้าจอ</translation>
 <translation id="6624493541160101248">เดสก์ปัจจุบัน: <ph name="DESK_NAME" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>

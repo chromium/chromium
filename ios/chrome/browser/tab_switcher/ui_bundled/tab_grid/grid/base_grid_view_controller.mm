@@ -1246,7 +1246,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)dismissModals {
-  ios::provider::DismissModalsForCollectionView(self.collectionView);
+  [self.collectionView.contextMenuInteraction dismissMenu];
 }
 
 - (void)reload {

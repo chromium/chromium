@@ -30,6 +30,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
       'loadEntityInstances',
       'removeEntityInstance',
       'removeEntityInstancesChangedListener',
+      'setOptInStatus',
     ]);
   }
 
@@ -49,6 +50,10 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
   setGetAllAttributeTypesForEntityTypeNameResponse(
       attributeTypes: AttributeType[]): void {
     this.attributeTypes_ = attributeTypes;
+  }
+
+  setOptInStatus(optInStatus: boolean) {
+    this.methodCalled('setOptInStatus', optInStatus);
   }
 
   callEntityInstancesChangedListener(

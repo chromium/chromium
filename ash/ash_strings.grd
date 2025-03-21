@@ -6921,10 +6921,10 @@ Here are some things you can try to get started.
         Create contact
       </message>
       <message name="IDS_ASH_SCANNER_ACTION_CREATE_SHEET" desc="The label on a button that can be clicked to create a new Google Sheet from the contents of a screenshot.">
-        Create Google Sheets
+        Create Google Sheet
       </message>
       <message name="IDS_ASH_SCANNER_ACTION_CREATE_DOC" desc="The label on a button that can be clicked to create a new Google Doc from the contents of a screenshot.">
-        Create Google Docs
+        Create Google Doc
       </message>
       <message name="IDS_ASH_SCANNER_ACTION_COPY_TEXT_AND_FORMAT" desc="The label on a button that can be clicked to copy text with formatting from the contents of a screenshot. Formatting includes properties such as text size, font, and color.">
         Copy with formatting

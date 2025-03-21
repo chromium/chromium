@@ -9,7 +9,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
@@ -67,7 +67,7 @@ TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
       .WillOnce(
           ::testing::DoAll(::testing::Invoke(&run_loop2, &base::RunLoop::Quit),
                            ::testing::Return(true)));
-  PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(page_node());
+  DiscardEligibilityPolicy::RemovesDiscardAttemptMarkerForTesting(page_node());
   system_node()->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_CRITICAL);

@@ -105,8 +105,7 @@ class GlicBorderView::BorderViewUpdater {
 
   // Called when the focused tab changes with the focused tab data object.
   void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
-    content::WebContents* contents =
-        focused_tab_data.focused_tab_contents.get();
+    content::WebContents* contents = focused_tab_data.focus();
     auto* previous_focus = glic_focused_contents_in_current_window_.get();
     if (contents && IsTabInCurrentWindow(contents)) {
       glic_focused_contents_in_current_window_ =

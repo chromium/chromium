@@ -27,25 +27,18 @@ package org.chromium.chrome.browser;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+@Batch(Batch.PER_CLASS)  // Batching is recommended for faster tests.
 public class MyPTTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
-    // Recommend to batch whenever possible so the test runs faster.
-    // Omit this rule in a non-batched test.
+    // Reuse the Activity between test cases when possible so the batched test
+    // runs faster.
     @Rule
-    public BatchedPublicTransitRule<PageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ true);
-
-    ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
+    public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =
+            ChromeTransitTestRules.blankPageStartReusedActivityRule();
 
     @Test
     @LargeTest
     public void testOpenBlankPage() {
-        PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
+        PageStation page = mCtaTestRule.start();
         TransitAsserts.assertFinalDestination(page);
     }
 }
@@ -150,7 +143,7 @@ public class MyPTTest {
     @LargeTest
     @Feature({"RenderTest"})
     public void testOneTab_I_render() throws IOException {
-        PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
+        PageStation page = mCtaTestRule.start();
         mRenderTestRule.render(page.getTabSwitcherButton(), "1_tab");
         TransitAsserts.assertFinalDestination(page);
     }
@@ -198,7 +191,7 @@ guide, but the render test is a very good way of testing this too.
 ```java
 public class MyPTTest {
     public void testOneTab_I() {
-        PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
+        PageStation page = mCtaTestRule.start();
 
         ImageButton tabSwitcherButton = page.getTabSwitcherButton();
         TabSwitcherDrawable tabSwitcherDrawable = (TabSwitcherDrawable) tabSwitcherButton.getDrawable();
@@ -215,7 +208,7 @@ Let's add a second test case:
 ```java
 public class MyPTTest {
     public void testTwoTabs_II() {
-        PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
+        PageStation page = mCtaTestRule.start();
         NewTabPageStation ntp = page.openGenericAppMenu().openNewTab();
 
         ImageButton tabSwitcherButton = ntp.getTabSwitcherButton();
@@ -282,7 +275,7 @@ public class MyPTTest {
 +       new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
 
     public void testTwoTabs_II() {
--       PageStation page = mEntryPoints.startOnBlankPage(mBatchedRule);
+-       PageStation page = mCtaTestRule.start();
 
 +       PageStation page = mInitialStateRule.startOnBlankPage();
         [...]

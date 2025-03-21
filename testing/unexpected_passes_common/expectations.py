@@ -6,6 +6,7 @@
 import collections
 import copy
 import datetime
+import functools
 import logging
 import os
 import re
@@ -191,8 +192,9 @@ class Expectations(object):
         if _RawResultsContainUnhandledValue(e):
           continue
 
+        wildcard_type = WildcardTypeFromTypExpectation(e)
         expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
-                                             e.reason)
+                                             wildcard_type, e.reason)
         if expectation in expectations_for_file:
           # In practice this should never be hit unless the file was somehow
           # modified, as _RemoveDuplicateExpectations() should have removed all
@@ -344,8 +346,9 @@ class Expectations(object):
     for e in list_parser.expectations:
       if _RawResultsContainUnhandledValue(e):
         continue
+      wildcard_type = WildcardTypeFromTypExpectation(e)
       expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
-                                           e.reason)
+                                           wildcard_type, e.reason)
       if expectation in seen_expectations:
         lines_to_remove.add(e.lineno)
       else:
@@ -500,12 +503,14 @@ class Expectations(object):
       A data_types.Expectation containing the same information as |line|.
     """
     header = self._GetExpectationFileTagHeader(expectation_file)
-    single_line_content = header + line
+    annotations = self._GetExpectationFileAnnotations(expectation_file)
+    single_line_content = header + annotations + line
     list_parser = expectations_parser.TaggedTestListParser(single_line_content)
     assert len(list_parser.expectations) == 1
     typ_expectation = list_parser.expectations[0]
+    wildcard_type = WildcardTypeFromTypExpectation(typ_expectation)
     return data_types.Expectation(typ_expectation.test, typ_expectation.tags,
-                                  typ_expectation.raw_results,
+                                  typ_expectation.raw_results, wildcard_type,
                                   typ_expectation.reason)
 
   def _GetExpectationFileTagHeader(self, expectation_file: str) -> str:
@@ -520,6 +525,45 @@ class Expectations(object):
       the top of the file defining possible tags and expected results.
     """
     raise NotImplementedError()
+
+  # Kept as a method so that caching is handled at the object level instead of
+  # at the module level.
+  # pylint: disable=no-self-use
+  @functools.cache
+  def _GetExpectationFileAnnotations(self, expectation_file: str) -> str:
+    """Gets all annotations found within the expectation file.
+
+    This assumes that all annotations are specified before any expectations and
+    that there is at most one of each annotation. These assumptions are not
+    strictly enforced by typ's code, but should hold true for any files that
+    are actually used with the UPF.
+
+    Args:
+      expectation_file: A filepath pointing to an expectation file to get the
+          annotations from.
+    """
+    with open(expectation_file, encoding='utf-8') as infile:
+      contents = infile.read()
+
+    all_annotations = [
+        expectations_parser.TaggedTestListParser.CONFLICTS_ALLOWED,
+        expectations_parser.TaggedTestListParser.CONFLICT_RESOLUTION,
+        expectations_parser.TaggedTestListParser.FULL_WILDCARD_SUPPORT,
+    ]
+
+    found_annotation_lines = []
+    for line in contents.splitlines(keepends=True):
+      for annotation in all_annotations:
+        if line.startswith(annotation):
+          if any(a.startswith(annotation) for a in found_annotation_lines):
+            raise RuntimeError(
+                f'Found multiple cases of {annotation} annotation in file '
+                f'{expectation_file}')
+          found_annotation_lines.append(line)
+          break
+    return ''.join(found_annotation_lines)
+
+  # pylint: enable=no-self-use
 
   def FilterToKnownTags(self, tags: Iterable[str]) -> Set[str]:
     """Filters |tags| to only include tags known to expectation files.
@@ -1118,3 +1162,23 @@ def _RemoveStaleComments(content: str, removed_lines: Set[int],
       content = content.replace(match, '')
 
   return content
+
+
+def WildcardTypeFromTypExpectation(
+    e: expectations_parser.Expectation) -> data_types.WildcardType:
+  """Helper to convert information in a typ expectation to a WildcardType.
+
+  Args:
+    e: The typ Expectation to extract information from.
+
+  Returns:
+    The data_types.WildcardType value that corresponds to the data contained
+    within |e|.
+  """
+  wildcard_type = data_types.WildcardType.NON_WILDCARD
+  if e.is_glob:
+    if e.full_wildcard_support:
+      wildcard_type = data_types.WildcardType.FULL_WILDCARD
+    else:
+      wildcard_type = data_types.WildcardType.SIMPLE_WILDCARD
+  return wildcard_type

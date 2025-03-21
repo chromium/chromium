@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
@@ -51,17 +52,12 @@ bool IsHostInAllowList(const std::vector<std::string_view>& allowlist,
 }
 
 void MayActOnUrl(const GURL& url, DecisionCallback callback) {
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    ResolveDecision(std::move(callback), false);
-    return;
-  }
-
   if (net::IsLocalhost(url)) {
     ResolveDecision(std::move(callback), true);
     return;
   }
 
-  if (url.HostIsIPAddress()) {
+  if (!url.SchemeIs(url::kHttpsScheme) || url.HostIsIPAddress()) {
     ResolveDecision(std::move(callback), false);
     return;
   }

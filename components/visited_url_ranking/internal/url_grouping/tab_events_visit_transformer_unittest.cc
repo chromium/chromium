@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "components/visited_url_ranking/internal/transformer/transformer_test_support.h"
+#include "components/visited_url_ranking/internal/url_grouping/tab_event_tracker_impl.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/test_support.h"
+#include "components/visited_url_ranking/public/url_visit.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace visited_url_ranking {
@@ -17,8 +19,25 @@ namespace {
 
 constexpr char kTestUrl1[] = "https://www.example1.com/";
 constexpr base::TimeDelta kTimeSinceLoad1 = base::Hours(20);
-constexpr char kTestUrl2[] = "https://www.example2.com/";
 constexpr base::TimeDelta kTimeSinceLoad2 = base::Hours(40);
+
+URLVisitAggregate CreateVisitForTab(base::TimeDelta time_since_active,
+                                    int tab_id) {
+  base::Time timestamp = base::Time::Now() - time_since_active;
+  auto candidate = CreateSampleURLVisitAggregate(GURL(kTestUrl1), 1, timestamp,
+                                                 {Fetcher::kTabModel});
+  auto tab_data_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
+  auto* tab_data =
+      std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
+  tab_data->last_active_tab.id = tab_id;
+  return candidate;
+}
+
+int GetRecentFgCount(const URLVisitAggregate& visit) {
+  auto tab_data_it = visit.fetcher_data_map.find(Fetcher::kTabModel);
+  auto* tab = std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
+  return tab->recent_fg_count;
+}
 
 class TabEventsVisitTransformerTest : public URLVisitAggregatesTransformerTest {
  public:
@@ -27,26 +46,41 @@ class TabEventsVisitTransformerTest : public URLVisitAggregatesTransformerTest {
 
   void SetUp() override {
     Test::SetUp();
-    transformer_ = std::make_unique<TabEventsVisitTransformer>();
+    auto transformer = std::make_unique<TabEventsVisitTransformer>();
+    tab_transformer_impl_ = transformer.get();
+    transformer_ = std::move(transformer);
+    tab_tracker_ = std::make_unique<TabEventTrackerImpl>(base::DoNothing());
+    tab_transformer_impl_->set_tab_event_tracker(tab_tracker_.get());
   }
 
   void TearDown() override {
+    tab_transformer_impl_->set_tab_event_tracker(nullptr);
+    tab_tracker_.reset();
+    tab_transformer_impl_ = nullptr;
     transformer_.reset();
     Test::TearDown();
   }
 
   std::vector<URLVisitAggregate> GetSampleCandidates() {
-    base::Time now = base::Time::Now();
     std::vector<URLVisitAggregate> candidates = {};
+    candidates.push_back(CreateVisitForTab(kTimeSinceLoad1, 1));
+    candidates.push_back(CreateVisitForTab(kTimeSinceLoad2, 2));
 
-    // Entries with only tabs:
-    candidates.push_back(CreateSampleURLVisitAggregate(
-        GURL(kTestUrl1), 1, now - kTimeSinceLoad1, {Fetcher::kTabModel}));
-    candidates.push_back(CreateSampleURLVisitAggregate(
-        GURL(kTestUrl2), 2, now - kTimeSinceLoad2, {Fetcher::kTabModel}));
+    tab_tracker_->DidAddTab(1, 1);
+    tab_tracker_->DidAddTab(2, 1);
+    tab_tracker_->DidSelectTab(1, TabEventTracker::TabSelectionType::kFromUser,
+                               2);
+    tab_tracker_->DidSelectTab(2, TabEventTracker::TabSelectionType::kFromUser,
+                               1);
+    tab_tracker_->DidSelectTab(1, TabEventTracker::TabSelectionType::kFromUser,
+                               2);
 
     return candidates;
   }
+
+ protected:
+  raw_ptr<TabEventsVisitTransformer> tab_transformer_impl_;
+  std::unique_ptr<TabEventTrackerImpl> tab_tracker_;
 };
 
 TEST_F(TabEventsVisitTransformerTest, Transform) {
@@ -55,7 +89,9 @@ TEST_F(TabEventsVisitTransformerTest, Transform) {
       std::move(candidates),
       FetchOptions::CreateDefaultFetchOptionsForTabResumption());
   ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);
-  EXPECT_EQ(result.second.size(), 2u);
+  ASSERT_EQ(result.second.size(), 2u);
+  EXPECT_EQ(GetRecentFgCount(result.second[0]), 3);
+  EXPECT_EQ(GetRecentFgCount(result.second[1]), 2);
 }
 
 }  // namespace

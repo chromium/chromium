@@ -6,8 +6,8 @@
 // ash/webui/personalization_app/tools/gen_tsconfig.py --root_out_dir out/pc \
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
-import {GetTabContextErrorReason, PanelStateKind, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GetTabContextError, GlicBrowserHost, GlicWebClient, Observable, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
+import {PanelStateKind, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicWebClient, Observable, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
 
@@ -205,7 +205,7 @@ class ApiTests extends ApiTestFixtureBase {
     const activeSequence = observeSequence(this.host.panelActive());
     assertTrue(await activeSequence.next());
     await this.advanceToNextStep();
-    assertTrue(!await activeSequence.next());
+    assertFalse(await activeSequence.next());
   }
 
   async testCanAttachPanel() {
@@ -237,15 +237,35 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.enableDragResize(false);
   }
 
+  async testGetFocusedTabState() {
+    assertTrue(!!this.host.getFocusedTabState);
+    const sequence = observeSequence(this.host.getFocusedTabState());
+    const focus = await sequence.next();
+    assertTrue(!!focus);
+    assertTrue(focus.url.endsWith('glic/test.html'), `url=${focus.url}`);
+    assertEquals('Test Page', focus.title);
+  }
+
   async testGetFocusedTabStateV2() {
     assertTrue(!!this.host.getFocusedTabStateV2);
     const sequence = observeSequence(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
-    assertTrue(!!focus.focusedTab, 'Should be a focused tab');
+    assertTrue(!!focus.hasFocus);
     assertTrue(
-        focus.focusedTab.url.endsWith('glic/test.html'),
-        `url=${focus.focusedTab.url}`);
-    assertEquals('Test Page', focus.focusedTab.title);
+        focus.hasFocus.tabData.url.endsWith('glic/test.html'),
+        `url=${focus.hasFocus.tabData.url}`);
+    assertEquals('Test Page', focus.hasFocus.tabData.title);
+    assertFalse(!!focus.hasNoFocus);
+  }
+
+  async testGetFocusedTabStateV2BrowserClosed() {
+    assertTrue(!!this.host.getFocusedTabStateV2);
+    const sequence = observeSequence(this.host.getFocusedTabStateV2());
+    // Ignore the initial focus.
+    await sequence.next();
+    const focus = await sequence.next();
+    assertFalse(!!focus.hasFocus);
+    assertTrue(!!focus.hasNoFocus);
   }
 
   async testGetContextFromFocusedTabWithoutPermission() {
@@ -256,8 +276,7 @@ class ApiTests extends ApiTestFixtureBase {
       await this.host.getContextFromFocusedTab?.({});
     } catch (e) {
       assertEquals(
-          GetTabContextErrorReason.PERMISSION_DENIED,
-          (e as GetTabContextError).reason);
+          'tabContext failed: permission denied', (e as Error).message);
     }
   }
 
@@ -270,10 +289,10 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(
         result.tabData.url.endsWith('glic/test.html') ?? false,
         `Tab data has unexpected url ${result.tabData.url}`);
-    assertTrue(!result.annotatedPageData);
-    assertTrue(!result.pdfDocumentData);
-    assertTrue(!result.webPageData);
-    assertTrue(!result.viewportScreenshot);
+    assertFalse(!!result.annotatedPageData);
+    assertFalse(!!result.pdfDocumentData);
+    assertFalse(!!result.webPageData);
+    assertFalse(!!result.viewportScreenshot);
   }
 
   // TODO(harringtond): Add a test for a PDF.
@@ -293,7 +312,7 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(
         result.tabData.url.endsWith('glic/test.html') ?? false,
         `Tab data has unexpected url ${result.tabData.url}`);
-    assertTrue(!result.pdfDocumentData);  // The page is not a PDF.
+    assertFalse(!!result.pdfDocumentData);  // The page is not a PDF.
     assertTrue(!!result.webPageData);
     assertEquals(
         'This is a test page', result.webPageData.mainDocument.innerText);
@@ -351,9 +370,9 @@ class ApiTests extends ApiTestFixtureBase {
     const tabContextState =
         observeSequence(this.host.getTabContextPermissionState());
 
-    assertTrue(!await microphoneState.next());
-    assertTrue(!await locationState.next());
-    assertTrue(!await tabContextState.next());
+    assertFalse(await microphoneState.next());
+    assertFalse(await locationState.next());
+    assertFalse(await tabContextState.next());
 
     this.host.setMicrophonePermissionState(true);
     assertTrue(await microphoneState.next());
@@ -625,6 +644,12 @@ type ComparableValue = boolean|string|number|undefined|null;
 function assertTrue(x: boolean, message?: string): asserts x {
   if (!x) {
     throw new Error(`assertTrue failed: ${x} is not true. ${message ?? ''}`);
+  }
+}
+
+function assertFalse(x: boolean, message?: string): asserts x is false {
+  if (x) {
+    throw new Error(`assertFalse failed: ${x} is not false. ${message ?? ''}`);
   }
 }
 

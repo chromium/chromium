@@ -1096,7 +1096,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (void)dismissModals {
   [self.signinPromoViewMediator disconnect];
   self.signinPromoViewMediator = nil;
-  ios::provider::DismissModalsForTableView(self.tableView);
+  [self.tableView.contextMenuInteraction dismissMenu];
 }
 
 #pragma mark - UITableViewDelegate

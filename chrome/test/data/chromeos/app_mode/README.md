@@ -54,10 +54,6 @@ Chrome apps and extensions accessible to `FakeCWS` in automated tests.
 7.  In `webstore/itemsnippet/BUILD.gn`, add `<app_id>.textproto` to `sources` so
     a protobuf string API response can be generated from the `.textproto` file.
 
-TODO(crbug.com/325314721): `webstore/inlineinstall/detail` is deprecated and no
-longer used for tests. The directory will be removed when the item snippets API
-is fully rolled out.
-
 ### How to use test Chrome Apps or extensions?
 
 It's recommended to use these apps and extensions with `KioskMixin` via the

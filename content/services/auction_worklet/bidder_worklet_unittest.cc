@@ -884,6 +884,22 @@ class BidderWorkletTest : public testing::Test {
         direct_from_seller_auction_signals_header_ad_slot_);
   }
 
+  void FinishGenerateBid(
+      mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>&
+          bid_finalizer) {
+    bid_finalizer->FinishGenerateBid(
+        auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+        per_buyer_currency_,
+        provide_direct_from_seller_signals_late_
+            ? direct_from_seller_per_buyer_signals_
+            : std::nullopt,
+        direct_from_seller_per_buyer_signals_header_ad_slot_,
+        provide_direct_from_seller_signals_late_
+            ? direct_from_seller_auction_signals_
+            : std::nullopt,
+        direct_from_seller_auction_signals_header_ad_slot_);
+  }
+
   // Calls BeginGenerateBid()/FinishGenerateBid(), expecting the
   // GenerateBidClient's OnGenerateBidComplete() method never to be invoked.
   void GenerateBidExpectingNeverCompletes(
@@ -9136,6 +9152,116 @@ TEST_P(BidderWorkletMultiThreadingTest,
       "Ads.InterestGroup.Auction.UsedPremadeContext", false, 1);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread", 0);
+}
+
+TEST_P(BidderWorkletMultiThreadingTest,
+       PreparesContextsIfFinishGenerateBidBeforeOrAfterJavascriptDownload) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgePrepareBidderContextsInAdvance,
+      {{"WaitForPromisesToPrepareContexts", "true"}});
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  const GURL kFullSignalsUrl(
+      "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
+
+  const char kJson[] = R"({"perInterestGroupData":
+                         {"Fred": {"priorityVector": {"foo": 1.0}}}
+                       })";
+
+  for (bool finalize_before_js_download : {true, false}) {
+    SCOPED_TRACE(finalize_before_js_download);
+    url_loader_factory_.ClearResponses();
+    auto bidder_worklet = CreateWorklet();
+
+    base::HistogramTester histogram_tester;
+    generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+    mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
+        bid_finalizer;
+
+    BeginGenerateBid(bidder_worklet.get(),
+                     bid_finalizer.BindNewEndpointAndPassReceiver());
+
+    if (finalize_before_js_download) {
+      FinishGenerateBid(bid_finalizer);
+      task_environment_.RunUntilIdle();
+      AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                            CreateBasicGenerateBidScript());
+    } else {
+      AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                            CreateBasicGenerateBidScript());
+      task_environment_.RunUntilIdle();
+      FinishGenerateBid(bid_finalizer);
+    }
+
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(generate_bid_run_loop_->AnyQuitCalled());
+
+    histogram_tester.ExpectTotalCount(
+        "Ads.InterestGroup.Auction.UsedPremadeContext", 0);
+
+    AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+    task_environment_.RunUntilIdle();
+
+    generate_bid_run_loop_->Run();
+    generate_bid_run_loop_.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.UsedPremadeContext", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread", 1);
+  }
+}
+
+TEST_P(BidderWorkletMultiThreadingTest,
+       DoesNotPrepareContextsBeforeFinishGenerateBidIfWaitForPromisesEnabled) {
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  const GURL kFullSignalsUrl(
+      "https://signals.test/?hostname=top.window.test&interestGroupNames=Fred");
+
+  const char kJson[] = R"({"perInterestGroupData":
+                       {"Fred": {"priorityVector": {"foo": 1.0}}}
+                     })";
+
+  for (bool wait_for_promises : {true, false}) {
+    SCOPED_TRACE(wait_for_promises);
+    url_loader_factory_.ClearResponses();
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kFledgePrepareBidderContextsInAdvance,
+        {{"WaitForPromisesToPrepareContexts",
+          wait_for_promises ? "true" : "false"}});
+    auto bidder_worklet = CreateWorklet();
+    AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                          CreateBasicGenerateBidScript());
+
+    base::HistogramTester histogram_tester;
+    generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+    mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
+        bid_finalizer;
+    BeginGenerateBid(bidder_worklet.get(),
+                     bid_finalizer.BindNewEndpointAndPassReceiver());
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(generate_bid_run_loop_->AnyQuitCalled());
+
+    histogram_tester.ExpectTotalCount(
+        "Ads.InterestGroup.Auction.UsedPremadeContext", 0);
+
+    AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson);
+    task_environment_.RunUntilIdle();
+
+    // FinishGenerateBid should cause us to generate our bid, but because this
+    // is coming after signals, we never got a chance to prepare contexts.
+    FinishGenerateBid(bid_finalizer);
+
+    generate_bid_run_loop_->Run();
+    generate_bid_run_loop_.reset();
+
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.UsedPremadeContext", !wait_for_promises, 1);
+    histogram_tester.ExpectTotalCount(
+        "Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread",
+        !wait_for_promises);
+  }
 }
 
 TEST_P(BidderWorkletMultiThreadingTest,

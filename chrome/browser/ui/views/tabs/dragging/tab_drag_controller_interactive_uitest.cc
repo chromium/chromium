@@ -306,6 +306,14 @@ class BrowserChangeWaiter : public BrowserListObserver {
 
  private:
   void Quit() {
+    if (quit_called_) {
+      return;
+    }
+    // Browser addition/removal callbacks can be called multiple times, calling
+    // |Quit()| each time.
+    // So make sure that the |closure_| still gets to run if multiple |Quit()|
+    // calls happen in quick succession.
+    quit_called_ = true;
     if (closure_) {
       // For ChangeType::kRemoved, the browser is still closing and
       // synchronously running the closure now can lead to reentrancy issues, so
@@ -326,6 +334,7 @@ class BrowserChangeWaiter : public BrowserListObserver {
   }
 
   ChangeType type_;
+  bool quit_called_ = false;
   base::OnceClosure closure_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
@@ -2087,9 +2096,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(tab_strip2->GetWidget()->HasCapture());
 }
 
-class TestDialog : public views::DialogDelegateView {
+class TabDragControllerTestDialog : public views::DialogDelegateView {
  public:
-  TestDialog() {
+  TabDragControllerTestDialog() {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetModalType(ui::mojom::ModalType::kChild);
     // Dialogs that take focus must have a name and role to pass accessibility
@@ -2099,10 +2108,11 @@ class TestDialog : public views::DialogDelegateView {
                                    ax::mojom::NameFrom::kAttribute);
   }
 
-  TestDialog(const TestDialog&) = delete;
-  TestDialog& operator=(const TestDialog&) = delete;
+  TabDragControllerTestDialog(const TabDragControllerTestDialog&) = delete;
+  TabDragControllerTestDialog& operator=(const TabDragControllerTestDialog&) =
+      delete;
 
-  ~TestDialog() override = default;
+  ~TabDragControllerTestDialog() override = default;
 
   views::View* GetInitiallyFocusedView() override { return this; }
 };
@@ -2124,7 +2134,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   // Create a web modal dialog on the first tab.
   views::Widget* dialog = constrained_window::ShowWebModalDialogViews(
-      new TestDialog, browser()->tab_strip_model()->GetWebContentsAt(0));
+      new TabDragControllerTestDialog,
+      browser()->tab_strip_model()->GetWebContentsAt(0));
 
   // Capture the initial offset of the dialog relative to the browser before
   // dragging.
@@ -2797,8 +2808,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(TabDragController::IsActive());
   ASSERT_EQ(1u, browser_list()->size());
 
-  // Release the mouse, stopping the drag session.
+  // Drag to the trailing end of the tabstrip to ensure we're in a
+  // predictable spot within the strip.
+  StopAnimating(tab_strip2);
+  ASSERT_TRUE(DragInputToCenter(tab_strip2->tab_at(1)));
+  // Release mouse or touch, stopping the drag session.
   ASSERT_TRUE(ReleaseInput());
+
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(TabDragController::IsActive());
   EXPECT_EQ("100 0 1", IDString(browser2->tab_strip_model()));

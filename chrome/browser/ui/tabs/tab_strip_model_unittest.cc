@@ -933,6 +933,76 @@ TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {
   EXPECT_EQ(tabstrip.count(), 6);
 }
 
+TEST_F(TabStripModelTest, TestDetachGroupNewSelection) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(3), true);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(4), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(5), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(6), true);
+
+  tab_groups::TabGroupId group_id =
+      tabstrip.AddToNewGroup(std::vector<int>{1, 2});
+
+  // Test the first preference is a tab the group opened.
+  tabstrip.ActivateTabAt(2);
+  tabstrip.ForgetAllOpeners();
+  tabstrip.SetOpenerOfWebContentsAt(0, tabstrip.GetWebContentsAt(1));
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      tabstrip.DetachTabGroupForInsertion(group_id);
+
+  EXPECT_EQ(tabstrip.active_index(), 0);
+
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 1);
+  tabstrip.ActivateTabAt(1);
+  tabstrip.ForgetAllOpeners();
+  tabstrip.SetOpenerOfWebContentsAt(4, tabstrip.GetWebContentsAt(1));
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+
+  EXPECT_EQ(tabstrip.active_index(), 2);
+
+  // Test the second preference is a tab the group's opener opened.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 1);
+  tabstrip.ActivateTabAt(1);
+  tabstrip.ForgetAllOpeners();
+  tabstrip.SetOpenerOfWebContentsAt(2, tabstrip.GetWebContentsAt(3));
+  tabstrip.SetOpenerOfWebContentsAt(1, tabstrip.GetWebContentsAt(4));
+  tabstrip.SetOpenerOfWebContentsAt(0, tabstrip.GetWebContentsAt(4));
+
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+  EXPECT_EQ(tabstrip.active_index(), 0);
+
+  // Test the third preference is the group's opener.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 1);
+  tabstrip.ActivateTabAt(1);
+  tabstrip.ForgetAllOpeners();
+  tabstrip.SetOpenerOfWebContentsAt(2, tabstrip.GetWebContentsAt(3));
+
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+  EXPECT_EQ(tabstrip.active_index(), 1);
+
+  // Next preference is the tab after the last tab of the group.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 2);
+  tabstrip.ActivateTabAt(2);
+  tabstrip.ForgetAllOpeners();
+
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+  EXPECT_EQ(tabstrip.active_index(), 2);
+
+  // Last preference is the tab before the first tab of the group.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group),
+                                    tabstrip.count());
+  tabstrip.ActivateTabAt(5);
+  tabstrip.ForgetAllOpeners();
+
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+  EXPECT_EQ(tabstrip.active_index(), 3);
+}
+
 TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());

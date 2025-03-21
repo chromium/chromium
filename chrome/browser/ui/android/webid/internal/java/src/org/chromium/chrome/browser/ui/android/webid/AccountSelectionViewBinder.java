@@ -33,7 +33,6 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
@@ -41,7 +40,9 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.E
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -225,37 +226,56 @@ class AccountSelectionViewBinder {
     }
 
     /**
-     * Called whenever an add account button is bound to this view.
+     * Called whenever a login button is bound to this view.
      *
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
      * @param key The key of the property to be bound.
      */
     @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
-    static void bindAddAccountView(PropertyModel model, View view, PropertyKey key) {
-        if (key == AddAccountButtonProperties.PROPERTIES) {
-            AddAccountButtonProperties.Properties properties =
-                    model.get(AddAccountButtonProperties.PROPERTIES);
+    static void bindLoginButtonView(PropertyModel model, View view, PropertyKey key) {
+        if (key == LoginButtonProperties.PROPERTIES) {
+            LoginButtonProperties.Properties properties =
+                    model.get(LoginButtonProperties.PROPERTIES);
             Context context = view.getContext();
 
-            // If iconView is available, the add account button is an account row at the end of the
-            // accounts list.
-            ImageView iconView = view.findViewById(R.id.start_icon);
-            IdentityProviderMetadata idpMetadata = properties.mIdpMetadata;
-            if (iconView != null) {
-                TintedDrawable plusIcon =
-                        TintedDrawable.constructTintedDrawable(
-                                context,
-                                properties.mRpMode == RpMode.ACTIVE
-                                        ? R.drawable.plus
-                                        : R.drawable.open_in_new_tab,
-                                properties.mRpMode == RpMode.ACTIVE
-                                        ? R.color.default_icon_color_accent1_tint_list
-                                        : R.color.default_icon_color_tint_list);
-                iconView.setImageDrawable(plusIcon);
+            // If startIconView is available, the add account button is an account row at the end of
+            // the accounts list.
+            ImageView startIconView = view.findViewById(R.id.start_icon);
+            IdentityProviderData identityProvider = properties.mIdentityProvider;
+            IdentityProviderMetadata idpMetadata = identityProvider.getIdpMetadata();
+            Boolean showIdp = properties.mShowIdp;
+            if (startIconView != null) {
+                Bitmap brandIcon = idpMetadata.getBrandIconBitmap();
+                ImageView endIconView = view.findViewById(R.id.end_icon);
+                if (!showIdp || brandIcon == null) {
+                    setDefaultLoginImage(context, properties, startIconView);
+                    if (endIconView != null) {
+                        endIconView.setVisibility(View.GONE);
+                    }
+                } else {
+                    Resources resources = view.getResources();
+                    int iconSize =
+                            resources.getDimensionPixelSize(
+                                    R.dimen.account_selection_login_brand_icon_size);
+                    Drawable croppedBrandIcon =
+                            createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
+                    startIconView.setImageDrawable(croppedBrandIcon);
+
+                    if (endIconView != null) {
+                        setDefaultLoginImage(context, properties, endIconView);
+                        endIconView.setVisibility(View.VISIBLE);
+                    }
+                }
 
                 TextView subject = view.findViewById(R.id.title);
-                subject.setText(context.getString(R.string.account_selection_add_account));
+                String buttonText =
+                        showIdp
+                                ? context.getString(
+                                        R.string.account_selection_add_account_with_origin,
+                                        identityProvider.getIdpForDisplay())
+                                : context.getString(R.string.account_selection_add_account);
+                subject.setText(buttonText);
 
                 view.setOnClickListener(
                         clickedView -> {
@@ -265,8 +285,8 @@ class AccountSelectionViewBinder {
                 return;
             }
 
-            // Since iconView is not available, the add account button is a secondary button under
-            // the continue button at the bottom of the screen.
+            // Since startIconView is not available, the add account button is a secondary button
+            // under the continue button at the bottom of the screen.
             ButtonCompat button = view.findViewById(R.id.account_selection_add_account_btn);
             button.setOnClickListener(
                     clickedView -> {
@@ -286,6 +306,20 @@ class AccountSelectionViewBinder {
         } else {
             assert false : "Unhandled update to property:" + key;
         }
+    }
+
+    static void setDefaultLoginImage(
+            Context context, LoginButtonProperties.Properties properties, ImageView iconView) {
+        TintedDrawable plusIcon =
+                TintedDrawable.constructTintedDrawable(
+                        context,
+                        properties.mRpMode == RpMode.ACTIVE
+                                ? R.drawable.plus
+                                : R.drawable.open_in_new_tab,
+                        properties.mRpMode == RpMode.ACTIVE
+                                ? R.color.default_icon_color_accent1_tint_list
+                                : R.color.default_icon_color_tint_list);
+        iconView.setImageDrawable(plusIcon);
     }
 
     static SpanApplier.SpanInfo createLink(
@@ -662,7 +696,7 @@ class AccountSelectionViewBinder {
             itemBinder = AccountSelectionViewBinder::bindErrorTextView;
         } else if (key == ItemProperties.ADD_ACCOUNT_BUTTON) {
             itemView = view.findViewById(R.id.account_selection_add_account_btn);
-            itemBinder = AccountSelectionViewBinder::bindAddAccountView;
+            itemBinder = AccountSelectionViewBinder::bindLoginButtonView;
         } else if (key == ItemProperties.ACCOUNT_CHIP) {
             itemView = view.findViewById(R.id.account_chip);
             itemBinder = AccountSelectionViewBinder::bindAccountView;

@@ -198,11 +198,15 @@ android_library("chrome_java_transit") {
 
   sources = [
     "javatests/src/org/chromium/chrome/test/transit/AppMenuFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/BaseCtaTransitTestRule.java",
     "javatests/src/org/chromium/chrome/test/transit/BlankCTATabInitialStatePublicTransitRule.java",
-    "javatests/src/org/chromium/chrome/test/transit/ChromeTabbedActivityPublicTransitEntryPoints.java",
+    "javatests/src/org/chromium/chrome/test/transit/ChromeTabbedActivityEntryPoints.java",
+    "javatests/src/org/chromium/chrome/test/transit/ChromeTransitTestRules.java",
     "javatests/src/org/chromium/chrome/test/transit/CtaAppMenuFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/FreshCtaTransitTestRule.java",
     "javatests/src/org/chromium/chrome/test/transit/Journeys.java",
     "javatests/src/org/chromium/chrome/test/transit/MessageFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/ReusedCtaTransitTestRule.java",
     "javatests/src/org/chromium/chrome/test/transit/SnackbarFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/SoftKeyboardFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/context_menu/ContextMenuFacility.java",

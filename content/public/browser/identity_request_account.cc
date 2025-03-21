@@ -4,7 +4,10 @@
 
 #include "content/public/browser/identity_request_account.h"
 
+#include <optional>
+
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "third_party/blink/public/common/webid/login_status_account.h"
 
 namespace content {
 
@@ -35,6 +38,24 @@ IdentityRequestAccount::IdentityRequestAccount(
       login_state{login_state},
       browser_trusted_login_state{browser_trusted_login_state},
       last_used_timestamp{last_used_timestamp} {}
+
+// TODO(crbug.com/405194067) Fix this to properly handle alternative
+// identifiers.
+IdentityRequestAccount::IdentityRequestAccount(
+    const blink::common::webid::LoginStatusAccount& account)
+    : id{account.id},
+      display_identifier{account.email},
+      display_name(account.name),
+      email{account.email},
+      name{account.name},
+      given_name{account.given_name.value_or("")},
+      picture{account.picture.value_or(GURL())},
+      login_hints{{}},
+      domain_hints{{}},
+      labels{{}},
+      login_state{std::nullopt},
+      browser_trusted_login_state(LoginState::kSignUp),
+      last_used_timestamp{std::nullopt} {}
 
 IdentityRequestAccount::~IdentityRequestAccount() = default;
 

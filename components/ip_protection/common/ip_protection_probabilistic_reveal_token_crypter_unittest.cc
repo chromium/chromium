@@ -61,7 +61,7 @@ absl::StatusOr<ProbabilisticRevealToken> CreateTokenFromPlaintext(
   ASSIGN_OR_RETURN(std::string u_compressed, ciphertext.u.ToBytesCompressed());
   ASSIGN_OR_RETURN(std::string e_compressed, ciphertext.e.ToBytesCompressed());
   return ProbabilisticRevealToken{1, std::move(u_compressed),
-                                  std::move(e_compressed)};
+                                  std::move(e_compressed), std::string(8, '0')};
 }
 
 absl::StatusOr<std::vector<ProbabilisticRevealToken>> CreateTokens(

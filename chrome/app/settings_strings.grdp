@@ -176,6 +176,14 @@
       Select the More Gestures tab, then turn on Swipe between pages to navigate back and forward
     </message>
   </if>
+  <if expr="not chromeos_ash">
+    <message name="IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_TITLE" desc="Title for a setting that allows you to change what type of feedback messages you receive.">
+      Copied to clipboard confirmations
+    </message>
+    <message name="IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_DESCRIPTION" desc="Subtitle for a setting that allows you to change the frequency of feedback messages.">
+      Shows a confirmation when you copy links, images, or videos
+    </message>
+  </if>
 
   <!-- Appearance Page -->
   <message name="IDS_SETTINGS_APPEARANCE" desc="Name of the settings page which displays appearance preferences.">

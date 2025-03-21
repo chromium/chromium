@@ -5,6 +5,7 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
@@ -23,10 +24,14 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    section = document.createElement('settings-autofill-ai-section');
+
+    // By default, the user is not opted in.
+    loadTimeData.overrideValues({'autofillAiOptedIn': false});
 
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
+
+    section = document.createElement('settings-autofill-ai-section');
 
     // The tests need to simulate that the user has some entity instances saved,
     // because an ineligible user without any entity instances saved cannot see
@@ -46,19 +51,6 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
     ];
     entityDataManager.setLoadEntityInstancesResponse(
         testEntityInstancesWithLabels);
-
-    // Define the opt in pref.
-    section.prefs = {
-      autofill: {
-        prediction_improvements: {
-          enabled: {
-            key: 'autofill.prediction_improvements.enabled',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: false,
-          },
-        },
-      },
-    };
   });
 
   interface EligibilityParamsInterface {
@@ -80,8 +72,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
   eligibilityParams.forEach(
       (params) => test(params.title, async function() {
         section.ineligibleUser = params.ineligibleUser;
-        section.prefs.autofill.prediction_improvements.enabled.value =
-            params.optedIn;
+        loadTimeData.overrideValues({'autofillAiOptedIn': params.optedIn});
 
         document.body.appendChild(section);
         await flushTasks();
@@ -109,7 +100,6 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
     section.ineligibleUser = false;
     document.body.appendChild(section);
     await flushTasks();
-    assertFalse(section.prefs.autofill.prediction_improvements.enabled.value);
 
     const toggle =
         section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -117,13 +107,12 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
     assertTrue(!!toggle);
 
     toggle.click();
+    assertTrue(await entityDataManager.whenCalled('setOptInStatus'));
+    entityDataManager.reset();
     await flushTasks();
-    assertTrue(section.prefs.autofill.prediction_improvements.enabled.value);
-
 
     toggle.click();
-    await flushTasks();
-    assertFalse(section.prefs.autofill.prediction_improvements.enabled.value);
+    assertFalse(await entityDataManager.whenCalled('setOptInStatus'));
   });
 });
 
@@ -136,6 +125,8 @@ suite('AutofillAiSectionUiTest', function() {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({'autofillAiOptedIn': true});
+
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
@@ -199,17 +190,6 @@ suite('AutofillAiSectionUiTest', function() {
         testEntityInstancesWithLabels);
 
     section = document.createElement('settings-autofill-ai-section');
-    section.prefs = {
-      autofill: {
-        prediction_improvements: {
-          enabled: {
-            key: 'autofill.prediction_improvements.enabled',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: true,
-          },
-        },
-      },
-    };
     document.body.appendChild(section);
     await flushTasks();
 
@@ -425,12 +405,17 @@ suite('AutofillAiSectionUiTest', function() {
   });
 
   test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {
-    // The toggle is initially enabled (see the setup() method), clicking it
-    // disables the 'autofill.prediction_improvements.enabled' pref.
-    assertTrue(section.prefs.autofill.prediction_improvements.enabled.value);
-    section.shadowRoot!.querySelector<HTMLElement>('#prefToggle')!.click();
+    // The toggle is initially enabled (see the setup() method). Clicking it
+    // sets the opt-in status to false.
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#prefToggle');
+    assertTrue(!!toggle);
+    assertFalse(toggle.disabled);
+    toggle.click();
+
+    assertFalse(await entityDataManager.whenCalled('setOptInStatus'));
     await flushTasks();
-    assertFalse(section.prefs.autofill.prediction_improvements.enabled.value);
 
     assertTrue(
         isVisible(section.shadowRoot!.querySelector('#entries')),

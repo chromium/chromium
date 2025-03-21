@@ -1942,8 +1942,8 @@ public class SelectableTabListEditorTest {
 
         TabGroupModelFilter filter =
                 mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
-        for (int i = 0; i < filter.getCount(); i++) {
-            tabs.add(filter.getTabAt(i));
+        for (int i = 0; i < filter.getIndividualTabAndGroupCount(); i++) {
+            tabs.add(filter.getRepresentativeTabAt(i));
         }
 
         return tabs;

@@ -61,6 +61,12 @@ BASE_FEATURE(kAltClickAndSixPackCustomization,
              "AltClickAndSixPackCustomization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature changes the default setting of Ambient EQ to off. This feature
+// has no effect if `kAllowAmbientEQ` is not also enabled.
+BASE_FEATURE(kAmbientEQDefaultOff,
+             "AmbientEQDefaultOff",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to allow Dev channel to use Prod server feature.
 BASE_FEATURE(kAmbientModeDevUseProdFeature,
              "ChromeOSAmbientModeDevChannelUseProdServer",
@@ -447,6 +453,11 @@ BASE_FEATURE(kCoralFeatureAllowed,
              "CoralFeatureAllowed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the coral feature supports multi-language.
+BASE_FEATURE(kCoralFeatureMultiLanguage,
+             "CoralFeatureMultiLanguage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables execution of routine for copying client keys and certs from NSS DB to
 // software backed Chaps slot. It's only respected if the
 // EnableNssDbClientCertsRollback feature flag is disabled.
@@ -458,6 +469,12 @@ BASE_FEATURE(kCopyClientKeysCertsToChaps,
 BASE_FEATURE(kCrosPrivacyHub,
              "CrosPrivacyHub",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, ChromeOS system services and Chrome-on-ChromeOS will use separate
+// API keys for Geolocation resolution.
+BASE_FEATURE(kCrosSeparateGeoApiKey,
+             "CrosSeparateGeoApiKey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables cros safety service for trust and safety filtering for the text/image
 // output of on-device gen ai models.
@@ -1608,7 +1625,7 @@ BASE_FEATURE(kInternalServerSideSpeechRecognitionByFinch,
 // S3 USM_RNNT model.
 BASE_FEATURE(kInternalServerSideSpeechRecognitionUSMModelFinch,
              "InternalServerSideSpeechRecognitionUSMModelFinch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sending `client-info` values to IPP printers on ChromeOS.
 BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2439,7 +2456,7 @@ BASE_FEATURE(kProjectorV2, "ProjectorV2", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether to use USM for serverside speech recognition for projector.
 BASE_FEATURE(kProjectorUseUSMForS3,
              "ProjectorUseUSMForS3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // controls whether projector uses dynamic colors.
 BASE_FEATURE(kProjectorDynamicColors,
@@ -3302,6 +3319,10 @@ bool IsAltClickAndSixPackCustomizationEnabled() {
          base::FeatureList::IsEnabled(kAltClickAndSixPackCustomization);
 }
 
+bool IsAmbientEQDefaultOff() {
+  return base::FeatureList::IsEnabled(kAmbientEQDefaultOff);
+}
+
 bool IsAmbientModeDevUseProdEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeDevUseProdFeature);
 }
@@ -3449,6 +3470,10 @@ bool IsCopyClientKeysCertsToChapsEnabled() {
 
 bool IsCrosPrivacyHubLocationEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHub);
+}
+
+bool IsCrosSeparateGeoApiKeyEnabled() {
+  return base::FeatureList::IsEnabled(kCrosSeparateGeoApiKey);
 }
 
 bool IsCrosSafetyServiceEnabled() {

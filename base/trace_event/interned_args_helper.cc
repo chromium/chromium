@@ -37,11 +37,12 @@ void InternedSourceLocation::Add(
     const TraceSourceLocation& location) {
   auto* msg = interned_data->add_source_locations();
   msg->set_iid(iid);
-  if (location.file_name != nullptr) {
-    msg->set_file_name(location.file_name);
+  if (!location.file_name.empty()) {
+    msg->set_file_name(location.file_name.data(), location.file_name.length());
   }
-  if (location.function_name != nullptr) {
-    msg->set_function_name(location.function_name);
+  if (!location.function_name.empty()) {
+    msg->set_function_name(location.function_name.data(),
+                           location.function_name.length());
   }
   // TODO(ssid): Add line number once it is allowed in internal proto.
   // TODO(ssid): Add program counter to the proto fields when

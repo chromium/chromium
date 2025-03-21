@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/browser.h"
@@ -74,8 +73,7 @@ IN_PROC_BROWSER_TEST_F(AppInfoDialogBrowserTest,
   ASSERT_TRUE(AppInfoDialog::GetLastDialogForTesting());
 
   // Unload all extensions.
-  extension_environment_->GetExtensionService()
-      ->ProfileMarkedForPermanentDeletionForTest();
+  extension_environment_->ProfileMarkedForPermanentDeletionForTest();
 
   // Dialog widgets and their root views are closed asynchronously so the dialog
   // is still alive.

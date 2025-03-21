@@ -71,6 +71,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void, OnTabGroupUnShareComplete, (const LocalTabGroupID&, bool));
   MOCK_METHOD(void, OnCollaborationRemoved, (const syncer::CollaborationId&));
 
+  MOCK_METHOD(std::vector<const SavedTabGroup*>, ReadAllGroups, (), (const));
   MOCK_METHOD(std::vector<SavedTabGroup>, GetAllGroups, (), (const));
   MOCK_METHOD(std::optional<SavedTabGroup>,
               GetGroup,
@@ -122,6 +123,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               ());
   MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetSharedTabGroupControllerDelegate,
+              ());
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
+              GetSharedTabGroupAccountControllerDelegate,
               ());
   MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
               CreateScopedLocalObserverPauser,

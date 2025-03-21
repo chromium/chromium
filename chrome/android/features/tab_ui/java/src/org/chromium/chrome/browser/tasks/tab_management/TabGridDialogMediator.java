@@ -53,9 +53,8 @@ import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
-import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.CancelLongPressTabItemEventListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
@@ -107,7 +106,7 @@ import java.util.Optional;
 public class TabGridDialogMediator
         implements SnackbarManager.SnackbarController,
                 TabGridDialogView.VisibilityListener,
-                TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener,
+                TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener,
                 AppHeaderObserver {
     @VisibleForTesting static final String SHOW_SEND_FEEDBACK_PARAM = "show_send_feedback";
     @VisibleForTesting static final String SHARE_FEEDBACK_CATEGORY_SUFFIX = ".tab_group_share";
@@ -625,7 +624,9 @@ public class TabGridDialogMediator
         if (tabs == null) {
             mCurrentTabId = Tab.INVALID_TAB_ID;
         } else {
-            mCurrentTabId = filter.getTabAt(filter.indexOf(tabs.get(0))).getId();
+            mCurrentTabId =
+                    filter.getRepresentativeTabAt(filter.representativeIndexOf(tabs.get(0)))
+                            .getId();
         }
 
         updateTabGroupId();
@@ -717,7 +718,8 @@ public class TabGridDialogMediator
 
     private void updateGridTabSwitcher() {
         if (!isVisible() || mTabSwitcherResetHandler == null) return;
-        mTabSwitcherResetHandler.resetWithTabList(mCurrentTabGroupModelFilterSupplier.get(), false);
+        mTabSwitcherResetHandler.resetWithListOfTabs(
+                mCurrentTabGroupModelFilterSupplier.get().getRepresentativeTabList());
     }
 
     private void updateDialog() {
@@ -822,7 +824,7 @@ public class TabGridDialogMediator
 
     private void updateDialogScrollPosition() {
         // If current selected tab is not within this dialog, always scroll to the top.
-        Tab currentTab = TabModelUtils.getCurrentTab(mCurrentTabGroupModelFilterSupplier.get());
+        Tab currentTab = mCurrentTabGroupModelFilterSupplier.get().getCurrentRepresentativeTab();
         if (mCurrentTabId != getIdForTab(currentTab)) {
             mModel.set(TabGridDialogProperties.INITIAL_SCROLL_INDEX, 0);
             return;
@@ -1062,7 +1064,8 @@ public class TabGridDialogMediator
     private void updateTabGroupId() {
         if (mTransitiveSharedGroupObserver == null) return;
 
-        boolean isIncognitoBranded = mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded();
+        boolean isIncognitoBranded =
+                mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognitoBranded();
         if (isIncognitoBranded
                 || !mCollaborationService.getServiceStatus().isAllowedToJoin()
                 || mCurrentTabId == Tab.INVALID_TAB_ID) {
@@ -1086,7 +1089,7 @@ public class TabGridDialogMediator
     }
 
     private boolean shouldShowShareButton() {
-        return !mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded()
+        return !mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognitoBranded()
                 && mCollaborationService.getServiceStatus().isAllowedToCreate();
     }
 
@@ -1256,7 +1259,7 @@ public class TabGridDialogMediator
         removeTabGroupModelFilterObserver(oldFilter);
 
         if (newFilter != null) {
-            boolean isIncognito = newFilter.isIncognito();
+            boolean isIncognito = newFilter.getTabModel().isIncognito();
             updateColorProperties(mActivity, isIncognito);
             newFilter.addObserver(mTabModelObserver);
             newFilter.addTabGroupObserver(mTabGroupModelFilterObserver);

@@ -89,6 +89,10 @@ using OnProfileSwitchCompletion =
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
                          sceneState:(SceneState*)sceneState;
 
+// Switches to the profile with `profileName`, for `sceneIdentifier`.
+- (void)switchToProfileWithName:(const std::string&)profileName
+                     sceneState:(SceneState*)sceneState;
+
 // Converts the personal profile to a managed one and attaches `identity` to it.
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity;
 

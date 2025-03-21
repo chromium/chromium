@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -261,7 +261,7 @@ void GlicKeyedService::GetContextFromFocusedTab(
   if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled) ||
       !window_controller_->IsShowing()) {
     std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-        mojom::GetTabContextErrorReason::kPermissionDenied));
+        std::string("permission denied")));
     return;
   }
 
@@ -328,9 +328,8 @@ FocusedTabData GlicKeyedService::GetFocusedTabData() {
 
 bool GlicKeyedService::IsContextAccessIndicatorShown(
     const content::WebContents* contents) {
-  const raw_ptr<content::WebContents> web_contents =
-      GetFocusedTabData().focused_tab_contents.get();
-  return is_context_access_indicator_enabled_ && web_contents == contents;
+  return is_context_access_indicator_enabled_ &&
+         GetFocusedTabData().focus() == contents;
 }
 
 void GlicKeyedService::WebClientCreated() {

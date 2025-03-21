@@ -679,7 +679,7 @@ URLLoader::URLLoader(
       has_user_activation_(request.trusted_params &&
                            request.trusted_params->has_user_activation),
       request_destination_(request.destination),
-      expected_signatures_(request.expected_signatures),
+      expected_public_keys_(request.expected_public_keys),
       resource_scheduler_client_(context.GetResourceSchedulerClient()),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
       custom_proxy_pre_cache_headers_(request.custom_proxy_pre_cache_headers),
@@ -962,7 +962,7 @@ void URLLoader::ConfigureRequest(
                           *factory_params_, *origin_access_list_,
                           request_credentials_mode_);
 
-  MaybeSetAcceptSignatureHeader(url_request_.get(), expected_signatures_);
+  MaybeSetAcceptSignatureHeader(url_request_.get(), expected_public_keys_);
 
   url_request_->set_first_party_url_policy(first_party_url_policy);
 
@@ -2200,7 +2200,7 @@ void URLLoader::ContinueOnResponseStartedImmediately() {
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           MaybeBlockResponseForSRIMessageSignature(
               url_request_->url(), *response_,
-              /*checks_forced_by_initiator=*/!expected_signatures_.empty(),
+              /*checks_forced_by_initiator=*/!expected_public_keys_.empty(),
               devtools_observer_, devtools_request_id().value_or(""))) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);

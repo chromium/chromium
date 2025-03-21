@@ -1,0 +1,46 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is used by json_to_struct.py to generate prepopulated_engines.h/cc.
+// See prepopulated_engines.json for details.
+
+{
+  "type_name": "RegionalSettings",
+
+  "headers": [
+    "base/containers/fixed_flat_map.h",
+    "base/containers/span.h",
+    "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+  ],
+
+  "schema": [
+    {
+      "field": "search_engines",
+      "type": "struct",
+      "optional": true,
+      "type_name": "RegionalSearchEngines",
+      "fields": [
+        {
+          // Top search engines identified for the region.
+          "field": "top",
+          "type": "array",
+          "contents": {
+            "type": "class",
+            "ctype": "PrepopulatedEngine *"
+          }
+        },
+        {
+          // Any additional engines to include on the choice screen.
+          "field": "remaining",
+          "type": "array",
+          "optional": true,
+          "contents": {
+            "type": "class",
+            "ctype": "PrepopulatedEngine *"
+          }
+        }
+      ]
+    }
+  ]
+}

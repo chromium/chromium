@@ -55,10 +55,15 @@ export interface EntityDataManagerProxy {
       void;
 
   /**
-   * Remove a listener to changes in the entity instances.
+   * Removes a listener to changes in the entity instances.
    */
   removeEntityInstancesChangedListener(
       listener: EntityInstancesChangedListener): void;
+
+  /**
+   * Sets the opt-in status for AutofillAi for the current user.
+   */
+  setOptInStatus(optedIn: boolean): void;
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
@@ -94,6 +99,10 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
   removeEntityInstancesChangedListener(
       listener: EntityInstancesChangedListener) {
     chrome.autofillPrivate.onEntityInstancesChanged.removeListener(listener);
+  }
+
+  setOptInStatus(optedIn: boolean) {
+    chrome.autofillPrivate.setAutofillAiOptInStatus(optedIn);
   }
 
   static getInstance() {

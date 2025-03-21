@@ -119,16 +119,16 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     };
   }
 
-  items: T[] = [];
-  itemSize: number = 100;
-  listItemHost?: Node;
-  minViewportHeight?: number;
-  scrollOffset: number = 0;
-  scrollTarget: HTMLElement = document.documentElement;
-  restoreFocusElement: Element|null = null;
-  template: (item: T, index: number) => TemplateResult = () => html``;
-  chunkSize: number = 0;
-  private numItemsDisplayed_: number = 0;
+  accessor items: T[] = [];
+  accessor itemSize: number = 100;
+  accessor listItemHost: Node|undefined;
+  accessor minViewportHeight: number|undefined;
+  accessor scrollOffset: number = 0;
+  accessor scrollTarget: HTMLElement = document.documentElement;
+  accessor restoreFocusElement: Element|null = null;
+  accessor template: (item: T, index: number) => TemplateResult = () => html``;
+  accessor chunkSize: number = 0;
+  private accessor numItemsDisplayed_: number = 0;
 
   // Internal state
   private lastItemsLength_: number = 0;

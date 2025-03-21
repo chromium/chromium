@@ -22,8 +22,6 @@ BASE_DECLARE_FEATURE(kTabGroupSyncServiceDesktopMigration);
 
 BASE_DECLARE_FEATURE(kTabGroupSyncDelegateAndroid);
 
-BASE_DECLARE_FEATURE(kTabGroupsDeferRemoteNavigations);
-
 BASE_DECLARE_FEATURE(kTabGroupSyncAutoOpenKillSwitch);
 
 BASE_DECLARE_FEATURE(kRestrictDownloadOnSyncedTabs);
@@ -43,8 +41,6 @@ BASE_DECLARE_FEATURE(kEnableOriginatingSavedGroupCleanUp);
 extern bool IsTabGroupSyncServiceDesktopMigrationEnabled();
 
 extern bool IsTabGroupSyncDelegateAndroidEnabled();
-
-extern bool IsTabGroupsDeferringRemoteNavigations();
 
 extern bool IsTabGroupSyncCoordinatorEnabled();
 

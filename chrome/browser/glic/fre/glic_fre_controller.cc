@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/version_info/channel.h"
@@ -14,12 +15,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
-#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/shell_integration.h"
@@ -32,6 +33,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
 namespace glic {
@@ -48,6 +50,8 @@ void GlicFreController::WebUiStateChanged(mojom::FreWebUiState new_state) {
     // UI State has changed
     webui_state_ = new_state;
     webui_state_callback_list_.Notify(webui_state_);
+
+    RecordMetricsIfDialogIsShowingAndReady();
   }
 }
 
@@ -80,6 +84,7 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
 }
 
 void GlicFreController::ShowFreDialog(Browser* browser) {
+  show_start_time_ = base::TimeTicks::Now();
   auth_controller_.CheckAuthBeforeShow(
       AuthController::FallbackBehavior::kShowReauthPage,
       base::BindOnce(&GlicFreController::ShowFreDialogAfterAuthCheck,
@@ -90,6 +95,7 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
     base::WeakPtr<Browser> browser,
     AuthController::BeforeShowResult result) {
   if (result != AuthController::BeforeShowResult::kReady) {
+    show_start_time_ = base::TimeTicks();
     return;
   }
 
@@ -119,6 +125,9 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
       base::BindRepeating(&GlicFreController::OnTabShowingModalWillDetach,
                           base::Unretained(this)));
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
+
+  // Recording the load latency time when FRE contents were preloaded.
+  RecordMetricsIfDialogIsShowingAndReady();
 }
 
 void GlicFreController::DismissFreIfOpenOnActiveTab(Browser* browser) {
@@ -169,6 +178,7 @@ void GlicFreController::DismissFre() {
     fre_widget_.reset();
     tab_showing_modal_ = nullptr;
     will_detach_subscription_ = {};
+    show_start_time_ = base::TimeTicks();
   }
 }
 
@@ -334,6 +344,16 @@ void GlicFreController::CreateView() {
                           features::kGlicFreInitialHeight.Get()));
   auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
   GlicProfileManager::GetInstance()->OnLoadingClientForService(service);
+}
+
+void GlicFreController::RecordMetricsIfDialogIsShowingAndReady() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!!fre_widget_ && webui_state_ == mojom::FreWebUiState::kReady &&
+      !show_start_time_.is_null()) {
+    base::UmaHistogramMediumTimes("Glic.FrePresentationTime",
+                                  (base::TimeTicks::Now() - show_start_time_));
+    show_start_time_ = base::TimeTicks();
+  }
 }
 
 bool GlicFreController::IsShowingDialog() const {

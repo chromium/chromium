@@ -5,6 +5,7 @@
 # pylint: disable=too-many-lines
 
 import collections
+from collections.abc import Generator, Iterable
 import datetime
 import fnmatch
 import functools
@@ -16,8 +17,7 @@ import os
 import pkgutil
 import re
 import types
-from typing import (Any, Dict, Generator, Iterable, List, Optional, Set, Tuple,
-                    Type)
+from typing import Any, Type
 import unittest
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
@@ -71,13 +71,13 @@ _ARGS_TO_CONSOLIDATE = frozenset([
     '--disable-dawn-features',
 ])
 
-TestTuple = Tuple[str, ct.GeneratedTest]
+TestTuple = tuple[str, ct.GeneratedTest]
 TestTupleGenerator = Generator[TestTuple, None, None]
 
 
 # Handled in a function to avoid polluting the module's environment with
 # temporary variable names.
-def _GenerateSpecificToGenericTagMapping() -> Dict[str, str]:
+def _GenerateSpecificToGenericTagMapping() -> dict[str, str]:
   specific_to_generic = {}
   for _, tag_set in validate_tag_consistency.TAG_SPECIALIZATIONS.items():
     for general_tag, specific_tags in tag_set.items():
@@ -91,9 +91,9 @@ _specific_to_generic_tags = _GenerateSpecificToGenericTagMapping()
 
 @dataclasses.dataclass
 class _BrowserLaunchInfo():
-  browser_args: Set[str] = ct.EmptySet()
-  profile_dir: Optional[str] = None
-  profile_type: Optional[str] = None
+  browser_args: set[str] = ct.EmptySet()
+  profile_dir: str | None = None
+  profile_type: str | None = None
 
   def __eq__(self, other: Any):
     return (isinstance(other, _BrowserLaunchInfo)
@@ -119,7 +119,7 @@ class GpuIntegrationTest(
   # We store a deep copy of the original browser finder options in
   # order to be able to restart the browser multiple times, with a
   # different set of command line arguments each time.
-  _original_finder_options: Optional[bo.BrowserFinderOptions] = None
+  _original_finder_options: bo.BrowserFinderOptions | None = None
 
   # We keep track of the set of command line arguments used to launch
   # the browser most recently in order to figure out whether we need
@@ -133,7 +133,7 @@ class GpuIntegrationTest(
 
   # Keeps track of the first test that is run on a shard for a flakiness
   # workaround. See crbug.com/1079244.
-  _first_run_test: Optional[str] = None
+  _first_run_test: str | None = None
 
   # Keeps track of whether this is the first browser start on a shard for a
   # flakiness workaround. See crbug.com/323927831.
@@ -154,9 +154,9 @@ class GpuIntegrationTest(
   _about_gpu_content = None
   _test_that_started_browser = None
   _args_changed_this_browser_start = True
-  _cached_platform_tags: Optional[List[str]] = None
+  _cached_platform_tags: list[str] | None = None
 
-  tab: Optional[ct.Tab] = None
+  tab: ct.Tab | None = None
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
@@ -164,9 +164,8 @@ class GpuIntegrationTest(
       self.set_artifacts(None)
     self._skip_was_due_to_expectation = False
 
-  def set_artifacts(self,
-                    artifacts: Optional[Type[acw.ArtifactCompatibilityWrapper]]
-                    ) -> None:
+  def set_artifacts(
+      self, artifacts: Type[acw.ArtifactCompatibilityWrapper] | None) -> None:
     # Instead of using the default logging artifact implementation, use the
     # full logging one. This ensures we get debugging information if something
     # goes wrong before typ can set the actual artifact implementation, such
@@ -196,11 +195,11 @@ class GpuIntegrationTest(
     """Returns whether the suite in general supports parallel tests."""
     return False
 
-  def _GetSerialGlobs(self) -> Set[str]:  # pylint: disable=no-self-use
+  def _GetSerialGlobs(self) -> set[str]:  # pylint: disable=no-self-use
     """Returns a set of test name globs that should be run serially."""
     return set()
 
-  def _GetSerialTests(self) -> Set[str]:  # pylint: disable=no-self-use
+  def _GetSerialTests(self) -> set[str]:  # pylint: disable=no-self-use
     """Returns a set of test names that should be run serially."""
     return set()
 
@@ -276,7 +275,7 @@ class GpuIntegrationTest(
                               'revision.'))
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Generates the browser args to use for the next browser startup.
 
     Child classes are expected to override this and add any additional default
@@ -310,7 +309,7 @@ class GpuIntegrationTest(
 
   @classmethod
   def CustomizeBrowserArgs(cls,
-                           additional_args: Optional[List[str]] = None) -> None:
+                           additional_args: list[str] | None = None) -> None:
     """Customizes the browser's command line arguments for the next startup.
 
     NOTE that redefining this method in subclasses will NOT do what
@@ -325,8 +324,9 @@ class GpuIntegrationTest(
         cls._GenerateAndSanitizeBrowserArgs(additional_args))
 
   @classmethod
-  def _GenerateAndSanitizeBrowserArgs(
-      cls, additional_args: Optional[List[str]] = None) -> List[str]:
+  def _GenerateAndSanitizeBrowserArgs(cls,
+                                      additional_args: list[str] | None = None
+                                      ) -> list[str]:
     """Generates browser arguments and sanitizes invalid arguments.
 
     Args:
@@ -366,9 +366,9 @@ class GpuIntegrationTest(
 
   @classmethod
   def _SetBrowserArgsForNextStartup(cls,
-                                    browser_args: List[str],
-                                    profile_dir: Optional[str] = None,
-                                    profile_type: Optional[str] = None) -> None:
+                                    browser_args: list[str],
+                                    profile_dir: str | None = None,
+                                    profile_type: str | None = None) -> None:
     """Sets the browser arguments to use for the next browser startup.
 
     Args:
@@ -413,10 +413,10 @@ class GpuIntegrationTest(
 
   def RestartBrowserIfNecessaryWithArgs(
       self,
-      additional_args: Optional[List[str]] = None,
+      additional_args: list[str] | None = None,
       force_restart: bool = False,
-      profile_dir: Optional[str] = None,
-      profile_type: Optional[str] = None) -> None:
+      profile_dir: str | None = None,
+      profile_type: str | None = None) -> None:
     """Restarts the browser if it is determined to be necessary.
 
     A restart is necessary if restarting would cause the browser to run with
@@ -469,8 +469,8 @@ class GpuIntegrationTest(
     # pylint: enable=protected-access
 
   def RestartBrowserWithArgs(self,
-                             additional_args: Optional[List[str]] = None,
-                             profile_dir: Optional[str] = None,
+                             additional_args: list[str] | None = None,
+                             profile_dir: str | None = None,
                              profile_type: str = 'clean') -> None:
     self.RestartBrowserIfNecessaryWithArgs(additional_args,
                                            force_restart=True,
@@ -918,7 +918,7 @@ class GpuIntegrationTest(
     # pylint: enable=protected-access
 
   def _HandleExpectedFailureOrFlake(self, test_name: str,
-                                    expected_crashes: Dict[str, int],
+                                    expected_crashes: dict[str, int],
                                     should_retry_on_failure: bool) -> None:
     """Helper method for handling a failure in an expected flaky/failing test"""
     # We don't check the return value here since we'll be raising the caught
@@ -978,8 +978,8 @@ class GpuIntegrationTest(
     return (self.browser is not None
             and not self._skip_post_test_cleanup_and_debug_info)
 
-  def _HandlePass(self, test_name: str, expected_crashes: Dict[str, int],
-                  expected_results: Set[str]) -> None:
+  def _HandlePass(self, test_name: str, expected_crashes: dict[str, int],
+                  expected_results: set[str]) -> None:
     """Helper function for handling a passing test."""
     # Fuchsia does not have minidump support, use system info to check
     # for crash count.
@@ -1055,7 +1055,7 @@ class GpuIntegrationTest(
         self.fail("High performance GPU should have been active but wasn't")
 
   # pylint: disable=too-many-return-statements
-  def _ClearExpectedCrashes(self, expected_crashes: Dict[str, int]) -> bool:
+  def _ClearExpectedCrashes(self, expected_crashes: dict[str, int]) -> bool:
     """Clears any expected crash minidumps so they're not caught later.
 
     Args:
@@ -1100,7 +1100,7 @@ class GpuIntegrationTest(
   # pylint: enable=too-many-return-statements
 
   # pylint: disable=no-self-use
-  def GetExpectedCrashes(self, args: ct.TestArgs) -> Dict[str, int]:
+  def GetExpectedCrashes(self, args: ct.TestArgs) -> dict[str, int]:
     """Returns which crashes, per process type, to expect for the current test.
 
     Should be overridden by child classes to actually return valid data if
@@ -1132,7 +1132,7 @@ class GpuIntegrationTest(
     """
     raise NotImplementedError
 
-  def _GetDx12VulkanBotConfig(self) -> Dict[str, bool]:
+  def _GetDx12VulkanBotConfig(self) -> dict[str, bool]:
     """Returns expected bot config for DX12 and Vulkan support.
 
     This configuration is collected on Windows platform only.
@@ -1168,7 +1168,7 @@ class GpuIntegrationTest(
     return config
 
   @classmethod
-  def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
+  def GetPlatformTags(cls, browser: ct.Browser) -> list[str]:
     """This function will take a Browser instance as an argument.
     It will call the super classes implementation of GetPlatformTags() to get
     a list of tags. Then it will add the gpu vendor, gpu device id,
@@ -1234,7 +1234,7 @@ class GpuIntegrationTest(
 
   @classmethod
   def _GetDriverVersionTags(cls, browser: ct.Browser,
-                            system_info: si_module.SystemInfo) -> List[str]:
+                            system_info: si_module.SystemInfo) -> list[str]:
     gpu_info = system_info.gpu
     tags = []
     if gpu_helper.EXPECTATIONS_DRIVER_TAGS and gpu_info:
@@ -1313,7 +1313,7 @@ class GpuIntegrationTest(
     return '/'
 
   @classmethod
-  def IgnoredTags(cls) -> List[str]:
+  def IgnoredTags(cls) -> list[str]:
     return [
         # We only ever use android-webview-instrumentation if we want to specify
         # that an expectation applies to Webview.
@@ -1392,7 +1392,7 @@ def _PreemptArguments(browser_options: bo.BrowserOptions,
   """
 
   def _GetMatchingArg(arg_to_look_for: str,
-                      all_args: Iterable[str]) -> Optional[str]:
+                      all_args: Iterable[str]) -> str | None:
     for arg in all_args:
       # Per the comments in BrowserOptions.ConsolidateValuesForArg, only the
       # --flag=value format for browser args is supported.
@@ -1420,7 +1420,7 @@ def _TagConflictChecker(tag1: str, tag2: str) -> bool:
           and tag2 != _specific_to_generic_tags.get(tag1, tag1))
 
 
-def GenerateTestNameMapping() -> Dict[str, Type[GpuIntegrationTest]]:
+def GenerateTestNameMapping() -> dict[str, Type[GpuIntegrationTest]]:
   """Generates a mapping from suite name to class of all GPU integration tests.
 
   Returns:

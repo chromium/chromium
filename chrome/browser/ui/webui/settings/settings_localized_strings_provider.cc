@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
@@ -68,6 +69,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -281,6 +283,10 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
 #else  // !BUILDFLAG(IS_CHROMEOS)
       {"focusHighlightLabel",
        IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION},
+      {"toastAlertLevelTitle",
+       IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_TITLE},
+      {"toastAlertLevelDescription",
+       IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_DESCRIPTION},
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
       {"overscrollHistoryNavigationTitle",
@@ -1481,6 +1487,13 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   auto* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);
+  // TODO(crbug.com/404485362): Read from GAIA-id keyed account-level pref
+  // instead.
+  PrefService* prefs = autofill_client ? autofill_client->GetPrefs() : nullptr;
+  html_source->AddBoolean(
+      "autofillAiOptedIn",
+      prefs && prefs->GetBoolean(
+                   autofill::prefs::kAutofillPredictionImprovementsEnabled));
   html_source->AddBoolean(
       "userEligibleForAutofillAi",
       autofill_client &&

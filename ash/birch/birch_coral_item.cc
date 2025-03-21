@@ -185,7 +185,11 @@ void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
       NOTREACHED() << "Invalid response with unknown source.";
   }
 
-  // Assign the initial entities to the current active desk.
+  // Assign the first `kMaxItemsForCoralSuppressionContext` initial entities to
+  // the current active desk as suppression context.
+  const int initial_entities_size = initial_entities.size();
+  initial_entities.resize(
+      std::min(initial_entities_size, kMaxItemsForCoralSuppressionContext));
   auto* desks_controller = DesksController::Get();
   desks_controller->GetDeskAtIndex(desks_controller->GetActiveDeskIndex())
       ->set_tab_app_entities(std::move(initial_entities));

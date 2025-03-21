@@ -39,10 +39,10 @@ export class CrChipElement extends CrChipElementBase {
     };
   }
 
-  disabled: boolean = false;
-  chipAriaLabel: string = '';
-  chipRole: string = '';
-  selected: boolean = false;
+  accessor disabled: boolean = false;
+  accessor chipAriaLabel: string = '';
+  accessor chipRole: string = '';
+  accessor selected: boolean = false;
 
   constructor() {
     super();

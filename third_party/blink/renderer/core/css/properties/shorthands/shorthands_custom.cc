@@ -1327,7 +1327,8 @@ bool Flex::ParseShorthand(bool important,
     for (;;) {
       CSSParserSavePoint savepoint(stream);
       double num;
-      if (css_parsing_utils::ConsumeNumberRaw(stream, context, num)) {
+      if (css_parsing_utils::ConsumeNumberRaw_DO_NOT_USE(stream, context,
+                                                         num)) {
         if (num < 0) {
           break;
         }

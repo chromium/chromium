@@ -3238,22 +3238,6 @@
             ]
         }
     ],
-    "BatteryStatusAndPowerSavingBroadcastReceiversInBackground": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BatteryStatusManagerBroadcastReceiverInBackground",
-                        "PowerSavingModeBroadcastReceiverInBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "BiometricAuthPwdFillAndroid": [
         {
             "platforms": [
@@ -7073,6 +7057,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableLazyLoginWebUILoading"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CrosSeparateGeoApiKey": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrosSeparateGeoApiKey"
                     ]
                 }
             ]
@@ -11761,6 +11760,37 @@
             ]
         }
     ],
+    "IOSChromnientDenseText": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensVsintParamEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSChromnientEscapeHatch": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_iOSLensOverlayEscapeHatchTip",
+                        "LensOverlayEnableLVFEscapeHatch"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSCriteriaExperimentEnabled": [
         {
             "platforms": [
@@ -12694,10 +12724,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithSettings",
-                    "params": {
-                        "identity-disc-account-menu-with-settings-button": "true"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "IdentityConfirmationSnackbar",
                         "IdentityDiscAccountMenu"
@@ -13826,6 +13853,22 @@
                         "LobsterDogfood",
                         "LobsterQuickInsertZeroState",
                         "LobsterRightClickMenu"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LocalWebApprovalsIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LocalWebApprovals",
+                        "SupervisedUserBlockInterstitialV3"
                     ]
                 }
             ]
@@ -17129,21 +17172,6 @@
             ]
         }
     ],
-    "PinweaverPasswords": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootPinweaverForPassword"
-                    ]
-                }
-            ]
-        }
-    ],
     "PlainTextPainter": [
         {
             "platforms": [
@@ -18222,26 +18250,6 @@
                     "name": "Disabled",
                     "disable_features": [
                         "DefaultAllowPrivacySandboxAttestations"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrivacySandboxEqualizedPromptButtons": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxEqualizedPromptButtons"
                     ]
                 }
             ]
@@ -21564,22 +21572,6 @@
             ]
         }
     ],
-    "ScreencastServerBasedUSMRNNTLocales": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InternalServerSideSpeechRecognitionUSMModelFinch",
-                        "ProjectorUseUSMForS3"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScrimForBrowserWindowModal": [
         {
             "platforms": [
@@ -24524,24 +24516,6 @@
             ]
         }
     ],
-    "UseItemSnippetsAPI": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseItemSnippetsAPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSCContentSharingPicker": [
         {
             "platforms": [
@@ -26829,6 +26803,21 @@
                     "name": "Disabled",
                     "enable_features": [
                         "CredentialProviderPerformanceImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
+    "iOSTailoredNonModalDBPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TailoredNonModalDBPromo"
                     ]
                 }
             ]

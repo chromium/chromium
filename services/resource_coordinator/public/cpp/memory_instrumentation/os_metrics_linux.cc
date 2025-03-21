@@ -20,6 +20,7 @@
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/elf_reader.h"
+#include "base/debug/proc_maps_linux.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -305,6 +306,18 @@ uint32_t CountMappings(base::ProcessId pid) {
   return newline_characters;
 }
 
+// Get values from smaps_rollup for the current process.
+void GetSmapsRollup(uint32_t* pss, uint32_t* swap_pss) {
+  auto value = base::debug::ReadAndParseSmapsRollup();
+  if (!value) {
+    *pss = 0;
+    *swap_pss = 0;
+    return;
+  }
+  *pss = value->pss;
+  *swap_pss = value->swap_pss;
+}
+
 }  // namespace
 
 FILE* g_proc_smaps_for_testing = nullptr;
@@ -328,8 +341,8 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
       base::saturated_cast<uint32_t>(info->resident_set_bytes / 1024);
   dump->peak_resident_set_kb = GetPeakResidentSetSize(handle);
   dump->is_peak_rss_resettable = ResetPeakRSSIfPossible(handle);
-
   dump->mappings_count = CountMappings(handle);
+  GetSmapsRollup(&dump->pss_kb, &dump->swap_pss_kb);
 
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)

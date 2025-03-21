@@ -2294,5 +2294,20 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
             "HTML, CSS, JavaScript");
 }
 
+TEST_F(AIPageContentAgentTest, Title) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<head>"
+      "  <title>test title</title>"
+      "</head>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  EXPECT_EQ(content->frame_data->title, "test title");
+}
+
 }  // namespace
 }  // namespace blink

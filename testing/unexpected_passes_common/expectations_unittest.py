@@ -12,6 +12,9 @@ from unittest import mock
 # vpython-provided modules.
 from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
+# //third_party/catapult/third_party/typ imports.
+from typ import expectations_parser
+
 # //testing imports.
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
@@ -19,6 +22,10 @@ from unexpected_passes_common import unittest_utils as uu
 
 # Protected access is allowed for unittests.
 # pylint: disable=protected-access
+
+NON_WILDCARD = data_types.WildcardType.NON_WILDCARD
+SIMPLE_WILDCARD = data_types.WildcardType.SIMPLE_WILDCARD
+FULL_WILDCARD = data_types.WildcardType.FULL_WILDCARD
 
 FAKE_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win linux ]
@@ -29,6 +36,20 @@ crbug.com/5678 crbug.com/6789 [ win ] foo/another/test [ RetryOnFailure ]
 [ linux ] foo/test [ Failure ]
 
 crbug.com/2345 [ linux ] bar/* [ RetryOnFailure ]
+crbug.com/3456 [ linux ] some/bad/test [ Skip ]
+crbug.com/4567 [ linux ] some/good/test [ Pass ]
+"""
+
+FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT = """\
+# tags: [ win linux ]
+# results: [ Failure RetryOnFailure Skip Pass ]
+# full_wildcard_support: true
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/5678 crbug.com/6789 [ win ] foo/another/test [ RetryOnFailure ]
+
+[ linux ] foo/\\*test [ Failure ]
+
+crbug.com/2345 [ linux ] *foo\\*bar/* [ RetryOnFailure ]
 crbug.com/3456 [ linux ] some/bad/test [ Skip ]
 crbug.com/4567 [ linux ] some/good/test [ Pass ]
 """
@@ -78,6 +99,23 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
 crbug.com/4567 [ linux ] some/good/test [ Pass ]
 
 [ linux ] foo/test [ Failure ]
+"""
+
+FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE_FULL_WILDCARD_SUPPORT = """\
+# tags: [ win linux ]
+# results: [ Failure RetryOnFailure Skip Pass ]
+# full_wildcard_support: true
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/5678 crbug.com/6789 [ win ] foo/another/test [ RetryOnFailure ]
+
+[ linux ] foo/\\*test [ Failure ]
+
+crbug.com/2345 [ linux ] *foo\\*bar/* [ RetryOnFailure ]
+crbug.com/3456 [ linux ] some/bad/test [ Skip ]
+crbug.com/4567 [ linux ] some/good/test [ Pass ]
+
+[ linux ] foo/\\*test [ Failure ]
+crbug.com/2345 [ linux ] *foo\\*bar/* [ RetryOnFailure ]
 """
 
 FAKE_EXPECTATION_FILE_CONTENTS_WITH_MULTIPLE_DUPLICATES = """\
@@ -159,13 +197,48 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     expected_expectation_map = {
         filename: {
             data_types.Expectation(
-                'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
+                'foo/test', ['win'], ['Failure'], NON_WILDCARD,
+                'crbug.com/1234'): {},
             data_types.Expectation(
-                'foo/another/test', ['win'], ['RetryOnFailure'],
+                'foo/another/test', ['win'], ['RetryOnFailure'], NON_WILDCARD,
                 'crbug.com/5678 crbug.com/6789'): {},
-            data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
+            data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                NON_WILDCARD): {},
             data_types.Expectation(
-                'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
+                'bar/*', ['linux'], ['RetryOnFailure'], SIMPLE_WILDCARD,
+                'crbug.com/2345'): {},
+        },
+    }
+    # yapf: enable
+    self.assertEqual(expectation_map, expected_expectation_map)
+    self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
+
+  def testExpectationFileWithFullWildcardSupport(self):
+    """testExpectationfile, but with full_wildcard_support enabled."""
+    filename = '/foo'
+    self._expectation_content[
+        filename] = FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT
+    with open(filename, 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT)
+
+    expectation_map = self.instance.CreateTestExpectationMap(
+        filename, None, datetime.timedelta(days=0))
+    # Skip expectations should be omitted, but everything else should be
+    # present.
+    # yapf: disable
+    expected_expectation_map = {
+        filename: {
+            data_types.Expectation(
+                'foo/test', ['win'], ['Failure'], NON_WILDCARD,
+                'crbug.com/1234'): {},
+            data_types.Expectation(
+                'foo/another/test', ['win'], ['RetryOnFailure'], NON_WILDCARD,
+                'crbug.com/5678 crbug.com/6789'): {},
+            data_types.Expectation('foo/*test', ['linux'], ['Failure'],
+                NON_WILDCARD): {},
+            data_types.Expectation(
+                '*foo\\*bar/*', ['linux'], ['RetryOnFailure'], FULL_WILDCARD,
+                'crbug.com/2345'): {},
         },
     }
     # yapf: enable
@@ -176,14 +249,19 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     """Tests reading expectations from multiple files."""
     filename1 = '/foo'
     filename2 = '/bar'
-    expectation_files = [filename1, filename2]
+    filename3 = '/baz'
+    expectation_files = [filename1, filename2, filename3]
     self._expectation_content[filename1] = FAKE_EXPECTATION_FILE_CONTENTS
     self._expectation_content[
         filename2] = SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS
+    self._expectation_content[
+        filename3] = FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT
     with open(filename1, 'w', encoding='utf-8') as outfile:
       outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
     with open(filename2, 'w', encoding='utf-8') as outfile:
       outfile.write(SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
+    with open(filename3, 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT)
 
     expectation_map = self.instance.CreateTestExpectationMap(
         expectation_files, None, datetime.timedelta(days=0))
@@ -191,18 +269,35 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     expected_expectation_map = {
       expectation_files[0]: {
         data_types.Expectation(
-            'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
+            'foo/test', ['win'], ['Failure'], NON_WILDCARD,
+            'crbug.com/1234'): {},
         data_types.Expectation(
-             'foo/another/test', ['win'], ['RetryOnFailure'],
-             'crbug.com/5678 crbug.com/6789'): {},
-        data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
+            'foo/another/test', ['win'], ['RetryOnFailure'], NON_WILDCARD,
+            'crbug.com/5678 crbug.com/6789'): {},
+        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+            NON_WILDCARD): {},
         data_types.Expectation(
-            'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
+            'bar/*', ['linux'], ['RetryOnFailure'], SIMPLE_WILDCARD,
+            'crbug.com/2345'): {},
       },
       expectation_files[1]: {
         data_types.Expectation(
-            'foo/test', ['mac'], ['Failure'], 'crbug.com/4567'): {},
-      }
+            'foo/test', ['mac'], ['Failure'], NON_WILDCARD,
+            'crbug.com/4567'): {},
+      },
+      expectation_files[2]: {
+        data_types.Expectation(
+            'foo/test', ['win'], ['Failure'], NON_WILDCARD,
+            'crbug.com/1234'): {},
+        data_types.Expectation(
+            'foo/another/test', ['win'], ['RetryOnFailure'], NON_WILDCARD,
+            'crbug.com/5678 crbug.com/6789'): {},
+        data_types.Expectation('foo/*test', ['linux'], ['Failure'],
+            NON_WILDCARD): {},
+        data_types.Expectation(
+            '*foo\\*bar/*', ['linux'], ['RetryOnFailure'], FULL_WILDCARD,
+            'crbug.com/2345'): {},
+      },
     }
     # yapf: enable
     self.assertEqual(expectation_map, expected_expectation_map)
@@ -212,12 +307,16 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     """Tests reading expectations from a list of tests."""
     expectation_map = self.instance.CreateTestExpectationMap(
         None, ['foo/test', 'bar/*'], datetime.timedelta(days=0))
+    # yapf: disable
     expected_expectation_map = {
         '': {
-            data_types.Expectation('foo/test', [], ['RetryOnFailure']): {},
-            data_types.Expectation('bar/*', [], ['RetryOnFailure']): {},
+            data_types.Expectation(
+                'foo/test', [], ['RetryOnFailure'], NON_WILDCARD): {},
+            data_types.Expectation(
+                'bar/*', [], ['RetryOnFailure'], SIMPLE_WILDCARD): {},
         },
     }
+    # yapf: enable
     self.assertEqual(expectation_map, expected_expectation_map)
     self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
 
@@ -241,13 +340,16 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     expected_expectation_map = {
         filename: {
             data_types.Expectation(
-                'foo/test', ['win'], ['Failure'], 'crbug.com/1234'): {},
+                'foo/test', ['win'], ['Failure'], NON_WILDCARD,
+                'crbug.com/1234'): {},
             data_types.Expectation(
-                'foo/another/test', ['win'], ['RetryOnFailure'],
+                'foo/another/test', ['win'], ['RetryOnFailure'], NON_WILDCARD,
                 'crbug.com/5678 crbug.com/6789'): {},
-            data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
+            data_types.Expectation('foo/test', ['linux'], ['Failure'],
+                NON_WILDCARD): {},
             data_types.Expectation(
-                'bar/*', ['linux'], ['RetryOnFailure'], 'crbug.com/2345'): {},
+                'bar/*', ['linux'], ['RetryOnFailure'], SIMPLE_WILDCARD,
+                'crbug.com/2345'): {},
         },
     }
     # yapf: enable
@@ -258,6 +360,49 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
       content = infile.read()
 
     self.assertEqual(content, FAKE_EXPECTATION_FILE_CONTENTS + '\n')
+
+  def testDuplicateExpectationRemovedFullWildcardSupport(self):
+    """testDuplicateExpectationRemoved, but with full_wildcard_support."""
+    filename = '/foo'
+    with open(filename, 'w', encoding='utf-8') as outfile:
+      outfile.write(
+          FAKE_EXPECTATION_FILE_CONTENTS_WITH_DUPLICATE_FULL_WILDCARD_SUPPORT)
+
+    def ContentSideEffect(_, __) -> str:
+      with open(filename, encoding='utf-8') as infile:
+        return infile.read()
+
+    self._content_mock.side_effect = ContentSideEffect
+
+    expectation_map = self.instance.CreateTestExpectationMap(
+        filename, None, datetime.timedelta(days=0))
+    # Skip expectations should be omitted, but everything else should be
+    # present.
+    # yapf: disable
+    expected_expectation_map = {
+        filename: {
+            data_types.Expectation(
+                'foo/test', ['win'], ['Failure'], NON_WILDCARD,
+                'crbug.com/1234'): {},
+            data_types.Expectation(
+                'foo/another/test', ['win'], ['RetryOnFailure'], NON_WILDCARD,
+                'crbug.com/5678 crbug.com/6789'): {},
+            data_types.Expectation('foo/*test', ['linux'], ['Failure'],
+                NON_WILDCARD): {},
+            data_types.Expectation(
+                '*foo\\*bar/*', ['linux'], ['RetryOnFailure'], FULL_WILDCARD,
+                'crbug.com/2345'): {},
+        },
+    }
+    # yapf: enable
+    self.assertEqual(expectation_map, expected_expectation_map)
+    self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
+
+    with open(filename, encoding='utf-8') as infile:
+      content = infile.read()
+
+    self.assertEqual(
+        content, FAKE_EXPECTATION_FILE_CONTENTS_FULL_WILDCARD_SUPPORT + '\n')
 
   def testDuplicateExpectationNotRemoved(self):
     """Tests behavior when duplicate expectations still exist."""
@@ -435,9 +580,10 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD)
     ]
 
     expected_contents = self.header + """
@@ -472,7 +618,7 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234 crbug.com/3456 crbug.com/4567'),
     ]
     expected_contents = self.header + """
@@ -506,13 +652,13 @@ crbug.com/3456 [ win ] foo/test [ Failure ]
 crbug.com/4567 [ win ] foo/test [ Failure ]
 """
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/2345'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/3456'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/4567'),
     ]
     expected_contents = self.header + """
@@ -542,11 +688,11 @@ crbug.com/2345 [ win ] in_block [ Failure ]
 crbug.com/3456 [ win ] after_block [ Failure ]
 """
     stale_expectations = [
-        data_types.Expectation('before_block', ['win'], 'Failure',
+        data_types.Expectation('before_block', ['win'], 'Failure', NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('in_block', ['win'], 'Failure',
+        data_types.Expectation('in_block', ['win'], 'Failure', NON_WILDCARD,
                                'crbug.com/2345'),
-        data_types.Expectation('after_block', ['win'], 'Failure',
+        data_types.Expectation('after_block', ['win'], 'Failure', NON_WILDCARD,
                                'crbug.com/3456'),
     ]
     expected_contents = self.header + """
@@ -574,11 +720,11 @@ crbug.com/2345 [ win ] in_block [ Failure ]
 crbug.com/3456 [ win ] after_block [ Failure ]
 """
     unused_expectations = [
-        data_types.Expectation('before_block', ['win'], 'Failure',
+        data_types.Expectation('before_block', ['win'], 'Failure', NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('in_block', ['win'], 'Failure',
+        data_types.Expectation('in_block', ['win'], 'Failure', NON_WILDCARD,
                                'crbug.com/2345'),
-        data_types.Expectation('after_block', ['win'], 'Failure',
+        data_types.Expectation('after_block', ['win'], 'Failure', NON_WILDCARD,
                                'crbug.com/3456'),
     ]
     expected_contents = self.header + """
@@ -609,9 +755,9 @@ crbug.com/4567 [ win ] also_do_not_remove [ Failure ]
 """
     expectations_to_remove = [
         data_types.Expectation('disabled_stale', ['win'], 'Failure',
-                               'crbug.com/2345'),
+                               NON_WILDCARD, 'crbug.com/2345'),
         data_types.Expectation('disabled_unused', ['win'], 'Failure',
-                               'crbug.com/3456'),
+                               NON_WILDCARD, 'crbug.com/3456'),
     ]
 
     expected_contents = self.header + """
@@ -652,11 +798,11 @@ crbug.com/2345 [ win ] foo/test [ Failure ]  # finder:disable-general
 crbug.com/3456 [ win ] foo/test [ Failure ]
 """
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/2345'),
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/3456'),
     ]
     expected_contents = self.header + """
@@ -680,12 +826,12 @@ crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
 crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
 """
     stale_expectations = [
-        data_types.Expectation('not_disabled', ['win'], 'Failure',
+        data_types.Expectation('not_disabled', ['win'], 'Failure', NON_WILDCARD,
                                'crbug.com/1234'),
         data_types.Expectation('stale_disabled', ['win'], 'Failure',
-                               'crbug.com/2345'),
+                               NON_WILDCARD, 'crbug.com/2345'),
         data_types.Expectation('unused_disabled', ['win'], 'Failure',
-                               'crbug.com/3456')
+                               NON_WILDCARD, 'crbug.com/3456')
     ]
     expected_contents = self.header + """
 crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
@@ -706,12 +852,12 @@ crbug.com/2345 [ win ] stale_disabled [ Failure ]  # finder:disable-stale
 crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
 """
     stale_expectations = [
-        data_types.Expectation('not_disabled', ['win'], 'Failure',
+        data_types.Expectation('not_disabled', ['win'], 'Failure', NON_WILDCARD,
                                'crbug.com/1234'),
         data_types.Expectation('stale_disabled', ['win'], 'Failure',
-                               'crbug.com/2345'),
+                               NON_WILDCARD, 'crbug.com/2345'),
         data_types.Expectation('unused_disabled', ['win'], 'Failure',
-                               'crbug.com/3456')
+                               NON_WILDCARD, 'crbug.com/3456')
     ]
     expected_contents = self.header + """
 crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
@@ -751,9 +897,10 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
     ]
 
     expected_contents = self.header + """
@@ -803,17 +950,28 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('a', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('b', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('c', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('d', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('e', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('f', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('g', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('h', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('i', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('j', ['linux'], ['RetryOnFailure']),
-        data_types.Expectation('k', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('a', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('b', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('c', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('d', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('e', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('f', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('g', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('h', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('i', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('j', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
+        data_types.Expectation('k', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD),
     ]
 
     expected_contents = self.header + """
@@ -852,9 +1010,9 @@ crbug.com/3456 [ linux ] foo/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['win'], ['Failure'],
+        data_types.Expectation('bar/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
     ]
 
@@ -890,7 +1048,8 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD)
     ]
 
     expected_contents = contents
@@ -924,9 +1083,10 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD)
     ]
 
     expected_contents = self.header + """
@@ -968,7 +1128,8 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD)
     ]
 
     expected_contents = contents
@@ -1002,9 +1163,10 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD)
     ]
 
     expected_contents = self.header + """
@@ -1048,9 +1210,10 @@ crbug.com/1234 [ linux ] foo/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['win'], ['Failure'],
+        data_types.Expectation('foo/test', ['win'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'],
+                               NON_WILDCARD)
     ]
 
     expected_contents = self.header + """
@@ -1153,7 +1316,7 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
     ]
 
@@ -1182,7 +1345,7 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
     ]
 
@@ -1210,7 +1373,7 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
 crbug.com/1234 [ linux ] foo/test [ Failure ]"""
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
     ]
 
@@ -1241,7 +1404,7 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
     ]
 
@@ -1275,7 +1438,7 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
     ]
 
@@ -1314,7 +1477,7 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
     ]
 
@@ -1350,9 +1513,9 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('foo/test', ['mac'], ['Failure'],
+        data_types.Expectation('foo/test', ['mac'], ['Failure'], NON_WILDCARD,
                                'crbug.com/3456'),
     ]
 
@@ -1389,9 +1552,9 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
 """
 
     stale_expectations = [
-        data_types.Expectation('foo/test', ['linux'], ['Failure'],
+        data_types.Expectation('foo/test', ['linux'], ['Failure'], NON_WILDCARD,
                                'crbug.com/1234'),
-        data_types.Expectation('foo/test', ['mac'], ['Failure'],
+        data_types.Expectation('foo/test', ['mac'], ['Failure'], NON_WILDCARD,
                                'crbug.com/3456'),
     ]
 
@@ -1457,8 +1620,10 @@ crbug.com/2345 [ win ] bar/test [ Failure ]
     self.assertEqual(group_name, 'group name')
 
 
-class GetDisableAnnotatedExpectationsFromFileUnittest(unittest.TestCase):
+class GetDisableAnnotatedExpectationsFromFileUnittest(
+    fake_filesystem_unittest.TestCase):
   def setUp(self) -> None:
+    self.setUpPyfakefs()
     self.instance = uu.CreateGenericExpectations()
 
   def testNestedBlockComments(self) -> None:
@@ -1514,28 +1679,31 @@ crbug.com/1234 [ win ] bar/test [ Failure ]
 
 crbug.com/1234 [ mac ] bar/test [ Failure ]
 """
+    with open('/expectation_file', 'w', encoding='utf-8') as outfile:
+      outfile.write(contents)
+
     annotated_expectations = (
         self.instance._GetDisableAnnotatedExpectationsFromFile(
-            'expectation_file', contents))
+            '/expectation_file', contents))
     self.assertEqual(len(annotated_expectations), 4)
     self.assertEqual(
         annotated_expectations[data_types.Expectation('foo/test', ['win'],
-                                                      'Failure',
+                                                      'Failure', NON_WILDCARD,
                                                       'crbug.com/1234')],
         ('-general', 'general-reason'))
     self.assertEqual(
         annotated_expectations[data_types.Expectation('foo/test', ['mac'],
-                                                      'Failure',
+                                                      'Failure', NON_WILDCARD,
                                                       'crbug.com/1234')],
         ('-stale', ''))
     self.assertEqual(
         annotated_expectations[data_types.Expectation('foo/test', ['linux'],
-                                                      'Failure',
+                                                      'Failure', NON_WILDCARD,
                                                       'crbug.com/1234')],
         ('-unused', 'unused reason'))
     self.assertEqual(
         annotated_expectations[data_types.Expectation('bar/test', ['win'],
-                                                      'Failure',
+                                                      'Failure', NON_WILDCARD,
                                                       'crbug.com/1234')],
         ('-narrowing', ''))
 
@@ -1554,52 +1722,119 @@ crbug.com/1234 [ win ] bar/test [ Failure ]  # finder:disable-narrowing
 crbug.com/1234 [ mac ] bar/test [ Failure ]
 """
     # pylint: enable=line-too-long
+    with open('/expectation_file', 'w', encoding='utf-8') as outfile:
+      outfile.write(contents)
+
     annotated_expectations = (
         self.instance._GetDisableAnnotatedExpectationsFromFile(
-            'expectation_file', contents))
+            '/expectation_file', contents))
     self.assertEqual(len(annotated_expectations), 4)
     self.assertEqual(
         annotated_expectations[data_types.Expectation('foo/test', ['win'],
-                                                      'Failure',
+                                                      'Failure', NON_WILDCARD,
                                                       'crbug.com/1234')],
         ('-general', 'general-reason'))
     self.assertEqual(
         annotated_expectations[data_types.Expectation('foo/test', ['mac'],
-                                                      'Failure',
+                                                      'Failure', NON_WILDCARD,
                                                       'crbug.com/1234')],
         ('-stale', ''))
     self.assertEqual(
         annotated_expectations[data_types.Expectation('foo/test', ['linux'],
-                                                      'Failure',
+                                                      'Failure', NON_WILDCARD,
                                                       'crbug.com/1234')],
         ('-unused', 'unused reason'))
     self.assertEqual(
         annotated_expectations[data_types.Expectation('bar/test', ['win'],
-                                                      'Failure',
+                                                      'Failure', NON_WILDCARD,
                                                       'crbug.com/1234')],
         ('-narrowing', ''))
 
 
-class GetExpectationLineUnittest(unittest.TestCase):
+class GetExpectationLineUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self) -> None:
+    self.setUpPyfakefs()
     self.instance = uu.CreateGenericExpectations()
 
   def testNoMatchingExpectation(self) -> None:
     """Tests that the case of no matching expectation is handled."""
-    expectation = data_types.Expectation('foo', ['win'], 'Failure')
+    with open('/expectation_file', 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
+    expectation = data_types.Expectation('foo', ['win'], 'Failure',
+                                         NON_WILDCARD)
     line, line_number = self.instance._GetExpectationLine(
-        expectation, FAKE_EXPECTATION_FILE_CONTENTS, 'expectation_file')
+        expectation, FAKE_EXPECTATION_FILE_CONTENTS, '/expectation_file')
     self.assertIsNone(line)
     self.assertIsNone(line_number)
 
   def testMatchingExpectation(self) -> None:
     """Tests that matching expectations are found."""
+    with open('/expectation_file', 'w', encoding='utf-8') as outfile:
+      outfile.write(FAKE_EXPECTATION_FILE_CONTENTS)
     expectation = data_types.Expectation('foo/test', ['win'], 'Failure',
-                                         'crbug.com/1234')
+                                         NON_WILDCARD, 'crbug.com/1234')
     line, line_number = self.instance._GetExpectationLine(
-        expectation, FAKE_EXPECTATION_FILE_CONTENTS, 'expectation_file')
+        expectation, FAKE_EXPECTATION_FILE_CONTENTS, '/expectation_file')
     self.assertEqual(line, 'crbug.com/1234 [ win ] foo/test [ Failure ]')
     self.assertEqual(line_number, 3)
+
+
+class GetExpectationFileAnnotationsUnittest(fake_filesystem_unittest.TestCase):
+
+  def setUp(self):
+    self.setUpPyfakefs()
+    self.instance = uu.CreateGenericExpectations()
+
+  def testNoAnnotations(self):
+    """Tests behavior when no annotations are present."""
+    contents = """\
+# tags: [ release debug ]
+# results: [ Failure Skip ]
+"""
+    with open('/expectation_file', 'w', encoding='utf-8') as outfile:
+      outfile.write(contents)
+
+    self.assertEqual(
+        self.instance._GetExpectationFileAnnotations('/expectation_file'), '')
+
+  def testAllAnnotations(self):
+    """Tests behavior when all annotations are present."""
+    contents = """\
+# tags: [ release debug ]
+# results: [ Failure Skip ]
+# full_wildcard_support: true
+# conflicts_allowed: true
+# conflict_resolution: override
+"""
+    with open('/expectation_file', 'w', encoding='utf-8') as outfile:
+      outfile.write(contents)
+
+    expected_output = """\
+# full_wildcard_support: true
+# conflicts_allowed: true
+# conflict_resolution: override
+"""
+
+    self.assertEqual(
+        self.instance._GetExpectationFileAnnotations('/expectation_file'),
+        expected_output)
+
+  def testDuplicateAnnotation(self):
+    """Tests behavior when there is a duplicate annotation present."""
+    contents = """\
+# tags: [ release debug ]
+# results: [ Failure Skip ]
+# full_wildcard_support: true
+# full_wildcard_support: false
+"""
+    with open('/expectation_file', 'w', encoding='utf-8') as outfile:
+      outfile.write(contents)
+
+    with self.assertRaisesRegex(
+        RuntimeError,
+        'Found multiple cases of # full_wildcard_support:  annotation in file '
+        '/expectation_file'):
+      self.instance._GetExpectationFileAnnotations('/expectation_file')
 
 
 class FilterToMostSpecificTypTagsUnittest(fake_filesystem_unittest.TestCase):
@@ -1711,7 +1946,7 @@ class NarrowSemiStaleExpectationScopeUnittest(fake_filesystem_unittest.TestCase
       self.assertEqual(infile.read(),
                        FAKE_EXPECTATION_FILE_CONTENTS_WITH_COMPLEX_TAGS)
 
-  def testWildcard(self) -> None:
+  def testSimpleWildcard(self) -> None:
     """Regression test to ensure that wildcards are modified correctly."""
     file_contents = """\
 # tags: [ win ]
@@ -1732,7 +1967,8 @@ crbug.com/1234 [ win ] foo/bar* [ Failure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/bar*', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/bar*', ['win'], 'Failure', SIMPLE_WILDCARD,
+                'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -1755,6 +1991,53 @@ crbug.com/1234 [ intel win ] foo/bar* [ Failure ]
       self.assertEqual(infile.read(), expected_contents)
     self.assertEqual(urls, {'crbug.com/1234'})
 
+  def testFullWildcard(self) -> None:
+    """Regression test to ensure that full wildcards are modified correctly."""
+    file_contents = """\
+# tags: [ win ]
+# tags: [ amd intel ]
+# results: [ Failure ]
+# full_wildcard_support: true
+
+crbug.com/1234 [ win ] foo/bar* [ Failure ]
+"""
+    with open(self.filename, 'w') as f:
+      f.write(file_contents)
+
+    amd_stats = data_types.BuildStats()
+    amd_stats.AddPassedBuild(frozenset(['win', 'amd']))
+    intel_stats = data_types.BuildStats()
+    intel_stats.AddFailedBuild('1', frozenset(['win', 'intel']))
+    # yapf: disable
+    test_expectation_map = data_types.TestExpectationMap({
+        self.filename:
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation(
+                'foo/bar*', ['win'], 'Failure', FULL_WILDCARD,
+                'crbug.com/1234'):
+            data_types.BuilderStepMap({
+                'win_builder':
+                data_types.StepBuildStatsMap({
+                    'amd': amd_stats,
+                    'intel': intel_stats,
+                }),
+            }),
+        }),
+    })
+    # yap: enable
+    urls = self.instance.NarrowSemiStaleExpectationScope(test_expectation_map)
+    expected_contents = """\
+# tags: [ win ]
+# tags: [ amd intel ]
+# results: [ Failure ]
+# full_wildcard_support: true
+
+crbug.com/1234 [ intel win ] foo/bar* [ Failure ]
+"""
+    with open(self.filename) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+    self.assertEqual(urls, {'crbug.com/1234'})
+
   def testMultipleSteps(self) -> None:
     """Tests that scope narrowing works across multiple steps."""
     amd_stats = data_types.BuildStats()
@@ -1766,7 +2049,7 @@ crbug.com/1234 [ intel win ] foo/bar* [ Failure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -1806,7 +2089,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_amd_builder':
                 data_types.StepBuildStatsMap({
@@ -1858,7 +2141,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -1869,7 +2152,8 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
             # These two expectations are here to ensure that our continue logic
             # works as expected when we hit cases we can't handle, i.e. that
             # later expectations are still handled properly.
-            data_types.Expectation('bar/test', ['win'], 'Failure', ''):
+            data_types.Expectation(
+                'bar/test', ['win'], 'Failure', NON_WILDCARD, ''):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -1877,7 +2161,8 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
                     'win2': failed_amd_stats,
                 }),
             }),
-            data_types.Expectation('baz/test', ['win'], 'Failure', ''):
+            data_types.Expectation(
+                'baz/test', ['win'], 'Failure', NON_WILDCARD, ''):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -1886,7 +2171,8 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
                 }),
             }),
             data_types.Expectation(
-                'foo/test', ['linux'], 'RetryOnFailure', 'crbug.com/2345'):
+                'foo/test', ['linux'], 'RetryOnFailure', NON_WILDCARD,
+                'crbug.com/2345'):
             data_types.BuilderStepMap({
                 'linux_builder':
                 data_types.StepBuildStatsMap({
@@ -1928,7 +2214,7 @@ crbug.com/2345 [ debug linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_amd_builder':
                 data_types.StepBuildStatsMap({
@@ -1977,7 +2263,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -2007,7 +2293,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -2036,7 +2322,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -2083,7 +2369,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -2126,7 +2412,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -2173,7 +2459,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -2219,7 +2505,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -2268,7 +2554,7 @@ crbug.com/2345 [ linux ] foo/test [ RetryOnFailure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['win'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['win'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'win_builder':
                 data_types.StepBuildStatsMap({
@@ -2355,7 +2641,7 @@ crbug.com/1234 foo/test [ Failure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', [], 'Failure', 'crbug.com/1234'):
+                'foo/test', [], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'mixed_builder':
                 data_types.StepBuildStatsMap({
@@ -2408,7 +2694,7 @@ crbug.com/2345 [ mac ] bar/test [ Failure ]
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['mac'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['mac'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'mac_builder':
                 data_types.StepBuildStatsMap({
@@ -2417,7 +2703,7 @@ crbug.com/2345 [ mac ] bar/test [ Failure ]
                 }),
             }),
             data_types.Expectation(
-                'bar/test', ['mac'], 'Failure', 'crbug.com/2345'):
+                'bar/test', ['mac'], 'Failure', NON_WILDCARD, 'crbug.com/2345'):
             data_types.BuilderStepMap({
                 'mac_builder':
                 data_types.StepBuildStatsMap({
@@ -2490,7 +2776,7 @@ crbug.com/874695 foo/test [ Failure ]
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
                 'foo/test',
-                [], 'Failure', 'crbug.com/874695'):
+                [], 'Failure', NON_WILDCARD, 'crbug.com/874695'):
             data_types.BuilderStepMap({
                 'Linux Tests (dbg)(1)':
                 data_types.StepBuildStatsMap({
@@ -2592,7 +2878,7 @@ crbug.com/2345 [ mac ] bar/test [ Failure ]  # finder:disable-narrowing
         self.filename:
         data_types.ExpectationBuilderMap({
             data_types.Expectation(
-                'foo/test', ['mac'], 'Failure', 'crbug.com/1234'):
+                'foo/test', ['mac'], 'Failure', NON_WILDCARD, 'crbug.com/1234'):
             data_types.BuilderStepMap({
                 'mac_builder':
                 data_types.StepBuildStatsMap({
@@ -2601,7 +2887,7 @@ crbug.com/2345 [ mac ] bar/test [ Failure ]  # finder:disable-narrowing
                 }),
             }),
             data_types.Expectation(
-                'bar/test', ['mac'], 'Failure', 'crbug.com/2345'):
+                'bar/test', ['mac'], 'Failure', NON_WILDCARD, 'crbug.com/2345'):
             data_types.BuilderStepMap({
                 'mac_builder':
                 data_types.StepBuildStatsMap({
@@ -2662,6 +2948,29 @@ class FindOrphanedBugsUnittest(fake_filesystem_unittest.TestCase):
     bugs = ['crbug.com/1', 'crbug.com/3', 'crbug.com/4']
     self.assertEqual(self.instance.FindOrphanedBugs(bugs),
                      set(['crbug.com/3', 'crbug.com/4']))
+
+
+class WildcardTypeFromTypExpectationUnittest(unittest.TestCase):
+
+  def testBasic(self):
+    """Tests basic, happy path functionality."""
+    typ_expectation = expectations_parser.Expectation(
+        'test', is_glob=False, full_wildcard_support=False)
+    self.assertEqual(
+        expectations.WildcardTypeFromTypExpectation(typ_expectation),
+        NON_WILDCARD)
+
+    typ_expectation = expectations_parser.Expectation(
+        'test*', is_glob=True, full_wildcard_support=False)
+    self.assertEqual(
+        expectations.WildcardTypeFromTypExpectation(typ_expectation),
+        SIMPLE_WILDCARD)
+
+    typ_expectation = expectations_parser.Expectation(
+        '*test*', is_glob=True, full_wildcard_support=True)
+    self.assertEqual(
+        expectations.WildcardTypeFromTypExpectation(typ_expectation),
+        FULL_WILDCARD)
 
 
 if __name__ == '__main__':

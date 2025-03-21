@@ -7,6 +7,9 @@
 
 #include <stdio.h>
 
+#include <optional>
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,11 +41,17 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   // explanation and usage.
   void AddTag(const std::string& name, const std::string& value);
 
+  // Add SubTestResult in the GTest XML output.
+  // See gtest_sub_test_results.h for more information.
+  void AddSubTestResult(std::string_view name,
+                        testing::TimeInMillis elapsed_time,
+                        std::optional<std::string_view> failure_message);
+
   // Must be called before adding as a listener. Returns true on success.
   [[nodiscard]] bool Initialize(const FilePath& output_file_path);
 
   // CHECK/DCHECK failed. Print file/line and message to the xml.
-  void OnAssert(const char* file,
+  void OnAssert(std::string_view file,
                 int line,
                 const std::string& summary,
                 const std::string& message);
@@ -54,7 +63,7 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   void OnTestEnd(const testing::TestInfo& test_info) override;
   void OnTestSuiteEnd(const testing::TestSuite& test_suite) override;
 
-  void WriteTestPartResult(const char* file,
+  void WriteTestPartResult(std::string_view file,
                            int line,
                            testing::TestPartResult::Type type,
                            const std::string& summary,

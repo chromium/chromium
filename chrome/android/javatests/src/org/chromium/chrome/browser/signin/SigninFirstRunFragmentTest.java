@@ -1471,8 +1471,6 @@ public class SigninFirstRunFragmentTest {
 
             // Sign-in isn't processed by SigninFirstRunFragment for child accounts.
             verify(mSigninManagerMock, never()).signin(any(CoreAccountInfo.class), anyInt(), any());
-            verify(mSigninManagerMock, never())
-                    .signinAndEnableSync(any(CoreAccountInfo.class), anyInt(), any());
         } else {
             checkFragmentWithSignInSpinner(
                     accountInfo, continueAsButtonText, /* isChildAccount= */ true);

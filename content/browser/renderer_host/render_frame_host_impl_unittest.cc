@@ -1341,6 +1341,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
@@ -1360,6 +1361,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
@@ -1379,6 +1381,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
@@ -1397,6 +1400,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;

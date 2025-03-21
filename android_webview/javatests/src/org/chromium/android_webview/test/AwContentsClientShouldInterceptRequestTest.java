@@ -26,9 +26,8 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AsyncShouldInterceptRequestCallback;
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.WebResponseCallback;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
@@ -113,7 +112,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
 
         @Override
         public void shouldInterceptRequestAsync(
-                AwContentsClient.AwWebResourceRequest request, WebResponseCallback callback) {
+                AwWebResourceRequest request, WebResponseCallback callback) {
             mResponseCallback = callback;
             mCallbackHelper.run();
         }

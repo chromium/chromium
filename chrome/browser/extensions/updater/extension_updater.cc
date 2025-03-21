@@ -27,6 +27,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
@@ -172,6 +173,7 @@ ExtensionUpdater::ExtensionUpdater(
       profile_(profile),
       registry_(ExtensionRegistry::Get(profile)),
       registrar_(ExtensionRegistrar::Get(profile)),
+      delayed_install_manager_(DelayedInstallManager::Get(profile)),
       extension_cache_(cache) {
   DCHECK_LE(frequency_seconds, kMaxUpdateFrequencySeconds);
 #if defined(NDEBUG)
@@ -652,8 +654,11 @@ void ExtensionUpdater::OnExtensionDownloadFailed(
   // check might have queued an update for this extension already. If a
   // current update check has |install_immediately| set the previously
   // queued update should be installed now.
-  if (install_immediately && service_->GetPendingExtensionUpdate(id))
-    service_->FinishDelayedInstallationIfReady(id, install_immediately);
+  if (install_immediately &&
+      delayed_install_manager_->GetPendingExtensionUpdate(id)) {
+    delayed_install_manager_->FinishDelayedInstallationIfReady(
+        id, install_immediately);
+  }
 }
 
 void ExtensionUpdater::OnExtensionDownloadRetry(const ExtensionId& id,
@@ -709,7 +714,8 @@ bool ExtensionUpdater::GetExtensionExistingVersion(const ExtensionId& id,
       registry_->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
   if (!extension)
     return false;
-  const Extension* update = service_->GetPendingExtensionUpdate(id);
+  const Extension* update =
+      delayed_install_manager_->GetPendingExtensionUpdate(id);
   if (update)
     *version = update->VersionString();
   else
@@ -721,7 +727,8 @@ ExtensionUpdateData ExtensionUpdater::GetExtensionUpdateData(
     const ExtensionId& id) {
   ExtensionUpdateData result;
 
-  const Extension* update = service_->GetPendingExtensionUpdate(id);
+  const Extension* update =
+      delayed_install_manager_->GetPendingExtensionUpdate(id);
 
   if (update) {
     result.pending_version = update->VersionString();
@@ -802,6 +809,8 @@ void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
 
   // The ExtensionService is now responsible for cleaning up the temp file
   // at |crx_file.info.path|.
+  // TODO(crbug.com/404943906): Migrate CreateUpdateInstaller() out of
+  // ExtensionService and call the new location here.
   scoped_refptr<CrxInstaller> installer = service_->CreateUpdateInstaller(
       crx_file.info, crx_file.file_ownership_passed);
   if (installer) {

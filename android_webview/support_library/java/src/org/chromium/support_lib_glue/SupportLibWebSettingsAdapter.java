@@ -503,7 +503,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
         try (TraceEvent ignored =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_PAYMENT_REQUEST_ENABLED")) {
             recordApiCall(ApiCall.GET_PAYMENT_REQUEST_ENABLED);
-            return mAwSettings.getBackForwardCacheEnabled();
+            return mAwSettings.getPaymentRequestEnabled();
         }
     }
 
