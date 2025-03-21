@@ -20,40 +20,6 @@
 namespace blink {
 namespace {
 
-mojom::blink::AIWriterTone ToMojoAIWriterTone(V8AIWriterTone tone) {
-  switch (tone.AsEnum()) {
-    case V8AIWriterTone::Enum::kFormal:
-      return mojom::blink::AIWriterTone::kFormal;
-    case V8AIWriterTone::Enum::kNeutral:
-      return mojom::blink::AIWriterTone::kNeutral;
-    case V8AIWriterTone::Enum::kCasual:
-      return mojom::blink::AIWriterTone::kCasual;
-  }
-  NOTREACHED();
-}
-
-mojom::blink::AIWriterFormat ToMojoAIWriterFormat(V8AIWriterFormat format) {
-  switch (format.AsEnum()) {
-    case V8AIWriterFormat::Enum::kPlainText:
-      return mojom::blink::AIWriterFormat::kPlainText;
-    case V8AIWriterFormat::Enum::kMarkdown:
-      return mojom::blink::AIWriterFormat::kMarkdown;
-  }
-  NOTREACHED();
-}
-
-mojom::blink::AIWriterLength ToMojoAIWriterLength(V8AIWriterLength length) {
-  switch (length.AsEnum()) {
-    case V8AIWriterLength::Enum::kShort:
-      return mojom::blink::AIWriterLength::kShort;
-    case V8AIWriterLength::Enum::kMedium:
-      return mojom::blink::AIWriterLength::kMedium;
-    case V8AIWriterLength::Enum::kLong:
-      return mojom::blink::AIWriterLength::kLong;
-  }
-  NOTREACHED();
-}
-
 class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
                            public mojom::blink::AIManagerCreateWriterClient,
                            public AIContextObserver<AIWriter> {
@@ -73,17 +39,8 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    ai_->GetAIRemote()->CreateWriter(
-        std::move(client_remote),
-        mojom::blink::AIWriterCreateOptions::New(
-            options->getSharedContextOr(g_empty_string),
-            ToMojoAIWriterTone(options->tone()),
-            ToMojoAIWriterFormat(options->format()),
-            ToMojoAIWriterLength(options->length()),
-            ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
-            ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
-            mojom::blink::AILanguageCode::New(
-                options->getOutputLanguageOr(g_empty_string))));
+    ai_->GetAIRemote()->CreateWriter(std::move(client_remote),
+                                     ToMojoWriterCreateOptions(options));
   }
   ~CreateWriterClient() override = default;
 
@@ -184,15 +141,7 @@ ScriptPromise<V8AIAvailability> AIWriterFactory::availability(
   }
 
   ai_->GetAIRemote()->CanCreateWriter(
-      mojom::blink::AIWriterCreateOptions::New(
-          /*shared_context=*/g_empty_string,
-          ToMojoAIWriterTone(options->tone()),
-          ToMojoAIWriterFormat(options->format()),
-          ToMojoAIWriterLength(options->length()),
-          ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
-          ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
-          mojom::blink::AILanguageCode::New(
-              options->getOutputLanguageOr(g_empty_string))),
+      ToMojoWriterCreateOptions(options),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8AIAvailability>* resolver,
              AIWriterFactory* factory,
