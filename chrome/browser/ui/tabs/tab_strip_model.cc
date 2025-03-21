@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -1370,60 +1371,52 @@ void TabStripModel::MoveTabPrevious() {
   MoveTabRelative(TabRelativeDirection::kPrevious);
 }
 
-void TabStripModel::AddToNewSplit(const std::vector<int> indices) {
+split_tabs::SplitTabId TabStripModel::AddToNewSplit(
+    std::vector<int> indices,
+    tabs::SplitTabLayout tab_layout) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  // Ensure that there are exactly 2 indices, and that they are sorted and
-  // unique.
-  CHECK_EQ(indices.size(), 2u);
+  // Ensure that there is only one index. This will be split with the active
+  // tab.
+  CHECK_EQ(indices.size(), 1u);
   CHECK(std::ranges::is_sorted(indices));
-  CHECK(std::ranges::adjacent_find(indices) == indices.end());
+  CHECK(active_index() != kNoTab);
+  CHECK(active_index() != indices[0]);
 
-  split_tabs::SplitTabId split = split_tabs::SplitTabId::GenerateNew();
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
 
-  std::vector<tabs::TabInterface*> tabs = {};
+  // Insert the active index into the sorted `indices`.
+  auto position = lower_bound(indices.begin(), indices.end(), active_index());
+  indices.insert(position, active_index());
+
+  std::vector<tabs::TabModel*> tabs = {};
   for (int i : indices) {
     tabs::TabModel* tab_model = GetTabModelAtIndex(i);
     CHECK(!tab_model->IsSplit());
     tabs.push_back(tab_model);
-    // TODO(crbug.com/392950857): Once SplitTabCollection is hooked up, set the
-    // split id of the collection in this function, then set the split ids of
-    // tabs in SplitTabCollection::AddTab. For now, set the split ids of these
-    // tabs here so that we can tell they are part of the same split tab.
-    tab_model->set_split(split);
   }
 
-  // Find a destination for the first tab that's not pinned or grouped. We will
-  // stack the rest of the tabs up to its right.
-  int destination_index = -1;
-  for (int i = indices[0]; i < count(); i++) {
-    const int destination_candidate = i + 1;
+  // Add the tabs to a split with the active index.
+  MoveTabsAndSetPropertiesImpl(indices, active_index(),
+                               GetTabGroupForTab(active_index()),
+                               IsTabPinned(active_index()));
 
-    // Splitting at the end of the tabstrip is always valid.
-    if (!ContainsIndex(destination_candidate)) {
-      destination_index = destination_candidate;
-      break;
-    }
-
-    // Splitting in the middle of pinned tabs is never valid.
-    if (IsTabPinned(destination_candidate)) {
-      continue;
-    }
-
-    // Otherwise, splitting is valid if the destination is not in a group
-    std::optional<tab_groups::TabGroupId> destination_group =
-        GetTabGroupForTab(destination_candidate);
-    if (!destination_group.has_value()) {
-      destination_index = destination_candidate;
-      break;
-    }
+  std::vector<std::pair<tabs::TabInterface*, int>> tabs_with_indices;
+  for (tabs::TabModel* tab : tabs) {
+    tabs_with_indices.emplace_back(tab, GetIndexOfTab(tab));
+    // TODO(crbug.com/392950857): Once SplitTabCollection is hooked up, remove
+    // this and handle in the  `MoveTabRecursive` call.
+    tab->set_split(split_id);
   }
-
-  MoveTabsAndSetGroupImpl(indices, destination_index, std::nullopt);
 
   for (TabStripModelObserver& observer : observers_) {
-    observer.OnSplitViewAdded({destination_index - 1, destination_index});
+    observer.OnSplitTabCreated(
+        tabs_with_indices, split_id,
+        TabStripModelObserver::SplitTabAddReason::kNewSplitTabCreated,
+        tab_layout);
   }
+
+  return split_id;
 }
 
 void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
@@ -1537,9 +1530,30 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
         right_of_group.push_back(index);
       }
     }
-    MoveTabsAndSetGroupImpl(left_of_group, first_tab_in_group, std::nullopt);
-    MoveTabsAndSetGroupImpl(right_of_group, last_tab_in_group + 1,
-                            std::nullopt);
+    MoveTabsAndSetPropertiesImpl(left_of_group, first_tab_in_group,
+                                 std::nullopt, false);
+    MoveTabsAndSetPropertiesImpl(right_of_group, last_tab_in_group + 1,
+                                 std::nullopt, false);
+  }
+}
+
+void TabStripModel::RemoveSplit(split_tabs::SplitTabId split_id) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  // TODO(crbug.com/392950857): Use collection API to remove the split.
+  std::vector<std::pair<tabs::TabInterface*, int>> tabs_with_indices;
+  for (int i = 0; i < count(); i++) {
+    tabs::TabModel* tab_model = GetTabModelAtIndex(i);
+    if (tab_model->GetSplit() == split_id) {
+      tab_model->set_split(std::nullopt);
+      tabs_with_indices.emplace_back(tab_model, i);
+    }
+  }
+
+  for (TabStripModelObserver& observer : observers_) {
+    observer.OnSplitTabRemoved(
+        tabs_with_indices, split_id,
+        TabStripModelObserver::SplitTabRemoveReason::kSplitTabClosed);
   }
 }
 
@@ -1735,9 +1749,9 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandAddToExistingGroup:
       return SupportsTabGroups();
 
-    case CommandAddToSplit:
+    case CommandAddToSplit: {
       return true;
-
+    }
     case CommandRemoveFromGroup:
       return SupportsTabGroups();
 
@@ -1977,11 +1991,13 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         break;
       }
 
-      std::vector<int> indices = GetIndicesForCommand(context_index);
-      CHECK(indices.size() == 1 && indices[0] != active_index());
-      indices.push_back(active_index());
-      std::ranges::sort(indices);
-      AddToNewSplit(indices);
+      if (context_index == active_index()) {
+        // TODO(crbug.com/405426549): Replace with empty split GURL.
+        delegate()->AddTabAt(GURL(), context_index + 1, false,
+                             GetTabGroupForTab(context_index));
+        context_index += 1;
+      }
+      AddToNewSplit({context_index}, tabs::SplitTabLayout::kHorizontal);
       break;
     }
 
@@ -3056,7 +3072,7 @@ void TabStripModel::AddToNewGroupImpl(
     }
   }
 
-  MoveTabsAndSetGroupImpl(indices, destination_index, new_group);
+  MoveTabsAndSetPropertiesImpl(indices, destination_index, new_group, false);
 
   // Excluding the active tab, deselect all tabs being added to the group.
   // See crbug/1301846 for more info.
@@ -3109,17 +3125,20 @@ void TabStripModel::AddToExistingGroupImpl(const std::vector<int>& indices,
     std::vector<int> all_tabs = tabs_left_of_group;
     all_tabs.insert(all_tabs.end(), tabs_right_of_group.begin(),
                     tabs_right_of_group.end());
-    MoveTabsAndSetGroupImpl(all_tabs, last_tab_in_group + 1, group);
+    MoveTabsAndSetPropertiesImpl(all_tabs, last_tab_in_group + 1, group, false);
   } else {
-    MoveTabsAndSetGroupImpl(tabs_left_of_group, first_tab_in_group, group);
-    MoveTabsAndSetGroupImpl(tabs_right_of_group, last_tab_in_group + 1, group);
+    MoveTabsAndSetPropertiesImpl(tabs_left_of_group, first_tab_in_group, group,
+                                 false);
+    MoveTabsAndSetPropertiesImpl(tabs_right_of_group, last_tab_in_group + 1,
+                                 group, false);
   }
 }
 
-void TabStripModel::MoveTabsAndSetGroupImpl(
+void TabStripModel::MoveTabsAndSetPropertiesImpl(
     const std::vector<int>& indices,
     int destination_index,
-    std::optional<tab_groups::TabGroupId> group) {
+    std::optional<tab_groups::TabGroupId> group,
+    bool pinned) {
   if (!group_model_) {
     return;
   }
@@ -3134,7 +3153,7 @@ void TabStripModel::MoveTabsAndSetGroupImpl(
   }
   for (int i = numTabsMovingRight - 1; i >= 0; i--) {
     MoveTabToIndexImpl(indices[i], destination_index - numTabsMovingRight + i,
-                       group, false, false);
+                       group, pinned, false);
   }
 
   // Collect indices for tabs moving to the left.
@@ -3146,7 +3165,7 @@ void TabStripModel::MoveTabsAndSetGroupImpl(
   // Move tabs to the left, starting with the leftmost tab.
   for (size_t i = 0; i < move_left_indices.size(); i++) {
     MoveTabToIndexImpl(move_left_indices[i], destination_index + i, group,
-                       false, false);
+                       pinned, false);
   }
 }
 
