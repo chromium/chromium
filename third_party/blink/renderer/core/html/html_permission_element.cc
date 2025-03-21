@@ -389,6 +389,11 @@ scoped_refptr<const CalculationExpressionNode> BuildLengthBoundExpr(
   NOTREACHED();
 }
 
+void RecordUserInteractionAccepted(bool accepted) {
+  base::UmaHistogramBoolean("Blink.PermissionElement.UserInteractionAccepted",
+                            accepted);
+}
+
 }  // namespace
 
 HTMLPermissionElement::HTMLPermissionElement(Document& document)
@@ -942,10 +947,13 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
               kDefaultDisableTimeout) {
         AddConsoleError(
             "The permission element already has a request in progress.");
+        RecordUserInteractionAccepted(false);
         return;
       }
 
-      if (IsClickingEnabled()) {
+      bool is_user_interaction_enabled = IsClickingEnabled();
+      RecordUserInteractionAccepted(is_user_interaction_enabled);
+      if (is_user_interaction_enabled) {
         RequestPageEmbededPermissions();
       }
     } else {
@@ -955,6 +963,7 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
       AddConsoleError(
           "The permission element can only be activated by actual user "
           "clicks.");
+      RecordUserInteractionAccepted(false);
       base::UmaHistogramEnumeration(
           "Blink.PermissionElement.UserInteractionDeniedReason",
           UserInteractionDeniedReason::kUntrustedEvent);
