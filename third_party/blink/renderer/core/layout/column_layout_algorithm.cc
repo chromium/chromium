@@ -1112,6 +1112,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       Node().GetDocument().GetStyleEngine());
 
   wtf_size_t num_columns = 0u;
+  if (IsBreakInside(next_column_token)) {
+    num_columns = next_column_token->SequenceNumber() + 1;
+  }
   // Commit all column fragments to the fragment builder.
   for (auto result_with_offset : new_columns) {
     const PhysicalBoxFragment& column = result_with_offset.Fragment();
@@ -1139,7 +1142,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   // If there were superfluous ::column pseudo-elements from the previous pass,
   // remove the superfluous ones. This happens when the number of columns
   // decreases.
-  element->ClearColumnPseudoElements(num_columns);
+  if (!result->GetPhysicalFragment().GetBreakToken()) {
+    element->ClearColumnPseudoElements(num_columns);
+  }
 
   if (min_break_appeal)
     container_builder_.ClampBreakAppeal(*min_break_appeal);
