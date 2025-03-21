@@ -190,6 +190,8 @@ Note: There are two bidding requests because we reload the bidding worklet when 
         finished : true
         headers : {
             Accept : message/ad-auction-trusted-signals-response
+            Accept-Language : ar
+            User-Agent : Vending Machine
             acceptLanguage : ar
             userAgent : Vending Machine
         }
@@ -222,6 +224,8 @@ Note: There are two bidding requests because we reload the bidding worklet when 
         finished : true
         headers : {
             Accept : message/ad-auction-trusted-signals-response
+            Accept-Language : ar
+            User-Agent : Vending Machine
             acceptLanguage : ar
             userAgent : Vending Machine
         }
