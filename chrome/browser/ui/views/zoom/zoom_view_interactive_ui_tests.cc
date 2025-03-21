@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -27,20 +29,19 @@
 namespace zoom {
 namespace {
 
-class ZoomPageActionInteractiveUiTest : public InteractiveBrowserTest {
+class ZoomViewInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  ZoomPageActionInteractiveUiTest() {
+  ZoomViewInteractiveUiTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPageActionsMigration,
         {{features::kPageActionsMigrationZoom.name, "true"}});
   }
 
-  ZoomPageActionInteractiveUiTest(const ZoomPageActionInteractiveUiTest&) =
+  ZoomViewInteractiveUiTest(const ZoomViewInteractiveUiTest&) = delete;
+  ZoomViewInteractiveUiTest& operator=(const ZoomViewInteractiveUiTest&) =
       delete;
-  ZoomPageActionInteractiveUiTest& operator=(
-      const ZoomPageActionInteractiveUiTest&) = delete;
 
-  ~ZoomPageActionInteractiveUiTest() override = default;
+  ~ZoomViewInteractiveUiTest() override = default;
 
  protected:
   int GetZoomPercent() {
@@ -66,15 +67,25 @@ class ZoomPageActionInteractiveUiTest : public InteractiveBrowserTest {
     return Do([&]() { SetZoomLevel(content::PAGE_ZOOM_RESET); });
   }
 
+  auto EnsureZoomBubblePresent() {
+    return CheckResult([&]() { return ZoomBubbleView::GetZoomBubble(); },
+                       testing::Ne(nullptr));
+  }
+
+  auto EnsureZoomBubbleNotPresent() {
+    return CheckResult([&]() { return ZoomBubbleView::GetZoomBubble(); },
+                       testing::Eq(nullptr));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ZoomPageActionInteractiveUiTest, ZoomStateUpdates) {
+IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest, ZoomStateUpdates) {
   // We'll store the zoom-in image so we can compare it later to the zoom-out
   // image.
   ui::ImageModel zoom_in_image;
   RunTestSequence(
-      DoZoomIn(),
+      EnsureZoomBubbleNotPresent(), DoZoomIn(),
       CheckViewProperty(kActionItemZoomElementId,
                         &page_actions::PageActionView::GetVisible, true),
       CheckViewProperty(kActionItemZoomElementId,
@@ -88,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(ZoomPageActionInteractiveUiTest, ZoomStateUpdates) {
                          ->GetImageModel(views::Button::STATE_NORMAL)
                          .value();
                }),
-      DoZoomReset(), EnsureNotPresent(kActionItemZoomElementId),
+      EnsureZoomBubblePresent(), DoZoomReset(), EnsureZoomBubblePresent(),
       CheckResult([&]() { return GetZoomPercent(); }, testing::Eq(100)),
       DoZoomOut(),
       CheckViewProperty(kActionItemZoomElementId,
@@ -102,7 +113,8 @@ IN_PROC_BROWSER_TEST_F(ZoomPageActionInteractiveUiTest, ZoomStateUpdates) {
                   return page_action_view
                              ->GetImageModel(views::Button::STATE_NORMAL)
                              .value() != zoom_in_image;
-                }));
+                }),
+      EnsureZoomBubblePresent());
 }
 
 }  // namespace
