@@ -260,6 +260,7 @@ source_set("tflite_public_headers") {
 source_set("tflite_kernel_common_headers") {
   public = [
     "src/tensorflow/lite/core/kernels/register.h",
+    "src/tensorflow/lite/experimental/resource/resource_base.h",
     "src/tensorflow/lite/experimental/resource/resource_variable.h",
     "src/tensorflow/lite/external_cpu_backend_context.h",
     "src/tensorflow/lite/kernels/cpu_backend_context.h",
@@ -269,6 +270,7 @@ source_set("tflite_kernel_common_headers") {
     "src/tensorflow/lite/kernels/internal/compatibility.h",
     "src/tensorflow/lite/kernels/internal/runtime_shape.h",
     "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
+    "src/tensorflow/lite/kernels/kernel_util.h",
     "src/tensorflow/lite/kernels/op_macros.h",
     "src/tensorflow/lite/kernels/stablehlo_elementwise.h",
   ]
@@ -276,6 +278,113 @@ source_set("tflite_kernel_common_headers") {
   configs += [ ":tflite_flags" ]
 
   visibility = [ ":*" ]
+}
+
+config("tflite_litert_config") {
+  cflags = [
+    "-Wno-ignored-qualifiers",
+    "-Wno-macro-redefined",
+    "-Wno-mismatched-tags",
+  ]
+
+  if (build_tflite_with_xnnpack) {
+    defines = [ "XNNPACK_ENABLE_SUBGRAPH_RESHAPING" ]
+  }
+}
+
+source_set("tflite_litert_c_headers") {
+  public = [
+    "src/tensorflow/lite/experimental/litert/c/litert_common.h",
+    "src/tensorflow/lite/experimental/litert/c/litert_logging.h",
+    "src/tensorflow/lite/experimental/litert/c/litert_tensor_buffer.h",
+    "src/tensorflow/lite/experimental/litert/c/litert_tensor_buffer_types.h",
+  ]
+
+  configs += [
+    ":tflite_config",
+    ":tflite_flags",
+    ":tflite_litert_config",
+  ]
+
+  visibility = [ ":*" ]
+}
+
+tflite_litert_sources = [
+  "src/tensorflow/lite/experimental/genai/external_kvcache.cc",
+  "src/tensorflow/lite/experimental/genai/genai_ops.cc",
+  "src/tensorflow/lite/experimental/genai/genai_ops.h",
+  "src/tensorflow/lite/experimental/genai/kvcache.cc",
+  "src/tensorflow/lite/experimental/genai/sdpa.cc",
+  "src/tensorflow/lite/experimental/litert/c/litert_common.cc",
+  "src/tensorflow/lite/experimental/litert/c/litert_logging.cc",
+  "src/tensorflow/lite/experimental/litert/c/litert_tensor_buffer.cc",
+  "src/tensorflow/lite/experimental/litert/cc/litert_expected.h",
+  "src/tensorflow/lite/experimental/litert/cc/litert_macros.h",
+  "src/tensorflow/lite/experimental/litert/cc/litert_tensor_buffer.h",
+  "src/tensorflow/lite/experimental/litert/cc/litert_tensor_buffer_utils.cc",
+  "src/tensorflow/lite/experimental/litert/cc/litert_tensor_buffer_utils.h",
+  "src/tensorflow/lite/experimental/litert/core/util/tensor_type_util.cc",
+  "src/tensorflow/lite/experimental/litert/core/util/tensor_type_util.h",
+  "src/tensorflow/lite/experimental/litert/runtime/ahwb_buffer.cc",
+  "src/tensorflow/lite/experimental/litert/runtime/ahwb_buffer.h",
+  "src/tensorflow/lite/experimental/litert/runtime/dmabuf_buffer.cc",
+  "src/tensorflow/lite/experimental/litert/runtime/dmabuf_buffer.h",
+  "src/tensorflow/lite/experimental/litert/runtime/event.cc",
+  "src/tensorflow/lite/experimental/litert/runtime/event.h",
+  "src/tensorflow/lite/experimental/litert/runtime/fastrpc_buffer.cc",
+  "src/tensorflow/lite/experimental/litert/runtime/fastrpc_buffer.h",
+  "src/tensorflow/lite/experimental/litert/runtime/gl_buffer.cc",
+  "src/tensorflow/lite/experimental/litert/runtime/gl_buffer.h",
+  "src/tensorflow/lite/experimental/litert/runtime/gl_texture.cc",
+  "src/tensorflow/lite/experimental/litert/runtime/gl_texture.h",
+  "src/tensorflow/lite/experimental/litert/runtime/ion_buffer.cc",
+  "src/tensorflow/lite/experimental/litert/runtime/ion_buffer.h",
+  "src/tensorflow/lite/experimental/litert/runtime/tensor_buffer.cc",
+  "src/tensorflow/lite/experimental/litert/runtime/tensor_buffer.h",
+  "src/tensorflow/lite/experimental/resource/cache_buffer.cc",
+  "src/tensorflow/lite/experimental/resource/cache_buffer.h",
+  "src/tensorflow/lite/logger.cc",
+  "src/tensorflow/lite/logger.h",
+]
+
+tflite_litert_deps = [
+  ":tflite_kernel_common_headers",
+  ":tflite_kernel_internals",
+  ":tflite_public_headers",
+  "//third_party/abseil-cpp:absl",
+  "//third_party/flatbuffers",
+  "//third_party/fp16",
+  "//third_party/gemmlowp",
+  "//third_party/neon_2_sse",
+  "//third_party/ruy",
+]
+
+source_set("tflite_litert") {
+  sources = tflite_litert_sources
+
+  public_deps = [ ":tflite_litert_c_headers" ]
+  deps = tflite_litert_deps
+  deps += [ ":tflite_logging" ]
+
+  configs += [
+    ":tflite_config",
+    ":tflite_flags",
+    ":tflite_litert_config",
+  ]
+}
+
+source_set("tflite_litert_standalone") {
+  sources = tflite_litert_sources
+
+  public_deps = [ ":tflite_litert_c_headers" ]
+  deps = tflite_litert_deps
+  deps += [ ":tflite_logging_standalone" ]
+
+  configs += [
+    ":tflite_config",
+    ":tflite_flags",
+    ":tflite_litert_config",
+  ]
 }
 
 source_set("fft2d_deps") {
@@ -473,7 +582,6 @@ tflite_static_library("tflite_kernels") {
     "src/tensorflow/lite/kernels/hashtable_lookup.cc",
     "src/tensorflow/lite/kernels/if.cc",
     "src/tensorflow/lite/kernels/kernel_util.cc",
-    "src/tensorflow/lite/kernels/kernel_util.h",
     "src/tensorflow/lite/kernels/l2norm.cc",
     "src/tensorflow/lite/kernels/local_response_norm.cc",
     "src/tensorflow/lite/kernels/logical.cc",
@@ -706,7 +814,6 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/experimental/resource/initialization_status.h",
     "src/tensorflow/lite/experimental/resource/lookup_interfaces.h",
     "src/tensorflow/lite/experimental/resource/lookup_util.h",
-    "src/tensorflow/lite/experimental/resource/resource_base.h",
     "src/tensorflow/lite/experimental/resource/resource_variable.cc",
     "src/tensorflow/lite/experimental/resource/static_hashtable.cc",
     "src/tensorflow/lite/experimental/resource/static_hashtable.h",
@@ -829,7 +936,10 @@ tflite_static_library("tflite") {
     conditional_deps += [ "//third_party/xnnpack:xnnpack" ]
   }
 
-  conditional_public_deps = [ ":tflite_kernels" ]
+  conditional_public_deps = [
+    ":tflite_kernels",
+    ":tflite_litert",
+  ]
 
   public_deps = [
     ":tflite_compiler_utils",
