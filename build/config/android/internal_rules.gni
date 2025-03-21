@@ -4071,6 +4071,7 @@ if (enable_java_templates) {
         "additional_jar_files",
         "apk_name",
         "jar_excluded_patterns",
+        "jar_included_patterns",
         "javac_args",
         "processor_args_javac",
       ]
