@@ -306,6 +306,14 @@ class BrowserChangeWaiter : public BrowserListObserver {
 
  private:
   void Quit() {
+    if (quit_called_) {
+      return;
+    }
+    // Browser addition/removal callbacks can be called multiple times, calling
+    // |Quit()| each time.
+    // So make sure that the |closure_| still gets to run if multiple |Quit()|
+    // calls happen in quick succession.
+    quit_called_ = true;
     if (closure_) {
       // For ChangeType::kRemoved, the browser is still closing and
       // synchronously running the closure now can lead to reentrancy issues, so
@@ -326,6 +334,7 @@ class BrowserChangeWaiter : public BrowserListObserver {
   }
 
   ChangeType type_;
+  bool quit_called_ = false;
   base::OnceClosure closure_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
@@ -2799,8 +2808,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(TabDragController::IsActive());
   ASSERT_EQ(1u, browser_list()->size());
 
-  // Release the mouse, stopping the drag session.
+  // Drag to the trailing end of the tabstrip to ensure we're in a
+  // predictable spot within the strip.
+  StopAnimating(tab_strip2);
+  ASSERT_TRUE(DragInputToCenter(tab_strip2->tab_at(1)));
+  // Release mouse or touch, stopping the drag session.
   ASSERT_TRUE(ReleaseInput());
+
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(TabDragController::IsActive());
   EXPECT_EQ("100 0 1", IDString(browser2->tab_strip_model()));

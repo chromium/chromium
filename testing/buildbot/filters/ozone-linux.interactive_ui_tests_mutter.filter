@@ -56,19 +56,12 @@
 ########################################################
 
 # TODO(crbug.com/391903220) Now flaky on mutter
--GlicBorderViewUiTest.BorderResize
--ExtensionsMenuMainPageViewInteractiveTest.ContextMenuButtonOpensContextMenu
 -AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/WithoutContentSettingView_WithoutBackToTabButton
 -AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/WithoutContentSettingView_WithBackToTabButton
 -PictureInPictureBrowserFrameViewTest.RespectsUserLocationChangesAfterChildDialogCloses
 # Pointer lock tests are unstable and some crash on exit
 -FullscreenControllerInteractiveTest.*PointerLock*
 
-# TODO(crbug.com/391907155) These tab drag tests are failing.
--TabDragging/DetachToBrowserTabDragControllerTest.DragAllToSeparateWindow/*
--TabDragging/DetachToBrowserTabDragControllerTest.DragAllToSeparateWindowThenDrop/*
--TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderToSeparateWindow/*
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/*
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop/*
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindowDuringDragEnd/*
--TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/*
+# TODO(crbug.com/391903220) Now failing due to 1920x1200 display size
+-AppMenuFullscreenInteractiveTest.ContextMenu
+-CrElementsFocusTest.CrActionMenu
