@@ -8661,8 +8661,8 @@
   },
   {
     "name": "tab-resumption",
-    "owners": [ "ewannpv@chromium.org", "gambard@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "olivierrobin@chromium.org", "gambard@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 142
   },
   {
     "name": "tab-resumption-images",
