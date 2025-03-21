@@ -396,6 +396,10 @@ void CheckClientDownloadRequestBase::SendRequest() {
   client_download_request_->set_skipped_certificate_allowlist(
       skipped_certificate_allowlist_);
 
+  CHECK(service_);
+
+  service_->delegate()->PreSerializeRequest(item(), *client_download_request_);
+
   if (!client_download_request_->SerializeToString(
           &client_download_request_data_)) {
     FinishRequest(DownloadCheckResult::UNKNOWN, REASON_INVALID_REQUEST_PROTO);
@@ -411,8 +415,6 @@ void CheckClientDownloadRequestBase::SendRequest() {
     FinishRequest(DownloadCheckResult::DANGEROUS, REASON_MANUAL_BLOCKLIST);
     return;
   }
-
-  CHECK(service_);
 
   NotifySendRequest(client_download_request_.get());
 

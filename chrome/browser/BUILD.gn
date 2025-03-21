@@ -3443,6 +3443,7 @@ static_library("browser") {
       "//components/safe_browsing/android:safe_browsing_api_handler_util",
       "//components/safe_browsing/core/browser:referring_app_info",
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+      "//components/safe_browsing/core/browser/utils",
       "//components/saved_tab_groups/public:conversion_utils",
       "//components/search:start_suggest",
       "//components/security_state/content/android",

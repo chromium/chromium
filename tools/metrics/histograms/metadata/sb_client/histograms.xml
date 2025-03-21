@@ -62,6 +62,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.Android.GetReferringAppInfo.Result"
+    enum="SafeBrowsingAndroidGetReferringAppInfoResult"
+    expires_after="2025-09-30">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of getting the referring app info for a download
+    protection ClientDownloadRequest sent on Android. This is recorded after the
+    request is finalized but before it is sent.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.AndroidAppVerificationPromptResult2"
     enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-05-24">
   <owner>drubery@chromium.org</owner>
