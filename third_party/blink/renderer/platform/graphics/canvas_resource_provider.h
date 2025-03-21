@@ -408,6 +408,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // the cache.
   virtual bool IsResourceUsable(CanvasResource* resource) { return true; }
 
+  // IsResourceUsable() must be true for `resource`.
+  void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
+
  private:
   friend class FlushForImageListener;
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
@@ -432,8 +435,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Called after the recording was cleared from any draw ops it might have had.
   void RecordingCleared() override;
 
-  // IsResourceUsable() must be true for `resource`.
-  void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
   void ClearOldUnusedResources();
 

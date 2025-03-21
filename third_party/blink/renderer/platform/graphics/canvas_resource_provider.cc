@@ -896,6 +896,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
         size, format, alpha_type, color_space, ContextProviderWrapper(),
         CreateWeakPtr());
     CHECK(resource_);
+    RegisterUnusedResource(resource_);
   }
   ~CanvasResourceProviderSwapChain() override = default;
 
@@ -914,11 +915,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
   void WillDraw() override {
     needs_present_ = true;
     needs_flush_ = true;
-  }
-
-  scoped_refptr<CanvasResource> CreateResource() final {
-    TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::CreateResource");
-    return resource_;
   }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(
