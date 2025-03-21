@@ -493,6 +493,9 @@ TEST_F(ScannerControllerTest, CanShowUiForShellFalseWhenPinnedMetrics) {
 
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kCanShowUiReturnedFalseDueToPinnedMode, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kCanShowUiReturnedFalse, 1);
 }
 

@@ -492,8 +492,8 @@ bool ScannerController::CanShowUi() {
   if (screen_pinning_controller_ == nullptr) {
     CHECK_IS_TEST();
   } else if (screen_pinning_controller_->IsPinned()) {
-    // TODO: crbug.com/403423199 - Record a metric here that `CanShowUi`
-    // returned false due to being in pinned mode.
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kCanShowUiReturnedFalseDueToPinnedMode);
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kCanShowUiReturnedFalse);
     return false;
