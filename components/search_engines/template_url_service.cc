@@ -1881,7 +1881,10 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
       // This local search engine is already synced. If the timestamp differs
       // from Sync, we need to update locally or to the cloud. Note that if the
       // timestamps are equal, we touch neither.
-      if (sync_turl->last_modified() > local_turl->last_modified()) {
+      if (sync_turl->last_modified() > local_turl->last_modified() ||
+          // It is possible that `local_turl` was filtered out in
+          // GetAllSyncData() above. In such case, `sync_turl` should win.
+          !local_data_map.contains(local_turl->sync_guid())) {
         // We've received an update from Sync. We should replace all synced
         // fields in the local TemplateURL. Note that this includes the
         // TemplateURLID and the TemplateURL may have to be reparsed. This
