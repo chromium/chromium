@@ -206,16 +206,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
-<histogram name="SBClientDownload.DownloadRequestNetError" enum="NetErrorCodes"
-    expires_after="2025-07-20">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <owner>mattm@chromium.org</owner>
-  <summary>
-    The net error code for all CheckClientDownloadRequest URLFetchers.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DownloadRequestNetworkDuration" units="ms"
     expires_after="2025-12-24">
   <owner>drubery@chromium.org</owner>
@@ -236,17 +226,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Records the net error or HTTP response code after sending a
     CheckClientDownloadRequest.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.DownloadRequestResponseCode"
-    enum="HttpResponseCode" expires_after="2025-08-10">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <owner>mattm@chromium.org</owner>
-  <summary>
-    For CheckClientDownloadRequest URLFetchers with successful status, the HTTP
-    response code that was received.
   </summary>
 </histogram>
 

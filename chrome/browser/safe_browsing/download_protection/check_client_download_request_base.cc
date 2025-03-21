@@ -518,15 +518,6 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
            << ": success=" << success << " response_code=" << response_code;
   RecordHttpResponseOrErrorCode("SBClientDownload.DownloadRequestNetworkResult",
                                 loader_->NetError(), response_code);
-  // TODO: crbug.com/383994656 - Remove these metrics once
-  // SBClientDownload.DownloadRequestNetworkResult available on Stable. Alert
-  // monitoring should also be modified.
-  if (success) {
-    base::UmaHistogramSparse("SBClientDownload.DownloadRequestResponseCode",
-                             response_code);
-  }
-  base::UmaHistogramSparse("SBClientDownload.DownloadRequestNetError",
-                           -loader_->NetError());
 
   DownloadCheckResultReason reason = REASON_SERVER_PING_FAILED;
   DownloadCheckResult result = DownloadCheckResult::UNKNOWN;
