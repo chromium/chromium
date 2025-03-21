@@ -219,11 +219,19 @@ void RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
     const base::android::JavaParamRef<jstring>& relying_party_id,
     const base::android::JavaParamRef<jobject>& effective_origin,
     jboolean is_payment_credential_get_assertion,
+    const base::android::JavaParamRef<jobject>&
+        remote_desktop_client_override_origin,
     const base::android::JavaParamRef<jobject>& callback) const {
   url::Origin origin = url::Origin::FromJavaObject(env, effective_origin);
+  std::optional<url::Origin> remote_desktop_client_override_origin_optional;
+  if (!remote_desktop_client_override_origin.is_null()) {
+    remote_desktop_client_override_origin_optional =
+        url::Origin::FromJavaObject(env, remote_desktop_client_override_origin);
+  }
   render_frame_host_->PerformGetAssertionWebAuthSecurityChecks(
       ConvertJavaStringToUTF8(env, relying_party_id), origin,
       is_payment_credential_get_assertion,
+      remote_desktop_client_override_origin_optional,
       base::BindOnce(
           [](base::android::ScopedJavaGlobalRef<jobject> callback,
              blink::mojom::AuthenticatorStatus status, bool is_cross_origin) {
@@ -241,11 +249,19 @@ void RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
     const base::android::JavaParamRef<jstring>& relying_party_id,
     const base::android::JavaParamRef<jobject>& effective_origin,
     jboolean is_payment_credential_creation,
+    const base::android::JavaParamRef<jobject>&
+        remote_desktop_client_override_origin,
     const base::android::JavaParamRef<jobject>& callback) const {
   url::Origin origin = url::Origin::FromJavaObject(env, effective_origin);
+  std::optional<url::Origin> remote_desktop_client_override_origin_optional;
+  if (!remote_desktop_client_override_origin.is_null()) {
+    remote_desktop_client_override_origin_optional =
+        url::Origin::FromJavaObject(env, remote_desktop_client_override_origin);
+  }
   render_frame_host_->PerformMakeCredentialWebAuthSecurityChecks(
       ConvertJavaStringToUTF8(env, relying_party_id), origin,
       is_payment_credential_creation,
+      remote_desktop_client_override_origin_optional,
       base::BindOnce(
           [](base::android::ScopedJavaGlobalRef<jobject> callback,
              blink::mojom::AuthenticatorStatus status, bool is_cross_origin) {

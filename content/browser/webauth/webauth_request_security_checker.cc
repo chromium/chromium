@@ -324,8 +324,7 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
     RequestType request_type,
-    const blink::mojom::RemoteDesktopClientOverridePtr&
-        remote_desktop_client_override,
+    const std::optional<url::Origin>& remote_desktop_client_override_origin,
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) {
 #if !BUILDFLAG(IS_ANDROID)
   // Extensions are not supported on Android.
@@ -357,7 +356,11 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   }
 
   url::Origin relying_party_origin = caller_origin;
-  if (remote_desktop_client_override) {
+  if (remote_desktop_client_override_origin.has_value()) {
+    // SECURITY: `remote_desktop_client_override_origin` comes from the renderer
+    // process and should not be trusted by default. We only allow its use when
+    // the `caller_origin` is explicitly allowlisted through device level
+    // enterprise policy.
     if (!GetContentClient()
              ->browser()
              ->GetWebAuthenticationDelegate()
@@ -368,7 +371,7 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
               REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
       return nullptr;
     }
-    relying_party_origin = remote_desktop_client_override->origin;
+    relying_party_origin = remote_desktop_client_override_origin.value();
   }
 
   if (OriginIsAllowedToClaimRelyingPartyId(relying_party_id,

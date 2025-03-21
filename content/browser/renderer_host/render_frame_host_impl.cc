@@ -17427,6 +17427,7 @@ void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     const std::string& relying_party_id,
     const url::Origin& effective_origin,
     bool is_payment_credential_get_assertion,
+    const std::optional<url::Origin>& remote_desktop_client_override_origin,
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
         callback) {
   bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
@@ -17456,7 +17457,7 @@ void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
       remote_validation =
           GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
               effective_origin, relying_party_id, request_type,
-              /*remote_desktop_client_override=*/nullptr,
+              remote_desktop_client_override_origin,
               base::BindOnce(&RenderFrameHostImpl::
                                  OnGetAssertionWebAuthSecurityChecksCompleted,
                              weak_ptr_factory_.GetWeakPtr(),
@@ -17481,6 +17482,7 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     const std::string& relying_party_id,
     const url::Origin& effective_origin,
     bool is_payment_credential_creation,
+    const std::optional<url::Origin>& remote_desktop_client_override_origin,
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
         callback) {
   bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
@@ -17508,7 +17510,7 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
       remote_validation =
           GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
               effective_origin, relying_party_id, request_type,
-              /*remote_desktop_client_override=*/nullptr,
+              remote_desktop_client_override_origin,
               base::BindOnce(&RenderFrameHostImpl::
                                  OnMakeCredentialWebAuthSecurityChecksCompleted,
                              weak_ptr_factory_.GetWeakPtr(),
