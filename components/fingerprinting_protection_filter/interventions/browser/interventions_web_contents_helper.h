@@ -27,7 +27,8 @@ class InterventionsWebContentsHelper
  public:
   // TODO(https://crbug.com/380458351): Add incognito bool upon creation of this
   // WebContentsHelper.
-  static void CreateForWebContents(content::WebContents* web_contents);
+  static void CreateForWebContents(content::WebContents* web_contents,
+                                   bool is_incognito);
 
   InterventionsWebContentsHelper(const InterventionsWebContentsHelper&) =
       delete;
@@ -37,7 +38,8 @@ class InterventionsWebContentsHelper
   ~InterventionsWebContentsHelper() override;
 
  protected:
-  explicit InterventionsWebContentsHelper(content::WebContents* web_contents);
+  InterventionsWebContentsHelper(content::WebContents* web_contents,
+                                 bool is_incognito);
 
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(
@@ -45,6 +47,7 @@ class InterventionsWebContentsHelper
 
  private:
   friend class content::WebContentsUserData<InterventionsWebContentsHelper>;
+  bool is_incognito_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
