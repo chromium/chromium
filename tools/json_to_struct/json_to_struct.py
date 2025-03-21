@@ -162,9 +162,10 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
 
     if aggregation.kind == AggregationKind.MAP:
       f.write('\n')
-      f.write(f'extern const base::fixed_flat_map<std::string_view, const '
-              f'{schema["type_name"]}*, {len(description["elements"])}> '
-              f'{aggregation.name};\n')
+      f.write(
+          f'extern const base::fixed_flat_map<std::string_view, const '
+          f'{schema["type_name"]}*, {len(aggregation.GetSortedMapElements())}> '
+          f'{aggregation.name};\n')
 
     if namespace:
       f.write(u'\n')
@@ -229,8 +230,9 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
       f.write(f'const auto {aggregation.name} =\n'
               f'    base::MakeFixedFlatMap<std::string_view, '
               f'const {schema["type_name"]}*>({{\n')
-      for element_name, _ in description['elements'].items():
-        f.write(f'  {{"{element_name}", &{element_name}}},\n')
+
+      for (alias_name, element_name) in aggregation.GetSortedMapElements():
+        f.write(f'  {{"{alias_name}", &{element_name}}},\n')
       f.write('});\n')
 
     if namespace:

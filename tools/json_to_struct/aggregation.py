@@ -18,6 +18,16 @@ class AggregationDetails:
   kind: AggregationKind
   name: str
   export_items: bool
+  elements: dict[str, str]
+
+  def GetSortedArrayElements(self) -> list[str]:
+    """Returns sorted list of names of all elements."""
+    return sorted(self.elements.keys())
+
+  def GetSortedMapElements(self) -> list[tuple[str, str]]:
+    """Returns sorted mapping of all elements, including aliases."""
+    keys = sorted(self.elements.keys())
+    return [[key, self.elements[key]] for key in keys]
 
 
 def GetAggregationDetails(description) -> AggregationDetails:
@@ -37,6 +47,9 @@ def GetAggregationDetails(description) -> AggregationDetails:
       - `name` (str): The name assigned to the generated array or map.
       - `export_items` (bool, optional): Whether aggregated items should be
         exported (defaults to `true`).
+      - `map_aliases` (dict[str, str]) - if the aggregation `type` is set to
+        `"map"`, this field allows specifying additional aliases - elements
+        pointing to already defined structures.
 
   **Default Behavior:**
       - If the `aggregation` descriptor is missing, the function defaults to:
@@ -56,16 +69,38 @@ def GetAggregationDetails(description) -> AggregationDetails:
   # declaration.
   generate_array = description.get('generate_array', None)
   if generate_array:
-    return AggregationDetails(AggregationKind.ARRAY,
-                              generate_array.get('array_name'),
-                              export_items=True)
+    return AggregationDetails(kind=AggregationKind.ARRAY,
+                              name=generate_array.get('array_name'),
+                              export_items=True,
+                              elements={})
 
   aggregation = description.get('aggregation', {})
   kind = AggregationKind(aggregation.get('type', 'none'))
   name = aggregation.get('name', None)
   export_items = aggregation.get('export_items', True)
+  map_aliases = aggregation.get('map_aliases', {})
 
   if kind != AggregationKind.NONE and not name:
     raise Exception("Aggregation container needs a `name`.")
 
-  return AggregationDetails(kind, name, export_items)
+  elements = {}
+  for element in description.get('elements', {}).keys():
+    elements.update({element: element})
+
+  confirmed_aliases = {}
+  if kind == AggregationKind.MAP:
+    for alias, element in map_aliases.items():
+      # Confirmation check for duplicate entries.
+      # Note: we do not need to verify duplicate aliases, because `map_aliases`
+      # is already a dict - all keys should be unique.
+      if elements.get(alias, None):
+        raise Exception(f"Alias `{alias}` already defined as element.")
+
+      # Detect that alias does not point to a valid element.
+      if not elements.get(element, None):
+        raise Exception(f"Aliased element `{element}` does not exist.")
+
+      confirmed_aliases.update({alias: element})
+    elements.update(confirmed_aliases)
+
+  return AggregationDetails(kind, name, export_items, elements)
