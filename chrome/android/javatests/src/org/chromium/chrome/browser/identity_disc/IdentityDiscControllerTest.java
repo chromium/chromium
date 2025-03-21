@@ -238,9 +238,12 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    public void testIdentityDiscSignedIn() {
+    public void testIdentityDiscWithSignin() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
+        //  is implemented.
+        ThreadUtils.runOnUiThreadBlocking(mTab::reload);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()
@@ -266,86 +269,17 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    public void testIdentityDiscSignedIn_nonDisplayableEmail() {
+    public void testIdentityDiscWithSignin_nonDisplayableEmail() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
         AccountInfo accountInfo = addAndSigninAccountWithNonDisplayableEmail();
+        // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
+        //  is implemented.
+        ThreadUtils.runOnUiThreadBlocking(mTab::reload);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.accessibility_toolbar_btn_identity_disc_with_name,
-                                accountInfo.getFullName());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedContentDescription)));
-
-        mSigninTestRule.forceSignOut();
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    public void testIdentityDiscWithErrorBadgeSignedIn() {
-        // Fake an identity error.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                    SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                    fakeSyncServiceImpl.setRequiresClientUpgrade(true);
-                });
-
-        // Identity Disc should be shown on sign-in state change with a NTP refresh.
-        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string
-                                        .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
-                                TestAccounts.ACCOUNT1.getFullName(),
-                                TestAccounts.ACCOUNT1.getEmail());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedContentDescription)));
-
-        mSigninTestRule.signOut();
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    public void testIdentityDiscWithErrorBadgeSignedIn_nonDisplayableEmail() {
-        // Fake an identity error.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                    SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                    fakeSyncServiceImpl.setRequiresClientUpgrade(true);
-                });
-
-        // Identity Disc should be shown on sign-in state change with a NTP refresh.
-        AccountInfo accountInfo = addAndSigninAccountWithNonDisplayableEmail();
-        String expectedContentDescription =
-                mActivityTestRule
-                        .getActivity()
-                        .getString(
-                                R.string.accessibility_toolbar_btn_identity_disc_error_with_name,
                                 accountInfo.getFullName());
         ViewUtils.waitForVisibleView(
                 allOf(
@@ -534,12 +468,14 @@ public class IdentityDiscControllerTest {
     public void testIdentityDisc_signedIn_unoPhase2FollowUpEnabled_identityErrorExist(
             boolean nightModeEnabled) throws IOException {
         // Fake an identity error.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                    SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                    fakeSyncServiceImpl.setRequiresClientUpgrade(true);
-                });
+        FakeSyncServiceImpl fakeSyncService =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        fakeSyncService.setRequiresClientUpgrade(true);
 
         // Sign-in and wait for the user profile image to appear.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -548,7 +484,7 @@ public class IdentityDiscControllerTest {
                         .getActivity()
                         .getString(
                                 R.string
-                                        .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
+                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
                                 TestAccounts.ACCOUNT1.getFullName(),
                                 TestAccounts.ACCOUNT1.getEmail());
         ViewUtils.waitForVisibleView(
