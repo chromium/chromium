@@ -103,6 +103,16 @@ void CheckTextNodeProto(const proto::ContentNode& node_proto,
   EXPECT_EQ(text_data.text_style().color(), color);
 }
 
+void AssertValidOrigin(
+    const optimization_guide::proto::SecurityOrigin& proto_origin,
+    const url::Origin& expected) {
+  EXPECT_EQ(proto_origin.opaque(), expected.opaque());
+
+  url::Origin actual = url::Origin::Create(GURL(proto_origin.value()));
+  EXPECT_TRUE(actual.IsSameOriginWith(expected))
+      << "actual: " << actual << ", expected: " << expected;
+}
+
 TEST(PageContentProtoUtilTest, IframeNodeWithNoData) {
   auto main_frame_token = CreateFrameToken();
   auto root_content = CreatePageContent();
@@ -263,8 +273,9 @@ TEST(PageContentProtoUtilTest, ConvertImageInfo) {
   image_node->content_attributes->image_info =
       blink::mojom::AIPageContentImageInfo::New();
   image_node->content_attributes->image_info->image_caption = "image caption";
-  image_node->content_attributes->image_info->source_origin =
+  const auto expected_origin =
       url::Origin::Create(GURL("https://example.com/image.png"));
+  image_node->content_attributes->image_info->source_origin = expected_origin;
   root_content->root_node->children_nodes.emplace_back(std::move(image_node));
 
   AIPageContentResult page_content;
@@ -284,7 +295,7 @@ TEST(PageContentProtoUtilTest, ConvertImageInfo) {
                                .content_attributes()
                                .image_data();
   EXPECT_EQ(image_data.image_caption(), "image caption");
-  EXPECT_EQ(image_data.source_url(), GURL("https://example.com"));
+  AssertValidOrigin(image_data.security_origin(), expected_origin);
 }
 
 TEST(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Image) {
