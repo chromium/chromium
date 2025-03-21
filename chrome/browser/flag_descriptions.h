@@ -4380,6 +4380,9 @@ extern const char kCrosMallUrlDescription[];
 extern const char kCrosPrivacyHubName[];
 extern const char kCrosPrivacyHubDescription[];
 
+extern const char kCrOSEnforceMonoAudioCaptureName[];
+extern const char kCrOSEnforceMonoAudioCaptureDescription[];
+
 extern const char kCrOSEnforceSystemAecName[];
 extern const char kCrOSEnforceSystemAecDescription[];
 

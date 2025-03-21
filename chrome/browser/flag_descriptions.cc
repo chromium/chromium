@@ -7414,6 +7414,12 @@ const char kCrOSDspBasedAgcAllowedName[] =
 const char kCrOSDspBasedAgcAllowedDescription[] =
     "Allows the system variant of the AGC in CRAS to be run on DSP ";
 
+const char kCrOSEnforceMonoAudioCaptureName[] =
+    "Enforce mono audio capture for Chrome";
+const char kCrOSEnforceMonoAudioCaptureDescription[] =
+    "Enforce mono audio capture instead of stereo capture for Chrome on "
+    "ChromeOS";
+
 const char kCrOSEnforceSystemAecName[] = "Enforce using the system AEC in CrAS";
 const char kCrOSEnforceSystemAecDescription[] =
     "Enforces using the system variant in CrAS of the AEC";
