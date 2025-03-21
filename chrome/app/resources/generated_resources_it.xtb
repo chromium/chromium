@@ -617,7 +617,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="142655739075382478">L'app <ph name="APP_NAME" /> è bloccata</translation>
 <translation id="1427179946227469514">Tono sintesi vocale</translation>
 <translation id="1427269577154060167">Paese</translation>
-<translation id="1427506552622340174">Fai clic con il tasto destro del mouse per scrivere con maggiore sicurezza, riassumere i contenuti, ottenere definizioni e altro ancora. Al momento la disponibilità è limitata.</translation>
 <translation id="142765311413773645">La licenza di <ph name="APP_NAME" /> è scaduta</translation>
 <translation id="1428373049397869723">Puoi aprire e modificare i file supportati con questa app dal Finder o con altre app. Per stabilire quali file aprire per impostazione predefinita in questa app, <ph name="BEGIN_LINK" />scopri come impostare app predefinite sul dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Hai salvato una nota per una password su questo sito. Per visualizzarla, seleziona Gestisci le tue password nella barra di ricerca e degli indirizzi.</translation>
@@ -10529,7 +10528,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8452105022015742247">Trasferimento dei dati dell'Account Google dal tuo smartphone Android in corso…</translation>
 <translation id="8455775311562941553">Connessione a <ph name="HOST_DEVICE_NAME" /> attiva</translation>
 <translation id="8456067150616457342">Imposta il browser predefinito</translation>
-<translation id="8456200178779628126">Usa Google AI per ricevere assistenza nella lettura e nella scrittura</translation>
 <translation id="845702320058262034">Impossibile stabilire una connessione. Assicurati che il Bluetooth del telefono sia attivo.</translation>
 <translation id="8457251154056341970">Non vedrai più <ph name="MODULE_NAME" /> in questa pagina</translation>
 <translation id="8457451314607652708">Importa Preferiti</translation>
@@ -11424,7 +11422,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB collegato</translation>
 <translation id="9075413375877487220">Questa estensione non è ritenuta attendibile da Navigazione sicura avanzata.</translation>
-<translation id="9075985558450420812">Inserisci un prompt personalizzato o evidenzia il testo per creare un'immagine.</translation>
 <translation id="9076523132036239772">Spiacenti, impossibile verificare l'indirizzo email o la password. Prova a collegarti a una rete prima.</translation>
 <translation id="9076821103818989526">Riquadro laterale</translation>
 <translation id="9076977315710973122">Condivisione SMB</translation>

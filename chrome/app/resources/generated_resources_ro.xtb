@@ -617,7 +617,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="142655739075382478"><ph name="APP_NAME" /> a fost blocată</translation>
 <translation id="1427179946227469514">Tonalitatea redării vocale a textului</translation>
 <translation id="1427269577154060167">Țară</translation>
-<translation id="1427506552622340174">Dă clic dreapta ca să scrii cu mai multă încredere, să rezumi conținut, să primești definiții și multe altele. Momentan, opțiunea are disponibilitate limitată.</translation>
 <translation id="142765311413773645">Licența <ph name="APP_NAME" /> a expirat</translation>
 <translation id="1428373049397869723">Poți să deschizi și să editezi fișierele acceptate în această aplicație din Finder (Explorator) sau din alte aplicații. Pentru a alege fișierele care deschid aplicația în mod prestabilit, <ph name="BEGIN_LINK" />află cum să setezi aplicații prestabilite pe dispozitiv<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Ai salvat o notă pentru o parolă pe acest site. Ca să o vezi, selectează Gestionează parolele în bara de căutare și de adrese.</translation>
@@ -10529,7 +10528,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8452105022015742247">Transferarea informațiilor din Contul Google de pe telefonul Android</translation>
 <translation id="8455775311562941553">Conectat la <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Setează browserul prestabilit</translation>
-<translation id="8456200178779628126">Folosește Google AI pentru ajutor la citire și scriere</translation>
 <translation id="845702320058262034">Nu se poate conecta. Asigură-te că funcția Bluetooth a telefonului este pornită.</translation>
 <translation id="8457251154056341970">Nu vei mai vedea <ph name="MODULE_NAME" /> în această pagină</translation>
 <translation id="8457451314607652708">Importă marcajele</translation>
@@ -11425,7 +11423,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB conectat</translation>
 <translation id="9075413375877487220">Navigarea sigură îmbunătățită nu are încredere în această extensie.</translation>
-<translation id="9075985558450420812">Introdu o solicitare personalizată sau evidențiază text pentru a crea o imagine.</translation>
 <translation id="9076523132036239772">Din păcate, adresa de e-mail sau parola nu a putut fi verificată. Încearcă să te conectezi mai întâi la o rețea.</translation>
 <translation id="9076821103818989526">Panou lateral</translation>
 <translation id="9076977315710973122">Dispozitiv de stocare în rețea</translation>

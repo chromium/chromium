@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">Εσείς και η Google</translation>
 <translation id="3737319253362202215">Ρυθμίσεις μετάφρασης</translation>
 <translation id="3738139272394829648">Αγγίξτε για αναζήτηση</translation>
+<translation id="3739455665973395693">Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης στον Λογαριασμό σας Google</translation>
 <translation id="3739899004075612870">Ο σελιδοδείκτης προστέθηκε στο <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Η Φωνητική αναζήτηση δεν είναι διαθέσιμη σε αυτή τη συσκευή.</translation>
 <translation id="376561056759077985">Ορισμένα δεδομένα δεν έχουν αποθηκευτεί ακόμα</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">Θέλετε να κατεβάσετε ξανά το αρχείο <ph name="FILE_NAME" />;</translation>
 <translation id="3987993985790029246">Αντ. συνδ.</translation>
 <translation id="4000212216660919741">Η αρχική σελίδα είναι εκτός σύνδεσης</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 παραβιασμένος κωδικός πρόσβασης στον Λογαριασμό σας Google}other{# παραβιασμένοι κωδικοί πρόσβασης στον Λογαριασμό σας Google}}</translation>
 <translation id="4016425174436051808">Δεν είναι δυνατή η παρακολούθηση. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
 <translation id="4024768890073681126">Η διαχείριση του προγράμματος περιήγησης γίνεται από τον γονέα σου</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ω.}other{# ω.}}</translation>
@@ -831,6 +833,7 @@
 <translation id="4881695831933465202">Άνοιγμα</translation>
 <translation id="488187801263602086">Μετονομασία αρχείου</translation>
 <translation id="4885273946141277891">Μη υποστηριζόμενος αριθμός παρουσιών Chrome.</translation>
+<translation id="4890973535105146893">Δεν υπάρχουν αποθηκευμένοι κωδικοί πρόσβασης στον Λογαριασμό σας Google</translation>
 <translation id="4905823827770127520">Συμπερίληψη συνδέσμου προς τη σελίδα</translation>
 <translation id="4908869848243824489">Discover από την Google</translation>
 <translation id="4910889077668685004">Εφαρμογές πληρωμών</translation>
@@ -1703,6 +1706,7 @@
 <translation id="869891660844655955">Ημερομηνία λήξης</translation>
 <translation id="8699120352855309748">Να μην παρέχεται δυνατότητα μετάφρασης αυτών των γλωσσών</translation>
 <translation id="8712637175834984815">Κατάλαβα!</translation>
+<translation id="8715286883001906001">Ενισχύστε τους κωδικούς πρόσβασης στον Λογαριασμό σας Google</translation>
 <translation id="8723453889042591629">Γρήγορη μετάφραση αυτής της σελίδας. Για να επεξεργαστείτε αυτήν τη συντόμευση, αγγίξτε παρατεταμένα.</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8731268612289859741">Κωδικός ασφαλείας</translation>
@@ -1830,6 +1834,7 @@
 <translation id="970715775301869095">Απομένουν <ph name="MINUTES" /> λεπτά</translation>
 <translation id="981121421437150478">Εκτός σύνδεσης</translation>
 <translation id="983192555821071799">Κλείσιμο όλων των καρτελών</translation>
+<translation id="984756705737569814">Δεν είναι δυνατός ο έλεγχος των κωδικών πρόσβασης στον Λογαριασμό σας Google</translation>
 <translation id="987264212798334818">Γενικά</translation>
 <translation id="988091779042748639">Για να διαγράψετε το ιστορικό ανώνυμης περιήγησης από τη συσκευή σας, κλείστε όλες τις καρτέλες ανώνυμης περιήγησης.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> καρτέλες</translation>

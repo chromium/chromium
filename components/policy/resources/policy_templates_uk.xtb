@@ -1544,12 +1544,6 @@ API вебсервісу <ph name="REQUEST_FULLSCREEN_API_NAME" />
       Якщо це налаштування вимкнено, <ph name="PRODUCT_NAME" /> не виявлятиме, коли вікно перекривають інші вікна.
 
       Якщо це правило не налаштовано, перекривання не виявлятиметься.</translation>
-<translation id="2132424782557550556">Налаштування правил хмарного звітування.
-
-      Якщо правило <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> не налаштовано або для нього вибрано значення false, ці правила ігноруватимуться.
-
-      Це правило працює, лише коли комп'ютер зареєстровано відповідно до правила <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> для <ph name="PRODUCT_NAME" />.
-      Для <ph name="PRODUCT_OS_NAME" /> ці правила діють завжди.</translation>
 <translation id="2134437727173969994">Дозволити блокування екрана</translation>
 <translation id="2135335181634291106">Якщо правило <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> увімкнено, то параметр <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> указує URL-адресу вибраного значка пошукової системи за умовчанням.
 

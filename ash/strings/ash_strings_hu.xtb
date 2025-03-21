@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Nyelvi beállítások megjelenítése</translation>
 <translation id="1459693405370120464">Időjárás</translation>
 <translation id="1460620680449458626">Hang némítva.</translation>
+<translation id="1462439140224375968">Google-dokumentum létrehozva</translation>
 <translation id="14648076227129703">Ezzel engedélyezi a kamerához való hozzáférést a(z) <ph name="APP1_NAME" />, a(z) <ph name="APP2_NAME" />, valamint a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="1467432559032391204">Balra</translation>
 <translation id="146902737843070955">A rendszergazda kérelmezte ezt a módosítást</translation>
@@ -215,6 +216,7 @@
 <translation id="1679841710523778799">Fényerő növelése</translation>
 <translation id="1680659827022803830">Videohívás vezérlői</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Ezt a funkciót bármikor kikapcsolhatja a Beállításokban. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Időzítő a következő időtartamra: <ph name="TOTAL_TIME" />   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-cím: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Az aktív ablak a bal oldalon van dokkolva.</translation>
@@ -592,6 +594,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="301584155502740476">Hotspotadatok megjelenítése. A hotspot ki van kapcsolva.</translation>
 <translation id="3017079585324758401">Háttér</translation>
 <translation id="3018135054368884502">Médiatartalom előretekerése</translation>
+<translation id="3026897869154397692">Hozzáadva a naptárhoz</translation>
 <translation id="3033545621352269033">Be</translation>
 <translation id="3033912566804961911">Összevonás a következővel: <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Fájlok megnyitása</translation>
@@ -968,6 +971,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4221957499226645091"><ph name="APP_NAME" />, telepített alkalmazás, szüneteltetve</translation>
 <translation id="4228078597006700451">A vezérlők nincsenek beállítva</translation>
 <translation id="4230560241506423345">Új</translation>
+<translation id="4236726631849783264">Emlékeztető a javasolt műveletekről</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Áttekintési mód</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
@@ -984,7 +988,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4275663329226226506">Média</translation>
 <translation id="4279490309300973883">Tükrözés</translation>
 <translation id="4280601795273309128">A továbbiakban már nem érkeznek biztonsági frissítések. Váltson újabb eszközre.</translation>
-<translation id="4281739221820540368">Google-dokumentum létrehozása</translation>
 <translation id="4283888303416325161">A nagyobb biztonság érdekében adja meg a jelszót</translation>
 <translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="428715201724021596">Csatlakozás a profilhoz. Ez eltarthat néhány percig.</translation>
@@ -1045,6 +1048,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4471354919263203780">Beszédfelismerési fájlok letöltése… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Frissítse az eszközt most}=1{1 másodpercen belül frissítse az eszközt}other{# másodpercen belül frissítse az eszközt}}</translation>
 <translation id="4472575034687746823">Kezdő lépések</translation>
+<translation id="4473489370276014885">Google Névjegyek</translation>
 <translation id="4477350412780666475">Következő szám</translation>
 <translation id="4477751544736611934">Ez adatforgalmi költségekkel járhat.
 1 eszköz van csatlakoztatva.</translation>
@@ -1071,6 +1075,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4545950850562423083">Az aktuális oldal mentése könyvjelzőként</translation>
 <translation id="4548482551627849548">Aktív ablak áthelyezése a bal oldali asztalra</translation>
 <translation id="4552748006424994716">A visszhang elkerülése érdekében a mikrofonon érkező hangot csak vezetékes fejhallgatóval hallhatja.</translation>
+<translation id="4556953949326137018">Javasolt műveletek (például a „Hozzáadás a Naptárhoz” vagy a „Google Dokumentumok létrehozása”) használatakor a kijelölt területen szereplő tartalmat a rendszer elküldi a Google szervereire, hogy műveleteket javasoljon, a következő feltételek mellett: <ph name="LINK_TO_SERVICE_TERMS" />. Ne adjon meg személyes, kényes vagy bizalmas adatokat.</translation>
 <translation id="4560576029703263363">Be</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Jelszó elrejtése</translation>
@@ -1154,6 +1159,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="481455355267255546">Következő</translation>
 <translation id="481749895090480684">Feladatlista :<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera és mikrofon</translation>
+<translation id="4828935196674083554">Hozzáadás...</translation>
 <translation id="482908187605862807">A Play Áruházból rendelkezésre álló alkalmazások</translation>
 <translation id="4831034276697007977">Biztosan kikapcsolja az automatikus kattintásokat?</translation>
 <translation id="4835677468087803981">PIN-kód elrejtése</translation>
@@ -1651,6 +1657,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Az összes értesítés törlése</translation>
+<translation id="6426905245930183644">Létrehozás…</translation>
 <translation id="6430225033895752525">Összpontosítási üzemmód beállításainak megjelenítése</translation>
 <translation id="643147933154517414">Elkészült</translation>
 <translation id="6431865393913628856">Képernyőrögzítés</translation>
@@ -1717,7 +1724,6 @@ Frissen telepítve</translation>
 <translation id="6612889377159412215">részfeladat</translation>
 <translation id="6613765291890844037">Foglalt tárhely: <ph name="STORAGE_IN_USE_SIZE" /> | Összesen: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Az adatvédelmi képernyő be van kapcsolva</translation>
-<translation id="6618277154885124991">Google-táblázat létrehozása</translation>
 <translation id="6622679827379792051">A telefonján lévő alkalmazások megtekintésének beállítása</translation>
 <translation id="662279009180869175">A balra és jobbra nyilakkal átméretezheti az osztott képernyőt</translation>
 <translation id="6624493541160101248">Jelenlegi asztal: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />/<ph name="DESK_INDEX" />. asztal.</translation>
@@ -1891,6 +1897,7 @@ Frissen telepítve</translation>
 <translation id="7228968829656641943">Válassza ki a képernyőn való kereséshez. A billentyűzettel való navigációhoz nyomja le a Tab, majd a szóköz billentyűt.</translation>
 <translation id="7229029500464092426">Memória <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> összesen</translation>
 <translation id="7239814253344511868">Mindkét egérgomb</translation>
+<translation id="7240636904654154599">Google-táblázat létrehozva</translation>
 <translation id="7244725679040769470">Az akkumulátor töltöttségi szintje: <ph name="PERCENTAGE" />%. Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. A Chromebookot újra kell indítani a frissítés alkalmazásához. Ez akár egy percig is eltarthat.</translation>
 <translation id="7256057185598509352">2. ExpressKey</translation>
@@ -2401,6 +2408,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8921624153894383499">A Google Segéd nem beszél ezen a nyelven.</translation>
 <translation id="8926951137623668982">A polc mindig rejtve lesz</translation>
 <translation id="8929566928381252430">A Caps Lock billentyűt próbálja használni? Használja a következőt:</translation>
+<translation id="8929623844713377237">Névjegy létrehozva</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fájl}other{# fájl}}</translation>
 <translation id="8936501819958976551">deaktiválva</translation>
 <translation id="8938800817013097409">C típusú USB-vel kompatibilis eszköz (jobb hátsó port)</translation>

@@ -983,7 +983,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4275663329226226506">Truyền thông</translation>
 <translation id="4279490309300973883">Đang phản chiếu</translation>
 <translation id="4280601795273309128">Đã ngừng cập nhật bảo mật. Nâng cấp thiết bị của bạn.</translation>
-<translation id="4281739221820540368">Tạo tài liệu Google Tài liệu</translation>
 <translation id="4283888303416325161">Hãy nhập mật khẩu để tăng cường bảo mật</translation>
 <translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="428715201724021596">Đang kết nối với hồ sơ. Quá trình này có thể mất vài phút.</translation>
@@ -1716,7 +1715,6 @@ Mới cài đặt</translation>
 <translation id="6612889377159412215">việc phụ cần làm</translation>
 <translation id="6613765291890844037">Đang sử dụng <ph name="STORAGE_IN_USE_SIZE" /> dung lượng lưu trữ | Tổng cộng <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Màn hình bảo vệ quyền riêng tư đang bật</translation>
-<translation id="6618277154885124991">Tạo trang tính Google Trang tính</translation>
 <translation id="6622679827379792051">Thiết lập tính năng xem ứng dụng có trên điện thoại</translation>
 <translation id="662279009180869175">Dùng mũi tên trái và phải để đổi kích thước màn hình chia đôi</translation>
 <translation id="6624493541160101248">Không gian làm việc hiện tại: <ph name="DESK_NAME" />. Không gian làm việc số <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>

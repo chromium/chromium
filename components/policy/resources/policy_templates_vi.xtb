@@ -1545,12 +1545,6 @@ Nếu bạn không đặt chính sách này, thì ban đầu, tính năng Dịch
       Nếu bạn tắt chế độ cài đặt này, thì <ph name="PRODUCT_NAME" /> sẽ không phát hiện ra khi một cửa sổ bị các cửa sổ khác che khuất.
 
       Nếu bạn không đặt chính sách này, thì tính năng phát hiện che kín sẽ bật.</translation>
-<translation id="2132424782557550556">Định cấu hình chính sách báo cáo trên đám mây.
-
-      Khi bạn không đặt chính sách <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> hoặc đặt thành tắt, các chính sách này sẽ bị bỏ qua.
-
-      Các chính sách này chỉ có hiệu lực khi máy đã đăng ký chính sách <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> đối với <ph name="PRODUCT_NAME" />.
-      Các chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2134437727173969994">Cho phép khóa màn hình</translation>
 <translation id="2135335181634291106">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> sẽ chỉ định URL cho biểu tượng yêu thích của nhà cung cấp dịch vụ tìm kiếm mặc định.
 

@@ -616,7 +616,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="142655739075382478"><ph name="APP_NAME" /> is blocked</translation>
 <translation id="1427179946227469514">Text-to-speech pitch</translation>
 <translation id="1427269577154060167">Country</translation>
-<translation id="1427506552622340174">Right-click to write with more confidence, summarise content, get definitions and more. Currently has limited availability.</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> licence has expired</translation>
 <translation id="1428373049397869723">You can open and edit supported files with this app from Finder or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">You saved a note for a password on this site. To view it, select 'manage your passwords' in the search and address bar.</translation>
@@ -1893,6 +1892,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">File wasn’t available on site</translation>
 <translation id="2300383962156589922">Customise and control <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Qualified Certificate Statements</translation>
 <translation id="2301382460326681002">Extension root directory is invalid.</translation>
 <translation id="2301402091755573488">Shared tab</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Debugging features<ph name="END_H3" />
@@ -10541,7 +10541,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8452105022015742247">Transferring Google Account info from your Android phone</translation>
 <translation id="8455775311562941553">Connected to <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Set your default browser</translation>
-<translation id="8456200178779628126">Use Google AI to get help reading and writing</translation>
 <translation id="845702320058262034">Can’t connect. Make sure that your phone’s Bluetooth is turned on.</translation>
 <translation id="8457251154056341970">You won't see <ph name="MODULE_NAME" /> on this page again</translation>
 <translation id="8457451314607652708">Import bookmarks</translation>
@@ -11436,7 +11435,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB mouse connected</translation>
 <translation id="9075413375877487220">This extension is not trusted by Enhanced Safe Browsing.</translation>
-<translation id="9075985558450420812">Enter a custom prompt or highlight text to create an image.</translation>
 <translation id="9076523132036239772">Sorry, your email or password could not be verified. Try connecting to a network first.</translation>
 <translation id="9076821103818989526">Side panel</translation>
 <translation id="9076977315710973122">SMB share</translation>

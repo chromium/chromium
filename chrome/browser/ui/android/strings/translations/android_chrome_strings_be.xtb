@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">Вы і Google</translation>
 <translation id="3737319253362202215">Налады перакладу</translation>
 <translation id="3738139272394829648">Пошук дотыкам</translation>
+<translation id="3739455665973395693">У вашым Уліковым запісе Google няма раскрытых пароляў</translation>
 <translation id="3739899004075612870">Закладка дададзена ў <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Галасавы пошук недаступны на гэтай прыладзе</translation>
 <translation id="376561056759077985">Некаторыя даныя яшчэ не захаваны</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">Спампаваць файл "<ph name="FILE_NAME" />" зноў?</translation>
 <translation id="3987993985790029246">Скапіраваць спасылку</translation>
 <translation id="4000212216660919741">Пазасеткавы рэжым</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{У вашым Уліковым запісе Google 1 раскрыты пароль}one{У вашым Уліковым запісе Google # раскрыты пароль}few{У вашым Уліковым запісе Google # раскрытыя паролі}many{У вашым Уліковым запісе Google # раскрытых пароляў}other{У вашым Уліковым запісе Google # раскрытага пароля}}</translation>
 <translation id="4016425174436051808">Падпісацца не ўдалося. Нешта пайшло не так.</translation>
 <translation id="4024768890073681126">Браўзерам кіруюць бацькі</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# гадз}one{# гадз}few{# гадз}many{# гадз}other{# гадз}}</translation>
@@ -831,6 +833,7 @@
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="488187801263602086">Перайменаваць файл</translation>
 <translation id="4885273946141277891">Недапушчальная колькасць версій Chrome.</translation>
+<translation id="4890973535105146893">У вашым Уліковым запісе Google няма захаваных пароляў</translation>
 <translation id="4905823827770127520">Дадаць спасылку на старонку</translation>
 <translation id="4908869848243824489">Рэкамендацыі ад Google</translation>
 <translation id="4910889077668685004">Плацежныя праграмы</translation>
@@ -1703,6 +1706,7 @@
 <translation id="869891660844655955">Тэрмін дзеяння</translation>
 <translation id="8699120352855309748">Не прапаноўваць перакладаць з гэтых моў</translation>
 <translation id="8712637175834984815">Зразумела</translation>
+<translation id="8715286883001906001">Зрабіце паролі ў сваім Уліковым запісе Google больш надзейнымі</translation>
 <translation id="8723453889042591629">Хутка перакласці тэкст на гэтай старонцы. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8731268612289859741">Код бяспекі</translation>
@@ -1830,6 +1834,7 @@
 <translation id="970715775301869095">Засталося часу: <ph name="MINUTES" /> хв</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
 <translation id="983192555821071799">Закрыць усе ўкладкі</translation>
+<translation id="984756705737569814">Не ўдалося праверыць паролі ў вашым Уліковым запісе Google</translation>
 <translation id="987264212798334818">Агульныя</translation>
 <translation id="988091779042748639">Каб выдаліць гісторыю прагляду сайтаў у рэжыме інкогніта на прыладзе, закрыйце ўсе ўкладкі ў рэжыме інкогніта.</translation>
 <translation id="992745192656291733">Укладак: <ph name="TAB_COUNT" /></translation>

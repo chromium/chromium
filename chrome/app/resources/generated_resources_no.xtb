@@ -616,7 +616,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="142655739075382478"><ph name="APP_NAME" /> er blokkert</translation>
 <translation id="1427179946227469514">Tonehøyde for tekst til tale</translation>
 <translation id="1427269577154060167">Land</translation>
-<translation id="1427506552622340174">Høyreklikk for å skrive med større selvtillit, oppsummere innhold, få definisjoner med mer Har begrenset tilgjengelighet for øyeblikket.</translation>
 <translation id="142765311413773645">Lisensen for <ph name="APP_NAME" /> er utløpt</translation>
 <translation id="1428373049397869723">Du kan åpne og redigere støttede filer med denne appen i Finder eller andre apper. For å styre hvilke filer som åpner denne appen som standard, <ph name="BEGIN_LINK" />finn ut hvordan du angir standardapper på enheten<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Du har lagret en merknad for et passord på dette nettstedet. For å se den, administrer passordene dine i søke- og adressefeltet.</translation>
@@ -10531,7 +10530,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8452105022015742247">Overfører Google-kontoinformasjon fra Android-telefonen</translation>
 <translation id="8455775311562941553">Koblet til <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Angi standardnettleser</translation>
-<translation id="8456200178779628126">Bruk AI-løsninger fra Google for å få hjelp med å lese og skrive</translation>
 <translation id="845702320058262034">Kan ikke koble til. Kontroller at telefonens Bluetooth er på.</translation>
 <translation id="8457251154056341970">Du kommer ikke til å se <ph name="MODULE_NAME" /> på denne siden igjen</translation>
 <translation id="8457451314607652708">Importér bokmerker</translation>
@@ -11426,7 +11424,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-mus er tilkoblet</translation>
 <translation id="9075413375877487220">Denne utvidelsen er ikke klarert av Safe Browsing med økt beskyttelse.</translation>
-<translation id="9075985558450420812">Skriv inn en egen forespørsel eller marker tekst for å lage et bilde.</translation>
 <translation id="9076523132036239772">Beklager, men angitt e-postadresse eller passord kunne ikke bekreftes. Prøv å koble deg til et nettverk først.</translation>
 <translation id="9076821103818989526">Sidepanel</translation>
 <translation id="9076977315710973122">Delt SMB-nettverksressurs</translation>

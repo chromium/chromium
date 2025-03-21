@@ -1542,12 +1542,6 @@ Bu politika ayarlanmadan bırakılırsa Canlı Çeviri özelliği başlangıçta
       Bu ayarı devre dışı bırakırsanız <ph name="PRODUCT_NAME" />, üzeri diğer pencereler tarafından kaplanan pencereleri algılamaz.
 
       Bu politika ayarlanmadan bırakılırsa kapama algılama etkinleştirilir.</translation>
-<translation id="2132424782557550556">Bulut raporlaması politikalarını yapılandırır.
-
-      <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> politikası ayarlanmadan bırakıldığında veya devre dışı değerine ayarlandığında bu politikalar yok sayılır.
-
-      Bu politikalar yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> kaydı yapıldığında geçerli olur.
-      <ph name="PRODUCT_OS_NAME" /> için bu politikalar her zaman geçerlidir.</translation>
 <translation id="2134437727173969994">Ekranı kilitlemeye izin ver</translation>
 <translation id="2135335181634291106"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> protokolünün ayarlanması, varsayılan arama sağlayıcısının favori simgesi URL'sini belirtir.
 

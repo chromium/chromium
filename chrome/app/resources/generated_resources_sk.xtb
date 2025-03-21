@@ -618,7 +618,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="142655739075382478">Aplikácia <ph name="APP_NAME" /> je blokovaná</translation>
 <translation id="1427179946227469514">Výška hlasu pre prevod textu na reč</translation>
 <translation id="1427269577154060167">Krajina</translation>
-<translation id="1427506552622340174">Po kliknutí pravým tlačidlom môžete písať s väčšou istotou, zhrnúť obsah, získať definície a oveľa viac. Dostupnosť funkcie je momentálne obmedzená.</translation>
 <translation id="142765311413773645">Platnosť licencie aplikácie <ph name="APP_NAME" /> vypršala</translation>
 <translation id="1428373049397869723">Pomocou tejto aplikácie môžete otvárať a upravovať podporované súbory z aplikácie Finder alebo iných. Ak chcete ovládať, ktoré súbory predvolene otvoria túto aplikáciu, prečítajte si, <ph name="BEGIN_LINK" />ako v zariadení nastaviť predvolené aplikácie<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Uložili ste poznámku k heslu na tomto webe. Ak si ju chcete zobraziť, vyberte možnosť Správa hesiel vo vyhľadávaní a na paneli s adresou.</translation>
@@ -1882,6 +1881,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Súbor nebol na webe k dispozícii</translation>
 <translation id="2300383962156589922">Prispôsobiť a spravovať aplikáciu <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Vyhlásenia o certifikáte oprávnenosti</translation>
 <translation id="2301382460326681002">Koreňový adresár rozšírenia je neplatný.</translation>
 <translation id="2301402091755573488">Zdieľaná karta</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Funkcie ladenia<ph name="END_H3" />
@@ -10531,7 +10531,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8452105022015742247">Prenášajú sa informácie o účte Google z telefónu s Androidom</translation>
 <translation id="8455775311562941553">Pripojené k zariadeniu <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Nastavte si predvolený prehliadač</translation>
-<translation id="8456200178779628126">Získajte pomoc s čítaním a písaním pomocou umelej inteligencie od Googlu</translation>
 <translation id="845702320058262034">Nedá sa pripojiť. Skontrolujte, či je v telefóne zapnuté rozhranie Bluetooth.</translation>
 <translation id="8457251154056341970"><ph name="MODULE_NAME" /> na tejto stránke už neuvidíte</translation>
 <translation id="8457451314607652708">Import záložiek</translation>
@@ -11428,7 +11427,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Myš s konektorom USB bola pripojená</translation>
 <translation id="9075413375877487220">Zlepšené bezpečné prehliadanie nepovažuje toto rozšírenie za dôveryhodné.</translation>
-<translation id="9075985558450420812">Ak chcete vytvoriť obrázok, zadajte vlastný pokyn alebo zvýraznite text.</translation>
 <translation id="9076523132036239772">Je nám ľúto, e-mailovú adresu alebo heslo sa nepodarilo overiť. Skúste sa najprv pripojiť k sieti.</translation>
 <translation id="9076821103818989526">Bočný panel</translation>
 <translation id="9076977315710973122">Zdieľané úložisko SMB</translation>

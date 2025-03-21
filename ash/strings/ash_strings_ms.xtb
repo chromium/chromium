@@ -149,6 +149,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1455242230282523554">Tunjukkan tetapan bahasa</translation>
 <translation id="1459693405370120464">Cuaca</translation>
 <translation id="1460620680449458626">Kelantangan diredamkan.</translation>
+<translation id="1462439140224375968">Dokumen Google Dibuat</translation>
 <translation id="14648076227129703">Ini membenarkan akses kamera untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dan semua apl serta laman web dengan kebenaran kamera</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="146902737843070955">Pentadbir anda telah meminta perubahan ini</translation>
@@ -215,6 +216,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1679841710523778799">Tambahkan kecerahan</translation>
 <translation id="1680659827022803830">Kawalan panggilan video</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Anda boleh mematikan ciri ini pada bila-bila masa dalam Tetapan. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Pemasa <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Alamat IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Tetingkap aktif didok sebelah kiri.</translation>
@@ -592,6 +594,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="301584155502740476">Tunjukkan butiran tempat liputan. Tempat liputan dimatikan.</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
 <translation id="3018135054368884502">Mundar laju media</translation>
+<translation id="3026897869154397692">Ditambahkan pada Calendar</translation>
 <translation id="3033545621352269033">Dihidupkan</translation>
 <translation id="3033912566804961911">Gabung dengan <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Buka Fail</translation>
@@ -967,6 +970,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Apl yang Dipasang, Dijeda</translation>
 <translation id="4228078597006700451">Kawalan tidak disediakan</translation>
 <translation id="4230560241506423345">Baharu</translation>
+<translation id="4236726631849783264">Peringatan tentang tindakan cadangan</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mod ikhtisar</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
@@ -983,7 +987,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Pencerminan</translation>
 <translation id="4280601795273309128">Kemaskinian keselamatan tamat. Tingkatkan peranti anda.</translation>
-<translation id="4281739221820540368">Buat Google Docs</translation>
 <translation id="4283888303416325161">Masukkan kata laluan untuk meningkatkan keselamatan</translation>
 <translation id="4285498937028063278">Menyahpin</translation>
 <translation id="428715201724021596">Menyambung kepada profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
@@ -1044,6 +1047,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4471354919263203780">Memuat turun fail pengecaman pertuturan... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Kemas kini peranti sekarang}=1{Kemas kini peranti dalam masa 1 saat}other{Kemas kini peranti dalam masa # saat}}</translation>
 <translation id="4472575034687746823">Bermula</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">Lagu Seterusnya</translation>
 <translation id="4477751544736611934">Tetapan ini mungkin memerlukan kos data.
 1 peranti disambungkan.</translation>
@@ -1070,6 +1074,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4545950850562423083">Simpan halaman semasa sebagai penanda halaman</translation>
 <translation id="4548482551627849548">Alih tetingkap aktif kepada meja di sebelah kiri</translation>
 <translation id="4552748006424994716">Untuk mengelakkan gema, anda boleh mendengar bunyi mikrofon anda dengan fon kepala berwayar sahaja.</translation>
+<translation id="4556953949326137018">Apabila anda menggunakan tindakan cadangan seperti “tambahkan pada Calendar” atau “buat Google Docs”, kandungan daripada bahagian yang dipilih dihantar kepada pelayan Google untuk mencadangkan tindakan, tertakluk pada <ph name="LINK_TO_SERVICE_TERMS" />. Jangan sertakan sebarang maklumat yang bersifat peribadi, sensitif atau sulit.</translation>
 <translation id="4560576029703263363">Dihidupkan</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Sembunyikan kata laluan</translation>
@@ -1153,6 +1158,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="481455355267255546">Seterusnya</translation>
 <translation id="481749895090480684">Senarai tugasan: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
+<translation id="4828935196674083554">Menambahkan...</translation>
 <translation id="482908187605862807">Apl tersedia daripada Play Store</translation>
 <translation id="4831034276697007977">Adakah anda pasti mahu mematikan klik automatik?</translation>
 <translation id="4835677468087803981">Sembunyikan PIN</translation>
@@ -1650,6 +1656,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Kosongkan semua pemberitahuan</translation>
+<translation id="6426905245930183644">Membuat...</translation>
 <translation id="6430225033895752525">Tunjukkan tetapan Fokus</translation>
 <translation id="643147933154517414">Selesai</translation>
 <translation id="6431865393913628856">Rakaman skrin</translation>
@@ -1716,7 +1723,6 @@ Pemasangan baharu</translation>
 <translation id="6612889377159412215">subtugasan</translation>
 <translation id="6613765291890844037">Storan sebanyak <ph name="STORAGE_IN_USE_SIZE" /> sedang digunakan | <ph name="STORAGE_TOTAL_SIZE" /> jumlah storan</translation>
 <translation id="6614169507485700968">Skrin privasi dihidupkan</translation>
-<translation id="6618277154885124991">Buat Google Sheets</translation>
 <translation id="6622679827379792051">Menyediakan pemaparan apl telefon anda</translation>
 <translation id="662279009180869175">Gunakan anak panah ke kiri dan ke kanan untuk mengubah saiz skrin pisah</translation>
 <translation id="6624493541160101248">Meja semasa: <ph name="DESK_NAME" />. Meja <ph name="DESK_INDEX" /> daripada <ph name="DESK_COUNT" />.</translation>
@@ -1890,6 +1896,7 @@ Pemasangan baharu</translation>
 <translation id="7228968829656641943">Pilih untuk membuat carian pada skrin saya. Tekan tab, kemudian tekan kekunci ruang untuk menavigasi papan kekunci.</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> memori | Jumlah <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Kedua-dua butang tetikus</translation>
+<translation id="7240636904654154599">Helaian Google Dibuat</translation>
 <translation id="7244725679040769470">Baki kuasa bateri <ph name="PERCENTAGE" />(%). Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ini perlu dimulakan semula untuk menerapkan kemas kini. Proses ini boleh mengambil masa sehingga 1 minit.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2400,6 +2407,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8921624153894383499">Google Assistant tidak bertutur dalam bahasa ini.</translation>
 <translation id="8926951137623668982">Rak sentiasa disembunyikan</translation>
 <translation id="8929566928381252430">Cuba menggunakan Kunci Huruf Besar? Gunakan</translation>
+<translation id="8929623844713377237">Kenalan dibuat</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fail}other{# fail}}</translation>
 <translation id="8936501819958976551">dinyahaktifkan</translation>
 <translation id="8938800817013097409">Peranti USB-C (port kanan di belakang)</translation>

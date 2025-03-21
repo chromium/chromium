@@ -40,6 +40,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="2758123043070977469">Det gick inte att autentisera. Logga in igen.</translation>
 <translation id="2803375539583399270">Ange pinkod</translation>
 <translation id="2919669478609886916">Du delar nu den här datorn med en annan användare. Vill du fortsätta att dela?</translation>
+<translation id="2929683002824598593">Dela enhet</translation>
 <translation id="2939145106548231838">Autentisera till värd</translation>
 <translation id="3027681561976217984">Tryckläge</translation>
 <translation id="3106379468611574572">Fjärrdatorn svarar inte på anslutningsbegäran. Kontrollera att den är ansluten till Internet och försök igen.</translation>
@@ -117,10 +118,12 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="6178645564515549384">Lokal meddelandevärd för fjärrhjälp</translation>
 <translation id="618120821413932081">Uppdaterar fjärrskrivbordets upplösning så att det passar fönstret</translation>
 <translation id="6223301979382383752">Öppna inställningarna för skärminspelning</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> har begärt åtkomst till att se din skärm och styra tangentbordet och musen. Vill du dela din enhet?</translation>
 <translation id="6284412385303060032">Värden som kördes på konsolens inloggningsskärm har avslutats för att stödja Curtain Mode genom att byta till en värd som körs i en användarspecifik session.</translation>
 <translation id="6542902059648396432">Rapportera ett problem …</translation>
 <translation id="6583902294974160967">Support</translation>
 <translation id="6612717000975622067">Skicka Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Om du inte agerar börjar enheten automatiskt att dela om # sekund.}other{Om du inte agerar börjar enheten automatiskt att dela om # sekunder.}}</translation>
 <translation id="6654753848497929428">Dela</translation>
 <translation id="677755392401385740">Värd startad för användaren: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Hjälpprogram för att öppna en webbadress i <ph name="PRODUCT_NAME" />-klienten</translation>

@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">वैकल्पिक ट्रे</translation>
 <translation id="1264974993859112054">खेल-कूद</translation>
 <translation id="1268480293435976622">चाइनीज़ #7 साइज़ का लिफ़ाफ़ा</translation>
+<translation id="1269045546668906972">ज़्यादा फ़ील्ड ऑटोमैटिक तरीके से भरने के लिए, एआई की मदद से जानकारी ऑटोमैटिक भरने की सुविधा चालू करें</translation>
 <translation id="1269516672602708785">Google Sites में जल्दी से नई साइट बनाएं</translation>
 <translation id="1270328905573953738">सामान इधर-उधर ले जाने और जगहें बदलने की सेवाएं</translation>
 <translation id="1270502636509132238">पिकअप का तरीका</translation>
@@ -604,6 +605,7 @@
 <translation id="2040894699575719559">जगह की जानकारी पर रोक लगाई गई</translation>
 <translation id="2041788246978549610">उपलब्ध माइक्रोफ़ोन इस्तेमाल करें (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ट्रे 7</translation>
+<translation id="2043896419861982462">किस्तों में पैसे चुकाने के विकल्प छिपाने के लिए, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> पर जाएं</translation>
 <translation id="2045871135676061132">निजी तौर पर इस्तेमाल होने वाला लिफ़ाफ़ा</translation>
 <translation id="2046951263634619614">किताबों के खुदरा दुकानदार</translation>
 <translation id="2048261947532620704">पेज का अनुवाद किया जा रहा है</translation>
@@ -761,6 +763,7 @@
 <translation id="2293443924986248631">इसके चालू होने पर, साइटें उन कुकी का इस्तेमाल नहीं कर सकतीं जो आपको वेब पर ट्रैक करती हैं. शायद कुछ साइटों पर सुविधाएं ठीक से काम न करें.</translation>
 <translation id="2295831393422400053">'लिखने में मेरी मदद करो' सुविधा का इस्तेमाल करने के लिए, 'खोजों और ब्राउज़िंग को बेहतर बनाएं' सेटिंग को चालू करें</translation>
 <translation id="2296244067976588032">पासकी • iCloud Keychain</translation>
+<translation id="2296331629987861142">आसानी से किस्तों में पेमेंट करें. हालांकि, यह विकल्प इस बात पर निर्भर करता है कि आपने इसकी ज़रूरी शर्तें पूरी की हैं या नहीं. साथ ही, आपको इसका शुल्क चुकाना होगा</translation>
 <translation id="2300306941146563769">अपलोड नहीं की गई</translation>
 <translation id="2301098101308036335">कौनसी वेबसाइटें देखी गई हैं और कब.</translation>
 <translation id="230286397113210245">'गुप्त विंडो में खोलें' बटन, नई गुप्त विंडो खोलकर निजी तौर पर ब्राउज़ करने के लिए इसे चालू करें</translation>
@@ -1020,6 +1023,7 @@
 <translation id="2775884851269838147">पहला प्रिंट पेज</translation>
 <translation id="2781185443919227679">बीच और टापू</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781799097551205934">चेकआउट की प्रोसेस शुरू की जा रही है</translation>
 <translation id="2782088940970074970">किराये पर मिलने वाली कार</translation>
 <translation id="278436560439594386">घरेलू डिवाइसें</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -1047,6 +1051,7 @@
 <translation id="2859383374160668142">ट्रैक किए जा रहे प्रॉडक्ट की कीमत में गिरावट आने की जानकारी कभी भी देखी जा सकती है.</translation>
 <translation id="2859806420264540918">इस साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं.</translation>
 <translation id="28618371182701850">इलेक्ट्रिक और प्लग-इन वाहन</translation>
+<translation id="287387905105155974">सहायता वाला बबल</translation>
 <translation id="28761159517501904">फ़िल्में</translation>
 <translation id="2876489322757410363">किसी बाहरी ऐप्लिकेशन के ज़रिए पैसे चुकाने के लिए गुप्त मोड छोड़ रहे हैं. क्या आप यह मोड बंद करना चाहते हैं?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में सुरक्षित ब्राउज़िंग वगैरह को मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
@@ -1106,6 +1111,7 @@
 <translation id="2959274854674276289">शाकाहारी पकवान</translation>
 <translation id="2961809451460302960">जीवन बीमा</translation>
 <translation id="2962073860865348475">12 x 18 इंच</translation>
+<translation id="2965779286557330949">बस कुछ सेकंड और...</translation>
 <translation id="2967082089043584472"><ph name="SET" /> में जोड़ा गया</translation>
 <translation id="2967098518029543669">इसे अपने Google खाते में सेव करें</translation>
 <translation id="297173220375858963">डेस्कटॉप पब्लिशिंग</translation>
@@ -1134,6 +1140,7 @@
 <translation id="3005723025932146533">सहेजी गई कॉपी दिखाएं</translation>
 <translation id="300580149047131921">इस सुविधा का हाल ही में इस्तेमाल किया गया है</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध कार्रवाइयों को ब्राउज़ करने के लिए Tab दबाएं और फिर चुनी गई कार्रवाई करने के लिए, Enter दबाएं.</translation>
+<translation id="3010991137650052245">इस साइट पर <ph name="PERMISSION" /> का इस्तेमाल करने के लिए, आपको <ph name="SHORT_PRODUCT_NAME" /> को इसका ऐक्सेस देना होगा</translation>
 <translation id="3013711734159931232">घरेलू सामान</translation>
 <translation id="3014553260345122294">कारोबार की खबरें</translation>
 <translation id="3014726756341138577">प्रिंटर की बेहतर सुविधाएं</translation>
@@ -1478,6 +1485,7 @@
 <translation id="3600106876108433070">तुलना करने वाली टेबल के बारे में जानें</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">'Google की निजता सेटिंग मैनेज करें' बटन, अपने Google खाते की निजता सेटिंग पर जाने के लिए इसे चालू करें</translation>
+<translation id="3602695245205338770">किस्तों में पेमेंट करने की सुविधा देने वाली कोई कंपनी चुनें</translation>
 <translation id="3603507503523709">आपके एडमिन ने ऐप्लिकेशन को ब्लॉक कर दिया है</translation>
 <translation id="3605899229568538311">5 x 5 इंच</translation>
 <translation id="3606917451836803637">टीवी शो और प्रोग्राम</translation>
@@ -1782,6 +1790,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">नीति क्षेत्र समर्थित नहीं है.</translation>
+<translation id="411918202192379658">जानकारी ऑटोमैटिक भरने की सुविधा अब और बेहतर हो गई है</translation>
 <translation id="4121428309786185360">इस तारीख को खत्म</translation>
 <translation id="4123572138124678573">नीचे की ओर ट्रिपल पंच</translation>
 <translation id="412601465078863288">अपलोड करने का समय खत्म हो गया</translation>
@@ -2170,6 +2179,7 @@
 <translation id="4819347708020428563">क्या आप डिफ़ॉल्ट व्यू में वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करना चाहते हैं?</translation>
 <translation id="4822493756793346865">आम कीमतों की जानकारी, वेब पर मौजूद सभी स्टोर से ली गई है. यह पिछले 90 दिनों की कीमतों के हिसाब से है.</translation>
 <translation id="4822922322149719535">गड़बड़ियों की जानकारी देखें</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> को आपके डिवाइस के <ph name="PERMISSION" /> का ऐक्सेस चाहिए</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, जल्दी से नई Google शीट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="4826588772550366629">कैमरा और माइक्रोफ़ोन</translation>
 <translation id="4827283332383516812">कार्ड मिटाएं</translation>
@@ -2274,6 +2284,7 @@
 <translation id="5001526427543320409">तीसरे पक्ष की कुकी</translation>
 <translation id="5002932099480077015">अगर सक्षम किया हुआ हो, तो Chrome फ़ॉर्म को तेज़ी से भरने के लिए इस डिवाइस पर आपके कार्ड की एक प्रति संग्रहित करेगा.</translation>
 <translation id="5007392906805964215">समीक्षा करें</translation>
+<translation id="5010599530303458903">महीने के हिसाब से या बिना ब्याज वाली चार किस्तों में पेमेंट करें. हालांकि, यह विकल्प इस बात पर निर्भर करता है कि आपने इसकी ज़रूरी शर्तें पूरी की हैं या नहीं</translation>
 <translation id="5011561501798487822">पहचानी गई भाषा</translation>
 <translation id="5015510746216210676">मशीन का नाम:</translation>
 <translation id="5017554619425969104">आपका कॉपी किया हुआ टेक्स्ट</translation>
@@ -3241,6 +3252,7 @@
 <translation id="6706005862292023715">पर्दे और खिड़की लगाने की सेवाएं</translation>
 <translation id="6706210727756204531">दायरा</translation>
 <translation id="6706678697074905703">इस IBAN को आपके Google खाते में सेव नहीं किया जा सका. इसके बजाय, इसे इस डिवाइस पर Chrome में सेव किया गया है.</translation>
+<translation id="6707388108229299854">इस पते को अपने सभी डिवाइसों पर सेव करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">पिछला</translation>
 <translation id="6710594484020273272">&lt;खोज शब्द लिखें&gt;</translation>
@@ -3919,6 +3931,7 @@
 <translation id="7887885240995164102">पिक्चर में पिक्चर चालू करें</translation>
 <translation id="7888575728750733395">प्रिंट रेंडरिंग इंटेंट</translation>
 <translation id="7890748547282909375">स्क्रीनशॉट सेव करने के लिए, Microsoft OneDrive में साइन इन करें</translation>
+<translation id="7892865709991296481">पेमेंट सेटिंग</translation>
 <translation id="7894280532028510793">अगर स्पेलिंग सही है, तो <ph name="BEGIN_LINK" />Network Diagnostics ऐप्लिकेशन चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">7 x 9 इंच का लिफ़ाफ़ा</translation>
 <translation id="7905064834449738336">अगर कोई पासवर्ड इस्तेमाल किया जाता है, तो Chromium आपको चेतावनी देता है कि पासवर्ड ऑनलाइन पब्लिश हो चुका है. ऐसा करते समय, आपके पासवर्ड और उपयोगकर्ता नाम को एन्क्रिप्ट (सुरक्षित) किया जाता है, ताकि कोई उन्हें देख न सके, यहां तक कि Google भी नहीं.</translation>

@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">زبان کی ترتیبات دکھائیں</translation>
 <translation id="1459693405370120464">موسم</translation>
 <translation id="1460620680449458626">والیوم خاموش کیا ہوا ہے۔</translation>
+<translation id="1462439140224375968">‏نئی Google Doc تخلیق کی گئی</translation>
 <translation id="14648076227129703">اس سے کیمرے کی اجازت کے ساتھ <ph name="APP1_NAME" />، <ph name="APP2_NAME" /> اور تمام ایپس اور ویب سائٹس کو کیمرے تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="1467432559032391204">بائیں</translation>
 <translation id="146902737843070955">آپ کے منتظم نے اس تبدیلی کی درخواست کی ہے</translation>
@@ -592,6 +593,7 @@
 <translation id="301584155502740476">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ ہاٹ اسپاٹ آف ہے۔</translation>
 <translation id="3017079585324758401">پس منظر</translation>
 <translation id="3018135054368884502">فاسٹ فارورڈ میڈیا</translation>
+<translation id="3026897869154397692">کیلنڈر میں شامل کیا گیا</translation>
 <translation id="3033545621352269033">آن</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> کے ساتھ یکجا کریں</translation>
 <translation id="3036649622769666520">فائلیں کھولیں</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">میڈیا</translation>
 <translation id="4279490309300973883">مررنگ</translation>
 <translation id="4280601795273309128">سیکیورٹی اپ ڈیٹس ختم ہو گئیں۔ اپنے آلے کو اپ گریڈ کریں۔</translation>
-<translation id="4281739221820540368">‏‫Google Docs بنائیں</translation>
 <translation id="4283888303416325161">مزید سیکیورٹی کے لیے پاس ورڈ درج کریں</translation>
 <translation id="4285498937028063278">پن ہٹائیں</translation>
 <translation id="428715201724021596">پروفائل سے منسلک کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
@@ -1715,7 +1716,6 @@
 <translation id="6612889377159412215">ذیلی ٹاسک</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> اسٹوریج استعمال میں ہے | کل <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">رازداری کی اسکرین آن ہے</translation>
-<translation id="6618277154885124991">‏‫Google Sheets بنائیں</translation>
 <translation id="6622679827379792051">اپنے فون کی ایپس دیکھنے کو سیٹ اپ کریں</translation>
 <translation id="662279009180869175">اسپلٹ اسکرین کا سائز تبدیل کرنے کیلئے، بائیں اور دائیں تیر کے نشانات والی کلیدوں کا استعمال کریں</translation>
 <translation id="6624493541160101248">موجودہ ڈیسک: <ph name="DESK_NAME" />۔ <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک</translation>
@@ -1889,6 +1889,7 @@
 <translation id="7228968829656641943">میری اسکرین پر تلاش کرنے کے لیے منتخب کریں۔ کی بورڈ نیویگیشن کے لیے ٹیب پھر اسپیس دبائیں۔</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> میموری | کل <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">ماؤس کے دونوں بٹنز</translation>
+<translation id="7240636904654154599">‏نئی Google Sheet تخلیق کی گئی</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% بیٹری باقی ہے۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />۔ اپ ڈیٹ کو لاگو کرنے کے لیے Chromebook کو ری سٹارٹ کرنے کی ضرورت ہے۔ اس میں 1 منٹ تک لگ سکتا ہے۔</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2399,6 +2400,7 @@
 <translation id="8921624153894383499">‏Google اسسٹنٹ یہ زبان نہیں بولتا ہے۔</translation>
 <translation id="8926951137623668982">شیلف ہمیشہ پوشیدہ</translation>
 <translation id="8929566928381252430">‏‫Caps Lock استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
+<translation id="8929623844713377237">نیا رابطہ تخلیق کیا گیا</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 فائل}other{# فائلز}}</translation>
 <translation id="8936501819958976551">غیر فعال</translation>
 <translation id="8938800817013097409">‏USB-C آلہ (پیچھے موجود دایاں پورٹ)</translation>

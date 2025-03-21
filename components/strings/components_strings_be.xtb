@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">Розныя</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1268480293435976622">Канверт Chinese № 7</translation>
+<translation id="1269045546668906972">Уключыце аўтазапаўненне з выкарыстаннем штучнага інтэлекту, каб аўтаматычна запаўняць яшчэ больш палёў</translation>
 <translation id="1269516672602708785">Хутка стварыць новы сайт з дапамогай Google Сайтаў</translation>
 <translation id="1270328905573953738">Пераезд і перавозка</translation>
 <translation id="1270502636509132238">Спосаб прыняцця</translation>
@@ -1139,6 +1140,7 @@
 <translation id="3005723025932146533">Паказаць захаваную копію</translation>
 <translation id="300580149047131921">Выкарыстоўвалася нядаўна</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, націсніце Tab, каб праглядзець даступныя дзеянні, а затым Enter, каб выканаць выбранае дзеянне.</translation>
+<translation id="3010991137650052245">Каб выкарыстоўваць інструмент "<ph name="PERMISSION" />" на гэтым сайце, дайце браўзеру <ph name="SHORT_PRODUCT_NAME" /> адпаведны доступ</translation>
 <translation id="3013711734159931232">Гаспадарчыя тавары</translation>
 <translation id="3014553260345122294">Дзелавыя навіны</translation>
 <translation id="3014726756341138577">Пашыраныя функцыі прынтараў</translation>
@@ -1788,6 +1790,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Вобласць прымянення палітыкі не падтрымліваецца.</translation>
+<translation id="411918202192379658">Аўтазапаўненне стала яшчэ лепшым</translation>
 <translation id="4121428309786185360">Заканчэнне тэрміну дзеяння:</translation>
 <translation id="4123572138124678573">Тры дзіркі знізу</translation>
 <translation id="412601465078863288">Час чакання запампоўвання перавышаны</translation>
@@ -2176,6 +2179,7 @@
 <translation id="4819347708020428563">Збіраецеся змяняць анатацыі ў стандартным выглядзе?</translation>
 <translation id="4822493756793346865">Звесткі пра звычайныя цэны грунтуюцца на даных з крам у інтэрнэце за мінулыя 90 дзён.</translation>
 <translation id="4822922322149719535">Праглядзець журнал памылак</translation>
+<translation id="4823699521959851389">Браўзеру <ph name="SHORT_PRODUCT_NAME" /> патрабуецца доступ да наступнага інструмента на вашай прыладзе: <ph name="PERMISSION" /></translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую табліцу Google, націсніце Tab, затым Enter</translation>
 <translation id="4826588772550366629">камеру і мікрафон</translation>
 <translation id="4827283332383516812">Выдаленне карткі</translation>

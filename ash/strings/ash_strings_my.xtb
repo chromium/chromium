@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">တောက်ပမှုကို မြှင့်တင်ရန်</translation>
 <translation id="1680659827022803830">ဗီဒီယိုခေါ်ဆိုမှု အစီအမံများ</translation>
 <translation id="169515659049020177">Shift ကီး</translation>
+<translation id="1696984622403682083">ဆက်တင်များတွင် ဤတူးလ်ကို အချိန်မရွေး ပိတ်နိုင်သည်။ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> တိုင်မာ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 လိပ်စာ− <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ဖွင့်ထားသည့်ဝင်းဒိုးကို ဘယ်ဖက်တွင် နေရာချလိုက်သည်။</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />၊ ထည့်သွင်းထားသည့် အက်ပ်၊ ခဏရပ်ထားသည်</translation>
 <translation id="4228078597006700451">ထိန်းချုပ်မှုများ စနစ်ထည့်သွင်းမထားပါ</translation>
 <translation id="4230560241506423345">အသစ်</translation>
+<translation id="4236726631849783264">အကြံပြုသည့် လုပ်ဆောင်ချက်များအကြောင်း သတိပေးချက်</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ခြုံကြည့်သည့်မုဒ်</translation>
 <translation id="4242533952199664413">ဆက်တင်များကို ဖွင့်ရန်</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">မီဒီယာ</translation>
 <translation id="4279490309300973883">ထင်ဟပ်ပေးနေ</translation>
 <translation id="4280601795273309128">လုံခြုံရေးအပ်ဒိတ်များ ပြီးဆုံးပါပြီ။ သင့်စက်ကို အဆင့်မြှင့်ပါ။</translation>
-<translation id="4281739221820540368">Google Docs ပြုလုပ်ရန်</translation>
 <translation id="4283888303416325161">နောက်ထပ် လုံခြုံရေးအတွက် စကားဝှက်ထည့်ပါ</translation>
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="428715201724021596">ပရိုဖိုင်ကို ချိတ်ဆက်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">Speech recognition ဖိုင်များကို ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{စက်ကို ယခုအပ်ဒိတ်လုပ်ပါ}=1{စက်ကို ၁ စက္ကန့်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # စက္ကန့်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
 <translation id="4472575034687746823">စကြရအောင်</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">နောက်တစ်ပုဒ်</translation>
 <translation id="4477751544736611934">ဒေတာခ ပေးရနိုင်သည်။
 စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">လက်ရှိစာမျက်နှာကို လိပ်စာအဖြစ် သိမ်းရန်</translation>
 <translation id="4548482551627849548">ဖွင့်ထားသည့်ဝင်းဒိုးကို ဘယ်ဘက်မျက်နှာပြင်သို့ ရွှေ့ရန်</translation>
 <translation id="4552748006424994716">ပဲ့တင်သံ မဖြစ်စေရန် ကြိုးပါသောနားကြပ်ဖြင့်သာ သင့်မိုက်ကို နားထောင်နိုင်သည်။</translation>
+<translation id="4556953949326137018">“Calendar တွင် ထည့်ရန်” (သို့) “Google Docs ပြုလုပ်ရန်” ကဲ့သို့ အကြံပြုသည့် လုပ်ဆောင်ချက်များကို သုံးသောအခါ <ph name="LINK_TO_SERVICE_TERMS" /> နှင့် သက်ဆိုင်သည့် လုပ်ဆောင်ချက်များကို အကြံပြုရန်အတွက် ရွေးထားသောနေရာမှ အကြောင်းအရာကို Google ဆာဗာများသို့ ပို့သည်။ ကိုယ်ရေးကိုယ်တာ၊ သတိထားရမည့် (သို့) လျှို့ဝှက်အချက်အလက်များကို မထည့်ပါနှင့်။</translation>
 <translation id="4560576029703263363">ဖွင့်ရန်</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">စကားဝှက်ကို ဖျောက်ရန်</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">နောက်တစ်ခု</translation>
 <translation id="481749895090480684">လုပ်ဆောင်ရန်စာရင်း- <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ကင်မရာနှင့် မိုက်ခရိုဖုန်း</translation>
+<translation id="4828935196674083554">ထည့်နေသည်…</translation>
 <translation id="482908187605862807">Play Store မှ ရနိုင်သောအက်ပ်များ</translation>
 <translation id="4831034276697007977">အလိုအလျောက်နှိပ်ခြင်းကို ပိတ်လိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="4835677468087803981">ပင်နံပါတ် ဖျောက်ရန်</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">စာမျက်နှာအပေါ်</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">အကြောင်းကြားချက်အားလုံးကို ထုတ်ပစ်ရန်</translation>
+<translation id="6426905245930183644">ပြုလုပ်နေသည်…</translation>
 <translation id="6430225033895752525">အထူးပြသမှု ဆက်တင်များကို ပြပါ</translation>
 <translation id="643147933154517414">အားလုံးပြီးပါပြီ</translation>
 <translation id="6431865393913628856">ဖန်သားပြင် ရိုက်ကူးရန်</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">လုပ်ဆောင်စရာ အပိုင်းခွဲ</translation>
 <translation id="6613765291890844037">သိုလှောင်ခန်း <ph name="STORAGE_IN_USE_SIZE" /> သုံးနေသည် | စုစုပေါင်း <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်ကို ဖွင့်ထားသည်</translation>
-<translation id="6618277154885124991">Google Sheets ပြုလုပ်ရန်</translation>
 <translation id="6622679827379792051">သင့်ဖုန်းရှိ အက်ပ်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းရန်</translation>
 <translation id="662279009180869175">မျက်နှာပြင် ခွဲ၍ပြသခြင်းကို အရွယ်ပြင်ရန် ဘယ်နှင့် ညာညွှန်မြား သုံးပါ</translation>
 <translation id="6624493541160101248">လက်ရှိမျက်နှာပြင်- <ph name="DESK_NAME" />။ မျက်နှာပြင် <ph name="DESK_COUNT" /> ခုအနက် <ph name="DESK_INDEX" />။</translation>

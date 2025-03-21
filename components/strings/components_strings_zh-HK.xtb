@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">替用匣</translation>
 <translation id="1264974993859112054">運動</translation>
 <translation id="1268480293435976622">Chinese #7 信封</translation>
+<translation id="1269045546668906972">開啟 AI 自動填入功能，即可自動填寫更多欄位</translation>
 <translation id="1269516672602708785">在「Google 協作平台」中快速建立新版網站</translation>
 <translation id="1270328905573953738">搬屋和搬遷</translation>
 <translation id="1270502636509132238">取貨方式</translation>
@@ -1138,6 +1139,7 @@
 <translation id="3005723025932146533">顯示儲存的複本</translation>
 <translation id="300580149047131921">最近使用過</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒 Tab 掣就可以瀏覽可以用嘅操作，然後㩒 Enter 掣就可以執行揀咗嘅操作。</translation>
+<translation id="3010991137650052245">如要在此網站上使用<ph name="PERMISSION" />，請向 <ph name="SHORT_PRODUCT_NAME" /> 授予存取權</translation>
 <translation id="3013711734159931232">家庭用品</translation>
 <translation id="3014553260345122294">商業新聞</translation>
 <translation id="3014726756341138577">進階打印機功能</translation>
@@ -1410,6 +1412,7 @@
 <translation id="3479552764303398839">略過</translation>
 <translation id="3484560055331845446">您可能會失去 Google 帳戶存取權。Chrome 建議您立即變更密碼。系統會要求您登入。</translation>
 <translation id="3484861421501147767">提醒：可使用已儲存的宣傳代碼</translation>
+<translation id="3485901585646640838">如要使用儲存在 Google 帳戶的密碼和其他資料，請驗證身分</translation>
 <translation id="3486406746948052912">止汗劑、香體露和身體噴霧</translation>
 <translation id="3487845404393360112">紙匣 4</translation>
 <translation id="3493660662684070951">貨車、客貨車和休閒車</translation>
@@ -1787,6 +1790,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">系統不支援這項政策的範圍。</translation>
+<translation id="411918202192379658">自動填入更好用</translation>
 <translation id="4121428309786185360">到期日</translation>
 <translation id="4123572138124678573">三孔 (底部)</translation>
 <translation id="412601465078863288">上載逾時</translation>
@@ -2175,6 +2179,7 @@
 <translation id="4819347708020428563">要在預設檢視模式中編輯註解嗎？</translation>
 <translation id="4822493756793346865">一般價格是根據過去 90 日各網上商店的資料得出。</translation>
 <translation id="4822922322149719535">檢視錯誤記錄</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> 需要存取你裝置的<ph name="PERMISSION" /></translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以快速建立新嘅 Google 試算表</translation>
 <translation id="4826588772550366629">相機和麥克風</translation>
 <translation id="4827283332383516812">刪除卡</translation>
@@ -2529,6 +2534,7 @@
 <translation id="5443468954631487277">相反順序 (正面朝上)</translation>
 <translation id="5445340838622821110">如選擇分期付款，系統會填入一次性的虛擬卡號。此卡號只適用於這宗交易。<ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">允許 <ph name="SITE" /> 使用與你相關的既有資料</translation>
+<translation id="5451331376824595378">當 Chrome 標示安全事件時，系統會向你的管理員發送該事件的相關資料。內容可能包括你在 Chrome 瀏覽的網址、複製資料的來源網址、檔案名稱或元數據、IP 位址、瀏覽器或分頁當機相關資料，以及用於登入網頁應用程式、裝置和 Chrome 的使用者名稱。</translation>
 <translation id="5452270690849572955">找不到此 <ph name="HOST_NAME" /> 網頁</translation>
 <translation id="5452923259299906094">以電子錢包和 Pix 付款</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
@@ -3423,6 +3429,7 @@
 <translation id="7023765275461720661">要連結帳戶並透過 <ph name="BNPL_ISSUER_NAME" /> 付款嗎？</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030164307377592766">修改填入付款方法的設定</translation>
+<translation id="7031110846419387930">瀏覽器、作業系統、裝置、已安裝的軟件、檔案和 IP 位址的相關資料</translation>
 <translation id="7031646650991750659">您已安裝的 Google Play 應用程式</translation>
 <translation id="7035705295266423040">銀行要驗證你的身分</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Google 帳戶私隱設定</translation>
@@ -3534,6 +3541,7 @@
 <translation id="7221855153210829124">顯示通知</translation>
 <translation id="722454870747268814">新增無痕式分頁</translation>
 <translation id="7227293336683593977">過往價格</translation>
+<translation id="7228306718910595403">歐盟合格狀態</translation>
 <translation id="7232352818707016189">其他比較表格嘅操作</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>
 <translation id="7234112195906418665">旅遊和交通</translation>

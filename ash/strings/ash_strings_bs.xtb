@@ -215,6 +215,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1679841710523778799">Pojačavanje osvjetljenja</translation>
 <translation id="1680659827022803830">Kontrole video poziva</translation>
 <translation id="169515659049020177">Gornji red</translation>
+<translation id="1696984622403682083">Tu značajku uvijek možete isključiti u postavkama. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Tajmer od <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresa: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktivni prozor je priključen na lijevoj strani.</translation>
@@ -967,6 +968,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4221957499226645091">Aplikacija <ph name="APP_NAME" /> je instalirana i pauzirana</translation>
 <translation id="4228078597006700451">Kontrole nisu postavljene</translation>
 <translation id="4230560241506423345">Novo</translation>
+<translation id="4236726631849783264">Podsjetnik o predloženim radnjama</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Način rada za pregled</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
@@ -983,7 +985,6 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4275663329226226506">Mediji</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
 <translation id="4280601795273309128">Sigurnosna ažuriranja su se završila. Nadogradite uređaj.</translation>
-<translation id="4281739221820540368">Kreiraj Google dokument</translation>
 <translation id="4283888303416325161">Unesite lozinku radi veće sigurnosti</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="428715201724021596">Povezivanje s profilom. To može potrajati nekoliko minuta.</translation>
@@ -1044,6 +1045,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4471354919263203780">Preuzimanje fajlova za prepoznavanje govora... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Ažurirajte uređaj sada}=1{Ažurirajte uređaj u roku od 1 sekunde}one{Ažurirajte uređaj u roku od # sekunde}few{Ažurirajte uređaj u roku od # sekunde}other{Ažurirajte uređaj u roku od # sekundi}}</translation>
 <translation id="4472575034687746823">Započnite</translation>
+<translation id="4473489370276014885">Google kontakti</translation>
 <translation id="4477350412780666475">Sljedeća numera</translation>
 <translation id="4477751544736611934">Mogu nastati troškovi prenosa podataka.
 Povezan je 1 uređaj.</translation>
@@ -1070,6 +1072,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4545950850562423083">Sačuvajte trenutnu stranicu kao oznaku</translation>
 <translation id="4548482551627849548">Premjesti aktivni prozor na lijevu radnu površinu</translation>
 <translation id="4552748006424994716">Da spriječite eho, možete slušati zvuk mikrofona samo putem žičanih slušalica.</translation>
+<translation id="4556953949326137018">Kad upotrebljavate predložene radnje kao što su "dodaj u Kalendar" ili "izradi Google dokumente", sadržaj s odabranog područja šalje se na Googleove poslužitelje radi predlaganja radnji, u skladu s pravilima <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte navoditi ništa osobno, osjetljivo ni povjerljivo.</translation>
 <translation id="4560576029703263363">Uključeno</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
@@ -1153,6 +1156,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="481455355267255546">Sljedeće</translation>
 <translation id="481749895090480684">Lista zadataka: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kameru i mikrofon</translation>
+<translation id="4828935196674083554">Dodavanje...</translation>
 <translation id="482908187605862807">Aplikacije dostupne u Play trgovini</translation>
 <translation id="4831034276697007977">Jeste li sigurni da želite isključiti automatske klikove?</translation>
 <translation id="4835677468087803981">Sakrivanje PIN-a</translation>
@@ -1650,6 +1654,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="641817663353603351">Page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Obrišite sva obavještenja</translation>
+<translation id="6426905245930183644">U tijeku je izrada...</translation>
 <translation id="6430225033895752525">Prikaz postavki fokusiranja</translation>
 <translation id="643147933154517414">Završeno</translation>
 <translation id="6431865393913628856">Snimanje ekrana</translation>
@@ -1716,7 +1721,6 @@ Nova instalacija</translation>
 <translation id="6612889377159412215">podzadatak</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> pohrane je u upotrebi | Ukupno <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Ekran za privatnost je uključen</translation>
-<translation id="6618277154885124991">Kreiraj Google tabelu</translation>
 <translation id="6622679827379792051">Postavljanje pregledanja aplikacija telefona</translation>
 <translation id="662279009180869175">Promjena veličine podijeljenog ekrana pomoću strelica ulijevo i udesno</translation>
 <translation id="6624493541160101248">Trenutna radna površina: <ph name="DESK_NAME" />. Radna površina <ph name="DESK_INDEX" /> od <ph name="DESK_COUNT" />.</translation>

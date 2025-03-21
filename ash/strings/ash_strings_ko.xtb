@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">밝게</translation>
 <translation id="1680659827022803830">화상 회의 관리</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">언제든지 설정에서 이 기능을 사용 중지할 수 있습니다. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 타이머 · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 주소: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">활성 창이 왼쪽에 고정되었습니다.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, 설치된 앱, 일시중지됨</translation>
 <translation id="4228078597006700451">컨트롤이 설정되지 않음</translation>
 <translation id="4230560241506423345">신규</translation>
+<translation id="4236726631849783264">추천 작업에 대한 알림</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">전체보기 모드</translation>
 <translation id="4242533952199664413">설정 열기</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">미디어</translation>
 <translation id="4279490309300973883">미러링</translation>
 <translation id="4280601795273309128">보안 업데이트가 종료되었습니다. 기기를 업그레이드하세요.</translation>
-<translation id="4281739221820540368">Google 문서 만들기</translation>
 <translation id="4283888303416325161">보안 강화를 위해 비밀번호 입력</translation>
 <translation id="4285498937028063278">고정 해제</translation>
 <translation id="428715201724021596">프로필에 연결하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">음성 인식 파일 다운로드 중... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{지금 기기 업데이트}=1{1초 이내에 기기 업데이트}other{#초 이내에 기기 업데이트}}</translation>
 <translation id="4472575034687746823">시작하기</translation>
+<translation id="4473489370276014885">Google 주소록</translation>
 <translation id="4477350412780666475">다음 트랙</translation>
 <translation id="4477751544736611934">데이터 요금이 발생할 수 있습니다.
 기기 1대가 연결되었습니다.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">현재 페이지를 북마크로 저장</translation>
 <translation id="4548482551627849548">활성 창을 왼쪽 데스크로 이동합니다.</translation>
 <translation id="4552748006424994716">에코를 방지하려면 유선 헤드폰으로만 마이크를 들어야 합니다.</translation>
+<translation id="4556953949326137018">'Calendar에 추가' 또는 'Google Docs 문서 만들기'와 같은 추천 작업을 사용하면 선택한 영역의 콘텐츠가 Google 서버로 전송되어 <ph name="LINK_TO_SERVICE_TERMS" />에 따라 작업을 추천합니다. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="4560576029703263363">사용</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">비밀번호 숨김</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">다음 일정</translation>
 <translation id="481749895090480684">할 일 목록: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">카메라 및 마이크</translation>
+<translation id="4828935196674083554">추가 중...</translation>
 <translation id="482908187605862807">Play 스토어에서 사용 가능한 앱</translation>
 <translation id="4831034276697007977">자동 클릭을 사용 중지하시겠습니까?</translation>
 <translation id="4835677468087803981">PIN 숨기기</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">페이지 위로</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">알림 모두 지우기</translation>
+<translation id="6426905245930183644">생성 중...</translation>
 <translation id="6430225033895752525">집중 모드 설정 표시</translation>
 <translation id="643147933154517414">완료</translation>
 <translation id="6431865393913628856">화면 녹화</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">하위 할 일</translation>
 <translation id="6613765291890844037">저장용량 <ph name="STORAGE_IN_USE_SIZE" /> 사용 중 | 총 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">개인 정보 보호 화면이 켜져 있습니다</translation>
-<translation id="6618277154885124991">Google 시트 만들기</translation>
 <translation id="6622679827379792051">휴대전화의 앱 보기 설정</translation>
 <translation id="662279009180869175">왼쪽 및 오른쪽 화살표를 사용하여 화면 분할 크기 조절</translation>
 <translation id="6624493541160101248">현재 데스크는 <ph name="DESK_NAME" />입니다. 데스크 <ph name="DESK_COUNT" />개 중 <ph name="DESK_INDEX" />번째입니다.</translation>
