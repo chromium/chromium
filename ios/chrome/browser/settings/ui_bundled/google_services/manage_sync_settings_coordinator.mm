@@ -255,8 +255,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   _personalizeGoogleServicesCoordinator = nil;
 }
 
-- (void)stopAccountMenuCoordinatorWithResult:(SigninCoordinatorResult)result
-                                    identity:(id<SystemIdentity>)identity {
+- (void)stopAccountMenuCoordinator {
   [_accountMenuCoordinator stop];
   _accountMenuCoordinator = nil;
 }
@@ -499,10 +498,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                         anchorView:_viewController.view];
 
   __weak __typeof(self) weakself = self;
-  _accountMenuCoordinator.signinCompletion = ^(SigninCoordinatorResult result,
-                                               id<SystemIdentity> identity) {
-    [weakself stopAccountMenuCoordinatorWithResult:result identity:identity];
-  };
+  _accountMenuCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
+        [weakself stopAccountMenuCoordinator];
+      };
 
   [_accountMenuCoordinator start];
 }
