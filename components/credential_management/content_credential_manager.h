@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_CONTENT_CREDENTIAL_MANAGER_H_
-#define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_CONTENT_CREDENTIAL_MANAGER_H_
+#ifndef COMPONENTS_CREDENTIAL_MANAGEMENT_CONTENT_CREDENTIAL_MANAGER_H_
+#define COMPONENTS_CREDENTIAL_MANAGEMENT_CONTENT_CREDENTIAL_MANAGER_H_
 
 #include <memory>
 
@@ -16,9 +16,10 @@
 class GURL;
 
 namespace password_manager {
-class PasswordManagerClient;
 struct CredentialInfo;
+}
 
+namespace credential_management {
 // Implements blink::mojom::CredentialManager using an implementation of
 // ChromeCredentialManagerInterface. Methods Store, PreventSilentAccess and Get
 // are invoked from the renderer with callbacks as arguments.
@@ -40,20 +41,20 @@ class ContentCredentialManager : public blink::mojom::CredentialManager {
   void DisconnectBinding();
 
   // blink::mojom::CredentialManager methods:
-  void Store(const CredentialInfo& credential, StoreCallback callback) override;
+  void Store(const password_manager::CredentialInfo& credential,
+             StoreCallback callback) override;
   void PreventSilentAccess(PreventSilentAccessCallback callback) override;
-  void Get(CredentialMediationRequirement mediation,
+  void Get(password_manager::CredentialMediationRequirement mediation,
            bool include_passwords,
            const std::vector<GURL>& federations,
            GetCallback callback) override;
 
  private:
-  std::unique_ptr<credential_management::CredentialManagerInterface>
-      credential_manager_;
+  std::unique_ptr<CredentialManagerInterface> credential_manager_;
 
   mojo::Receiver<blink::mojom::CredentialManager> receiver_{this};
 };
 
-}  // namespace password_manager
+}  // namespace credential_management
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_CONTENT_CREDENTIAL_MANAGER_H_
+#endif  // COMPONENTS_CREDENTIAL_MANAGEMENT_CONTENT_CREDENTIAL_MANAGER_H_

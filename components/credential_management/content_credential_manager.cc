@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/content/browser/content_credential_manager.h"
+#include "components/credential_management/content_credential_manager.h"
 
 #include <utility>
 
@@ -10,13 +10,12 @@
 #include "components/password_manager/core/browser/credential_manager_impl.h"
 #include "mojo/public/cpp/bindings/message.h"
 
-namespace password_manager {
+namespace credential_management {
 
 // ContentCredentialManager -------------------------------------------------
 
 ContentCredentialManager::ContentCredentialManager(
-    std::unique_ptr<credential_management::CredentialManagerInterface>
-        credential_manager)
+    std::unique_ptr<CredentialManagerInterface> credential_manager)
     : credential_manager_(std::move(credential_manager)) {}
 
 ContentCredentialManager::~ContentCredentialManager() = default;
@@ -48,8 +47,9 @@ void ContentCredentialManager::DisconnectBinding() {
   credential_manager_->ResetPendingRequest();
 }
 
-void ContentCredentialManager::Store(const CredentialInfo& credential,
-                                     StoreCallback callback) {
+void ContentCredentialManager::Store(
+    const password_manager::CredentialInfo& credential,
+    StoreCallback callback) {
   credential_manager_->Store(credential, std::move(callback));
 }
 
@@ -58,12 +58,13 @@ void ContentCredentialManager::PreventSilentAccess(
   credential_manager_->PreventSilentAccess(std::move(callback));
 }
 
-void ContentCredentialManager::Get(CredentialMediationRequirement mediation,
-                                   bool include_passwords,
-                                   const std::vector<GURL>& federations,
-                                   GetCallback callback) {
+void ContentCredentialManager::Get(
+    password_manager::CredentialMediationRequirement mediation,
+    bool include_passwords,
+    const std::vector<GURL>& federations,
+    GetCallback callback) {
   credential_manager_->Get(mediation, include_passwords, federations,
                            std::move(callback));
 }
 
-}  // namespace password_manager
+}  // namespace credential_management
