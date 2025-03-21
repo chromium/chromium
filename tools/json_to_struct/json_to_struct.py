@@ -74,10 +74,12 @@ try:
 finally:
   sys.path.pop(0)
 
+from aggregation import GetAggregationDetails, AggregationKind
 import class_generator
 import element_generator
 import java_element_generator
 import struct_generator
+
 
 HEAD = u"""// Copyright %d The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -89,6 +91,7 @@ HEAD = u"""// Copyright %d The Chromium Authors
 // DO NOT EDIT.
 
 """
+
 
 def _GenerateHeaderGuard(h_filename):
   """Generates the string used in #ifndef guarding the header file.
@@ -143,16 +146,25 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
 
     for var_name, value in description.get('int_variables', {}).items():
       f.write(u'extern const int %s;\n' % var_name)
-    f.write(u'\n')
 
-    for element_name, element in description['elements'].items():
-      f.write(u'extern const %s %s;\n' % (schema['type_name'], element_name))
+    aggregation = GetAggregationDetails(description)
 
-    if 'generate_array' in description:
+    # Generate forward declarations of all elements.
+    if aggregation.export_items:
       f.write(u'\n')
-      f.write(
-          u'extern const base::span<const %s* const> %s;\n' %
-          (schema['type_name'], description['generate_array']['array_name']))
+      for element_name, element in description['elements'].items():
+        f.write(u'extern const %s %s;\n' % (schema['type_name'], element_name))
+
+    if aggregation.kind == AggregationKind.ARRAY:
+      f.write(u'\n')
+      f.write(f'extern const base::span<const {schema["type_name"]}* const> '
+              f'{aggregation.name};\n')
+
+    if aggregation.kind == AggregationKind.MAP:
+      f.write('\n')
+      f.write(f'extern const base::fixed_flat_map<std::string_view, const '
+              f'{schema["type_name"]}*, {len(description["elements"])}> '
+              f'{aggregation.name};\n')
 
     if namespace:
       f.write(u'\n')
@@ -181,27 +193,45 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
                encoding='utf-8') as f:
     f.write(head)
 
-    f.write(u'#include "%s"\n' % (fileroot + u'.h'))
-    f.write(u'\n')
+    f.write('#include "%s"\n' % (fileroot + u'.h'))
+    f.write('\n')
 
     if namespace:
-      f.write(u'namespace %s {\n' % namespace)
-      f.write(u'\n')
+      f.write('namespace %s {\n' % namespace)
+      f.write('\n')
+
+    aggregation = GetAggregationDetails(description)
+
+    if not aggregation.export_items:
+      f.write('namespace {\n')
+      f.write('\n')
 
     f.write(element_generator.GenerateElements(schema['type_name'],
         schema['schema'], description))
 
-    if 'generate_array' in description:
-      f.write(u'\n')
+    if not aggregation.export_items:
+      f.write('\n}  // anonymous namespace \n\n')
+
+    if aggregation.kind == AggregationKind.ARRAY:
+      f.write('\n')
       f.write(
-          u'const %s* const array_%s[] = {\n' %
-          (schema['type_name'], description['generate_array']['array_name']))
+          f'const {schema["type_name"]}* const array_{aggregation.name}[] = {{\n'
+      )
+
       for element_name, _ in description['elements'].items():
-        f.write(u'\t&%s,\n' % element_name)
-      f.write(u'};\n')
-      f.write(u'const base::span<const %s* const> %s{array_%s};\n' %
-              (schema['type_name'], description['generate_array']['array_name'],
-               description['generate_array']['array_name']))
+        f.write('  &%s,\n' % element_name)
+      f.write('};\n')
+      f.write(f'const base::span<const {schema["type_name"]}* const> '
+              f'{aggregation.name}{{array_{aggregation.name}}};\n')
+
+    if aggregation.kind == AggregationKind.MAP:
+      f.write('\n')
+      f.write(f'const auto {aggregation.name} =\n'
+              f'    base::MakeFixedFlatMap<std::string_view, '
+              f'const {schema["type_name"]}*>({{\n')
+      for element_name, _ in description['elements'].items():
+        f.write(f'  {{"{element_name}", &{element_name}}},\n')
+      f.write('});\n')
 
     if namespace:
       f.write(u'\n')
