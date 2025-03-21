@@ -23,13 +23,13 @@ import json
 import logging
 import os
 import subprocess
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from gpu_tests.util import host_information
 
-SummaryType = Dict[str, Dict[str, float]]
-ResultType = Dict[str, Any]
-MetricType = Dict[str, Union[List[str], List[float]]]
+SummaryType = dict[str, dict[str, float]]
+ResultType = dict[str, Any]
+MetricType = dict[str, list[str] | list[float]]
 
 
 def LocateIPG() -> str:
@@ -47,7 +47,7 @@ def LocateIPG() -> str:
 
 
 def GenerateIPGLogFilename(log_prefix: str = 'PowerLog',
-                           log_dir: Optional[str] = None,
+                           log_dir: str | None = None,
                            current_run: int = 1,
                            total_runs: int = 1,
                            timestamp: bool = False) -> str:
@@ -64,7 +64,7 @@ def GenerateIPGLogFilename(log_prefix: str = 'PowerLog',
 
 def RunIPG(duration_in_s: int = 60,
            resolution_in_ms: int = 100,
-           logfile: Optional[str] = None) -> None:
+           logfile: str | None = None) -> None:
   intel_power_gadget_path = LocateIPG()
   command = ('"%s" -duration %d -resolution %d' %
              (intel_power_gadget_path, duration_in_s, resolution_in_ms))
@@ -84,7 +84,7 @@ def RunIPG(duration_in_s: int = 60,
   logging.debug(output)
 
 
-def AnalyzeIPGLogFile(logfile: Optional[str] = None,
+def AnalyzeIPGLogFile(logfile: str | None = None,
                       skip_in_sec: int = 0) -> ResultType:
   if not logfile:
     logfile = GenerateIPGLogFilename()
@@ -128,12 +128,13 @@ def AnalyzeIPGLogFile(logfile: Optional[str] = None,
   return results
 
 
-def ProcessResultsFromMultipleIPGRuns(logfiles: List[str],
-                                      skip_in_seconds: int = 0,
-                                      outliers: int = 0,
-                                      output_json: Optional[str] = None
-                                      ) -> SummaryType:
-  def _ScrapeDataFromIPGLogFiles() -> Tuple[Dict[str, ResultType], MetricType]:
+def ProcessResultsFromMultipleIPGRuns(
+    logfiles: list[str],
+    skip_in_seconds: int = 0,
+    outliers: int = 0,
+    output_json: str | None = None) -> SummaryType:
+
+  def _ScrapeDataFromIPGLogFiles() -> tuple[dict[str, ResultType], MetricType]:
     """Scrapes data from IPG log files.
 
     Returns:

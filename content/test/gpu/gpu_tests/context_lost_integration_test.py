@@ -7,7 +7,7 @@ import logging
 import os
 import sys
 import time
-from typing import Any, List, Optional, Set, Tuple
+from typing import Any
 import unittest
 
 from gpu_tests import common_browser_args as cba
@@ -80,7 +80,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _SuiteSupportsParallelTests(cls) -> bool:
     return True
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     serial_tests = {
         # High/low power tests don't work properly with multiple browsers
         # active.
@@ -97,7 +97,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return serial_tests
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -121,7 +121,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Could not figure out how to prevent yapf from breaking the formatting
     # below.
     # yapf: disable
-    tests: Tuple[Tuple[str, str], ...] = (
+    tests: tuple[tuple[str, str], ...] = (
              ('GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash',
               'gpu_process_crash.html'),
              ('GpuCrash_GPUProcessCrashesExactlyOnce_SurfaceControlDisabled',
@@ -208,7 +208,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       timeout *= 2
     return timeout
 
-  def _WaitForPageToFinish(self, tab, timeout: Optional[int] = None) -> bool:
+  def _WaitForPageToFinish(self, tab, timeout: int | None = None) -> bool:
     timeout = timeout or self._GetWaitTimeout()
     try:
       tab.WaitForJavaScriptCondition('window.domAutomationController._finished',
@@ -220,7 +220,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _KillGPUProcess(self,
                       number_of_gpu_process_kills: int,
                       check_crash_count: bool,
-                      timeout: Optional[int] = None) -> None:
+                      timeout: int | None = None) -> None:
     timeout = timeout or self._GetWaitTimeout()
     tab = self.tab
     # Doing the GPU process kill operation cooperatively -- in the
@@ -322,8 +322,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab.Close()
     return vid
 
-  def _WaitForTabAndCheckCompletion(self,
-                                    timeout: Optional[int] = None) -> None:
+  def _WaitForTabAndCheckCompletion(self, timeout: int | None = None) -> None:
     tab = self.tab
     completed = self._WaitForPageToFinish(tab, timeout=timeout)
     if not completed:
@@ -833,7 +832,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',

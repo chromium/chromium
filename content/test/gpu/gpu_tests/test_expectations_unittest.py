@@ -5,7 +5,7 @@
 import inspect
 import os
 import re
-from typing import List, Optional, Type
+from typing import Type
 import unittest
 import unittest.mock as mock
 
@@ -64,7 +64,7 @@ def check_intel_driver_version(version: str) -> bool:
   return True
 
 
-def _ExtractUnitTestTestExpectations(file_name: str) -> List[str]:
+def _ExtractUnitTestTestExpectations(file_name: str) -> list[str]:
   file_name = os.path.join(
       os.path.dirname(os.path.abspath(__file__)), '..', 'unittest_data',
       'test_expectations', file_name)
@@ -94,7 +94,7 @@ def CheckTestExpectationsAreForExistingTests(
     unittest_testcase: unittest.TestCase,
     test_class: Type[gpu_integration_test.GpuIntegrationTest],
     mock_options: mock.MagicMock,
-    test_names: Optional[List[str]] = None) -> None:
+    test_names: list[str] | None = None) -> None:
   test_names = test_names or [
       args[0] for args in test_class.GenerateTestCases__RunGpuTest(mock_options)
   ]
@@ -123,7 +123,7 @@ def CheckTestExpectationPatternsForConflicts(
   return errors
 
 
-def _FindTestCases() -> List[Type[gpu_integration_test.GpuIntegrationTest]]:
+def _FindTestCases() -> list[Type[gpu_integration_test.GpuIntegrationTest]]:
   test_cases = []
   for start_dir in gpu_project_config.CONFIG.start_dirs:
     # Note we deliberately only scan the integration tests as a
