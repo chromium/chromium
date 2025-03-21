@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 
 #include <memory>
 #include <utility>
@@ -11,7 +11,7 @@
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/web_applications/web_app_launch_queue_delegate.h"
+#include "components/webapps/browser/launch_queue/launch_queue_delegate.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -24,7 +24,7 @@
 #include "third_party/blink/public/mojom/web_launch/web_launch.mojom.h"
 #include "url/origin.h"
 
-namespace web_app {
+namespace webapps {
 
 namespace {
 
@@ -72,15 +72,14 @@ class EntriesBuilder {
 
 }  // namespace
 
-WebAppLaunchQueue::WebAppLaunchQueue(
-    content::WebContents* web_contents,
-    std::unique_ptr<LaunchQueueDelegate> delegate)
+LaunchQueue::LaunchQueue(content::WebContents* web_contents,
+                         std::unique_ptr<LaunchQueueDelegate> delegate)
     : content::WebContentsObserver(web_contents),
       delegate_(std::move(delegate)) {}
 
-WebAppLaunchQueue::~WebAppLaunchQueue() = default;
+LaunchQueue::~LaunchQueue() = default;
 
-void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
+void LaunchQueue::Enqueue(LaunchParams launch_params) {
   DCHECK(delegate_->IsInScope(launch_params, launch_params.target_url))
       << launch_params.target_url.spec();
 
@@ -103,7 +102,7 @@ void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
   }
 }
 
-void WebAppLaunchQueue::FlushForTesting() const {
+void LaunchQueue::FlushForTesting() const {
   CHECK_IS_TEST();
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()
@@ -113,19 +112,20 @@ void WebAppLaunchQueue::FlushForTesting() const {
   launch_service.FlushForTesting();  // IN-TEST
 }
 
-void WebAppLaunchQueue::Reset() {
+void LaunchQueue::Reset() {
   queue_.clear();
   pending_navigation_ = false;
   last_sent_queued_launch_params_.reset();
 }
 
-const webapps::AppId* WebAppLaunchQueue::GetPendingLaunchAppId() const {
-  if (queue_.empty())
+const webapps::AppId* LaunchQueue::GetPendingLaunchAppId() const {
+  if (queue_.empty()) {
     return nullptr;
+  }
   return &(queue_.front().app_id);
 }
 
-void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
+void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   // Currently, launch data is only sent the primary main frame.
   if (!handle->IsInPrimaryMainFrame()) {
     return;
@@ -160,8 +160,8 @@ void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 }
 
-void WebAppLaunchQueue::SendQueuedLaunchParams(const GURL& current_url) {
-  for (WebAppLaunchParams& launch_params : queue_) {
+void LaunchQueue::SendQueuedLaunchParams(const GURL& current_url) {
+  for (LaunchParams& launch_params : queue_) {
     if (&launch_params == &queue_.back()) {
       last_sent_queued_launch_params_ = launch_params;
     }
@@ -170,8 +170,8 @@ void WebAppLaunchQueue::SendQueuedLaunchParams(const GURL& current_url) {
   queue_.clear();
 }
 
-void WebAppLaunchQueue::SendLaunchParams(WebAppLaunchParams launch_params,
-                                         const GURL& current_url) {
+void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
+                                   const GURL& current_url) {
   // TODO(dmurph): Figure out why this is failing.
   // https://crbug.com/2546057
   DCHECK(delegate_->IsInScope(launch_params, current_url))
@@ -201,4 +201,4 @@ void WebAppLaunchQueue::SendLaunchParams(WebAppLaunchParams launch_params,
   }
 }
 
-}  // namespace web_app
+}  // namespace webapps

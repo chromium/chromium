@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_LAUNCH_QUEUE_DELEGATE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_LAUNCH_QUEUE_DELEGATE_H_
+#ifndef COMPONENTS_WEBAPPS_BROWSER_LAUNCH_QUEUE_LAUNCH_QUEUE_DELEGATE_H_
+#define COMPONENTS_WEBAPPS_BROWSER_LAUNCH_QUEUE_LAUNCH_QUEUE_DELEGATE_H_
 
 class GURL;
 
@@ -19,23 +19,23 @@ struct PathInfo;
 
 }  // namespace content
 
-namespace web_app {
+namespace webapps {
 
-struct WebAppLaunchParams;
+struct LaunchParams;
 
 class LaunchQueueDelegate {
  public:
   virtual ~LaunchQueueDelegate() = default;
 
-  virtual bool IsInScope(const WebAppLaunchParams& launch_params,
+  virtual bool IsInScope(const LaunchParams& launch_params,
                          const GURL& current_url) const = 0;
 
   virtual content::PathInfo GetPathInfo(
       const base::FilePath& entry_path) const = 0;
 
-  virtual bool IsValidLaunchParams(const WebAppLaunchParams& params) const = 0;
+  virtual bool IsValidLaunchParams(const LaunchParams& params) const = 0;
 };
 
-}  // namespace web_app
+}  // namespace webapps
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_LAUNCH_QUEUE_DELEGATE_H_
+#endif  // COMPONENTS_WEBAPPS_BROWSER_LAUNCH_QUEUE_LAUNCH_QUEUE_DELEGATE_H_

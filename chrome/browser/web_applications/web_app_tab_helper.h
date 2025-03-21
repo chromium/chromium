@@ -24,10 +24,13 @@ namespace content {
 class WebContents;
 }
 
+namespace webapps {
+class LaunchQueue;
+}
+
 namespace web_app {
 
 class WebAppProvider;
-class WebAppLaunchQueue;
 
 // Per-tab web app helper. Allows to associate a tab (web page) with a web app.
 class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
@@ -120,7 +123,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
     is_pinned_home_tab_ = is_pinned_home_tab;
   }
 
-  WebAppLaunchQueue& EnsureLaunchQueue();
+  webapps::LaunchQueue& EnsureLaunchQueue();
 
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(
@@ -204,7 +207,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   // Use unique_ptr for lazy instantiation as most browser tabs have no need to
   // incur this memory overhead.
-  std::unique_ptr<WebAppLaunchQueue> launch_queue_;
+  std::unique_ptr<webapps::LaunchQueue> launch_queue_;
 
   // A callback that runs whenever the `tab` is destroyed, navigates or goes to
   // the background.
