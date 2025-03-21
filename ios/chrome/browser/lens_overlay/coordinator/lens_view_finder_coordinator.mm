@@ -94,9 +94,9 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command {
   LensOverlayConfigurationFactory* configurationFactory =
       [[LensOverlayConfigurationFactory alloc] init];
-  LensConfiguration* configuration = [configurationFactory
-      configurationForLensEntrypoint:command.entryPoint
-                             profile:self.browser->GetProfile()];
+  LensConfiguration* configuration =
+      [configurationFactory configurationForLensEntrypoint:command.entryPoint
+                                                   profile:self.profile];
 
   _transitionManager = [[LensViewFinderTransitionManager alloc]
       initWithLVFTransitionType:TransitionFromPresentationStyle(
