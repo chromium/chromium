@@ -296,6 +296,7 @@ enum Medium {
   kBleL2Cap = 10,
   kUsb = 11,
   kWebRtcNonCellular = 12,
+  kAwdl = 13,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyConnectionsMedium)
 

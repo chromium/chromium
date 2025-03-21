@@ -109,6 +109,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="BLE_L2CAP"/>
   <int value="11" label="USB"/>
   <int value="12" label="WebRTC Non-cellular"/>
+  <int value="13" label="AWDL"/>
 </enum>
 
 <!-- LINT.ThenChange(//chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom:NearbyConnectionsMedium) -->
@@ -656,6 +657,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="BLE L2CAP"/>
   <int value="12" label="USB"/>
   <int value="13" label="WebRTC Non-cellular"/>
+  <int value="14" label="AWDL"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/nearby_sharing/nearby_share_metrics.cc:NearbyShareUpgradedMedium) -->
