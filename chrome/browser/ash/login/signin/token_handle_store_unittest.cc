@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/json/values_util.h"
+#include "base/test/scoped_mock_clock_override.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -18,8 +21,11 @@ constexpr char kKnownUserPref[] = "KnownUsers";
 
 constexpr char kTokenHandlePref[] = "PasswordTokenHandle";
 constexpr char kTokenHandleStatusPref[] = "TokenHandleStatus";
+constexpr char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
 constexpr char kTokenHandleStatusInvalid[] = "invalid";
 constexpr char kTokenHandleStatusValid[] = "valid";
+
+constexpr base::TimeDelta kCacheStatusTime = base::Hours(1);
 
 }  // namespace
 
@@ -114,6 +120,49 @@ TEST_F(TokenHandleStoreTest,
       token_handle_store->ShouldObtainHandle(account_id);
 
   EXPECT_EQ(should_obtain_handle, false);
+}
+
+TEST_F(TokenHandleStoreTest, IsRecentlyCheckedReturnsFalseIfNeverChecked) {
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  auto known_user = std::make_unique<user_manager::KnownUser>(&local_state_);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      std::make_unique<TokenHandleStoreImpl>(std::move(known_user));
+
+  bool is_recently_checked = token_handle_store->IsRecentlyChecked(account_id);
+
+  EXPECT_EQ(is_recently_checked, false);
+}
+
+TEST_F(TokenHandleStoreTest,
+       IsRecentlyCheckedReturnsTrueIfWithinCacheStatusTime) {
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  auto known_user = std::make_unique<user_manager::KnownUser>(&local_state_);
+  base::ScopedMockClockOverride mock_clock;
+  known_user->SetPath(account_id, kTokenHandleLastCheckedPref,
+                      base::TimeToValue(base::Time::Now()));
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      std::make_unique<TokenHandleStoreImpl>(std::move(known_user));
+  mock_clock.Advance(kCacheStatusTime - base::Minutes(1));
+
+  bool is_recently_checked = token_handle_store->IsRecentlyChecked(account_id);
+
+  EXPECT_EQ(is_recently_checked, true);
+}
+
+TEST_F(TokenHandleStoreTest,
+       IsRecentlyCheckedReturnsFalseIfNotWithinCacheStatusTime) {
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  auto known_user = std::make_unique<user_manager::KnownUser>(&local_state_);
+  base::ScopedMockClockOverride mock_clock;
+  known_user->SetPath(account_id, kTokenHandleLastCheckedPref,
+                      base::TimeToValue(base::Time::Now()));
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      std::make_unique<TokenHandleStoreImpl>(std::move(known_user));
+  mock_clock.Advance(kCacheStatusTime * 2);
+
+  bool is_recently_checked = token_handle_store->IsRecentlyChecked(account_id);
+
+  EXPECT_EQ(is_recently_checked, false);
 }
 
 }  // namespace ash

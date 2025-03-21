@@ -15,7 +15,9 @@ namespace {
 
 constexpr char kTokenHandlePref[] = "PasswordTokenHandle";
 constexpr char kTokenHandleStatusPref[] = "TokenHandleStatus";
+constexpr char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
 constexpr char kTokenHandleStatusInvalid[] = "invalid";
+constexpr base::TimeDelta kCacheStatusTime = base::Hours(1);
 
 }  // namespace
 
@@ -38,8 +40,18 @@ bool TokenHandleStoreImpl::ShouldObtainHandle(
 
 bool TokenHandleStoreImpl::IsRecentlyChecked(
     const AccountId& account_id) const {
-  // TODO(emaamari): implement.
-  return true;
+  const base::Value* value =
+      known_user_->FindPath(account_id, kTokenHandleLastCheckedPref);
+  if (!value) {
+    return false;
+  }
+
+  std::optional<base::Time> last_checked = base::ValueToTime(value);
+  if (!last_checked.has_value()) {
+    return false;
+  }
+
+  return base::Time::Now() - last_checked.value() < kCacheStatusTime;
 }
 
 void TokenHandleStoreImpl::IsReauthRequired(
