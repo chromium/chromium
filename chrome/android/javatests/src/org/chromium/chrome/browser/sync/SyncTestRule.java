@@ -233,19 +233,16 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      *
      * @return the test account that is signed in.
      */
+    @Deprecated
     public CoreAccountInfo setUpAccountAndEnableSyncForTesting() {
-        return setUpAccountAndEnableSyncForTesting(false);
-    }
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addTestAccountThenSigninAndEnableSync(mSyncService);
 
-    /**
-     * Set up a child test account, sign in and enable sync. FirstSetupComplete bit will be set
-     * after this. For most purposes this function should be used as this emulates the basic sign in
-     * flow.
-     *
-     * @return the test account that is signed in.
-     */
-    public CoreAccountInfo setUpChildAccountAndEnableSyncForTesting() {
-        return setUpAccountAndEnableSyncForTesting(true);
+        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
+        enableUKM();
+        SyncTestUtil.waitForSyncFeatureActive();
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+        return accountInfo;
     }
 
     /**
@@ -445,17 +442,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                             ProfileManager.getLastUsedRegularProfile(), true);
                 });
-    }
-
-    private CoreAccountInfo setUpAccountAndEnableSyncForTesting(boolean isChildAccount) {
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addTestAccountThenSigninAndEnableSync(mSyncService, isChildAccount);
-
-        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
-        enableUKM();
-        SyncTestUtil.waitForSyncFeatureActive();
-        SyncTestUtil.triggerSyncAndWaitForCompletion();
-        return accountInfo;
     }
 
     private static PrefService getPrefService() {
