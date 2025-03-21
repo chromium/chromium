@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
@@ -37,7 +38,8 @@ const LayoutResult* MathTokenLayoutAlgorithm::Layout() {
       DynamicTo<MathMLTokenElement>(Node().GetDOMNode())
           ->GetTokenContent()
           .characters,
-      RuntimeEnabledFeatures::CanvasTextNgEnabled()
+      RuntimeEnabledFeatures::CanvasTextNgEnabled(
+          Node().GetDocument().GetExecutionContext())
           ? &PlainTextPainter::Shared()
           : nullptr);
   LayoutUnit ink_ascent(metrics->actualBoundingBoxAscent());

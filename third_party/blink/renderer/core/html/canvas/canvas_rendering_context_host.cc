@@ -384,7 +384,6 @@ gfx::ColorSpace CanvasRenderingContextHost::GetRenderingContextColorSpace()
 }
 
 PlainTextPainter& CanvasRenderingContextHost::GetPlainTextPainter() {
-  DCHECK(RuntimeEnabledFeatures::CanvasTextNgEnabled());
   if (!plain_text_painter_) {
     plain_text_painter_ =
         MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas);

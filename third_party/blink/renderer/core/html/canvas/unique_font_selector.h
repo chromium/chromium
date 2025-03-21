@@ -26,7 +26,7 @@ class CORE_EXPORT UniqueFontSelector
     : public GarbageCollected<UniqueFontSelector>,
       public MemoryPressureListener {
  public:
-  explicit UniqueFontSelector(FontSelector* base_selector);
+  UniqueFontSelector(FontSelector* base_selector, bool enable_cache);
   void Trace(Visitor* visitor) const override;
 
   const Font* FindOrCreateFont(const FontDescription& description);
@@ -62,6 +62,8 @@ class CORE_EXPORT UniqueFontSelector
   // and back() points to the least recently used item.
   VectorBackedLinkedList<LruListKey> lru_list_;
   uint32_t frame_generation_ = 0;
+
+  const bool enable_cache_;
 };
 
 }  // namespace blink
