@@ -158,6 +158,7 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
     scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
+    size_t max_retries,
     base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
   auto callback_wrapper =
       WrapCallbackWithMetrics(BackgroundTaskType::kSign, std::move(callback));
@@ -171,10 +172,9 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
 
   // TODO(b/263249728): deduplicate tasks with the same parameters.
   // TODO(b/263249728): implement a cache of recent signings.
-  // TODO(crbug.com/400903525): expose `max_retries` as a parameter.
-  auto task = std::make_unique<SignTask>(std::move(signing_key), data, priority,
-                                         /*max_retries=*/0,
-                                         std::move(callback_wrapper));
+  auto task =
+      std::make_unique<SignTask>(std::move(signing_key), data, priority,
+                                 max_retries, std::move(callback_wrapper));
   task_scheduler_.PostTask(std::move(task));
 }
 
