@@ -123,6 +123,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void OnCollaborationRemoved(
       const syncer::CollaborationId& collaboration_id) override;
 
+  std::vector<const SavedTabGroup*> ReadAllGroups() const override;
   std::vector<SavedTabGroup> GetAllGroups() const override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;
   std::optional<SavedTabGroup> GetGroup(
@@ -335,6 +336,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   void NotifyTabGroupSharingResult(const base::Uuid& group_guid,
                                    TabGroupSharingResult result);
+
+  // Whether a given group should show up in TabGroups
+  bool ShouldExposeSavedTabGroupInList(const SavedTabGroup& group) const;
 
   // Find tab group by collaboration Id.
   std::optional<SavedTabGroup> FindGroupWithCollaborationId(

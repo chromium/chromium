@@ -274,7 +274,18 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
       const syncer::CollaborationId& collaboration_id) = 0;
 
   // Accessor methods.
+  // ReadAllGroups and GetAllGroups both return the same list of groups,
+  // filtered by whether they should be exposed to external callers.
+  // ReadAllGroups should be used by default since it doesnt require copying
+  // unless there is a specific reason for using GetAllGroups.
+  // Note that the pointers returned by ReadAllGroups are affected by any
+  // insertion or deletion operations on the tab group, so don't hold the this
+  // vector while doing any insertion deletion, or use this pointer across
+  // multiple calls to ReadAllGroups.
+  virtual std::vector<const SavedTabGroup*> ReadAllGroups() const = 0;
   virtual std::vector<SavedTabGroup> GetAllGroups() const = 0;
+
+  // Returns groups (even if they would be filtered out in Get/ReadAllGroups).
   virtual std::optional<SavedTabGroup> GetGroup(
       const base::Uuid& guid) const = 0;
   virtual std::optional<SavedTabGroup> GetGroup(

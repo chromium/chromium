@@ -214,6 +214,18 @@ void TabGroupSyncServiceProxy::OnCollaborationRemoved(
   NOTIMPLEMENTED();
 }
 
+std::vector<const SavedTabGroup*> TabGroupSyncServiceProxy::ReadAllGroups()
+    const {
+  const std::vector<SavedTabGroup>& groups =
+      service_->model()->saved_tab_groups();
+  std::vector<const SavedTabGroup*> group_ptrs;
+  group_ptrs.reserve(groups.size());
+  for (const SavedTabGroup& group : groups) {
+    group_ptrs.push_back(&group);
+  }
+  return group_ptrs;
+}
+
 std::vector<SavedTabGroup> TabGroupSyncServiceProxy::GetAllGroups() const {
   return service_->model()->saved_tab_groups();
 }

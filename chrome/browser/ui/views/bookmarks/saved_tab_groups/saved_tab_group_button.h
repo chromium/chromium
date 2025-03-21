@@ -120,10 +120,6 @@ class SavedTabGroupButton : public views::MenuButton,
   // The local guid used to identify the group in the tabstrip if it is open.
   std::optional<tab_groups::TabGroupId> local_group_id_;
 
-  // The tabs to be displayed in the context menu. Currently supports tab
-  // title, url, and favicon.
-  std::vector<SavedTabGroupTab> tabs_;
-
   // The command id that gets updated and assigned to the context menu
   // commands.
   int latest_command_id_ = -1;

@@ -57,8 +57,8 @@ class TabGroupTypeObserverTest : public testing::Test {
 };
 
 TEST_F(TabGroupTypeObserverTest, NoTabGroupAvailableOnServiceInitialization) {
-  EXPECT_CALL(*service_.get(), GetAllGroups())
-      .WillOnce(Return(std::vector<SavedTabGroup>()));
+  EXPECT_CALL(*service_.get(), ReadAllGroups())
+      .WillOnce(Return(std::vector<const SavedTabGroup*>()));
   EXPECT_CALL(synthetic_field_trial_helper_,
               UpdateHadSavedTabGroupIfNeeded(false))
       .Times(1);
@@ -70,8 +70,8 @@ TEST_F(TabGroupTypeObserverTest, NoTabGroupAvailableOnServiceInitialization) {
 
 TEST_F(TabGroupTypeObserverTest,
        SavedTabGroupAvailableOnServiceInitialization) {
-  EXPECT_CALL(*service_.get(), GetAllGroups())
-      .WillOnce(Return(std::vector<SavedTabGroup>{group_1_}));
+  EXPECT_CALL(*service_.get(), ReadAllGroups())
+      .WillOnce(Return(std::vector<const SavedTabGroup*>{&group_1_}));
   EXPECT_CALL(synthetic_field_trial_helper_,
               UpdateHadSavedTabGroupIfNeeded(true))
       .Times(1);
@@ -84,8 +84,8 @@ TEST_F(TabGroupTypeObserverTest,
 TEST_F(TabGroupTypeObserverTest,
        SharedTabGroupAvailableOnServiceInitialization) {
   group_1_.SetCollaborationId(CollaborationId(std::string(kGroupId)));
-  EXPECT_CALL(*service_.get(), GetAllGroups())
-      .WillOnce(Return(std::vector<SavedTabGroup>{group_1_}));
+  EXPECT_CALL(*service_.get(), ReadAllGroups())
+      .WillOnce(Return(std::vector<const SavedTabGroup*>{&group_1_}));
   EXPECT_CALL(synthetic_field_trial_helper_,
               UpdateHadSavedTabGroupIfNeeded(true))
       .Times(1);
