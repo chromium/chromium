@@ -191,7 +191,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/android-arm64-rel", "no_reclient"]),
-        "reproxy": "try/android-arm64-rel",
+        "reproxy": gn_args.config(configs = ["try/android-arm64-rel", "reclient"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -252,7 +252,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/linux-rel", "no_reclient"]),
-        "reproxy": "try/linux-rel",
+        "reproxy": gn_args.config(configs = ["try/linux-rel", "reclient"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -312,7 +312,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/win-rel", "no_reclient"]),
-        "reproxy": "try/win-rel",
+        "reproxy": gn_args.config(configs = ["try/win-rel", "reclient"]),
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -343,7 +343,7 @@ ci_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["ci/Win x64 Builder", "no_reclient"]),
-        "reproxy": "ci/Win x64 Builder",
+        "reproxy": gn_args.config(configs = ["ci/Win x64 Builder", "reclient"]),
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -409,7 +409,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/linux-chromeos-rel", "no_reclient"]),
-        "reproxy": "try/linux-chromeos-rel",
+        "reproxy": gn_args.config(configs = ["try/linux-chromeos-rel", "reclient"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -475,7 +475,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/mac-rel", "no_reclient"]),
-        "reproxy": "try/mac-rel",
+        "reproxy": gn_args.config(configs = ["try/mac-rel", "reclient"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -546,7 +546,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/ios-simulator", "no_reclient"]),
-        "reproxy": "try/ios-simulator",
+        "reproxy": gn_args.config(configs = ["try/ios-simulator", "reclient"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
