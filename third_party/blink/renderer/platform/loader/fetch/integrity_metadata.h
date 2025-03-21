@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -23,11 +24,13 @@ using IntegrityMetadataPair = std::pair<String, IntegrityAlgorithm>;
 // Contains the result of SRI's "Parse Metadata" algorithm:
 //
 // https://wicg.github.io/signature-based-sri/#abstract-opdef-parse-metadata
-struct IntegrityMetadataSet {
-  IntegrityMetadataSet() {}
+struct PLATFORM_EXPORT IntegrityMetadataSet {
+  IntegrityMetadataSet() = default;
   bool empty() const { return hashes.empty() && public_keys.empty(); }
-  WTF::HashSet<IntegrityMetadataPair> hashes;
-  WTF::HashSet<IntegrityMetadataPair> public_keys;
+  WTF::Vector<IntegrityMetadataPair> hashes;
+  WTF::Vector<IntegrityMetadataPair> public_keys;
+
+  void Insert(const IntegrityMetadataPair& pair);
 
   bool operator==(const IntegrityMetadataSet& other) const {
     return this->hashes == other.hashes &&

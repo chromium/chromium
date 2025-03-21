@@ -165,7 +165,7 @@ class SubresourceIntegrityTest : public testing::Test {
       base::span<const IntegrityMetadata> expected_metadata) {
     IntegrityMetadataSet expected_metadata_set;
     for (const auto& expected : expected_metadata) {
-      expected_metadata_set.hashes.insert(expected.ToPair());
+      expected_metadata_set.Insert(std::move(expected.ToPair()));
     }
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(
@@ -580,7 +580,7 @@ TEST_F(SubresourceIntegrityTest, FindBestAlgorithm) {
       IntegrityAlgorithm::kEd25519,
   };
 
-  WTF::HashSet<IntegrityMetadataPair> alg_set;
+  WTF::Vector<IntegrityMetadataPair> alg_set;
   for (IntegrityAlgorithm alg : algs) {
     SCOPED_TRACE(alg);
 
@@ -589,7 +589,7 @@ TEST_F(SubresourceIntegrityTest, FindBestAlgorithm) {
 
     // Check that each algorithm in the test cases is stronger than the
     // previously-tested algorithms.
-    alg_set.insert(std::make_pair("", alg));
+    alg_set.push_back(std::make_pair("", alg));
     EXPECT_EQ(alg, SubresourceIntegrity::FindBestAlgorithm(alg_set));
   }
 }
@@ -830,8 +830,7 @@ TEST_P(SubresourceIntegritySignatureTest, CheckEmpty) {
 TEST_P(SubresourceIntegritySignatureTest, CheckNotSigned) {
   IntegrityReport integrity_report;
   IntegrityMetadataSet metadata_set;
-  metadata_set.public_keys.insert(
-      std::make_pair("", IntegrityAlgorithm::kEd25519));
+  metadata_set.Insert(std::make_pair("", IntegrityAlgorithm::kEd25519));
   String raw_headers = "";
 
   // If the flag is set, the lack of a signature will fail any signature

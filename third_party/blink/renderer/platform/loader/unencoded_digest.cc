@@ -96,7 +96,7 @@ std::optional<UnencodedDigest> UnencodedDigest::Create(
     // Store the byte sequence as a base64-encoded digest, matching CSP and
     // SRI's existing `IntegrityMetadata` implementation.
     parsed_digest.SetDigest(Base64Encode(base::as_byte_span(digest)));
-    integrity_metadata.hashes.insert(parsed_digest.ToPair());
+    integrity_metadata.Insert(std::move(parsed_digest.ToPair()));
   }
 
   if (integrity_metadata.hashes.empty()) {

@@ -222,7 +222,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
 }
 
 bool SubresourceIntegrity::CheckHashesImpl(
-    const WTF::HashSet<IntegrityMetadataPair>& hashes,
+    const WTF::Vector<IntegrityMetadataPair>& hashes,
     const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const FeatureContext* feature_context,
@@ -303,7 +303,7 @@ bool SubresourceIntegrity::CheckHashesImpl(
 }
 
 bool SubresourceIntegrity::CheckSignaturesImpl(
-    const WTF::HashSet<IntegrityMetadataPair>& integrity_pairs,
+    const WTF::Vector<IntegrityMetadataPair>& integrity_pairs,
     const KURL& resource_url,
     const String& raw_headers,
     IntegrityReport& integrity_report) {
@@ -359,7 +359,7 @@ bool SubresourceIntegrity::CheckSignaturesImpl(
 }
 
 IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
-    const WTF::HashSet<IntegrityMetadataPair>& metadata_pairs) {
+    const WTF::Vector<IntegrityMetadataPair>& metadata_pairs) {
   // Find the "strongest" algorithm in the set. (This relies on
   // IntegrityAlgorithm declaration order matching the "strongest" order, so
   // make the compiler check this assumption first.)
@@ -369,15 +369,12 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
                 "of the integrity algorithms.");
 
   // metadata_set is non-empty, so we are guaranteed to always have a result.
-  // This is effectively an implementation of std::max_element (C++17).
   DCHECK(!metadata_pairs.empty());
-  auto iter = metadata_pairs.begin();
-  IntegrityAlgorithm max_algorithm = iter->second;
-  ++iter;
-  for (; iter != metadata_pairs.end(); ++iter) {
-    max_algorithm = std::max(iter->second, max_algorithm);
-  }
-  return max_algorithm;
+  return std::max_element(
+             metadata_pairs.begin(), metadata_pairs.end(),
+             [](const IntegrityMetadataPair& a,
+                const IntegrityMetadataPair& b) { return a.second < b.second; })
+      ->second;
 }
 
 SubresourceIntegrity::AlgorithmParseResult
@@ -522,17 +519,14 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     }
 
     IntegrityMetadata integrity_metadata(digest, algorithm);
-    if (IsHashingAlgorithm(algorithm)) {
-      if (integrity_report) {
+    if (integrity_report) {
+      if (IsHashingAlgorithm(algorithm)) {
         integrity_report->AddUseCount(WebFeature::kSRIHashAssertion);
-      }
-      metadata_set.hashes.insert(integrity_metadata.ToPair());
-    } else {
-      if (integrity_report) {
+      } else {
         integrity_report->AddUseCount(WebFeature::kSRIPublicKeyAssertion);
       }
-      metadata_set.public_keys.insert(integrity_metadata.ToPair());
     }
+    metadata_set.Insert(std::move(integrity_metadata.ToPair()));
   }
 }
 
