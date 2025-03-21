@@ -13,14 +13,16 @@ steps:
   args:
     - '-c'
     - |
-        apt update -y 
-        apt install -y git \
-                   python3 \
-                   curl \
-                   ninja-build \ 
-                   pkg-config \
-                   libnss3-dev \
-                   libssl-dev
+        sudo apt update -y && sudo apt install -y \
+          git \
+          python3 \
+          curl \
+          ninja-build \
+          pkg-config \
+          libnss3-dev \
+          libssl-dev
+  env:
+    DEBIAN_FRONTEND: noninteractive
 
 # 2. Install Depot Tools
 - name: 'gcr.io/cloud-builders/git'
