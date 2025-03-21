@@ -8325,6 +8325,7 @@ static_library("browser_public_dependencies") {
     "//components/payments/core",
     "//components/payments/core:error_strings",
     "//components/policy/proto",
+    "//components/privacy_sandbox:privacy_sandbox_notice_mojom",
     "//components/reporting/proto:configuration_file_proto",
     "//components/safe_browsing:buildflags",
     "//components/saved_tab_groups/proto",
