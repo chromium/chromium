@@ -943,6 +943,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kLobsterEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kLobsterEnterprisePolicySettings] =
+      settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kSunfishEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kScannerEnabled] =
