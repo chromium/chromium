@@ -424,7 +424,6 @@ gn_args.config(
         "use_hashed_jni_names": True,
         "default_min_sdk_version": 23,
         "clang_use_default_sample_profile": False,
-        "media_use_ffmpeg": False,
         # https://crbug.com/1136963
         "use_thin_lto": False,
         "enable_resource_allowlist_generation": False,

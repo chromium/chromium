@@ -14,7 +14,6 @@
     "is_cronet_build": true,
     "is_debug": true,
     "llvm_android_mainline": true,
-    "media_use_ffmpeg": false,
     "symbol_level": 1,
     "target_cpu": "riscv64",
     "target_os": "android",
