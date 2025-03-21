@@ -138,8 +138,9 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     identity_test_env_.MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
 
-    enterprise_rt_service_ = CreateServiceAndEnablePolicy(
-        test_profile_, /*set_raw_token_fetcher=*/true);
+    enterprise_rt_service_ =
+        CreateServiceAndEnablePolicy(test_profile_, /*is_off_the_record=*/false,
+                                     /*set_raw_token_fetcher=*/true);
   }
 
   void TearDown() override {
@@ -149,6 +150,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
 
   std::unique_ptr<ChromeEnterpriseRealTimeUrlLookupService>
   CreateServiceAndEnablePolicy(Profile* profile,
+                               bool is_off_the_record = false,
                                bool set_raw_token_fetcher = false) {
     auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
     if (set_raw_token_fetcher) {
@@ -175,7 +177,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
             profile),
         referrer_chain_provider_.get(), &test_pref_service_,
-        identity_test_env_.identity_manager());
+        identity_test_env_.identity_manager(), is_off_the_record);
 
     test_pref_service_.SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
@@ -499,10 +501,8 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        CanPerformFullURLLookup_OffTheRecordDisabled) {
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
-  Profile* off_the_record_profile =
-      TestingProfile::Builder().BuildIncognito(test_profile_);
   auto off_the_record_rt_service =
-      CreateServiceAndEnablePolicy(off_the_record_profile);
+      CreateServiceAndEnablePolicy(test_profile_, /*is_off_the_record=*/true);
   EXPECT_FALSE(off_the_record_rt_service->CanPerformFullURLLookup());
 }
 
