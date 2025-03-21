@@ -4,14 +4,13 @@
 
 #include <cstddef>
 #include <optional>
-#include <string_view>
 #include <vector>
 
 #include "ash/public/cpp/shelf_config.h"
 #include "base/check_deref.h"
-#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/test/fake_cws_chrome_apps.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
@@ -30,6 +29,7 @@ namespace ash {
 using kiosk::test::BlockKioskLaunch;
 using kiosk::test::CurrentProfile;
 using kiosk::test::IsAppInstalled;
+using kiosk::test::OfflineEnabledChromeAppV2;
 using kiosk::test::PressNetworkAccelerator;
 using kiosk::test::TheKioskApp;
 using kiosk::test::WaitNetworkScreen;
@@ -70,25 +70,13 @@ std::vector<KioskMixin::Config> SplashScreenTestConfigs() {
 }
 
 std::vector<KioskMixin::Config> OfflineLaunchSplashScreenTestConfigs() {
-  // Configures the Chrome app in:
-  //   //chrome/test/data/chromeos/app_mode/apps_and_extensions/offline_enabled_kiosk_app
-  //
-  // We need an offline enabled Chrome app because some tests will try to launch
-  // it while offline.
-  static constexpr char kChromeAppId[] = "iiigpodgfihagabpagjehoocpakbnclp";
-
   // TODO(crbug.com/379633748): Add IWA.
   return {KioskMixin::Config{/*name=*/"WebApp",
                              /*auto_launch_account_id=*/{},
                              {KioskMixin::SimpleWebAppOption()}},
-          KioskMixin::Config{
-              /*name=*/"ChromeApp",
-              /*auto_launch_account_id=*/{},
-              {KioskMixin::CwsChromeAppOption{
-                  /*account_id=*/"offline-enabled-chrome-app@localhost",
-                  /*app_id=*/kChromeAppId,
-                  /*crx_filename=*/base::StrCat({kChromeAppId, ".crx"}),
-                  /*crx_version=*/"2.0.0"}}}};
+          KioskMixin::Config{/*name=*/"ChromeApp",
+                             /*auto_launch_account_id=*/{},
+                             {OfflineEnabledChromeAppV2()}}};
 }
 
 }  // namespace
