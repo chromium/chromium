@@ -2451,7 +2451,7 @@ deps = {
   },
 
   'src/third_party/mutter/src': {
-      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/mutter.git' + '@' + '62bc3f7dd5d23b0f07d03ed60ee04825be607c02',
+      'url': Var('chromium_git') + '/external/gitlab.gnome.org/GNOME/mutter.git' + '@' + '4a6f4510aad2b579f40008f98050c33f3da95799',
       'condition': 'checkout_linux and checkout_mutter',
   },
 
