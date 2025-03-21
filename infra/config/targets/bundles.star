@@ -7301,6 +7301,11 @@ targets.bundle(
     ],
     per_test_modifications = {
         "wpt_tests_ios": targets.mixin(
+            args = [
+                "--test-type",
+                "reftest",
+                "crashtest",
+            ],
             swarming = targets.swarming(
                 shards = 36,
                 expiration_sec = 18000,
