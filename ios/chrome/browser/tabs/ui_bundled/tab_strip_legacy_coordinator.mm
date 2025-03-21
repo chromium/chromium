@@ -57,8 +57,7 @@
 - (void)start {
   DCHECK(self.browser);
   DCHECK(self.presentationProvider);
-  TabStripStyle style =
-      self.browser->GetProfile()->IsOffTheRecord() ? INCOGNITO : NORMAL;
+  TabStripStyle style = self.profile->IsOffTheRecord() ? INCOGNITO : NORMAL;
   self.tabStripController = [[TabStripController alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
