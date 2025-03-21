@@ -88,12 +88,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       WaitForState(kBluetoothPowerState, true));
 }
 
-/*
- * TODO(crbug.com/404601483): Reenable once bug is fixed. Was disabled due to
- * cascading integration test failure blocking 136.0.7078.0 uprev.
- */
 IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
-                       DISABLED_ToggleBluetoothFromQuickSettingsBluetoothPage) {
+                       ToggleBluetoothFromQuickSettingsBluetoothPage) {
   SetupContextWidget();
   RunTestSequence(
       ObserveState(kBluetoothPowerState, BluetoothPowerStateObserver::Create()),
@@ -133,12 +129,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
       WaitForState(kBluetoothPowerState, true));
 }
 
-/*
- * TODO(crbug.com/404601483): Reenable once bug is fixed. Was disabled due to
- * cascading integration test failure blocking 136.0.7078.0 uprev.
- */
 IN_PROC_BROWSER_TEST_F(BluetoothIntegrationTest,
-                       DISABLED_ToggleBluetoothFromOsSettings) {
+                       ToggleBluetoothFromOsSettings) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-d3c7f622-a376-4ca1-9be2-47a004234655");
   SetupContextWidget();
