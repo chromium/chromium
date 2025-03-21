@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.privacy.secure_dns;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.text.Editable;
 import android.text.Html;
@@ -159,16 +157,12 @@ class SecureDnsProviderPreference extends Preference
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        mGroup =
-                (RadioButtonWithDescriptionLayout)
-                        assumeNonNull(holder.findViewById(R.id.mode_group));
+        mGroup = (RadioButtonWithDescriptionLayout) holder.findViewById(R.id.mode_group);
         mGroup.setOnCheckedChangeListener(this);
-        mAutomaticButton =
-                (RadioButtonWithDescription) assumeNonNull(holder.findViewById(R.id.automatic));
-        mSecureButton =
-                (RadioButtonWithDescription) assumeNonNull(holder.findViewById(R.id.secure));
+        mAutomaticButton = (RadioButtonWithDescription) holder.findViewById(R.id.automatic);
+        mSecureButton = (RadioButtonWithDescription) holder.findViewById(R.id.secure);
 
-        View selectionContainer = assumeNonNull(holder.findViewById(R.id.selection_container));
+        View selectionContainer = holder.findViewById(R.id.selection_container);
         mServerMenu = selectionContainer.findViewById(R.id.dropdown_spinner);
         mServerMenu.setOnItemSelectedListener(this);
         Context context = selectionContainer.getContext();

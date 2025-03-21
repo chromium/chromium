@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -77,10 +75,10 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        TextView title = (TextView) assumeNonNull(holder.findViewById(android.R.id.title));
+        TextView title = (TextView) holder.findViewById(android.R.id.title);
         title.setSingleLine(false);
 
-        TextView summary = (TextView) assumeNonNull(holder.findViewById(android.R.id.summary));
+        TextView summary = (TextView) holder.findViewById(android.R.id.summary);
         View.AccessibilityDelegate summaryOverrideDelegate = null;
         if (mSummaryOverrideForScreenReader != null) {
             summaryOverrideDelegate =

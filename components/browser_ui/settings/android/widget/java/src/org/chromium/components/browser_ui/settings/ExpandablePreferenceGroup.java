@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -63,7 +61,7 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
             mDrawable = SettingsUtils.createExpandArrow(getContext());
         }
         CheckableImageView imageView =
-                (CheckableImageView) assumeNonNull(holder.findViewById(R.id.checkable_image_view));
+                (CheckableImageView) holder.findViewById(R.id.checkable_image_view);
         imageView.setImageDrawable(mDrawable);
         imageView.setChecked(mExpanded);
 

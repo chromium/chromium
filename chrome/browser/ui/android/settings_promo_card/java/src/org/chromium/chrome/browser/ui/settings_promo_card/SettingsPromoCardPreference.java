@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.settings_promo_card;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.util.AttributeSet;
 
@@ -41,7 +39,7 @@ public class SettingsPromoCardPreference extends Preference {
         setVisible(false);
 
         if (mProvider != null && mProvider.isPromoShowing()) {
-            mProvider.setUpPromoCardView(assumeNonNull(holder.findViewById(R.id.promo_card_view)));
+            mProvider.setUpPromoCardView(holder.findViewById(R.id.promo_card_view));
             setVisible(true);
         }
     }

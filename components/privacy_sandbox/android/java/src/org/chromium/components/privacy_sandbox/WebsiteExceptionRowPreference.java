@@ -87,7 +87,6 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
 
         // Manually apply ListItemStartIcon style to draw the outer circle in the right size.
         ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
-        assumeNonNull(icon);
         FaviconViewUtils.formatIconForFavicon(getContext().getResources(), icon);
 
         if (!mFaviconFetchInProgress && faviconUrl().isValid()) {
