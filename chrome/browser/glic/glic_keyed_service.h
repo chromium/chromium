@@ -11,8 +11,8 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 

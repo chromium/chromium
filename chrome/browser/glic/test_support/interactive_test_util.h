@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_TEST_UTIL_H_
 
 #include "base/scoped_observation_traits.h"
-#include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/base/interaction/element_identifier.h"

@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
-#include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"

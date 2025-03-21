@@ -5,8 +5,8 @@
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 
 #include "base/strings/escape.h"
-#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
 #include "content/public/browser/web_contents.h"

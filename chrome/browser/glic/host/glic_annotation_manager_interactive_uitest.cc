@@ -9,7 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/glic/glic.mojom-shared.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"

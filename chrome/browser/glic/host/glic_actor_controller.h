@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 namespace actor {

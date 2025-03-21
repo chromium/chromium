@@ -28,7 +28,8 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [ "//chrome/browser/glic:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/glic/glic_fre.mojom-webui.ts" ]
+  mojo_files =
+      [ "$root_gen_dir/chrome/browser/glic/fre/glic_fre.mojom-webui.ts" ]
 
   ts_definitions = [
     # These files are necessary for chrome.webviewTag:

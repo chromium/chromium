@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 

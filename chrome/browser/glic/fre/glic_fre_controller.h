@@ -7,7 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/glic_fre.mojom.h"
+#include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"

@@ -11,7 +11,7 @@
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
