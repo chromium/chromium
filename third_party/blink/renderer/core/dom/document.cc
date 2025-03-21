@@ -170,6 +170,7 @@
 #include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -9010,6 +9011,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(focused_element_change_observers_);
   visitor->Trace(pending_link_header_preloads_);
   visitor->Trace(elements_needing_shadow_tree_);
+  visitor->Trace(scroll_marker_group_to_scrollable_areas_);
 #if BUILDFLAG(IS_ANDROID)
   visitor->Trace(payment_link_handler_);
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -9623,6 +9625,88 @@ VisitedLinkState& Document::GetVisitedLinkState() {
     visited_link_state_ = MakeGarbageCollected<VisitedLinkState>(*this);
   }
   return *visited_link_state_;
+}
+
+namespace {
+
+// Recursively traverses the DOM tree to find all elements with
+// scroll-marker-contain properties and collects their descendant
+// HTMLAnchorElements.
+void RecalcScrollMarkerContainRelations(
+    Element& element,
+    Element* scroll_marker_group_container) {
+  if (scroll_marker_group_container && element.HasTagName(html_names::kATag)) {
+    if (To<HTMLAnchorElement>(element).ScrollTargetElement()) {
+      ScrollMarkerGroupData& data =
+          scroll_marker_group_container->EnsureScrollMarkerGroupData();
+      data.AddToFocusGroup(element);
+    }
+  }
+  if (const ComputedStyle* style = element.GetComputedStyle()) {
+    if (!style->ScrollMarkerContainNone()) {
+      scroll_marker_group_container = &element;
+      element.GetDocument().AddScrollMarkerGroup(
+          &element.EnsureScrollMarkerGroupData());
+    }
+  }
+  for (Element* child = element.firstElementChild(); child;
+       child = child->nextElementSibling()) {
+    RecalcScrollMarkerContainRelations(*child, scroll_marker_group_container);
+  }
+}
+
+}  // namespace
+
+void Document::UpdateScrollMarkerGroupRelations() {
+  if (!needs_scroll_marker_contain_relations_update_) {
+    return;
+  }
+  for (auto& [scroll_marker_group, scrollable_areas] :
+       scroll_marker_group_to_scrollable_areas_) {
+    for (PaintLayerScrollableArea* scrollable_area : scrollable_areas) {
+      scrollable_area->RemoveScrollMarkerGroupContainerData(
+          scroll_marker_group);
+    }
+    scroll_marker_group->ClearFocusGroup();
+  }
+  scroll_marker_group_to_scrollable_areas_.clear();
+  if (document_element_) {
+    ::blink::RecalcScrollMarkerContainRelations(*document_element_, nullptr);
+  }
+  needs_scroll_marker_contain_relations_update_ = false;
+}
+
+void Document::UpdateScrollMarkerGroupToScrollableAreasMap() {
+  if (!needs_scroll_marker_groups_map_update_) {
+    return;
+  }
+  for (auto& [scroll_marker_group, scrollable_areas] :
+       scroll_marker_group_to_scrollable_areas_) {
+    scroll_marker_group->UpdateScrollableAreaSubscriptions(scrollable_areas);
+  }
+  needs_scroll_marker_groups_map_update_ = false;
+}
+
+void Document::AddScrollMarkerGroup(
+    ScrollMarkerGroupData* scroll_marker_group) {
+  scroll_marker_group_to_scrollable_areas_.insert(
+      scroll_marker_group, HeapHashSet<Member<PaintLayerScrollableArea>>());
+  needs_scroll_marker_contain_relations_update_ = true;
+}
+
+void Document::RemoveScrollMarkerGroup(
+    ScrollMarkerGroupData* scroll_marker_group_data) {
+  auto it =
+      scroll_marker_group_to_scrollable_areas_.find(scroll_marker_group_data);
+  if (it == scroll_marker_group_to_scrollable_areas_.end()) {
+    return;
+  }
+  for (PaintLayerScrollableArea* scrollable_area : it->value) {
+    scrollable_area->RemoveScrollMarkerGroupContainerData(
+        scroll_marker_group_data);
+  }
+  scroll_marker_group_to_scrollable_areas_.erase(it);
+  needs_scroll_marker_contain_relations_update_ = true;
 }
 
 net::SchemefulSite Document::GetCachedTopFrameSite(VisitedLinkPassKey) {

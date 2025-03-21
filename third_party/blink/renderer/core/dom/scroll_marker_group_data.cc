@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 
@@ -17,6 +18,10 @@ Element* ScrollTargetElement(Element* scroll_marker) {
   if (auto* scroll_marker_pseudo =
           DynamicTo<ScrollMarkerPseudoElement>(scroll_marker)) {
     return &scroll_marker_pseudo->UltimateOriginatingElement();
+  }
+  if (auto* anchor_scroll_marker =
+          DynamicTo<HTMLAnchorElement>(scroll_marker)) {
+    return anchor_scroll_marker->ScrollTargetElement();
   }
   return scroll_marker;
 }
@@ -259,13 +264,28 @@ HeapVector<Member<Element>> ScrollMarkerChooser::ChooseVisual(
 }
 
 void ScrollMarkerGroupData::AddToFocusGroup(Element& scroll_marker) {
-  DCHECK(scroll_marker.IsScrollMarkerPseudoElement());
+  DCHECK(scroll_marker.IsScrollMarkerPseudoElement() ||
+         scroll_marker.HasTagName(html_names::kATag));
+  // We need to update scrollers map for this scroll marker group if we
+  // have added HTMLAnchorElement.
+  if (scroll_marker.HasTagName(html_names::kATag)) {
+    SetNeedsScrollersMapUpdate();
+    scroll_marker.GetDocument().SetNeedsScrollMarkerGroupsMapUpdate();
+    scroll_marker.SetScrollMarkerGroupContainerData(this);
+  }
   focus_group_.push_back(scroll_marker);
 }
 
-void ScrollMarkerGroupData::RemoveFromFocusGroup(const Element& scroll_marker) {
+void ScrollMarkerGroupData::RemoveFromFocusGroup(Element& scroll_marker) {
   if (wtf_size_t index = focus_group_.Find(scroll_marker); index != kNotFound) {
     focus_group_.EraseAt(index);
+    // We need to update scrollers map for this scroll marker group if we
+    // have added HTMLAnchorElement.
+    if (scroll_marker.HasTagName(html_names::kATag)) {
+      SetNeedsScrollersMapUpdate();
+      scroll_marker.GetDocument().SetNeedsScrollMarkerGroupsMapUpdate();
+      scroll_marker.SetScrollMarkerGroupContainerData(nullptr);
+    }
     if (selected_marker_ == scroll_marker) {
       if (index == focus_group_.size()) {
         if (index == 0) {
@@ -302,6 +322,10 @@ bool ScrollMarkerGroupData::SetSelected(Element* scroll_marker,
                                      /*capabilities=*/nullptr));
     }
   }
+  if (auto* anchor_scroll_marker =
+          DynamicTo<HTMLAnchorElement>(selected_marker_.Get())) {
+    anchor_scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
+  }
   selected_marker_ = scroll_marker;
   if (!scroll_marker) {
     return true;
@@ -309,6 +333,10 @@ bool ScrollMarkerGroupData::SetSelected(Element* scroll_marker,
   if (auto* scroll_marker_pseudo =
           DynamicTo<ScrollMarkerPseudoElement>(scroll_marker)) {
     scroll_marker_pseudo->SetSelected(true, apply_snap_alignment);
+  }
+  if (auto* anchor_scroll_marker =
+          DynamicTo<HTMLAnchorElement>(scroll_marker)) {
+    anchor_scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
   }
   return true;
 }
@@ -480,6 +508,26 @@ void ScrollMarkerGroupData::UpdateSelectedScrollMarker() {
     // expectations.
     pending_selected_marker_ = selected;
   }
+}
+
+void ScrollMarkerGroupData::UpdateScrollableAreaSubscriptions(
+    HeapHashSet<Member<PaintLayerScrollableArea>>& scrollable_areas) {
+  if (!needs_scrollers_map_update_) {
+    return;
+  }
+  for (PaintLayerScrollableArea* scrollable_area : scrollable_areas) {
+    scrollable_area->RemoveScrollMarkerGroupContainerData(this);
+  }
+  scrollable_areas.clear();
+  for (Element* anchor_scroll_marker : focus_group_) {
+    if (PaintLayerScrollableArea* scrollable_area =
+            To<HTMLAnchorElement>(anchor_scroll_marker)
+                ->AncestorScrollableAreaOfScrollTargetElement()) {
+      scrollable_areas.insert(scrollable_area);
+      scrollable_area->AddScrollMarkerGroupContainerData(this);
+    }
+  }
+  needs_scrollers_map_update_ = false;
 }
 
 Element* ScrollMarkerGroupData::FindNextScrollMarker(const Element* current) {

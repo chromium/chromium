@@ -2389,6 +2389,10 @@ class ComputedStyle final : public ComputedStyleBase {
     return ScrollMarkerGroup() == other.ScrollMarkerGroup();
   }
 
+  bool ScrollMarkerContainNone() const {
+    return ScrollMarkerContain() == EScrollMarkerContain::kNone;
+  }
+
   PhysicalBoxStrut ScrollMarginStrut() const {
     return {LayoutUnit(ScrollMarginTop()), LayoutUnit(ScrollMarginRight()),
             LayoutUnit(ScrollMarginBottom()), LayoutUnit(ScrollMarginLeft())};
