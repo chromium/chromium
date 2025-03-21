@@ -125,7 +125,8 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
             webui_bubble_manager_->contents_warmup_level()));
 
     // Pause tab closing mode observation.
-    if (features::IsTabstripComboButtonEnabled()) {
+    if (features::IsTabSearchMoving() &&
+        !features::HasTabSearchToolbarButton()) {
       tab_strip_->NotifyTabstripBubbleOpened();
     }
 
@@ -153,7 +154,8 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
     }
   } else if (!visible && bubble_created_time_.has_value()) {
     // Re-enable tab closing mode observation.
-    if (features::IsTabstripComboButtonEnabled()) {
+    if (features::IsTabSearchMoving() &&
+        !features::HasTabSearchToolbarButton()) {
       tab_strip_->NotifyTabstripBubbleClosed();
     }
 

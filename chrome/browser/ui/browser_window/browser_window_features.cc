@@ -141,7 +141,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
 #if BUILDFLAG(ENABLE_GLIC)
     if (glic::GlicEnabling::IsProfileEligible(browser->GetProfile())) {
-      DCHECK(features::IsTabstripComboButtonEnabled());
+      DCHECK(features::IsTabSearchMoving());
       glic_nudge_controller_ =
           std::make_unique<tabs::GlicNudgeController>(browser);
       glic_iph_controller_ = std::make_unique<glic::GlicIphController>(browser);

@@ -123,7 +123,7 @@ class TabDeclutterControllerBrowserTest : public InProcessBrowserTest {
     auto* tab_strip_region_view =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->tab_strip_region_view();
-    if (features::IsTabstripComboButtonEnabled()) {
+    if (features::IsTabSearchMoving()) {
       return tab_strip_region_view->GetTabStripActionContainer();
     }
     return tab_strip_region_view->tab_search_container_for_testing();
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
             tab_declutter_controller()->nudge_timer_interval());
 
   views::LabelButton* close_button;
-  if (features::IsTabstripComboButtonEnabled()) {
+  if (features::IsTabSearchMoving()) {
     TabStripActionContainer* tab_strip_action_container =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->tab_strip_region_view()

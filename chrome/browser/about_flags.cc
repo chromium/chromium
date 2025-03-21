@@ -1870,6 +1870,9 @@ const FeatureEntry::FeatureParam
         {"has_background", "true"},
         {"reverse_button_order", "true"}};
 
+const FeatureEntry::FeatureParam kTabSearchToolbarButton[] = {
+    {"tab_search_toolbar_button", "true"}};
+
 const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
     {" - with background", kTabstripComboButtonBackground,
      std::size(kTabstripComboButtonBackground)},
@@ -1878,6 +1881,8 @@ const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
     {" - reverse button order & with background",
      kTabstripComboButtonReverseButtonOrderBackground,
      std::size(kTabstripComboButtonReverseButtonOrderBackground)},
+    {" - toolbar button", kTabSearchToolbarButton,
+     std::size(kTabSearchToolbarButton)},
 };
 
 #endif
