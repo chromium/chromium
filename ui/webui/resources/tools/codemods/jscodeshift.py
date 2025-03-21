@@ -55,11 +55,13 @@ def main(argv):
   print(f'Migrating {len(args.files)} files...')
 
   # Update TS file.
-  out = node.RunNode([
+  node.RunNode([
       os.path.join(_HERE_PATH, 'node_modules/jscodeshift/bin/jscodeshift.js'),
       '--transform=' + args.transform,
       '--extensions=ts',
       '--parser=ts',
+      '--no-babel',
+      '--fail-on-error',
   ] + args.files)
 
   print('DONE')
