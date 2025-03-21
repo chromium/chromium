@@ -143,6 +143,8 @@ bool ParseDate(std::u16string_view date,
     return -1;
   };
 
+  const char16_t* first_separator = nullptr;
+
   while (!date.empty() && !format.empty()) {
     int num = -1;
     if ((num = consume_part(u"YYYY")) >= 0) {
@@ -157,6 +159,14 @@ bool ParseDate(std::u16string_view date,
       result.day = num;
     } else if ((num = consume_part(u"D")) >= 0) {
       result.day = num;
+    } else if (Consume(format, u"*")) {
+      if (!ConsumeSeparator(date, first_separator)) {
+        return false;
+      }
+    } else if (Consume(format, u"+")) {
+      if (!ConsumeSeparator(date, first_separator) || !first_separator[0]) {
+        return false;
+      }
     } else if (!date.empty() && !format.empty() && date[0] == format[0]) {
       date = date.substr(1);
       format = format.substr(1);

@@ -96,8 +96,15 @@ TEST(AutofillDataModelUtils, IsValidDateFormat) {
   EXPECT_FALSE(IsValidDateFormat(u""));
   EXPECT_FALSE(IsValidDateFormat(u"_"));
   EXPECT_FALSE(IsValidDateFormat(u" _ "));
+
+  // "*" and "+" are wildcards in ParseDate() but not valid date formats.
+  EXPECT_FALSE(IsValidDateFormat(u"DD*MM*YYYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"DD+MM+YYYY"));
 }
 
+// Tests that ParseDate() extracts the right date from a format string.
+// Format strings may contain wildcards for separators.
+// Matches may be partial.
 TEST(AutofillDataModelUtils, ParseDate) {
   EXPECT_EQ(ParseDate(u"2025-12-11", u"YYYY-MM-DD"), Date(2025, 12, 11));
   EXPECT_EQ(ParseDate(u"2025-02-01", u"YYYY-MM-DD"), Date(2025, 2, 1));
@@ -119,6 +126,10 @@ TEST(AutofillDataModelUtils, ParseDate) {
 
   EXPECT_EQ(ParseDate(u"23.02.", u"DD.MM."), Date(0, 2, 23));
   EXPECT_EQ(ParseDate(u"23.2.", u"D.M."), Date(0, 2, 23));
+
+  EXPECT_EQ(ParseDate(u"2025-12-10", u"YYYY*MM*DD"), Date(2025, 12, 10));
+  EXPECT_EQ(ParseDate(u"20251210", u"YYYY*MM*DD"), Date(2025, 12, 10));
+  EXPECT_EQ(ParseDate(u"2025-12-10", u"YYYY+MM+DD"), Date(2025, 12, 10));
 
   EXPECT_EQ(ParseDate(u"2025", u"YYYY"), Date(2025, 0, 0));
   EXPECT_EQ(ParseDate(u"0001", u"YYYY"), Date(1, 0, 0));
@@ -197,8 +208,20 @@ TEST(AutofillDataModelUtils, ParseDate) {
 
   {
     Date date;
+    EXPECT_FALSE(ParseDate(u"20251210", u"YYYY+MM+DD", date));
+    EXPECT_EQ(date, Date(2025, 0, 0));
+  }
+
+  {
+    Date date;
     EXPECT_FALSE(ParseDate(u"202512-10", u"YYYYMMDD", date));
     EXPECT_EQ(date, Date(2025, 12, 0));
+  }
+
+  {
+    Date date;
+    EXPECT_FALSE(ParseDate(u"202521", u"YYYYMD", date));
+    EXPECT_EQ(date, Date(2025, 21, 0));
   }
 
   {

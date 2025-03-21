@@ -46,14 +46,28 @@ struct Date {
 bool IsValidDateFormat(std::u16string_view format);
 
 // Parses `date` according to `format` and populates the values in `result`
-// accordingly. Returns `true` iff `date` matches the `format`.
+// accordingly. Returns `true` iff `date` fully matches the `format`.
 //
-// For example, ParseDate(u"2025-09-10", u"YYYY-MM-DD", result) returns true and
-// sets `result` to Date{.year = 2025, .month = 9, .day = 10}.
+// Wildcards:
+// Typically, `format` satisfies IsValidDateFormat(). As an extension, `format`
+// may also contain wildcards for separators: "*" matches any separator, "+"
+// matches only non-empty separators. The first occurrence of a wildcard binds
+// the wildcard, so that subsequent occurrences only match the identical
+// separator.
 //
-// For partial matches, the first matches are populated in `result`. For
-// example, ParseDate(u"2025-XX-10", u"YYYY-MM-DD", result) returns false but
-// does populate `result.year`.
+// Partial matches:
+// For partial matches, the first matches are populated in `result`.
+//
+// Examples:
+// - ParseDate(u"2025-09-10", u"YYYY-MM-DD", result) returns true and sets
+//   `result` to Date{.year = 2025, .month = 9, .day = 10}.
+// - ParseDate(u"2025-09-10", u"YYYY+MM+DD", result) behaves as above.
+// - ParseDate(u"2025-09-10", u"YYYY*MM*DD", result) behaves as above.
+// - ParseDate(u"20250910", u"YYYY*MM*DD", result) behaves as above.
+// - ParseDate(u"2025-XX-10", u"YYYY-MM-DD", result) returns false and sets
+//   `result.year` to 2025.
+// - ParseDate(u"20250910", u"YYYY+MM+DD", result) returns false and sets
+//   `result.year` to 2025.
 //
 // This function is minimalistic and cheap (~1000x cheaper than parsing with
 // ICU without caching the SimpleDateFormat).
