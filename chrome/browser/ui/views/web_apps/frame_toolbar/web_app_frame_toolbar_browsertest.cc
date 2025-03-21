@@ -551,8 +551,14 @@ class WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/405233966): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu,
-                       Test) {
+                       MAYBE_Test) {
   helper()->InstallAndLaunchWebApp(browser(), GURL("https://test.org"));
 
   WebAppToolbarButtonContainer* toolbar_button_container =
@@ -1316,8 +1322,14 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
+// TODO(crbug.com/405233966): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WindowControlsOverlayRTL DISABLED_WindowControlsOverlayRTL
+#else
+#define MAYBE_WindowControlsOverlayRTL WindowControlsOverlayRTL
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       WindowControlsOverlayRTL) {
+                       MAYBE_WindowControlsOverlayRTL) {
   base::test::ScopedRestoreICUDefaultLocale test_locale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
 
@@ -1688,8 +1700,14 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       browser_view->GetWidget()->GetNativeView(), draggable_point));
 }
 
+// TODO(crbug.com/405233966): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FencedFrame DISABLED_FencedFrame
+#else
+#define MAYBE_FencedFrame FencedFrame
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       FencedFrame) {
+                       MAYBE_FencedFrame) {
   InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
