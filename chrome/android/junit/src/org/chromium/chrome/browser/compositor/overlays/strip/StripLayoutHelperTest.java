@@ -2013,7 +2013,7 @@ public class StripLayoutHelperTest {
         // Verify that we don't show the tab menu.
         assertFalse(
                 "Should not show tab menu after long press on tab.",
-                mStripLayoutHelper.isTabMenuShowingForTesting());
+                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
         // Verify we directly enter reorder mode.
         assertTrue(
                 "Should be in reorder mode after long press on tab.",
@@ -2215,13 +2215,13 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
         mStripLayoutHelper.onLongPress(150f, 0f);
 
-        // Verify that we show the "Close all tabs" popup menu.
+        // Verify that we show the popup menu anchored on the close button.
         assertFalse(
                 "Should not be in reorder mode after long press on tab close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
         assertTrue(
-                "Should show tab menu after long press on tab close button.",
-                mStripLayoutHelper.isTabMenuShowingForTesting());
+                "Should show menu anchored on close button after long press.",
+                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
     }
 
     @Test
@@ -2252,13 +2252,13 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabAtPositionForTesting(null);
         mStripLayoutHelper.onLongPress(150f, 0f);
 
-        // Verify that we show the "Close all tabs" popup menu.
+        // Verify that we show the popup menu anchored on the close button.
         assertFalse(
                 "Should not be in reorder mode after long press on empty space on tab strip.",
                 mStripLayoutHelper.getInReorderModeForTesting());
         assertFalse(
                 "Should not show after long press on empty space on tab strip.",
-                mStripLayoutHelper.isTabMenuShowingForTesting());
+                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
     }
 
     @Test
@@ -5084,7 +5084,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY);
         assertTrue(
                 "Should show tab menu after secondary click on tab close.",
-                mStripLayoutHelper.isTabMenuShowingForTesting());
+                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
     }
 
     @Test

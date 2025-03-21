@@ -393,7 +393,7 @@ public class StripLayoutHelper
 
     // Layout Constants
     private final float mNewTabButtonWidth;
-    private final ListPopupWindow mTabMenu;
+    private final ListPopupWindow mCloseButtonMenu;
 
     // All views are overlapped by TAB_OVERLAP_WIDTH_DP. Group titles do not need to be overlapped
     // by this much, so we offset the drawX.
@@ -675,8 +675,8 @@ public class StripLayoutHelper
         mIncognito = incognito;
 
         // Create tab menu
-        mTabMenu = new ListPopupWindow(mContext);
-        mTabMenu.setAdapter(
+        mCloseButtonMenu = new ListPopupWindow(mContext);
+        mCloseButtonMenu.setAdapter(
                 new ArrayAdapter<String>(
                         mContext,
                         R.layout.one_line_list_item,
@@ -686,12 +686,12 @@ public class StripLayoutHelper
                                             ? R.string.menu_close_all_tabs
                                             : R.string.menu_close_all_incognito_tabs)
                         }));
-        mTabMenu.setOnItemClickListener(
+        mCloseButtonMenu.setOnItemClickListener(
                 new OnItemClickListener() {
                     @Override
                     public void onItemClick(
                             AdapterView<?> parent, View view, int position, long id) {
-                        mTabMenu.dismiss();
+                        mCloseButtonMenu.dismiss();
                         if (position == ID_CLOSE_ALL_TABS) {
                             mTabGroupModelFilter
                                     .getTabModel()
@@ -707,8 +707,8 @@ public class StripLayoutHelper
                 });
 
         int menuWidth = mContext.getResources().getDimensionPixelSize(R.dimen.menu_width);
-        mTabMenu.setWidth(menuWidth);
-        mTabMenu.setModal(true);
+        mCloseButtonMenu.setWidth(menuWidth);
+        mCloseButtonMenu.setModal(true);
 
         mActionConfirmationManager = actionConfirmationManager;
         mGroupIdToHideSupplier.addObserver((newIdToHide) -> rebuildStripViews());
@@ -980,7 +980,7 @@ public class StripLayoutHelper
         if (mStripViews.length > 0) mUpdateHost.requestUpdate();
 
         // Dismiss tab menu, similar to how the app menu is dismissed on orientation change
-        mTabMenu.dismiss();
+        mCloseButtonMenu.dismiss();
 
         // Dismiss iph on orientation change, as its position might become incorrect.
         dismissTabStripSyncIph();
@@ -1328,7 +1328,7 @@ public class StripLayoutHelper
             bringSelectedTabToVisibleArea(0, false);
         } else {
             clearLastHoveredTab();
-            mTabMenu.dismiss();
+            mCloseButtonMenu.dismiss();
         }
     }
 
@@ -2689,7 +2689,7 @@ public class StripLayoutHelper
             showTabContextMenu(clickedTab);
         } else if (clickedView instanceof CompositorButton button
                 && button.getType() == ButtonType.TAB_CLOSE) {
-            showTabMenu((StripLayoutTab) button.getParentView());
+            showCloseButtonMenu((StripLayoutTab) button.getParentView());
         } else if (clickedView instanceof StripLayoutGroupTitle groupTitle) {
             showTabGroupContextMenu(groupTitle, /* shouldWaitForUpdate= */ false);
         }
@@ -4192,31 +4192,31 @@ public class StripLayoutHelper
      * @param anchorTab The tab the menu will be anchored to
      */
     @VisibleForTesting
-    void showTabMenu(StripLayoutTab anchorTab) {
+    void showCloseButtonMenu(StripLayoutTab anchorTab) {
         // 1. Bring the anchor tab to the foreground.
         int tabIndex = TabModelUtils.getTabIndexById(mModel, anchorTab.getTabId());
         TabModelUtils.setIndex(mModel, tabIndex);
 
         // 2. Anchor the popupMenu to the view associated with the tab
         View tabView = TabModelUtils.getCurrentTab(mModel).getView();
-        mTabMenu.setAnchorView(tabView);
+        mCloseButtonMenu.setAnchorView(tabView);
         // 3. Set the vertical offset to align the tab menu with bottom of the tab strip
         int tabHeight = mManagerHost.getHeight();
         int verticalOffset =
                 -(tabHeight - (int) mContext.getResources().getDimension(R.dimen.tab_strip_height));
-        mTabMenu.setVerticalOffset(verticalOffset);
+        mCloseButtonMenu.setVerticalOffset(verticalOffset);
 
         // 4. Set the horizontal offset to align the tab menu with the right side of the tab
         int horizontalOffset =
                 Math.round(
                                 (anchorTab.getDrawX() + anchorTab.getWidth())
                                         * mContext.getResources().getDisplayMetrics().density)
-                        - mTabMenu.getWidth();
+                        - mCloseButtonMenu.getWidth();
         // Cap the horizontal offset so that the tab menu doesn't get drawn off screen.
         horizontalOffset = Math.max(horizontalOffset, 0);
-        mTabMenu.setHorizontalOffset(horizontalOffset);
+        mCloseButtonMenu.setHorizontalOffset(horizontalOffset);
 
-        mTabMenu.show();
+        mCloseButtonMenu.show();
     }
 
     private void setScrollForScrollingTabStacker(float delta, boolean shouldAnimate, long time) {
@@ -4305,15 +4305,15 @@ public class StripLayoutHelper
     /**
      * @return true if the tab menu is showing
      */
-    public boolean isTabMenuShowingForTesting() {
-        return mTabMenu.isShowing();
+    public boolean isCloseButtonMenuShowingForTesting() {
+        return mCloseButtonMenu.isShowing();
     }
 
     /**
      * @param menuItemId The id of the menu item to click
      */
-    public void clickTabMenuItemForTesting(int menuItemId) {
-        mTabMenu.performItemClick(menuItemId);
+    public void clickCloseButtonMenuItemForTesting(int menuItemId) {
+        mCloseButtonMenu.performItemClick(menuItemId);
     }
 
     /**
