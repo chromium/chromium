@@ -7,13 +7,13 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "services/network/udp_socket.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <limits>
 #include <utility>
-
-#include "services/network/udp_socket.h"
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -35,6 +35,10 @@
 #include "services/network/socket_factory.h"
 #include "services/network/test/udp_socket_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace network {
 
@@ -669,6 +673,13 @@ TEST_F(UDPSocketTest, TestReadZeroByte) {
 #define MAYBE_JoinMulticastGroup JoinMulticastGroup
 #endif  // BUILDFLAG(IS_ANDROID)
 TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
+#if BUILDFLAG(IS_MAC)
+  // See https://crbug.com/354933441
+  if (base::mac::MacOSMajorVersion() == 15) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia.";
+  }
+#endif
+
   const char kGroup[] = "237.132.100.17";
 
   net::IPAddress group_ip;
