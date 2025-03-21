@@ -40,6 +40,7 @@ if (is_android) {
     "$google_play_services_package:google_play_services_cast_framework_java",
     "$google_play_services_package:google_play_services_cast_java",
     "$google_play_services_package:google_play_services_gcm_java",
+    "$google_play_services_package:google_play_services_identity_credentials_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -1295,6 +1296,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/usage_stats/EventTrackerTest.java",
       "src/org/chromium/chrome/browser/usage_stats/PageViewObserverTest.java",
       "src/org/chromium/chrome/browser/webauthn/AuthenticatorIncognitoConfirmationBottomsheetTest.java",
+      "src/org/chromium/content/browser/webid/IdentityCredentialsDelegateTest.java",
     ]
 
     deps = chrome_junit_tests_deps
