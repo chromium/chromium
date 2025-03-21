@@ -26,6 +26,7 @@
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -43,12 +44,12 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 using browser_command::mojom::ClickInfoPtr;
 using browser_command::mojom::Command;
@@ -329,7 +330,7 @@ void BrowserCommandHandler::StartSavedTabGroupTutorial() {
 }
 
 void BrowserCommandHandler::OpenGlic() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_GLIC)
   if (!glic::GlicEnabling::IsEnabledForProfile(profile_)) {
     return;
   }
@@ -345,7 +346,7 @@ void BrowserCommandHandler::OpenGlic() {
   glic_service->window_controller().Toggle(
       browser_window, /*prevent_close=*/false,
       glic::mojom::InvocationSource::kWhatsNew);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {
