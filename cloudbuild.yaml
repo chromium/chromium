@@ -22,7 +22,7 @@ steps:
           libnss3-dev \
           libssl-dev
   env:
-    DEBIAN_FRONTEND: noninteractive
+    - "DEBIAN_FRONTEND=noninteractive"
 
 # 2. Install Depot Tools
 - name: 'gcr.io/cloud-builders/git'
