@@ -230,11 +230,22 @@ ScriptPromise<IDLDouble> AITranslator::measureInputUsage(
     }
   }
 
-  // TODO(crbug.com/402136568): Implement the abort signal.
+  // TODO(crbug.com/399693771): This should be a composite signal of the passed
+  // in abort signal and the create abort signal.
+  CHECK(options);
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return EmptyPromise();
+  }
 
-  ScriptPromiseResolver<IDLDouble>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
-  resolver->Resolve(0);
+  AIResolverWithAbortSignal<IDLDouble>* resolver =
+      MakeGarbageCollected<AIResolverWithAbortSignal<IDLDouble>>(script_state,
+                                                                 signal);
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      WTF::BindOnce(&AIResolverWithAbortSignal<IDLDouble>::Resolve<double>,
+                    WrapPersistent(resolver), 0));
 
   return resolver->Promise();
 }

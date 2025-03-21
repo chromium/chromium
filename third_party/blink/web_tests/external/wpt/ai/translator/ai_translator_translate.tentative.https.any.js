@@ -190,3 +190,23 @@ promise_test(async t => {
         t, 'QuotaExceededError', translator.translate(text));
   }
 }, 'AITranslator.measureInputUsage() and inputQuota basic usage.');
+
+promise_test(async t => {
+  const controller = new AbortController();
+  controller.abort();
+
+  const translator =
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
+  const measureInputUsagePromise =
+      translator.measureInputUsage('hello', {signal: controller.signal});
+
+  await promise_rejects_dom(t, 'AbortError', measureInputUsagePromise);
+}, 'AITranslator.measureInputUsage() call with an aborted signal.');
+
+promise_test(async t => {
+  const translator =
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
+  await testAbortPromise(t, signal => {
+    return translator.measureInputUsage('hello', {signal});
+  });
+}, 'Aborting AITranslator.measureInputUsage().');
