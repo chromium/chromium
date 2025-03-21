@@ -11,6 +11,7 @@
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
 #import "base/containers/contains.h"
+#import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_groups_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
@@ -182,8 +184,9 @@ WebStateList::InsertionParams::InsertionParams(InsertionParams&& other) =
 WebStateList::InsertionParams& WebStateList::InsertionParams::operator=(
     InsertionParams&& other) = default;
 
-WebStateList::WebStateList(WebStateListDelegate* delegate)
-    : delegate_(delegate) {
+WebStateList::WebStateList(WebStateListDelegate* delegate,
+                           WebStateListGroupsDelegate* groups_delegate)
+    : delegate_(delegate), groups_delegate_(groups_delegate) {
   DCHECK(delegate_);
 }
 
@@ -1201,7 +1204,21 @@ void WebStateList::DeleteGroupIfEmpty(const TabGroup* group) {
   DCHECK(locked_);
 
   const auto iter = groups_.find(group);
-  if (iter != groups_.end() && group->range().count() == 0) {
+  if (iter == groups_.end() || group->range().count() > 0) {
+    return;
+  }
+
+  // In case the group is empty but should be kept, add a new tab in it
+  // instead of delete it.
+  if (groups_delegate_ && !groups_delegate_->ShouldDeleteGroup(group)) {
+    std::unique_ptr<web::WebState> web_state_to_insert =
+        groups_delegate_->WebStateToAddToEmptyGroup();
+    InsertWebStateImpl(
+        std::move(web_state_to_insert),
+        WebStateList::InsertionParams::Automatic().InGroup(group));
+    return;
+  }
+
     // Notify observers of the imminent deletion of the group.
     // The deletion doesn't change the active WebState.
     web::WebState* const active_web_state = GetActiveWebState();
@@ -1215,7 +1232,6 @@ void WebStateList::DeleteGroupIfEmpty(const TabGroup* group) {
 
     // Actually delete the group.
     groups_.erase(iter);
-  }
 }
 
 void WebStateList::SetActiveIndex(int active_index) {

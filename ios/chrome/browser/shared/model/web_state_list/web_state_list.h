@@ -22,6 +22,7 @@
 class RemovingIndexes;
 class TabGroup;
 class WebStateListDelegate;
+class WebStateListGroupsDelegate;
 class WebStateListObserver;
 
 namespace tab_groups {
@@ -178,7 +179,8 @@ class WebStateList {
     raw_ptr<WebStateList> web_state_list_ = nullptr;
   };
 
-  explicit WebStateList(WebStateListDelegate* delegate);
+  explicit WebStateList(WebStateListDelegate* delegate,
+                        WebStateListGroupsDelegate* groups_delegate = nullptr);
 
   WebStateList(const WebStateList&) = delete;
   WebStateList& operator=(const WebStateList&) = delete;
@@ -511,6 +513,9 @@ class WebStateList {
 
   // The WebStateList delegate.
   raw_ptr<WebStateListDelegate> delegate_ = nullptr;
+
+  // The WebStateList groups delegate.
+  raw_ptr<WebStateListGroupsDelegate> groups_delegate_ = nullptr;
 
   // Wrappers to the WebStates hosted by the WebStateList.
   std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;
