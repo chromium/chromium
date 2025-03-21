@@ -13,7 +13,7 @@ steps:
   args:
     - '-c'
     - |
-        sudo apt update -y && sudo apt install -y \
+        apt update -y && apt install -y \
           git \
           python3 \
           curl \
