@@ -129,8 +129,7 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
 }
 
 bool HomeButtonController::IsLongPressActionAvailable() {
-  // TODO: crbug.com/402237553 - Call `IsSunfishOrScannerAvailable` here.
-  return IsAssistantAvailable();
+  return IsAssistantAvailable() || IsSunfishOrScannerAvailable();
 }
 
 bool HomeButtonController::IsAssistantVisible() {
@@ -185,7 +184,7 @@ void HomeButtonController::OnUiVisibilityChanged(
 
 void HomeButtonController::OnSunfishScannerFeatureStatesChanged(
     SunfishScannerFeatureWatcher& source) {
-  // TODO: crbug.com/402237553 - Update the button's icon here.
+  button_->OnIconUpdated();
 }
 
 void HomeButtonController::StartAssistantAnimation() {

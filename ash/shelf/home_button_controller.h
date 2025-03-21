@@ -50,7 +50,7 @@ class HomeButtonController : public AppListControllerObserver,
   bool MaybeHandleGestureEvent(ui::GestureEvent* event);
 
   // Whether long-pressing the home button will perform an action, such as
-  // opening the Assistant UI.
+  // opening the Assistant UI or opening a Sunfish-behavior capture session.
   bool IsLongPressActionAvailable();
 
   // Whether the Assistant UI currently showing.
