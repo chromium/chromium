@@ -2883,6 +2883,10 @@
       status: "stable",
     },
     {
+      name: "MulticolColumnWrapping",
+      status: "experimental",
+    },
+    {
       name: "MultipleImportMaps",
       status: "stable",
     },

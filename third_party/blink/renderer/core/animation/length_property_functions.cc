@@ -39,6 +39,7 @@ Length::ValueRange LengthPropertyFunctions::GetValueRange(
     case CSSPropertyID::kColumnGap:
     case CSSPropertyID::kRowGap:
     case CSSPropertyID::kColumnWidth:
+    case CSSPropertyID::kColumnHeight:
     case CSSPropertyID::kWidth:
     case CSSPropertyID::kTabSize:
       return Length::ValueRange::kNonNegative;
@@ -424,6 +425,12 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
     case CSSPropertyID::kColumnWidth:
       if (!style.HasAutoColumnWidth()) {
         result = Length::Fixed(style.ColumnWidth());
+        success = true;
+      }
+      break;
+    case CSSPropertyID::kColumnHeight:
+      if (!style.HasAutoColumnHeight()) {
+        result = Length::Fixed(style.ColumnHeight());
         success = true;
       }
       break;

@@ -139,11 +139,13 @@ color-interpolation-filters: linearrgb
 color-rendering: auto
 column-count: auto
 column-gap: normal
+column-height: auto
 column-rule-color: rgb(0, 0, 0)
 column-rule-style: none
 column-rule-width: 0px
 column-span: none
 column-width: auto
+column-wrap: nowrap
 contain-intrinsic-block-size: none
 contain-intrinsic-height: none
 contain-intrinsic-inline-size: none

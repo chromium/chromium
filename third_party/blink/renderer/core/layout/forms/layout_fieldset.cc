@@ -138,6 +138,10 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
     if (!StyleRef().HasAutoColumnWidth()) {
       child_style_builder.SetColumnWidth(StyleRef().ColumnWidth());
     }
+    if (!StyleRef().HasAutoColumnHeight()) {
+      child_style_builder.SetColumnHeight(StyleRef().ColumnHeight());
+    }
+    child_style_builder.SetColumnWrap(StyleRef().ColumnWrap());
   }
   child_style_builder.SetColumnGap(StyleRef().ColumnGap());
   child_style_builder.SetColumnFill(StyleRef().GetColumnFill());

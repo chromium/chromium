@@ -436,6 +436,9 @@ CORE_EXPORT LayoutUnit ResolveColumnGapForMulticol(const ComputedStyle&,
 std::optional<LayoutUnit> ResolveRowGapLength(const ComputedStyle&,
                                               LayoutUnit available_size);
 
+LayoutUnit ResolveRowGapForMulticol(const ComputedStyle&,
+                                    LayoutUnit available_size);
+
 CORE_EXPORT LayoutUnit ColumnInlineProgression(const ComputedStyle&,
                                                LayoutUnit available_size);
 

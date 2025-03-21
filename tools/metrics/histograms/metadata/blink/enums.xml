@@ -7512,6 +7512,8 @@ Called by update_use_counter_css.py.-->
   <int value="846" label="row-rule-width"/>
   <int value="847" label="row-rule-color"/>
   <int value="848" label="print-color-adjust"/>
+  <int value="849" label="column-height"/>
+  <int value="850" label="column-wrap"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
