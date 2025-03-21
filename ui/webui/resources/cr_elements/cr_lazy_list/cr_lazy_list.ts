@@ -120,7 +120,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
   }
 
   items: T[] = [];
-  itemSize: number = 100;
+  itemSize?: number;
   listItemHost?: Node;
   minViewportHeight?: number;
   scrollOffset: number = 0;
@@ -154,10 +154,8 @@ export class CrLazyListElement<T = object> extends CrLitElement {
       this.style.setProperty('--list-item-size', `${this.itemSize}px`);
     }
 
-    if (changedProperties.has('itemSize') ||
-        changedProperties.has('chunkSize')) {
-      this.style.setProperty(
-          '--chunk-height', `${this.itemSize * this.chunkSize}px`);
+    if (changedProperties.has('chunkSize')) {
+      this.style.setProperty('--chunk-size', `${this.chunkSize}`);
     }
   }
 
@@ -370,7 +368,17 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     assert(domItems.length > 0);
     const firstDomItem = domItems.at(0) as HTMLElement;
     const lastDomItem = domItems.at(-1) as HTMLElement;
-    let totalHeight = lastDomItem.offsetTop + lastDomItem.offsetHeight;
+    const lastDomItemHeight = lastDomItem.offsetHeight;
+    if (firstDomItem === lastDomItem && lastDomItemHeight === 0) {
+      // If there is only 1 item and it has a height of 0, return early. This
+      // likely means the UI is still hidden or there is no content.
+      return 0;
+    } else if (this.itemSize) {
+      // Once items are actually visible and have a height > 0, assume that it
+      // is an accurate representation of the average item size.
+      return this.itemSize;
+    }
+    let totalHeight = lastDomItem.offsetTop + lastDomItemHeight;
     if (this.chunkSize > 0) {
       // Add the parent's offsetTop. The offsetParent will be the chunk div.
       // Subtract the offsetTop of the first chunk div to avoid counting any
