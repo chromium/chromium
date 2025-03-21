@@ -15,11 +15,8 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,16 +46,6 @@ void ExpectNetworkScreenContinueButtonShown(bool is_shown) {
 
 void ClickNetworkScreenContinueButton() {
   test::OobeJS().ClickOnPath(kNetworkConfigureScreenContinueButton);
-}
-
-// Disables the Gaia screen offline message. Leaving this enabled may interfere
-// with checks done in offline Kiosk launch tests, since it influences the
-// screens `WizardController` shows.
-void DisableGaiaOfflineScreen() {
-  LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->GetHandler<GaiaScreenHandler>()
-      ->set_offline_timeout_for_testing(base::TimeDelta::Max());
 }
 
 std::vector<KioskMixin::Config> SplashScreenTestConfigs() {
@@ -148,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(OfflineLaunchEnabledSplashScreenTest,
 IN_PROC_BROWSER_TEST_P(OfflineLaunchEnabledSplashScreenTest,
                        NetworkShortcutWorksOffline) {
   network_state_.SimulateOffline();
-  DisableGaiaOfflineScreen();
+  WaitNetworkScreen();
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   auto scoped_launch_blocker = BlockKioskLaunch();

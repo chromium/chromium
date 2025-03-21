@@ -322,6 +322,7 @@ GURL KioskMixin::GetDefaultServerUrl(std::string_view url_suffix) const {
 
 // static
 std::vector<KioskMixin::Config> KioskMixin::ConfigsToAutoLaunchEachAppType() {
+  // TODO(crbug.com/379633748): Add IWA.
   return {
       Config{/*name=*/"WebApp",
              AutoLaunchAccount{SimpleWebAppOption().account_id},
