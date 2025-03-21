@@ -42,9 +42,11 @@ using kiosk::test::AutoLaunchKioskApp;
 using kiosk::test::CloseAppWindow;
 using kiosk::test::CurrentProfile;
 using kiosk::test::IsAppInstalled;
+using kiosk::test::LaunchAppManually;
 using kiosk::test::OfflineEnabledChromeAppV1;
 using kiosk::test::OpenA11ySettings;
 using kiosk::test::TheKioskApp;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -96,7 +98,7 @@ class KioskTest : public MixinBasedInProcessBrowserTest,
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
   KioskMixin kiosk_{&mixin_host_,
@@ -190,24 +192,24 @@ class OfflineKioskTest
 
 IN_PROC_BROWSER_TEST_P(OfflineKioskTest, OfflineLaunchWorksOnceItComesOnline) {
   network_state_.SimulateOffline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
 }
 
 IN_PROC_BROWSER_TEST_P(OfflineKioskTest, PRE_LaunchesInstalledAppOffline) {
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
 }
 
 IN_PROC_BROWSER_TEST_P(OfflineKioskTest, LaunchesInstalledAppOffline) {
   network_state_.SimulateOffline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

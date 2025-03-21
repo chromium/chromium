@@ -29,9 +29,11 @@ namespace ash {
 using kiosk::test::BlockKioskLaunch;
 using kiosk::test::CurrentProfile;
 using kiosk::test::IsAppInstalled;
+using kiosk::test::LaunchAppManually;
 using kiosk::test::OfflineEnabledChromeAppV2;
 using kiosk::test::PressNetworkAccelerator;
 using kiosk::test::TheKioskApp;
+using kiosk::test::WaitKioskLaunched;
 using kiosk::test::WaitNetworkScreen;
 using kiosk::test::WaitSplashScreen;
 
@@ -101,19 +103,19 @@ class SplashScreenTest
 
 IN_PROC_BROWSER_TEST_P(SplashScreenTest, DisplaysNetworkScreenUntilOnline) {
   network_state_.SimulateOffline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   WaitNetworkScreen();
   ExpectNetworkScreenContinueButtonShown(/*is_shown=*/false);
 
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
 }
 
 IN_PROC_BROWSER_TEST_P(SplashScreenTest, NetworkShortcutWorksOnline) {
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   auto scoped_launch_blocker = BlockKioskLaunch();
   WaitSplashScreen();
@@ -124,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(SplashScreenTest, NetworkShortcutWorksOnline) {
 
   scoped_launch_blocker.reset();
   ClickNetworkScreenContinueButton();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
 }
 
@@ -138,8 +140,8 @@ using OfflineLaunchEnabledSplashScreenTest = SplashScreenTest;
 IN_PROC_BROWSER_TEST_P(OfflineLaunchEnabledSplashScreenTest,
                        PRE_NetworkShortcutWorksOffline) {
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
 }
 
@@ -147,7 +149,7 @@ IN_PROC_BROWSER_TEST_P(OfflineLaunchEnabledSplashScreenTest,
                        NetworkShortcutWorksOffline) {
   network_state_.SimulateOffline();
   DisableGaiaOfflineScreen();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   auto scoped_launch_blocker = BlockKioskLaunch();
   WaitSplashScreen();
@@ -158,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(OfflineLaunchEnabledSplashScreenTest,
   scoped_launch_blocker.reset();
   ClickNetworkScreenContinueButton();
 
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
 }
 

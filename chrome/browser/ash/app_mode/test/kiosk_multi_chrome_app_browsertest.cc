@@ -34,7 +34,9 @@ using kiosk::test::CloseAppWindow;
 using kiosk::test::CurrentProfile;
 using kiosk::test::InstalledChromeAppVersion;
 using kiosk::test::IsChromeAppInstalled;
+using kiosk::test::LaunchAppManually;
 using kiosk::test::TheKioskApp;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -311,8 +313,8 @@ class KioskMultiChromeAppTest : public MixinBasedInProcessBrowserTest,
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     ServeAppsInCws(kiosk_.fake_cws(), CurrentSecondaryApps());
 
-    ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
-    EXPECT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+    EXPECT_TRUE(WaitKioskLaunched());
   }
 
   const KioskMixin::CwsChromeAppOption& CurrentPrimaryApp() {

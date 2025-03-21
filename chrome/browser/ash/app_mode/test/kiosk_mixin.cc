@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -27,18 +26,12 @@
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/fake_cws_mixin.h"
-#include "chrome/browser/ash/app_mode/kiosk_app.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/app_mode/test/kiosk_session_initialized_waiter.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,15 +52,6 @@ constexpr base::FilePath::StringViewType kDefaultWebAppPath =
 void AppendSwitchesToDisplayLoginScreen(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kLoginManager);
   command_line->AppendSwitch(switches::kForceLoginManagerInTests);
-}
-
-// The account ID as configured in policies is different from the `AccountId`
-// that identify users in Chrome. This function converts the policy `account_id`
-// of a Kiosk app of the given `type` to a Chrome `AccountId`.
-AccountId CreateDeviceLocalAccountId(std::string_view account_id,
-                                     policy::DeviceLocalAccountType type) {
-  return AccountId(AccountId::FromUserEmail(
-      policy::GenerateDeviceLocalAccountUserId(account_id, type)));
 }
 
 std::string_view GetAccountId(const KioskMixin::Option& option) {
@@ -330,58 +314,6 @@ void KioskMixin::Configure(ScopedDevicePolicyUpdate& device_policy_update,
     ConfigureAutoLaunchAccountId(device_policy_update,
                                  config.auto_launch_account_id->value());
   }
-}
-
-bool KioskMixin::LaunchManually(const KioskApp& app) {
-  switch (app.id().type) {
-    case KioskAppType::kChromeApp:
-      return LoginScreenTestApi::LaunchApp(app.id().app_id.value());
-    case KioskAppType::kWebApp:
-    case KioskAppType::kIsolatedWebApp:
-      return LoginScreenTestApi::LaunchApp(app.id().account_id);
-  }
-}
-
-bool KioskMixin::LaunchManually(std::string_view account_id) {
-  auto app_maybe = GetAppByAccountId(account_id);
-  return app_maybe.has_value() ? LaunchManually(app_maybe.value()) : false;
-}
-
-bool KioskMixin::WaitSessionLaunched() {
-  return KioskSessionInitializedWaiter().Wait();
-}
-
-// static
-std::optional<KioskApp> KioskMixin::GetAppByAccountId(
-    std::string_view account_id) {
-  // We don't know which app type `account_id` refers to at this point. Create a
-  // device local account ID for each app type and see which one exists.
-  auto chrome_app_account_id = CreateDeviceLocalAccountId(
-      account_id, policy::DeviceLocalAccountType::kKioskApp);
-  auto web_app_account_id = CreateDeviceLocalAccountId(
-      account_id, policy::DeviceLocalAccountType::kWebKioskApp);
-  auto iwa_account_id = CreateDeviceLocalAccountId(
-      account_id, policy::DeviceLocalAccountType::kKioskIsolatedWebApp);
-  for (const auto& app : KioskController::Get().GetApps()) {
-    switch (app.id().type) {
-      case KioskAppType::kChromeApp:
-        if (app.id().account_id == chrome_app_account_id) {
-          return app;
-        }
-        break;
-      case KioskAppType::kWebApp:
-        if (app.id().account_id == web_app_account_id) {
-          return app;
-        }
-        break;
-      case KioskAppType::kIsolatedWebApp:
-        if (app.id().account_id == iwa_account_id) {
-          return app;
-        }
-        break;
-    }
-  }
-  return std::nullopt;
 }
 
 GURL KioskMixin::GetDefaultServerUrl(std::string_view url_suffix) const {

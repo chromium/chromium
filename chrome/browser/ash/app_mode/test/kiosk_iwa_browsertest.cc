@@ -24,6 +24,7 @@
 namespace ash {
 
 using kiosk::test::CurrentProfile;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -68,11 +69,11 @@ class KioskIwaTest : public MixinBasedInProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(KioskIwaTest, InstallsAndLaunchesApp) {
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskIwaTest, OriginHasUnlimitedStorage) {
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 
   ExtensionSpecialStoragePolicy* storage_policy =
       CurrentProfile().GetExtensionSpecialStoragePolicy();

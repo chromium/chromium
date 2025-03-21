@@ -29,7 +29,9 @@ namespace em = enterprise_management;
 
 namespace policy {
 
+using ash::kiosk::test::LaunchAppManually;
 using ash::kiosk::test::TheKioskApp;
+using ash::kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -68,9 +70,9 @@ class DeviceCommandRebootJobKioskBrowserTest
     DeviceCommandRebootBaseTest<
         MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
     if (IsManualLaunch()) {
-      ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+      ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
     }
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
  private:

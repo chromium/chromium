@@ -47,6 +47,7 @@
 namespace ash {
 
 using kiosk::test::CurrentProfile;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -152,7 +153,7 @@ class KioskAccessibilityExtensionTest
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
  private:
