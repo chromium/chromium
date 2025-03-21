@@ -6919,6 +6919,8 @@ TEST_F(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
       "Eager",
       true, 1);
+
+  prefetch_service.SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // Scenario:
@@ -6982,6 +6984,8 @@ TEST_F(PrefetchServiceTest,
   // Note that serving metrics is not recorded for the prefetch because
   // `HasPrefetchStatus()` doesn't hold in
   // `PrefetchContainer::UpdateServingPageMetrics()`.
+
+  prefetch_service.SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 TEST_F(PrefetchServiceTest,
