@@ -231,7 +231,7 @@ found in the LICENSE file.
                            android:gravity="center_vertical"
                            android:minHeight="@dimen/privacy_sandbox_dropdown_button_height_v3"
                            android:text="@string/privacy_sandbox_m1_notice_row_dropdown_title_v3"
-                           style="@style/TextAppearance.TextMedium.Secondary" />
+                           style="@style/TextAppearance.TextMediumThick.Secondary" />
 
                        <org.chromium.ui.widget.CheckableImageView
                            android:id="@+id/dropdown_element_expand_arrow"
@@ -268,36 +268,48 @@ found in the LICENSE file.
 
            <LinearLayout
               android:id="@+id/action_buttons"
-              android:orientation="horizontal"
+              android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:weightSum="2"
-              android:layout_marginTop="@dimen/promo_dialog_padding"
-              android:layout_marginBottom="@dimen/promo_dialog_padding"
-              android:layout_marginHorizontal="24dp"
               android:visibility="invisible" >
 
-              <org.chromium.ui.widget.ButtonCompat
-                  android:id="@+id/settings_button"
-                  android:focusable="true"
-                  android:layout_width="0dp"
-                  android:layout_weight="1"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_horizontal"
-                  android:layout_marginEnd="@dimen/privacy_sandbox_consent_button_margin_between"
-                  android:text="@string/privacy_sandbox_m1_notice_row_settings_button_v3"
-                  style="@style/FilledTonalButton" />
+              <View
+                  android:id="@+id/action_button_divider"
+                  android:layout_width="match_parent"
+                  android:layout_height="1dp"
+                  style="@style/HorizontalDivider" />
 
-              <org.chromium.ui.widget.ButtonCompat
-                  android:id="@+id/ack_button"
-                  android:focusable="true"
-                  android:layout_width="0dp"
-                  android:layout_weight="1"
+              <LinearLayout
+                  android:orientation="horizontal"
+                  android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
-                  android:text="@string/privacy_sandbox_m1_notice_row_got_it_button_v3"
-                  style="@style/FilledTonalButton" />
+                  android:layout_marginTop="@dimen/promo_dialog_padding"
+                  android:layout_marginBottom="@dimen/promo_dialog_padding"
+                  android:layout_marginHorizontal="24dp"
+                  android:weightSum="2">
 
+                  <org.chromium.ui.widget.ButtonCompat
+                      android:id="@+id/settings_button"
+                      android:focusable="true"
+                      android:layout_width="0dp"
+                      android:layout_weight="1"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center_horizontal"
+                      android:layout_marginEnd="@dimen/privacy_sandbox_consent_button_margin_between"
+                      android:text="@string/privacy_sandbox_m1_notice_row_settings_button_v3"
+                      style="@style/FilledTonalButton" />
+
+                  <org.chromium.ui.widget.ButtonCompat
+                      android:id="@+id/ack_button"
+                      android:focusable="true"
+                      android:layout_width="0dp"
+                      android:layout_weight="1"
+                      android:layout_height="wrap_content"
+                      android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
+                      android:text="@string/privacy_sandbox_m1_notice_row_got_it_button_v3"
+                      style="@style/FilledTonalButton" />
+
+               </LinearLayout>
            </LinearLayout>
         </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
 
