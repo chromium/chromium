@@ -105,6 +105,7 @@ std::u16string Transliterate(std::u16string_view value,
   if (!transliterator) {
     return base::i18n::ToLower(value);
   }
+  base::ScopedUmaHistogramTimer logger("Autofill.TransliterationDuration");
   return transliterator->Transliterate(value);
 }
 }  // namespace
