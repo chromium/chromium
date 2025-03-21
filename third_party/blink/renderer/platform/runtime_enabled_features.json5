@@ -1472,6 +1472,13 @@
       // https://chromestatus.com/feature/5134293578285056
       name: "Database",
     },
+    {
+      // Fix HandleMouseFocus selection for delegated focus text control.
+      // See https://crbug.com/400317114
+      // This feature was shipped in M136, so this flag can be removed in M138.
+      name: "DelegatesFocusTextControlFix",
+      status: "stable",
+    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.

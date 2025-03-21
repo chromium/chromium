@@ -4331,6 +4331,18 @@
     "owners": [
       "abotella@igalia.com"
     ]
+   },
+   {
+    "prefix": "delegates-focus-text-control-disabled",
+    "owners": ["dizhangg@google.com"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/shadow-dom/focus/text-selection-with-delegatesFocus-text-control.html"
+    ],
+    "args": [
+      "--disable-features=DelegatesFocusTextControlFix"
+    ],
+    "expires": "Jul 1, 2025"
   }
 
 ]
