@@ -2394,6 +2394,10 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   }
 #endif
 
+  if (window_features.is_popup) {
+    UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpenPopup);
+  }
+
   if (!completed_url.IsEmpty() || result.new_window)
     result.frame->Navigate(frame_request, WebFrameLoadType::kStandard);
 

@@ -4760,6 +4760,7 @@ enum WebFeature {
   kTextAutoSizingDisabledOnFlexbox = 5374,
   kAriaLabeledByAlternativeSpelling = 5375,
   kCanvasTextNg = 5376,
+  kDOMWindowOpenPopup = 5377,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
