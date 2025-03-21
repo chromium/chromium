@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.DocumentScanner.{RequestName}.Event"
     enum="MachineLearningServiceDocumentScannerResultEvent"
-    expires_after="2025-05-01">
+    expires_after="2025-11-01">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <owner>ml-service-team@google.com</owner>
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.LoadModelResult"
     enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2025-05-01">
+    expires_after="2025-11-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.ReapWorkerProcessErrno"
     enum="MachineLearningServiceReapWorkerProcessErrno"
-    expires_after="2025-05-01">
+    expires_after="2025-11-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
