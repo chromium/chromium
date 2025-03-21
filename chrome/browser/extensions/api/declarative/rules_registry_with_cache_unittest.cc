@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -25,6 +24,7 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative/test_rules_registry.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/extension.h"
@@ -356,8 +356,6 @@ TEST_F(RulesRegistryWithCacheTest, RulesPreservedAcrossRestart) {
   // extensions.
   ScopedTestMV2Enabler mv2_enabler;
 
-  ExtensionService* extension_service = env_.GetExtensionService();
-
   // 1. Add an extension, before rules registry gets created.
   std::string error;
   scoped_refptr<Extension> extension(LoadManifestUnchecked(
@@ -365,8 +363,8 @@ TEST_F(RulesRegistryWithCacheTest, RulesPreservedAcrossRestart) {
       mojom::ManifestLocation::kUnpacked, Extension::NO_FLAGS,
       extension1_->id(), &error));
   ASSERT_TRUE(error.empty());
-  extension_service->AddExtension(extension.get());
-  EXPECT_TRUE(extensions::ExtensionRegistry::Get(env_.profile())
+  env_.GetExtensionRegistrar()->AddExtension(extension.get());
+  EXPECT_TRUE(ExtensionRegistry::Get(env_.profile())
                   ->enabled_extensions()
                   .Contains(extension->id()));
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(

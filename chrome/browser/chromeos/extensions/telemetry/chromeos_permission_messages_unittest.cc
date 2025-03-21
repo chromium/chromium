@@ -10,11 +10,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -90,7 +90,7 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
                .SetLocation(ManifestLocation::kInternal)
                .Build();
 
-    env_.GetExtensionService()->AddExtension(app_.get());
+    env_.GetExtensionRegistrar()->AddExtension(app_.get());
   }
 
   // Returns the permission messages that would display in the prompt that
