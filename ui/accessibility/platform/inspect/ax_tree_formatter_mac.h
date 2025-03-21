@@ -40,14 +40,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterMac
       size_t end_index) const;
 
   // AXTreeFormatterMac
-  base::Value::Dict BuildNode(const id node) const;
+  base::Value::Dict BuildNode(id node) const;
 
  protected:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
-  base::Value::Dict BuildTree(const id root) const;
+  base::Value::Dict BuildTree(id root) const;
   base::Value::Dict BuildTreeForAXUIElement(AXUIElementRef node) const;
 
   void RecursiveBuildTree(const AXElementWrapper& ax_element,

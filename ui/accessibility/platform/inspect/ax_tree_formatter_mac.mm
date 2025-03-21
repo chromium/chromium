@@ -79,7 +79,7 @@ base::Value::Dict AXTreeFormatterMac::BuildTreeForAXUIElement(
   return BuildTree((__bridge id)node);
 }
 
-base::Value::Dict AXTreeFormatterMac::BuildTree(const id root) const {
+base::Value::Dict AXTreeFormatterMac::BuildTree(id root) const {
   DCHECK(root);
 
   AXTreeIndexerMac indexer(root);
@@ -180,7 +180,7 @@ base::Value::Dict AXTreeFormatterMac::BuildNodeForSelector(
   return BuildNode((__bridge id)node.get());
 }
 
-base::Value::Dict AXTreeFormatterMac::BuildNode(const id node) const {
+base::Value::Dict AXTreeFormatterMac::BuildNode(id node) const {
   DCHECK(node);
 
   AXTreeIndexerMac indexer(node);
