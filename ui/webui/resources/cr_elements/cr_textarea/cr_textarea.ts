@@ -139,21 +139,21 @@ export class CrTextareaElement extends CrLitElement {
     };
   }
 
-  override autofocus: boolean = false;
-  disabled: boolean = false;
-  readonly: boolean = false;
-  required: boolean = false;
-  rows: number = 3;
-  label: string = '';
-  maxlength?: number;
-  value: string = '';
-  placeholder: string = '';
-  autogrow: boolean = false;
-  hasMaxHeight: boolean = false;
-  invalid: boolean = false;
-  firstFooter: string = '';
-  secondFooter: string = '';
-  protected internalValue_: string = '';
+  override accessor autofocus: boolean = false;
+  accessor disabled: boolean = false;
+  accessor readonly: boolean = false;
+  accessor required: boolean = false;
+  accessor rows: number = 3;
+  accessor label: string = '';
+  accessor maxlength: number|undefined;
+  accessor value: string = '';
+  accessor placeholder: string = '';
+  accessor autogrow: boolean = false;
+  accessor hasMaxHeight: boolean = false;
+  accessor invalid: boolean = false;
+  accessor firstFooter: string = '';
+  accessor secondFooter: string = '';
+  protected accessor internalValue_: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

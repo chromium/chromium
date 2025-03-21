@@ -96,15 +96,15 @@ export class CrDialogElement extends CrLitElement {
     };
   }
 
-  closeText?: string;
-  consumeKeydownEvent: boolean = false;
-  ignoreEnterKey: boolean = false;
-  ignorePopstate: boolean = false;
-  noCancel: boolean = false;
-  open: boolean = false;
-  showCloseButton: boolean = false;
-  showOnAttach: boolean = false;
-  ariaDescriptionText?: string;
+  accessor closeText: string|undefined;
+  accessor consumeKeydownEvent: boolean = false;
+  accessor ignoreEnterKey: boolean = false;
+  accessor ignorePopstate: boolean = false;
+  accessor noCancel: boolean = false;
+  accessor open: boolean = false;
+  accessor showCloseButton: boolean = false;
+  accessor showOnAttach: boolean = false;
+  accessor ariaDescriptionText: string|undefined;
 
   private mutationObserver_: MutationObserver|null = null;
   private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;

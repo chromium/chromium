@@ -45,8 +45,8 @@ export class CrIconsetElement extends CrLitElement {
     };
   }
 
-  name: string = '';
-  size: number = 24;
+  accessor name: string = '';
+  accessor size: number = 24;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

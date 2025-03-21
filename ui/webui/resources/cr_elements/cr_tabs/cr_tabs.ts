@@ -60,9 +60,9 @@ export class CrTabsElement extends CrLitElement {
     };
   }
 
-  tabIcons: string[] = [];
-  tabNames: string[] = [];
-  selected: number = NONE_SELECTED;
+  accessor tabIcons: string[] = [];
+  accessor tabNames: string[] = [];
+  accessor selected: number = NONE_SELECTED;
 
   private isRtl_: boolean = false;
 
