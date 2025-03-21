@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>AriaNotify UseCounter</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div aria-label="Container">
+<button aria-label="a" id="a" onclick="notify(this)"></button>
+</div>
+</body>
+<script>
+    function notify(clickedElement) {
+    clickedElement.ariaNotify("one", {
+                         "interrupt": "all"});
+    clickedElement.ariaNotify("two", {"priority": "high"});
+    clickedElement.ariaNotify("three", {
+                           "interrupt": "pending"});
+    }
+    </script>
+    <script type="module">
+import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+test(() => {
+  internals.clearUseCounter(document, WebFeature.kAriaNotify);
+  document.getElementById('a').click();
+  assert_true(internals.isUseCounted(document, WebFeature.kAriaNotify));
+  internals.clearUseCounter(document, WebFeature.kAriaNotify);
+  document.ariaNotify("hello");
+  assert_true(internals.isUseCounted(document, WebFeature.kAriaNotify));
+});
+</script>
