@@ -4764,6 +4764,8 @@ enum WebFeature {
   kFencedFrameDisableUntrustedNetwork = 5378,
   kFencedFrameNotifyEvent = 5379,
   kSharedStorageGetInFencedFrame = 5380,
+  kTranslator_MeasureInputUsage_Method = 5381,
+  kTranslator_InputQuota_AttributeGetter = 5382,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

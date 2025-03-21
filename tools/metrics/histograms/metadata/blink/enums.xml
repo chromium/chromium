@@ -5984,6 +5984,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5378" label="FencedFrameDisableUntrustedNetwork"/>
   <int value="5379" label="FencedFrameNotifyEvent"/>
   <int value="5380" label="SharedStorageGetInFencedFrame"/>
+  <int value="5381" label="Translator_MeasureInputUsage_Method"/>
+  <int value="5382" label="Translator_InputQuota_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
