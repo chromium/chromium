@@ -297,18 +297,15 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   pos.reserve(stops_.size());
 
   if (color_space_interpolation_space_ == Color::ColorSpace::kNone) {
-    bool has_non_legacy_color = false;
+    Color::ColorSpace color_space = Color::ColorSpace::kSRGB;
     for (const auto& stop : stops_) {
-      if (!Color::IsLegacyColorSpace(stop.color.GetColorSpace())) {
-        has_non_legacy_color = true;
+      auto stop_color_space = stop.color.GetColorInterpolationSpace();
+      if (stop_color_space != Color::ColorSpace::kSRGBLegacy) {
+        color_space = stop_color_space;
+        break;
       }
     }
-
-    if (has_non_legacy_color) {
-      color_space_interpolation_space_ = Color::ColorSpace::kOklab;
-    } else {
-      color_space_interpolation_space_ = Color::ColorSpace::kSRGB;
-    }
+    color_space_interpolation_space_ = color_space;
   }
 
   FillSkiaStops(colors, pos);
