@@ -108,7 +108,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.PRERENDER_WITH_URL,
                 Features.WEB_STORAGE_DELETE_BROWSING_DATA,
                 Features.SPECULATIVE_LOADING_CONFIG,
-                Features.SAVE_STATE + Features.DEV_SUFFIX,
+                Features.SAVE_STATE,
                 Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE,
                 Features.ASYNC_SHOULD_INTERCEPT_REQUEST + Features.DEV_SUFFIX,
                 Features.PROVIDER_WEAKLY_REF_WEBVIEW,
