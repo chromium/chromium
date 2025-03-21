@@ -119,6 +119,10 @@ EnumTraits<ip_protection::mojom::TryGetProbabilisticRevealTokensStatus,
         kNoGoogleChromeBranding:
       return ip_protection::mojom::TryGetProbabilisticRevealTokensStatus::
           kNoGoogleChromeBranding;
+    case ip_protection::TryGetProbabilisticRevealTokensStatus::
+        kInvalidEpochIdSize:
+      return ip_protection::mojom::TryGetProbabilisticRevealTokensStatus::
+          kInvalidEpochIdSize;
   }
   // Failure to convert should never occur.
   NOTREACHED();
@@ -200,6 +204,11 @@ bool EnumTraits<ip_protection::mojom::TryGetProbabilisticRevealTokensStatus,
       *output = ip_protection::TryGetProbabilisticRevealTokensStatus::
           kNoGoogleChromeBranding;
       return true;
+    case ip_protection::mojom::TryGetProbabilisticRevealTokensStatus::
+        kInvalidEpochIdSize:
+      *output = ip_protection::TryGetProbabilisticRevealTokensStatus::
+          kInvalidEpochIdSize;
+      return true;
   }
   return false;
 }
@@ -220,7 +229,8 @@ bool StructTraits<ip_protection::mojom::ProbabilisticRevealTokenDataView,
     Read(ip_protection::mojom::ProbabilisticRevealTokenDataView data,
          ip_protection::ProbabilisticRevealToken* out) {
   out->version = data.version();
-  return data.ReadU(&out->u) && data.ReadE(&out->e);
+  return data.ReadU(&out->u) && data.ReadE(&out->e) &&
+         data.ReadEpochId(&out->epoch_id);
 }
 
 bool StructTraits<

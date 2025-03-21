@@ -127,6 +127,11 @@ struct StructTraits<ip_protection::mojom::ProbabilisticRevealTokenDataView,
     return prt.e;
   }
 
+  static const std::string& epoch_id(
+      const ip_protection::ProbabilisticRevealToken& prt) {
+    return prt.epoch_id;
+  }
+
   // If Read() returns false, Mojo will discard the message.
   static bool Read(ip_protection::mojom::ProbabilisticRevealTokenDataView data,
                    ip_protection::ProbabilisticRevealToken* out);
