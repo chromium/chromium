@@ -17,10 +17,11 @@ ScopedDisableExitOnDFatal::ScopedDisableExitOnDFatal()
 ScopedDisableExitOnDFatal::~ScopedDisableExitOnDFatal() = default;
 
 // static
-void ScopedDisableExitOnDFatal::LogAssertHandler(const char* file,
-                                                 int line,
-                                                 std::string_view message,
-                                                 std::string_view stack_trace) {
+void ScopedDisableExitOnDFatal::LogAssertHandler(
+    std::string_view file,
+    int line,
+    const std::string_view message,
+    const std::string_view stack_trace) {
   // Simply swallow the assert.
 }
 

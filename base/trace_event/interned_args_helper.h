@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/hash/hash.h"
@@ -25,13 +26,16 @@ namespace trace_event {
 // for log event's location since base::Location uses program counter based
 // location.
 struct BASE_EXPORT TraceSourceLocation {
-  const char* function_name = nullptr;
-  const char* file_name = nullptr;
+  // While these are string_views, only the address is used for equality and
+  // hashing. The length is still needed when interning a new location since the
+  // strings may not be null-terminated.
+  std::string_view function_name;
+  std::string_view file_name;
   int line_number = 0;
 
   TraceSourceLocation() = default;
-  TraceSourceLocation(const char* function_name,
-                      const char* file_name,
+  TraceSourceLocation(std::string_view function_name,
+                      std::string_view file_name,
                       int line_number)
       : function_name(function_name),
         file_name(file_name),
@@ -45,8 +49,8 @@ struct BASE_EXPORT TraceSourceLocation {
         line_number(location.line_number()) {}
 
   bool operator==(const TraceSourceLocation& other) const {
-    return file_name == other.file_name &&
-           function_name == other.function_name &&
+    return file_name.data() == other.file_name.data() &&
+           function_name.data() == other.function_name.data() &&
            line_number == other.line_number;
   }
 };
@@ -76,8 +80,8 @@ struct hash<base::trace_event::TraceSourceLocation> {
   std::size_t operator()(
       const base::trace_event::TraceSourceLocation& loc) const {
     return base::HashInts(
-        base::HashInts(reinterpret_cast<uintptr_t>(loc.file_name),
-                       reinterpret_cast<uintptr_t>(loc.function_name)),
+        base::HashInts(reinterpret_cast<uintptr_t>(loc.file_name.data()),
+                       reinterpret_cast<uintptr_t>(loc.function_name.data())),
         static_cast<size_t>(loc.line_number));
   }
 };

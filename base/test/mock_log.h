@@ -67,7 +67,7 @@ class MockLog {
   // destinations.
   MOCK_METHOD5(Log,
                bool(int severity,
-                    const char* file,
+                    std::string_view file,
                     int line,
                     size_t message_start,
                     const std::string& str));
@@ -82,7 +82,7 @@ class MockLog {
   // Static function which is set as the logging message handler.
   // Called once for each message.
   static bool LogMessageHandler(int severity,
-                                const char* file,
+                                std::string_view file,
                                 int line,
                                 size_t message_start,
                                 const std::string& str);

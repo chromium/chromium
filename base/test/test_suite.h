@@ -71,7 +71,7 @@ class TestSuite {
   // By default fatal log messages (e.g. from DCHECKs) result in error dialogs
   // which gum up buildbots. Use a minimalistic assert handler which just
   // terminates the process.
-  void UnitTestAssertHandler(const char* file,
+  void UnitTestAssertHandler(std::string_view file,
                              int line,
                              std::string_view summary,
                              std::string_view stack_trace);

@@ -11,6 +11,8 @@
 
 #include <initguid.h>
 
+#include <string_view>
+
 #include "base/memory/singleton.h"
 
 namespace logging {
@@ -39,7 +41,7 @@ LogEventProvider* LogEventProvider::GetInstance() {
 }
 
 bool LogEventProvider::LogMessage(logging::LogSeverity severity,
-                                  const char* file,
+                                  std::string_view file,
                                   int line,
                                   size_t message_start,
                                   const std::string& message) {
@@ -91,9 +93,6 @@ bool LogEventProvider::LogMessage(logging::LogSeverity severity,
     }
 
     EtwMofEvent<5> event(kLogEventId, LOG_MESSAGE_FULL, level);
-    if (file == NULL) {
-      file = "";
-    }
 
     // Add the stack trace.
     event.SetField(0, sizeof(depth), &depth);
@@ -101,7 +100,7 @@ bool LogEventProvider::LogMessage(logging::LogSeverity severity,
     // The line.
     event.SetField(2, sizeof(line), &line);
     // The file.
-    event.SetField(3, strlen(file) + 1, file);
+    event.SetField(3, file.length(), file.data());
     // And finally the message.
     event.SetField(4, message.length() + 1 - message_start,
                    message.c_str() + message_start);
