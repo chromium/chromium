@@ -29,5 +29,5 @@ public interface AsyncShouldInterceptRequestCallback {
      *     response information.
      */
     public void shouldInterceptRequestAsync(
-            AwContentsClient.AwWebResourceRequest request, WebResponseCallback callback);
+            AwWebResourceRequest request, WebResponseCallback callback);
 }

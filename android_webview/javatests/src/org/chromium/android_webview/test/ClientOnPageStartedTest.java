@@ -19,6 +19,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;

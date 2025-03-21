@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;

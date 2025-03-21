@@ -40,7 +40,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.Log;

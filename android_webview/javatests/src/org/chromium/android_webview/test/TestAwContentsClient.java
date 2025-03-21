@@ -15,6 +15,7 @@ import org.junit.Assert;
 
 import org.chromium.android_webview.AwConsoleMessage;
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;

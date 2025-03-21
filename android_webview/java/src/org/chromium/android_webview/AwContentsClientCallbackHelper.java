@@ -67,24 +67,23 @@ public class AwContentsClientCallbackHelper {
     }
 
     private static class OnReceivedErrorInfo {
-        final AwContentsClient.AwWebResourceRequest mRequest;
+        final AwWebResourceRequest mRequest;
         final AwContentsClient.AwWebResourceError mError;
 
         OnReceivedErrorInfo(
-                AwContentsClient.AwWebResourceRequest request,
-                AwContentsClient.AwWebResourceError error) {
+                AwWebResourceRequest request, AwContentsClient.AwWebResourceError error) {
             mRequest = request;
             mError = error;
         }
     }
 
     private static class OnSafeBrowsingHitInfo {
-        final AwContentsClient.AwWebResourceRequest mRequest;
+        final AwWebResourceRequest mRequest;
         final int mThreatType;
         final Callback<AwSafeBrowsingResponse> mCallback;
 
         OnSafeBrowsingHitInfo(
-                AwContentsClient.AwWebResourceRequest request,
+                AwWebResourceRequest request,
                 int threatType,
                 Callback<AwSafeBrowsingResponse> callback) {
             mRequest = request;
@@ -94,11 +93,10 @@ public class AwContentsClientCallbackHelper {
     }
 
     private static class OnReceivedHttpErrorInfo {
-        final AwContentsClient.AwWebResourceRequest mRequest;
+        final AwWebResourceRequest mRequest;
         final WebResourceResponseInfo mResponse;
 
-        OnReceivedHttpErrorInfo(
-                AwContentsClient.AwWebResourceRequest request, WebResourceResponseInfo response) {
+        OnReceivedHttpErrorInfo(AwWebResourceRequest request, WebResourceResponseInfo response) {
             mRequest = request;
             mResponse = response;
         }
@@ -320,14 +318,13 @@ public class AwContentsClientCallbackHelper {
     }
 
     public void postOnReceivedError(
-            AwContentsClient.AwWebResourceRequest request,
-            AwContentsClient.AwWebResourceError error) {
+            AwWebResourceRequest request, AwContentsClient.AwWebResourceError error) {
         OnReceivedErrorInfo info = new OnReceivedErrorInfo(request, error);
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_RECEIVED_ERROR, info));
     }
 
     public void postOnSafeBrowsingHit(
-            AwContentsClient.AwWebResourceRequest request,
+            AwWebResourceRequest request,
             int threatType,
             Callback<AwSafeBrowsingResponse> callback) {
         OnSafeBrowsingHitInfo info = new OnSafeBrowsingHitInfo(request, threatType, callback);
@@ -358,7 +355,7 @@ public class AwContentsClientCallbackHelper {
     }
 
     public void postOnReceivedHttpError(
-            AwContentsClient.AwWebResourceRequest request, WebResourceResponseInfo response) {
+            AwWebResourceRequest request, WebResourceResponseInfo response) {
         OnReceivedHttpErrorInfo info = new OnReceivedHttpErrorInfo(request, response);
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_RECEIVED_HTTP_ERROR, info));
     }

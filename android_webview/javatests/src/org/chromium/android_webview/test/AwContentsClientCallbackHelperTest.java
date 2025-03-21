@@ -23,6 +23,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsClientCallbackHelper;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.TestAwContentsClient.OnLoadResourceHelper;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
@@ -199,7 +200,7 @@ public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
         OnReceivedErrorHelper receivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
 
         int onReceivedErrorCount = receivedErrorHelper.getCallCount();
-        AwContentsClient.AwWebResourceRequest request = new AwContentsClient.AwWebResourceRequest();
+        AwWebResourceRequest request = new AwWebResourceRequest();
         request.url = TEST_URL;
         request.isOutermostMainFrame = true;
         AwContentsClient.AwWebResourceError error = new AwContentsClient.AwWebResourceError();
