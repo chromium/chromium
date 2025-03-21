@@ -1661,6 +1661,12 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
 }
 
 bool ViewTransitionStyleTracker::HasActiveAnimations() const {
+  // TODO(crbug.com/405117566): Handle scoped transitions.
+  auto* originating_element = document_->documentElement();
+  if (!originating_element) {
+    return false;
+  }
+
   auto pseudo_has_animation = [](PseudoElement* pseudo_element) {
     auto* animations = pseudo_element->GetElementAnimations();
     if (!animations) {
@@ -1677,7 +1683,8 @@ bool ViewTransitionStyleTracker::HasActiveAnimations() const {
     }
     return false;
   };
-  return !!ViewTransitionUtils::FindPseudoIf(*document_, pseudo_has_animation);
+  return !!ViewTransitionUtils::FindPseudoIf(*originating_element,
+                                             pseudo_has_animation);
 }
 
 PaintPropertyChangeType ViewTransitionStyleTracker::UpdateCaptureClip(
@@ -1968,18 +1975,23 @@ bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
 void ViewTransitionStyleTracker::InvalidateStyle() {
   ua_style_sheet_ = nullptr;
 
-  if (auto* originating_element = document_->documentElement()) {
-    originating_element->SetNeedsStyleRecalc(
-        kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                               style_change_reason::kViewTransition));
+  // TODO(crbug.com/405117566): Handle scoped transitions.
+  auto* originating_element = document_->documentElement();
+  if (!originating_element) {
+    return;
   }
+
+  originating_element->SetNeedsStyleRecalc(
+      kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                             style_change_reason::kViewTransition));
 
   auto invalidate_style = [](PseudoElement* pseudo_element) {
     pseudo_element->SetNeedsStyleRecalc(
         kLocalStyleChange, StyleChangeReasonForTracing::Create(
                                style_change_reason::kViewTransition));
   };
-  ViewTransitionUtils::ForEachTransitionPseudo(*document_, invalidate_style);
+  ViewTransitionUtils::ForEachTransitionPseudo(*originating_element,
+                                               invalidate_style);
 
   // Invalidate layout view compositing properties.
   if (auto* layout_view = document_->GetLayoutView()) {
