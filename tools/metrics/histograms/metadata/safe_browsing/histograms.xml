@@ -584,7 +584,10 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.NetworkResult{IsAccessTokenIncluded}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-09-07">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-21">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1554,7 +1557,10 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.HitReport.NetworkResult"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-09-07">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-21">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2074,7 +2080,10 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.MultipartUploader.NetworkResult.{UploaderConsumer}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-08-17">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-21">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
   <owner>drubery@chromium.org</owner>
   <owner>nancylanxiao@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2412,7 +2421,10 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.ResumableUploader.NetworkResult.EnterpriseUpload"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-08-17">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-21">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
   <owner>drubery@chromium.org</owner>
   <owner>nancylanxiao@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -3097,7 +3109,10 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenNetworkResult"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-08-17">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-21">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

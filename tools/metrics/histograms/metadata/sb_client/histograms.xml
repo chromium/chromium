@@ -220,7 +220,10 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetworkResult"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-08-17">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-21">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -748,7 +751,10 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.NetworkResult2"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-09-14">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-21">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
