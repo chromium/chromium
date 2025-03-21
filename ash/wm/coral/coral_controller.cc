@@ -45,7 +45,7 @@ namespace ash {
 namespace {
 
 constexpr int kMinItemsInGroup = 4;
-constexpr int kMaxItemsInGroup = 10;
+constexpr int kMaxItemsInGroup = 25;
 constexpr int kMaxGroupsToGenerate = 2;
 // Too many items in 1 request could result in poor performance.
 constexpr size_t kMaxItemsInRequest = 100;
