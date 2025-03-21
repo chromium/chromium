@@ -15,15 +15,12 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/types.h>
 #include <unistd.h>
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace media {
 
 bool GetFileSize(const int fd, size_t* size) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (fd < 0) {
     VLOG(1) << "Invalid file descriptor";
     return false;
@@ -49,10 +46,6 @@ bool GetFileSize(const int fd, size_t* size) {
 
   *size = base::checked_cast<size_t>(fd_size);
   return true;
-#else
-  NOTIMPLEMENTED();
-  return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 bool VerifyGpuMemoryBufferHandle(
@@ -77,7 +70,6 @@ bool VerifyGpuMemoryBufferHandle(
     VLOG(1) << "Unsupported: " << pixel_format;
     return false;
   }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const size_t num_planes = media::VideoFrame::NumPlanes(pixel_format);
   if (num_planes != gmb_handle.native_pixmap_handle.planes.size() ||
       num_planes == 0) {
@@ -133,10 +125,6 @@ bool VerifyGpuMemoryBufferHandle(
     }
   }
   return true;
-#else
-  NOTIMPLEMENTED();
-  return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace media
