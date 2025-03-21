@@ -95,6 +95,8 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
     return state_.PointerIsMine(reinterpret_cast<uintptr_t>(ptr));
   }
 
+  void DestructForTesting();
+
  private:
   // Virtual base class representing a free list of entries T.
   template <typename T>

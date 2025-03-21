@@ -237,6 +237,14 @@ void GuardedPageAllocator::Init(const AllocatorSettings& settings,
 #endif
 }
 
+void GuardedPageAllocator::DestructForTesting() {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+  partition_alloc::GwpAsanSupport::DestructForTesting();
+#else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+  // No need to call UnmapRegion() as ~GuardedPageAllocator does this.
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+}
+
 std::vector<std::pair<void*, size_t>>
 GuardedPageAllocator::GetInternalMemoryRegions() {
   std::vector<std::pair<void*, size_t>> regions;
