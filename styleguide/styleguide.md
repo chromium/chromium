@@ -6,10 +6,12 @@
     *   [Modern C++ use](c++/c++-features.md) for allowed/banned features.
     *   See also: [C++ Dos and Don'ts](c++/c++-dos-and-donts.md) for Chromium
         best-practices.
+    *   [Blink C++ style](c++/blink-c++.md)
 *   [Chromium Objective-C style guide](objective-c/objective-c.md)
 *   [Chromium Swift style guide](swift/swift.md)
 *   [Java style guide for Android](java/java.md)
 *   [Chromium Python style guide](python/python.md)
+    *   [Blink Python style](python/blink-python.md)
 *   [GN style guide](https://gn.googlesource.com/gn/+/main/docs/style_guide.md)
     for build files.
     *   See also: [Writing GN templates](../build/docs/writing_gn_templates.md)
@@ -20,7 +22,8 @@ Chromium also uses these languages to a lesser degree:
 
 *   [Kernel C style](https://www.kernel.org/doc/html/latest/process/coding-style.html)
     for ChromiumOS firmware.
-*   [IDL](https://www.chromium.org/blink/webidl/#syntax)
+*   [WebIDL](https://www.chromium.org/blink/webidl/#syntax)
+*   [Mojo IDL](../docs/security/mojo.md) for cross-process IPC
 *   [Jinja style guide](https://sites.google.com/a/chromium.org/dev/developers/jinja#TOC-Style)
     for [Jinja](https://sites.google.com/a/chromium.org/dev/developers/jinja)
     templates.
