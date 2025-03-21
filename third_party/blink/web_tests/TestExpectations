@@ -9103,3 +9103,6 @@ crbug.com/404571518 [ Win11-arm64 ] virtual/gpu/external/wpt/mediacapture-record
 # Gardener 2025-03-20
 crbug.com/405231143 [ Mac13 ] external/wpt/visual-viewport/viewport-scrollbars-cause-resize-in-iframe.html [ Failure ]
 crbug.com/405231143 [ Mac ] external/wpt/clear-site-data/clear-cache-partitioning.https.html [ Failure Timeout ]
+
+# Gardener 2025-03-21
+crbug.com/405231143 [ Win11-arm64 ] external/wpt/clear-site-data/clear-cache-partitioning.https.html [ Failure ]
