@@ -1245,19 +1245,21 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
     }
     return;
   }
-  UseCounter::Count(GetDocument(), WebFeature::kValidPopoverAttribute);
-  switch (type) {
-    case PopoverValueType::kAuto:
-      UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeAuto);
-      break;
-    case PopoverValueType::kHint:
-      UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeHint);
-      break;
-    case PopoverValueType::kManual:
-      UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeManual);
-      break;
-    case PopoverValueType::kNone:
-      NOTREACHED();
+  if (!IsInUserAgentShadowRoot()) {
+    UseCounter::Count(GetDocument(), WebFeature::kValidPopoverAttribute);
+    switch (type) {
+      case PopoverValueType::kAuto:
+        UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeAuto);
+        break;
+      case PopoverValueType::kHint:
+        UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeHint);
+        break;
+      case PopoverValueType::kManual:
+        UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeManual);
+        break;
+      case PopoverValueType::kNone:
+        NOTREACHED();
+    }
   }
   CHECK_EQ(type, GetPopoverTypeFromAttributeValue(
                      FastGetAttribute(html_names::kPopoverAttr)));
