@@ -395,7 +395,6 @@ HTMLPermissionElement::HTMLPermissionElement(Document& document)
     : HTMLElement(html_names::kPermissionTag, document),
       ScrollSnapshotClient(GetDocument().GetFrame()),
       permission_service_(document.GetExecutionContext()),
-      permission_observer_receivers_(this, document.GetExecutionContext()),
       embedded_permission_control_receiver_(this,
                                             document.GetExecutionContext()),
       disable_reason_expire_timer_(
@@ -450,7 +449,6 @@ V8PermissionState HTMLPermissionElement::permissionStatus() const {
 
 void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
-  visitor->Trace(permission_observer_receivers_);
   visitor->Trace(embedded_permission_control_receiver_);
   visitor->Trace(permission_text_span_);
   visitor->Trace(intersection_observer_);
@@ -488,9 +486,6 @@ void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
 
 void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
-  // We also need to remove all permission observer receivers from the set, to
-  // effectively stop listening the permission status change events.
-  permission_observer_receivers_.Clear();
   permission_status_map_.clear();
   aggregated_permission_status_ = std::nullopt;
   pseudo_state_ = {/*has_invalid_style*/ false, /*is_occluded*/ false};
@@ -502,6 +497,7 @@ void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
     embedded_permission_control_receiver_.reset();
   }
 
+  is_registered_in_browser_process_ = false;
   if (LocalDOMWindow* window = GetDocument().domWindow()) {
     CachedPermissionStatus::From(window)->UnregisterClient(
         this, permission_descriptors_);
@@ -987,19 +983,9 @@ void HTMLPermissionElement::RequestPageEmbededPermissions() {
                     WrapWeakPersistent(this)));
 }
 
-void HTMLPermissionElement::RegisterPermissionObserver(
-    const PermissionDescriptorPtr& descriptor,
-    MojoPermissionStatus current_status) {
-  mojo::PendingRemote<PermissionObserver> observer;
-  permission_observer_receivers_.Add(observer.InitWithNewPipeAndPassReceiver(),
-                                     descriptor->name, GetTaskRunner());
-  GetPermissionService()->AddPageEmbeddedPermissionObserver(
-      descriptor.Clone(), current_status, std::move(observer));
-}
-
 void HTMLPermissionElement::OnPermissionStatusChange(
+    PermissionName permission_name,
     MojoPermissionStatus status) {
-  auto permission_name = permission_observer_receivers_.current_context();
   auto it = permission_status_map_.find(permission_name);
   CHECK(it != permission_status_map_.end());
   it->value = status;
@@ -1023,15 +1009,11 @@ void HTMLPermissionElement::OnEmbeddedPermissionControlRegistered(
   CHECK(statuses.has_value());
   CHECK_EQ(statuses->size(), permission_descriptors_.size());
 
-  bool needs_permission_observer_registration =
-      permission_observer_receivers_.empty();
+  is_registered_in_browser_process_ = true;
   for (wtf_size_t i = 0; i < permission_descriptors_.size(); ++i) {
     auto status = (*statuses)[i];
     const auto& descriptor = permission_descriptors_[i];
     permission_status_map_.Set(descriptor->name, status);
-    if (needs_permission_observer_registration) {
-      RegisterPermissionObserver(descriptor, status);
-    }
   }
 
   UpdatePermissionStatusAndAppearance();
@@ -1134,7 +1116,7 @@ bool HTMLPermissionElement::IsClickingEnabled() {
     return false;
   }
 
-  if (!IsRegisteredInBrowserProcess()) {
+  if (!is_registered_in_browser_process()) {
     AddConsoleError(String::Format(
         "The permission element '%s' cannot be activated because of security "
         "checks or because the page's quota has been exceeded.",
@@ -1251,7 +1233,7 @@ HTMLPermissionElement::GetClickingEnabledState() const {
     }
   }
 
-  if (!IsRegisteredInBrowserProcess()) {
+  if (!is_registered_in_browser_process()) {
     return {false, AtomicString("unsuccessful_registration")};
   }
 
