@@ -3022,7 +3022,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'AOHe75Z6ZPz5W4nXLY_Bq9fL-Jv0Q-GCBdx_XM-GMSAC',
+        'version': 'DswY1RZcBlSJu6rgVu4kEy4x_xA50baF-WyboRr2LboC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
