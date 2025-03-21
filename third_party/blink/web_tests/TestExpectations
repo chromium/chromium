@@ -1048,8 +1048,6 @@ crbug.com/1445990 external/wpt/css/css-ui/outline-color-002.html [ Failure ]
 crbug.com/1445990 external/wpt/css/css-ui/outline-color-003.html [ Failure ]
 crbug.com/1445990 external/wpt/css/css-ui/outline-color-004.html [ Failure ]
 
-crbug.com/405004975 external/wpt/css/css-ui/cursor-calc-hotspot.html [ Crash ]
-
 # [css-flexbox]
 
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
@@ -1067,8 +1065,6 @@ crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-002.h
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-003.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse-line-wrapping.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html [ Failure ]
-
-crbug.com/405004975 external/wpt/css/css-flexbox/flex-shorthand-calc.html [ Crash ]
 
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item.html [ Failure ]
@@ -1439,10 +1435,6 @@ crbug.com/393395931 external/wpt/css/css-scoping/slotted-has-004.html [ Failure 
 
 # css-will-change
 crbug.com/403372462 external/wpt/css/css-will-change/will-change-stacking-context-z-index-4.html [ Failure ]
-
-# sign() / "math mess" issues.
-crbug.com/405187813 external/wpt/css/css-flexbox/parsing/flex-computed.html [ Crash ]
-crbug.com/405187813 external/wpt/css/css-flexbox/parsing/flex-valid.html [ Crash ]
 
 # ====== Style team owned tests to here ======
 
