@@ -123,6 +123,8 @@ source_set("data_type_controller") {
   visibility = [ "//components/browser_sync" ]
 
   sources = [
+    "shared_tab_group_account_data_type_controller.cc",
+    "shared_tab_group_account_data_type_controller.h",
     "shared_tab_group_data_type_controller.cc",
     "shared_tab_group_data_type_controller.h",
   ]
