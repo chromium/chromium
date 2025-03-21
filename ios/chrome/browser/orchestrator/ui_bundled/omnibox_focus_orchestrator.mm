@@ -161,7 +161,6 @@
           if (shouldCrossfadeEditAndSteadyViews) {
             [self.locationBarAnimatee
                     resetTextFieldOffsetAndOffsetSteadyViewToMatch];
-            [self.locationBarAnimatee setFakeboxButtonsSnapshotFaded:YES];
 
             // Fading the views happens with a different timing for a better
             // visual effect. The steady view looks like an ordinary label, and
@@ -183,6 +182,14 @@
                                             [self.locationBarAnimatee
                                                 setEditViewFaded:NO];
                                           }];
+
+            [UIView
+                addKeyframeWithRelativeStartTime:0
+                                relativeDuration:0.7
+                                      animations:^{
+                                        [self.locationBarAnimatee
+                                            setFakeboxButtonsSnapshotFaded:YES];
+                                      }];
           }
 
           // Scale the leading icon in with a slight bounce / spring.
