@@ -534,7 +534,6 @@ void CreateTestMultiplanarVideoDrawQuad(
     RasterContextProvider* child_context_provider) {
   DCHECK(video_frame->ColorSpace().IsValid());
 
-  bool contents_opaque = false;
   float draw_opacity = 1.0f;
   const bool with_alpha = (video_frame->format() == media::PIXEL_FORMAT_I420A);
   if (with_alpha) {
@@ -551,7 +550,7 @@ void CreateTestMultiplanarVideoDrawQuad(
   video_resource_updater->ObtainFrameResource(video_frame);
   video_resource_updater->AppendQuad(
       render_pass, video_frame, transform, rect, visible_rect, mask_filter_info,
-      /*clip_rect=*/std::nullopt, contents_opaque, draw_opacity,
+      /*clip_rect=*/std::nullopt, /*context_opaque=*/with_alpha, draw_opacity,
       sorting_context_id);
 
   // Get the appended quad and map resource ids for transfer.
