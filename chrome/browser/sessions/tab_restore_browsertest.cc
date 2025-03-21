@@ -1677,7 +1677,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroupInNewWindow) {
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
   CloseTab(closed_tab_index);
-  chrome::MoveTabsToNewWindow(browser(), {0}, group);
+  chrome::MoveGroupToNewWindow(browser(), group);
 
   // Expect the tab to be restored to the new window, inside the group.
   ASSERT_NO_FATAL_FAILURE(RestoreTab(1, closed_tab_index));
