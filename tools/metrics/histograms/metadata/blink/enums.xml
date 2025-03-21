@@ -5936,6 +5936,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5333" label="ButtonTypeAttrInvalidWithCommandOrCommandfor"/>
   <int value="5334" label="CSSVarFallbackCycle"/>
   <int value="5335" label="CSSAttrFallbackCycle"/>
+  <int value="5372" label="SpeculationRulesTargetHintBlank"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

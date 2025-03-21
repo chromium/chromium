@@ -147,6 +147,10 @@ void PrerenderBrowserTest::TestPrerenderAndActivateInNewTab(
     bool should_be_activated) {
   base::HistogramTester histogram_tester;
 
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kSpeculationRulesTargetHintBlank, 0);
+
   // Navigate to an initial page.
   GURL url = embedded_test_server()->GetURL("/prerender/simple_links.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
@@ -160,6 +164,10 @@ void PrerenderBrowserTest::TestPrerenderAndActivateInNewTab(
 
   // Activate.
   EXPECT_TRUE(ExecJs(GetActiveWebContents(), link_click_script));
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kSpeculationRulesTargetHintBlank, 1);
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
