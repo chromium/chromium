@@ -594,6 +594,35 @@ GraphBuilderOrt::ClampIndices(std::string_view indices,
   return output;
 }
 
+template <typename DataType>
+  requires internal::IsSupportedTensorType<DataType>
+[[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
+GraphBuilderOrt::Clamp(std::string_view input,
+                       base::span<const uint32_t> shape,
+                       base::span<const DataType> min_value,
+                       base::span<const DataType> max_value) {
+  ASSIGN_OR_RETURN(std::string min,
+                   CreateInitializer<DataType>(shape, min_value));
+  ASSIGN_OR_RETURN(std::string max,
+                   CreateInitializer<DataType>(shape, max_value));
+
+  // max_output = max(input_value, min_value)
+  const std::string max_node = GenerateNextOperationName("inserted_max");
+  const std::string max_output = GenerateNextOperandName();
+  std::array<const char*, 2> max_inputs = {input.data(), min.c_str()};
+  std::array<const char*, 1> max_outputs = {max_output.c_str()};
+  model_editor_.AddNode(kOpTypeMax, max_node, max_inputs, max_outputs);
+
+  // min_output = min(max_output, max_value)
+  const std::string min_node = GenerateNextOperationName("inserted_min");
+  const std::string min_output = GenerateNextOperandName();
+  std::array<const char*, 2> min_inputs = {max_output.c_str(), max.c_str()};
+  std::array<const char*, 1> min_outputs = {min_output.c_str()};
+  model_editor_.AddNode(kOpTypeMin, min_node, min_inputs, min_outputs);
+
+  return min_output;
+}
+
 void GraphBuilderOrt::AddInput(uint64_t input_id) {
   const mojom::Operand& operand = GetOperand(input_id);
   std::string name = GetOperandNameById(input_id);
@@ -1566,21 +1595,22 @@ GraphBuilderOrt::AddGatherElementsOperation(
   return base::ok();
 }
 
-void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
   const std::string node = GenerateNextOperationName(gather_nd.label);
   const std::string input = GetOperandNameById(gather_nd.input_operand_id);
   const std::string indices = GetOperandNameById(gather_nd.indices_operand_id);
   const std::string output = GetOperandNameById(gather_nd.output_operand_id);
 
-  std::string int64_indices;
-  const OperandDataType indices_data_type =
-      GetOperand(gather_nd.indices_operand_id).descriptor.data_type();
-
-  // TODO(https://github.com/shiyi9801/chromium/issues/141): Clamp the indices
-  // operand to ensure it won't be out-of-bound.
+  const OperandDescriptor& indices_desc =
+      GetOperand(gather_nd.indices_operand_id).descriptor;
+  const std::vector<uint32_t>& indices_shape = indices_desc.shape();
+  const std::vector<uint32_t>& input_shape =
+      GetOperand(gather_nd.input_operand_id).descriptor.shape();
 
   // ONNX GatherND only supports int64 indices.
-  switch (indices_data_type) {
+  std::string int64_indices;
+  switch (indices_desc.data_type()) {
     case OperandDataType::kInt64: {
       int64_indices = indices;
       break;
@@ -1598,10 +1628,32 @@ void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
           << "[WebNN] GatherND only supports int32, uint32 and int64 indices.";
   }
 
-  std::array<const char*, 2> inputs = {input.c_str(), int64_indices.c_str()};
-  std::array<const char*, 1> outputs = {output.c_str()};
+  // Clamp the indices to ensure that all values in indices are within bounds
+  // [-s, s-1] along axis of size s, i.e. -input_shape[i] <= indices[...,i] <=
+  // input_shape[i] - 1.
 
-  model_editor_.AddNode(kOpTypeGatherND, node, inputs, outputs);
+  size_t indices_rank = indices_shape.size();
+  CHECK_GT(indices_rank, 0u);
+  uint32_t indices_last_dim_size = indices_shape[indices_rank - 1];
+  std::array<uint32_t, 1> min_max_shape = {indices_last_dim_size};
+
+  base::FixedArray<int64_t> min_value(indices_last_dim_size);
+  base::FixedArray<int64_t> max_value(indices_last_dim_size);
+  for (uint32_t axis = 0; axis < indices_last_dim_size; ++axis) {
+    min_value[axis] = -static_cast<int64_t>(input_shape[axis]);
+    max_value[axis] = static_cast<int64_t>(input_shape[axis]) - 1;
+  }
+  ASSIGN_OR_RETURN(
+      std::string clamped_indices,
+      Clamp<int64_t>(int64_indices, min_max_shape, min_value, max_value));
+
+  std::array<const char*, 2> gather_nd_inputs = {input.c_str(),
+                                                 clamped_indices.c_str()};
+  std::array<const char*, 1> gather_nd_outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeGatherND, node, gather_nd_inputs,
+                        gather_nd_outputs);
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
@@ -3032,7 +3084,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kGatherNd: {
-        AddGatherNDOperation(*operation->get_gather_nd());
+        RETURN_IF_ERROR(AddGatherNDOperation(*operation->get_gather_nd()));
         break;
       }
       case mojom::Operation::Tag::kGelu: {

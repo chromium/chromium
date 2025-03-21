@@ -180,6 +180,15 @@ class GraphBuilderOrt {
       base::span<const int64_t> ends_value,
       base::span<const int64_t> steps_value);
 
+  // This clamp is emulated by min(max(input_value, min_value), max_value).
+  template <typename DataType>
+    requires internal::IsSupportedTensorType<DataType>
+  [[nodiscard]] base::expected<std::string, mojom::ErrorPtr> Clamp(
+      std::string_view input,
+      base::span<const uint32_t> shape,
+      base::span<const DataType> min_value,
+      base::span<const DataType> max_value);
+
   // Clamp the indices within the dimension size to prevent out-of-bound
   // reading.
   [[nodiscard]] base::expected<std::string, mojom::ErrorPtr> ClampIndices(
@@ -241,7 +250,8 @@ class GraphBuilderOrt {
       const mojom::Gather& gather);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddGatherElementsOperation(const mojom::GatherElements& gather_elements);
-  void AddGatherNDOperation(const mojom::GatherND& gather_nd);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddGatherNDOperation(
+      const mojom::GatherND& gather_nd);
   void AddGemmOperation(const mojom::Gemm& gemm);
   template <typename GruType>
     requires(std::is_same_v<GruType, mojom::Gru> ||
