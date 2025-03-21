@@ -54,7 +54,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
       ReferrerChainProvider* referrer_chain_provider,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
-      bool is_off_the_record);
+      bool is_off_the_record,
+      bool is_guest_session);
 
   ChromeEnterpriseRealTimeUrlLookupService(
       const ChromeEnterpriseRealTimeUrlLookupService&) = delete;
@@ -125,6 +126,9 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   // Indicates if the service is bound to an off the record browsing session.
   bool is_off_the_record_;
+
+  // Indicates if the service is bound to a guest browsing session.
+  bool is_guest_session_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 

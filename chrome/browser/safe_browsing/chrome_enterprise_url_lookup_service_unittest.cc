@@ -140,6 +140,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
 
     enterprise_rt_service_ =
         CreateServiceAndEnablePolicy(test_profile_, /*is_off_the_record=*/false,
+                                     /*is_guest_session=*/false,
                                      /*set_raw_token_fetcher=*/true);
   }
 
@@ -151,6 +152,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<ChromeEnterpriseRealTimeUrlLookupService>
   CreateServiceAndEnablePolicy(Profile* profile,
                                bool is_off_the_record = false,
+                               bool is_guest_session = false,
                                bool set_raw_token_fetcher = false) {
     auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
     if (set_raw_token_fetcher) {
@@ -177,7 +179,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
             profile),
         referrer_chain_provider_.get(), &test_pref_service_,
-        identity_test_env_.identity_manager(), is_off_the_record);
+        identity_test_env_.identity_manager(), is_off_the_record,
+        is_guest_session);
 
     test_pref_service_.SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
@@ -491,10 +494,8 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest, CanPerformFullURLLookup) {
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        CanPerformFullURLLookup_GuestModeEnabled) {
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
-  Profile* guest_profile =
-      profile_manager_->CreateGuestProfile()->GetPrimaryOTRProfile(
-          /*create_if_needed=*/true);
-  auto guest_rt_service = CreateServiceAndEnablePolicy(guest_profile);
+  auto guest_rt_service = CreateServiceAndEnablePolicy(
+      test_profile_, /*is_off_the_record=*/false, /*is_guest_session=*/true);
   EXPECT_TRUE(guest_rt_service->CanPerformFullURLLookup());
 }
 
