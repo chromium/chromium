@@ -524,7 +524,6 @@ void IsolatedWebAppInstallerViewController::OnChildDialogChanged() {
 std::unique_ptr<views::DialogDelegate>
 IsolatedWebAppInstallerViewController::CreateDialogDelegate(
     std::unique_ptr<views::View> contents_view) {
-  gfx::Size contents_max_size = contents_view->GetMaximumSize();
   auto delegate = std::make_unique<OnCompleteDialogDelegate>();
   delegate->set_internal_name(
       IsolatedWebAppInstallerView::kInstallerWidgetName);
@@ -533,8 +532,9 @@ IsolatedWebAppInstallerViewController::CreateDialogDelegate(
   delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);
   delegate->SetHasWindowSizeControls(false);
+  delegate->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
   delegate->SetCanResize(false);
-  delegate->set_fixed_width(contents_max_size.width());
   // TODO(crbug.com/40280769): Set the title of the dialog for Alt+Tab
   delegate->SetShowTitle(false);
 
