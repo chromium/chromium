@@ -704,7 +704,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4282440837784183472">La tua organizzazione, <ph name="MANAGED_DOMAIN" />, gestisce l'account a cui stai accedendo e la modalità di utilizzo di Chrome. L'amministratore può configurare o limitare determinate funzionalità.</translation>
 <translation id="4285846616383034558">Cookie, cache e altri dati dei siti</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Attiva il blocco schermo nelle impostazioni di Android<ph name="END_LINK" /></translation>
-<translation id="4296252229500326964">Nuova scheda in incognito</translation>
+<translation id="4296252229500326964">Scheda in incognito</translation>
 <translation id="4298388696830689168">Siti collegati</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Impostazioni di base</translation>
@@ -936,7 +936,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5326246328175179736">Non puoi accedere con questo account</translation>
 <translation id="5328542107300944283">Utilizza con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Richieste di autorizzazione</translation>
-<translation id="534580735623577507">Nessun sito da <ph name="TIME_PERIOD" /></translation>
+<translation id="534580735623577507">Nessun sito: <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
 <translation id="5375374982898812658">Perderai immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i tuoi dispositivi</translation>
 <translation id="5375577065097716013">Cerca immagine con Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
@@ -1581,7 +1581,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8084864785646838999">Parte della tua cronologia potrebbe non essere mostrata qui. Per vedere tutta la cronologia di Chrome, apri la cronologia completa del browser. Inoltre, il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8088176524274673045">Per condividere i contenuti con le persone qui vicino, fa' scansionare loro questo codice QR</translation>
 <translation id="8090732854597034573">Se hai bisogno di aiuto, rivolgiti al tuo genitore</translation>
-<translation id="8101414242770404289">Nessuna scheda da <ph name="TIME_PERIOD" /></translation>
+<translation id="8101414242770404289">Nessuna scheda: <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Scheda di navigazione in incognito</translation>
 <translation id="8105613260829665809">Se continui, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio<ph name="END_TOS_LINK" />.\nPer contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_UMA_LINK" />Gestisci<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1842,7 +1842,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="938850635132480979">Errore: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Inserisci passphrase</translation>
 <translation id="95817756606698420">Chrome può usare <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> per le ricerche in Cina. Puoi modificare questa preferenza nelle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Elimina dati di navigazione</translation>
+<translation id="961856697154696964">Elimina dati navigazione</translation>
 <translation id="966131775676567255">Eliminazione dei dati dell'account in corso…</translation>
 <translation id="96681097142096641">Vuoi visualizzare la pagina semplificata?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min rimanenti</translation>

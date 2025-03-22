@@ -812,7 +812,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4769095993849849966">Nouveau nom de fichier</translation>
 <translation id="4769632191812288342">Vous bénéficiez de la protection standard</translation>
 <translation id="4773122030389014189">Partager le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
-<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> ont bien été supprimées</translation>
+<translation id="4775646243557794597">Suppression réussie sur la période suivante : <ph name="TIME_PERIOD" /></translation>
 <translation id="4777866634702576038">Supprimer le groupe d'onglets ?</translation>
 <translation id="4778653490315793244">Rien à afficher pour le moment</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> est votre moteur de recherche par défaut</translation>
@@ -936,7 +936,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5326246328175179736">Vous ne pouvez pas vous connecter avec ce compte</translation>
 <translation id="5328542107300944283">Utiliser avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Demandes d'autorisation</translation>
-<translation id="534580735623577507">Aucun site à partir des <ph name="TIME_PERIOD" /></translation>
+<translation id="534580735623577507">Aucun site sur la période suivante : <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
 <translation id="5375374982898812658">Vous perdrez immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", qui sera supprimé de tous vos appareils</translation>
 <translation id="5375577065097716013">Rechercher image avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
@@ -1326,7 +1326,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6971862865055170158">Ne pas approuver</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nouvel onglet ou onglet mis à jour</translation>
 <translation id="6978717888677691380">Sites que vous avez bloqués</translation>
-<translation id="6979737339423435258">Toutes les données</translation>
+<translation id="6979737339423435258">Depuis le début</translation>
 <translation id="6983306615164277634">Vous pouvez aussi appuyer de manière prolongée sur la barre d'adresse pour changer la position.</translation>
 <translation id="6987047470128880212">La navigation privée n'est pas disponible sur cet appareil</translation>
 <translation id="6991701761229081516">Vos mots de passe seront téléchargés au format CSV. Toute personne ou entité (y compris les applis) ayant accès au fichier pourra les voir. Les mots de passe exportés seront supprimés de Chrome.</translation>
@@ -1581,7 +1581,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8084864785646838999">Il est possible qu'une partie de votre historique ne soit pas affichée ici. Pour le voir en intégralité, sélectionnez "Ouvrir tout l'historique Chrome". En outre, votre compte Google conserve peut-être d'autres historiques de navigation sur <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8088176524274673045">Pour partager avec des personnes à proximité, laissez-les scanner ce QR code</translation>
 <translation id="8090732854597034573">Si tu as besoin d'aide, demande à ton parent</translation>
-<translation id="8101414242770404289">Aucun onglet à partir des <ph name="TIME_PERIOD" /></translation>
+<translation id="8101414242770404289">Aucun onglet sur la période suivante : <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
 <translation id="8105613260829665809">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" />.\nPour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
