@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -105,7 +106,7 @@ TEST_F(ServiceMainTest, EncryptDecryptTest) {
   BSTR input = ::SysAllocStringByteLen(nullptr, plaintext.length());
   ASSERT_TRUE(input);
 
-  memcpy(input, plaintext.data(), plaintext.length());
+  UNSAFE_TODO(memcpy(input, plaintext.data(), plaintext.length()));
   base::win::ScopedBstr output;
   DWORD last_error;
   HRESULT hr =
@@ -120,7 +121,7 @@ TEST_F(ServiceMainTest, EncryptDecryptTest) {
                    output.ByteLength());
 
   BSTR input2 = ::SysAllocStringByteLen(nullptr, encrypted.length());
-  memcpy(input2, encrypted.data(), encrypted.length());
+  UNSAFE_TODO(memcpy(input2, encrypted.data(), encrypted.length()));
   base::win::ScopedBstr original;
 
   hr = elevator->DecryptData(input2, original.Receive(), &last_error);

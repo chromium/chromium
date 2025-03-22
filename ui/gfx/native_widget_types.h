@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -22,6 +23,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include <string>
+#endif
+
+#if BUILDFLAG(IS_IOS)
+#include <variant>
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -117,7 +122,12 @@ using NativeEvent = ui::Event*;
 using NativeCursor = void*;
 using NativeView = base::apple::WeakUIView;
 using NativeWindow = base::apple::WeakUIWindow;
+#if BUILDFLAG(USE_BLINK)
+using NativeEvent =
+    std::variant<base::apple::OwnedUIEvent, base::apple::OwnedBEKeyEntry>;
+#else
 using NativeEvent = base::apple::OwnedUIEvent;
+#endif  // BUILDFLAG(USE_BLINK)
 #elif BUILDFLAG(IS_MAC)
 using NativeCursor = base::apple::OwnedNSCursor;
 using NativeEvent = base::apple::OwnedNSEvent;

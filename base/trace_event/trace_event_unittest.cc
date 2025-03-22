@@ -20,7 +20,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -1640,7 +1639,7 @@ TEST_F(TraceEventTestFixture, ThreadOnceBlocking) {
 
 std::string* g_log_buffer = nullptr;
 bool MockLogMessageHandler(int,
-                           std::string_view,
+                           const char*,
                            int,
                            size_t,
                            const std::string& str) {
@@ -1673,7 +1672,7 @@ TEST_F(TraceEventTestFixture, EchoToConsole) {
 }
 
 bool LogMessageHandlerWithTraceEvent(int,
-                                     std::string_view,
+                                     const char*,
                                      int,
                                      size_t,
                                      const std::string&) {

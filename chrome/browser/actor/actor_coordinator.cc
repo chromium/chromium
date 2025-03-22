@@ -10,9 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/site_policy.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 

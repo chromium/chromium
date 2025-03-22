@@ -305,6 +305,10 @@ SearchResultsPanel::GetHighlightableItems() const {
   return highlightable_items;
 }
 
+views::View* SearchResultsPanel::GetWebViewForFocus() {
+  return search_results_view_->GetInitiallyFocusedView();
+}
+
 void SearchResultsPanel::Navigate(const GURL& url) {
   search_results_view_->Navigate(url);
 }

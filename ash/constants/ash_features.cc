@@ -1625,7 +1625,7 @@ BASE_FEATURE(kInternalServerSideSpeechRecognitionByFinch,
 // S3 USM_RNNT model.
 BASE_FEATURE(kInternalServerSideSpeechRecognitionUSMModelFinch,
              "InternalServerSideSpeechRecognitionUSMModelFinch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables sending `client-info` values to IPP printers on ChromeOS.
 BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2456,7 +2456,7 @@ BASE_FEATURE(kProjectorV2, "ProjectorV2", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether to use USM for serverside speech recognition for projector.
 BASE_FEATURE(kProjectorUseUSMForS3,
              "ProjectorUseUSMForS3",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // controls whether projector uses dynamic colors.
 BASE_FEATURE(kProjectorDynamicColors,

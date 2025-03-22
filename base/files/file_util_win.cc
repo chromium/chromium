@@ -25,6 +25,7 @@
 
 #include "base/check.h"
 #include "base/clang_profiling_buildflags.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/files/file_enumerator.h"
@@ -868,7 +869,7 @@ bool DevicePathToDriveLetterPath(const FilePath& nt_device_path,
           device_path.IsParent(nt_device_path)) {
         *out_drive_letter_path =
             FilePath(drive + nt_device_path.value().substr(
-                                 wcslen(device_path_as_string)));
+                                 UNSAFE_TODO(wcslen(device_path_as_string))));
         return true;
       }
     }
@@ -948,9 +949,9 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
 FILE* OpenFile(const FilePath& filename, const char* mode) {
   // 'N' is unconditionally added below, so be sure there is not one already
   // present before a comma in |mode|.
-  DCHECK(
-      strchr(mode, 'N') == nullptr ||
-      (strchr(mode, ',') != nullptr && strchr(mode, 'N') > strchr(mode, ',')));
+  DCHECK(UNSAFE_TODO(strchr(mode, 'N')) == nullptr ||
+         (UNSAFE_TODO(strchr(mode, ',')) != nullptr &&
+          UNSAFE_TODO(strchr(mode, 'N')) > UNSAFE_TODO(strchr(mode, ','))));
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   std::wstring w_mode = UTF8ToWide(mode);
   AppendModeCharacter(L'N', &w_mode);

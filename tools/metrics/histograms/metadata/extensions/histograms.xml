@@ -3812,6 +3812,16 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Management.SetEnabled.HasUserGesture"
+    enum="Boolean" expires_after="2026-03-20">
+  <owner>solomonkinard@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Emitted whenever an extension calls the chrome.management.setEnabled() API
+    method. Emits whether API call was made using a user gesture.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Management_Refresh" units="ms"
     expires_after="2023-05-07">
   <owner>jam@chromium.org</owner>

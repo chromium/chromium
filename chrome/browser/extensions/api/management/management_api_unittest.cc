@@ -230,6 +230,28 @@ TEST_F(ManagementApiUnitTest, ManagementSetEnabled) {
   policy->UnregisterProvider(&provider);
 }
 
+// chrome.management.setEnabled can be called with or without a user gesture.
+// Verify that the associated histogram is set accordingly.
+TEST_F(ManagementApiUnitTest, ManagementSetEnabledMaybeHasUserGesture) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
+  registrar()->AddExtension(extension.get());
+  auto run_set_enabled_function = [&](bool use_user_gesture) {
+    bool success = RunSetEnabledFunction(
+        /*web_contents=*/nullptr, extension->id(), use_user_gesture,
+        /*accept_dialog=*/true, nullptr);
+    ASSERT_TRUE(success);
+    histogram_tester.ExpectBucketCount(
+        ManagementSetEnabledFunction::kSetEnabledHasUserGestureHistogramName,
+        use_user_gesture, 1);
+  };
+
+  run_set_enabled_function(/*use_user_gesture=*/true);
+  run_set_enabled_function(/*use_user_gesture=*/false);
+}
+
 // Test that component extensions cannot be disabled, and that policy extensions
 // can be disabled only by component/policy extensions.
 TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {

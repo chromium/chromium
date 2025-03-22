@@ -20,10 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_implementation.h"
 
-// Temporarily disable this test while enums are being renumbered.
-// anglebug.com/40096838
-#if 0
-
 namespace gpu {
 class ANGLEShaderPixelLocalStorageTest : public testing::Test {
  public:
@@ -65,9 +61,6 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, GetIntegerv) {
   }
 
   EXPECT_GT(gl_get_integer(GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE), 4);
-  EXPECT_GT(gl_get_integer(
-                GL_MAX_COLOR_ATTACHMENTS_WITH_ACTIVE_PIXEL_LOCAL_STORAGE_ANGLE),
-            0);
   EXPECT_GT(
       gl_get_integer(
           GL_MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_ANGLE),
@@ -117,8 +110,10 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, GetIntegerv) {
 // Verifies that glGetFramebufferPixelLocalStorageParameter{f,i}vANGLE is
 // marshalled properly over the command buffer. Thorough testing of these
 // commands is done in angle_end2end_tests.
+
+// TODO(anglebug.com/40096838): debug and re-enable this test.
 TEST_F(ANGLEShaderPixelLocalStorageTest,
-       GetFramebufferPixelLocalStorageParameter) {
+       DISABLED_GetFramebufferPixelLocalStorageParameter) {
   if (!gl_.IsInitialized() ||
       !GLTestHelper::HasExtension("GL_ANGLE_shader_pixel_local_storage")) {
     return;
@@ -363,5 +358,3 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, BlockEmulatedDefaultFramebuffer) {
   EXPECT_GL_ERROR(GL_NO_ERROR);
 }
 }  // namespace gpu
-
-#endif  // #if 0

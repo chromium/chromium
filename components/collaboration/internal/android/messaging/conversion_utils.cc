@@ -121,6 +121,22 @@ ScopedJavaLocalRef<jobject> CreatePersistentMessageAndMaybeAddToListHelper(
 
   return jmessage;
 }
+
+ScopedJavaLocalRef<jobject> AggregatedMessageMetadataToJava(
+    JNIEnv* env,
+    const AggregatedMessageData& aggregated_data) {
+  ScopedJavaLocalRef<jobject> j_aggregated_data;
+
+  for (const auto& attribution : aggregated_data.attributions) {
+    auto j_attribution = MessageAttributionToJava(env, attribution);
+    j_aggregated_data =
+        Java_ConversionUtils_addAttributionToAggregatedMessageData(
+            env, j_aggregated_data, j_attribution);
+  }
+
+  return j_aggregated_data;
+}
+
 }  // namespace
 
 ScopedJavaLocalRef<jobject> PersistentMessageToJava(
@@ -145,10 +161,20 @@ ScopedJavaLocalRef<jobject> PersistentMessagesToJava(
 ScopedJavaLocalRef<jobject> InstantMessageToJava(
     JNIEnv* env,
     const InstantMessage& message) {
+  ScopedJavaLocalRef<jobject> j_attribution =
+      message.attribution.has_value()
+          ? MessageAttributionToJava(env, message.attribution.value())
+          : ScopedJavaLocalRef<jobject>();
+  ScopedJavaLocalRef<jobject> j_aggregated_data =
+      message.aggregated_data.has_value()
+          ? AggregatedMessageMetadataToJava(env,
+                                            message.aggregated_data.value())
+          : ScopedJavaLocalRef<jobject>();
   return Java_ConversionUtils_createInstantMessage(
-      env, MessageAttributionToJava(env, message.attribution),
-      static_cast<int>(message.collaboration_event),
-      static_cast<int>(message.level), static_cast<int>(message.type));
+      env, static_cast<int>(message.collaboration_event),
+      static_cast<int>(message.level), static_cast<int>(message.type),
+      ConvertUTF16ToJavaString(env, message.localized_message), j_attribution,
+      j_aggregated_data);
 }
 
 ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(

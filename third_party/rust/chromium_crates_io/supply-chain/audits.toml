@@ -3192,6 +3192,12 @@ and there were no hits except:
   https://chromium-review.googlesource.com/c/chromium/src/+/6187726/2/third_party/rust/chromium_crates_io/vendor/rust_decimal-1.36.0/tests/decimal_tests.rs
 '''
 
+[[audits.rust_decimal]]
+who = "Chris Palmer <palmer@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.36.0 -> 1.37.0"
+notes = "New `unsafe` in a test."
+
 [[audits.rustc-demangle]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

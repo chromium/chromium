@@ -110,7 +110,7 @@ const GUID kChromeTraceProviderName = {
 // Assertion handler for logging errors that occur when dialogs are
 // silenced.  To record a new error, pass the log string associated
 // with that error in the str parameter.
-NOINLINE void SilentRuntimeAssertHandler(std::string_view file,
+NOINLINE void SilentRuntimeAssertHandler(const char* file,
                                          int line,
                                          std::string_view message,
                                          std::string_view stack_trace) {

@@ -5,19 +5,23 @@
 package org.chromium.components.collaboration.messaging;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Represents a message from the Tab Group Sharing system, where something of note requires an
  * instant message to the UI layer. This is a shim layer for the native representation of the
- * object. See //components/collaboration/public/messaging/message.h for specific details.
- * TODO: Add a proper constructor to avoid @SuppressWarnings("NullAway.Init")
+ * object. See //components/collaboration/public/messaging/message.h for specific details. TODO: Add
+ * a proper constructor to avoid @SuppressWarnings("NullAway.Init")
  */
 @NullMarked
 public class InstantMessage {
-    @SuppressWarnings("NullAway.Init") // This is set to a non-null value immediately after init
-    public MessageAttribution attribution;
-
     @CollaborationEvent public int collaborationEvent;
     @InstantNotificationLevel public int level;
     @InstantNotificationType public int type;
+
+    @SuppressWarnings("NullAway.Init") // This is set to a non-null value immediately after init
+    public String localizedMessage;
+
+    public @Nullable MessageAttribution attribution;
+    public @Nullable AggregatedMessageData aggregatedData;
 }

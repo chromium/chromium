@@ -12,6 +12,7 @@
 #include "base/base_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/process_handle.h"
@@ -37,7 +38,7 @@ class ExceptionPointers {
  public:
   ExceptionPointers() {
     RtlCaptureContext(&context_);
-    memset(&exception_, 0, sizeof(exception_));
+    UNSAFE_TODO(memset(&exception_, 0, sizeof(exception_)));
     exception_.ExceptionCode = EXCEPTION_ACCESS_VIOLATION;
 
     exception_ptrs_.ExceptionRecord = &exception_;

@@ -186,6 +186,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void ShowBnplTos(BnplTosModel bnpl_tos_model,
                    base::OnceClosure accept_callback,
                    base::OnceClosure cancel_callback) override;
+  void CloseBnplTos() override;
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;

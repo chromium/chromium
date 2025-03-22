@@ -12388,6 +12388,21 @@
             ]
         }
     ],
+    "IOSSignInButtonWithoutAvatar": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SignInButtonNoAvatar"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSignInUff": [
         {
             "platforms": [
@@ -12552,6 +12567,21 @@
                     },
                     "enable_features": [
                         "TabResumptionImages"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSTailoredNonModalDBPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TailoredNonModalDBPromo"
                     ]
                 }
             ]
@@ -21572,6 +21602,22 @@
             ]
         }
     ],
+    "ScreencastServerBasedUSMRNNTLocales": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InternalServerSideSpeechRecognitionUSMModelFinch",
+                        "ProjectorUseUSMForS3"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScrimForBrowserWindowModal": [
         {
             "platforms": [
@@ -26803,21 +26849,6 @@
                     "name": "Disabled",
                     "enable_features": [
                         "CredentialProviderPerformanceImprovements"
-                    ]
-                }
-            ]
-        }
-    ],
-    "iOSTailoredNonModalDBPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TailoredNonModalDBPromo"
                     ]
                 }
             ]

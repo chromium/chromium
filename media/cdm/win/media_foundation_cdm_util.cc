@@ -4,11 +4,13 @@
 
 #include "media/cdm/win/media_foundation_cdm_util.h"
 
-#include <combaseapi.h>
 #include <initguid.h>  // Needed for DEFINE_PROPERTYKEY to work properly.
+
+#include <combaseapi.h>
 #include <mferror.h>
 #include <propkeydef.h>  // Needed for DEFINE_PROPERTYKEY.
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/propvarutil.h"
@@ -142,8 +144,8 @@ HRESULT BuildCdmProperties(
     client_token_propvar->caub.cElems = client_token->size();
     client_token_propvar->caub.pElems = reinterpret_cast<unsigned char*>(
         CoTaskMemAlloc(client_token->size() * sizeof(char)));
-    memcpy(client_token_propvar->caub.pElems, client_token->data(),
-           client_token->size());
+    UNSAFE_TODO(memcpy(client_token_propvar->caub.pElems, client_token->data(),
+                       client_token->size()));
 
     RETURN_IF_FAILED(temp_properties->SetValue(
         EME_CONTENTDECRYPTIONMODULE_CLIENT_TOKEN, client_token_var.get()));

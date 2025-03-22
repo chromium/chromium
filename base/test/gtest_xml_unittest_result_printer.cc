@@ -157,7 +157,7 @@ bool XmlUnitTestResultPrinter::Initialize(const FilePath& output_file_path) {
   return true;
 }
 
-void XmlUnitTestResultPrinter::OnAssert(std::string_view file,
+void XmlUnitTestResultPrinter::OnAssert(const char* file,
                                         int line,
                                         const std::string& summary,
                                         const std::string& message) {
@@ -240,7 +240,7 @@ void XmlUnitTestResultPrinter::OnTestSuiteEnd(
 }
 
 void XmlUnitTestResultPrinter::WriteTestPartResult(
-    std::string_view file,
+    const char* file,
     int line,
     testing::TestPartResult::Type result_type,
     const std::string& summary,
@@ -268,12 +268,11 @@ void XmlUnitTestResultPrinter::WriteTestPartResult(
   std::string summary_encoded = base::Base64Encode(summary);
   std::string message_encoded = base::Base64Encode(message);
   fprintf(output_file_.get(),
-          "      <x-test-result-part type=\"%s\" file=\"%.*s\" line=\"%d\">\n"
+          "      <x-test-result-part type=\"%s\" file=\"%s\" line=\"%d\">\n"
           "        <summary>%s</summary>\n"
           "        <message>%s</message>\n"
           "      </x-test-result-part>\n",
-          type, static_cast<int>(file.length()), file.data(), line,
-          summary_encoded.c_str(), message_encoded.c_str());
+          type, file, line, summary_encoded.c_str(), message_encoded.c_str());
   fflush(output_file_);
 }
 

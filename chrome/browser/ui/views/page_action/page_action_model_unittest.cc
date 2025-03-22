@@ -141,5 +141,27 @@ TEST_F(PageActionModelTest, SetActionItemProperties) {
   EXPECT_EQ(model_.GetActionItemIsShowingBubble(), true);
 }
 
+TEST_F(PageActionModelTest, ShouldHidePageAction) {
+  model_.SetShowRequested(PassKey(), true);
+  model_.SetActionItemProperties(
+      PassKey(),
+      ActionItem::Builder().SetEnabled(true).SetVisible(true).Build().get());
+  model_.SetTabActive(PassKey(), true);
+  // Confirm it's now visible by default.
+  EXPECT_TRUE(model_.GetVisible());
+
+  // Because we know we are about to toggle “hide” on and off once,
+  // we expect 2 calls to OnPageActionModelChanged():
+  //   1) false->true  => triggers a notify
+  //   2) true->false  => triggers a notify
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
+
+  model_.SetShouldHidePageAction(PassKey(), true);
+  EXPECT_FALSE(model_.GetVisible());
+
+  model_.SetShouldHidePageAction(PassKey(), false);
+  EXPECT_TRUE(model_.GetVisible());
+}
+
 }  // namespace
 }  // namespace page_actions

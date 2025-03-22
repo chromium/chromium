@@ -706,7 +706,10 @@ class BrowserView : public BrowserWindow,
   void TabChangedAt(content::WebContents* contents,
                     int index,
                     TabChangeType change_type) override;
-  void OnSplitViewAdded(std::vector<int> indices) override;
+  void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+                         split_tabs::SplitTabId split_id,
+                         SplitTabAddReason reason,
+                         tabs::SplitTabLayout tab_layout) override;
   void TabStripEmpty() override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
   void CloseAllTabsStopped(TabStripModel* tab_strip_model,

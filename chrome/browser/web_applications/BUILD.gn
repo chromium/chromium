@@ -315,6 +315,8 @@ source_set("web_applications") {
     "web_app_database.h",
     "web_app_database_factory.cc",
     "web_app_database_factory.h",
+    "web_app_database_serialization.cc",
+    "web_app_database_serialization.h",
     "web_app_filter.cc",
     "web_app_filter.h",
     "web_app_helpers.cc",

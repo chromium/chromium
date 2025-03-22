@@ -101,6 +101,8 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
       return "The IPC caller is not allowed.";
     case ApplicationError::kCOMInitializationFailed:
       return "COM initialization failed.";
+    case ApplicationError::kCloudPolicyClientTimeout:
+      return "Cloud Policy Client timed out";
   }
 }
 

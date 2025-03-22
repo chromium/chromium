@@ -26,7 +26,7 @@ class BnplManagerTestApi {
       std::string risk_data,
       std::string context_token,
       GURL redirect_url,
-      std::string issuer_id) {
+      BnplIssuer issuer) {
     bnpl_manager_->ongoing_flow_state_ =
         std::make_unique<BnplManager::OngoingFlowState>();
     bnpl_manager_->ongoing_flow_state_->billing_customer_number =
@@ -37,7 +37,7 @@ class BnplManagerTestApi {
     bnpl_manager_->ongoing_flow_state_->context_token =
         std::move(context_token);
     bnpl_manager_->ongoing_flow_state_->redirect_url = std::move(redirect_url);
-    bnpl_manager_->ongoing_flow_state_->issuer_id = std::move(issuer_id);
+    bnpl_manager_->ongoing_flow_state_->issuer = std::move(issuer);
   }
 
   void SetOnBnplVcnFetchedCallback(
@@ -62,14 +62,15 @@ class BnplManagerTestApi {
     return bnpl_manager_->ongoing_flow_state_.get();
   }
 
-  const std::string& GetIssuerId() const {
-    return bnpl_manager_->ongoing_flow_state_->issuer_id;
-  }
-
   void OnTosDialogAccepted() { bnpl_manager_->OnTosDialogAccepted(); }
 
   void CreateBnplPaymentInstrument() {
     bnpl_manager_->CreateBnplPaymentInstrument();
+  }
+
+  void OnRedirectUrlFetched(PaymentsAutofillClient::PaymentsRpcResult result,
+                            const BnplFetchUrlResponseDetails& response) {
+    bnpl_manager_->OnRedirectUrlFetched(result, response);
   }
 
  private:

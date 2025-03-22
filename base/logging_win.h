@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <string>
-#include <string_view>
 
 #include "base/base_export.h"
 #include "base/logging.h"
@@ -60,7 +59,7 @@ class BASE_EXPORT LogEventProvider : public base::win::EtwTraceProvider {
   static LogEventProvider* GetInstance();
 
   static bool LogMessage(logging::LogSeverity severity,
-                         std::string_view file,
+                         const char* file,
                          int line,
                          size_t message_start,
                          const std::string& str);

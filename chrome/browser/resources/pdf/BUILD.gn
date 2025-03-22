@@ -109,6 +109,7 @@ build_webui("build") {
 
   if (enable_pdf_ink2) {
     non_web_component_files += [
+      "elements/ink_annotation_brush_mixin.ts",
       "elements/ink_brush_selector.html.ts",
       "elements/ink_brush_selector.ts",
       "elements/ink_color_selector.html.ts",
@@ -123,6 +124,7 @@ build_webui("build") {
       "elements/viewer_bottom_toolbar_dropdown.ts",
       "elements/viewer_side_panel.html.ts",
       "elements/viewer_side_panel.ts",
+      "ink2_manager.ts",
     ]
   }
 

@@ -6,6 +6,7 @@
 
 #include <ShellHandwriting.h>
 
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/event_utils.h"
@@ -70,8 +71,8 @@ std::optional<StylusHandwritingPropertiesWin> GetStylusHandwritingProperties(
     if (it != event_properties->end()) {
       CHECK_EQ(it->second.size(), sizeof(uint32_t));
       uint32_t handwriting_pointer_id = 0;
-      std::memcpy(&handwriting_pointer_id, it->second.data(),
-                  it->second.size());
+      UNSAFE_TODO(std::memcpy(&handwriting_pointer_id, it->second.data(),
+                              it->second.size()));
       handwriting_properties =
           std::make_optional<StylusHandwritingPropertiesWin>();
       handwriting_properties->handwriting_pointer_id = handwriting_pointer_id;
@@ -81,7 +82,8 @@ std::optional<StylusHandwritingPropertiesWin> GetStylusHandwritingProperties(
     if (it != event_properties->end()) {
       CHECK_EQ(it->second.size(), sizeof(uint64_t));
       uint64_t handwriting_stroke_id = 0;
-      std::memcpy(&handwriting_stroke_id, it->second.data(), it->second.size());
+      UNSAFE_TODO(std::memcpy(&handwriting_stroke_id, it->second.data(),
+                              it->second.size()));
       if (!handwriting_properties.has_value()) [[unlikely]] {
         handwriting_properties =
             std::make_optional<StylusHandwritingPropertiesWin>();

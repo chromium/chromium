@@ -10,7 +10,7 @@
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "components/tab_collections/public/tab_interface.h"
 
 class Browser;
 class Profile;

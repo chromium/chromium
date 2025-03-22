@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 // This file defines wrappers to allow C++ code to hold references to

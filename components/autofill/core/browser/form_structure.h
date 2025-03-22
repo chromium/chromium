@@ -368,10 +368,7 @@ class FormStructure {
   void set_randomized_encoder(std::unique_ptr<RandomizedEncoder> encoder);
 
   base::optional_ref<const RandomizedEncoder> randomized_encoder() const {
-    if (randomized_encoder_) {
-      return randomized_encoder_.get();
-    }
-    return std::nullopt;
+    return randomized_encoder_.get();
   }
 
   const LanguageCode& current_page_language() const {

@@ -13,9 +13,9 @@
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/tab_collections/public/tab_interface.h"
 
 namespace glic {
 

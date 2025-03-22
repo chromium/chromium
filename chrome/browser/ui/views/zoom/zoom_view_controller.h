@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_ZOOM_ZOOM_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_ZOOM_ZOOM_VIEW_CONTROLLER_H_
 
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "components/tab_collections/public/tab_interface.h"
 
 namespace content {
 class WebContents;

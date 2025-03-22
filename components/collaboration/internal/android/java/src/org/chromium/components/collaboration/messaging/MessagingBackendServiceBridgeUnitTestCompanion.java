@@ -153,6 +153,9 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         Assert.assertEquals(InstantNotificationLevel.SYSTEM, message.level);
         Assert.assertEquals(InstantNotificationType.CONFLICT_TAB_REMOVED, message.type);
         Assert.assertEquals(CollaborationEvent.TAB_REMOVED, message.collaborationEvent);
+        Assert.assertEquals("Message content - single message", message.localizedMessage);
+        Assert.assertNotNull(message.attribution);
+        Assert.assertNull(message.aggregatedData);
 
         // MessageAttribution.
         MessageAttribution attribution = message.attribution;
@@ -176,6 +179,54 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         Assert.assertEquals("fedcba09-8765-4321-0987-6f5e4d3c2b1a", tmm.syncTabId);
         Assert.assertEquals("https://example.com/", tmm.lastKnownUrl);
         Assert.assertEquals("last known tab title", tmm.lastKnownTitle);
+    }
+
+    @CalledByNative
+    private void verifyAggregatedInstantMessage() {
+        verify(mInstantMessageDelegate)
+                .displayInstantaneousMessage(
+                        mInstantMessageCaptor.capture(), mInstantMessageCallbackCaptor.capture());
+        InstantMessage message = mInstantMessageCaptor.getValue();
+        Assert.assertEquals(InstantNotificationLevel.SYSTEM, message.level);
+        Assert.assertEquals(InstantNotificationType.CONFLICT_TAB_REMOVED, message.type);
+        Assert.assertEquals(CollaborationEvent.TAB_REMOVED, message.collaborationEvent);
+        Assert.assertEquals("Message content - aggregated message", message.localizedMessage);
+        Assert.assertNull(message.attribution);
+        Assert.assertNotNull(message.aggregatedData);
+        Assert.assertEquals(2, message.aggregatedData.attributions.size());
+
+        // Attribution 1.
+        MessageAttribution attribution1 = message.aggregatedData.attributions.get(0);
+        Assert.assertEquals("cf07d904-88d4-4bc9-989d-57a9ab9e17a7", attribution1.id);
+        Assert.assertEquals("my group", attribution1.collaborationId);
+        Assert.assertEquals(new GaiaId("affected"), attribution1.affectedUser.gaiaId);
+        Assert.assertEquals(new GaiaId("triggering"), attribution1.triggeringUser.gaiaId);
+
+        // Attribution 2.
+        MessageAttribution attribution2 = message.aggregatedData.attributions.get(1);
+        Assert.assertEquals("24ed7c34-41a3-47c2-aad4-5ea42a1765d5", attribution2.id);
+        Assert.assertEquals("my group", attribution2.collaborationId);
+        Assert.assertEquals(new GaiaId("affected 2"), attribution2.affectedUser.gaiaId);
+        Assert.assertEquals(new GaiaId("triggering 2"), attribution2.triggeringUser.gaiaId);
+
+        // TabGroupMessageMetadata of attribution 1.
+        TabGroupMessageMetadata tgmm = attribution1.tabGroupMetadata;
+        Assert.assertEquals(
+                new LocalTabGroupId(new Token(2748937106984275893L, 588177993057108452L)),
+                tgmm.localTabGroupId);
+        Assert.assertEquals("a1b2c3d4-e5f6-7890-1234-567890abcdef", tgmm.syncTabGroupId);
+        Assert.assertEquals("last known group title", tgmm.lastKnownTitle);
+        Assert.assertEquals(TabGroupColorId.ORANGE, tgmm.lastKnownColor.get().intValue());
+
+        // TabMessageMetadata of attribution 1.
+        TabMessageMetadata tmm = attribution1.tabMetadata;
+        Assert.assertEquals(499897179L, tmm.localTabId);
+        Assert.assertEquals("fedcba09-8765-4321-0987-6f5e4d3c2b1a", tmm.syncTabId);
+        Assert.assertEquals("https://example.com/", tmm.lastKnownUrl);
+        Assert.assertEquals("last known tab title", tmm.lastKnownTitle);
+
+        // TabMessageMetadata of attribution 2.
+        Assert.assertEquals("last known tab title 2", attribution2.tabMetadata.lastKnownTitle);
     }
 
     @CalledByNative

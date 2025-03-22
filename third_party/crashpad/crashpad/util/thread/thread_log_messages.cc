@@ -16,8 +16,6 @@
 
 #include <sys/types.h>
 
-#include <string_view>
-
 #include "base/check_op.h"
 #include "base/logging.h"
 
@@ -28,7 +26,7 @@ namespace {
 thread_local std::vector<std::string>* thread_local_log_messages;
 
 bool LogMessageHandler(logging::LogSeverity severity,
-                       std::string_view file_path,
+                       const char* file_path,
                        int line,
                        size_t message_start,
                        const std::string& string) {

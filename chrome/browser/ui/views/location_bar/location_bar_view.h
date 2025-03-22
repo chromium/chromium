@@ -67,6 +67,7 @@ class SelectedKeywordView;
 
 namespace page_actions {
 class PageActionContainerView;
+class PageActionController;
 }  // namespace page_actions
 
 namespace views {
@@ -337,8 +338,10 @@ class LocationBarView
   void RefreshPageActionIconViews();
 
   // Updates PageActionContainerView's action controller to the active tab's
-  // controller.
-  void RefreshPageActionContainerView();
+  // controller. At the same time, the page actions visibility will be set based
+  // on the omnibox state.
+  void RefreshPageActionContainerViewAndIconsVisibility(
+      bool should_hide_page_actions);
 
   // Updates the color of the icon for the "clear all" button.
   void RefreshClearAllButtonIcon();
@@ -431,6 +434,11 @@ class LocationBarView
       const ui::MouseEvent& event) const;
 
   bool GetPopupMode() const;
+
+  // Returns the `PageActionController` for the currently active tab, or nullptr
+  // if there is no valid active tab or the tab is in the process of being
+  // destroyed.
+  page_actions::PageActionController* GetPageActionController();
 
 #if BUILDFLAG(IS_MAC)
   // Called when app shims change.

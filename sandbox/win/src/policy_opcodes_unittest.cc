@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "sandbox/win/src/policy_engine_opcodes.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
+#include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_engine_params.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
@@ -45,7 +45,7 @@ TEST(PolicyEngineTest, ParameterSetTest) {
   ParameterSet pset4 = ParamPickerMake(txt);
   const wchar_t* result3 = nullptr;
   EXPECT_TRUE(pset4.Get(&result3));
-  EXPECT_EQ(0, wcscmp(txt, result3));
+  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(txt, result3)));
 }
 
 TEST(PolicyEngineTest, OpcodeConstraints) {

@@ -332,13 +332,30 @@ gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
 }
 
 std::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
-  return std::nullopt;
+  return display_feature_;
 }
 
-void RenderWidgetHostViewIOS::DisableDisplayFeatureOverrideForEmulation() {}
+void RenderWidgetHostViewIOS::DisableDisplayFeatureOverrideForEmulation() {
+  if (!display_feature_overridden_for_emulation_) {
+    return;
+  }
+
+  display_feature_overridden_for_emulation_ = false;
+  display_feature_ = std::nullopt;
+  ComputeDisplayFeature();
+  host()->SynchronizeVisualProperties();
+}
 
 void RenderWidgetHostViewIOS::OverrideDisplayFeatureForEmulation(
-    const DisplayFeature* display_feature) {}
+    const DisplayFeature* display_feature) {
+  if (display_feature) {
+    display_feature_ = *display_feature;
+  } else {
+    display_feature_ = std::nullopt;
+  }
+  display_feature_overridden_for_emulation_ = true;
+  host()->SynchronizeVisualProperties();
+}
 
 void RenderWidgetHostViewIOS::UpdateBackgroundColor() {}
 
@@ -400,6 +417,7 @@ void RenderWidgetHostViewIOS::UpdateScreenInfo() {
         gfx::Rect([ui_view_->view_ bounds]).size());
   }
   RenderWidgetHostViewBase::UpdateScreenInfo();
+  ComputeDisplayFeature();
 }
 
 void RenderWidgetHostViewIOS::OnSynchronizedDisplayPropertiesChanged(
@@ -900,6 +918,17 @@ void RenderWidgetHostViewIOS::DeleteSurroundingText(int before, int after) {
   }
 }
 
+void RenderWidgetHostViewIOS::SendKeyEvent(
+    const input::NativeWebKeyboardEvent& event) {
+  auto* host = GetFocusedWidget();
+  if (!host) {
+    return;
+  }
+  ui::LatencyInfo latency_info;
+  latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
+  host->ForwardKeyboardEventWithLatencyInfo(event, latency_info);
+}
+
 blink::mojom::FrameWidgetInputHandler*
 RenderWidgetHostViewIOS::GetFrameWidgetInputHandlerForFocusedWidget() {
   auto* focused_widget = GetFocusedWidget();
@@ -942,6 +971,34 @@ gfx::Size RenderWidgetHostViewIOS::GetCompositorViewportPixelSize() {
   return gfx::ScaleToCeiledSize(
       IsTesting() ? GetRequestedRendererSize() : GetScreenInfo().rect.size(),
       GetDeviceScaleFactor());
+}
+
+void RenderWidgetHostViewIOS::ComputeDisplayFeature() {
+  if (display_feature_overridden_for_emulation_) {
+    return;
+  }
+
+  display_feature_ = std::nullopt;
+  gfx::Rect view_bounds([ui_view_->view_ bounds]);
+  if (view_bounds.IsEmpty()) {
+    return;
+  }
+
+  float dip_scale = 1 / GetDeviceScaleFactor();
+  // Segments coming from the platform are in native resolution.
+  gfx::Rect transformed_display_feature =
+      gfx::ScaleToRoundedRect(view_bounds, dip_scale);
+  transformed_display_feature.Offset(-view_bounds.x(), -view_bounds.y());
+  transformed_display_feature.Intersect(gfx::Rect(GetVisibleViewportSize()));
+  if (transformed_display_feature.x() == 0) {
+    display_feature_ = {DisplayFeature::Orientation::kHorizontal,
+                        transformed_display_feature.y(),
+                        transformed_display_feature.height()};
+  } else if (transformed_display_feature.y() == 0) {
+    display_feature_ = {DisplayFeature::Orientation::kVertical,
+                        transformed_display_feature.x(),
+                        transformed_display_feature.width()};
+  }
 }
 
 }  // namespace content

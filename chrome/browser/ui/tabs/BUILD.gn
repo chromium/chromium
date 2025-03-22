@@ -13,7 +13,6 @@ source_set("tabs_public") {
   public = [
     "public/tab_dialog_manager.h",
     "public/tab_features.h",
-    "public/tab_interface.h",
     "tab_network_state.h",
   ]
   sources = [ "tab_network_state.cc" ]
