@@ -11,6 +11,15 @@ MessageAttribution::MessageAttribution(const MessageAttribution& other) =
     default;
 MessageAttribution::~MessageAttribution() = default;
 
+AggregatedMessageData::AggregatedMessageData() = default;
+AggregatedMessageData::AggregatedMessageData(
+    const AggregatedMessageData& other) = default;
+AggregatedMessageData::~AggregatedMessageData() = default;
+
+InstantMessage::InstantMessage() = default;
+InstantMessage::InstantMessage(const InstantMessage& other) = default;
+InstantMessage::~InstantMessage() = default;
+
 TabGroupMessageMetadata::TabGroupMessageMetadata() = default;
 TabGroupMessageMetadata::TabGroupMessageMetadata(
     const TabGroupMessageMetadata& other) = default;

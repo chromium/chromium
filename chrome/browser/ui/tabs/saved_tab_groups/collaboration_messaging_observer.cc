@@ -249,8 +249,9 @@ void CollaborationMessagingObserver::ReopenTabForCurrentInstantMessage() {
 
   const InstantMessage& message =
       instant_message_queue_processor_.GetCurrentMessage();
-  auto tab_metadata = message.attribution.tab_metadata;
-  auto tab_group_metadata = message.attribution.tab_group_metadata;
+  CHECK(message.attribution.has_value());
+  auto tab_metadata = message.attribution->tab_metadata;
+  auto tab_group_metadata = message.attribution->tab_group_metadata;
   if (!tab_metadata || !tab_group_metadata) {
     return;
   }
@@ -278,7 +279,8 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
 
   const InstantMessage& message =
       instant_message_queue_processor_.GetCurrentMessage();
-  auto tab_group_metadata = message.attribution.tab_group_metadata;
+  CHECK(message.attribution.has_value());
+  auto tab_group_metadata = message.attribution->tab_group_metadata;
   if (!tab_group_metadata) {
     return;
   }
