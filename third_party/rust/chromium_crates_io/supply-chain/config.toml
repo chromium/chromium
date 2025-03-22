@@ -404,7 +404,10 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rstest_macros:0.22.0"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rust_decimal:1.36.0"]
+[policy."rstest_reuse:0.7.0"]
+criteria = ["crypto-safe", "safe-to-run"]
+
+[policy."rust_decimal:1.37.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."rustc-demangle-capi:0.1.0"]
