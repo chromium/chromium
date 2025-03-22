@@ -1386,6 +1386,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // sorted in reading flow order.
   const HeapVector<Member<Node>> ReadingFlowChildren() const;
 
+  void setHeadingOffset(int);
+  int headingOffset() const;
   void setHeadingReset(bool);
   bool headingReset() const;
   int GetComputedHeadingOffset(int max_offset);

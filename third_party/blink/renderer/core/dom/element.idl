@@ -173,7 +173,7 @@ dictionary SetHTMLUnsafeOptions {
     [RuntimeEnabled=ContainerTiming, CEReactions, Reflect=containertiming] attribute DOMString containerTiming;
 
     // Heading Offset
-    [CEReactions, RuntimeEnabled=HeadingOffset, Reflect=headingoffset] attribute long headingOffset;
+    [CEReactions, RuntimeEnabled=HeadingOffset] attribute unsigned long headingOffset;
     [CEReactions, RuntimeEnabled=HeadingOffset] attribute boolean headingReset;
 };
 
