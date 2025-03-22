@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "ui/gfx/native_widget_types.h"
 
 @class UIEvent;
 @class UITouch;
@@ -20,7 +21,7 @@ namespace input {
 
 class COMPONENT_EXPORT(INPUT) WebKeyboardEventBuilder {
  public:
-  static blink::WebKeyboardEvent Build(UIEvent* event);
+  static blink::WebKeyboardEvent Build(gfx::NativeEvent event);
 };
 
 class COMPONENT_EXPORT(INPUT) WebGestureEventBuilder {

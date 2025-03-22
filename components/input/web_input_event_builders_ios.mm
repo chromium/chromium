@@ -9,13 +9,18 @@
 
 #include "components/input/web_input_event_builders_ios.h"
 
+#import <BrowserEngineKit/BrowserEngineKit.h>
 #import <UIKit/UIKit.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_touch_point.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/blink/blink_event_util.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/events/keycodes/keyboard_code_conversion_ios.h"
 
 namespace input {
 
@@ -53,9 +58,8 @@ void RemoveUITouch(UITouch* touch) {
   NOTREACHED();
 }
 
-int ModifiersFromEvent(UIEvent* event) {
+int ModifiersFromEvent(UIKeyModifierFlags modifier_flags) {
   int modifiers = 0;
-  UIKeyModifierFlags modifier_flags = [event modifierFlags];
 
   if (modifier_flags & UIKeyModifierControl) {
     modifiers |= blink::WebInputEvent::kControlKey;
@@ -180,10 +184,101 @@ blink::WebTouchPoint CreateWebTouchPoint(
   return touch;
 }
 
+NSString* FilterSpecialCharacter(NSString* str) {
+  if ([str length] != 1) {
+    return str;
+  }
+  unichar c = [str characterAtIndex:0];
+  NSString* result = str;
+  if (c == 0x7F) {
+    // Backspace should be 8
+    result = @"\x8";
+  } else if (c >= 0xF700 && c <= 0xF7FF) {
+    // Mac private use characters should be @"\0" (@"" won't work)
+    // NSDeleteFunctionKey will also go into here
+    // Use the range 0xF700~0xF7FF to match
+    // http://www.opensource.apple.com/source/WebCore/WebCore-7601.1.55/platform/mac/KeyEventMac.mm
+    result = @"\0";
+  }
+  return result;
+}
+
+bool IsSystemKeyEvent(const blink::WebKeyboardEvent& event) {
+  // Windows and Linux set |isSystemKey| if alt is down. Blink looks at this
+  // flag to decide if it should handle a key or not. E.g. alt-left/right
+  // shouldn't be used by Blink to scroll the current page, because we want
+  // to get that key back for it to do history navigation. Hence, the
+  // corresponding situation on OS X is to set this for cmd key presses.
+
+  // cmd-b and and cmd-i are system wide key bindings that OS X doesn't
+  // handle for us, so the editor handles them.
+  int modifiers = event.GetModifiers() & blink::WebInputEvent::kInputModifiers;
+  if (modifiers == blink::WebInputEvent::kMetaKey &&
+      event.windows_key_code == ui::VKEY_B) {
+    return false;
+  }
+  if (modifiers == blink::WebInputEvent::kMetaKey &&
+      event.windows_key_code == ui::VKEY_I) {
+    return false;
+  }
+
+  return event.GetModifiers() & blink::WebInputEvent::kMetaKey;
+}
+
 }  // namespace
 
-blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(UIEvent*) {
-  return blink::WebKeyboardEvent();
+blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(gfx::NativeEvent event) {
+  BEKeyEntry* entry = std::get<base::apple::OwnedBEKeyEntry>(event).Get();
+  CHECK(entry);
+
+  ui::DomCode dom_code = ui::DomCodeFromBEKeyEntry(entry);
+  int modifiers = ModifiersFromEvent(entry.key.modifierFlags) |
+                  ui::DomCodeToWebInputEventModifiers(dom_code);
+
+  blink::WebKeyboardEvent result(
+      entry.state == BEKeyPressStateUp ? blink::WebInputEvent::Type::kKeyUp
+                                       : blink::WebInputEvent::Type::kKeyDown,
+      modifiers, ui::EventTimeStampFromSeconds(entry.timestamp));
+
+  // the keyCode is the keyboard code in BEKeyEntry
+  auto key_code = static_cast<ui::KeyboardCode>(entry.key.keyCode);
+  bool is_numeric_keypad_keycode =
+      key_code >= ui::VKEY_NUMPAD0 && key_code <= ui::VKEY_NUMPAD9;
+  result.windows_key_code = is_numeric_keypad_keycode
+                                ? key_code
+                                : ui::LocatedToNonLocatedKeyboardCode(key_code);
+
+  result.native_key_code = key_code;
+  result.dom_code = static_cast<int>(dom_code);
+  result.dom_key = ui::DomKeyFromBEKeyEntry(entry);
+  NSString* text_str = FilterSpecialCharacter(entry.key.characters);
+  NSString* unmodified_str = FilterSpecialCharacter(entry.key.characters);
+  // Always use 13 for Enter/Return -- we don't want to use AppKit's
+  // different character for Enter.
+  if (result.windows_key_code == '\r') {
+    text_str = @"\r";
+    unmodified_str = @"\r";
+  }
+
+  // Always use 9 for tab -- we don't want to use AppKit's different character
+  // for shift-tab.
+  if (result.windows_key_code == 9) {
+    text_str = @"\x9";
+    unmodified_str = @"\x9";
+  }
+
+  if ([text_str length] < blink::WebKeyboardEvent::kTextLengthCap &&
+      [unmodified_str length] < blink::WebKeyboardEvent::kTextLengthCap) {
+    [text_str getCharacters:reinterpret_cast<UniChar*>(&result.text[0])];
+    [unmodified_str
+        getCharacters:reinterpret_cast<UniChar*>(&result.unmodified_text[0])];
+  } else {
+    NOTIMPLEMENTED();
+  }
+
+  result.is_system_key = IsSystemKeyEvent(result);
+
+  return result;
 }
 
 blink::WebGestureEvent WebGestureEventBuilder::Build(UIEvent*, UIView*) {
@@ -196,7 +291,7 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
     UIEvent* event,
     UIView* view,
     const std::optional<gfx::Vector2dF>& view_offset) {
-  blink::WebTouchEvent result(type, ModifiersFromEvent(event),
+  blink::WebTouchEvent result(type, ModifiersFromEvent(event.modifierFlags),
                               ui::EventTimeStampFromSeconds([event timestamp]));
   // TODO(dtapuska): Enable
   //   ui::ComputeEventLatencyOS(event);

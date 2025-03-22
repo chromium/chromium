@@ -533,6 +533,8 @@ source_set("native_widget_types_sources") {
 
   configs += [ ":gfx_impl_define" ]
 
+  deps = [ "//build:blink_buildflags" ]
+
   if (is_mac) {
     sources = [ "native_widget_types_mac.mm" ]
     frameworks = [ "AppKit.framework" ]

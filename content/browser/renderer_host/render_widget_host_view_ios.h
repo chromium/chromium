@@ -212,6 +212,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   bool CanResignFirstResponderForTesting() const;
   void ContentInsetChanged();
   void DeleteSurroundingText(int before, int after);
+  void SendKeyEvent(const input::NativeWebKeyboardEvent& event);
 
   void StartAutoscrollForSelectionToPoint(const gfx::PointF& point);
   void StopAutoscroll();

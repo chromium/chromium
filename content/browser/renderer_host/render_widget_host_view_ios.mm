@@ -918,6 +918,17 @@ void RenderWidgetHostViewIOS::DeleteSurroundingText(int before, int after) {
   }
 }
 
+void RenderWidgetHostViewIOS::SendKeyEvent(
+    const input::NativeWebKeyboardEvent& event) {
+  auto* host = GetFocusedWidget();
+  if (!host) {
+    return;
+  }
+  ui::LatencyInfo latency_info;
+  latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
+  host->ForwardKeyboardEventWithLatencyInfo(event, latency_info);
+}
+
 blink::mojom::FrameWidgetInputHandler*
 RenderWidgetHostViewIOS::GetFrameWidgetInputHandlerForFocusedWidget() {
   auto* focused_widget = GetFocusedWidget();
