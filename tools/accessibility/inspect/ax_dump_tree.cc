@@ -6,7 +6,6 @@
 #include <iostream>
 #include <numeric>
 #include <string>
-#include <string_view>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -23,7 +22,7 @@ constexpr char kApiSwitch[] = "api";
 constexpr char kHelpSwitch[] = "help";
 
 bool AXDumpTreeLogMessageHandler(int severity,
-                                 std::string_view file,
+                                 const char* file,
                                  int line,
                                  size_t message_start,
                                  const std::string& str) {

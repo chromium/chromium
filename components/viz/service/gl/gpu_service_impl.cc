@@ -172,12 +172,12 @@ struct LogMessage {
 
 // Forward declare log handlers so they can be used within LogMessageManager.
 bool PreInitializeLogHandler(int severity,
-                             std::string_view file,
+                             const char* file,
                              int line,
                              size_t message_start,
                              const std::string& message);
 bool PostInitializeLogHandler(int severity,
-                              std::string_view file,
+                              const char* file,
                               int line,
                               size_t message_start,
                               const std::string& message);
@@ -269,7 +269,7 @@ LogMessageManager* GetLogMessageManager() {
 }
 
 bool PreInitializeLogHandler(int severity,
-                             std::string_view file,
+                             const char* file,
                              int line,
                              size_t message_start,
                              const std::string& message) {
@@ -280,7 +280,7 @@ bool PreInitializeLogHandler(int severity,
 }
 
 bool PostInitializeLogHandler(int severity,
-                              std::string_view file,
+                              const char* file,
                               int line,
                               size_t message_start,
                               const std::string& message) {
