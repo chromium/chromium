@@ -25,6 +25,7 @@
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/tab_slider_button.h"
@@ -35,6 +36,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/base/class_property.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -270,6 +272,14 @@ bool IsCaptureWindowSelectable(aura::Window* window) {
     return false;
 
   return !IsWindowFullyOccluded(window);
+}
+
+std::u16string GetA11yNameForFineTunePosition(
+    FineTunePosition fine_tune_position) {
+  return l10n_util::GetStringUTF16(
+      fine_tune_position == FineTunePosition::kCenter
+          ? IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME
+          : IDS_ASH_SCREEN_CAPTURE_SELECTED_DRAG_HANDLE_ACCESSIBLE_TITLE);
 }
 
 }  // namespace
@@ -657,8 +667,8 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
       auto ax_virtual_view = std::make_unique<views::AXVirtualView>();
       ax_virtual_views_[fine_tune_position] = ax_virtual_view.get();
       ax_virtual_view->SetRole(ax::mojom::Role::kButton);
-      // TODO(crbug.com/401066100): Add strings.
-      ax_virtual_view->SetName(u"To be determined");
+      ax_virtual_view->SetName(
+          GetA11yNameForFineTunePosition(fine_tune_position));
       const views::AXVirtualView::AXVirtualViews& ax_virtual_children =
           ax_widget_->GetRootView()->GetViewAccessibility().virtual_children();
       CHECK_EQ(ax_virtual_children.size(), 1u);
