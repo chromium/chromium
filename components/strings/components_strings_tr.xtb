@@ -158,6 +158,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Spor</translation>
 <translation id="1268480293435976622">Zarf Chinese #7</translation>
+<translation id="1269045546668906972">Daha fazla alanı otomatik olarak doldurmak için yapay zeka ile otomatik doldurma özelliğini etkinleştirin</translation>
 <translation id="1269516672602708785">Google Sites'ta hızlıca yeni bir site oluşturun</translation>
 <translation id="1270328905573953738">Taşınma ve Yer Değiştirme</translation>
 <translation id="1270502636509132238">Alma Yöntemi</translation>
@@ -1138,6 +1139,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3005723025932146533">Kaydedilen kopyayı göster</translation>
 <translation id="300580149047131921">Son kullanılan</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, kullanılabilir işlemlere göz atmak için Sekme tuşuna, ardından seçilen işlemi yürütmek için Enter tuşuna basın.</translation>
+<translation id="3010991137650052245">Bu sitede <ph name="PERMISSION" /> kullanabilmesi amacıyla <ph name="SHORT_PRODUCT_NAME" /> için erişim izni verin</translation>
 <translation id="3013711734159931232">Ev Malzemeleri</translation>
 <translation id="3014553260345122294">İş Haberleri</translation>
 <translation id="3014726756341138577">Gelişmiş yazıcı özellikleri</translation>
@@ -1410,6 +1412,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3484560055331845446">Google Hesabınıza erişimi kaybedebilirsiniz. Chrome, şifrenizi hemen değiştirmenizi önerir. Oturum açmanız istenecektir.</translation>
 <translation id="3484861421501147767">Hatırlatıcı: Kayıtlı promosyon kodu kullanılabilir</translation>
+<translation id="3485901585646640838">Google Hesabınızda kayıtlı şifreleri ve diğer öğeleri kullanmak için kimliğinizi doğrulayın</translation>
 <translation id="3486406746948052912">Terlemeyi Önleyici Ürünler, Deodorantlar ve Vücut Spreyleri</translation>
 <translation id="3487845404393360112">Tepsi 4</translation>
 <translation id="3493660662684070951">Kamyon, Kamyonet ve SUV'ler</translation>
@@ -1788,6 +1791,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Politika kapsamı desteklenmiyor.</translation>
+<translation id="411918202192379658">Otomatik doldurma artık daha iyi</translation>
 <translation id="4121428309786185360">Son Kullanma Tarihi:</translation>
 <translation id="4123572138124678573">Altta üçlü delik</translation>
 <translation id="412601465078863288">Yükleme zaman aşımına uğradı</translation>
@@ -2176,6 +2180,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4819347708020428563">Ek açıklamalar varsayılan görünümde düzenlensin mi?</translation>
 <translation id="4822493756793346865">Normal fiyat bilgileri, web'deki mağazaların geçtiğimiz 90 gün içindeki fiyatlarına dayanır.</translation>
 <translation id="4822922322149719535">Hata günlüğünü inceleyin</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" />, cihazınızda <ph name="PERMISSION" /> erişimine ihtiyaç duyuyor</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, hızlıca yeni bir Google E-Tablosu oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="4826588772550366629">kamera ve mikrofon</translation>
 <translation id="4827283332383516812">Kartı sil</translation>
@@ -2530,6 +2535,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5443468954631487277">Ters sırada ön yüz yukarı bakacak şekilde</translation>
 <translation id="5445340838622821110">Taksitle ödeme yaptığınızda tek seferlik sanal kart numarası doldurulur. Söz konusu numara yalnızca bu satın alma işlemine yöneliktir. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700"><ph name="SITE" /> sitesinin sizinle ilgili kaydettiği bilgileri kullanmasına izin verin</translation>
+<translation id="5451331376824595378">Güvenlik işlemleri Chrome tarafından işaretlendiğinde bu işlemlerle ilgili veriler yöneticinize gönderilir. Bu veriler; Chrome'da ziyaret ettiğiniz sayfaların URL'si, veri kopyaladığınız sayfaların URL'si, dosya adları veya meta veriler, IP adresleri, tarayıcı ya da sekme kilitlenmelerinin yanı sıra web tabanlı uygulamalarda, cihazınızda ve Chrome'da oturum açmak için kullandığınız kullanıcı adını içerir.</translation>
 <translation id="5452270690849572955">Bu <ph name="HOST_NAME" /> sayfası bulunamıyor</translation>
 <translation id="5452923259299906094">E-cüzdan ve Pix ile ödeyin</translation>
 <translation id="5455374756549232013">Politika zaman damgası yanlış</translation>
@@ -3424,6 +3430,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7023765275461720661">Hesabı bağlayıp <ph name="BNPL_ISSUER_NAME" /> ile ödeme yapmak istiyor musunuz?</translation>
 <translation id="7029809446516969842">Şifreler</translation>
 <translation id="7030164307377592766">ödeme yöntemi girmeyle ilgili ayarları değiştirme</translation>
+<translation id="7031110846419387930">Tarayıcınız, işletim sisteminiz, cihazınız, yüklü yazılımlar, dosyalar ve IP adresleri hakkında bilgiler</translation>
 <translation id="7031646650991750659">Hangi Google Play uygulamalarını yüklediğiniz</translation>
 <translation id="7035705295266423040">Bankanız kimliğinizi doğrulamak istiyor</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınızın gizlilik ayarlarını yönetmek için Sekme'ye, ardından Enter'a basın</translation>
@@ -3535,6 +3542,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7221855153210829124">Bildirimleri göstermek</translation>
 <translation id="722454870747268814">Yeni Gizli Sekme</translation>
 <translation id="7227293336683593977">Fiyat Geçmişi</translation>
+<translation id="7228306718910595403">AB Uygunluk Durumu</translation>
 <translation id="7232352818707016189">Karşılaştırma tablosuyla ilgili diğer işlemler</translation>
 <translation id="7233592378249864828">Yazdırma onay sayfası</translation>
 <translation id="7234112195906418665">Seyahat ve Ulaşım</translation>

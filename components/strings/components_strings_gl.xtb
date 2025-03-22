@@ -158,6 +158,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1264309058268477500">Alternar</translation>
 <translation id="1264974993859112054">Deportes</translation>
 <translation id="1268480293435976622">Sobre chinés n.º 7</translation>
+<translation id="1269045546668906972">Activa a función de autocompletar coa IA para encher automaticamente máis campos</translation>
 <translation id="1269516672602708785">Crear rapidamente un sitio novo en Google Sites</translation>
 <translation id="1270328905573953738">Mudanzas e traslados</translation>
 <translation id="1270502636509132238">Método de recollida</translation>
@@ -1138,6 +1139,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3005723025932146533">Mostrar copia gardada</translation>
 <translation id="300580149047131921">Usada recentemente</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme o tabulador para explorar as accións dispoñibles e despois Introducir para executar a acción seleccionada.</translation>
+<translation id="3010991137650052245">Concédelle permiso de <ph name="PERMISSION" /> a <ph name="SHORT_PRODUCT_NAME" /> para que poida usar ese recurso neste sitio</translation>
 <translation id="3013711734159931232">Produtos do fogar</translation>
 <translation id="3014553260345122294">Noticias sobre negocios</translation>
 <translation id="3014726756341138577">Funcións avanzadas da impresora</translation>
@@ -1410,6 +1412,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3484560055331845446">Poderías perder o acceso á túa Conta de Google. Chrome recoméndache que cambies de contrasinal agora. Deberás iniciar sesión.</translation>
 <translation id="3484861421501147767">Recordatorio: tes un código promocional gardado dispoñible</translation>
+<translation id="3485901585646640838">Para utilizar os contrasinais e outros elementos gardados na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="3486406746948052912">Antitranspirantes, desodorizantes e brumas corporais</translation>
 <translation id="3487845404393360112">Bandexa 4</translation>
 <translation id="3493660662684070951">Camións, furgonetas e SUV</translation>
@@ -1788,6 +1791,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Ámbito da política non admitido.</translation>
+<translation id="411918202192379658">A función de autocompletar agora é mellor</translation>
 <translation id="4121428309786185360">Data de caducidade</translation>
 <translation id="4123572138124678573">Tres perforacións na parte inferior</translation>
 <translation id="412601465078863288">Esgotouse o tempo de espera para a carga</translation>
@@ -2176,6 +2180,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4819347708020428563">Queres editar as anotacións na vista predeterminada?</translation>
 <translation id="4822493756793346865">Os prezos habituais baséanse en datos procedentes de tendas da Web recompilados ao longo dos últimos 90 días.</translation>
 <translation id="4822922322149719535">Revisar rexistro de erros</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> necesita acceso ao seguinte recurso do teu dispositivo: <ph name="PERMISSION" /></translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente unha nova folla de cálculo de Google</translation>
 <translation id="4826588772550366629">cámara e micrófono</translation>
 <translation id="4827283332383516812">Eliminar a tarxeta</translation>
@@ -2530,6 +2535,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5443468954631487277">Orde inversa cara arriba</translation>
 <translation id="5445340838622821110">Cando pagas a prazos, complétase un número de tarxeta virtual único. Este número é só para esta compra. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use a información que gardase sobre ti</translation>
+<translation id="5451331376824595378">Cando Chrome marca un evento de seguranza, envíanselle os datos relevantes sobre este á persoa que che administra a conta. Estes datos poden incluír os URL das páxinas que visites en Chrome, os URL das páxinas das que copies datos, metadatos ou nomes de ficheiros, información sobre fallos do navegador ou das pestanas, e o nome de usuario que utilices para iniciar sesión nas aplicacións baseadas na Web, no teu dispositivo e en Chrome.</translation>
 <translation id="5452270690849572955">Non se pode atopar esta páxina de <ph name="HOST_NAME" /></translation>
 <translation id="5452923259299906094">Pagar co moedeiro electrónico e con Pix</translation>
 <translation id="5455374756549232013">Marca de tempo da política incorrecta</translation>
@@ -3424,6 +3430,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7023765275461720661">Queres vincular a conta e pagar con <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7030164307377592766">modificar a configuración para completar os métodos de pago</translation>
+<translation id="7031110846419387930">Información sobre o navegador, o sistema operativo, o dispositivo, o software instalado, os ficheiros e os enderezos IP</translation>
 <translation id="7031646650991750659">As aplicacións de Google Play que teñas instaladas</translation>
 <translation id="7035705295266423040">O teu banco quere verificar a túa identidade</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar a configuración de privacidade da túa Conta de Google, preme Tabulador e, a continuación, Introducir</translation>
@@ -3534,6 +3541,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7221855153210829124">Mostrar notificacións</translation>
 <translation id="722454870747268814">Nova pestana do modo de incógnito</translation>
 <translation id="7227293336683593977">Historial de prezos</translation>
+<translation id="7228306718910595403">Estado de cualificación da UE</translation>
 <translation id="7232352818707016189">Máis accións para a táboa de comparación</translation>
 <translation id="7233592378249864828">Folla de confirmación da impresión</translation>
 <translation id="7234112195906418665">Viaxes e transporte</translation>

@@ -216,6 +216,7 @@
 <translation id="1679841710523778799">چمک بڑھائیں</translation>
 <translation id="1680659827022803830">ویڈیو کال کنٹرولز</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">آپ ترتیبات میں کسی بھی وقت اس خصوصیت کو آف کر سکتے ہیں۔ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ٹائمر · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">‏IPv6 پتہ: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">فعال ونڈو بائیں طرف ڈاک کی ہوئی ہے۔</translation>
@@ -969,6 +970,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />، انسٹال کردہ ایپ، موقوف ہے</translation>
 <translation id="4228078597006700451">کنٹرولز کو سیٹ اپ نہیں ہیں</translation>
 <translation id="4230560241506423345">نئی</translation>
+<translation id="4236726631849783264">تجویز کردہ کارروائیوں کے بارے میں ایک یاد دہانی</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">مجموعی جائزہ کی وضع</translation>
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
@@ -1045,6 +1047,7 @@
 <translation id="4471354919263203780">اسپیچ شناخت کی فائلز ڈاؤن لوڈ ہو رہی ہیں... %<ph name="PERCENT" /></translation>
 <translation id="4471432286288241507">{0,plural, =0{ابھی آلہ کو اپ ڈیٹ کریں}=1{1 سیکنڈ کے اندر آلہ کو اپ ڈیٹ کریں}other{# سیکنڈز کے اندر آلہ کو اپ ڈیٹ کریں}}</translation>
 <translation id="4472575034687746823">شروع کریں</translation>
+<translation id="4473489370276014885">‏‫Google رابطے</translation>
 <translation id="4477350412780666475">اگلا ٹریک</translation>
 <translation id="4477751544736611934">اس کے نتیجے میں ڈیٹا چارجز لگ سکتے ہیں۔
 1 آلہ منسلک ہو گیا۔</translation>
@@ -1071,6 +1074,7 @@
 <translation id="4545950850562423083">موجودہ صفحہ کو بُک مارک کے طور پر محفوظ کریں</translation>
 <translation id="4548482551627849548">فعال ونڈو کو بائیں ڈیسک کی طرف منتقل کریں</translation>
 <translation id="4552748006424994716">بازگشت سے بچنے کے لیے، آپ اپنے مائیک کو صرف تار والے ہیڈ فون سے سن سکتے ہیں۔</translation>
+<translation id="4556953949326137018">‏جب آپ تجویز کردہ کاروائیوں جیسے کہ "کیلنڈر میں شامل کریں" یا "Google Docs تخلیق کریں" کا استعمال کرتے ہیں تو منتخب کردہ علاقے سے مواد کو Google سرورز کو کارروائیوں کی تجویز کرنے کے لیے بھیجا جاتا ہے جو <ph name="LINK_TO_SERVICE_TERMS" /> کے ساتھ مشروط ہوتا ہے۔ کوئی بھی ذاتی، حساس یا رازدارانہ چیز شامل نہ کریں۔</translation>
 <translation id="4560576029703263363">آن</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
@@ -1154,6 +1158,7 @@
 <translation id="481455355267255546">اس کے آگے</translation>
 <translation id="481749895090480684">ٹاسک کی فہرست: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
+<translation id="4828935196674083554">شامل کیا جا رہا ہے…</translation>
 <translation id="482908187605862807">‏Play اسٹور سے دستیاب ایپس</translation>
 <translation id="4831034276697007977">کیا آپ واقعی خودکار کلکس کو آف کرنا چاہتے ہیں؟</translation>
 <translation id="4835677468087803981">‏‫PIN چھپائیں</translation>
@@ -1651,6 +1656,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">تمام اطلاعات صاف کریں</translation>
+<translation id="6426905245930183644">تخلیق ہو رہی ہے…</translation>
 <translation id="6430225033895752525">فوکس کی ترتیبات دکھائیں</translation>
 <translation id="643147933154517414">سب ہو گیا</translation>
 <translation id="6431865393913628856">اسکرین ریکارڈر</translation>
@@ -2401,6 +2407,7 @@
 <translation id="8926951137623668982">شیلف ہمیشہ پوشیدہ</translation>
 <translation id="8929566928381252430">‏‫Caps Lock استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="8929623844713377237">نیا رابطہ تخلیق کیا گیا</translation>
+<translation id="8934418770423095813">‏Google Doc تخلیق کریں</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 فائل}other{# فائلز}}</translation>
 <translation id="8936501819958976551">غیر فعال</translation>
 <translation id="8938800817013097409">‏USB-C آلہ (پیچھے موجود دایاں پورٹ)</translation>

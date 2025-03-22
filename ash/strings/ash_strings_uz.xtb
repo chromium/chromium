@@ -215,6 +215,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1679841710523778799">Yorqinlikni ko‘tarish</translation>
 <translation id="1680659827022803830">Video chaqiruv boshqaruvi</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Bu funksiyani istalgan vaqt Sozlamalar orqali faolsizlantirish mumkin. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taymer · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 manzil: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Faol oyna chapga mahkamlandi.</translation>
@@ -967,6 +968,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Oʻrnatilgan ilova, Pauzada</translation>
 <translation id="4228078597006700451">Parametrlar sozlanmadi</translation>
 <translation id="4230560241506423345">Yangi</translation>
+<translation id="4236726631849783264">Tavsiya etilgan amallar haqida eslatma</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Umumiy axborot rejimi</translation>
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
@@ -1043,6 +1045,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4471354919263203780">Nutqni aniqlash fayllari yuklab olinmoqda... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Qurilmani hoziroq oʻchirib yoqish kerak}=1{Qurilmani 1 soniya ichida oʻchirib yoqish kerak}other{Qurilmani # soniya ichida oʻchirib yoqish kerak}}</translation>
 <translation id="4472575034687746823">Boshlash</translation>
+<translation id="4473489370276014885">Google Kontaktlar</translation>
 <translation id="4477350412780666475">Keyingi trek</translation>
 <translation id="4477751544736611934">Trafik uchun haq olinishi mumkin.
 1 ta qurilma ulandi.</translation>
@@ -1069,6 +1072,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4545950850562423083">Joriy sahifani bukmark shaklida saqlash</translation>
 <translation id="4548482551627849548">Faol oynani ish stolining chap tomoniga joylash</translation>
 <translation id="4552748006424994716">Aks sado eshitilmasligi uchun faqatgina simli quloqlik mikrofonidan tinglang.</translation>
+<translation id="4556953949326137018"><ph name="LINK_TO_SERVICE_TERMS" /> bilan muvofiq tarzda “Taqvimga kiritish” yoki “Google Docs hujjatini yaratish” kabi tavsiya etilgan amal ishlatilganda tanlangan hudud kontenti Google serverlariga yuboriladi. Bu kelgusi amallarni tavsiya qilish uchun zarur. Shaxsiy va maxfiy axborotlarni yubormang.</translation>
 <translation id="4560576029703263363">Yoniq</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Parolni berkitish</translation>
@@ -1152,6 +1156,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="481455355267255546">Keyingisi</translation>
 <translation id="481749895090480684">Vazifalar roʻyxati: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera va mikrofon</translation>
+<translation id="4828935196674083554">Qoʻshilmoqda…</translation>
 <translation id="482908187605862807">Play Marketdan mavjud ilovalar</translation>
 <translation id="4831034276697007977">Avtomatik kliklar bekor qilinsinmi?</translation>
 <translation id="4835677468087803981">PIN kodni berkitish</translation>
@@ -1649,6 +1654,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617">Himoya: <ph name="SECURITY_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Barcha eslatmalarni tozalang</translation>
+<translation id="6426905245930183644">Yaratilmoqda...</translation>
 <translation id="6430225033895752525">Fokus sozlamalarini ochish</translation>
 <translation id="643147933154517414">Bajarildi</translation>
 <translation id="6431865393913628856">Ekran yozuvi</translation>
@@ -2398,6 +2404,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8921624153894383499">Google Assistent hozircha bu tilda gapirmaydi.</translation>
 <translation id="8926951137623668982">Javon doim berk</translation>
 <translation id="8929566928381252430">Caps Lock bosish kerakmi? Buni ishlating:</translation>
+<translation id="8934418770423095813">Google Doc hujjatini yaratish</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ta fayl}other{# ta fayl}}</translation>
 <translation id="8936501819958976551">faolsizlantirildi</translation>
 <translation id="8938800817013097409">USB-C qurilma (orqa tomondagi o‘ng port)</translation>

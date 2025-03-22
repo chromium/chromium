@@ -694,6 +694,7 @@
 <translation id="4270730597186910506">តាមដាន ឬឈប់តាមដានផលិតផល។</translation>
 <translation id="4277529130885813215">ប្រើ​ឧបករណ៍​ផ្សេងទៀត</translation>
 <translation id="4282440837784183472">ស្ថាប័ន​របស់អ្នក <ph name="MANAGED_DOMAIN" /> គ្រប់គ្រង​គណនី​ដែលអ្នក​កំពុងចូល និង​របៀបដែល Chrome អាចត្រូវបានប្រើ។ អ្នកគ្រប់គ្រង​របស់អ្នក​អាចរៀបចំ ឬ​ដាក់កំហិត​លើមុខងារ​ជាក់លាក់បាន។</translation>
+<translation id="4285498937028063278">ដកការដៅ</translation>
 <translation id="4285846616383034558">ខូគី ឃ្លាំងបម្រុង និង​ទិន្នន័យ​គេហទំព័រ​ផ្សេងទៀត</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />បើក​ការចាក់សោអេក្រង់​នៅក្នុង​ការកំណត់ Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">ផ្ទាំងឯកជន​ថ្មី</translation>
@@ -923,6 +924,7 @@
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5319359161174645648">Google ណែនាំ Chrome</translation>
 <translation id="5326246328175179736">អ្នក​មិនអាច​ចូល​ដោយប្រើ​គណនីនេះ​បានទេ</translation>
+<translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5328542107300944283">ប្រើ​តាមរយៈ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">សំណើសុំ​ការអនុញ្ញាត</translation>
 <translation id="534580735623577507">មិនមាន​គេហទំព័រ​ពីរយៈពេល <ph name="TIME_PERIOD" />ទេ</translation>
@@ -1078,6 +1080,7 @@
 <translation id="605721222689873409">ឆ្នាំ</translation>
 <translation id="6059830886158432458">គ្រប់គ្រង​អត្ថបទ និង​សកម្មភាព​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6071995715087444295">ដើម្បីពិនិត្យរកមើលពាក្យសម្ងាត់ដែល​រងការលុកលុយ សូមចូលគណនី Google របស់អ្នក</translation>
+<translation id="6078323886959318429">បន្ថែម​ផ្លូវកាត់</translation>
 <translation id="6085886413119427067">កំណត់របៀបភ្ជាប់​គេហទំព័រ​តាមរយៈការតភ្ជាប់ដែលមានសុវត្ថិភាព</translation>
 <translation id="6087286598828478206">ទប់ស្កាត់ និង​ចាកចេញ​ពីក្រុមឬ?</translation>
 <translation id="60923314841986378">នៅសល់ <ph name="HOURS" /> ម៉ោងទៀត</translation>

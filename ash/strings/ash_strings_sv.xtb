@@ -216,6 +216,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1679841710523778799">Öka ljusstyrkan</translation>
 <translation id="1680659827022803830">Kontrollpanel för videosamtal</translation>
 <translation id="169515659049020177">Skift</translation>
+<translation id="1696984622403682083">Du kan stänga av funktionen när som helst i inställningarna. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Timer på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adress: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Det aktiva fönstret har dockats till vänster.</translation>
@@ -969,6 +970,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installerad app, pausad</translation>
 <translation id="4228078597006700451">Kontrollerna har inte ställts in</translation>
 <translation id="4230560241506423345">Ny</translation>
+<translation id="4236726631849783264">En påminnelse om föreslagna åtgärder</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Översiktsläge</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
@@ -1045,6 +1047,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4471354919263203780">Filer för taligenkänning laddas ned … <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Uppdatera enheten nu}=1{Uppdatera enheten inom 1 sekund}other{Uppdatera enheten inom # sekunder}}</translation>
 <translation id="4472575034687746823">Kom igång</translation>
+<translation id="4473489370276014885">Google Kontakter</translation>
 <translation id="4477350412780666475">Nästa spår</translation>
 <translation id="4477751544736611934">Detta kan innebära datakostnader.
 1 enhet är ansluten.</translation>
@@ -1071,6 +1074,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4545950850562423083">Spara aktuell sida som bokmärke</translation>
 <translation id="4548482551627849548">Flytta det aktiva fönstret till skrivbordet till vänster</translation>
 <translation id="4552748006424994716">Du kan undvika eko genom att endast lyssna på mikrofonen med hörlurar med sladd.</translation>
+<translation id="4556953949326137018">När du använder föreslagna åtgärder som ”Lägg till i Kalender” eller ”Skapa Google Dokument” skickas innehållet från det markerade området till Googles servrar för att föreslå åtgärder, i enlighet med <ph name="LINK_TO_SERVICE_TERMS" />. Ange inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="4560576029703263363">På</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
@@ -1154,6 +1158,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="481455355267255546">Kommande</translation>
 <translation id="481749895090480684">Uppgiftslista: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera och mikrofon</translation>
+<translation id="4828935196674083554">Lägger till ...</translation>
 <translation id="482908187605862807">Tillgängliga appar i Play Butik</translation>
 <translation id="4831034276697007977">Vill du inaktivera automatiska klick?</translation>
 <translation id="4835677468087803981">Dölj pinkod</translation>
@@ -1651,6 +1656,7 @@ Inga enheter är anslutna.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Rensa alla aviseringar</translation>
+<translation id="6426905245930183644">Skapar …</translation>
 <translation id="6430225033895752525">Visa fokusinställningar</translation>
 <translation id="643147933154517414">Klart</translation>
 <translation id="6431865393913628856">Skärminspelning</translation>
@@ -2402,6 +2408,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8926951137623668982">Hyllan döljs alltid</translation>
 <translation id="8929566928381252430">Försöker du använda Caps Lock-tangenten? Använd</translation>
 <translation id="8929623844713377237">Kontakten har skapats</translation>
+<translation id="8934418770423095813">Skapa Google-dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}other{# filer}}</translation>
 <translation id="8936501819958976551">inaktiverad</translation>
 <translation id="8938800817013097409">USB-C-enhet (högra porten på baksidan)</translation>

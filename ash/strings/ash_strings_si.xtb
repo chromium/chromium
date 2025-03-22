@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">දීප්තිය වැඩි කරන්න</translation>
 <translation id="1680659827022803830">වීඩියෝ ඇමතුම් පාලන</translation>
 <translation id="169515659049020177">SHIFT</translation>
+<translation id="1696984622403682083">ඔබට සැකසීම් තුළ ඕනෑම වේලාවක මෙම විශේෂාංගය ක්‍රියා විරහිත කළ හැක. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> කාල ගණකය · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ලිපිනය: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">සක්‍රිය කවුළුව වමේ ඈඳා ඇත.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ස්ථාපිත යෙදුම, විරාම කරන ලදී</translation>
 <translation id="4228078597006700451">පාලන සකසා නැත</translation>
 <translation id="4230560241506423345">නව</translation>
+<translation id="4236726631849783264">යෝජිත ක්‍රියාමාර්ග පිළිබඳ සිහිකැඳවීමක්</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">දළ විශ්ලේෂණ ආකාරය</translation>
 <translation id="4242533952199664413">සැකසීම් විවෘත කරන්න</translation>
@@ -1043,6 +1045,7 @@
 <translation id="4471354919263203780">කථන හැඳුනුම් ‍ගොනු බාගනිමින්... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{උපාංගය දැන් යාවත්කාලීන කරන්න}=1{උපාංගය තත්පර 1ක් තුළ යාවත්කාලීන කරන්න}one{උපාංගය තත්පර #ක් තුළ යාවත්කාලීන කරන්න}other{උපාංගය තත්පර #ක් තුළ යාවත්කාලීන කරන්න}}</translation>
 <translation id="4472575034687746823">අරඹන්න</translation>
+<translation id="4473489370276014885">Google සම්බන්ධතා</translation>
 <translation id="4477350412780666475">ඊළඟ ඛණ්ඩය</translation>
 <translation id="4477751544736611934">මෙයට දත්ත පිරිවැයක් දැරීමට සිදු වේ.
 1 උපාංගයක් සම්බන්ධ කර ඇත.</translation>
@@ -1069,6 +1072,7 @@
 <translation id="4545950850562423083">වත්මන් පිටුව පිටුසනක් ලෙස සුරකින්න</translation>
 <translation id="4548482551627849548">සක්‍රිය කවුළුව වමේ මේසයට ගෙන යන්න</translation>
 <translation id="4552748006424994716">අනුනාදය වැළැක්වීමට, ඔබට රැහැන් ගත හෙඩ්ෆෝන් මගින් පමණක් ඔබේ මයික්‍රොෆෝනයට සවන් දිය හැක.</translation>
+<translation id="4556953949326137018">ඔබ “දින දර්ශනයට එක් කරන්න” හෝ “Google Docs තනන්න” වැනි යෝජිත ක්‍රියා භාවිතා කරන විට, තෝරාගත් ප්‍රදේශයෙන් අන්තර්ගතය <ph name="LINK_TO_SERVICE_TERMS" /> වෙත යටත්ව, ක්‍රියා යෝජනා කිරීමට Google සේවාදායකයන් වෙත යවනු ලැබේ. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකරන්න.</translation>
 <translation id="4560576029703263363">සක්‍රියයි</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">මුරපදය සඟවන්න</translation>
@@ -1152,6 +1156,7 @@
 <translation id="481455355267255546">මීළඟට</translation>
 <translation id="481749895090480684">කාර්ය ලැයිස්තුව: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">කැමරාව සහ මයික්‍රෆෝනය</translation>
+<translation id="4828935196674083554">එක් කරමින්...</translation>
 <translation id="482908187605862807">Play Store වෙතින් ලබා ගත හැකි යෙදුම්</translation>
 <translation id="4831034276697007977">ඔබට ස්වයංක්‍රීය ක්ලික් කිරීම් අක්‍රිය කළ යුතු බව ඔබට තහවුරුද?</translation>
 <translation id="4835677468087803981">PIN සඟවන්න</translation>
@@ -1649,6 +1654,7 @@
 <translation id="641817663353603351">පිටුව ඉහළට</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">සියලු දැනුම්දීම් හිස් කරන්න</translation>
+<translation id="6426905245930183644">තනමින්…</translation>
 <translation id="6430225033895752525">අවධාන සැකසීම් පෙන්වන්න</translation>
 <translation id="643147933154517414">සියල්ල නිමයි</translation>
 <translation id="6431865393913628856">තිර පටිගත කිරීම</translation>
@@ -2398,6 +2404,7 @@
 <translation id="8921624153894383499">Google සහායක මෙම භාෂාව කථා කරන්නේ නැත.</translation>
 <translation id="8926951137623668982">රාක්කය සැම විට සඟවා ඇත</translation>
 <translation id="8929566928381252430">Caps Lock භාවිතා කිරීමට උත්සාහ කරන්නේ ද? භාවිතා කරන්න</translation>
+<translation id="8934418770423095813">Google Doc තනන්න</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ගොනුවක්}one{ගොනු #ක්}other{ගොනු #ක්}}</translation>
 <translation id="8936501819958976551">ක්‍රියා විරහිතයි</translation>
 <translation id="8938800817013097409">USB-C උපාංගය (පසුපස දකුණු තොට)</translation>

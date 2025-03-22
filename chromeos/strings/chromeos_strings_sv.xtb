@@ -240,6 +240,7 @@
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
 <translation id="1908234395526491708">Misslyckade UDP-förfrågningar</translation>
 <translation id="1908394185991500139">vänsterpil</translation>
+<translation id="1911678930322867245">Flytta högst upp till höger</translation>
 <translation id="1914144885717544695">på fredag</translation>
 <translation id="1915960750806557358">Ge feedback eller beskriv problemet. Inkludera inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="1923388006036088459">Accentfärger</translation>
@@ -1560,16 +1561,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">en strand</translation>
 <translation id="819278132617411009">Använd Google AI för att bli mer produktiv</translation>
-<translation id="82003371436638355">När du väljer Skapa din egen skriver du en anpassad prompt. Du kan även välja Välj ett tema och sedan välja de understrukna orden för att anpassa AI-bakgrunden.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Välj Inspirera mig för att få mer unika och varierade AI-bildalternativ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          När du skapar en egen bakgrund skickas prompten till Googles servrar för att generera bilder och förbättra produkten i enlighet med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles användarvillkor och integritetspolicy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ange inget som är personligt, känsligt eller konfidentiellt.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativ AI kan göra misstag, inklusive om personer, så dubbelkolla svaren. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Läs mer<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Förmåner</translation>
@@ -1698,6 +1689,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8820817407110198400">Bokmärken</translation>
 <translation id="8833620912470026819">kaktusskog</translation>
 <translation id="8834539327799336565">Anslutna just nu</translation>
+<translation id="8842526499753992487">Flytta högst upp till vänster</translation>
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8849799913685544685">fyr</translation>
 <translation id="8851859208664803097">Stoppat – skrivaren kan inte nås</translation>

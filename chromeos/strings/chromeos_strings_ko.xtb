@@ -1544,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">해변</translation>
 <translation id="819278132617411009">Google AI를 사용하여 생산성 높이기</translation>
-<translation id="82003371436638355">'직접 만들기'를 선택한 경우 맞춤 프롬프트를 작성하세요. 또는 '테마 선택'을 선택한 후 밑줄이 그어진 단어를 선택해 AI 배경화면을 맞춤설정하세요.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          '아이디어 얻기'를 선택하면 더욱 다양하고 고유한 AI 생성 이미지 옵션이 제공됩니다.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          직접 배경화면을 만들면 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 서비스 약관 및 개인정보처리방침<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />에 따라 이미지를 생성하고 제품을 개선하기 위해 프롬프트가 Google 서버로 전송됩니다. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          생성형 AI는 인물 등에 관한 정보 제공 시 실수를 할 수 있으니 다시 한번 확인하세요 <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />자세히 알아보기<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8208861521865154048">혜택</translation>

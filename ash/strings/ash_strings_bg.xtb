@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">Увеличаване на яркостта</translation>
 <translation id="1680659827022803830">Контроли за видеообаждания</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Можете да изключите тази функция по всяко време от настройките. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Таймер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 адрес: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Активният прозорец е прикрепен отляво.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирано приложение, поставено на пауза</translation>
 <translation id="4228078597006700451">Контролите не са настроени</translation>
 <translation id="4230560241506423345">Ново</translation>
+<translation id="4236726631849783264">Напомняне за предложените действия</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим за общ преглед</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
@@ -1043,6 +1045,7 @@
 <translation id="4471354919263203780">Файловете за разпознаване на говор се изтеглят... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Актуализирайте устройството сега}=1{Актуализирайте устройството в рамките на 1 секунда}other{Актуализирайте устройството в рамките на # секунди}}</translation>
 <translation id="4472575034687746823">Първи стъпки</translation>
+<translation id="4473489370276014885">Google Контакти</translation>
 <translation id="4477350412780666475">Следващ запис</translation>
 <translation id="4477751544736611934">Това може да доведе до разходи за данни.
 1 устройство е свързано.</translation>
@@ -1069,6 +1072,7 @@
 <translation id="4545950850562423083">Запазване на текущата страница като отметка</translation>
 <translation id="4548482551627849548">Преместване на активния прозорец към работния кът отляво</translation>
 <translation id="4552748006424994716">За да избегнете ехо, можете да слушате микрофона си само със слушалки с кабел.</translation>
+<translation id="4556953949326137018">Когато използвате предложени действия, като например „добавяне към Календар“ или „създаване на документ в Google Документи“, съдържанието от избраната област се изпраща до сървърите на Google с цел предлагане на действия, предмет на <ph name="LINK_TO_SERVICE_TERMS" />. Не включвайте лично, чувствително или поверително съдържание.</translation>
 <translation id="4560576029703263363">Включено</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Скриване на паролата</translation>
@@ -1152,6 +1156,7 @@
 <translation id="481455355267255546">Предстоящи събития</translation>
 <translation id="481749895090480684">Списък със задачи: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камерата и микрофона ви</translation>
+<translation id="4828935196674083554">Добавя се...</translation>
 <translation id="482908187605862807">Приложения, налични в Google Play Магазин</translation>
 <translation id="4831034276697007977">Наистина ли искате да изключите автоматичните кликвания?</translation>
 <translation id="4835677468087803981">Скриване на ПИН кода</translation>
@@ -1649,6 +1654,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Изчистване на всички известия</translation>
+<translation id="6426905245930183644">Създава се...</translation>
 <translation id="6430225033895752525">Показване на настройките за режима за концентрация</translation>
 <translation id="643147933154517414">Всичко е готово</translation>
 <translation id="6431865393913628856">Записване на екрана</translation>
@@ -2398,6 +2404,7 @@
 <translation id="8921624153894383499">Google Асистент не поддържа този език.</translation>
 <translation id="8926951137623668982">Лавицата е винаги скрита</translation>
 <translation id="8929566928381252430">Опитвате се да използвате клавиша Caps Lock? Натиснете</translation>
+<translation id="8934418770423095813">Създаване на документ в Google Документи</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файла}}</translation>
 <translation id="8936501819958976551">деактивирана</translation>
 <translation id="8938800817013097409">Устройство с USB-C (десният порт на гърба)</translation>

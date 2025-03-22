@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Imizamo emikhulu evunyelwe idluliwe.</translation>
 <translation id="1908234395526491708">Ukwehluleka kwesicelo se-UDP</translation>
 <translation id="1908394185991500139">Umcimbisholo wangakwesokunxele</translation>
+<translation id="1911678930322867245">Iya phezulu kwesokudla</translation>
 <translation id="1914144885717544695">ngoLwesihlanu</translation>
 <translation id="1915960750806557358">Yabelana ngempendulo yakho noma uchaze inkinga yakho. Qinisekisa ukuthi awufaki lutho lomuntu siqu, oluzwelayo, noma oluyimfihlo.</translation>
 <translation id="1923388006036088459">Imibala ye-accent</translation>
@@ -1543,16 +1544,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8179976553408161302">Faka</translation>
 <translation id="8183975772394450380">ibhishi</translation>
 <translation id="819278132617411009">Sebenzisa iGoogle AI ukuze ukhiqize kakhudlwana</translation>
-<translation id="82003371436638355">Uma ukhetha okuthi "Sungula okwakho," bhala umyalelo womuntu ngamunye. Noma ungakhetha okuthi "Khetha itimu" bese ukhetha amagama adwetshelwe ukuze uqondanise nomuntu siqu iphepha lakho langemuva le-AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Khetha okuthi "Ngikhuthaze" ukuze uthole imifanekiso ongakhetha kuyo ye-AI eyingqayizivele nezihlukile.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Uma usungula isithombe sakho sangemuva, umyalelo uthunyelwa kumaseva eGoogle ukuze ukhiqize izithombe uphinde uthuthukise umkhiqizo, ngaphansi <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Kwemigomo Yesevisi yeGoogle Nenqubomgomo Yobumfihlo<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ungafaki lutho lomuntu siqu, oluzwelayo, noma oluyimfihlo.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          I-AI ekhiqizayo ingenza amaphutha, okufaka okumayelana nabantu, ngakho ihloke ngokuphindiwe. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Funda kabanzi<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Qala futhi</translation>
 <translation id="8206859287963243715">Iselula</translation>
 <translation id="8208861521865154048">Izinzuzo</translation>
@@ -1679,6 +1670,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8820817407110198400">Amabhukhimakhi</translation>
 <translation id="8833620912470026819">ihlathi lomdolofiya</translation>
 <translation id="8834539327799336565">Kuxhunyiwe manje</translation>
+<translation id="8842526499753992487">Iya phezulu kwesokunxele</translation>
 <translation id="8845001906332463065">Thola usizo</translation>
 <translation id="8849799913685544685">indlu yesibani</translation>
 <translation id="8851859208664803097">Kumisiwe - Iphrinta ayifinyeleleki</translation>

@@ -240,6 +240,7 @@
 <translation id="1905710495812624430">Viršytas didžiausias bandymų skaičius.</translation>
 <translation id="1908234395526491708">Nepavyko pateikti UDP užklausų</translation>
 <translation id="1908394185991500139">rodyklė kairėn</translation>
+<translation id="1911678930322867245">Perkelti aukštyn, dešinėn</translation>
 <translation id="1914144885717544695">penktadienį</translation>
 <translation id="1915960750806557358">Pateikite atsiliepimą arba aprašykite problemą. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.</translation>
 <translation id="1923388006036088459">Paryškinimo spalvos</translation>
@@ -1560,16 +1561,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="8183975772394450380">paplūdimys</translation>
 <translation id="819278132617411009">Naudokite „Google“ DI, kad būtumėte produktyvesni</translation>
-<translation id="82003371436638355">Jei pasirinkote „Kurti savo“, parašykite tinkintą užklausą. Arba pasirinkite „Pasirinkti temą“, tada pasirinkite temą ir pabrauktus žodžius, kad suasmenintumėte DI ekrano foną.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pasirinkite „Įkvėpk mane“, kad gautumėte unikalesnių ir įvairesnių DI vaizdų.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kai kuriate savo ekrano foną, užklausa siunčiama į „Google“ serverius, kad būtų galima generuoti vaizdus ir tobulinti produktą, vadovaujantis <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Google“ paslaugų teikimo sąlygomis ir privatumo politika<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatyvinis DI gali klysti, įskaitant su žmonėmis susijusias klaidas, todėl patikrinkite dar kartą <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Sužinokite daugiau<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
@@ -1698,6 +1689,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8820817407110198400">Žymės</translation>
 <translation id="8833620912470026819">kaktusų miškas</translation>
 <translation id="8834539327799336565">Šiuo metu susieti</translation>
+<translation id="8842526499753992487">Perkelti aukštyn, kairėn</translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
 <translation id="8849799913685544685">švyturys</translation>
 <translation id="8851859208664803097">Sustabdyta – spausdintuvas nepasiekiamas</translation>

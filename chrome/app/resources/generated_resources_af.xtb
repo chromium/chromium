@@ -267,6 +267,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1175572348579024023">Rollees</translation>
 <translation id="1175914831232945926">Syfers</translation>
 <translation id="1176471985365269981">Mag nie lêers of vouers op jou toestel wysig nie</translation>
+<translation id="1176864681932214421">Skep prente met KI</translation>
 <translation id="1177073277575830464">Vinnige opstelling vir Android is gedoen. Gaan op jou <ph name="DEVICE_TYPE" /> met die opstelling voort.</translation>
 <translation id="1177440945615690056">Jy kan in instellings aan enige kwalifiserende selnetwerk koppel</translation>
 <translation id="1177548198167638471">Moenie weer vra nie</translation>
@@ -3596,6 +3597,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3503995387997205657">Jy kan jou vorige programme terugstel</translation>
 <translation id="3505100368357440862">Inkopievoorstelle</translation>
 <translation id="3507132249039706973">Standaardbeskerming is aan</translation>
+<translation id="3507650052590605702">Bestuur wagwoord</translation>
 <translation id="3507888235492474624">Soek weer na Bluetooth-toestelle</translation>
 <translation id="3508492320654304609">Jou aanmelddata kon nie uitgevee word nie</translation>
 <translation id="3508920295779105875">Kies 'n ander vouer …</translation>
@@ -3698,6 +3700,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3582057310199111521">Op 'n misleidende werf ingevoer en in dataskending gevind</translation>
 <translation id="3582299299336701326">Maak ligte skerms donker en donker skerms lig. Druk Soek + Ctrl + H om kleuromkering aan en af te skakel.</translation>
 <translation id="3584169441612580296">Lees en verander foto's, musiek en ander media van jou rekenaar af</translation>
+<translation id="3586741240886978899">Jy het op hierdie werf gebruik</translation>
 <translation id="3586806079541226322">Kan nie hierdie lêer oopmaak nie</translation>
 <translation id="3586931643579894722">Versteek besonderhede</translation>
 <translation id="3587279952965197737">Moet <ph name="MAX_CHARACTER_COUNT" /> of minder karakters wees</translation>
@@ -6618,7 +6621,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5643717184207603910">Hou prestasie spoedig</translation>
 <translation id="5646376287012673985">Ligging</translation>
 <translation id="5646558797914161501">Sakeman</translation>
-<translation id="5646994841348250879">Kies ’n rekening om by <ph name="SITE_ETLD_PLUS_ONE" /> aan te meld</translation>
 <translation id="5648021990716966815">Mikrofoonsok</translation>
 <translation id="5648166631817621825">Afgelope 7 dae</translation>
 <translation id="5651308944918885595">Nabydeling: opspoorbaarheid</translation>
@@ -9367,6 +9369,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7650582458329409456">{COUNT,plural, =1{1 vingerafdruk is opgestel}other{{COUNT} vingerafdrukke is opgestel}}</translation>
 <translation id="7650677314924139716">Huidige datagebruikinstelling is Net Wi-Fi</translation>
 <translation id="7650920359639954963">Nie geaktiveer nie: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">Verifieer dat dit jy is sodat jy hierdie boekmerk op al jou toestelle kan kry</translation>
 <translation id="7651400349472467012">Kitswarmkol is beskikbaar</translation>
 <translation id="7651784568388208829">Foonsentrum-taakvoortsetting</translation>
 <translation id="765293928828334535">Programme, uitbreidings en gebruikerskripte kan nie van hierdie webwerf af bygevoeg word nie</translation>
@@ -9405,6 +9408,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7670434942695515800">Gradeer na die jongste weergawe op vir die beste werkverrigting. Dit word aanbeveel dat jou lêers gerugsteun word ingeval die opgradering nie voltooi kan word nie. Linux sal afskakel sodra die opgradering begin. Stoor oop lêers voordat jy voortgaan. <ph name="LINK_START" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Onderskrifte</translation>
 <translation id="7671130400130574146">Gebruik stelseltitelbalk en -grense</translation>
+<translation id="7671139479636735732">Regsklik om jou idees maklik te visualiseer</translation>
 <translation id="767127784612208024">Raak om terugstelling te bevestig</translation>
 <translation id="7671472752213333268">“<ph name="EXTENSION_NAME" />” wil vanaf “<ph name="SCANNER_NAME" />” skandeer.</translation>
 <translation id="7672504401554182757">Kies watter toestel die toegangsleutel vir <ph name="APP_NAME" /> het</translation>
@@ -9424,6 +9428,9 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7680416688940118410">Raakskermkalibrasie</translation>
 <translation id="7681095912841365527">Werf kan Bluetooth gebruik</translation>
 <translation id="7681597159868843240">Werwe gebruik gewoonlik jou toestel se bewegingsensors vir kenmerke soos virtuele realiteit of fiksheidnasporing</translation>
+<translation id="7681757571815416227">Om jou toestel met jou <ph name="DOMAIN" />-profiel te gebruik, het jou organisasie inligting oor die toestel nodig.
+
+Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toestel se bedryfstelsel en IP-adresse insluit.</translation>
 <translation id="7683373461016844951">Om voort te gaan, klik OK en klik dan Voeg Persoon By om 'n nuwe profiel vir jou <ph name="DOMAIN" />-e-posadres te skep.</translation>
 <translation id="7683834360226457448">Swaksigskermnutsgoed</translation>
 <translation id="7684212569183643648">Deur jou administrateur geïnstalleer</translation>
@@ -10204,6 +10211,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8217399928341212914">Hou aan om outomatiese aflaaie van veelvuldige lêers te blokkeer</translation>
 <translation id="8219785583603399823">Sien graderings vir hierdie winkel</translation>
 <translation id="822050276545350872">Van nou af word geen wagtydperk vereis nie</translation>
+<translation id="8221942262855134126">Bestuur wagwoord</translation>
 <translation id="8222112516148944758">Jou oortjiegroepe stoor en dateer outomaties op al jou toestelle op</translation>
 <translation id="8222674561049363989">Lêer is nie ’n geldige dokument nie</translation>
 <translation id="822347941086490485">Soek tans HID-toestelle …</translation>
@@ -10994,6 +11002,9 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8767069439158587614">Wys alle soektogte na <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Dateer Chrome outomaties vir alle gebruikers op</translation>
 <translation id="8768049274922835860">Almal</translation>
+<translation id="8769047324653576116">Om jou toestel met jou organisasieprofiel te gebruik, het jou organisasie inligting oor die toestel nodig.
+
+Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toestel se bedryfstelsel en IP-adresse insluit.</translation>
 <translation id="876956356450740926">Laat loop ontwikkelaarnutsdinge, IDE’s en redigeerders. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Uitbreidingwortelgids</translation>
 <translation id="8773535891252326047">Skakel gekopieer om te merk</translation>

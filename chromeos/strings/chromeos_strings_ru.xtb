@@ -1544,16 +1544,6 @@
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="819278132617411009">Работайте эффективнее с ИИ от Google</translation>
-<translation id="82003371436638355">Если вы выбрали "Создайте свои обои", введите запрос. Также можно нажать "Выберите тему", а затем использовать подчеркнутые слова для персонализации ИИ-изображения.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Чтобы получить больше уникальных и разнообразных картинок, нажмите "Случайные обои".
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Когда вы создаете собственные обои, запрос отправляется на серверы ИИ от Google. Это позволяет генерировать изображения и улучшать продукт. На данные распространяются <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Условия использования и Политика конфиденциальности Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не указывайте персональную и конфиденциальную информацию.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генеративный искусственный интеллект может допускать ошибки, в том числе в сведениях о людях, поэтому ответы лучше перепроверять. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Подробнее…<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8206859287963243715">Сотовый</translation>
 <translation id="8208861521865154048">Преимущества</translation>

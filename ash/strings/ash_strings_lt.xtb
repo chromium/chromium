@@ -216,6 +216,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1679841710523778799">Padidinti šviesumą</translation>
 <translation id="1680659827022803830">Vaizdo skambučių valdikliai</translation>
 <translation id="169515659049020177">Antrojo lygio klavišas</translation>
+<translation id="1696984622403682083">Galite bet kada išjungti šią funkciją skiltyje „Nustatymai“. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> laikmatis · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">„IPv6“ adresas: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktyvus langas įstatytas kairėje.</translation>
@@ -969,6 +970,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4221957499226645091">„<ph name="APP_NAME" />“, įdiegta programa, pristabdyta</translation>
 <translation id="4228078597006700451">Valdikliai nenustatyti</translation>
 <translation id="4230560241506423345">Naujas</translation>
+<translation id="4236726631849783264">Priminimas apie siūlomus veiksmus</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Apžvalgos režimas</translation>
 <translation id="4242533952199664413">Atidaryti nustatymus</translation>
@@ -1045,6 +1047,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4471354919263203780">Atsisiunčiami kalbos atpažinimo failai... <ph name="PERCENT" /> proc.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Atnaujinkite įrenginį dabar}=1{Atnaujinkite įrenginį per vieną sekundę}one{Atnaujinkite įrenginį per # sekundę}few{Atnaujinkite įrenginį per # sekundes}many{Atnaujinkite įrenginį per # sekundės}other{Atnaujinkite įrenginį per # sekundžių}}</translation>
 <translation id="4472575034687746823">Pradėkite</translation>
+<translation id="4473489370276014885">„Google“ kontaktai</translation>
 <translation id="4477350412780666475">Kitas takelis</translation>
 <translation id="4477751544736611934">Dėl to gali būti taikomas duomenų mokestis.
 Prijungtas vienas įrenginys.</translation>
@@ -1071,6 +1074,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4545950850562423083">Išsaugoti dabartinį puslapį kaip žymę</translation>
 <translation id="4548482551627849548">Perkelti aktyvų langą į darbalaukį kairėje</translation>
 <translation id="4552748006424994716">Norėdami išvengti aido, mikrofono galite klausyti tik naudodami laidines ausines.</translation>
+<translation id="4556953949326137018">Kai naudojate siūlomus veiksmus, pvz., „pridėti prie Kalendoriaus“ arba „kurti „Google“ dokumentus“, turinys iš pasirinktos srities siunčiamas į „Google“ serverius, kad būtų galima siūlyti veiksmus, atsižvelgiant į <ph name="LINK_TO_SERVICE_TERMS" />. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.</translation>
 <translation id="4560576029703263363">Įjungta</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Slėpti slaptažodį</translation>
@@ -1154,6 +1158,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="481455355267255546">Toliau</translation>
 <translation id="481749895090480684">Užduočių sąrašas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
+<translation id="4828935196674083554">Pridedama...</translation>
 <translation id="482908187605862807">Pasiekiamos programos iš „Play“ parduotuvės</translation>
 <translation id="4831034276697007977">Ar tikrai norite išjungti automatinius paspaudimus?</translation>
 <translation id="4835677468087803981">Slėpti PIN kodą</translation>
@@ -1651,6 +1656,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="641817663353603351">ankstesnis puslapis</translation>
 <translation id="6424520630891723617">„<ph name="SECURITY_STATUS" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Visų pranešimų išvalymas</translation>
+<translation id="6426905245930183644">Kuriama...</translation>
 <translation id="6430225033895752525">Rodyti „Focus“ nustatymus</translation>
 <translation id="643147933154517414">Viskas atlikta</translation>
 <translation id="6431865393913628856">Ekrano įrašas</translation>
@@ -2402,6 +2408,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8926951137623668982">Lentyna visada slepiama</translation>
 <translation id="8929566928381252430">Bandote naudoti didžiųjų raidžių klavišą? Naudoti</translation>
 <translation id="8929623844713377237">Sukurtas kontaktas</translation>
+<translation id="8934418770423095813">Sukurti „Google“ dokumentą</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Vienas failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
 <translation id="8936501819958976551">išaktyvinta</translation>
 <translation id="8938800817013097409">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>

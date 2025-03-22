@@ -215,6 +215,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1679841710523778799">Turn brightness up</translation>
 <translation id="1680659827022803830">Video call controls</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">You can turn off this feature at any time in Settings. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> timer · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 address: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Active window docked on left.</translation>
@@ -967,6 +968,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installed app, paused</translation>
 <translation id="4228078597006700451">Controls not set up</translation>
 <translation id="4230560241506423345">New</translation>
+<translation id="4236726631849783264">A reminder about suggested actions</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
 <translation id="4242533952199664413">Open settings</translation>
@@ -1043,6 +1045,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4471354919263203780">Downloading speech recognition files <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Update device now}=1{Update device within 1 second}other{Update device within # seconds}}</translation>
 <translation id="4472575034687746823">Get started</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">Next track</translation>
 <translation id="4477751544736611934">This may incur data cost.
 One device connected.</translation>
@@ -1069,6 +1072,7 @@ One device connected.</translation>
 <translation id="4545950850562423083">Save current page as bookmark</translation>
 <translation id="4548482551627849548">Move active window to desk on left</translation>
 <translation id="4552748006424994716">To avoid an echo, you can listen to your mic only with wired headphones.</translation>
+<translation id="4556953949326137018">When you use suggested actions such as 'add to Calendar' or 'create Google Docs', the content from the selected area is sent to Google servers to suggest actions, subject to <ph name="LINK_TO_SERVICE_TERMS" />. Don't include anything personal, sensitive or confidential.</translation>
 <translation id="4560576029703263363">On</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Hide password</translation>
@@ -1152,6 +1156,7 @@ One device connected.</translation>
 <translation id="481455355267255546">Up next</translation>
 <translation id="481749895090480684">Task list: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">camera and microphone</translation>
+<translation id="4828935196674083554">Adding…</translation>
 <translation id="482908187605862807">Available apps from the Play Store</translation>
 <translation id="4831034276697007977">Are you sure that you want to turn off automatic clicks?</translation>
 <translation id="4835677468087803981">Hide PIN</translation>
@@ -1649,6 +1654,7 @@ No devices connected.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Clear all notifications</translation>
+<translation id="6426905245930183644">Creating…</translation>
 <translation id="6430225033895752525">Show Focus settings</translation>
 <translation id="643147933154517414">All finished</translation>
 <translation id="6431865393913628856">Screen record</translation>
@@ -2398,6 +2404,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8921624153894383499">The Google Assistant doesn’t speak this language.</translation>
 <translation id="8926951137623668982">Shelf always hidden</translation>
 <translation id="8929566928381252430">Trying to use Caps lock? Use</translation>
+<translation id="8934418770423095813">Create Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# files}}</translation>
 <translation id="8936501819958976551">deactivated</translation>
 <translation id="8938800817013097409">USB-C device (right port in the back)</translation>

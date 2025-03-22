@@ -407,6 +407,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1264956950255940376">Škiljenje na lijevo oko</translation>
 <translation id="1265094893042958831">Generiranje prijedloga za ovu stranicu…</translation>
 <translation id="1265279736024499987">Vaše aplikacije i postavke sinkronizirat će se na svim uređajima s ChromeOS Flexom na kojima ste prijavljeni svojim Google računom. Za opcije sinkronizacije preglednika otvorite <ph name="LINK_BEGIN" />postavke Chromea<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Nakon izrade snimke zaslona ili pretraživanja zaslona prikaži više radnji, na primjer dodavanje u Kalendar, izrada Google dokumenata i drugo.</translation>
 <translation id="126710816202626562">Jezik prijevoda:</translation>
 <translation id="1267649802567297774">Generirana slika <ph name="INDEX" /> za <ph name="SUBJECT" /> u stilu <ph name="STYLE" />, s ugođajem <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1572,6 +1573,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="208547068587548667">Prijavite se na <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Pokušajte ponovo</translation>
 <translation id="208634871997892083">Uvijek uključena VPN mreža</translation>
+<translation id="208654914566977272">Predložene radnje prilikom pretraživanja zaslona</translation>
 <translation id="2087822576218954668">Ispis: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Prijava je podržana samo nakon što instalirate <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">Ugrađeni TrackPoint</translation>
@@ -6605,7 +6607,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5643717184207603910">Neka izvedba bude brza</translation>
 <translation id="5646376287012673985">Lokacija</translation>
 <translation id="5646558797914161501">Poslovni čovjek</translation>
-<translation id="5646994841348250879">Odaberite račun da biste se prijavili na: <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Utičnica mikrofona</translation>
 <translation id="5648166631817621825">Posljednjih 7 dana</translation>
 <translation id="5651308944918885595">Vidljivost uređaja za dijeljenje u blizini</translation>

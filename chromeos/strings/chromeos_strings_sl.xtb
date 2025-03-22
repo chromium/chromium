@@ -1544,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plaža</translation>
 <translation id="819278132617411009">Uporabite Googlovo umetno inteligenco za doseganje večje storilnosti</translation>
-<translation id="82003371436638355">Ko izberete »Ustvarite lastnega«, vnesite poziv po meri. Izberete lahko tudi »Izberite temo« in nato izberete podčrtane besede, če želite osebno prilagoditi UI zaslonsko ozadje.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Izberite »Navdihni me«, da pridobite bolj edinstvene in raznolike možnosti slik z umetno inteligenco.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Ko ustvarite lastno zaslonsko ozadje, se poziv pošlje v Googlove strežnike zaradi generiranja slik in izboljšanja izdelka v skladu z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlovimi pogoji storitve in pravilnikom o zasebnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ne vključite osebnih, občutljivih ali zaupnih podatkov.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativna umetna inteligenca se lahko zmoti, tudi o ljudeh, zato preverite odgovore. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Več o tem<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8206859287963243715">Prenosni</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>

@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
 <translation id="1908234395526491708">UDP istek hataları</translation>
 <translation id="1908394185991500139">sol ok</translation>
+<translation id="1911678930322867245">Sağ üste taşı</translation>
 <translation id="1914144885717544695">Cuma günü</translation>
 <translation id="1915960750806557358">Geri bildiriminizi paylaşın veya sorununuzu açıklayın. Kişisel, hassas veya gizli bilgiler eklemeyin.</translation>
 <translation id="1923388006036088459">Vurgu renkleri</translation>
@@ -1543,16 +1544,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">kumsal</translation>
 <translation id="819278132617411009">Daha üretken olmak için Google Yapay Zeka'yı kullanın</translation>
-<translation id="82003371436638355">"Kendiniz oluşturun"u seçip özel bir istem yazın. Dilerseniz "Bir tema seç" seçeneğini belirleyip yapay zeka duvar kağıdınızı kişiselleştirmek için altı çizili kelimeleri seçebilirsiniz.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Daha benzersiz ve çeşitli yapay zeka resim seçenekleri için "Bana ilham ver"i seçin.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kendi duvar kağıdınızı oluşturduğunuzda istem, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'ın Hizmet Şartları ve Gizlilik Politikası<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />'na tabi olacak şekilde görsel üretmek ve ürünü iyileştirmek için Google sunucularına gönderilir. Kişisel, hassas veya gizli bilgiler eklemeyin.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Üretken yapay zeka, kişiler de dahil olmak üzere farklı konular hakkında yanlış bilgi verebildiğinden yanıtlarını doğrulayın. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Daha fazla bilgi edinin<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.</translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
 <translation id="8208861521865154048">Avantajlar</translation>
@@ -1679,6 +1670,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8820817407110198400">Yer işaretleri</translation>
 <translation id="8833620912470026819">kaktüs ormanı</translation>
 <translation id="8834539327799336565">Şu anda bağlı cihazlar</translation>
+<translation id="8842526499753992487">Sol üste taşı</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8849799913685544685">deniz feneri</translation>
 <translation id="8851859208664803097">Durduruldu - Yazıcıya erişilemiyor</translation>

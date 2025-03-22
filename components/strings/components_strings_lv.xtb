@@ -158,6 +158,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1264309058268477500">Alternatīva</translation>
 <translation id="1264974993859112054">Sports</translation>
 <translation id="1268480293435976622">Ķīniešu aploksne 7</translation>
+<translation id="1269045546668906972">Ieslēdziet MI nodrošināto automātisko aizpildi, lai automātiski aizpildītu vairāk lauku.</translation>
 <translation id="1269516672602708785">Ātri izveidot jaunu vietni pakalpojumā Google vietnes</translation>
 <translation id="1270328905573953738">Pārvākšanās un pārvietošana</translation>
 <translation id="1270502636509132238">Saņemšanas veids</translation>
@@ -1138,6 +1139,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3005723025932146533">Rādīt saglabāto versiju</translation>
 <translation id="300580149047131921">Nesen lietota</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārlūkotu pieejamās darbības, nospiediet tabulēšanas taustiņu. Pēc tam, lai izpildītu atlasīto darbību, nospiediet Enter.</translation>
+<translation id="3010991137650052245">Lai šajā vietnē varētu tikt izmantota <ph name="PERMISSION" />, piešķiriet pārlūkam <ph name="SHORT_PRODUCT_NAME" /> piekļuvi.</translation>
 <translation id="3013711734159931232">Mājsaimniecības piederumi</translation>
 <translation id="3014553260345122294">Uzņēmējdarbības ziņas</translation>
 <translation id="3014726756341138577">Printera papildu funkcijas</translation>
@@ -1410,6 +1412,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3484560055331845446">Varat zaudēt piekļuvi savam Google kontam. Chrome iesaka nekavējoties nomainīt paroli. Jums tiks lūgts pierakstīties.</translation>
 <translation id="3484861421501147767">Atgādinājums: saglabātais akcijas kods ir pieejams</translation>
+<translation id="3485901585646640838">Lai varētu izmantot paroles un citus datus, kas saglabāti jūsu Google kontā, apstipriniet savu identitāti.</translation>
 <translation id="3486406746948052912">Pretsviedru līdzekļi, dezodoranti un ķermeņa aerosoli</translation>
 <translation id="3487845404393360112">4. paplāte</translation>
 <translation id="3493660662684070951">Kravas automašīnas, furgoni un apvidus automašīnas</translation>
@@ -1786,6 +1789,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Politikas diapazons netiek atbalstīts.</translation>
+<translation id="411918202192379658">Automātiskā aizpilde ir kļuvusi labāka</translation>
 <translation id="4121428309786185360">Beigu datums</translation>
 <translation id="4123572138124678573">Trīs caurumi apakšdaļā</translation>
 <translation id="412601465078863288">Augšupielādei iestājās noildze</translation>
@@ -2174,6 +2178,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4819347708020428563">Vai vēlaties rediģēt piezīmes noklusējuma skatā?</translation>
 <translation id="4822493756793346865">Parasto cenu pamatā ir informācija par pēdējām 90 dienām no veikaliem tīmeklī.</translation>
 <translation id="4822922322149719535">Pārskatīt kļūdu žurnālu</translation>
+<translation id="4823699521959851389">Pārlūkam <ph name="SHORT_PRODUCT_NAME" /> ir vajadzīga piekļuve šādai jūsu ierīces funkcionalitātei: <ph name="PERMISSION" />.</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu Google izklājlapu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="4826588772550366629">kameru un mikrofonu</translation>
 <translation id="4827283332383516812">Kartes dzēšana</translation>
@@ -2528,6 +2533,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5443468954631487277">Pretēja secība, virspuse uz augšu</translation>
 <translation id="5445340838622821110">Izmantojot maksāšanu pa daļām, tiek ievadīts vienreizējs virtuālās kartes numurs. Šis numurs ir paredzēts tikai šim pirkumam. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Atļaujiet vietnei <ph name="SITE" /> izmantot informāciju, kas tajā saglabāta par jums.</translation>
+<translation id="5451331376824595378">Ja pārlūkā Chrome tiek atzīmēti ar drošību saistīti notikumi, atbilstošie dati par notikumiem tiek nosūtīti administratoram. Šie dati var ietvert: pārlūkā Chrome apmeklēto lapu vietrāžus URL; to lapu vietrāžus URL, no kurām kopējāt datus; failu nosaukumus vai metadatus; IP adreses; pārlūka vai ciļņu avārijas; lietotājvārdu, ko izmantojat, lai pierakstītos tīmekļa lietojumprogrammās, ierīcē un pārlūkā Chrome.</translation>
 <translation id="5452270690849572955">Šo vietnes <ph name="HOST_NAME" /> lapu nevar atrast</translation>
 <translation id="5452923259299906094">Maksāt, izmantojot e-maku un Pix</translation>
 <translation id="5455374756549232013">Politikas laikspiedols nav derīgs.</translation>
@@ -3422,6 +3428,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7023765275461720661">Vai saistīt kontu un maksāt, izmantojot <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Paroles</translation>
 <translation id="7030164307377592766">mainīt maksājumu veidu aizpildes iestatījumus</translation>
+<translation id="7031110846419387930">Informācija par jūsu pārlūku, OS, ierīci, instalēto programmatūru, failiem un IP adresēm</translation>
 <translation id="7031646650991750659">Kuras Google Play lietotnes esat instalējis</translation>
 <translation id="7035705295266423040">Banka vēlas apstiprināt jūsu identitāti</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu sava Google konta konfidencialitātes iestatījumus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
@@ -3533,6 +3540,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7221855153210829124">Rādīt paziņojumus</translation>
 <translation id="722454870747268814">Jauna inkognito cilne</translation>
 <translation id="7227293336683593977">Cenu vēsture</translation>
+<translation id="7228306718910595403">ES kvalificēts statuss</translation>
 <translation id="7232352818707016189">Citas darbības, ko var veikt ar salīdzinājuma tabulu</translation>
 <translation id="7233592378249864828">Drukāšanas apstiprinājuma lapa</translation>
 <translation id="7234112195906418665">Ceļojumi un transports</translation>

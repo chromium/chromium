@@ -1561,16 +1561,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">tengerpart</translation>
 <translation id="819278132617411009">A Google AI használatával hatékonyabb lehet</translation>
-<translation id="82003371436638355">Írhat egyéni utasítást a „Saját létrehozása” lehetőséget választva. Másik lehetőségként kiválaszthatja a „Téma kiválasztása” elemet, majd kijelölhet egy témát, és az aláhúzott szavak kiválasztásával személyre szabhatja az AI-háttérképet.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Az „Inspiráció” gombot választva egyedibb és változatosabb AI-képlehetőségeket kaphat.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Amikor saját háttérképet hoz létre, a rendszer elküldi az utasítást a Google szervereinek a képek generálásához és a termék továbbfejlesztéséhez a <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Általános Szerződési Feltételeinek és adatvédelmi irányelveinek<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> megfelelően. Ne adjon meg személyes, kényes vagy bizalmas adatokat.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A generatív AI hibázhat (többek között személyekkel kapcsolatban is), ezért ellenőrizze a válaszait. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />További információ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>

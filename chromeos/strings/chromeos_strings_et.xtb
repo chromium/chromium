@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
 <translation id="1908394185991500139">vasaknool</translation>
+<translation id="1911678930322867245">Teisalda paremale üles</translation>
 <translation id="1914144885717544695">reedel</translation>
 <translation id="1915960750806557358">Jagage tagasisidet või kirjeldage oma probleem. Ärge lisage midagi, mis on isiklik, delikaatne või konfidentsiaalne.</translation>
 <translation id="1923388006036088459">Aktsentvärvid</translation>
@@ -1543,16 +1544,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8183975772394450380">rand</translation>
 <translation id="819278132617411009">Kasutage Google'i AI-d, et olla produktiivsem</translation>
-<translation id="82003371436638355">Kui valite „Loo oma”, kirjutage kohandatud päring. Või saate teema valimiseks teha valiku „Vali teema”, et AI taustapildi isikupärastamiseks allajoonitud sõnad valida.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Ainulaadsemate ja mitmekesisemate AI-piltide saamiseks valige „Inspireeri mind”.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kui loote oma taustapildi, saadetakse Google'i serveritele päring, et genereerida pilte ja täiustada toodet kooskõlas <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'i teenusetingimuste ja privaatsuseeskirjadega<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ärge lisage midagi isiklikku, delikaatset ega konfidentsiaalset.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatiivne AI võib anda ebatäpset teavet, sealhulgas inimeste kohta, seega kontrollige selle vastused üle. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Lisateave<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
@@ -1679,6 +1670,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8820817407110198400">Järjehoidjad</translation>
 <translation id="8833620912470026819">kaktusemets</translation>
 <translation id="8834539327799336565">Praegu ühendatud</translation>
+<translation id="8842526499753992487">Teisalda vasakule üles</translation>
 <translation id="8845001906332463065">Otsige abi</translation>
 <translation id="8849799913685544685">tuletorn</translation>
 <translation id="8851859208664803097">Peatatud – printeriga ei saa ühendust</translation>

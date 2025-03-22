@@ -215,6 +215,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1679841710523778799">Lisää kirkkautta</translation>
 <translation id="1680659827022803830">Videopuheluominaisuuksien hallinta</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Voit laittaa ominaisuuden pois päältä milloin tahansa asetuksista. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ajastin · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-osoite: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktiivinen ikkuna kiinnitetty vasemmalle</translation>
@@ -967,6 +968,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, asennettu sovellus, keskeytetty</translation>
 <translation id="4228078597006700451">Säätimiä ei ole otettu käyttöön</translation>
 <translation id="4230560241506423345">Uusi</translation>
+<translation id="4236726631849783264">Muistutus ehdotetuista toiminnoista</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Yleiskatsaustila</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
@@ -1043,6 +1045,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4471354919263203780">Ladataan puheentunnistustiedostoja… <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Päivitä laite nyt}=1{Päivitä laite 1 sekunnin kuluessa}other{Päivitä laite # sekunnin kuluessa}}</translation>
 <translation id="4472575034687746823">Aloita</translation>
+<translation id="4473489370276014885">Google-yhteystiedot</translation>
 <translation id="4477350412780666475">Seuraava kappale</translation>
 <translation id="4477751544736611934">Tästä voidaan periä datansiirtomaksuja.
 Yksi laite yhdistetty.</translation>
@@ -1069,6 +1072,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4545950850562423083">Tallenna nykyinen sivu kirjanmerkkinä</translation>
 <translation id="4548482551627849548">Siirrä aktiivinen ikkuna vasemmalla olevalle työpöydälle</translation>
 <translation id="4552748006424994716">Voit välttää kaikumisen kuuntelemalla mikrofonia vain langallisilla kuulokkeilla.</translation>
+<translation id="4556953949326137018">Kun käytät ehdotettuja toimintoja, kuten "lisää Kalenteriin" tai "luo Google Docs", valitun alueen sisältö lähetetään Googlen palvelimille ehdotettujen toimintoja varten. Käyttöön sovelletaan: <ph name="LINK_TO_SERVICE_TERMS" />. Älä lisää henkilökohtaisia, arkaluontoisia tai luottamuksellisia tietoja.</translation>
 <translation id="4560576029703263363">Päällä</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Piilota salasana</translation>
@@ -1152,6 +1156,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="481455355267255546">Seuraavaksi</translation>
 <translation id="481749895090480684">Tehtävälista: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kameraasi ja mikrofoniasi</translation>
+<translation id="4828935196674083554">Lisätään…</translation>
 <translation id="482908187605862807">Play Kaupassa saatavilla olevat sovellukset</translation>
 <translation id="4831034276697007977">Haluatko varmasti lopettaa automaattisen klikkaamisen?</translation>
 <translation id="4835677468087803981">Piilota PIN-koodi</translation>
@@ -1649,6 +1654,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="641817663353603351">sivu ylös</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Tyhjennä kaikki ilmoitukset</translation>
+<translation id="6426905245930183644">Luodaan...</translation>
 <translation id="6430225033895752525">Näytä Keskittymisasetukset</translation>
 <translation id="643147933154517414">Valmis</translation>
 <translation id="6431865393913628856">Näytön tallennus</translation>
@@ -2397,6 +2403,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8921624153894383499">Google Assistant ei ole käytettävissä tällä kielellä.</translation>
 <translation id="8926951137623668982">Hylly piilotetaan aina</translation>
 <translation id="8929566928381252430">Yritätkö käyttää Caps Lockia? Käytä yhdistelmää</translation>
+<translation id="8934418770423095813">Luo Google-dokumentti</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tiedosto}other{# tiedostoa}}</translation>
 <translation id="8936501819958976551">poistettu käytöstä</translation>
 <translation id="8938800817013097409">C-tyypin USB-laite (oikeanpuoleinen takaportti)</translation>

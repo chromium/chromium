@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">အရန်</translation>
 <translation id="1264974993859112054">အားကစား</translation>
 <translation id="1268480293435976622">Chinese #7 စာအိတ်</translation>
+<translation id="1269045546668906972">နောက်ထပ်အကွက်များကို အလိုအလျောက် ဖြည့်နိုင်ရန် ‘AI ဖြင့် အော်တိုဖြည့်’ ဖွင့်ပါ</translation>
 <translation id="1269516672602708785">Google Sites တွင် ဝဘ်ဆိုက်အသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="1270328905573953738">ရွှေ့ခြင်းနှင့် နေရာပြန်ချထားခြင်း</translation>
 <translation id="1270502636509132238">လာယူနည်း</translation>
@@ -1143,6 +1144,7 @@
 <translation id="3005723025932146533">သိမ်းထားသည့် မိတ္တူကိုပြပါ</translation>
 <translation id="300580149047131921">မကြာသေးမီက သုံးထားသည်</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ ရနိုင်သောလုပ်ဆောင်ချက်များ ကြည့်ရန် ‘တဘ်’ ကိုနှိပ်ပြီး ရွေးထားသောလုပ်ဆောင်ချက်ကို ဆောင်ရွက်ရန် Enter နှိပ်ပါ။</translation>
+<translation id="3010991137650052245">ဤဝဘ်ဆိုက်တွင် သင်၏ <ph name="PERMISSION" /> သုံးရန် <ph name="SHORT_PRODUCT_NAME" /> အား သုံးခွင့်ပေးပါ</translation>
 <translation id="3013711734159931232">အိမ်သုံးပစ္စည်း</translation>
 <translation id="3014553260345122294">စီးပွားရေးသတင်း</translation>
 <translation id="3014726756341138577">အဆင့်မြင့် ပရင်တာတူးလ်များ</translation>
@@ -1789,6 +1791,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">မူဝါဒ နယ်ပယ်ကို မပံ့ပိုးထား။</translation>
+<translation id="411918202192379658">အော်တိုဖြည့် ပိုကောင်းလာပါပြီ</translation>
 <translation id="4121428309786185360">မှာ သက်တမ်း ကုန်</translation>
 <translation id="4123572138124678573">အောက်ခြေတွင် သုံးချက်ဖောက်ရန်</translation>
 <translation id="412601465078863288">အပ်လုဒ် အချိန်ကုန်သွားသည်</translation>
@@ -2178,6 +2181,7 @@
 <translation id="4819347708020428563">မှတ်ချက်များကို မူရင်းမြင်ကွင်းတွင် တည်းဖြတ်မလား။</translation>
 <translation id="4822493756793346865">ပုံမှန်ဈေးနှုန်းများသည် ပြီးခဲ့သော ရက် ၉၀ အတွင်း ဝဘ်တစ်ခုလုံးရှိ ဆိုင်များအပေါ် အခြေခံထားသည်။</translation>
 <translation id="4822922322149719535">အမှားမှတ်တမ်းကို ကြည့်ရန်</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> သည် သင့်စက်၏ <ph name="PERMISSION" /> သုံးခွင့် လိုအပ်သည်</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Sheet အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="4826588772550366629">ကင်မရာနှင့် မိုက်ခရိုဖုန်း</translation>
 <translation id="4827283332383516812">ကတ်ကို ဖျက်ရန်</translation>

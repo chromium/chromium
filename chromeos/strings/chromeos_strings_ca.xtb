@@ -1544,16 +1544,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8183975772394450380">una platja</translation>
 <translation id="819278132617411009">Utilitza la IA de Google per augmentar la productivitat</translation>
-<translation id="82003371436638355">Si selecciones Crea el teu, escriu una indicació personalitzada. També pots seleccionar Tria un tema i, a continuació, seleccionar les paraules subratllades per personalitzar el teu fons de pantalla IA.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Per obtenir més opcions d'imatges d'IA úniques i variades, selecciona Inspira'm.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Quan crees el teu propi fons de pantalla, la indicació s'envia als servidors de Google per generar imatges i millorar el producte, de conformitat amb les <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />condicions del servei i la política de privadesa de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. No hi incloguis informació personal, sensible ni confidencial.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          La IA generativa pot cometre errors, també sobre persones, així que comprova'n les respostes. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Més informació<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>

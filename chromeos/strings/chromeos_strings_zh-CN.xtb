@@ -1544,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">海滩</translation>
 <translation id="819278132617411009">使用 Google AI 提高工作效率</translation>
-<translation id="82003371436638355">如果选择“创建您自己的壁纸”，请撰写自定义提示。或者，您也可以选择“选择主题”，然后选择带下划线的字词，打造个性化的 AI 壁纸。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          选择“给我灵感”，获得更多独特而多样的 AI 图像选项。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          当您创建自己的壁纸时，系统会将提示发送到 Google 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《服务条款》和《隐私权政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图像并改进产品。请勿包含任何个人、敏感或机密信息。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          生成式 AI 的回答（包括与人有关的信息）未必正确无误，请务必核查。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />了解详情<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>

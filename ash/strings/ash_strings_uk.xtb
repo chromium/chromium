@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">Збільшити яскравість</translation>
 <translation id="1680659827022803830">Елементи керування відеодзвінками</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Цю функцію можна будь-коли вимкнути в налаштуваннях. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Адреса IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Активне вікно закріплено ліворуч.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установлений додаток, призупинено</translation>
 <translation id="4228078597006700451">Елементи керування не налаштовано</translation>
 <translation id="4230560241506423345">Створити</translation>
+<translation id="4236726631849783264">Нагадування про рекомендовані дії</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим огляду</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
@@ -1043,6 +1045,7 @@
 <translation id="4471354919263203780">Завантажуються файли для розпізнавання мовлення… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Оновіть пристрій зараз}=1{Оновіть пристрій протягом 1 секунди}one{Оновіть пристрій протягом # секунди}few{Оновіть пристрій протягом # секунд}many{Оновіть пристрій протягом # секунд}other{Оновіть пристрій протягом # секунди}}</translation>
 <translation id="4472575034687746823">Початок роботи</translation>
+<translation id="4473489370276014885">Контакти Google</translation>
 <translation id="4477350412780666475">Наступна композиція</translation>
 <translation id="4477751544736611934">За передавання даних може стягуватися плата.
 Підключено 1 пристрій.</translation>
@@ -1069,6 +1072,7 @@
 <translation id="4545950850562423083">Зберегти поточну сторінку як закладку</translation>
 <translation id="4548482551627849548">Перемістити активне вікно на робочий стіл ліворуч</translation>
 <translation id="4552748006424994716">Щоб уникнути відлуння, слухайте звук зі свого мікрофона лише через дротові навушники.</translation>
+<translation id="4556953949326137018">Коли ви використовуєте запропоновані дії, наприклад "Додати в Календар" або "Створити документ Google", контент із вибраної області надсилається на сервери Google, щоб пропонувати вам дії. На ці пропозиції поширюються <ph name="LINK_TO_SERVICE_TERMS" />. Не вказуйте особисту, чутливу чи конфіденційну інформацію.</translation>
 <translation id="4560576029703263363">Увімкнено</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Сховати пароль</translation>
@@ -1152,6 +1156,7 @@
 <translation id="481455355267255546">Найближчі події</translation>
 <translation id="481749895090480684">Список завдань "<ph name="GLANCEABLES_TASKS_LIST_NAME" />"</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
+<translation id="4828935196674083554">Додавання…</translation>
 <translation id="482908187605862807">Доступні додатки з Google Play</translation>
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
 <translation id="4835677468087803981">Сховати PIN-код</translation>
@@ -1649,6 +1654,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Видаліть усі сповіщення</translation>
+<translation id="6426905245930183644">Створення…</translation>
 <translation id="6430225033895752525">Показати налаштування режиму концентрації уваги</translation>
 <translation id="643147933154517414">Готово</translation>
 <translation id="6431865393913628856">Запис відео з екрана</translation>
@@ -2398,6 +2404,7 @@
 <translation id="8921624153894383499">Google Асистент не підтримує цю мову.</translation>
 <translation id="8926951137623668982">Полицю завжди сховано</translation>
 <translation id="8929566928381252430">Щоб натиснути клавішу Caps Lock, скористайтеся такою комбінацією:</translation>
+<translation id="8934418770423095813">Створити документ Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="8936501819958976551">деактивовано</translation>
 <translation id="8938800817013097409">Пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>

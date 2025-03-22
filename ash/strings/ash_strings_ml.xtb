@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">ഭാഷാ ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="1459693405370120464">കാലാവസ്ഥ</translation>
 <translation id="1460620680449458626">വോളിയം മ്യൂട്ട് ചെയ്‌തിരിക്കുന്നു.</translation>
+<translation id="1462439140224375968">Google Doc സൃഷ്ടിച്ചു</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> എന്നിവയ്ക്കും ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="1467432559032391204">ഇടത്</translation>
 <translation id="146902737843070955">നിങ്ങളുടെ അഡ്‌മിൻ ഈ മാറ്റം അഭ്യർത്ഥിച്ചു</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">ഹോട്ട്സ്പോട്ട് വിശദാംശങ്ങൾ കാണിക്കുക. ഹോട്ട്സ്പോട്ട് ഓഫാണ്.</translation>
 <translation id="3017079585324758401">പശ്ചാത്തലം</translation>
 <translation id="3018135054368884502">മീഡിയ ഫാസ്റ്റ് ഫോർവേഡ് ചെയ്യുക</translation>
+<translation id="3026897869154397692">കലണ്ടറിൽ ചേർത്തു</translation>
 <translation id="3033545621352269033">ഓണാണ്</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> എന്ന ഡെസ്ക്കുമായി സംയോജിപ്പിക്കുക</translation>
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
@@ -1894,6 +1896,7 @@
 <translation id="7228968829656641943">എന്റെ സ്ക്രീൻ തിരയാൻ തിരഞ്ഞെടുക്കുക. കീബോർഡ് നാവിഗേഷനായി ടാബ് അമർത്തുക, തുടർന്ന് സ്പെയ്‌സ് അമർത്തുക.</translation>
 <translation id="7229029500464092426">മെമ്മറി <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ആകെ</translation>
 <translation id="7239814253344511868">രണ്ട് മൗസ് ബട്ടണുകളും</translation>
+<translation id="7240636904654154599">Google Sheet സൃഷ്ടിച്ചു</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ബാറ്ററി ചാർജ് ശേഷിക്കുന്നു.
 നിങ്ങളുടെ ഉപകരണം പവറിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. അപ്‌ഡേറ്റ് നടപ്പിലാക്കാൻ ഈ Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്. ഇതിന് ഒരു മിനിറ്റ് വരെ സമയമെടുത്തേക്കാം.</translation>
@@ -2405,6 +2408,8 @@
 <translation id="8921624153894383499">Google അസിസ്‌റ്റന്‍റ് ഈ ഭാഷ സംസാരിക്കില്ല.</translation>
 <translation id="8926951137623668982">ഷെൽഫ് എപ്പോഴും അദൃശ്യമാണ്</translation>
 <translation id="8929566928381252430">Caps Lock ഉപയോഗിക്കാൻ ശ്രമിക്കുകയാണോ? ഉപയോഗിക്കൂ</translation>
+<translation id="8929623844713377237">കോൺടാക്റ്റ് സൃഷ്ടിച്ചു</translation>
+<translation id="8934418770423095813">Google ഡോക് സൃഷ്ടിക്കുക</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ഒരു ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="8936501819958976551">നിർജീവമാക്കി</translation>
 <translation id="8938800817013097409">USB-C ഉപകരണം (പുറകിൽ വലതുവശത്തെ പോർട്ട്)</translation>

@@ -84,6 +84,7 @@
 <translation id="6710025070089118043">网站无法使用第三方 Cookie 为您提供个性化内容和广告，也无法了解您在其他网站上的操作，除非您授予相关网站对第三方 Cookie 的访问权限</translation>
 <translation id="6774168155917940386">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将活动记录与网站中关于您的其他信息整合到一起。公司有责任告知您他们会如何使用您的数据。详情请参阅<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="6789193059040353742">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK1" />广告主题<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告。</translation>
+<translation id="7011445931908871535">要删除数据吗？</translation>
 <translation id="7084100010522077571">详细了解广告效果衡量</translation>
 <translation id="7315780377187123731">详细了解“阻止第三方 Cookie”选项</translation>
 <translation id="737025278945207416">某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起</translation>
@@ -97,6 +98,7 @@
 <translation id="8200078544056087897">依赖第三方 Cookie 的网站功能应该会按预期运行</translation>
 <translation id="8365690958942020052">您访问的网站可请求获取以下信息：您的广告主题，或者您访问过的网站建议的广告。</translation>
 <translation id="839994149685752920">网站可以使用第三方 Cookie 为您提供个性化内容和广告</translation>
+<translation id="8477178913400731244">删除数据</translation>
 <translation id="859369389161884405">在新标签页中打开《隐私权政策》</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />您可以如何管理这些数据？<ph name="END_BOLD" />Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题。</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />网站会如何使用这些数据？<ph name="END_BOLD" />网站及其广告合作伙伴可以根据您的活动记录，在其他网站上向您展示个性化广告。例如，如果您访问某个网站来查找晚餐食谱，该网站可能会推测您对烹饪感兴趣。之后，另一个网站可能会向您展示第一个网站建议的杂货配送服务广告。</translation>

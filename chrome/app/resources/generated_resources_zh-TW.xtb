@@ -267,6 +267,7 @@
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1175914831232945926">數字</translation>
 <translation id="1176471985365269981">不得編輯裝置上的檔案或資料夾</translation>
+<translation id="1176864681932214421">使用 AI 生成圖片</translation>
 <translation id="1177073277575830464">Android 快速設定已完成，請在 <ph name="DEVICE_TYPE" /> 上繼續設定</translation>
 <translation id="1177440945615690056">你可以使用「設定」連線到任何適用的行動網路</translation>
 <translation id="1177548198167638471">不要再詢問</translation>
@@ -3683,6 +3684,7 @@
 <translation id="3582057310199111521">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更你電腦中的相片、音樂及其他媒體</translation>
+<translation id="3586741240886978899">你在這個網站上使用過</translation>
 <translation id="3586806079541226322">無法開啟這個檔案</translation>
 <translation id="3586931643579894722">隱藏詳細資訊</translation>
 <translation id="3587279952965197737">長度不得超過 <ph name="MAX_CHARACTER_COUNT" /> 個半形字元</translation>
@@ -6597,7 +6599,6 @@
 <translation id="5643717184207603910">維持快速效能</translation>
 <translation id="5646376287012673985">位置</translation>
 <translation id="5646558797914161501">商人</translation>
-<translation id="5646994841348250879">選擇用來登入「<ph name="SITE_ETLD_PLUS_ONE" />」的帳戶</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5648166631817621825">過去 7 天</translation>
 <translation id="5651308944918885595">鄰近分享可偵測性</translation>
@@ -9344,6 +9345,7 @@
 <translation id="7650582458329409456">{COUNT,plural, =1{已設定 1 枚指紋}other{已設定 {COUNT} 枚指紋}}</translation>
 <translation id="7650677314924139716">目前的數據用量設定是僅限 Wi-Fi</translation>
 <translation id="7650920359639954963">未啟用：<ph name="REASON" /></translation>
+<translation id="7651182181030187705">如要在所有裝置上使用這個書籤，請驗證身分</translation>
 <translation id="7651400349472467012">有可用的即時無線基地台</translation>
 <translation id="7651784568388208829">Phone Hub 工作接續</translation>
 <translation id="765293928828334535">無法從這個網站新增應用程式、擴充功能和使用者指令碼</translation>
@@ -9382,6 +9384,7 @@
 <translation id="7670434942695515800">如要取得最佳效能，請升級至最新版本。建議你先備份檔案，以免系統無法完成升級。升級作業一旦開始，Linux 將會關閉。請先儲存開啟的檔案再執行後續操作。<ph name="LINK_START" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">字幕</translation>
 <translation id="7671130400130574146">使用系統標題列及邊界</translation>
+<translation id="7671139479636735732">按一下滑鼠右鍵即可以視覺化方式呈現你的構想</translation>
 <translation id="767127784612208024">輕觸即可確認重設</translation>
 <translation id="7671472752213333268">「<ph name="EXTENSION_NAME" />」要求使用「<ph name="SCANNER_NAME" />」掃描。</translation>
 <translation id="7672504401554182757">選擇哪一部裝置有「<ph name="APP_NAME" />」的密碼金鑰</translation>

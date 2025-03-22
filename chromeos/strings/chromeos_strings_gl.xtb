@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Superouse o número máximo de intentos.</translation>
 <translation id="1908234395526491708">Erros nas solicitudes de UDP</translation>
 <translation id="1908394185991500139">frecha cara á esquerda</translation>
+<translation id="1911678930322867245">Mover á parte superior dereita</translation>
 <translation id="1914144885717544695">o venres</translation>
 <translation id="1915960750806557358">Comparte os teus comentarios ou describe o problema. Non inclúas información persoal, delicada nin confidencial.</translation>
 <translation id="1923388006036088459">Cores para destacar</translation>
@@ -1543,16 +1544,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183975772394450380">praia</translation>
 <translation id="819278132617411009">Usa a IA de Google para ser unha persoa máis produtiva</translation>
-<translation id="82003371436638355">Se elixes a opción Crear un propio, podes escribir unha solicitude personalizada. Tamén podes darlle a Escoller un tema e despois seleccionar as palabras subliñadas para personalizar un fondo de pantalla xerado por IA.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A opción Inspírame pode ofrecerche unha selección de imaxes de IA únicas.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Cando creas o teu propio fondo de pantalla, a solicitude envíase aos servidores de Google para xerar imaxes e mellorar o produto, tal e como se establece na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de privacidade e nas Condicións de servizo de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Non inclúas información persoal, delicada nin confidencial.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A IA xenerativa pode cometer erros (mesmo no referente á información sobre persoas), polo que debes revisar os resultados. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Máis información<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
@@ -1679,6 +1670,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8833620912470026819">bosque de cactos</translation>
 <translation id="8834539327799336565">Dispositivos conectados actualmente</translation>
+<translation id="8842526499753992487">Mover á parte superior esquerda</translation>
 <translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8849799913685544685">faro</translation>
 <translation id="8851859208664803097">Impresión detida: non se puido establecer conexión coa impresora</translation>
