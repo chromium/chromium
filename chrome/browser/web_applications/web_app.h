@@ -520,6 +520,8 @@ class WebApp {
 
  private:
   friend class WebAppDatabase;
+  friend std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto);
+  friend std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app);
   friend std::ostream& operator<<(std::ostream&, const WebApp&);
 
   webapps::AppId app_id_;
