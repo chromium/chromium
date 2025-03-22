@@ -5703,7 +5703,7 @@ static_library("ui") {
 
   if (enable_webui_generate_code_cache) {
     deps += [
-      "//ui/webui:buildflags",
+      "//chrome/browser/resources:code_cache_resources",
       "//ui/webui/resources:code_cache_resources",
     ]
   }

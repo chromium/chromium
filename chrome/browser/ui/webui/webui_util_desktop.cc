@@ -21,6 +21,7 @@
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
+#include "chrome/grit/side_panel_shared_code_cache_resources_map.h"
 #include "content/public/common/content_features.h"
 #include "ui/webui/resources/grit/webui_code_cache_resources_map.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
@@ -166,13 +167,33 @@ base::flat_map<GURL, int> GetWebUIResourceUrlToCodeCacheMap() {
 
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
   if (features::kWebUIBundledCodeCacheGenerateResourceMap.Get()) {
-    // Currently only shared resources are supported.
+    // Shared resources.
     AppendWebUIResourceURLToCodeCachePairs(
         content::kChromeUIScheme, content::kChromeUIResourcesHost,
         kWebuiCodeCacheResources, url_to_code_cache_pairs);
     AppendWebUIResourceURLToCodeCachePairs(
         content::kChromeUIUntrustedScheme, content::kChromeUIResourcesHost,
         kWebuiCodeCacheResources, url_to_code_cache_pairs);
+
+    // TODO(crbug.com/402625343): We can avoid enumerating host-specific WebUI
+    // code cache resources here and instead delegate to registered WebUI
+    // configs or similar. This may also be unnecessary once these mappings are
+    // exposed in renderers at compile-time.
+
+    // chrome://bookmarks-side-panel.top-chrome
+    AppendWebUIResourceURLToCodeCachePairs(
+        content::kChromeUIScheme, chrome::kChromeUIBookmarksSidePanelHost,
+        kSidePanelSharedCodeCacheResources, url_to_code_cache_pairs);
+
+    // chrome://customize-chrome-side-panel.top-chrome
+    AppendWebUIResourceURLToCodeCachePairs(
+        content::kChromeUIScheme, chrome::kChromeUICustomizeChromeSidePanelHost,
+        kSidePanelSharedCodeCacheResources, url_to_code_cache_pairs);
+
+    // chrome://read-later.top-chrome
+    AppendWebUIResourceURLToCodeCachePairs(
+        content::kChromeUIScheme, chrome::kChromeUIReadLaterHost,
+        kSidePanelSharedCodeCacheResources, url_to_code_cache_pairs);
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 
