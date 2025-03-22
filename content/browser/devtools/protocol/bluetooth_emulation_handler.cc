@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/devtools/protocol/bluetooth_emulation.h"
 #include "device/bluetooth/emulation/fake_central.h"
@@ -20,6 +21,9 @@ using device::BluetoothAdapterFactory;
 namespace content::protocol {
 
 namespace {
+
+constexpr std::string_view kConnect = "connect";
+constexpr std::string_view kDiscovery = "discovery";
 
 base::flat_map<uint16_t, std::vector<uint8_t>> ToManufacturerData(
     protocol::Array<protocol::BluetoothEmulation::ManufacturerData>*
@@ -83,7 +87,35 @@ bluetooth::mojom::CentralState ToCentralState(const String& state_string) {
   return bluetooth::mojom::CentralState::ABSENT;
 }
 
+constexpr std::string_view ToGATTOperation(
+    bluetooth::mojom::GATTOperationType type) {
+  switch (type) {
+    case bluetooth::mojom::GATTOperationType::kConnect:
+      return kConnect;
+    case bluetooth::mojom::GATTOperationType::kDiscovery:
+      return kDiscovery;
+  }
+}
+
+std::optional<bluetooth::mojom::GATTOperationType> ToGATTOperation(
+    std::string_view type) {
+  if (type == kConnect) {
+    return bluetooth::mojom::GATTOperationType::kConnect;
+  } else if (type == kDiscovery) {
+    return bluetooth::mojom::GATTOperationType::kDiscovery;
+  } else {
+    return std::nullopt;
+  }
+}
+
 }  // namespace
+
+// static
+std::vector<BluetoothEmulationHandler*> BluetoothEmulationHandler::ForAgentHost(
+    DevToolsAgentHostImpl* host) {
+  return host->HandlersByName<BluetoothEmulationHandler>(
+      BluetoothEmulation::Metainfo::domainName);
+}
 
 BluetoothEmulationHandler::BluetoothEmulationHandler()
     : DevToolsDomainHandler(BluetoothEmulation::Metainfo::domainName) {}
@@ -91,6 +123,7 @@ BluetoothEmulationHandler::BluetoothEmulationHandler()
 BluetoothEmulationHandler::~BluetoothEmulationHandler() = default;
 
 void BluetoothEmulationHandler::Wire(UberDispatcher* dispatcher) {
+  frontend_.emplace(dispatcher->channel());
   BluetoothEmulation::Dispatcher::wire(dispatcher, this);
 }
 
@@ -101,6 +134,7 @@ Response BluetoothEmulationHandler::Enable(const String& in_state,
   }
 
   CHECK(!fake_central_.is_bound());
+  CHECK(!client_receiver_.is_bound());
   emulation_enabled_ = true;
   global_factory_values_ =
       BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
@@ -110,6 +144,13 @@ Response BluetoothEmulationHandler::Enable(const String& in_state,
         base::MakeRefCounted<bluetooth::FakeCentral>(
             ToCentralState(in_state),
             fake_central_.BindNewPipeAndPassReceiver()));
+    // While there's a possibility the client might not be fully settled on the
+    // fake central side upon return, this is acceptable. Client events are
+    // expected to be delivered only after at least one peripheral has been
+    // simulated. By that time, the client should be properly settled on the
+    // fake central side.
+    fake_central_->SetClient(client_receiver_.BindNewEndpointAndPassRemote());
+    client_receiver_.reset_on_disconnect();
   }
   return Response::Success();
 }
@@ -117,6 +158,7 @@ Response BluetoothEmulationHandler::Enable(const String& in_state,
 Response BluetoothEmulationHandler::Disable() {
   if (fake_central_.is_bound()) {
     CHECK(emulation_enabled_);
+    client_receiver_.reset();
     fake_central_.reset();
     // reset this only if this is the instance holding the bound central.
     content::BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(
@@ -181,6 +223,47 @@ void BluetoothEmulationHandler::SimulateAdvertisement(
       std::move(payload),
       base::BindOnce(&SimulateAdvertisementCallback::sendSuccess,
                      std::move(callback)));
+}
+
+void BluetoothEmulationHandler::SimulateGATTOperationResponse(
+    const String& in_address,
+    const String& in_type,
+    int in_code,
+    std::unique_ptr<SimulateGATTOperationResponseCallback> callback) {
+  if (!fake_central_.is_bound()) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("BluetoothEmulation not enabled"));
+    return;
+  }
+  auto gatt_operation_type = ToGATTOperation(in_type);
+  if (!gatt_operation_type) {
+    std::move(callback)->sendFailure(Response::InvalidParams(
+        base::StrCat({"Unknown GATT operation type ", in_type})));
+    return;
+  }
+
+  fake_central_->SimulateGATTOperationResponse(
+      *gatt_operation_type, in_address, in_code,
+      base::BindOnce(
+          [](std::unique_ptr<SimulateGATTOperationResponseCallback> callback,
+             const std::string& type, bool success) {
+            if (!success) {
+              std::move(callback)->sendFailure(
+                  Response::ServerError(base::StrCat(
+                      {"Failed to simulate GATT response for operation type ",
+                       type})));
+              return;
+            }
+            std::move(callback)->sendSuccess();
+          },
+          std::move(callback), in_type));
+}
+
+void BluetoothEmulationHandler::DispatchGATTOperationEvent(
+    bluetooth::mojom::GATTOperationType type,
+    const std::string& peripheral_address) {
+  frontend_->GattOperationReceived(peripheral_address,
+                                   std::string(ToGATTOperation(type)));
 }
 
 }  // namespace content::protocol

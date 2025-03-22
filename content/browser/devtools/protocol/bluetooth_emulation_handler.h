@@ -19,10 +19,14 @@ namespace content::protocol {
 // [device/bluetooth/test/README.md](https://chromium.googlesource.com/chromium/src/+/main/device/bluetooth/test/README.md)
 class CONTENT_EXPORT BluetoothEmulationHandler
     : public DevToolsDomainHandler,
-      public BluetoothEmulation::Backend {
+      public BluetoothEmulation::Backend,
+      public bluetooth::mojom::FakeCentralClient {
  public:
   BluetoothEmulationHandler();
   ~BluetoothEmulationHandler() override;
+
+  static std::vector<BluetoothEmulationHandler*> ForAgentHost(
+      DevToolsAgentHostImpl* host);
 
   // DevToolsDomainHandler:
   void Wire(UberDispatcher* dispatcher) override;
@@ -51,10 +55,24 @@ class CONTENT_EXPORT BluetoothEmulationHandler
       std::unique_ptr<protocol::BluetoothEmulation::ScanEntry> in_entry,
       std::unique_ptr<SimulateAdvertisementCallback> callback) override;
 
+  void SimulateGATTOperationResponse(
+      const String& in_address,
+      const String& in_type,
+      int in_code,
+      std::unique_ptr<SimulateGATTOperationResponseCallback> callback) override;
+
+  // bluetooth::mojom::FakeCentralClient
+  void DispatchGATTOperationEvent(
+      bluetooth::mojom::GATTOperationType type,
+      const std::string& peripheral_address) override;
+
+  std::optional<BluetoothEmulation::Frontend> frontend_;
   // Tracks emulation usage across all instances, since the backend can only
   // support one fake adapter at a time.
   inline static bool emulation_enabled_ = false;
   mojo::Remote<bluetooth::mojom::FakeCentral> fake_central_;
+  mojo::AssociatedReceiver<bluetooth::mojom::FakeCentralClient>
+      client_receiver_{this};
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       global_factory_values_;
 };
