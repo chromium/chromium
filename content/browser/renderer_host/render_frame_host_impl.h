@@ -3261,6 +3261,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool AncestorsAllowSameSiteNoneCookiesOverride(
       const url::Origin& frame_origin) const;
 
+  const std::map<std::string, base::WeakPtr<ServiceWorkerClient>>&
+  service_worker_clients_for_testing() const {
+    return service_worker_clients_;
+  }
+
  protected:
   friend class RenderFrameHostFactory;
 
