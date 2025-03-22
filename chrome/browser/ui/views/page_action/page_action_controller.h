@@ -103,6 +103,11 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   base::CallbackListSubscription CreateActionItemSubscription(
       actions::ActionItem* action_item);
 
+  // Forces all page actions managed by this controller to be hidden, regardless
+  // of whether they would otherwise be visible. Setting it to `false` reverts
+  // back to each page action's normal visibility logic.
+  void SetShouldHidePageActions(bool should_hide_page_actions);
+
   // PinnedToolbarActionsModel::Observer
   void OnActionsChanged() override;
 

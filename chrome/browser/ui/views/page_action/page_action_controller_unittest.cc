@@ -498,5 +498,21 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideTooltip) {
   controller().ClearOverrideTooltip(kActionItemId);
 }
 
+TEST_F(PageActionControllerMockModelTest, ShouldForciblyHidePageActions) {
+  controller().Initialize(tab_interface(), {kActionItemId});
+
+  EXPECT_CALL(models().Get(kActionItemId),
+              SetShouldHidePageAction(_, /*should_hide_page_actions*/ true))
+      .Times(1);
+
+  controller().SetShouldHidePageActions(true);
+
+  EXPECT_CALL(models().Get(kActionItemId),
+              SetShouldHidePageAction(_, /*should_hide_page_actions*/ false))
+      .Times(1);
+
+  controller().SetShouldHidePageActions(false);
+}
+
 }  // namespace
 }  // namespace page_actions

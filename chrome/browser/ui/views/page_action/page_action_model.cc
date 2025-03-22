@@ -102,6 +102,10 @@ void PageActionModel::SetActionItemProperties(
 }
 
 bool PageActionModel::GetVisible() const {
+  if (should_hide_) {
+    return false;
+  }
+
   return is_tab_active_ && action_item_enabled_ && action_item_visible_ &&
          show_requested_ && !has_pinned_icon_;
 }
@@ -158,6 +162,17 @@ void PageActionModel::SetOverrideTooltip(
     return;
   }
   override_tooltip_ = override_tooltip;
+  NotifyChange();
+}
+
+void PageActionModel::SetShouldHidePageAction(
+    base::PassKey<PageActionController>,
+    bool should_hide) {
+  if (should_hide_ == should_hide) {
+    return;
+  }
+
+  should_hide_ = should_hide;
   NotifyChange();
 }
 

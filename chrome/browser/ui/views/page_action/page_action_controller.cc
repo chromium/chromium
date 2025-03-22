@@ -142,6 +142,13 @@ PageActionController::CreateActionItemSubscription(
   return subscription;
 }
 
+void PageActionController::SetShouldHidePageActions(
+    bool should_hide_page_actions) {
+  for (auto& [id, model] : page_actions_) {
+    model->SetShouldHidePageAction(PassKey(), should_hide_page_actions);
+  }
+}
+
 void PageActionController::OnActionsChanged() {
   PinnedActionsModelChanged();
 }
