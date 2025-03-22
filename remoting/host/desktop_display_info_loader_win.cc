@@ -10,6 +10,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace remoting {
@@ -111,8 +112,8 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
     // get the friendly name for the device.
     std::string monitor_name;
     for (const auto& entry : paths_with_names) {
-      if (wcscmp(entry.source_device_name.viewGdiDeviceName,
-                 device.DeviceName) == 0) {
+      if (UNSAFE_TODO(wcscmp(entry.source_device_name.viewGdiDeviceName,
+                             device.DeviceName)) == 0) {
         monitor_name = GetFriendlyDeviceName(entry.path);
         break;
       }

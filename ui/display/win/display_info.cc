@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -22,7 +23,7 @@ namespace {
 template <size_t N>
 std::wstring_view FixedArrayToStringView(
     const std::wstring_view::value_type (&str)[N]) {
-  return std::wstring_view(str, ::wcsnlen(str, N));
+  return std::wstring_view(str, UNSAFE_TODO(::wcsnlen(str, N)));
 }
 
 }  // namespace

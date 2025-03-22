@@ -7,6 +7,7 @@
 #include <list>
 
 #include "base/at_exit.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -238,7 +239,7 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
     bool got_valid_hwnd = got_valid_hwnd_;
     base::debug::Alias(&got_valid_hwnd);
     WNDCLASSEX class_info;
-    memset(&class_info, 0, sizeof(WNDCLASSEX));
+    UNSAFE_TODO(memset(&class_info, 0, sizeof(WNDCLASSEX)));
     class_info.cbSize = sizeof(WNDCLASSEX);
     BOOL got_class =
         GetClassInfoEx(GetModuleHandle(nullptr),

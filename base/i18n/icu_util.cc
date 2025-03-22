@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -151,7 +152,7 @@ void LazyInitIcuDataFile() {
 #if BUILDFLAG(IS_WIN)
   // TODO(brucedawson): http://crbug.com/445616
   wchar_t tmp_buffer[_MAX_PATH] = {};
-  wcscpy_s(tmp_buffer, data_path.value().c_str());
+  UNSAFE_TODO(wcscpy_s(tmp_buffer, data_path.value().c_str()));
   debug::Alias(tmp_buffer);
 #endif
   data_path = data_path.AppendASCII(kIcuDataFileName);
@@ -159,7 +160,7 @@ void LazyInitIcuDataFile() {
 #if BUILDFLAG(IS_WIN)
   // TODO(brucedawson): http://crbug.com/445616
   wchar_t tmp_buffer2[_MAX_PATH] = {};
-  wcscpy_s(tmp_buffer2, data_path.value().c_str());
+  UNSAFE_TODO(wcscpy_s(tmp_buffer2, data_path.value().c_str()));
   debug::Alias(tmp_buffer2);
 #endif
 
@@ -194,7 +195,7 @@ void LazyInitIcuDataFile() {
     // TODO(brucedawson): http://crbug.com/445616.
     g_debug_icu_pf_last_error = ::GetLastError();
     g_debug_icu_pf_error_details = file.error_details();
-    wcscpy_s(g_debug_icu_pf_filename, data_path.value().c_str());
+    UNSAFE_TODO(wcscpy_s(g_debug_icu_pf_filename, data_path.value().c_str()));
   }
 #endif  // BUILDFLAG(IS_WIN)
 }
@@ -287,7 +288,7 @@ bool InitializeICUFromDataFile() {
   int debug_icu_pf_error_details = g_debug_icu_pf_error_details;
   debug::Alias(&debug_icu_pf_error_details);
   wchar_t debug_icu_pf_filename[_MAX_PATH] = {};
-  wcscpy_s(debug_icu_pf_filename, g_debug_icu_pf_filename);
+  UNSAFE_TODO(wcscpy_s(debug_icu_pf_filename, g_debug_icu_pf_filename));
   debug::Alias(&debug_icu_pf_filename);
 #endif  // BUILDFLAG(IS_WIN)
   // Excluding Chrome OS from this CHECK due to b/289684640.

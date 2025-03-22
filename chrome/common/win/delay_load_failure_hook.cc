@@ -8,6 +8,7 @@
 #include <delayimp.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/win/delay_load_failure_support.h"
@@ -21,7 +22,7 @@ namespace {
 // this won't generate a crash report.
 FARPROC WINAPI DelayLoadFailureHook(unsigned reason, DelayLoadInfo* dll_info) {
   char dll_name[MAX_PATH];
-  base::strlcpy(dll_name, dll_info->szDll, std::size(dll_name));
+  UNSAFE_TODO(base::strlcpy(dll_name, dll_info->szDll, std::size(dll_name)));
   // It's not an error if "bthprops.cpl" fails to be loaded, there's a custom
   // exception handler in 'device/bluetooth/bluetooth_init_win.cc" that will
   // intercept the exception triggered by the delay load runtime. Returning 0

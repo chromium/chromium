@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -488,7 +489,8 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   ASSERT_TRUE(writable_region.IsValid());
   base::WritableSharedMemoryMapping writable_mapping = writable_region.Map();
   ASSERT_TRUE(writable_mapping.IsValid());
-  memcpy(writable_mapping.memory(), contents.data(), contents.size());
+  UNSAFE_TODO(
+      memcpy(writable_mapping.memory(), contents.data(), contents.size()));
 
   // Get the path to the sandboxed app.
   wchar_t prog_name[MAX_PATH];

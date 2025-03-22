@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -582,7 +583,8 @@ TEST(SetupUtilTest, StoreDMTokenToRegistrySuccess) {
             key.ReadValue(name.c_str(), raw_value.data(), &size, &dtype));
   EXPECT_EQ(REG_BINARY, dtype);
   ASSERT_EQ(kExpectedSize, size);
-  EXPECT_EQ(0, memcmp(token.data(), raw_value.data(), kExpectedSize));
+  EXPECT_EQ(0,
+            UNSAFE_TODO(memcmp(token.data(), raw_value.data(), kExpectedSize)));
 
   std::tie(key, name) = InstallUtil::GetCloudManagementDmTokenLocation(
       InstallUtil::ReadOnly(true), InstallUtil::BrowserLocation(true));
@@ -593,7 +595,8 @@ TEST(SetupUtilTest, StoreDMTokenToRegistrySuccess) {
             key.ReadValue(name.c_str(), raw_value.data(), &size, &dtype));
   EXPECT_EQ(REG_BINARY, dtype);
   ASSERT_EQ(kExpectedSize, size);
-  EXPECT_EQ(0, memcmp(token.data(), raw_value.data(), kExpectedSize));
+  EXPECT_EQ(0,
+            UNSAFE_TODO(memcmp(token.data(), raw_value.data(), kExpectedSize)));
 }
 
 TEST(SetupUtilTest, StoreDMTokenToRegistryShouldFailWhenDMTokenTooLarge) {

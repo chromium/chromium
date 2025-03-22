@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/at_exit.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -33,7 +34,7 @@ DeviceMonitorMessageWindow* g_message_window;
 // STL map.
 struct CompareGUID {
   bool operator()(const GUID& a, const GUID& b) const {
-    return memcmp(&a, &b, sizeof a) < 0;
+    return UNSAFE_TODO(memcmp(&a, &b, sizeof a)) < 0;
   }
 };
 }  // namespace
