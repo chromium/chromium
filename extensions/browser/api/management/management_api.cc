@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -433,6 +434,8 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
       management::SetEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   extension_id_ = params->id;
+  base::UmaHistogramBoolean(kSetEnabledHasUserGestureHistogramName,
+                            user_gesture());
 
   if (ExtensionsBrowserClient::Get()->IsAppModeForcedForApp(extension_id_)) {
     return RespondNow(Error(keys::kCannotChangePrimaryKioskAppError));
