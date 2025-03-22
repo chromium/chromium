@@ -10,9 +10,9 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 class GURL;

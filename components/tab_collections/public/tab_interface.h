@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_PUBLIC_TAB_INTERFACE_H_
-#define CHROME_BROWSER_UI_TABS_PUBLIC_TAB_INTERFACE_H_
+#ifndef COMPONENTS_TAB_COLLECTIONS_PUBLIC_TAB_INTERFACE_H_
+#define COMPONENTS_TAB_COLLECTIONS_PUBLIC_TAB_INTERFACE_H_
 
 #include <memory>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/tab_collections/public/supports_handles.h"
 #include "components/tab_groups/tab_group_id.h"
 
@@ -16,7 +18,9 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+#if !BUILDFLAG(IS_ANDROID)
 class BrowserWindowInterface;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace split_tabs {
 class SplitTabId;
@@ -35,12 +39,19 @@ class ScopedTabModalUI {
   virtual ~ScopedTabModalUI() = default;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // See documentation for ShouldAcceptMouseEventsWhileWindowInactive.
 class ScopedAcceptMouseEventsWhileWindowInactive {
  public:
   ScopedAcceptMouseEventsWhileWindowInactive() = default;
   virtual ~ScopedAcceptMouseEventsWhileWindowInactive() = default;
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// TODO(crbug.com/404889112): This interface will be reused for Android as part
+// of the effort to share tab collections between desktop and Android. Some
+// features of TabInterface are unsupported on Android. A buildflag is used to
+// turn off this functionality.
 
 // This is the public interface for tabs in a desktop browser. Most features in
 // //chrome/browser depend on this interface, and thus to prevent circular
@@ -164,6 +175,7 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // never changes.
   virtual bool IsInNormalWindow() const = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Always valid in production code. Exceptions are:
   //  (1) Tabs briefly do not have a BrowserWindowInterface when they are
   //  detached from one window and moved to another. That is an implementation
@@ -180,6 +192,7 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // TabFeatures or BrowserWindowFeatures, you can safely assume that this is
   // always non-nullptr.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns the feature controllers scoped to this tab.
   // TabFeatures that depend on other TabFeatures should not use this method.
@@ -207,6 +220,7 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // is not part of a split tab.
   virtual std::optional<split_tabs::SplitTabId> GetSplit() const = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
   // On macOS, tabs do not accept mouse events if the window is not active, even
   // if it's a child window that is active. Calling this method overrides that
   // behavior until the unique_ptr is destroyed. This is only relevant if the
@@ -214,10 +228,11 @@ class TabInterface : public SupportsHandles<TabInterface> {
   virtual bool ShouldAcceptMouseEventsWhileWindowInactive() const = 0;
   virtual std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
   AcceptMouseEventsWhileWindowInactive() = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 using TabHandle = TabInterface::Handle;
 
 }  // namespace tabs
 
-#endif  // CHROME_BROWSER_UI_TABS_PUBLIC_TAB_INTERFACE_H_
+#endif  // COMPONENTS_TAB_COLLECTIONS_PUBLIC_TAB_INTERFACE_H_

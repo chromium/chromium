@@ -3,8 +3,14 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  public = [ "public/supports_handles.h" ]
-  public_deps = [ "//base" ]
+  public = [
+    "public/supports_handles.h",
+    "public/tab_interface.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/tab_groups",
+  ]
 }
 
 source_set("unit_tests") {
