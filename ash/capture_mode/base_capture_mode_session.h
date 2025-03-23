@@ -80,10 +80,6 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // it does not have a bar widget.
   virtual views::Widget* GetCaptureModeBarWidget() = 0;
 
-  // Gets the feedback button widget screen bounds. Returns an empty rect if the
-  // button is not available.
-  virtual gfx::Rect GetFeedbackWidgetScreenBounds() const = 0;
-
   // Gets the current window selected for `kWindow` capture source. Returns
   // nullptr if no window is available for selection.
   virtual aura::Window* GetSelectedWindow() const = 0;

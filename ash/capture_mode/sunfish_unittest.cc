@@ -309,35 +309,6 @@ TEST_F(SunfishDisabledScannerDisabledTest,
       1);
 }
 
-// Tests that the feedback button is not shown in default capture mode if
-// neither Sunfish nor Scanner is enabled.
-TEST_F(SunfishDisabledScannerDisabledTest,
-       FeedbackButtonNotShownInDefaultMode) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-
-  auto* controller = CaptureModeController::Get();
-  ASSERT_TRUE(controller);
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
-  ASSERT_TRUE(session);
-  CaptureModeSessionTestApi session_test_api(session);
-  views::Widget* feedback_button_widget =
-      session_test_api.GetFeedbackButtonWidget();
-  // There are various ways a widget can be hidden. Any of them should pass this
-  // test.
-  EXPECT_THAT(
-      feedback_button_widget,
-      AnyOf(IsNull(), Property("IsVisible", &views::Widget::IsVisible, false),
-            Property("GetLayer", &views::Widget::GetLayer,
-                     AnyOf(Property("GetTargetOpacity",
-                                    &ui::Layer::GetTargetOpacity, 0.f),
-                           Property("GetTargetVisibility",
-                                    &ui::Layer::GetTargetVisibility, false)))));
-}
-
 class SunfishDisabledTest : public SunfishTestBase {
  public:
   SunfishDisabledTest() {
@@ -1451,48 +1422,6 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
   // image region.
 }
 
-TEST_F(SunfishTest, HideFeedbackButtonOnSourceTypeChange) {
-  // Start default image region capture mode.
-  auto* controller =
-      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  CaptureModeSessionTestApi session_test_api(
-      controller->capture_mode_session());
-  views::Widget* feedback_button_widget =
-      session_test_api.GetFeedbackButtonWidget();
-  ASSERT_TRUE(feedback_button_widget);
-  EXPECT_EQ(1.f, feedback_button_widget->GetLayer()->GetTargetOpacity());
-
-  // Simulate clicking the video toggle button to change the type.
-  LeftClickOn(GetVideoToggleButton());
-  ASSERT_EQ(CaptureModeType::kVideo, controller->type());
-
-  // Test the feedback button is hidden and hovering over it does not update the
-  // cursor.
-  ASSERT_TRUE(feedback_button_widget);
-  EXPECT_FALSE(feedback_button_widget->IsVisible());
-  EXPECT_EQ(0.f, feedback_button_widget->GetLayer()->GetTargetOpacity());
-
-  auto* generator = GetEventGenerator();
-  generator->MoveMouseTo(
-      feedback_button_widget->GetWindowBoundsInScreen().CenterPoint());
-  auto* cursor_manager = Shell::Get()->cursor_manager();
-  EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
-
-  // Switch back to image region capture.
-  LeftClickOn(GetImageToggleButton());
-  ASSERT_EQ(CaptureModeType::kImage, controller->type());
-
-  // Test the feedback button is re-shown and hovering over it updates the
-  // cursor.
-  ASSERT_TRUE(feedback_button_widget);
-  EXPECT_TRUE(feedback_button_widget->IsVisible());
-  EXPECT_EQ(1.f, feedback_button_widget->GetLayer()->GetTargetOpacity());
-
-  generator->MoveMouseTo(
-      feedback_button_widget->GetWindowBoundsInScreen().CenterPoint());
-  EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_manager->GetCursor().type());
-}
-
 // Tests that the search button is re-shown on region selected or adjusted in
 // default mode.
 TEST_F(SunfishTest, ShowSearchButtonOnRegionAdjusted) {
@@ -1843,84 +1772,6 @@ TEST_F(SunfishTest, IsCursorVisible) {
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
-// Tests that the feedback button is shown in the Sunfish session.
-TEST_F(SunfishTest, FeedbackButtonShown) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-  auto* controller = CaptureModeController::Get();
-  ASSERT_TRUE(controller);
-  controller->StartSunfishSession();
-
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
-  ASSERT_TRUE(session);
-  CaptureModeSessionTestApi session_test_api(session);
-  views::Widget* feedback_button_widget =
-      session_test_api.GetFeedbackButtonWidget();
-  ASSERT_TRUE(feedback_button_widget);
-  EXPECT_TRUE(feedback_button_widget->IsVisible());
-  ui::Layer* feedback_button_layer = feedback_button_widget->GetLayer();
-  ASSERT_TRUE(feedback_button_layer);
-  EXPECT_TRUE(feedback_button_layer->GetTargetVisibility());
-  EXPECT_GT(feedback_button_layer->GetTargetOpacity(), 0.f);
-}
-
-// Tests that the feedback button is shown in default capture mode.
-TEST_F(SunfishTest, FeedbackButtonShownInDefaultMode) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-
-  auto* controller = CaptureModeController::Get();
-  ASSERT_TRUE(controller);
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
-  ASSERT_TRUE(session);
-  CaptureModeSessionTestApi session_test_api(session);
-  views::Widget* feedback_button_widget =
-      session_test_api.GetFeedbackButtonWidget();
-  ASSERT_TRUE(feedback_button_widget);
-  EXPECT_TRUE(feedback_button_widget->IsVisible());
-  ui::Layer* feedback_button_layer = feedback_button_widget->GetLayer();
-  ASSERT_TRUE(feedback_button_layer);
-  EXPECT_TRUE(feedback_button_layer->GetTargetVisibility());
-  EXPECT_GT(feedback_button_layer->GetTargetOpacity(), 0.f);
-}
-
-// Tests that the feedback button is hidden in default capture mode if Sunfish
-// is disabled by enterprise policy.
-TEST_F(SunfishEnabledScannerDisabledTest,
-       FeedbackButtonNotShownInDefaultModeIfEnterpriseDisabled) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  auto* controller = CaptureModeController::Get();
-  ASSERT_TRUE(controller);
-  auto* test_delegate =
-      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
-  test_delegate->set_is_search_allowed_by_policy(false);
-
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
-  ASSERT_TRUE(session);
-  CaptureModeSessionTestApi session_test_api(session);
-  views::Widget* feedback_button_widget =
-      session_test_api.GetFeedbackButtonWidget();
-  // There are various ways a widget can be hidden. Any of them should pass this
-  // test.
-  EXPECT_THAT(
-      feedback_button_widget,
-      AnyOf(IsNull(), Property("IsVisible", &views::Widget::IsVisible, false),
-            Property("GetLayer", &views::Widget::GetLayer,
-                     AnyOf(Property("GetTargetOpacity",
-                                    &ui::Layer::GetTargetOpacity, 0.f),
-                           Property("GetTargetVisibility",
-                                    &ui::Layer::GetTargetVisibility, false)))));
-}
-
 // Tests the search button shown and pressed metrics are being properly
 // recorded.
 TEST_F(SunfishTest, RecordSearchButtonShownAndPressed) {
@@ -2029,13 +1880,11 @@ TEST_F(SunfishTest, PanelBounds) {
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   ASSERT_TRUE(controller->GetSearchResultsPanel());
 
-  // Get the in-screen bounds of the work area and the feedback button.
+  // Get the in-screen bounds of the work area.
   const gfx::Rect work_area =
       controller->search_results_panel_widget()->GetWorkAreaBoundsInScreen();
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  const gfx::Rect feedback_bounds =
-      session_test_api.GetFeedbackButton()->GetBoundsInScreen();
 
   // Define the known possible coordinates of the search results panel.
   const int left_x = work_area.x() + capture_mode::kPanelWorkAreaSpacing;
@@ -2045,10 +1894,6 @@ TEST_F(SunfishTest, PanelBounds) {
   const int default_y = work_area.bottom() -
                         capture_mode::kSearchResultsPanelTotalHeight -
                         capture_mode::kPanelWorkAreaSpacing;
-  // TODO(hewer): Remove this when the feedback button is removed.
-  const int above_button_y = feedback_bounds.y() -
-                             capture_mode::kSearchResultsPanelTotalHeight -
-                             capture_mode::kPanelButtonSpacing;
 
   // By default, the panel should appear on the left side.
   gfx::Rect target_bounds(left_x, default_y,
@@ -2069,10 +1914,8 @@ TEST_F(SunfishTest, PanelBounds) {
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   ASSERT_TRUE(controller->GetSearchResultsPanel());
 
-  // The panel should now appear on the right side instead, just above the
-  // feedback button.
+  // The panel should now appear on the right side instead.
   target_bounds.set_x(right_x);
-  target_bounds.set_y(above_button_y);
   EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
             target_bounds);
 
@@ -2089,7 +1932,6 @@ TEST_F(SunfishTest, PanelBounds) {
 
   // The panel should appear back on the left side since there is more space.
   target_bounds.set_x(left_x);
-  target_bounds.set_y(default_y);
   EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
             target_bounds);
 
@@ -2106,7 +1948,6 @@ TEST_F(SunfishTest, PanelBounds) {
 
   // The panel should appear on the right side since there is more space.
   target_bounds.set_x(right_x);
-  target_bounds.set_y(above_button_y);
   EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
             target_bounds);
 }

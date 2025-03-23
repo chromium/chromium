@@ -51,7 +51,6 @@ class CaptureModeSettingsView;
 class CaptureRegionOverlayController;
 class CaptureWindowObserver;
 class CursorSetter;
-class PillButton;
 class RecordingTypeMenuView;
 class ScannerActionViewModel;
 enum class ScannerEntryPoint;
@@ -201,7 +200,6 @@ class ASH_EXPORT CaptureModeSession
   void OnScannerActionsFetched(
       ScannerSession::FetchActionsResponse actions_response) override;
   void ShowActionContainerError(const std::u16string& error_message) override;
-  gfx::Rect GetFeedbackWidgetScreenBounds() const override;
   void OnSearchResultsPanelCreated(views::Widget* panel_widget) override;
   bool TakeFocusForSearchResultsPanel(bool reverse) override;
   void ClearPseudoFocus() override;
@@ -481,15 +479,6 @@ class ASH_EXPORT CaptureModeSession
   // again after a previous attempt failed.
   void OnScannerTryAgainPressed();
 
-  // Creates the feedback button widget if it wasn't previously created and
-  // should be shown, and updates the widget's bounds and visibility.
-  void UpdateFeedbackButtonWidget();
-
-  // Returns true if `widget` is the `feedback_button_widget_` and we should
-  // hide it, as the button should only be shown when we are in region selection
-  // mode for an image (including Sunfish/Scanner sessions).
-  bool ShouldHideFeedbackWidget(views::Widget* widget) const;
-
   // Returns true if the action container should be shown, excluding a check for
   // whether Sunfish-related UI or Scanner-related UI can be shown. This checks:
   // - a drag is not in progress,
@@ -503,9 +492,6 @@ class ASH_EXPORT CaptureModeSession
   // also includes a check for whether Sunfish-related UI or Scanner-related UI
   // can be shown.
   bool ShouldShowActionContainerWidget() const;
-
-  // Shows the feedback page with preset information for sunfish.
-  void ShowFeedbackPage();
 
   // Removes the glow animation if there is one.
   void MaybeRemoveGlowAnimation();
@@ -560,10 +546,7 @@ class ASH_EXPORT CaptureModeSession
   raw_ptr<RecordingTypeMenuView, DanglingUntriaged> recording_type_menu_view_ =
       nullptr;
 
-  // Widget that shows a feedback button for Sunfish.
-  views::UniqueWidgetPtr feedback_button_widget_;
-  raw_ptr<PillButton> feedback_button_;
-
+  // Widget that shows a consent disclaimer for Sunfish and Scanner features.
   views::UniqueWidgetPtr disclaimer_;
 
   // Magnifier glass used during a region capture session.
