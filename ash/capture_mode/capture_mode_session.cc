@@ -3749,12 +3749,12 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
           IDS_ASH_SCREEN_CAPTURE_MORE_ACTIONS_UNAVAILABLE_OFFLINE_ERROR));
     } else {
       RecordSearchButtonShown();
-      // TODO(crbug.com/388898754): Finalize and translate the search button
-      // text.
       capture_mode_util::AddActionButton(
           base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()),
-          u"Search with Lens", &kLensIcon,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_SCREEN_CAPTURE_SUNFISH_SEARCH_BUTTON_TITLE),
+          &kLensIcon,
           ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1),
           ActionButtonViewID::kSearchButton);
     }

@@ -1225,7 +1225,11 @@ AutofillPrivateSetAutofillAiOptInStatusFunction::Run() {
     return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
 
-  // TODO(crbug.com/402367669): Mark feature as used to avoid IPH showing again.
+  if (parameters->opted_in) {
+    autofill_client()->NotifyIphFeatureUsed(
+        autofill::AutofillClient::IphFeature::kAutofillAi);
+  }
+
   return RespondNow(NoArguments());
 }
 

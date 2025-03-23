@@ -246,6 +246,10 @@ static_library("renderer") {
     ]
   }
 
+  if (enable_glic) {
+    deps += [ "//chrome/renderer/actor" ]
+  }
+
   if (enable_nacl) {
     deps += [ "//components/nacl/renderer" ]
 

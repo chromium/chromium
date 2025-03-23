@@ -203,7 +203,8 @@ SearchResultsPanel::SearchResultsPanel() {
                   IconButton::Builder()
                       .SetType(IconButton::Type::kSmallFloating)
                       .SetVectorIcon(&kMediumOrLargeCloseButtonIcon)
-                      .SetAccessibleName(u"Close Panel")
+                      .SetAccessibleName(l10n_util::GetStringUTF16(
+                          IDS_ASH_SUNFISH_SEARCH_DIALOG_CLOSE))
                       .Build())
                   .CopyAddressTo(&close_button_)
                   .SetCallback(base::BindRepeating(

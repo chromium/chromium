@@ -6869,6 +6869,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SUNFISH_ACTION_BUTTON_WINDOW_TITLE" desc="The title of the window that contains available action buttons after the user has selected a region on their screen of interest. Example actions include copy text or create a Google Doc.">
         Actions
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SUNFISH_SEARCH_BUTTON_TITLE" desc="The tile of the button that shows after the user selectes a region on their screen. ">
+        Search with Google
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SUNFISH_CLOSE_BUTTON_ACCESSIBLE_NAME" desc="The accessible name of the close button for a screen capture mode, 'search my screen', where users can select a region on their screen to search.">
         Close search my screen
       </message>
@@ -6883,6 +6886,15 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_ACTION_ATTEMPTED_OFFLINE_ERROR" desc="The error message shown if the user is offline while attempting an action that requires an internet connection.">
         Check your internet and try again
+      </message>
+      <message name="IDS_ASH_SUNFISH_SEARCH_DIALOG_CLOSE" desc="The accessible name of the close button of the search model dialog for the Sunfish feature. ">
+        Close Panel
+      </message>
+      <message name="IDS_ASH_SUNFISH_SEARCH_BOX_BUTTON" desc="The accessible name and tooltip of the search button for the Sunfish feature. ">
+        Search my screen with Google Lens
+      </message>
+      <message name="IDS_ASH_SUNFISH_EDUCATE_TOAST_MESSAGE" desc="The message shown in a toast window to educate the user about the Sunfish feature.">
+        Select anything on your screen to search, copy text, and more
       </message>
 
       <!-- Scanner -->

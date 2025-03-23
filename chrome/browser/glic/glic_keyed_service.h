@@ -29,7 +29,6 @@ class AuthController;
 class GlicActorController;
 class FocusedTabData;
 class GlicEnabling;
-class GlicFocusedTabManager;
 class GlicMetrics;
 class GlicProfileManager;
 class GlicScreenshotCapturer;

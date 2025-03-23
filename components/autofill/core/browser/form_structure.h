@@ -223,14 +223,6 @@ class FormStructure {
   void RetrieveFromCache(const FormStructure& cached_form,
                          RetrieveFromCacheReason reason);
 
-  void LogDetermineHeuristicTypesMetrics();
-
-  // Sets each field's `html_type` and `html_mode` based on the field's
-  // `parsed_autocomplete` member.
-  // Sets `has_author_specified_types_` to `true` iff the `parsed_autocomplete`
-  // is available for at least one field.
-  void SetFieldTypesFromAutocompleteAttribute();
-
   // Rationalize phone number fields so that, in every section, only the first
   // complete phone number is filled automatically. This is useful for when a
   // form contains a first phone number and second phone number, which usually
@@ -312,8 +304,6 @@ class FormStructure {
   void set_last_filling_timestamp(base::TimeTicks last_filling_timestamp) {
     last_filling_timestamp_ = last_filling_timestamp;
   }
-
-  bool all_fields_are_passwords() const { return all_fields_are_passwords_; }
 
   bool may_run_autofill_ai_model() const { return may_run_autofill_ai_model_; }
 
@@ -412,6 +402,14 @@ class FormStructure {
   void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
                             HeuristicSource heuristic_source);
 
+  void LogDetermineHeuristicTypesMetrics();
+
+  // Sets each field's `html_type` and `html_mode` based on the field's
+  // `parsed_autocomplete` member.
+  // Sets `has_author_specified_types_` to `true` iff the `parsed_autocomplete`
+  // is available for at least one field.
+  void SetFieldTypesFromAutocompleteAttribute();
+
   // Production code only uses the default parameters.
   // Unit tests also test other parameters.
   struct ShouldBeParsedParams {
@@ -490,9 +488,6 @@ class FormStructure {
 
   // True if the form contains at least one password field.
   bool has_password_field_ = false;
-
-  // True if all form fields are password fields.
-  bool all_fields_are_passwords_ = false;
 
   // Indicates whether the client may run the AutofillAI model for this form.
   bool may_run_autofill_ai_model_ = false;

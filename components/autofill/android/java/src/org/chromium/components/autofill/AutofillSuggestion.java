@@ -30,7 +30,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final boolean mIsIconAtStart;
     private final int mSuggestionType;
     private final boolean mIsDeletable;
-    private final boolean mIsMultilineLabel;
     private final boolean mApplyDeactivatedStyle;
     private final boolean mShouldDisplayTermsAvailable;
     private final @Nullable String mFeatureForIph;
@@ -53,7 +52,6 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param isIconAtStart {@code true} if {@code iconId} is displayed before {@code label}.
      * @param popupItemId The type of suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
-     * @param isMultilineLabel Whether the label is displayed over multiple lines.
      * @param applyDeactivatedStyle Whether to apply deactivated style to the suggestion.
      * @param shouldDisplayTermsAvailable Whether the terms message is displayed.
      * @param featureForIph The IPH feature for the autofill suggestion. If present, it'll be
@@ -73,7 +71,6 @@ public class AutofillSuggestion extends DropdownItemBase {
             boolean isIconAtStart,
             @SuggestionType int popupItemId,
             boolean isDeletable,
-            boolean isMultilineLabel,
             boolean applyDeactivatedStyle,
             boolean shouldDisplayTermsAvailable,
             @Nullable String featureForIph,
@@ -90,7 +87,6 @@ public class AutofillSuggestion extends DropdownItemBase {
         mIsIconAtStart = isIconAtStart;
         mSuggestionType = popupItemId;
         mIsDeletable = isDeletable;
-        mIsMultilineLabel = isMultilineLabel;
         mApplyDeactivatedStyle = applyDeactivatedStyle;
         mShouldDisplayTermsAvailable = shouldDisplayTermsAvailable;
         mFeatureForIph = featureForIph;
@@ -127,11 +123,6 @@ public class AutofillSuggestion extends DropdownItemBase {
     @Override
     public int getIconId() {
         return mIconId;
-    }
-
-    @Override
-    public boolean isMultilineLabel() {
-        return mIsMultilineLabel;
     }
 
     @Override
@@ -212,7 +203,6 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mIsIconAtStart == other.mIsIconAtStart
                 && this.mSuggestionType == other.mSuggestionType
                 && this.mIsDeletable == other.mIsDeletable
-                && this.mIsMultilineLabel == other.mIsMultilineLabel
                 && this.mApplyDeactivatedStyle == other.mApplyDeactivatedStyle
                 && this.mShouldDisplayTermsAvailable == other.mShouldDisplayTermsAvailable
                 && Objects.equals(this.mFeatureForIph, other.mFeatureForIph)
@@ -228,7 +218,6 @@ public class AutofillSuggestion extends DropdownItemBase {
         private @Nullable Drawable mIconDrawable;
         private boolean mIsIconAtStart;
         private boolean mIsDeletable;
-        private boolean mIsMultiLineLabel;
         private boolean mApplyDeactivatedStyle;
         private boolean mShouldDisplayTermsAvailable;
         private @Nullable String mFeatureForIph;
@@ -263,11 +252,6 @@ public class AutofillSuggestion extends DropdownItemBase {
 
         public Builder setIsDeletable(boolean isDeletable) {
             this.mIsDeletable = isDeletable;
-            return this;
-        }
-
-        public Builder setIsMultiLineLabel(boolean isMultiLineLabel) {
-            this.mIsMultiLineLabel = isMultiLineLabel;
             return this;
         }
 
@@ -342,7 +326,6 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mIsIconAtStart,
                     mSuggestionType,
                     mIsDeletable,
-                    mIsMultiLineLabel,
                     mApplyDeactivatedStyle,
                     mShouldDisplayTermsAvailable,
                     mFeatureForIph,
