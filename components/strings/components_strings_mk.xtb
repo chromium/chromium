@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">Наизменична</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1268480293435976622">Плик Chinese #7</translation>
+<translation id="1269045546668906972">Вклучете ја „Автоматско пополнување со AI“ за да пополнува повеќе полиња автоматски</translation>
 <translation id="1269516672602708785">Набрзина создајте нов сајт во Google Sites</translation>
 <translation id="1270328905573953738">Преселување и преместување</translation>
 <translation id="1270502636509132238">Начин на подигнување</translation>
@@ -1138,6 +1139,7 @@
 <translation id="3005723025932146533">Прикажи зачувана копија</translation>
 <translation id="300580149047131921">Неодамна користено</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете на Tab за прелистување на достапните дејства, а потоа притиснете на Enter за извршување на избраното дејство.</translation>
+<translation id="3010991137650052245">За да користите <ph name="PERMISSION" /> на сајтов, треба да му доделите пристап на <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Производи за домаќинство</translation>
 <translation id="3014553260345122294">Бизнис-вести</translation>
 <translation id="3014726756341138577">напредни функции за печатачи</translation>
@@ -1410,6 +1412,7 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3484560055331845446">Може да го изгубите пристапот до сметката на Google. Chrome препорачува да ја промените лозинката сега. Ќе се побара од вас да се најавите.</translation>
 <translation id="3484861421501147767">Потсетник: достапен е зачуван промотивен код</translation>
+<translation id="3485901585646640838">За да ги користите лозинките и друго што се зачувани во вашата сметка на Google, потврдете го вашиот идентитет</translation>
 <translation id="3486406746948052912">Антиперспиранти, дезодоранси и спрејови за тело</translation>
 <translation id="3487845404393360112">Фиока 4</translation>
 <translation id="3493660662684070951">Камиони, комбиња и теренски возила</translation>
@@ -1788,6 +1791,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Обемот на политиката не е поддржан.</translation>
+<translation id="411918202192379658">Автоматското пополнување тукушто се подобри</translation>
 <translation id="4121428309786185360">Истекува на</translation>
 <translation id="4123572138124678573">Три дупки долу</translation>
 <translation id="412601465078863288">Времето за прикачување истече</translation>
@@ -2176,6 +2180,7 @@
 <translation id="4819347708020428563">Сакате ли да ги измените прибелешките во стандарден приказ?</translation>
 <translation id="4822493756793346865">Стандардните цени се засновани врз цените во продавниците на интернет во минатите 90 дена.</translation>
 <translation id="4822922322149719535">Прегледајте ја евиденцијата на грешки</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> бара пристап до <ph name="PERMISSION" /> на вашиот уред</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нова табела на Google</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="4827283332383516812">Бришење картичка</translation>
@@ -2530,6 +2535,7 @@
 <translation id="5443468954631487277">Обратен редослед со лицето нагоре</translation>
 <translation id="5445340838622821110">Кога плаќате на рати, се пополнува еднократен број на виртуелна картичка. Бројов важи само за ова купување. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Дозволете сајтот <ph name="SITE" /> да ги користи податоците што ги зачувал за вас</translation>
+<translation id="5451331376824595378">Кога Chrome пријавува безбедносни настани, податоци релевантни за настаните се испраќаат до администраторот. Тука спаѓаат URL-адресите на страниците што ги отворате во Chrome, URL-адресите на страниците од коишто копирате податоци, имињата или метаподатоците на датотеките, IP-адресите, падовите на прелистувачот или картичките и корисничкото име што го користите за најавување на онлајн апликациите, вашиот уред и Chrome.</translation>
 <translation id="5452270690849572955">Оваа страница на <ph name="HOST_NAME" /> не може да се најде</translation>
 <translation id="5452923259299906094">Плаќајте со eWallet и Pix</translation>
 <translation id="5455374756549232013">Лош временски печат на правилата</translation>
@@ -3424,6 +3430,7 @@
 <translation id="7023765275461720661">Да се поврзе сметката и да се плати со <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7030164307377592766">да ги измени поставките за пополнување на начините на плаќање</translation>
+<translation id="7031110846419387930">Податоци за вашиот прелистувач, OS, уред, инсталиран софтвер, датотеки и IP-адреси</translation>
 <translation id="7031646650991750659">кои апликации од Google Play сте ги инсталирале</translation>
 <translation id="7035705295266423040">Вашата банка сака да го потврди вашиот идентитет</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да управувате со поставките за приватност на вашата сметка на Google</translation>
@@ -3534,6 +3541,7 @@
 <translation id="7221855153210829124">Прикажи известувања</translation>
 <translation id="722454870747268814">Нова инкогнито картичка</translation>
 <translation id="7227293336683593977">Историја на цените</translation>
+<translation id="7228306718910595403">Статус на квалификуваност за EU</translation>
 <translation id="7232352818707016189">Повеќе дејства за табелата во „Споредба“</translation>
 <translation id="7233592378249864828">Испечати лист за потврда</translation>
 <translation id="7234112195906418665">Патување и транспорт</translation>

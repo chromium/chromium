@@ -1544,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">жээк</translation>
 <translation id="819278132617411009">Майнаптуу иштөө үчүн Google'дун жасалма интеллектин колдонуңуз</translation>
-<translation id="82003371436638355">"Өзүңүздүкүн түзүңүз" вариантын тандасаңыз, сурамыңызды жазыңыз. Же "Тема тандоо" баскычын тандап, ЖИ тушкагазын жекелештирүү үчүн асты сызылган сөздөрдү тандай аласыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Өзгөчө жана түрдүү сүрөттөрдү алуу үчүн "Мени шыктандыр" дегенди тандаңыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Өзүңүздүн тушкагазыңызды түзсөңүз, сурам Google ЖИ серверлерине жөнөтүлүп, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'дун Тейлөө шарттарына жана Купуялык эрежелерине<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ылайык сүрөттөрдү түзүү жана кызматты жакшыртуу үчүн колдонулат. Жеке же купуя нерселерди кошпоңуз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генеративдик жасалма интеллект адамдар, ошондой эле башка нерселер тууралуу так эмес маалыматты көрсөтүшү мүмкүн, андыктан анын жоопторун эки жолу текшериңиз. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Кеңири маалымат<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Улантуу</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>

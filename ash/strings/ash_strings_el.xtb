@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">Αύξηση φωτεινότητας</translation>
 <translation id="1680659827022803830">Στοιχεία ελέγχου βιντεοκλήσεων</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Μπορείτε να απενεργοποιήσετε αυτή τη λειτουργία ανά πάσα στιγμή στις Ρυθμίσεις. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Χρονόμετρο <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Διεύθυνση IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Το ενεργό παράθυρο αγκυρώθηκε αριστερά.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Εγκατεστημένη εφαρμογή, Τέθηκε σε παύση</translation>
 <translation id="4228078597006700451">Δεν έχουν ρυθμιστεί στοιχεία ελέγχου</translation>
 <translation id="4230560241506423345">Νέο</translation>
+<translation id="4236726631849783264">Μια υπενθύμιση σχετικά με τις προτεινόμενες ενέργειες</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Λειτουργία επισκόπησης</translation>
 <translation id="4242533952199664413">Ανοίξτε τις ρυθμίσεις</translation>
@@ -1043,6 +1045,7 @@
 <translation id="4471354919263203780">Πραγματοποιείται λήψη των αρχείων αναγνώρισης ομιλίας… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Ενημέρωση συσκευής τώρα}=1{Ενημέρωση συσκευής εντός 1 δευτερολέπτου}other{Ενημέρωση συσκευής εντός # δευτερολέπτων}}</translation>
 <translation id="4472575034687746823">Έναρξη</translation>
+<translation id="4473489370276014885">Επαφές Google</translation>
 <translation id="4477350412780666475">Επόμενο κομμάτι</translation>
 <translation id="4477751544736611934">Ενδέχεται να προκύψουν χρεώσεις δεδομένων.
 1 συνδεδεμένη συσκευή.</translation>
@@ -1069,6 +1072,7 @@
 <translation id="4545950850562423083">Αποθήκευση τρέχουσας σελίδας ως σελιδοδείκτη</translation>
 <translation id="4548482551627849548">Μετακίνηση ενεργού παραθύρου στο γραφείο στα αριστερά</translation>
 <translation id="4552748006424994716">Για να αποφύγετε την ηχώ, μπορείτε να ακούτε το μικρόφωνό σας μόνο με ενσύρματα ακουστικά.</translation>
+<translation id="4556953949326137018">Όταν χρησιμοποιείτε προτεινόμενες ενέργειες, όπως "Προσθήκη στο Ημερολόγιο" ή "Δημιουργία εγγράφων Google", το περιεχόμενο από την επιλεγμένη περιοχή αποστέλλεται στους διακομιστές της Google, για να προτείνει ενέργειες, σύμφωνα με τους <ph name="LINK_TO_SERVICE_TERMS" />. Μην συμπεριλάβετε προσωπικό, ευαίσθητο ή εμπιστευτικό περιεχόμενο.</translation>
 <translation id="4560576029703263363">Ενεργό</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Απόκρυψη κωδικού πρόσβασης</translation>
@@ -1152,6 +1156,7 @@
 <translation id="481455355267255546">Ακολουθούν</translation>
 <translation id="481749895090480684">Λίστα εργασιών: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
+<translation id="4828935196674083554">Προσθήκη…</translation>
 <translation id="482908187605862807">Διαθέσιμες εφαρμογές από το Play Store</translation>
 <translation id="4831034276697007977">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε τα αυτόματα κλικ;</translation>
 <translation id="4835677468087803981">Απόκρυψη PIN</translation>
@@ -1649,6 +1654,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Διαγραφή όλων των ειδοποιήσεων</translation>
+<translation id="6426905245930183644">Δημιουργία…</translation>
 <translation id="6430225033895752525">Εμφάνιση ρυθμίσεων λειτουργίας συγκέντρωσης</translation>
 <translation id="643147933154517414">Όλα έτοιμα</translation>
 <translation id="6431865393913628856">Εγγραφή οθόνης</translation>
@@ -2398,6 +2404,7 @@
 <translation id="8921624153894383499">Ο Βοηθός Google δεν είναι διαθέσιμος σε αυτήν τη γλώσσα.</translation>
 <translation id="8926951137623668982">Το ράφι θα αποκρύπτεται πάντα</translation>
 <translation id="8929566928381252430">Προσπαθείτε να χρησιμοποιήσετε το πλήκτρο Caps Lock; Χρήση</translation>
+<translation id="8934418770423095813">Δημιουργία Εγγράφου Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 αρχείο}other{# αρχεία}}</translation>
 <translation id="8936501819958976551">απενεργοποιημένο</translation>
 <translation id="8938800817013097409">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>

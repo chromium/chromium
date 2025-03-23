@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
 <translation id="1908234395526491708">Alınmayan UDP sorğuları</translation>
 <translation id="1908394185991500139">sol ox</translation>
+<translation id="1911678930322867245">Yuxarı sağ tərəfə köçürün</translation>
 <translation id="1914144885717544695">Cümə</translation>
 <translation id="1915960750806557358">Rəy paylaşın və ya problemi təsvir edin. Şəxsi, həssas və ya məxfi məlumat daxil etməyin.</translation>
 <translation id="1923388006036088459">Vurğu rəngləri</translation>
@@ -1543,16 +1544,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">çimərlik</translation>
 <translation id="819278132617411009">Məhsuldar olmaq üçün Google Sİ istifadə edin</translation>
-<translation id="82003371436638355">"Özünüz yaradın" seçdikdə fərdi sorğu yazın. Yaxud "Tema seçin" üzərinə toxuna və sonra Sİ divar kağızını fərdiləşdirmək üçün altından xətt çəkilən sözləri seçə bilərsiniz.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Unikal və müxtəlif Sİ şəkilləri üçün "Təsadüfi" seçin.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Öz divar kağızınızı yaratdıqda şəkillər yaratmaq və məhsulu təkmilləşdirmək üçün <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-un Xidmət Şərtlərinə və Məxfilik Siyasətinə<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> uyğun olmaqla sorğu Google serverlərinə göndərilir. Şəxsi, həssas və ya məxfi məlumat daxil etməyin.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Yaradan Sİ insanlar da daxil olmaqla bəzi məsələlər haqqında səhvlər edə bilər, buna görə də özünüz də yoxlayın. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Ətraflı məlumat<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Davam edin</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
@@ -1679,6 +1670,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8820817407110198400">Əlfəcinlər</translation>
 <translation id="8833620912470026819">kaktus meşəsi</translation>
 <translation id="8834539327799336565">Hazırda qoşulub</translation>
+<translation id="8842526499753992487">Yuxarı sol tərəfə köçürün</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8849799913685544685">mayak</translation>
 <translation id="8851859208664803097">Dayandı - Printer əlçatan deyil</translation>

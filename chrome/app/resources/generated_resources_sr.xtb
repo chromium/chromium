@@ -2220,6 +2220,7 @@
         Можете да управљате подешавањима из менија картице или да видите још опција у менију Прилагодите Chrome.</translation>
 <translation id="2514326558286966059">Откључавајте брже помоћу отиска прста</translation>
 <translation id="2514465118223423406">Када је миш повезан</translation>
+<translation id="2514938842036917377">Овим бришете <ph name="TOTAL_USAGE" /> података које чувају <ph name="SITE_NAME" />, повезани сајтови и инсталиране апликације</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Потврдите корисничко име</translation>
 <translation id="2517472476991765520">Скенирај</translation>
@@ -6604,7 +6605,6 @@
 <translation id="5643717184207603910">Нека перформансе буду брзе</translation>
 <translation id="5646376287012673985">Локација</translation>
 <translation id="5646558797914161501">Бизнисмен</translation>
-<translation id="5646994841348250879">Одаберите налог да бисте се пријавили на <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Утикач за микрофон</translation>
 <translation id="5648166631817621825">Последњих 7 дана</translation>
 <translation id="5651308944918885595">Видљивост за Дељење у близини</translation>
@@ -9084,6 +9084,7 @@
 <translation id="7443806024147773267">Приступајте лозинкама увек када сте пријављени на Google налог</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Колачићи ће данас бити поново блокирани}=1{Колачићи ће сутра бити поново блокирани}one{# дан док се колачићи поново не блокирају}few{# дана док се колачићи поново не блокирају}other{# дана док се колачићи поново не блокирају}}</translation>
 <translation id="7444983668544353857">Онемогући <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">Овим бришете <ph name="TOTAL_USAGE" /> података које чувају <ph name="SITE_NAME" /> и повезани сајтови</translation>
 <translation id="7448430327655618736">Аутоматски инсталира апликације</translation>
 <translation id="7448664748118305024">Избришите податке које су сајтови сачували на уређају када затворите све прозоре</translation>
 <translation id="7450761244949417357">Сада се отвара у прегледачу <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>

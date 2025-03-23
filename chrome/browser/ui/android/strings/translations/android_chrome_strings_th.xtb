@@ -694,6 +694,7 @@
 <translation id="4270730597186910506">ติดตามหรือเลิกติดตามผลิตภัณฑ์</translation>
 <translation id="4277529130885813215">ใช้อุปกรณ์อื่น</translation>
 <translation id="4282440837784183472">องค์กร <ph name="MANAGED_DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chrome ผู้ดูแลระบบจะตั้งค่าหรือจำกัดฟีเจอร์บางอย่างได้</translation>
+<translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="4285846616383034558">คุกกี้ แคช และข้อมูลเว็บไซต์อื่นๆ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />เปิดการล็อกหน้าจอในการตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
@@ -923,6 +924,7 @@
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5319359161174645648">Google ขอแนะนำ Chrome</translation>
 <translation id="5326246328175179736">คุณลงชื่อเข้าใช้ด้วยบัญชีนี้ไม่ได้</translation>
+<translation id="5327248766486351172">ชื่อ</translation>
 <translation id="5328542107300944283">ใช้ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">คำขอสิทธิ์</translation>
 <translation id="534580735623577507">ไม่มีเว็บไซต์จาก <ph name="TIME_PERIOD" /></translation>
@@ -1078,6 +1080,7 @@
 <translation id="605721222689873409">ปป</translation>
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
 <translation id="6071995715087444295">หากต้องการตรวจสอบรหัสผ่านที่ถูกละเมิด ให้ลงชื่อเข้าใช้บัญชี Google</translation>
+<translation id="6078323886959318429">เพิ่มทางลัด</translation>
 <translation id="6085886413119427067">กำหนดวิธีเชื่อมต่อเว็บไซต์ผ่านการเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="6087286598828478206">บล็อกและออกจากกลุ่มใช่ไหม</translation>
 <translation id="60923314841986378">เหลือ <ph name="HOURS" /> ชั่วโมง</translation>

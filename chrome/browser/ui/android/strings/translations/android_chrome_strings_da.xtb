@@ -694,6 +694,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4270730597186910506">Overvåg eller stop med at overvåge et produkt.</translation>
 <translation id="4277529130885813215">Brug en anden enhed</translation>
 <translation id="4282440837784183472">Din organisation, <ph name="MANAGED_DOMAIN" />, administrerer den konto, du logger ind på, og hvordan Chrome kan bruges. Din administrator kan konfigurere eller begrænse visse funktioner.</translation>
+<translation id="4285498937028063278">Frigør</translation>
 <translation id="4285846616383034558">Cookies, cache og andre websitedata</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivér skærmlåsen i Android-indstillingerne<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Ny inkognitofane</translation>
@@ -923,6 +924,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
 <translation id="5326246328175179736">Du kan ikke logge ind med denne konto</translation>
+<translation id="5327248766486351172">Navn</translation>
 <translation id="5328542107300944283">Brug via <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Anmodninger om tilladelse</translation>
 <translation id="534580735623577507">Ingen websites fra <ph name="TIME_PERIOD" /></translation>
@@ -1078,6 +1080,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Administrer dine historier og din aktivitet her</translation>
 <translation id="6071995715087444295">Log ind på din Google-konto for at tjekke, om der er kompromitterede adgangskoder</translation>
+<translation id="6078323886959318429">Tilføj genvej</translation>
 <translation id="6085886413119427067">Bestemmer, hvordan der skal oprettes forbindelse til websites via en sikker forbindelse</translation>
 <translation id="6087286598828478206">Vil du blokere og forlade gruppen?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timer tilbage</translation>

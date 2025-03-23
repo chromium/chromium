@@ -215,6 +215,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1679841710523778799">Aumentar o brilho</translation>
 <translation id="1680659827022803830">Controlos de videochamada</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Pode desativar esta funcionalidade em qualquer altura nas Definições. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Endereço IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Janela ativa ancorada à esquerda.</translation>
@@ -967,6 +968,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app instalada, em pausa</translation>
 <translation id="4228078597006700451">Controlos não configurados</translation>
 <translation id="4230560241506423345">Novo</translation>
+<translation id="4236726631849783264">Um lembrete sobre ações sugeridas</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de vista geral</translation>
 <translation id="4242533952199664413">Abrir definições</translation>
@@ -1043,6 +1045,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4471354919263203780">A transferir ficheiros de reconhecimento de voz… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Atualize o dispositivo agora}=1{Atualize o dispositivo dentro de 1 segundo}other{Atualize o dispositivo dentro de # segundos}}</translation>
 <translation id="4472575034687746823">Começar</translation>
+<translation id="4473489370276014885">Contactos do Google</translation>
 <translation id="4477350412780666475">Faixa seguinte</translation>
 <translation id="4477751544736611934">Isto pode significar custos de dados.
 1 dispositivo ligado.</translation>
@@ -1069,6 +1072,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4545950850562423083">Guardar a página atual como marcador</translation>
 <translation id="4548482551627849548">Mover janela ativa para o espaço de trabalho à esquerda</translation>
 <translation id="4552748006424994716">Para evitar o eco, pode ouvir o microfone apenas com os auscultadores com fios.</translation>
+<translation id="4556953949326137018">Quando usa ações sugeridas, como "adicionar ao Calendário" ou "criar documento do Google Docs", o conteúdo da área selecionada é enviado para os servidores da Google para sugerir ações, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="4560576029703263363">Ativado</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar palavra-passe</translation>
@@ -1152,6 +1156,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="481455355267255546">A seguir</translation>
 <translation id="481749895090480684">Lista de tarefas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">câmara e microfone</translation>
+<translation id="4828935196674083554">A adicionar…</translation>
 <translation id="482908187605862807">Apps disponíveis na Play Store</translation>
 <translation id="4831034276697007977">Tem a certeza de que quer desativar os cliques automáticos?</translation>
 <translation id="4835677468087803981">Ocultar PIN</translation>
@@ -1649,6 +1654,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="641817663353603351">página para cima</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Limpar todas as notificações</translation>
+<translation id="6426905245930183644">A criar…</translation>
 <translation id="6430225033895752525">Mostrar as definições do Modo sem distrações</translation>
 <translation id="643147933154517414">Tudo concluído</translation>
 <translation id="6431865393913628856">Gravação de ecrã</translation>
@@ -2398,6 +2404,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8921624153894383499">O Assistente Google não fala este idioma.</translation>
 <translation id="8926951137623668982">Prateleira sempre oculta</translation>
 <translation id="8929566928381252430">Está a tentar usar o Caps Lock? Use</translation>
+<translation id="8934418770423095813">Criar Documento do Google Docs</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desativada</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira direita)</translation>

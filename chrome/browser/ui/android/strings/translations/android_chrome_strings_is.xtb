@@ -694,6 +694,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4270730597186910506">Kveiktu eða slökktu á rakningu vöru.</translation>
 <translation id="4277529130885813215">Nota annað tæki</translation>
 <translation id="4282440837784183472">Fyrirtækið þitt, <ph name="MANAGED_DOMAIN" />, stjórnar reikningnum sem þú ert að skrá þig inn á og því hvernig hægt er að nota Chrome. Stjórnandinn getur sett upp eða takmarkað tiltekna eiginleika.</translation>
+<translation id="4285498937028063278">Losa</translation>
 <translation id="4285846616383034558">Fótspor, skyndiminni og önnur vefsvæðagögn</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Kveiktu á skjálás í stillingum Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nýr huliðsflipi</translation>
@@ -923,6 +924,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5319359161174645648">Google mælir með Chrome</translation>
 <translation id="5326246328175179736">Þú getur ekki skráð þig inn með þessum reikningi</translation>
+<translation id="5327248766486351172">Heiti</translation>
 <translation id="5328542107300944283">Notaðu þetta með <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Heimildabeiðnir</translation>
 <translation id="534580735623577507">Engin vefsvæði frá <ph name="TIME_PERIOD" /></translation>
@@ -1078,6 +1080,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="605721222689873409">ÁÁ</translation>
 <translation id="6059830886158432458">Stjórnaðu sögunum þínum og virkni hér</translation>
 <translation id="6071995715087444295">Skráðu þig inn á Google-reikninginn þinn til að leita að aðgangsorðum í hættu</translation>
+<translation id="6078323886959318429">Bæta flýtileið við</translation>
 <translation id="6085886413119427067">Ákvarðar hvernig á að tengjast vefsvæðum um örugga tengingu</translation>
 <translation id="6087286598828478206">Setja á bannlista og yfirgefa hóp?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> klst. eftir</translation>

@@ -1512,6 +1512,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="595202126637698455">Omogućeno je praćenje izvedbe</translation>
 <translation id="5955304353782037793">apl</translation>
 <translation id="5958529069007801266">Nadzirani korisnik</translation>
+<translation id="596035801491797438">Isključite upravljanje licem</translation>
 <translation id="5960410286721553511">Pregledajte nedavne fotografije i medije telefona</translation>
 <translation id="5965524703725988602">Prebacite tamnu temu. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Vrtite prozore prema naprijed</translation>
@@ -2404,6 +2405,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8921624153894383499">Google asistent ne govori taj jezik.</translation>
 <translation id="8926951137623668982">Polica je uvijek skrivena</translation>
 <translation id="8929566928381252430">Pokušavate li upotrijebiti Caps Lock? Upotrijebite</translation>
+<translation id="8934418770423095813">Izradi Google dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">USB-C uređaj (desni priključak sa stražnje strane)</translation>

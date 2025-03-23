@@ -215,6 +215,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1679841710523778799">Tăng độ sáng</translation>
 <translation id="1680659827022803830">Bộ tính năng điều khiển cuộc gọi video</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Bạn có thể tắt tính năng này bất cứ lúc nào trong phần Cài đặt. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Đồng hồ hẹn giờ <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Địa chỉ IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Cửa sổ đang hoạt động gắn phía bên trái.</translation>
@@ -967,6 +968,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ứng dụng đã được cài đặt nhưng đã tạm dừng</translation>
 <translation id="4228078597006700451">Chưa thiết lập các nút điều khiển</translation>
 <translation id="4230560241506423345">Mới</translation>
+<translation id="4236726631849783264">Lời nhắc về các hành động được đề xuất</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Chế độ tổng quan</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
@@ -1043,6 +1045,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4471354919263203780">Đang tải các tệp nhận dạng lời nói xuống... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Cập nhật thiết bị ngay}=1{Cập nhật thiết bị trong vòng 1 giây}other{Cập nhật thiết bị trong vòng # giây}}</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
+<translation id="4473489370276014885">Danh bạ Google</translation>
 <translation id="4477350412780666475">Bản nhạc tiếp theo</translation>
 <translation id="4477751544736611934">Bạn có thể phải chịu chi phí dữ liệu.
 Đã kết nối 1 thiết bị.</translation>
@@ -1069,6 +1072,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4545950850562423083">Lưu trang hiện tại làm dấu trang</translation>
 <translation id="4548482551627849548">Di chuyển cửa sổ đang hoạt động sang không gian làm việc ở bên trái</translation>
 <translation id="4552748006424994716">Để tránh tiếng vọng, bạn chỉ nghe được micrô của mình khi dùng tai nghe có dây.</translation>
+<translation id="4556953949326137018">Khi bạn sử dụng các hành động được đề xuất như "thêm vào Lịch" hoặc "tạo Google Tài liệu", nội dung từ khu vực đã chọn sẽ được gửi đến máy chủ của Google để đề xuất các hành động, tuân theo <ph name="LINK_TO_SERVICE_TERMS" />. Đừng nhập thông tin mang tính cá nhân, nhạy cảm hoặc bí mật.</translation>
 <translation id="4560576029703263363">Đang bật</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
@@ -1152,6 +1156,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="481455355267255546">Sắp diễn ra</translation>
 <translation id="481749895090480684">Danh sách việc cần làm: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">máy ảnh và micrô</translation>
+<translation id="4828935196674083554">Đang thêm...</translation>
 <translation id="482908187605862807">Ứng dụng hiện có trên Cửa hàng Play</translation>
 <translation id="4831034276697007977">Bạn có chắc chắn muốn tắt tính năng tự động nhấp không?</translation>
 <translation id="4835677468087803981">Ẩn mã PIN</translation>
@@ -1649,6 +1654,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Xóa tất cả thông báo</translation>
+<translation id="6426905245930183644">Đang tạo...</translation>
 <translation id="6430225033895752525">Hiện chế độ cài đặt Tập trung</translation>
 <translation id="643147933154517414">Đã xong</translation>
 <translation id="6431865393913628856">Ghi màn hình</translation>
@@ -2398,6 +2404,7 @@ Mới cài đặt</translation>
 <translation id="8921624153894383499">Trợ lý Google không hỗ trợ ngôn ngữ này.</translation>
 <translation id="8926951137623668982">Giá luôn ẩn</translation>
 <translation id="8929566928381252430">Bạn đang tìm cách dùng phím Caps Lock? Hãy sử dụng</translation>
+<translation id="8934418770423095813">Tạo Google Tài liệu</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tệp}other{# tệp}}</translation>
 <translation id="8936501819958976551">đã tắt</translation>
 <translation id="8938800817013097409">Thiết bị USB-C (cổng bên phải ở phía sau)</translation>

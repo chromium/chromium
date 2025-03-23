@@ -267,6 +267,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1175572348579024023">Faire défiler</translation>
 <translation id="1175914831232945926">des chiffres</translation>
 <translation id="1176471985365269981">Sites non autorisés à modifier les fichiers ni les dossiers sur votre appareil</translation>
+<translation id="1176864681932214421">Créez des images avec l'IA</translation>
 <translation id="1177073277575830464">La configuration rapide d'Android est terminée. Poursuivez la configuration sur votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">Vous pouvez vous connecter à n'importe quel réseau mobile éligible depuis les paramètres</translation>
 <translation id="1177548198167638471">Ne plus me demander</translation>
@@ -3582,6 +3583,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3503995387997205657">Vous pouvez restaurer vos précédentes applis</translation>
 <translation id="3505100368357440862">Suggestions d'achat</translation>
 <translation id="3507132249039706973">La protection standard est activée</translation>
+<translation id="3507650052590605702">Gérer le mot de passe</translation>
 <translation id="3507888235492474624">Relancer la recherche d'appareils Bluetooth</translation>
 <translation id="3508492320654304609">Impossible de supprimer vos données de connexion</translation>
 <translation id="3508920295779105875">Choisir un autre dossier...</translation>
@@ -3684,6 +3686,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3582057310199111521">Saisi sur un site trompeur et détecté lors d'une violation des données</translation>
 <translation id="3582299299336701326">Assombrissez ou éclarcissez l'écran. Appuyez sur Recherche+Ctrl+H pour activer ou désactiver l'inversion des couleurs.</translation>
 <translation id="3584169441612580296">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur et les modifier</translation>
+<translation id="3586741240886978899">Vous l'avez utilisé sur ce site</translation>
 <translation id="3586806079541226322">Impossible d'ouvrir ce fichier</translation>
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587279952965197737">Ne doit pas comporter plus de <ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
@@ -6602,7 +6605,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5643717184207603910">Maintenir des performances rapides</translation>
 <translation id="5646376287012673985">Localisation</translation>
 <translation id="5646558797914161501">Homme d'affaires</translation>
-<translation id="5646994841348250879">Sélectionnez un compte pour vous connecter à <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5651308944918885595">Découvrabilité pour le Partage à proximité</translation>
@@ -8442,7 +8444,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Coupé (par défaut)</translation>
 <translation id="6979557074007409812">Oui, conserver mes données séparément du profil professionnel</translation>
-<translation id="6979737339423435258">Toutes les données</translation>
+<translation id="6979737339423435258">Depuis le début</translation>
 <translation id="6980402667292348590">Insérer</translation>
 <translation id="6981553172137913845">Pour parcourir le Web en mode privé, cliquez sur le menu à trois points afin d'ouvrir une fenêtre de navigation privée</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
@@ -9354,6 +9356,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7650582458329409456">{COUNT,plural, =1{Une empreinte digitale configurée}one{{COUNT} empreinte digitale configurée}other{{COUNT} empreintes digitales configurées}}</translation>
 <translation id="7650677314924139716">Le paramètre de consommation des données est actuellement défini sur "Wi-Fi uniquement"</translation>
 <translation id="7650920359639954963">Désactivée : <ph name="REASON" /></translation>
+<translation id="7651182181030187705">Pour obtenir ce favori sur tous vos appareils, confirmez votre identité</translation>
 <translation id="7651400349472467012">Point d'accès instantané disponible</translation>
 <translation id="7651784568388208829">Poursuivre la tâche Phone Hub</translation>
 <translation id="765293928828334535">Les applications, les extensions et les scripts d'utilisateur ne peuvent pas être ajoutés à partir de ce site Web</translation>
@@ -9392,6 +9395,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7670434942695515800">Pour des performances optimales, installez la dernière version. Nous vous recommandons de sauvegarder vos fichiers au cas où la mise à niveau échouerait. Une fois la mise à niveau lancée, Linux s'arrêtera. Enregistrez les fichiers ouverts avant de continuer. <ph name="LINK_START" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Sous-titres</translation>
 <translation id="7671130400130574146">Utiliser la barre de titre et les bordures de fenêtre du système</translation>
+<translation id="7671139479636735732">Effectuez un clic droit pour visualiser facilement vos idées</translation>
 <translation id="767127784612208024">Appuyez pour confirmer la réinitialisation</translation>
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" souhaite scanner à partir de "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Sélectionnez l'appareil qui a la clé d'accès pour <ph name="APP_NAME" /></translation>
@@ -9411,6 +9415,9 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7680416688940118410">Calibrage de l'écran tactile</translation>
 <translation id="7681095912841365527">Le site peut utiliser le Bluetooth</translation>
 <translation id="7681597159868843240">Les sites utilisent généralement les capteurs de mouvement de votre appareil pour proposer des fonctionnalités comme la réalité virtuelle ou le suivi de vos activités de remise en forme</translation>
+<translation id="7681757571815416227">Vous devez fournir à votre organisation des informations sur cet appareil pour pouvoir l'utiliser avec votre profil <ph name="DOMAIN" />.
+
+Cela peut inclure des informations sur les logiciels installés, les fichiers, votre navigateur, le système d'exploitation de l'appareil et les adresses IP.</translation>
 <translation id="7683373461016844951">Pour continuer, cliquez sur "OK", puis sur "Ajouter une personne" afin de créer un profil pour votre adresse e-mail <ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">Outils d'affichage pour malvoyants</translation>
 <translation id="7684212569183643648">Installée par votre administrateur</translation>
@@ -10192,6 +10199,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8217399928341212914">Continuer à bloquer le téléchargement automatique de plusieurs fichiers</translation>
 <translation id="8219785583603399823">Voir les notes de ce magasin</translation>
 <translation id="822050276545350872">À partir de maintenant, plus besoin d'attendre</translation>
+<translation id="8221942262855134126">Gérer le mot de passe</translation>
 <translation id="8222112516148944758">Vos groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils.</translation>
 <translation id="8222674561049363989">Ce fichier n'est pas un document valide</translation>
 <translation id="822347941086490485">Recherche d'périphériques HID…</translation>
@@ -10982,6 +10990,9 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8767069439158587614">Afficher toutes les recherches pour <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Mettre à jour Chrome automatiquement pour tous les utilisateurs</translation>
 <translation id="8768049274922835860">Tout le monde</translation>
+<translation id="8769047324653576116">Vous devez fournir des informations sur cet appareil pour pouvoir l'utiliser avec le profil de votre organisation.
+
+Cela peut inclure des informations sur les logiciels installés, les fichiers, votre navigateur, le système d'exploitation de l'appareil et les adresses IP.</translation>
 <translation id="876956356450740926">Exécutez les outils pour les développeurs, les IDE et les éditeurs. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Répertoire racine de l'extension</translation>
 <translation id="8773535891252326047">Lien copié vers le texte en surbrillance</translation>

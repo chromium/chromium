@@ -1541,15 +1541,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plażę</translation>
 <translation id="819278132617411009">Wykorzystaj sztuczną inteligencję Google, aby zwiększyć swoją produktywność</translation>
-<translation id="82003371436638355">Gdy wybierzesz „Utwórz własny”, wpisz niestandardowy prompt. Możesz też kliknąć „Wybierz motyw”, a potem zaznaczyć podkreślone słowa, aby spersonalizować tapetę AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów wygenerowanych przez AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Gdy tworzysz własną tapetę, prompt jest wysyłany na serwery Google w celu wygenerowania obrazów oraz użycia go do ulepszania usługi, zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Warunkami korzystania z usług i Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatywna AI może popełniać błędy, także dotyczące osób, dlatego sprawdzaj uzyskane odpowiedzi. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Więcej informacji<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>

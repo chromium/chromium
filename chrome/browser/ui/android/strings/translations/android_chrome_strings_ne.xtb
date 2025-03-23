@@ -694,6 +694,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4270730597186910506">कुनै उत्पादन ट्र्याक वा अनट्र्याक गर्नुहोस्।</translation>
 <translation id="4277529130885813215">अर्को डिभाइस प्रयोग गर्नुहोस्</translation>
 <translation id="4282440837784183472">तपाईंको सङ्गठन, <ph name="MANAGED_DOMAIN" /> ले तपाईंले साइन इन गर्न लागिरहेको खाता र Chrome प्रयोग गर्न सकिने तरिका व्यवस्थापन गर्छ। तपाईंका एड्मिन खास सुविधाहरू सेटअप गर्न वा ती सुविधामाथि प्रतिबन्ध लगाउन सक्नुहुन्छ।</translation>
+<translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
 <translation id="4285846616383034558">कुकी, क्यास र अन्य साइट डेटा</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android का सेटिङमा गई स्क्रिन लक अन गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">नयाँ इन्कोग्निटो ट्याब</translation>
@@ -922,6 +923,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5319359161174645648">Google ले Chrome प्रयोग गर्ने सुझाव दिन्छ</translation>
 <translation id="5326246328175179736">तपाईं यो खाता प्रयोग गरी साइन इन गर्न सक्नुहुन्न</translation>
+<translation id="5327248766486351172">नाम</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मार्फत प्रयोग गर्नुहोस्</translation>
 <translation id="5342314432463739672">अनुमतिसम्बन्धी अनुरोधहरू</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> मा कुनै पनि साइट खोलिएको छैन</translation>
@@ -1077,6 +1079,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">यहाँ आफ्नो समाचार फिडमा देखिने सामग्री तथा क्रियाकलाप नियन्त्रण गर्नुहोस्</translation>
 <translation id="6071995715087444295">ह्याक वा चोरी भएका पासवर्डहरू हेर्न आफ्नो Google खातामा साइन इन गर्नुहोस्</translation>
+<translation id="6078323886959318429">सर्टकट हाल्नुहोस्</translation>
 <translation id="6085886413119427067">यसले सुरक्षित इन्टरनेटमार्फत वेबसाइटहरूमा जोडिने तरिका निर्धारण गर्छ</translation>
 <translation id="6087286598828478206">ब्लक गरेर समूह छाड्ने हो?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> घन्टा बाँकी छ</translation>

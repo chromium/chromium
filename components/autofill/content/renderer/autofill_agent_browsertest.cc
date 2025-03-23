@@ -1504,9 +1504,10 @@ class AutofillAgentTestCaret
       case FormControlType::kInputText:
       case FormControlType::kTextArea:
         test_api(autofill_agent())
-            .QueryAutofillSuggestions(
+            .ShowSuggestions(
                 GetElement().DynamicTo<blink::WebFormControlElement>(),
-                /*trigger_source=*/{}, /*form_cache=*/{});
+                AutofillSuggestionTriggerSource::kFormControlElementClicked,
+                /*form_cache=*/{});
         break;
       default:
         NOTREACHED();

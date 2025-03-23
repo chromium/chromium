@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">الدُرج البديل</translation>
 <translation id="1264974993859112054">رياضة</translation>
 <translation id="1268480293435976622">ظرف صيني رقم 7</translation>
+<translation id="1269045546668906972">يمكنك تفعيل ميزة "الملء التلقائي باستخدام الذكاء الاصطناعي" لملء المزيد من الحقول تلقائيًا</translation>
 <translation id="1269516672602708785">‏إنشاء موقع إلكتروني جديد في "مواقع Google" بسرعة</translation>
 <translation id="1270328905573953738">خدمات نقل المفروشات</translation>
 <translation id="1270502636509132238">طريقة الاستلام</translation>
@@ -1139,6 +1140,7 @@
 <translation id="3005723025932146533">عرض نسخة محفوظة</translation>
 <translation id="300580149047131921">تم استخدامه مؤخرًا</translation>
 <translation id="3009036448238594149">‏‫<ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) لتصفُّح الإجراءات المتوفّرة، ثم اضغط على مفتاح Enter لتنفيذ الإجراء المحدَّد.</translation>
+<translation id="3010991137650052245">لاستخدام <ph name="PERMISSION" /> على هذا الموقع الإلكتروني، يجب منح <ph name="SHORT_PRODUCT_NAME" /> إذنًا بذلك</translation>
 <translation id="3013711734159931232">مستلزمات منزلية</translation>
 <translation id="3014553260345122294">أخبار الأعمال</translation>
 <translation id="3014726756341138577">الميزات المتقدمة للطابعة</translation>
@@ -1411,6 +1413,7 @@
 <translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3484560055331845446">‏قد لا تتمكّن من الوصول إلى حسابك على Google. لذا ينصح Chrome بتغيير كلمة مرورك الآن. وسيُطلَب منك تسجيل الدخول.</translation>
 <translation id="3484861421501147767">هذا تذكير بتوفّر رمز ترويجي تم حفظه</translation>
+<translation id="3485901585646640838">‏لاستخدام كلمات المرور وغيرها من المعلومات المحفوظة في حسابك على Google، يجب إثبات هويتك</translation>
 <translation id="3486406746948052912">مزيلات العرق ومنتجات منع التعرّق ومعطّرات للجسم</translation>
 <translation id="3487845404393360112">الدُرج 4</translation>
 <translation id="3493660662684070951">شاحنات وسيارات رياضية متعددة الأغراض</translation>
@@ -1789,6 +1792,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">نطاق السياسة غير متوافق.</translation>
+<translation id="411918202192379658">تحسينات على ميزة "الملء التلقائي"</translation>
 <translation id="4121428309786185360">تاريخ انتهاء الصلاحية</translation>
 <translation id="4123572138124678573">عمل ثلاثة ثقوب بالأسفل</translation>
 <translation id="412601465078863288">انتهت مهلة التحميل</translation>
@@ -2178,6 +2182,7 @@
 <translation id="4819347708020428563">هل تريد تعديل التعليقات التوضيحية في العرض التلقائي؟</translation>
 <translation id="4822493756793346865">تستند الأسعار العادية إلى معلومات المتاجر المتاحة على الويب خلال آخر 90 يومًا.</translation>
 <translation id="4822922322149719535">مراجعة سجلّ الأخطاء</translation>
+<translation id="4823699521959851389">يحتاج <ph name="SHORT_PRODUCT_NAME" /> إلى إذن باستخدام <ph name="PERMISSION" /> على جهازك</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء "جدول بيانات Google" جديد بسرعة.</translation>
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
 <translation id="4827283332383516812">حذف البطاقة</translation>
@@ -2532,6 +2537,7 @@
 <translation id="5443468954631487277">ترتيب عكسي والوجه للأعلى</translation>
 <translation id="5445340838622821110">عند الدفع على أقساط، يتم ملء رقم بطاقة افتراضية لمرة واحدة. وهذا الرقم مخصّص لعملية الشراء هذه فقط. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">السماح للموقع الإلكتروني <ph name="SITE" /> باستخدام معلوماتك المحفوظة عليه</translation>
+<translation id="5451331376824595378">‏عندما يبلِّغ Chrome عن أي أحداث أمنية، يتم إرسال بيانات عنها إلى المشرف. ويمكن أن تتضمّن هذه البيانات عناوين URL لصفحات تزورها في Chrome، وعناوين URL لصفحات تم نسخ بيانات منها، وأسماء ملفات أو بيانات وصفية، وعناوين IP، وأعطال المتصفِّح أو علامات التبويب، واسم المستخدم الذي تستعين به لتسجيل الدخول إلى كل من التطبيقات المستندة إلى الويب وجهازك وChrome.</translation>
 <translation id="5452270690849572955">لا يمكن العثور على صفحة <ph name="HOST_NAME" /> هذه.</translation>
 <translation id="5452923259299906094">‏الدفع باستخدام المحفظة الإلكترونية وPix</translation>
 <translation id="5455374756549232013">الطابع الزمني للسياسة سيئ</translation>
@@ -3426,6 +3432,7 @@
 <translation id="7023765275461720661">هل تريد ربط الحساب والدفع باستخدام <ph name="BNPL_ISSUER_NAME" />؟</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7030164307377592766">تعديل الإعدادات لملء بيانات طُرق الدفع.</translation>
+<translation id="7031110846419387930">‏معلومات عن المتصفّح ونظام التشغيل والجهاز والبرامج المُثبَّتة والملفات وعناوين IP</translation>
 <translation id="7031646650991750659">‏تطبيقات Google Play التي ثبّتها</translation>
 <translation id="7035705295266423040">يحتاج المصرف إلى إثبات هويتك</translation>
 <translation id="7038063300915481831">‏<ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة إعدادات خصوصية حسابك على Google.</translation>
@@ -3537,6 +3544,7 @@
 <translation id="7221855153210829124">عرض الإشعارات</translation>
 <translation id="722454870747268814">علامة تبويب للتصفح المتخفي</translation>
 <translation id="7227293336683593977">سجلّ الأسعار</translation>
+<translation id="7228306718910595403">حالة الأهلية في الاتحاد الأوروبي</translation>
 <translation id="7232352818707016189">مزيد من الإجراءات في جدول المقارنة</translation>
 <translation id="7233592378249864828">طباعة ورقة التأكيد</translation>
 <translation id="7234112195906418665">سفر ووسائل نقل</translation>

@@ -1544,16 +1544,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strönd</translation>
 <translation id="819278132617411009">Notaðu gervigreind Google til að koma fleiru í verk</translation>
-<translation id="82003371436638355">Þegar þú velur “Búðu til þitt eigið” skaltu skrifa eigin sérsniðna skipun. Að öðrum kosti geturðu valið „Velja þema“ og síðan undirstrikuðu orðin til að sérsníða gervigreindarveggfóðrið þitt.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Veldu „Fá innblástur“ til að fá einstakari og fjölbreyttari valkosti fyrir gervigreindarmyndir.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Þegar þú býrð til þitt eigið veggfóður er skipunin þín send til þjóna Google til að búa til myndir og bæta vöruna í samræmi við <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />þjónustuskilmála og persónuverndarstefnu Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ekki slá inn persónulegar upplýsingar, viðkvæmar upplýsingar eða trúnaðarupplýsingar.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Skapandi gervigreind getur gert mistök, þar á meðal varðandi fólk, svo að þú skalt gæta þess að fara yfir öll svör sem þú færð. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Nánar<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Halda áfram</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8208861521865154048">Fríðindi</translation>

@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">替用匣</translation>
 <translation id="1264974993859112054">運動資訊</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
+<translation id="1269045546668906972">開啟「使用 AI 自動填入」功能，讓系統自動填寫更多欄位</translation>
 <translation id="1269516672602708785">在 Google 協作平台中快速建立新網站</translation>
 <translation id="1270328905573953738">搬家與遷址</translation>
 <translation id="1270502636509132238">取件方式</translation>
@@ -1137,6 +1138,7 @@
 <translation id="3005723025932146533">顯示儲存的複本</translation>
 <translation id="300580149047131921">最近使用過</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵瀏覽可用動作，按下 Enter 鍵則可執行所選動作。</translation>
+<translation id="3010991137650052245">如要允許這個網站使用<ph name="PERMISSION" />，請將存取權授予 <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">家庭用品</translation>
 <translation id="3014553260345122294">商業新聞</translation>
 <translation id="3014726756341138577">進階印表機功能</translation>
@@ -1787,6 +1789,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">系統不支援這項政策的範圍。</translation>
+<translation id="411918202192379658">自動填入功能再進化</translation>
 <translation id="4121428309786185360">到期日</translation>
 <translation id="4123572138124678573">三孔 (底部)</translation>
 <translation id="412601465078863288">上傳作業逾時</translation>
@@ -2175,6 +2178,7 @@
 <translation id="4819347708020428563">要在預設檢視中編輯註解嗎？</translation>
 <translation id="4822493756793346865">一般價格的依據是過去 90 天各網路商店的資料。</translation>
 <translation id="4822922322149719535">查看錯誤記錄</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> 需要使用裝置的<ph name="PERMISSION" /></translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可快速建立新的 Google 試算表</translation>
 <translation id="4826588772550366629">攝影機和麥克風</translation>
 <translation id="4827283332383516812">刪除卡片</translation>

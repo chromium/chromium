@@ -588,6 +588,7 @@ La reautenticación online puede solicitarse por varios motivos, como cuando se 
 <translation id="143649776386947790">Usar el comportamiento predeterminado</translation>
 <translation id="1438739959477268107">Configuración predeterminada de la generación de claves</translation>
 <translation id="1440408958042020947">Permite que los usuarios que hayan aceptado usar la función Mi teléfono accedan a través de esta función a fotos y vídeos recientes hechos con su teléfono.</translation>
+<translation id="1442458649848299896">Habilitar que el lanzamiento de la reducción de <ph name="AL_HEADER_NAME" /> se controle mediante pruebas de campo</translation>
 <translation id="1443532790824582949">Habilitar el teclado virtual táctil</translation>
 <translation id="1449083855104537880">Si se le asigna el valor "true" a esta política, se incluyen las opciones de accesibilidad en el menú de la bandeja del sistema. Si se le asigna el valor "false", las opciones no aparecen en el menú.
 
@@ -2112,6 +2113,7 @@ Si no se define esta política, la opción predeterminada será <ph name="POLICY
 <translation id="252742292004421898">Permitir la API Direct Sockets en estos sitios</translation>
 <translation id="2529880111512635313">Configura la lista de aplicaciones y extensiones de instalación forzada</translation>
 <translation id="253135976343875019">Tiempo de espera de inactividad cuando el dispositivo está conectado a la red</translation>
+<translation id="2532480434098051405">Permitir Inserción de imágenes y mejorar los modelos de IA.</translation>
 <translation id="2535370400681639351">Si se habilita esta política, las solicitudes de autenticación gnubby se enviarán a una conexión de host remota mediante un proxy.
 
       Si se inhabilita esta política o no se le asigna ningún valor, las solicitudes de autenticación gnubby no se enviarán mediante un proxy.
@@ -3226,6 +3228,15 @@ Si se inhabilita esta política, no se permitirá la función de escritura predi
 <translation id="3387999258705169775">Comportamiento predeterminado de la restricción anidada de la función setTimeout().</translation>
 <translation id="3388628790024977864">No permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Habilitar la autenticación gnubby para el host de acceso remoto</translation>
+<translation id="3394895899282672754">Se ha programado la reducción del encabezado de solicitud HTTP <ph name="AL_HEADER_NAME" /> y del captador JavaScript <ph name="JS_GETTER_NAME" /> por motivos de privacidad.
+Para facilitar las pruebas y asegurar la compatibilidad, esta política te permite habilitar o inhabilitar el lanzamiento de esta reducción.
+
+Si se habilita esta política o no se define, se aplicará el lanzamiento de la reducción de <ph name="AL_HEADER_NAME" /> mediante pruebas de campo.
+Si se inhabilita esta política, las pruebas de campo no podrán activar el lanzamiento de la reducción.
+
+Para obtener más información sobre esta función, consulta https://github.com/explainers-by-googlers/reduce-accept-language.
+
+NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente reflejarán los cambios de esta política mientras se esté ejecutando el navegador.</translation>
 <translation id="3395744872155955051">Permitir que se puedan elegir archivos directamente desde <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">No mostrar recomendaciones de aplicaciones en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamiento predeterminado del sistema (depende del tamaño de la pantalla)</translation>
@@ -3556,6 +3567,17 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
       Para consultar más información sobre <ph name="CORS" />, visita <ph name="CORS_HELP_URL" />.
 
       Ten en cuenta que se anunció que esta política se eliminaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se eliminará en la versión 84.</translation>
+<translation id="3604709604504768625">Esta política controla la configuración de la función Inserción de imágenes de <ph name="PRODUCT_OS_NAME" />.
+
+Si se asigna el valor 0, permite que se use la función y que Google utilice datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales originales y comentarios escritos. También puede que los revisen un equipo de personas para mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con el contenido de los usuarios (incluyendo peticiones, entradas, resultados, materiales originales y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2, no se permite la función.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3606571057705314194">Selector de perfil inhabilitado al iniciar</translation>
 <translation id="3608206578291537084">Habilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="3608281460204780443">Mostrar el icono de Chrome Web Store en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> y en la página Nueva pestaña</translation>
@@ -4188,6 +4210,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />, el proveedor de búsqueda no se activará con ninguna palabra clave.</translation>
 <translation id="4090088362777472639">El hash SHA-256 del playbook de Ansible.</translation>
 <translation id="4091040199847925434">Inhabilitar los informes sobre datos del sistema y contenido de páginas que se usan para ayudar a mejorar la función Navegación segura</translation>
+<translation id="4093058072421210667">No permitir Inserción de imágenes.</translation>
 <translation id="4098920079809952737">Permitir imprimir con y sin gráficos de fondo</translation>
 <translation id="410061592404122032">Preguntar siempre que un sitio quiera obtener el permiso de gestión de ventanas</translation>
 <translation id="410068710490553233">Permite iniciar sesión en más cuentas de Google</translation>
@@ -5045,6 +5068,7 @@ Si se le asigna el valor None o no se define, los certificados de <ph name="PROD
       Obsoleto: El modelo de permisos USB permitía especificar la URL solicitante y la URL de inserción. Esta opción, aunque ya no está disponible, es retrocompatible: si se especifica una URL solicitante y una URL de inserción, esta última obtendrá el permiso como origen destacado, y la URL solicitante se ignorará por completo.
 
       Si no se establece esta política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
+<translation id="471269469779289997">Permitir Inserción de imágenes sin mejorar los modelos de IA.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo no estará disponible.</translation>
 <translation id="4715773950737036924">Controlar la disponibilidad de las extensiones cuya publicación se ha anulado en Chrome Web Store</translation>
 <translation id="4722122254122249791">Habilitar el aislamiento de sitios web específicos</translation>
@@ -5994,6 +6018,7 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite est
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
+<translation id="5368878547690689592">Controlar el lanzamiento de la reducción de <ph name="AL_HEADER_NAME" /></translation>
 <translation id="5369937289900051171">Solo impresión en color</translation>
 <translation id="5370279767682621504">Habilitar la compatibilidad con HTTP/0.9 en puertos no utilizados de forma predeterminada</translation>
 <translation id="5370765433640162225">Cuando se le asigna el valor True a esta política, la limpieza automática se ejecuta durante el inicio de sesión para asegurarse de que hay suficiente espacio en disco disponible.
@@ -9373,6 +9398,7 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
 
       Si la política se inhabilita, los usuarios no podrán hacer clic para ignorar las páginas de advertencia.</translation>
 <translation id="7750991880413385988">Abrir página Nueva pestaña</translation>
+<translation id="7752154519644940493">Configuración de la función Inserción de imágenes de IA generativa</translation>
 <translation id="7753678409577376761">Habilitar el punto de entrada de las funciones experimentales de la barra de herramientas del navegador</translation>
 <translation id="7754704193130578113">Preguntar dónde se guardará cada archivo antes de descargarlo</translation>
 <translation id="7754893969683595513">Si se asigna un valor a esta política, se especificará el tiempo (en milisegundos) que tardará el servicio de gestión en solicitar información de la política de usuarios. Los valores válidos están comprendidos entre 1.800.000 (30 minutos) y 86.400.000 (1 día). Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.
@@ -10514,6 +10540,7 @@ Esta política no tendrá ningún efecto si se habilita, se deja en blanco o no 
 <translation id="8575746110808109915">Configura la política para habilitar la función de restauración completa.
       Si se le asigna el valor true a esta política, las aplicaciones y ventanas de aplicaciones se restaurarán o no tras un fallo o reinicio basándose en el ajuste de restauración de la aplicación.
       Si se le asigna el valor false a esta política, solo se abrirán automáticamente las ventanas del navegador.</translation>
+<translation id="8579020983849384175">Editor de texto (compatible desde la versión 136)</translation>
 <translation id="8583509234908413302">Permitir cambiar la versión de WebRTC a versiones antiguas de TLS/DTLS</translation>
 <translation id="8584279193368801689">Restringe el modo de impresión con PIN. Si no se establece esta política, no se aplicará ninguna restricción. Si el modo no está disponible, se ignorará esta política. Ten en cuenta que la función de impresión con PIN solo está habilitada en impresoras que utilizan uno de los protocolos IPPS, HTTPS, USB o IPP por USB.</translation>
 <translation id="858510846828945657">Lista de excepciones de dominios de servicio bloqueados de servicio de SSO flotante</translation>
@@ -11147,6 +11174,7 @@ Nota: Por el momento, solo se tendrá en cuenta la primera entrada. Más adelant
       Para obtener información detallada sobre los patrones de entrada válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. El valor <ph name="WILDCARD_VALUE" /> no se acepta en esta política. Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.</translation>
 <translation id="9010080992450148617">Permitir que los usuarios registrados en el Programa de Protección Avanzada envíen los archivos descargados a Google para realizar un análisis profundo</translation>
 <translation id="9012101302849557459">Amplía la compatibilidad de aplicaciones de Chrome en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" />.</translation>
+<translation id="9013629280364842072">Inhabilitar que el lanzamiento de la reducción de <ph name="AL_HEADER_NAME" /> se controle mediante pruebas de campo</translation>
 <translation id="9013875414788074110">Durante el inicio de sesión, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
 
       Cuando se asigna el valor "-1" a esta política, el usuario puede autenticarse sin conexión indefinidamente. Cualquier otro valor que se asigne a esta política indicará el tiempo que debe transcurrir desde la última autenticación con conexión para que el usuario tenga que utilizar de nuevo la autenticación con conexión.

@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
@@ -27,6 +28,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -364,11 +366,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, SetAutofillAiOptIn) {
-  EXPECT_FALSE(autofill_client()->GetPrefs()->GetBoolean(
-      autofill::prefs::kAutofillPredictionImprovementsEnabled));
+  autofill_client()->set_entity_data_manager(
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile()));
+  autofill_client()->SetUpPrefsAndIdentityForAutofillAi();
+  EXPECT_TRUE(autofill::SetAutofillAiOptInStatus(*autofill_client(), false));
+  EXPECT_FALSE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
   ASSERT_TRUE(RunAutofillSubtest("optIntoAutofillAi"));
-  EXPECT_TRUE(autofill_client()->GetPrefs()->GetBoolean(
-      autofill::prefs::kAutofillPredictionImprovementsEnabled));
+  EXPECT_TRUE(autofill::GetAutofillAiOptInStatus(*autofill_client()));
 }
 
 }  // namespace

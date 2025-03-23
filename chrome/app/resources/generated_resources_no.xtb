@@ -267,6 +267,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1175572348579024023">Rull</translation>
 <translation id="1175914831232945926">Siffer</translation>
 <translation id="1176471985365269981">Nettsteder som ikke har lov til å redigere filer eller mapper på enheten</translation>
+<translation id="1176864681932214421">Lag bilder med AI</translation>
 <translation id="1177073277575830464">Hurtigkonfigureringen for Android er ferdig. Fortsett konfigureringen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="1177440945615690056">Du kan koble til et hvilket som helst kvalifisert mobilnettverk i innstillingene</translation>
 <translation id="1177548198167638471">Ikke spør igjen</translation>
@@ -3590,6 +3591,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3503995387997205657">Du kan gjenopprette de tidligere appene dine</translation>
 <translation id="3505100368357440862">Handelsforslag</translation>
 <translation id="3507132249039706973">Standardbeskyttelse er på</translation>
+<translation id="3507650052590605702">Administrer passordet</translation>
 <translation id="3507888235492474624">Skann etter Bluetooth-enheter på nytt</translation>
 <translation id="3508492320654304609">Påloggingsinformasjonen din kunne ikke slettes</translation>
 <translation id="3508920295779105875">Velg en annen mappe</translation>
@@ -3692,6 +3694,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3582057310199111521">Skrevet inn på villedende nettsted og funnet i databrudd</translation>
 <translation id="3582299299336701326">Gjør lyse skjermer mørke og mørke skjermer lyse. Trykk på søketasten + Ctrl + H for å slå fargeinvertering på og av.</translation>
 <translation id="3584169441612580296">lese og endre bilder, musikk og andre medier fra datamaskinen din</translation>
+<translation id="3586741240886978899">Du brukte kontoen på dette nettstedet</translation>
 <translation id="3586806079541226322">Kan ikke åpne denne filen</translation>
 <translation id="3586931643579894722">Skjul detaljer</translation>
 <translation id="3587279952965197737">Kan maksimalt bestå av <ph name="MAX_CHARACTER_COUNT" /> tegn</translation>
@@ -6606,7 +6609,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5643717184207603910">Oppretthold ytelsen</translation>
 <translation id="5646376287012673985">Posisjon</translation>
 <translation id="5646558797914161501">Forretningsmann</translation>
-<translation id="5646994841348250879">Velg en konto for å logge på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Mikrofonkontakt</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5651308944918885595">Synlighet for nærdeling</translation>
@@ -9356,6 +9358,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingeravtrykk er konfigurert}other{{COUNT} fingeravtrykk er konfigurert}}</translation>
 <translation id="7650677314924139716">Gjeldende innstilling for databruk er Bare Wifi</translation>
 <translation id="7650920359639954963">Ikke aktivert: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">For å få dette bokmerket på alle enhetene dine, bekreft at det er deg</translation>
 <translation id="7651400349472467012">Umiddelbar wifi-sone er tilgjengelig</translation>
 <translation id="7651784568388208829">Fortsettelse av oppgaver med Telefonstyring</translation>
 <translation id="765293928828334535">Apper, utvidelser og brukerskript kan ikke legges til fra dette nettstedet</translation>
@@ -9394,6 +9397,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7670434942695515800">Oppgrader til den nyeste versjonen for å få den beste ytelsen. Det anbefales at du sikkerhetskopierer filene dine, i tilfelle oppgraderingen ikke kan fullføres. Når oppgraderingen begynner, avsluttes Linux. Lagre åpne filer før du fortsetter. <ph name="LINK_START" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Undertekster</translation>
 <translation id="7671130400130574146">Bruk systemets tittellinje og kantlinjer</translation>
+<translation id="7671139479636735732">Høyreklikk for å visualisere ideene dine enkelt</translation>
 <translation id="767127784612208024">Berør for å bekrefte tilbakestilling</translation>
 <translation id="7671472752213333268">«<ph name="EXTENSION_NAME" />» vil skanne fra «<ph name="SCANNER_NAME" />».</translation>
 <translation id="7672504401554182757">Velg hvilken enhet som har tilgangsnøkkelen for <ph name="APP_NAME" /></translation>
@@ -9413,6 +9417,9 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7680416688940118410">Kalibrering av berøringsskjerm</translation>
 <translation id="7681095912841365527">Nettstedet kan bruke Bluetooth</translation>
 <translation id="7681597159868843240">Nettsteder bruker vanligvis bevegelsessensorene på enheten din for å kunne tilby funksjoner som virtuell virkelighet eller helsesporing</translation>
+<translation id="7681757571815416227">Før du kan bruke enheten med profilen din for <ph name="DOMAIN" />, må organisasjonen ha informasjon om enheten.
+
+Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enhetens operativsystem og IP-adresser.</translation>
 <translation id="7683373461016844951">For å fortsette, klikk på OK. Klikk deretter på Legg til person for å opprette en ny profil for <ph name="DOMAIN" />-e-postadressen din.</translation>
 <translation id="7683834360226457448">Visningsverktøy for brukere med nedsatt synsevne</translation>
 <translation id="7684212569183643648">Installert av administratoren din</translation>
@@ -10194,6 +10201,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8217399928341212914">Fortsett blokkeringen av automatisk nedlasting av flere filer</translation>
 <translation id="8219785583603399823">Se vurderinger av denne butikken</translation>
 <translation id="822050276545350872">Heretter er det slutt på ventingen</translation>
+<translation id="8221942262855134126">Administrer passordet</translation>
 <translation id="8222112516148944758">Fanegruppene dine lagres og oppdateres automatisk på alle enhetene dine</translation>
 <translation id="8222674561049363989">Filen er ikke noe gyldig dokument</translation>
 <translation id="822347941086490485">Finner HID-enheter …</translation>
@@ -10984,6 +10992,9 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8767069439158587614">Vis alle søk etter <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Oppdater Chrome automatisk for alle brukere</translation>
 <translation id="8768049274922835860">Alle</translation>
+<translation id="8769047324653576116">Før du kan bruke enheten med organisasjonsprofilen din, må organisasjonen ha informasjon om enheten.
+
+Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enhetens operativsystem og IP-adresser.</translation>
 <translation id="876956356450740926">Kjør utviklerverktøy, IDE-er og redigeringsverktøy. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Rotkatalog for utvidelser</translation>
 <translation id="8773535891252326047">Linken til den markerte teksten er kopiert</translation>

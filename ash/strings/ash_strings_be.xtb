@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Паказаць моўныя налады</translation>
 <translation id="1459693405370120464">Надвор’е</translation>
 <translation id="1460620680449458626">Гук выключаны.</translation>
+<translation id="1462439140224375968">Створаны дакумент Google</translation>
 <translation id="14648076227129703">Доступ да камеры атрымаюць праграмы "<ph name="APP1_NAME" />", "<ph name="APP2_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру</translation>
 <translation id="1467432559032391204">Злева</translation>
 <translation id="146902737843070955">Запыт на гэта змяненне атрыманы ад адміністратара</translation>
@@ -215,6 +216,7 @@
 <translation id="1679841710523778799">Павялічыць яркасць</translation>
 <translation id="1680659827022803830">Элементы кіравання відэавыклікам</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Гэту функцыю можна ў любы час выключыць у наладах. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Адрас IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Актыўнае акно замацавана злева.</translation>
@@ -592,6 +594,7 @@
 <translation id="301584155502740476">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот выключаны.</translation>
 <translation id="3017079585324758401">Фон</translation>
 <translation id="3018135054368884502">Пераматаць медыязмесціва ўперад</translation>
+<translation id="3026897869154397692">Дададзена ў Каляндар</translation>
 <translation id="3033545621352269033">Уключана</translation>
 <translation id="3033912566804961911">Аб’яднаць са сталом "<ph name="DESK_NAME" />"</translation>
 <translation id="3036649622769666520">Адкрыццё файлаў</translation>
@@ -967,6 +970,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, усталяваная праграма, прыпынена</translation>
 <translation id="4228078597006700451">Налады не зададзены</translation>
 <translation id="4230560241506423345">Стварыць</translation>
+<translation id="4236726631849783264">Напамін пра прапанаваныя дзеянні</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Рэжым агляду</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
@@ -1043,6 +1047,7 @@
 <translation id="4471354919263203780">Ідзе спампоўванне файлаў распазнавання маўлення... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Абнавіце прыладу зараз}=1{Абнавіце прыладу на працягу 1 секунды}one{Абнавіце прыладу на працягу # секунды}few{Абнавіце прыладу на працягу # секунд}many{Абнавіце прыладу на працягу # секунд}other{Абнавіце прыладу на працягу # секунды}}</translation>
 <translation id="4472575034687746823">Пачаць</translation>
+<translation id="4473489370276014885">Google Кантакты</translation>
 <translation id="4477350412780666475">Наступны трэк</translation>
 <translation id="4477751544736611934">Можа спаганяцца плата за перадачу даных.
 Падключана 1 прылада.</translation>
@@ -1069,6 +1074,7 @@
 <translation id="4545950850562423083">Захаваць бягучую старонку ў закладках</translation>
 <translation id="4548482551627849548">Перамясціць актыўнае акно на стол злева</translation>
 <translation id="4552748006424994716">Каб прадухіліць узнікненне рэха, можна слухаць мікрафон толькі правадным навушнікам.</translation>
+<translation id="4556953949326137018">Калі вы выкарыстоўваеце прапанаваныя дзеянні, такія як "дадаць у Каляндар" або "стварыць дакумент Google", змесціва з выбранай вобласці адпраўляецца на серверы Google для прапанавання дзеянняў. Такую адпраўку рэгулююць <ph name="LINK_TO_SERVICE_TERMS" />. Не ўключайце ў змесціва асабістую і канфідэнцыяльную інфармацыю.</translation>
 <translation id="4560576029703263363">Уключана</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Схаваць пароль</translation>
@@ -1152,6 +1158,7 @@
 <translation id="481455355267255546">Будучыя падзеі</translation>
 <translation id="481749895090480684">Спіс задач: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камеру і мікрафон</translation>
+<translation id="4828935196674083554">Ідзе дадаванне…</translation>
 <translation id="482908187605862807">Даступныя праграмы з Крамы Play</translation>
 <translation id="4831034276697007977">Сапраўды выключыць аўтаматычныя націсканні?</translation>
 <translation id="4835677468087803981">Схаваць PIN-код</translation>
@@ -1649,6 +1656,7 @@
 <translation id="641817663353603351">Page Up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Выдаліць усе апавяшчэнні</translation>
+<translation id="6426905245930183644">Ідзе стварэнне…</translation>
 <translation id="6430225033895752525">Паказаць налады Канцэнтрацыі ўвагі</translation>
 <translation id="643147933154517414">Усё гатова</translation>
 <translation id="6431865393913628856">Запіс экрана</translation>
@@ -1888,6 +1896,7 @@
 <translation id="7228968829656641943">Выберыце для пошуку змесціва на экране. Для навігацыі з дапамогай клавіятуры, націсніце клавішу Tab, потым – прабел.</translation>
 <translation id="7229029500464092426">Даступны аб’ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Абедзве кнопкі мышы</translation>
+<translation id="7240636904654154599">Створана табліца Google</translation>
 <translation id="7244725679040769470">Засталося <ph name="PERCENTAGE" />% зараду акумулятара. Падключыце прыладу да крыніцы сілкавання.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Для ўсталявання абнаўлення патрабуецца перазапуск Chromebook. Гэта можа заняць да 1 хвіліны.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2398,6 +2407,8 @@
 <translation id="8921624153894383499">Памочнік Google не размаўляе на гэтай мове.</translation>
 <translation id="8926951137623668982">Паліца заўсёды схавана</translation>
 <translation id="8929566928381252430">Хочаце ўключыць Caps Lock? Скарыстайце</translation>
+<translation id="8929623844713377237">Створаны кантакт</translation>
+<translation id="8934418770423095813">Стварыць дакумент Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="8936501819958976551">выключыла</translation>
 <translation id="8938800817013097409">Прылада USB-C (задні порт справа)</translation>

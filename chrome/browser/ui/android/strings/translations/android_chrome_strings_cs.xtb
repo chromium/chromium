@@ -584,6 +584,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3721119614952978349">Vy a Google</translation>
 <translation id="3737319253362202215">Nastavení překladu</translation>
 <translation id="3738139272394829648">Vyhledání klepnutím</translation>
+<translation id="3739455665973395693">V účtu Google nemáte žádná prolomená hesla</translation>
 <translation id="3739899004075612870">Přidáno do záložek (<ph name="PRODUCT_NAME" />)</translation>
 <translation id="3740525748616366977">Hlasové vyhledávání není v tomto zařízení k dispozici</translation>
 <translation id="376561056759077985">Některá data ještě nejsou uložena</translation>
@@ -637,6 +638,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3985215325736559418">Opravdu soubor <ph name="FILE_NAME" /> chcete stáhnout znovu?</translation>
 <translation id="3987993985790029246">Kopírovat odkaz</translation>
 <translation id="4000212216660919741">Offline domovská stránka</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{V účtu Google máte 1 prolomené heslo}few{V účtu Google máte # prolomená hesla}many{V účtu Google máte # prolomeného hesla}other{V účtu Google máte # prolomených hesel}}</translation>
 <translation id="4016425174436051808">Sledování nelze zapnout. Něco se pokazilo.</translation>
 <translation id="4024768890073681126">Tvůj prohlížeč spravují rodiče</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}few{# h}many{# h}other{# h}}</translation>
@@ -692,6 +694,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4270730597186910506">Začít nebo přestat sledovat produkt.</translation>
 <translation id="4277529130885813215">Použít jiné zařízení</translation>
 <translation id="4282440837784183472">Účet, ke kterému jste přihlášeni, a možné způsoby používání prohlížeče Chrome spravuje organizace <ph name="MANAGED_DOMAIN" />. Váš administrátor může nastavit nebo omezit určité funkce.</translation>
+<translation id="4285498937028063278">Odepnout</translation>
 <translation id="4285846616383034558">Soubory cookie, mezipaměť a další data webů</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Zapněte v nastavení systému Android zámek obrazovky<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nová anonymní karta</translation>
@@ -831,6 +834,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4881695831933465202">Otevřít</translation>
 <translation id="488187801263602086">Přejmenovat soubor</translation>
 <translation id="4885273946141277891">Nepodporovaný počet instancí Chromu.</translation>
+<translation id="4890973535105146893">V účtu Google nemáte uložená žádná hesla</translation>
 <translation id="4905823827770127520">Zahrnout odkaz na stránku</translation>
 <translation id="4908869848243824489">Kanál Objevit od Googlu</translation>
 <translation id="4910889077668685004">Platební aplikace</translation>
@@ -920,6 +924,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5319359161174645648">Google doporučuje prohlížeč Chrome</translation>
 <translation id="5326246328175179736">Pomocí tohoto účtu se přihlásit nemůžete</translation>
+<translation id="5327248766486351172">Jméno</translation>
 <translation id="5328542107300944283">Použít na webu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Žádosti o oprávnění</translation>
 <translation id="534580735623577507">Žádné weby z <ph name="TIME_PERIOD" /></translation>
@@ -1075,6 +1080,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Zde můžete ovládat své příběhy a aktivity</translation>
 <translation id="6071995715087444295">Pokud chcete zkontrolovat, zda nedošlo k prolomení hesel, přihlaste se k účtu Google</translation>
+<translation id="6078323886959318429">Přidat zástupce</translation>
 <translation id="6085886413119427067">Určuje způsob připojení k webům přes zabezpečené připojení</translation>
 <translation id="6087286598828478206">Zablokovat a opustit skupinu?</translation>
 <translation id="60923314841986378">Zbývá: <ph name="HOURS" /> h</translation>
@@ -1703,6 +1709,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="869891660844655955">Datum konce platnosti</translation>
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
 <translation id="8712637175834984815">Hotovo</translation>
+<translation id="8715286883001906001">Zesilte hesla ve svém účtu Google</translation>
 <translation id="8723453889042591629">Nechte si tuto stránku rychle přeložit. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>
 <translation id="8731268612289859741">Bezpečnostní kód</translation>
@@ -1830,6 +1837,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="970715775301869095">Zbývá: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavřít všechny karty</translation>
+<translation id="984756705737569814">Hesla ve vašem účtu Google nelze zkontrolovat</translation>
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="988091779042748639">Pokud ze zařízení chcete vymazat historii anonymního prohlížení, zavřete všechny anonymní karty</translation>
 <translation id="992745192656291733">Počet karet: <ph name="TAB_COUNT" /></translation>

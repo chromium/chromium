@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">ብሩህነትን ጨምር</translation>
 <translation id="1680659827022803830">የቪድዮ ጥሪ መቆጣጠሪያዎች</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">ይህን ባህሪ በማንኛውም ጊዜ በቅንብሮች ውስጥ ማጥፋት ይችላሉ። <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ሰዓት ቆጣሪ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">የIPv6 አድራሻ፦ <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ገባሪ መስኮት በግራ በኩል ተተክሏል።</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />፣ የተጫነ መረግበሪያ፣ ባለበት ቆሟል</translation>
 <translation id="4228078597006700451">መቆጣጠሪያዎች አልተዋቀሩም</translation>
 <translation id="4230560241506423345">አዲስ</translation>
+<translation id="4236726631849783264">ስለ የተጠቆሙ ድርጊቶች አስታዋሽ</translation>
 <translation id="4239069858505860023">ጂፒአርኤስ</translation>
 <translation id="4240486403425279990">የአጠቃላይ ዕይታ ሁነታ</translation>
 <translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
@@ -1043,6 +1045,7 @@
 <translation id="4471354919263203780">የንግግር ማወቂያ ፋይሎችን በማውረድ ላይ... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{አሁን መሣሪያን ያዘምኑ}=1{በ1 ሰከንድ ውስጥ መሣሪያን ያዘምኑ}one{በ# ሰከንዶች ውስጥ መሣሪያን ያዘምኑ}other{በ# ሰከንዶች ውስጥ መሣሪያን ያዘምኑ}}</translation>
 <translation id="4472575034687746823">ይጀምሩ</translation>
+<translation id="4473489370276014885">የGoogle እውቂያዎች</translation>
 <translation id="4477350412780666475">ቀጣይ ትራክ</translation>
 <translation id="4477751544736611934">ይህ የውሂብ ወጪን ሊያስከትል ይችላል።
 1 መሣሪያ ተገናኝቷል።</translation>
@@ -1069,6 +1072,7 @@
 <translation id="4545950850562423083">የአሁኑን ገጽ እንደ ዕልባት ያስቀምጡ</translation>
 <translation id="4548482551627849548">ገቢር መስኮትን በግራ በኩል ወደ ዴስክ ውሰድ</translation>
 <translation id="4552748006424994716">የገደል ማሚቶን ለማስቀረት ማይክሮፎንዎን በባለ ገመድ የራስ ላይ ማዳመጫ ብቻ ማዳመጥ ይችላሉ።</translation>
+<translation id="4556953949326137018">እንደ «ወደ ቀን መቁጠሪያ አክል» ወይም «Google ሰነዶች ፍጠር» ያሉ የተጠቆሙ ድርጊቶችን ሲጠቀሙ ከተመረጠው አካባቢ ያለው ይዘት ለተጠቆሙ ድርጊቶች ወደ Google አገልጋዮች ይላካል፣ ይህ በ<ph name="LINK_TO_SERVICE_TERMS" />ተገዢ ነው። የግል፣ ልዩ ጥንቃቄ የሚያስፈልገው ወይም ምስጢራዊ የሆነ ማንኛውም ነገር አያካትቱ።</translation>
 <translation id="4560576029703263363">አብራ</translation>
 <translation id="4561267230861221837">3ጂ</translation>
 <translation id="4565377596337484307">የይለፍ ቃል ደብቅ</translation>
@@ -1152,6 +1156,7 @@
 <translation id="481455355267255546">ቀጥሎ የሚመጣው</translation>
 <translation id="481749895090480684">የተግባር ዝርዝር፦ <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ካሜራ እና ማይክሮፎን</translation>
+<translation id="4828935196674083554">በማከል ላይ...</translation>
 <translation id="482908187605862807">ከPlay መደብር የሚገኙ መተግበሪያዎች</translation>
 <translation id="4831034276697007977">ራስሰር ጠቅ ማድረጎችን ማጥፋት እንደሚፈልጉ እርግጠኛ ነዎት?</translation>
 <translation id="4835677468087803981">ፒን ደብቅ</translation>
@@ -1649,6 +1654,7 @@
 <translation id="641817663353603351">ገጽ ወደላይ</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ሁሉንም ማሳወቂያዎች አጽዳ</translation>
+<translation id="6426905245930183644">በመፍጠር ላይ...</translation>
 <translation id="6430225033895752525">የትኩረት ቅንብሮችን አሳይ</translation>
 <translation id="643147933154517414">ሁሉም ተከናውኗል</translation>
 <translation id="6431865393913628856">የማያ ገፅ ቀረጻ</translation>
@@ -2400,6 +2406,7 @@
 <translation id="8921624153894383499">የGoogle ረዳቱ ይህን ቋንቋ አይናገርም።</translation>
 <translation id="8926951137623668982">መደርደሪያ ሁልጊዜ ይደበቃል</translation>
 <translation id="8929566928381252430">Caps Lock ለመጠቀም እየሞከሩ ነው? ይጠቀሙ</translation>
+<translation id="8934418770423095813">Google ሰነድን ይጫኑ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ፋይል}one{# ፋይል}other{# ፋይሎች}}</translation>
 <translation id="8936501819958976551">ቦዝኗል</translation>
 <translation id="8938800817013097409">USB-C መሣሪያ (የቀኝ ወደብ ከኋላ በኩል)</translation>

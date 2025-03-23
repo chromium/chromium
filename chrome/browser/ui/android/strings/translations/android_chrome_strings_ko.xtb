@@ -694,6 +694,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4270730597186910506">제품을 추적하거나 추적을 해제합니다.</translation>
 <translation id="4277529130885813215">다른 기기 사용</translation>
 <translation id="4282440837784183472"><ph name="MANAGED_DOMAIN" /> 조직에서 내가 로그인한 계정과 Chrome이 사용되는 방식을 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다</translation>
+<translation id="4285498937028063278">고정 해제</translation>
 <translation id="4285846616383034558">쿠키, 캐시, 기타 사이트 데이터</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android 설정에서 화면 잠금 사용 설정하기<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">새 시크릿 탭</translation>
@@ -923,6 +924,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5317780077021120954">저장</translation>
 <translation id="5319359161174645648">Google에서 추천하는 Chrome</translation>
 <translation id="5326246328175179736">이 계정으로는 로그인할 수 없습니다.</translation>
+<translation id="5327248766486351172">이름</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 계정으로 사용</translation>
 <translation id="5342314432463739672">권한 요청</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> 동안의 사이트 없음</translation>
@@ -1078,6 +1080,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">여기에서 스토리 및 활동을 관리하세요.</translation>
 <translation id="6071995715087444295">유출된 비밀번호가 있는지 확인하려면 Google 계정에 로그인하세요</translation>
+<translation id="6078323886959318429">바로가기 추가</translation>
 <translation id="6085886413119427067">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다.</translation>
 <translation id="6087286598828478206">차단하고 그룹에서 나가시겠습니까?</translation>
 <translation id="60923314841986378"><ph name="HOURS" />시간 남음</translation>

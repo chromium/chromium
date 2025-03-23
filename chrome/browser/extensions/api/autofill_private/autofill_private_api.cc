@@ -54,6 +54,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1219,15 +1220,11 @@ AutofillPrivateSetAutofillAiOptInStatusFunction::Run() {
   std::optional<autofill_private::SetAutofillAiOptInStatus::Params> parameters =
       autofill_private::SetAutofillAiOptInStatus::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
-  PrefService* prefs = autofill_client()->GetPrefs();
-  if (!prefs) {
+  if (!autofill::SetAutofillAiOptInStatus(*autofill_client(),
+                                          parameters->opted_in)) {
     return RespondNow(Error(kErrorAutofillAiUnavailable));
   }
 
-  // TODO(crbug.com/404485362): Write to GAIA-id keyed account-level pref
-  // instead.
-  prefs->SetBoolean(autofill::prefs::kAutofillPredictionImprovementsEnabled,
-                    parameters->opted_in);
   // TODO(crbug.com/402367669): Mark feature as used to avoid IPH showing again.
   return RespondNow(NoArguments());
 }

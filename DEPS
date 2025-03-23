@@ -295,11 +295,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'd54c36d6edd717d63db3c817e9d91cab28f3060b',
+  'skia_revision': 'ca97f221e74329f4254872c518b49217678b8a3b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '3de64494d18e90ee908ddbf74b1240bb43e1a776',
+  'v8_revision': '8a4c79f2f72614bf9af2f65593d37f49a4c86e8e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -387,7 +387,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'f0dda7c63c64f6c152143d4ea6e4a93a56569b65',
+  'devtools_frontend_revision': '1aa930db260d7c3c77e0f60faa2bf2dbce0f057c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -411,7 +411,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '6e987405d6e8e21b3225a79c2ffd8bd931e2f832',
+  'dawn_revision': '62e0e50822042e394fdcc9206d4c83a22f442b1c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1484,7 +1484,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '0baef85aa298a01b2478e6319a62053c3f2dcd1e',
+    '3a8eb5117c0d6cca918f32acaf0ee9c5981f5f81',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1513,7 +1513,7 @@ deps = {
   },
 
   'src/ios/third_party/material_components_ios/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + 'e7a6b602b4309114c51678be122847fe8f47bf34',
+      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + '487329ba2b556318adddda8039172182746f16ae',
       'condition': 'checkout_ios',
   },
 
@@ -2838,16 +2838,16 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@d9f0ad9b940dc760fef132233769f74534e3798a',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@c101024bcab8a43b15955251ae93ee3b57cd8dcb',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@e57f993cff981c8c3ffd38967e030f04d13781a9',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@0e710677989b4326ac974fd80c5308191ed80965',
   'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@ada1771a9f7a125573aa94fe551fdc44b45769bd',
   'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@78c359741d855213e8685278eb81bb62599f8e56',
-  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@d002f8e0f9ecf3b05f8556800f4139d2fa9e3143',
+  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@47404470464709ed5c4b660f9ebc73c717e85a50',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@32ee3e6e333a4bc4064fe64cfdfdcf6e71a92743',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@ccae111ac678adbc9c74be10c8384cd1af835710',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@313d1d4d70d4f18b26488d417998fce5bc6630c4',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@44b817842beb1717170dda9322301bdb4303212b',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
@@ -3011,7 +3011,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'q0Td5NrKvDtVJtFTgXbvOzh9VMdBbfYMuWV2Co6O5fgC',
+        'version': 'PlIiqZbmkMBYZ88AJ1lkuHSMIX45XGcvsWA3SAvn-3sC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3022,7 +3022,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'DswY1RZcBlSJu6rgVu4kEy4x_xA50baF-WyboRr2LboC',
+        'version': 'DHdvEjWHqgKjufBTsT53WL6-nDnBJoFd64JtaUaqGxsC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3033,7 +3033,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': '-ERgTyd9hccV1ZM-ww2d3BSMv5fHninVsxN-Oz2wQMgC',
+        'version': '02tA3UW1e-79Cmz6sPlUFEr6mVWGTGSSHsZ5McW3UygC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3093,7 +3093,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/autorolled',
-              'version': 'r-Y3eSXC6S98faOG8uZP2QCCP1vI3L3JMf4KWW2zeYMC',
+              'version': 'w2y97k-NQzDOyLRaKw6hWZdjnDhyhx8vGenImrJh34cC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -4681,7 +4681,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'e34818920c8e0d65869e6cb1cc6f5fe018553572',
+        '0bf543ddfc682a16bdb1927324e62064148f8d91',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

@@ -1544,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ชายหาด</translation>
 <translation id="819278132617411009">ใช้ AI ของ Google เพื่อทำงานอย่างมีประสิทธิภาพมากขึ้น</translation>
-<translation id="82003371436638355">เมื่อเลือก "สร้างของคุณเอง" ให้เขียนพรอมต์ที่กำหนดเอง หรือเลือก "เลือกธีม" แล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนวอลเปเปอร์ AI ในแบบของคุณ
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          เลือก "ขอแรงบันดาลใจหน่อย" เพื่อรับตัวเลือกรูปภาพ AI ที่เป็นเอกลักษณ์และหลากหลายยิ่งขึ้น
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          เมื่อสร้างวอลเปเปอร์ของคุณเอง ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ของ Google เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ข้อกำหนดในการให้บริการและนโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> อย่าระบุสิ่งที่เป็นเรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generative AI อาจทำผิดพลาดได้ ซึ่งรวมถึงการให้ข้อมูลเกี่ยวกับผู้คน ดังนั้นโปรดตรวจสอบคำตอบอีกครั้ง <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>

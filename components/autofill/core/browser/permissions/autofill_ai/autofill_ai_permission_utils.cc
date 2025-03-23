@@ -83,15 +83,19 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
   NOTREACHED();
 }
 
-// Checks whether all requirements for `PrefService` state are satisfied.
-[[nodiscard]] bool SatisfiesPreferenceRequirements(
-    const PrefService& pref_service,
-    bool has_entity_data_saved,
-    AutofillAiAction action) {
+// Checks whether preference-related requirements are satisfied.
+[[nodiscard]] bool SatisfiesPreferenceRequirements(const AutofillClient& client,
+                                                   bool has_entity_data_saved,
+                                                   AutofillAiAction action) {
   // No pref state can prevent actions that are relevant for data transparency
   // (i.e., showing/updating/removing existing data in settings).
   if (IsRelevantForDataTransparency(action) && has_entity_data_saved) {
     return true;
+  }
+
+  const PrefService* const prefs = client.GetPrefs();
+  if (!prefs) {
+    return false;
   }
 
   // State of the AutofillAI-specific enterprise policy pref.
@@ -99,7 +103,7 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
       base::to_underlying(optimization_guide::model_execution::prefs::
                               ModelExecutionEnterprisePolicyValue::kDisable);
   static_assert(kAutofillPredictionSettingsDisabled == 2);
-  if (pref_service.GetInteger(
+  if (prefs->GetInteger(
           optimization_guide::prefs::
               kAutofillPredictionImprovementsEnterprisePolicyAllowed) ==
       kAutofillPredictionSettingsDisabled) {
@@ -107,22 +111,11 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
   }
 
   // State of the Address-Autofill pref.
-  if (!pref_service.GetBoolean(prefs::kAutofillProfileEnabled)) {
+  if (!prefs->GetBoolean(prefs::kAutofillProfileEnabled)) {
     return false;
   }
 
-  // TODO(crbug.com/397881703): Remove feature guards once the pref is migrated
-  // to a GAIA-keyed dictionary. It makes no sense to extend the scope before
-  // since we want to remove the old pref anyway.
-  // State of the user-set AutofillAI pref.
-  const bool autofill_ai_enabled =
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-      pref_service.GetBoolean(prefs::kAutofillPredictionImprovementsEnabled);
-#else
-      false;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+  const bool autofill_ai_enabled = GetAutofillAiOptInStatus(client);
   switch (action) {
     case AutofillAiAction::kAddEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
@@ -242,12 +235,11 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
   }
 
   const EntityDataManager* const edm = client.GetEntityDataManager();
-  const PrefService* const prefs = client.GetPrefs();
-  if (!edm || !prefs) {
+  if (!edm) {
     return false;
   }
   const bool has_entity_data_saved = !edm->GetEntityInstances().empty();
-  if (!SatisfiesPreferenceRequirements(*prefs, has_entity_data_saved, action)) {
+  if (!SatisfiesPreferenceRequirements(client, has_entity_data_saved, action)) {
     return false;
   }
 

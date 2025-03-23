@@ -215,6 +215,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1679841710523778799">Skru opp lysstyrken</translation>
 <translation id="1680659827022803830">Innstillinger for videosamtale</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Du kan når som helst slå av denne funksjonen i innstillingene. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Nedtelling på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adresse: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Det aktive vinduet er festet på venstre side.</translation>
@@ -967,6 +968,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installert app, satt på pause</translation>
 <translation id="4228078597006700451">Kontrollene er ikke konfigurert</translation>
 <translation id="4230560241506423345">Opprett</translation>
+<translation id="4236726631849783264">En påminnelse om foreslåtte handlinger</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Oversiktsmodus</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
@@ -1043,6 +1045,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4471354919263203780">Laster ned filer for talegjenkjenning … <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Oppdater enheten nå}=1{Oppdater enheten innen 1 sekund}other{Oppdater enheten innen # sekunder}}</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
+<translation id="4473489370276014885">Google-kontakter</translation>
 <translation id="4477350412780666475">Neste spor</translation>
 <translation id="4477751544736611934">Dette kan medføre datakostnader.
 1 enhet er tilkoblet.</translation>
@@ -1069,6 +1072,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4545950850562423083">Lagre denne siden som bokmerke</translation>
 <translation id="4548482551627849548">Flytt det aktive vinduet til skrivebordet til venstre</translation>
 <translation id="4552748006424994716">På grunn av ekko kan du bare lytte til mikrofonen din via hodetelefoner med ledning.</translation>
+<translation id="4556953949326137018">Når du bruker foreslåtte handlinger, for eksempel «legg til i Kalender» eller «lag Google-dokumenter», blir innholdet fra det valgte området sendt til Google-tjenere for å foreslå handlinger, i henhold til <ph name="LINK_TO_SERVICE_TERMS" />. Ikke ta med noe som er personlig, sensitivt eller konfidensielt.</translation>
 <translation id="4560576029703263363">På</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Skjul passord</translation>
@@ -1152,6 +1156,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="481455355267255546">Neste</translation>
 <translation id="481749895090480684">Huskeliste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
+<translation id="4828935196674083554">Legger til ...</translation>
 <translation id="482908187605862807">Tilgjengelige apper fra Play-butikken</translation>
 <translation id="4831034276697007977">Er du sikker på at du vil slå av automatiske klikk?</translation>
 <translation id="4835677468087803981">Skjul PIN-koden</translation>
@@ -1649,6 +1654,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Fjern alle varsler</translation>
+<translation id="6426905245930183644">Oppretter ...</translation>
 <translation id="6430225033895752525">Vis innstillinger for fokus</translation>
 <translation id="643147933154517414">Ingen varsler</translation>
 <translation id="6431865393913628856">Skjermopptak</translation>
@@ -2398,6 +2404,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8921624153894383499">Google-assistenten kan ikke dette språket.</translation>
 <translation id="8926951137623668982">Hyllen skjules alltid</translation>
 <translation id="8929566928381252430">Prøver du å bruke Caps Lock-tasten? Bruk</translation>
+<translation id="8934418770423095813">Opprett Google-dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}other{# filer}}</translation>
 <translation id="8936501819958976551">deaktivert</translation>
 <translation id="8938800817013097409">USB-C-enhet (høyre port på baksiden)</translation>

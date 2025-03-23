@@ -215,6 +215,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1679841710523778799">Zvýšit jas</translation>
 <translation id="1680659827022803830">Ovládání videohovoru</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Tuto funkci můžete kdykoli vypnout v Nastavení. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Časovač na <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresa IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktivní okno je zadokováno vlevo.</translation>
@@ -967,6 +968,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalovaná aplikace, pozastaveno</translation>
 <translation id="4228078597006700451">Ovládací prvky nejsou nastaveny</translation>
 <translation id="4230560241506423345">Nové</translation>
+<translation id="4236726631849783264">Připomenutí ohledně navrhovaných akcí</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Režim přehledu</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
@@ -1043,6 +1045,7 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4471354919263203780">Stahování souborů k rozpoznávání řeči… <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Ihned zařízení aktualizujte}=1{Do jedné sekundy zařízení aktualizujte}few{Do # sekund zařízení aktualizujte}many{Do # sekundy zařízení aktualizujte}other{Do # sekund zařízení aktualizujte}}</translation>
 <translation id="4472575034687746823">Začít</translation>
+<translation id="4473489370276014885">Kontakty Google</translation>
 <translation id="4477350412780666475">Další skladba</translation>
 <translation id="4477751544736611934">To může znamenat náklady na data.
 Je připojeno 1 zařízení.</translation>
@@ -1069,6 +1072,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="4545950850562423083">Uložit aktuální stránku jako záložku</translation>
 <translation id="4548482551627849548">Přesunout aktivní okno na plochu vlevo</translation>
 <translation id="4552748006424994716">Pokud chcete zabránit ozvěně, můžete mikrofon poslouchat jen s kabelovými sluchátky.</translation>
+<translation id="4556953949326137018">Když použijete navrhované akce, jako je „přidat do Kalendáře“ nebo „vytvořit Dokumenty Google“, obsah z vybrané oblasti se odešle na servery Google, aby navrhl akce. Platí <ph name="LINK_TO_SERVICE_TERMS" />. Neuvádějte žádné osobní, citlivé ani důvěrné informace.</translation>
 <translation id="4560576029703263363">Zapnuto</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Skrýt heslo</translation>
@@ -1152,6 +1156,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="481455355267255546">Další v pořadí</translation>
 <translation id="481749895090480684">Seznam úkolů: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">fotoaparát a mikrofon</translation>
+<translation id="4828935196674083554">Přidávání…</translation>
 <translation id="482908187605862807">Dostupné aplikace z Obchodu Play</translation>
 <translation id="4831034276697007977">Opravdu chcete automatická kliknutí vypnout?</translation>
 <translation id="4835677468087803981">Skrýt PIN</translation>
@@ -1649,6 +1654,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Vymazat všechna oznámení</translation>
+<translation id="6426905245930183644">Vytváření…</translation>
 <translation id="6430225033895752525">Zobrazit nastavení soustředění</translation>
 <translation id="643147933154517414">Vše je hotovo</translation>
 <translation id="6431865393913628856">Nahrávání obrazovky</translation>
@@ -2396,6 +2402,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8921624153894383499">Tímto jazykem Asistent Google nehovoří.</translation>
 <translation id="8926951137623668982">Polička je vždy skrytá</translation>
 <translation id="8929566928381252430">Pokoušíte se použít klávesu Caps Lock? Použijte</translation>
+<translation id="8934418770423095813">Vytvořit Dokument Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="8936501819958976551">deaktivovala</translation>
 <translation id="8938800817013097409">Zařízení USB Type-C (pravý zadní port)</translation>

@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">स्क्रीन की रोशनी बढ़ाएं</translation>
 <translation id="1680659827022803830">वीडियो कॉल की सेटिंग</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">सेटिंग में जाकर, इसे किसी भी समय बंद किया जा सकता है. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 पता: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">चालू विंडो को बाईं तरफ़ डॉक किया गया है.</translation>
@@ -968,6 +969,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल किया गया ऐप्लिकेशन, कुछ देर के लिए रोका गया</translation>
 <translation id="4228078597006700451">कंट्रोल सेट अप नहीं किए गए हैं</translation>
 <translation id="4230560241506423345">नया</translation>
+<translation id="4236726631849783264">सुझाई गई कार्रवाइयों के बारे में रिमाइंडर</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">खास जानकारी मोड</translation>
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
@@ -1044,6 +1046,7 @@
 <translation id="4471354919263203780">बोली पहचानने वाली फाइलें डाउनलोड हो रही हैं... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{डिवाइस को अभी अपडेट करें}=1{डिवाइस को 1 सेकंड के अंदर अपडेट करें}one{डिवाइस को # सेकंड के अंदर अपडेट करें}other{डिवाइस को # सेकंड के अंदर अपडेट करें}}</translation>
 <translation id="4472575034687746823">शुरू करें</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">अगला ट्रैक</translation>
 <translation id="4477751544736611934">इससे डेटा खर्च हो सकता है.
 एक डिवाइस कनेक्ट है.</translation>
@@ -1070,6 +1073,7 @@
 <translation id="4545950850562423083">मौजूदा पेज को बुकमार्क के तौर पर सेव करें</translation>
 <translation id="4548482551627849548">ऐक्टिव विंडो को बाईं ओर मौजूद डेस्क पर ले जाएं</translation>
 <translation id="4552748006424994716">आवाज़ इको न हो, इसके लिए माइक की आवाज़ को सिर्फ़ तार वाले हेडफ़ोन के ज़रिए सुना जा सकता है.</translation>
+<translation id="4556953949326137018">“Calendar में जोड़ें” या “Google दस्तावेज़ बनाएं” जैसी सुझाई गई कार्रवाइयों का इस्तेमाल करने पर, चुने गए एरिया का कॉन्टेंट Google के सर्वर पर भेजा जाता है, ताकि आपको कार्रवाइयों के सुझाव दिए जा सकें. इन कार्रवाइयों पर, <ph name="LINK_TO_SERVICE_TERMS" /> लागू होती हैं. इनमें किसी भी तरह की निजी, संवेदनशील या गोपनीय जानकारी शामिल न करें.</translation>
 <translation id="4560576029703263363">चालू है</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">पासवर्ड छिपाएं</translation>
@@ -1153,6 +1157,7 @@
 <translation id="481455355267255546">आने वाले दिनों में होने वाले इवेंट</translation>
 <translation id="481749895090480684">टास्क की सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">कैमरा और माइक्रोफ़ोन</translation>
+<translation id="4828935196674083554">जोड़ा जा रहा है...</translation>
 <translation id="482908187605862807">Play Store पर उपलब्ध ऐप्लिकेशन</translation>
 <translation id="4831034276697007977">क्या आप वाकई अपने-आप क्लिक होने की सुविधा बंद करना चाहते हैं?</translation>
 <translation id="4835677468087803981">पिन छिपाएं</translation>
@@ -1650,6 +1655,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">सभी सूचनाएं हटाएं</translation>
+<translation id="6426905245930183644">बनाया जा रहा है...</translation>
 <translation id="6430225033895752525">फ़ोकस मोड की सेटिंग दिखाएं</translation>
 <translation id="643147933154517414">सभी पूरे हो गए</translation>
 <translation id="6431865393913628856">स्क्रीन रिकॉर्ड</translation>
@@ -2399,6 +2405,7 @@
 <translation id="8921624153894383499">Google Assistant सेवा इस भाषा में उपलब्ध नहीं है.</translation>
 <translation id="8926951137623668982">शेल्फ़ को हमेशा के लिए छिपाकर रखा गया है</translation>
 <translation id="8929566928381252430">क्या आपको Caps Lock का इस्तेमाल करना है? इनका इस्तेमाल करें</translation>
+<translation id="8934418770423095813">Google दस्तावेज़ बनाएं</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="8936501819958976551">बंद की गई</translation>
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>

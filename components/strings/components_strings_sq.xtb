@@ -158,6 +158,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1264309058268477500">Alternative</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1268480293435976622">Zarf kinez nr. 7</translation>
+<translation id="1269045546668906972">Aktivizo plotësimin automatik me IA-në për të plotësuar automatikisht më shumë fusha</translation>
 <translation id="1269516672602708785">Krijo shpejt një sajt të ri te Google Sites</translation>
 <translation id="1270328905573953738">Shërbime për zhvendosje dhe shpërngulje</translation>
 <translation id="1270502636509132238">Mënyra e marrjes</translation>
@@ -1138,6 +1139,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3005723025932146533">Shfaq një kopje të ruajtur</translation>
 <translation id="300580149047131921">Përdorur së fundi</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp tastin "Tab" për të shfletuar veprimet e disponueshme dhe më pas tastin "Enter" për të ekzekutuar veprimin e zgjedhur.</translation>
+<translation id="3010991137650052245">Për ta përdorur "<ph name="PERMISSION" />" bë këtë sajt, jepi qasje <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Artikuj për shtëpinë</translation>
 <translation id="3014553260345122294">Lajme nga biznesi</translation>
 <translation id="3014726756341138577">Veçoritë e përparuara të printerit</translation>
@@ -1410,6 +1412,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3484560055331845446">Mund të humbësh qasjen në "Llogarinë tënde të Google". Chrome rekomandon që ta ndryshosh fjalëkalimin tani. Do të të kërkohet që të identifikohesh.</translation>
 <translation id="3484861421501147767">Rikujtesë: Një kod promocional i ruajtur është i disponueshëm</translation>
+<translation id="3485901585646640838">Për të përdorur fjalëkalimet dhe të tjera të ruajtura në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="3486406746948052912">Antiperspirantë, deodorantë dhe spërkatës për trupin</translation>
 <translation id="3487845404393360112">Tabakaja 4</translation>
 <translation id="3493660662684070951">Kamionë, furgona dhe SUV</translation>
@@ -1788,6 +1791,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Objektivi i politikës nuk mbështetet.</translation>
+<translation id="411918202192379658">Plotësimi automatik sapo u përmirësua</translation>
 <translation id="4121428309786185360">Skadon në</translation>
 <translation id="4123572138124678573">Tri shpime poshtë</translation>
 <translation id="412601465078863288">Koha e ngarkimit skadoi</translation>
@@ -2176,6 +2180,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4819347708020428563">Të redaktohen shënimet në pamjen e parazgjedhur?</translation>
 <translation id="4822493756793346865">Çmimet tipike bazohen në dyqane nga i gjithë uebi gjatë 90 ditëve të fundit.</translation>
 <translation id="4822922322149719535">Rishiko evidencën e gabimeve</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> ka nevojë për qasje te "<ph name="PERMISSION" />" në pajisjen tënde</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një "Fletë të re të Google</translation>
 <translation id="4826588772550366629">kamerën dhe mikrofonin</translation>
 <translation id="4827283332383516812">Fshi kartën</translation>
@@ -2530,6 +2535,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5443468954631487277">Renditja e kundërt e kthyer lart</translation>
 <translation id="5445340838622821110">Kur paguan me kalimin e kohës, plotësohet një numër vetëm për një herë i kartës virtuale. Ky numër shërben vetëm për këtë blerje. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Lejo që <ph name="SITE" /> të përdorë informacionet e ruajtura për ty</translation>
+<translation id="5451331376824595378">Kur sinjalizohen ngjarje sigurie nga Chrome, të dhënat përkatëse rreth ngjarjeve i dërgohen administratorit tënd. Kjo mund të përfshijë URL-të e faqeve që viziton në Chrome, URL-të e faqeve nga të cilat ke kopjuar të dhënat, emrat ose metadatat e skedarëve, adresat IP, ndërprerjet aksidentale të shfletuesit ose të skedës dhe emrin e përdoruesit që përdor ti për t'u identifikuar në aplikacionet bazuar në ueb, në pajisjen tënde dhe në Chrome.</translation>
 <translation id="5452270690849572955">Kjo faqe e <ph name="HOST_NAME" /> nuk mund të gjendet</translation>
 <translation id="5452923259299906094">Paguaj me "Portofolin elektronik" dhe Pix</translation>
 <translation id="5455374756549232013">Vulë kohore politike e gabuar</translation>
@@ -3423,6 +3429,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7023765275461720661">Të lidhet llogaria dhe të paguhet me <ph name="BNPL_ISSUER_NAME" />?</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7030164307377592766">të modifikojë cilësimet për plotësimin e mënyrave të pagesave</translation>
+<translation id="7031110846419387930">Informacionet për shfletuesin, sistemin operativ, softuerët e instaluar, skedarët dhe adresat IP</translation>
 <translation id="7031646650991750659">Cilat aplikacione të Google Play ke instaluar</translation>
 <translation id="7035705295266423040">Banka jote dëshiron të verifikojë që je ti.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar cilësimet e privatësisë së "Llogarisë sate të Google"</translation>
@@ -3533,6 +3540,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7221855153210829124">Shfaq njoftimet</translation>
 <translation id="722454870747268814">Skedë e re "e fshehtë"</translation>
 <translation id="7227293336683593977">Historiku i çmimeve</translation>
+<translation id="7228306718910595403">Statusi i kualifikuar në BE</translation>
 <translation id="7232352818707016189">Më shumë veprime për "Krahaso tavolinën"</translation>
 <translation id="7233592378249864828">Printo fletën e konfirmimit</translation>
 <translation id="7234112195906418665">Udhëtimi dhe transporti</translation>

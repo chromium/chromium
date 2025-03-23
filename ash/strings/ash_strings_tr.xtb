@@ -215,6 +215,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1679841710523778799">Parlaklığı artırır</translation>
 <translation id="1680659827022803830">Görüntülü görüşme kontrolleri</translation>
 <translation id="169515659049020177">ÜstKrktr</translation>
+<translation id="1696984622403682083">Bu özelliği dilediğiniz zaman Ayarlar'dan kapatabilirsiniz. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> zamanlayıcı· <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresi: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Etkin pencere sola sabitlendi.</translation>
@@ -967,6 +968,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Yüklü Uygulama, Duraklatıldı</translation>
 <translation id="4228078597006700451">Kontroller ayarlanmadı</translation>
 <translation id="4230560241506423345">Yeni</translation>
+<translation id="4236726631849783264">Önerilen eylemler hakkında hatırlatma</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Genel bakış modu</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
@@ -1043,6 +1045,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4471354919263203780">Konuşma tanıma dosyaları indiriliyor... %<ph name="PERCENT" /></translation>
 <translation id="4471432286288241507">{0,plural, =0{Cihazı şimdi güncelleyin}=1{Cihazı 1 saniye içinde güncelleyin}other{Cihazı # saniye içinde güncelleyin}}</translation>
 <translation id="4472575034687746823">Başlayın</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">Sonraki Parça</translation>
 <translation id="4477751544736611934">Bu işlem için veri ücreti ödemeniz gerekebilir.
 1 cihaz bağlı.</translation>
@@ -1069,6 +1072,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4545950850562423083">Geçerli sayfayı yer işareti olarak kaydeder</translation>
 <translation id="4548482551627849548">Etkin pencereyi soldaki masaya taşı</translation>
 <translation id="4552748006424994716">Yankı olmasını önlemek için mikrofonunuzu yalnızca kablolu kulaklık ile dinleyebilirsiniz.</translation>
+<translation id="4556953949326137018">"Takvim'e ekle" veya "Google Dokümanı oluştur" gibi önerilen eylemleri kullandığınızda seçili alandaki içerikler, eylem önermek için <ph name="LINK_TO_SERVICE_TERMS" /> uyarınca Google sunucularına gönderilir. Kişisel, hassas veya gizli bilgiler eklemeyin.</translation>
 <translation id="4560576029703263363">Açık</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Şifreyi gizle</translation>
@@ -1152,6 +1156,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="481455355267255546">Sıradaki</translation>
 <translation id="481749895090480684">Görev listesi: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera ve mikrofon</translation>
+<translation id="4828935196674083554">Ekleniyor...</translation>
 <translation id="482908187605862807">Play Store'daki mevcut uygulamalar</translation>
 <translation id="4831034276697007977">Otomatik tıklamaları kapatmak istediğinizden emin misiniz?</translation>
 <translation id="4835677468087803981">PIN'i gizle</translation>
@@ -1649,6 +1654,7 @@ Bağlı cihaz yok.</translation>
 <translation id="641817663353603351">Sayfa yukarı</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü</translation>
 <translation id="642644398083277086">Tüm bildirimleri temizleyin</translation>
+<translation id="6426905245930183644">Oluşturuluyor...</translation>
 <translation id="6430225033895752525">Odaklanma ayarlarını göster</translation>
 <translation id="643147933154517414">Tümü bitti</translation>
 <translation id="6431865393913628856">Ekran kaydı</translation>
@@ -2398,6 +2404,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8921624153894383499">Google Asistan bu dili konuşmuyor.</translation>
 <translation id="8926951137623668982">Raf her zaman gizleniyor</translation>
 <translation id="8929566928381252430">Caps Lock tuşunu kullanmaya mı çalışıyorsunuz? Şunu kullanın:</translation>
+<translation id="8934418770423095813">Google Dokümanı Oluştur</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 dosya}other{# dosya}}</translation>
 <translation id="8936501819958976551">devre dışı</translation>
 <translation id="8938800817013097409">USB-C cihaz (arkadaki sağ bağlantı noktası)</translation>

@@ -1487,13 +1487,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   auto* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);
-  // TODO(crbug.com/404485362): Read from GAIA-id keyed account-level pref
-  // instead.
-  PrefService* prefs = autofill_client ? autofill_client->GetPrefs() : nullptr;
   html_source->AddBoolean(
       "autofillAiOptedIn",
-      prefs && prefs->GetBoolean(
-                   autofill::prefs::kAutofillPredictionImprovementsEnabled));
+      autofill_client && autofill::GetAutofillAiOptInStatus(*autofill_client));
   html_source->AddBoolean(
       "userEligibleForAutofillAi",
       autofill_client &&

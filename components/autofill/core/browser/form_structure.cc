@@ -111,6 +111,10 @@ std::string_view ToYesOrNo(bool value) {
   return value ? "Yes" : "No";
 }
 
+bool has_autocomplete(const std::unique_ptr<AutofillField>& field) {
+  return field->parsed_autocomplete().has_value();
+}
+
 }  // namespace
 
 FormStructure::FormStructure(const FormData& form)
@@ -372,7 +376,7 @@ bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
       (!all_fields_are_passwords() ||
        active_field_count() <
            params.required_fields_for_forms_with_only_password_fields) &&
-      !has_author_specified_types_) {
+      std::ranges::none_of(fields_, has_autocomplete)) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingNotEnoughFields
                         << active_field_count() << *this;
@@ -669,7 +673,7 @@ void FormStructure::LogDetermineHeuristicTypesMetrics() {
   developer_engagement_metrics_ = 0;
   if (IsAutofillable()) {
     AutofillMetrics::DeveloperEngagementMetric metric =
-        has_author_specified_types_
+        std::ranges::any_of(fields_, has_autocomplete)
             ? AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS
             : AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS;
     developer_engagement_metrics_ |= 1 << metric;
@@ -678,7 +682,6 @@ void FormStructure::LogDetermineHeuristicTypesMetrics() {
 }
 
 void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
-  has_author_specified_types_ = false;
   std::map<FieldSignature, size_t> field_rank_map;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
     if (!field->parsed_autocomplete()) {
@@ -689,7 +692,6 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
     // is considered a type hint. This allows a website's author to specify an
     // attribute like autocomplete="other" on a field to disable all Autofill
     // heuristics for the form.
-    has_author_specified_types_ = true;
     if (field->parsed_autocomplete()->field_type ==
         HtmlFieldType::kUnspecified) {
       continue;

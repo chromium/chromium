@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Прегледајте подешавања језика</translation>
 <translation id="1459693405370120464">Време</translation>
 <translation id="1460620680449458626">Звук је искључен.</translation>
+<translation id="1462439140224375968">Направљен је Google документ</translation>
 <translation id="14648076227129703">Ово омогућава приступ камери за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и све апликације и веб-сајтове са дозволом за камеру</translation>
 <translation id="1467432559032391204">Улево</translation>
 <translation id="146902737843070955">Администратор је затражио ову промену</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">Прегледајте детаље хотспота. Хотспот је искључен.</translation>
 <translation id="3017079585324758401">Позадина</translation>
 <translation id="3018135054368884502">Премотај медијски садржај унапред</translation>
+<translation id="3026897869154397692">Додато је у календар</translation>
 <translation id="3033545621352269033">Укључено</translation>
 <translation id="3033912566804961911">Комбинујте са: <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Отварање датотека</translation>
@@ -1895,6 +1897,7 @@
 <translation id="7228968829656641943">Изаберите да бисте претраживали екран. Притисните Tab, па тастер за размак ради кретања помоћу тастатуре.</translation>
 <translation id="7229029500464092426">Искоришћена меморија <ph name="AVAILABLE_MEMORY" /> | Укупно <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Оба тастера миша</translation>
+<translation id="7240636904654154599">Направљена је Google табела</translation>
 <translation id="7244725679040769470">Преостало је <ph name="PERCENTAGE" /> % батерије.
 Прикључите уређај на напајање.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Овај Chromebook мора да се растартује ради примене ажурирања. Ово може да потраје највише 1 минут.</translation>
@@ -2406,6 +2409,8 @@
 <translation id="8921624153894383499">Google помоћник не говори овај језик.</translation>
 <translation id="8926951137623668982">Полица је увек сакривена</translation>
 <translation id="8929566928381252430">Покушавате да користите Caps Lock? Користите</translation>
+<translation id="8929623844713377237">Контакт је направљен</translation>
+<translation id="8934418770423095813">Направите Google документ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
 <translation id="8938800817013097409">Уређај са USB прикључком типа C (задњи десни порт)</translation>

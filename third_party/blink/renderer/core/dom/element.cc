@@ -769,6 +769,31 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   return false;
 }
 
+constexpr unsigned kMinHeadingOffset = 0u;
+// 9 is the maximum heading level recommended by the ARIA
+// specification. See https://w3c.github.io/aria/#aria-level
+// See also AXNodeObject::HeadingLevel():
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/modules/accessibility/ax_node_object.cc;l=3225;drc=d99d45a2124f7075b201e6bf5db39fec8971d583
+constexpr unsigned kMaxHeadingOffset = 9u;
+
+void Element::setHeadingOffset(int value) {
+  DCHECK(RuntimeEnabledFeatures::HeadingOffsetEnabled());
+  SetUnsignedIntegralAttribute(html_names::kHeadingoffsetAttr, value,
+                               kMinHeadingOffset);
+}
+
+int Element::headingOffset() const {
+  DCHECK(RuntimeEnabledFeatures::HeadingOffsetEnabled());
+  const AtomicString& headingoffset_value =
+      FastGetAttribute(html_names::kHeadingoffsetAttr);
+  unsigned value = 0;
+  if (!ParseHTMLClampedNonNegativeInteger(
+          headingoffset_value, kMinHeadingOffset, kMaxHeadingOffset, value)) {
+    return kMinHeadingOffset;
+  }
+  return value;
+}
+
 void Element::setHeadingReset(bool value) {
   DCHECK(RuntimeEnabledFeatures::HeadingOffsetEnabled());
   SetBooleanAttribute(html_names::kHeadingresetAttr, value);
@@ -790,15 +815,7 @@ int Element::GetComputedHeadingOffset(int max_offset) {
     return 0;
   }
 
-  auto get_offset = [](const Element* element) -> int {
-    if (!element) {
-      return 0;
-    }
-    return std::max(
-        0, element->FastGetAttribute(html_names::kHeadingoffsetAttr).ToInt());
-  };
-
-  int offset = get_offset(this);
+  int offset = this->headingOffset();
   if (headingReset()) {
     return std::min(max_offset, offset);
   }
@@ -833,7 +850,7 @@ int Element::GetComputedHeadingOffset(int max_offset) {
       // of this attribute.
       return std::min(offset, max_offset);
     }
-    offset += get_offset(element);
+    offset += element->headingOffset();
     if (offset >= max_offset) {
       return max_offset;
     }

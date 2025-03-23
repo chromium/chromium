@@ -215,6 +215,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1679841710523778799">Augmenter la luminosité</translation>
 <translation id="1680659827022803830">Commandes pour les appels vidéo</translation>
 <translation id="169515659049020177">Maj</translation>
+<translation id="1696984622403682083">Vous pouvez désactiver cette fonctionnalité à tout moment dans les paramètres. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Minuterie de <ph name="TOTAL_TIME" /> : <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresse IPv6 : <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Fenêtre active ancrée à gauche.</translation>
@@ -966,6 +967,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, application installée, en pause</translation>
 <translation id="4228078597006700451">Commandes non configurées</translation>
 <translation id="4230560241506423345">Nouveau</translation>
+<translation id="4236726631849783264">Un rappel concernant les actions suggérées</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode Aperçu</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -1042,6 +1044,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4471354919263203780">Téléchargement des fichiers de reconnaissance vocale en cours… <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Mettez à jour l'appareil maintenant}=1{Mettez à jour l'appareil d'ici 1 seconde}one{Mettez à jour l'appareil d'ici # seconde}other{Mettez à jour l'appareil d'ici # secondes}}</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
+<translation id="4473489370276014885">Contacts Google</translation>
 <translation id="4477350412780666475">Chanson suivante</translation>
 <translation id="4477751544736611934">Cela peut entraîner des coûts de données.
 Un appareil connecté.</translation>
@@ -1068,6 +1071,7 @@ Un appareil connecté.</translation>
 <translation id="4545950850562423083">Enregistrer la page actuelle comme signet</translation>
 <translation id="4548482551627849548">Déplacer la fenêtre active vers le bureau à gauche</translation>
 <translation id="4552748006424994716">Pour éviter l'écho, vous pouvez écouter le son provenant de votre micro uniquement avec un casque d'écoute filaire.</translation>
+<translation id="4556953949326137018">Lorsque vous utilisez des actions suggérées telles que « ajouter au calendrier » ou « créer des documents Google », le contenu de la zone sélectionnée est envoyé aux serveurs Google pour suggérer des actions, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="4560576029703263363">Activé</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
@@ -1151,6 +1155,7 @@ Un appareil connecté.</translation>
 <translation id="481455355267255546">À venir</translation>
 <translation id="481749895090480684">Liste de tâches : <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">caméra et microphone</translation>
+<translation id="4828935196674083554">Ajout en cours…</translation>
 <translation id="482908187605862807">Applications offertes dans la boutique Play Store</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques?</translation>
 <translation id="4835677468087803981">Masquer le NIP</translation>
@@ -1648,6 +1653,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="641817663353603351">page précédente</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Effacer toutes les notifications</translation>
+<translation id="6426905245930183644">Création en cours…</translation>
 <translation id="6430225033895752525">Afficher les paramètres du mode Sans distractions</translation>
 <translation id="643147933154517414">Tout est terminé</translation>
 <translation id="6431865393913628856">Enregistrement d'écran</translation>
@@ -2396,6 +2402,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8921624153894383499">L'Assistant Google ne parle pas cette langue.</translation>
 <translation id="8926951137623668982">L'étagère est toujours masquée</translation>
 <translation id="8929566928381252430">Vous essayez d'utiliser la touche Verr maj? Utiliser</translation>
+<translation id="8934418770423095813">Créer un document Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">désactivée</translation>
 <translation id="8938800817013097409">Appareil USB-C (port arrière-droit)</translation>

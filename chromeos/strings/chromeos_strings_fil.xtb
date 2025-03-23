@@ -1561,16 +1561,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">beach</translation>
 <translation id="819278132617411009">Gamitin ang Google AI para mas maging produktibo</translation>
-<translation id="82003371436638355">Kapag pinili mo ang “Gumawa ng sarili mo,” magsulat ng custom na prompt. O puwede mong piliin ang “Pumili ng tema” at pagkatapos ay piliin ang mga nakasalungguhit na salita para i-personalize ang iyong AI wallpaper.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Piliin ang "Pahingi ng inspirasyon" para makakuha ng higit pang natatangi at iba't ibang opsyon para sa mga larawang binuo ng AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kapag gumawa ka ng sarili mong wallpaper, ipinapadala ang prompt sa mga server ng Google para bumuo ng mga imahe at pahusayin ang produkto, nang napapailalim sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Mga Tuntunin ng Serbisyo at Patakaran sa Privacy ng Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Puwedeng magkamali ang generative AI, kabilang ang tungkol sa mga tao, kaya i-double check ito. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Matuto pa<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">Mga Perk</translation>

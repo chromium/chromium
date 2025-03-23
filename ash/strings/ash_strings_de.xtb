@@ -215,6 +215,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1679841710523778799">Helligkeit erhöhen</translation>
 <translation id="1680659827022803830">Einstellungen für Videoanrufe</translation>
 <translation id="169515659049020177">Umschalttaste</translation>
+<translation id="1696984622403682083">Du kannst diese Funktion jederzeit in den Einstellungen deaktivieren. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Timer: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-Adresse: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktives Fenster links fixiert.</translation>
@@ -967,6 +968,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installierte App, pausiert</translation>
 <translation id="4228078597006700451">Steuerelemente nicht eingerichtet</translation>
 <translation id="4230560241506423345">Neu</translation>
+<translation id="4236726631849783264">Erinnerung zu vorgeschlagenen Aktionen</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Übersichtsmodus</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
@@ -1043,6 +1045,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4471354919263203780">Spracherkennungsdateien werden heruntergeladen... <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Gerät jetzt neu starten}=1{Gerät innerhalb von 1 Sekunde neu starten}other{Gerät innerhalb von # Sekunden neu starten}}</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
+<translation id="4473489370276014885">Google Kontakte</translation>
 <translation id="4477350412780666475">Nächster Titel</translation>
 <translation id="4477751544736611934">Dadurch können Datennutzungskosten anfallen.
 1 Gerät verbunden.</translation>
@@ -1069,6 +1072,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4545950850562423083">Aktuelle Seite als Lesezeichen speichern</translation>
 <translation id="4548482551627849548">Aktives Fenster in den linken Desktop verschieben</translation>
 <translation id="4552748006424994716">Damit es kein Echo gibt, kannst du deine Mikrofonaufnahmen über kabelgebundene Kopfhörer anhören.</translation>
+<translation id="4556953949326137018">Wenn du vorgeschlagene Aktionen wie „Zum Kalender hinzufügen“ oder „Google Docs-Dokument erstellen“ verwendest, werden die Inhalte aus dem ausgewählten Bereich gemäß den <ph name="LINK_TO_SERVICE_TERMS" /> an Google-Server gesendet, um Aktionen vorzuschlagen. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.</translation>
 <translation id="4560576029703263363">An</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
@@ -1152,6 +1156,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="481455355267255546">Als Nächstes</translation>
 <translation id="481749895090480684">Aufgabenliste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">Kamera und Mikrofon</translation>
+<translation id="4828935196674083554">Wird hinzugefügt…</translation>
 <translation id="482908187605862807">Im Play Store verfügbare Apps</translation>
 <translation id="4831034276697007977">Möchtest du automatische Klicks wirklich deaktivieren?</translation>
 <translation id="4835677468087803981">PIN ausblenden</translation>
@@ -1649,6 +1654,7 @@ Keine Geräte verbunden.</translation>
 <translation id="641817663353603351">Bild-auf</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Alle Benachrichtigungen löschen</translation>
+<translation id="6426905245930183644">Wird erstellt…</translation>
 <translation id="6430225033895752525">Einstellungen für den Konzentrationsmodus anzeigen</translation>
 <translation id="643147933154517414">Fertig</translation>
 <translation id="6431865393913628856">Bildschirm aufzeichnen</translation>
@@ -2398,6 +2404,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8921624153894383499">Google Assistant spricht diese Sprache nicht.</translation>
 <translation id="8926951137623668982">Ablage immer ausgeblendet</translation>
 <translation id="8929566928381252430">Möchtest du die Feststelltaste verwenden? Verwenden</translation>
+<translation id="8934418770423095813">Google-Dokument erstellen</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 Datei}other{# Dateien}}</translation>
 <translation id="8936501819958976551">deaktiviert</translation>
 <translation id="8938800817013097409">USB-C-Gerät (rechter Port hinten)</translation>

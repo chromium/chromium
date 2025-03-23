@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
 <translation id="1908394185991500139">ձախ սլաք</translation>
+<translation id="1911678930322867245">Տեղափոխել վերևի աջ անկյուն</translation>
 <translation id="1914144885717544695">ուրբաթ օրը</translation>
 <translation id="1915960750806557358">Կիսվեք ձեր կարծիքով կամ նկարագրեք խնդիրը։ Մի՛ ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։</translation>
 <translation id="1923388006036088459">Ակցենտային գույներ</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">լողափ</translation>
 <translation id="819278132617411009">Օգտագործեք Google AI-ը՝ ավելի արդյունավետ լինելու համար</translation>
-<translation id="82003371436638355">Երբ ընտրեք «Ստեղծել ձեր սեփականը», գրեք անհատական հարցում։ Կամ կարող եք սեղմել «Ընտրել թեմա» և այնուհետև ընտրել ընդգծված բառերը՝ ձեր ԱԲ պաստառն անհատականացնելու համար։
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Ընտրեք «Ոգեշնչիր ինձ»՝ ԱԲ պատկերների ավելի յուրօրինակ և բազմազան տարբերակներ ստանալու համար։
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Երբ դուք ստեղծում եք ձեր սեփական պաստառը, հարցումն ուղարկվում է Google-ի սերվերներին՝ պատկերներ գեներացնելու և պրոդուկտը բարելավելու համար, ինչը ենթակա է<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ի Օգտագործման պայմաններին և գաղտնիության քաղաքականությանը<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />։ Մի ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Գեներատիվ արհեստական բանականությունը կարող է սխալներ թույլ տալ, այդ թվում՝ մարդկանց մասին, ուստի ստուգեք դրա տրամադրած պատասխանները։ <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Իմանալ ավելին<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="8833620912470026819">կակտուսների անտառ</translation>
 <translation id="8834539327799336565">Միացված է</translation>
+<translation id="8842526499753992487">Տեղափոխել վերևի ձախ անկյուն</translation>
 <translation id="8845001906332463065">Օգնություն</translation>
 <translation id="8849799913685544685">փարոս</translation>
 <translation id="8851859208664803097">Կանգնեցված է – Տպիչն անհասանելի է</translation>

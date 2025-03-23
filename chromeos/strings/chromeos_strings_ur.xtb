@@ -240,6 +240,7 @@
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1908234395526491708">‏UDP درخواست کی ناکامیاں</translation>
 <translation id="1908394185991500139">بائیں طرف تیر کا نشان</translation>
+<translation id="1911678930322867245">اوپر دائیں طرف منتقل کریں</translation>
 <translation id="1914144885717544695">جمعہ کو</translation>
 <translation id="1915960750806557358">اپنے تاثرات کا اشتراک کریں یا اپنے مسئلے کی وضاحت کریں۔ یہ یقینی بنائیں کہ ایسی کوئی چیز شامل نہیں کی گئی ہے جو ذاتی، حساس یا رازدارانہ ہو۔</translation>
 <translation id="1923388006036088459">ایکسنٹ کے رنگ</translation>
@@ -1560,16 +1561,6 @@
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8183975772394450380">ساحل</translation>
 <translation id="819278132617411009">‏مزید پروڈکٹیو بننے کے لیے Google AI کا استعمال کریں</translation>
-<translation id="82003371436638355">‏جب آپ "خود اپنا بنائیں" کو منتخب کرتے ہیں تو ایک حسب ضرورت پرامپٹ لکھیں۔ یا آپ "تھیم منتخب کریں" کا انتخاب کر سکتے ہیں اور پھر اپنے AI وال پیپر کو ذاتی نوعیت کا بنانے کے لیے انڈر لائن کردہ الفاظ کا انتخاب کر سکتے ہیں۔
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          مزید منفرد اور متنوع AI سے تخلیق کردہ تصاویر کے اختیارات حاصل کرنے کے لیے "مجھے آئیڈیاز فراہم کریں" کو منتخب کریں۔
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          جب آپ خود اپنا وال پیپربناتے ہیں تو تصاویر تخلیق کرنے اور پروڈکٹ کو بہتر بنانے کیلئے پرامپٹ Google سرورز کو بھیجا جاتا ہے، یہ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google کی سروس کی شرائط اور رازداری کی پالیسی<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> سے مشروط ہے۔ کوئی بھی ذاتی، حساس یا رازدارانہ چیز شامل نہ کریں۔
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          تخلیق کر سکنے والا AI غلطیاں کر سکتا ہے، بشمول لوگوں کے بارے میں، لہذا اسے دوبارہ چیک کریں۔ <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />مزید جانیں<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8206859287963243715">سیلولر</translation>
 <translation id="8208861521865154048">فوائد</translation>
@@ -1698,6 +1689,7 @@
 <translation id="8820817407110198400">بُک مارکس</translation>
 <translation id="8833620912470026819">کیکٹس کا جنگل</translation>
 <translation id="8834539327799336565">فی الحال منسلک ہے</translation>
+<translation id="8842526499753992487">اوپر بائیں طرف منتقل کریں</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
 <translation id="8849799913685544685">Lighthouse</translation>
 <translation id="8851859208664803097">رک گیا - پرنٹر ناقابل رسائی ہے</translation>

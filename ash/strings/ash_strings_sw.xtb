@@ -215,6 +215,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1679841710523778799">Ongeza ung'aavu</translation>
 <translation id="1680659827022803830">Vidhibiti vya mazungumzo ya video</translation>
 <translation id="169515659049020177">Hama</translation>
+<translation id="1696984622403682083">Unaweza kuzima kipengele hiki wakati wowote kwenye Mipangilio. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Kipima muda cha <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Anwani ya IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Dirisha linalotumika limepachikwa kushoto.</translation>
@@ -967,6 +968,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Programu Iliyosakinishwa, Imesitishwa</translation>
 <translation id="4228078597006700451">Vidhibiti havijawekewa mipangilio</translation>
 <translation id="4230560241506423345">Mpya</translation>
+<translation id="4236726631849783264">Kikumbusho kuhusu vitendo vinavyopendekezwa</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Hali ya muhtasari</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
@@ -1043,6 +1045,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4471354919263203780">Inapakua faili za utambuzi wa matamshi... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Sasisha kifaa sasa}=1{Sasisha kifaa ndani ya sekunde moja}other{Sasisha kifaa ndani ya sekunde #}}</translation>
 <translation id="4472575034687746823">Anza</translation>
+<translation id="4473489370276014885">Anwani kwenye Google</translation>
 <translation id="4477350412780666475">Wimbo Unaofuata</translation>
 <translation id="4477751544736611934">Huenda ukatozwa gharama za data.
 Kifaa 1 kimeunganishwa.</translation>
@@ -1069,6 +1072,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="4545950850562423083">Hifadhi ukurasa wa sasa uwe alamisho</translation>
 <translation id="4548482551627849548">Sogeza dirisha linalotumika kwenye eneokazi la upande wa kushoto</translation>
 <translation id="4552748006424994716">Ili uepuke mwangwi, unaweza kusikiliza sauti yako kwenye maikrofoni ukitumia kipokea sauti cha kichwani chenye waya.</translation>
+<translation id="4556953949326137018">Ukitumia vitendo vinavyopendekezwa kama vile “weka kwenye Kalenda” au “tayarisha Hati za Google,” maudhui kutoka sehemu uliyochagua yanatumwa kwenye seva za Google ili kupendekeza vitendo, kulingana na <ph name="LINK_TO_SERVICE_TERMS" />. Usijumuishe taarifa zozote binafsi, nyeti au za siri.</translation>
 <translation id="4560576029703263363">Imewashwa</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ficha nenosiri</translation>
@@ -1152,6 +1156,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="481455355267255546">Yanayofuata</translation>
 <translation id="481749895090480684">Orodha ya majukumu <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera na maikrofoni</translation>
+<translation id="4828935196674083554">Inaweka...</translation>
 <translation id="482908187605862807">Programu zinazopatikana kutoka kwenye Duka la Google Play</translation>
 <translation id="4831034276697007977">Je, una uhakika ungependa kuzima mibofyo ya kiotomatiki?</translation>
 <translation id="4835677468087803981">Ficha PIN</translation>
@@ -1649,6 +1654,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Futa arifa zote</translation>
+<translation id="6426905245930183644">Inatayarisha...</translation>
 <translation id="6430225033895752525">Onyesha mipangilio ya Kumakinika</translation>
 <translation id="643147933154517414">Hakuna arifa</translation>
 <translation id="6431865393913628856">Rekodi skrini</translation>
@@ -2399,6 +2405,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8921624153894383499">Programu ya Mratibu wa Google haina huduma ya lugha hii.</translation>
 <translation id="8926951137623668982">Rafu inafichwa kila wakati</translation>
 <translation id="8929566928381252430">Je, unajaribu kutumia kitufe cha Caps Lock? Tumia</translation>
+<translation id="8934418770423095813">Unda Hati ya Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Faili 1}other{Faili #}}</translation>
 <translation id="8936501819958976551">kimezimwa</translation>
 <translation id="8938800817013097409">Kifaa cha USB-C (mlango wa kulia nyuma)</translation>

@@ -215,6 +215,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1679841710523778799">Verhoog helderheid</translation>
 <translation id="1680659827022803830">Video-oproepkontroles</translation>
 <translation id="169515659049020177">Skuifsleutel</translation>
+<translation id="1696984622403682083">Jy kan hierdie kenmerk enige tyd in Instellings afskakel. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-afteller · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adres: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktiewe venster is aan die linkerkant gedok.</translation>
@@ -968,6 +969,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />; geïnstalleerde program; onderbreek</translation>
 <translation id="4228078597006700451">Kontroles nie opgestel nie</translation>
 <translation id="4230560241506423345">Nuut</translation>
+<translation id="4236726631849783264">’n Onthounota oor voorgestelde handelinge</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Oorsigmodus</translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>
@@ -1044,6 +1046,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4471354919263203780">Laai tans spraakherkenninglêers af … <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Dateer toestel nou op}=1{Dateer toestel binne 1 sekonde op}other{Dateer toestel binne # sekondes op}}</translation>
 <translation id="4472575034687746823">Kom aan die gang</translation>
+<translation id="4473489370276014885">Google-kontakte</translation>
 <translation id="4477350412780666475">Volgende snit</translation>
 <translation id="4477751544736611934">Dit kan datakoste tot gevolg hê.
 1 toestel is gekoppel.</translation>
@@ -1070,6 +1073,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4545950850562423083">Stoor huidige bladsy as boekmerk</translation>
 <translation id="4548482551627849548">Skuif aktiewe venster na lessenaar aan die linkerkant toe</translation>
 <translation id="4552748006424994716">Om te verhoed dat die klank eggo, kan jy net met bedrade oorfone na jou mikrofoon luister.</translation>
+<translation id="4556953949326137018">Wanneer jy voorgestelde handelinge soos “voeg by Kalender” of “skep Google Dokumente” gebruik, word die inhoud van die geselekteerde area na Google-bedieners toe gestuur om handelinge voor te stel, onderhewig aan <ph name="LINK_TO_SERVICE_TERMS" />. Moenie enigiets insluit wat persoonlik, sensitief of vertroulik is nie.</translation>
 <translation id="4560576029703263363">Aan</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
@@ -1153,6 +1157,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="481455355267255546">Volgende</translation>
 <translation id="481749895090480684">Taaklys: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera en mikrofoon</translation>
+<translation id="4828935196674083554">Voeg tans by …</translation>
 <translation id="482908187605862807">Beskikbare apps vanaf die Play Winkel</translation>
 <translation id="4831034276697007977">Is jy seker jy wil outomatiese klikke afskakel?</translation>
 <translation id="4835677468087803981">Versteek PIN</translation>
@@ -1650,6 +1655,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="641817663353603351">blaai boontoe</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Vee alle kennisgewings uit</translation>
+<translation id="6426905245930183644">Skep tans …</translation>
 <translation id="6430225033895752525">Wys Fokus-instellings</translation>
 <translation id="643147933154517414">Als klaar</translation>
 <translation id="6431865393913628856">Skermopnemer</translation>
@@ -2399,6 +2405,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8921624153894383499">Die Google Assistent praat nie hierdie taal nie.</translation>
 <translation id="8926951137623668982">Rak is altyd versteek</translation>
 <translation id="8929566928381252430">Probeer jy om Caps Lock te gebruik? Gebruik</translation>
+<translation id="8934418770423095813">Skep Google Dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 lêer}other{# lêers}}</translation>
 <translation id="8936501819958976551">gedeaktiveer</translation>
 <translation id="8938800817013097409">USB C-toestel (regterpoort aan agterkant)</translation>

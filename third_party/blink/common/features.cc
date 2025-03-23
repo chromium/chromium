@@ -726,7 +726,14 @@ BASE_FEATURE(kDropInputEventsWhilePaintHolding,
 
 BASE_FEATURE(kEstablishGpuChannelAsync,
              "EstablishGpuChannelAsync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             // TODO(crbug.com/1278147): Experiment with this more on desktop to
+             // see if it can help.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Whether to respect loading=lazy attribute for images when they are on
 // invisible pages.

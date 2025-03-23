@@ -231,15 +231,6 @@ class FormStructure {
   // is available for at least one field.
   void SetFieldTypesFromAutocompleteAttribute();
 
-  // Returns the values that can be filled into the form structure for the
-  // given type. For example, there's no way to fill in a value of "The Moon"
-  // into ADDRESS_HOME_STATE if the form only has a
-  // <select autocomplete="region"> with no "The Moon" option. Returns an
-  // empty set if the form doesn't reference the given type or if all inputs
-  // are accepted (e.g., <input type="text" autocomplete="region">).
-  // All returned values are standardized to upper case.
-  std::set<std::u16string> PossibleValues(FieldType type);
-
   // Rationalize phone number fields so that, in every section, only the first
   // complete phone number is filled automatically. This is useful for when a
   // form contains a first phone number and second phone number, which usually
@@ -297,10 +288,6 @@ class FormStructure {
   const url::Origin& main_frame_origin() const { return main_frame_origin_; }
 
   const ButtonTitleList& button_titles() const { return button_titles_; }
-
-  bool has_author_specified_types() const {
-    return has_author_specified_types_;
-  }
 
   bool has_password_field() const { return has_password_field_; }
 
@@ -500,10 +487,6 @@ class FormStructure {
   // The number of fields that are part of the form signature and that are
   // included in queries to the Autofill server.
   size_t active_field_count_ = 0;
-
-  // Whether the form includes any field types explicitly specified by the site
-  // author, via the |autocompletetype| attribute.
-  bool has_author_specified_types_ = false;
 
   // True if the form contains at least one password field.
   bool has_password_field_ = false;

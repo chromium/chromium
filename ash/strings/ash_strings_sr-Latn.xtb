@@ -149,6 +149,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1455242230282523554">Pregledajte podešavanja jezika</translation>
 <translation id="1459693405370120464">Vreme</translation>
 <translation id="1460620680449458626">Zvuk je isključen.</translation>
+<translation id="1462439140224375968">Napravljen je Google dokument</translation>
 <translation id="14648076227129703">Ovo omogućava pristup kameri za <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i sve aplikacije i veb-sajtove sa dozvolom za kameru</translation>
 <translation id="1467432559032391204">Ulevo</translation>
 <translation id="146902737843070955">Administrator je zatražio ovu promenu</translation>
@@ -593,6 +594,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="301584155502740476">Pregledajte detalje hotspota. Hotspot je isključen.</translation>
 <translation id="3017079585324758401">Pozadina</translation>
 <translation id="3018135054368884502">Premotaj medijski sadržaj unapred</translation>
+<translation id="3026897869154397692">Dodato je u kalendar</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3033912566804961911">Kombinujte sa: <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Otvaranje datoteka</translation>
@@ -1895,6 +1897,7 @@ Novo instaliranje</translation>
 <translation id="7228968829656641943">Izaberite da biste pretraživali ekran. Pritisnite Tab, pa taster za razmak radi kretanja pomoću tastature.</translation>
 <translation id="7229029500464092426">Iskorišćena memorija <ph name="AVAILABLE_MEMORY" /> | Ukupno <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Oba tastera miša</translation>
+<translation id="7240636904654154599">Napravljena je Google tabela</translation>
 <translation id="7244725679040769470">Preostalo je <ph name="PERCENTAGE" /> % baterije.
 Priključite uređaj na napajanje.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ovaj Chromebook mora da se rastartuje radi primene ažuriranja. Ovo može da potraje najviše 1 minut.</translation>
@@ -2406,6 +2409,8 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8921624153894383499">Google pomoćnik ne govori ovaj jezik.</translation>
 <translation id="8926951137623668982">Polica je uvek sakrivena</translation>
 <translation id="8929566928381252430">Pokušavate da koristite Caps Lock? Koristite</translation>
+<translation id="8929623844713377237">Kontakt je napravljen</translation>
+<translation id="8934418770423095813">Napravite Google dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">Uređaj sa USB priključkom tipa C (zadnji desni port)</translation>

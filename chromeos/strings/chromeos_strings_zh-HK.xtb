@@ -1544,16 +1544,6 @@
 <translation id="8179976553408161302">Enter 鍵</translation>
 <translation id="8183975772394450380">海灘</translation>
 <translation id="819278132617411009">使用 Google AI 提升生產力</translation>
-<translation id="82003371436638355">如果選取 [自行建立]，請自行輸入提示；另可點擊 [選擇主題] 再選取加上底線的字詞，以個人化 AI 圖片。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          選取 [給我驚喜] 即可取得更多獨特多變的 AI 圖片選項。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          自製桌布時，系統會將提示傳送至 Google 伺服器，以便生成圖像及提升產品品質。在處理資料的過程中須遵守 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《服務條款》及《私隱權政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />。請勿加入任何個人、敏感或機密內容。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          生成式 AI 可能會出錯 (包括人物資料)，請加以複查。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />瞭解詳情<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
