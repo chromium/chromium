@@ -104,8 +104,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterBooleanPref(prefs::kAutofillPredictionImprovementsEnabled,
-                                false);
   registry->RegisterBooleanPref(
       prefs::kAutofillBnplEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
