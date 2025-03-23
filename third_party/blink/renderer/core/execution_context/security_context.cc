@@ -197,15 +197,13 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
   bool should_report =
       !permissions_policy_result || !report_only_permissions_policy_result;
 
-  std::optional<String> reporting_endpoint;
+  String reporting_endpoint;
   if (!permissions_policy_result) {
-    reporting_endpoint = std::optional<String>(
-        permissions_policy_->GetEndpointForFeature(feature));
+    reporting_endpoint =
+        String::FromUTF8(permissions_policy_->GetEndpointForFeature(feature));
   } else if (!report_only_permissions_policy_result) {
-    reporting_endpoint = std::optional<String>(
+    reporting_endpoint = String::FromUTF8(
         report_only_permissions_policy_->GetEndpointForFeature(feature));
-  } else {
-    reporting_endpoint = std::nullopt;
   }
 
   return {permissions_policy_result, should_report, reporting_endpoint};
@@ -228,7 +226,7 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
       !report_only_document_policy_ ||
       report_only_document_policy_->IsFeatureEnabled(feature, threshold_value);
   return {policy_result, !policy_result || !report_only_policy_result,
-          std::nullopt};
+          String()};
 }
 
 }  // namespace blink

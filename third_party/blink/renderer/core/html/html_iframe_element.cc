@@ -680,8 +680,8 @@ void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
         permissions_policy &&
         !network::PermissionsPolicy::InheritedValueForFeature(
             src, permissions_policy, feature_desc, container_policy)) {
-      auto endpoint = std::optional<String>(
-          permissions_policy->GetEndpointForFeature(feature));
+      auto endpoint =
+          String::FromUTF8(permissions_policy->GetEndpointForFeature(feature));
       GetExecutionContext()->ReportPotentialPermissionsPolicyViolation(
           feature, mojom::blink::PolicyDisposition::kEnforce, endpoint,
           /*message*/ "", allow_, src_);
@@ -691,8 +691,8 @@ void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {
                !network::PermissionsPolicy::InheritedValueForFeature(
                    src, report_only_permissions_policy, feature_desc,
                    container_policy)) {
-      auto endpoint = std::optional<String>(
-          report_only_permissions_policy->GetEndpointForFeature(feature));
+      auto endpoint =
+          String::FromUTF8(permissions_policy->GetEndpointForFeature(feature));
       GetExecutionContext()->ReportPotentialPermissionsPolicyViolation(
           feature, mojom::blink::PolicyDisposition::kReport, endpoint,
           /*message*/ "", allow_, src_);
