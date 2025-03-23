@@ -107,7 +107,7 @@
 <translation id="5400836586163650660">グレー</translation>
 <translation id="5446043142172831860">タブを削除するとグループから退出します</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
-<translation id="5494920125229734069">すべて選択する</translation>
+<translation id="5494920125229734069">すべて選択</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を閉じます。}other{タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を閉じます。}}</translation>
 <translation id="5556417849629758491">ストア情報を表示、画面上部付近に表示されるオプション</translation>
 <translation id="5627941783489838464">タブの更新はありません</translation>
