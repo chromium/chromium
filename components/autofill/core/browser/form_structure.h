@@ -289,10 +289,6 @@ class FormStructure {
 
   const ButtonTitleList& button_titles() const { return button_titles_; }
 
-  bool has_author_specified_types() const {
-    return has_author_specified_types_;
-  }
-
   bool has_password_field() const { return has_password_field_; }
 
   // Returns whether the form comes from an HTML form with a <form> tag.
@@ -491,10 +487,6 @@ class FormStructure {
   // The number of fields that are part of the form signature and that are
   // included in queries to the Autofill server.
   size_t active_field_count_ = 0;
-
-  // Whether the form includes any field types explicitly specified by the site
-  // author, via the |autocompletetype| attribute.
-  bool has_author_specified_types_ = false;
 
   // True if the form contains at least one password field.
   bool has_password_field_ = false;
