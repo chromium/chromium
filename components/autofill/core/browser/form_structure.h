@@ -313,8 +313,6 @@ class FormStructure {
     last_filling_timestamp_ = last_filling_timestamp;
   }
 
-  bool all_fields_are_passwords() const { return all_fields_are_passwords_; }
-
   bool may_run_autofill_ai_model() const { return may_run_autofill_ai_model_; }
 
   void set_may_run_autofill_ai_model(bool may_run_autofill_ai_model) {
@@ -490,9 +488,6 @@ class FormStructure {
 
   // True if the form contains at least one password field.
   bool has_password_field_ = false;
-
-  // True if all form fields are password fields.
-  bool all_fields_are_passwords_ = false;
 
   // Indicates whether the client may run the AutofillAI model for this form.
   bool may_run_autofill_ai_model_ = false;
