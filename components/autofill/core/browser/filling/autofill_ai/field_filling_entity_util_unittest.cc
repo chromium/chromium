@@ -49,10 +49,10 @@ using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
 class GetFieldsFillableByAutofillAiTest : public testing::Test {
  public:
   GetFieldsFillableByAutofillAiTest() {
-    client().SetUpPrefsAndIdentityForAutofillAi();
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
         helper_.autofill_webdata_service(), /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
+    client().SetUpPrefsAndIdentityForAutofillAi();
 
     test_api(form_).PushField(
         test::CreateTestFormField("", "", "", FormControlType::kInputText));
