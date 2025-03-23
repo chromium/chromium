@@ -251,9 +251,6 @@ void ClearSyncTransportOptIns(PrefService* prefs) {
   prefs->SetDict(kAutofillSyncTransportOptIn, base::Value::Dict());
 }
 
-// UsesVirtualViewStructureForAutofill is defined in
-// //chrome/browser/ui/autofill/autofill_client_provider.cc
-
 void SetFacilitatedPaymentsPix(PrefService* prefs, bool value) {
 #if BUILDFLAG(IS_ANDROID)
   prefs->SetBoolean(kFacilitatedPaymentsPix, value);

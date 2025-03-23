@@ -218,8 +218,6 @@ void SetPaymentCardBenefits(PrefService* prefs, bool value);
 
 void ClearSyncTransportOptIns(PrefService* prefs);
 
-bool UsesVirtualViewStructureForAutofill(const PrefService* prefs);
-
 void SetFacilitatedPaymentsPix(PrefService* prefs, bool value);
 
 bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs);
