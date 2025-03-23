@@ -223,14 +223,6 @@ class FormStructure {
   void RetrieveFromCache(const FormStructure& cached_form,
                          RetrieveFromCacheReason reason);
 
-  void LogDetermineHeuristicTypesMetrics();
-
-  // Sets each field's `html_type` and `html_mode` based on the field's
-  // `parsed_autocomplete` member.
-  // Sets `has_author_specified_types_` to `true` iff the `parsed_autocomplete`
-  // is available for at least one field.
-  void SetFieldTypesFromAutocompleteAttribute();
-
   // Rationalize phone number fields so that, in every section, only the first
   // complete phone number is filled automatically. This is useful for when a
   // form contains a first phone number and second phone number, which usually
@@ -409,6 +401,14 @@ class FormStructure {
   // types of the corresponding fields for the `pattern_source`.
   void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
                             HeuristicSource heuristic_source);
+
+  void LogDetermineHeuristicTypesMetrics();
+
+  // Sets each field's `html_type` and `html_mode` based on the field's
+  // `parsed_autocomplete` member.
+  // Sets `has_author_specified_types_` to `true` iff the `parsed_autocomplete`
+  // is available for at least one field.
+  void SetFieldTypesFromAutocompleteAttribute();
 
   // Production code only uses the default parameters.
   // Unit tests also test other parameters.
