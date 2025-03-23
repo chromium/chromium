@@ -130,6 +130,9 @@ TEST(AutofillDataModelUtils, ParseDate) {
   EXPECT_EQ(ParseDate(u"2025-12-10", u"YYYY*MM*DD"), Date(2025, 12, 10));
   EXPECT_EQ(ParseDate(u"20251210", u"YYYY*MM*DD"), Date(2025, 12, 10));
   EXPECT_EQ(ParseDate(u"2025-12-10", u"YYYY+MM+DD"), Date(2025, 12, 10));
+  EXPECT_EQ(ParseDate(u"2025-12-10", u"YYYY+MM*DD"), Date(2025, 12, 10));
+  EXPECT_EQ(ParseDate(u"2025-12-10", u"YYYY*MM+DD"), Date(2025, 12, 10));
+  EXPECT_EQ(ParseDate(u"2025 / 12 / 10", u"YYYY*MM*DD"), Date(2025, 12, 10));
 
   EXPECT_EQ(ParseDate(u"2025", u"YYYY"), Date(2025, 0, 0));
   EXPECT_EQ(ParseDate(u"0001", u"YYYY"), Date(1, 0, 0));
@@ -199,47 +202,94 @@ TEST(AutofillDataModelUtils, ParseDate) {
   EXPECT_EQ(ParseDate(u"2025-12-10", u"M"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-12-10", u"DD"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025-12-10", u"D"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"20251210", u"YYYY+MM+DD"), std::nullopt);
 
   {
     Date date;
-    EXPECT_TRUE(ParseDate(u"2025-12-11", u"YYYY-MM-DD", date));
+    const char16_t* separator = u"whatever";
+    EXPECT_TRUE(ParseDate(u"2025-12-11", u"YYYY-MM-DD", date, separator));
     EXPECT_EQ(date, Date(2025, 12, 11));
+    EXPECT_EQ(separator, nullptr);
   }
 
   {
     Date date;
-    EXPECT_FALSE(ParseDate(u"20251210", u"YYYY+MM+DD", date));
+    const char16_t* separator = u"whatever";
+    EXPECT_TRUE(ParseDate(u"2025-12-10", u"YYYY+MM+DD", date, separator));
+    EXPECT_EQ(date, Date(2025, 12, 10));
+    EXPECT_EQ(std::u16string_view(separator), std::u16string_view(u"-"));
+  }
+
+  {
+    Date date;
+    const char16_t* separator = u"whatever";
+    EXPECT_TRUE(ParseDate(u"2025-12-10", u"YYYY*MM*DD", date, separator));
+    EXPECT_EQ(date, Date(2025, 12, 10));
+    EXPECT_EQ(std::u16string_view(separator), std::u16string_view(u"-"));
+  }
+
+  {
+    Date date;
+    const char16_t* separator = u"whatever";
+    EXPECT_TRUE(ParseDate(u"20251210", u"YYYY*MM*DD", date, separator));
+    EXPECT_EQ(date, Date(2025, 12, 10));
+    EXPECT_EQ(separator, std::u16string_view(u""));
+  }
+
+  {
+    Date date;
+    const char16_t* separator = u"whatever";
+    EXPECT_FALSE(ParseDate(u"20251210", u"YYYY+MM+DD", date, separator));
     EXPECT_EQ(date, Date(2025, 0, 0));
+    EXPECT_EQ(separator, std::u16string_view(u""));
   }
 
   {
     Date date;
-    EXPECT_FALSE(ParseDate(u"202512-10", u"YYYYMMDD", date));
+    const char16_t* separator = u"whatever";
+    EXPECT_FALSE(ParseDate(u"2025-12-10", u"YYYY-XX-DD", date, separator));
+    EXPECT_EQ(date, Date(2025, 0, 0));
+    EXPECT_EQ(separator, nullptr);
+  }
+
+  {
+    Date date;
+    const char16_t* separator = u"whatever";
+    EXPECT_FALSE(ParseDate(u"202512-10", u"YYYYMMDD", date, separator));
     EXPECT_EQ(date, Date(2025, 12, 0));
+    EXPECT_EQ(separator, nullptr);
   }
 
   {
     Date date;
-    EXPECT_FALSE(ParseDate(u"202521", u"YYYYMD", date));
+    const char16_t* separator = u"whatever";
+    EXPECT_FALSE(ParseDate(u"202521", u"YYYYMD", date, separator));
     EXPECT_EQ(date, Date(2025, 21, 0));
+    EXPECT_EQ(separator, nullptr);
   }
 
   {
     Date date;
-    EXPECT_FALSE(ParseDate(u"2025-12-11", u"YYYY-MM", date));
+    const char16_t* separator = u"whatever";
+    EXPECT_FALSE(ParseDate(u"2025-12-11", u"YYYY-MM", date, separator));
     EXPECT_EQ(date, Date(2025, 12, 0));
+    EXPECT_EQ(separator, nullptr);
   }
 
   {
     Date date;
-    EXPECT_FALSE(ParseDate(u"2025-12", u"YYYY-MM-DD", date));
+    const char16_t* separator = u"whatever";
+    EXPECT_FALSE(ParseDate(u"2025-12", u"YYYY-MM-DD", date, separator));
     EXPECT_EQ(date, Date(2025, 12, 0));
+    EXPECT_EQ(separator, nullptr);
   }
 
   {
     Date date;
-    EXPECT_FALSE(ParseDate(u"2025-12-10", u"YYYY-ZZ-DD", date));
+    const char16_t* separator = u"whatever";
+    EXPECT_FALSE(ParseDate(u"2025-12-10", u"YYYY-ZZ-DD", date, separator));
     EXPECT_EQ(date, Date(2025, 0, 0));
+    EXPECT_EQ(separator, nullptr);
   }
 }
 

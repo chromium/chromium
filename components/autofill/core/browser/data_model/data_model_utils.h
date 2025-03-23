@@ -54,26 +54,40 @@ bool IsValidDateFormat(std::u16string_view format);
 // matches only non-empty separators. The first occurrence of a wildcard binds
 // the wildcard, so that subsequent occurrences only match the identical
 // separator.
+// The out parameter `separator` is set to the separator if the wildcard matches
+// any (including the empty separator). Otherwise, it is set to nullptr.
 //
 // Partial matches:
 // For partial matches, the first matches are populated in `result`.
 //
 // Examples:
-// - ParseDate(u"2025-09-10", u"YYYY-MM-DD", result) returns true and sets
-//   `result` to Date{.year = 2025, .month = 9, .day = 10}.
-// - ParseDate(u"2025-09-10", u"YYYY+MM+DD", result) behaves as above.
-// - ParseDate(u"2025-09-10", u"YYYY*MM*DD", result) behaves as above.
-// - ParseDate(u"20250910", u"YYYY*MM*DD", result) behaves as above.
-// - ParseDate(u"2025-XX-10", u"YYYY-MM-DD", result) returns false and sets
-//   `result.year` to 2025.
-// - ParseDate(u"20250910", u"YYYY+MM+DD", result) returns false and sets
-//   `result.year` to 2025.
+// - ParseDate(u"2025-09-10", u"YYYY-MM-DD", result, separator) returns true and
+//   sets `result` to Date{.year = 2025, .month = 9, .day = 10} and `separator`
+//   to nullptr.
+// - ParseDate(u"2025-09-10", u"YYYY+MM+DD", result, separator) behaves as
+//   above, except that it sets `separator` to u"-".
+// - ParseDate(u"2025-09-10", u"YYYY*MM*DD", result, separator) behaves as
+//   above, except that it sets `separator` to u"-".
+// - ParseDate(u"20250910", u"YYYY*MM*DD", result, separator) behaves as
+//   above, except that it sets `separator` to u"".
+// - ParseDate(u"2025-XX-10", u"YYYY-MM-DD", result, separator) returns false
+//   and sets `result.year` to 2025 and `separator` to nullptr.
+// - ParseDate(u"20250910", u"YYYY+MM+DD", result, separator) returns false and
+//   sets `result.year` to 2025 and `separator` to u"".
 //
 // This function is minimalistic and cheap (~1000x cheaper than parsing with
 // ICU without caching the SimpleDateFormat).
 bool ParseDate(std::u16string_view date,
                std::u16string_view format,
-               Date& result);
+               Date& result,
+               const char16_t*& wildcard_instance);
+
+inline bool ParseDate(std::u16string_view date,
+                      std::u16string_view format,
+                      Date& result) {
+  const char16_t* wildcard_instance = nullptr;
+  return ParseDate(date, format, result, wildcard_instance);
+}
 
 // Returns true iff all values requested by `format` are valid in `date`:
 // - If `format` contains a year, the date's year must be in the range 1 to 9999

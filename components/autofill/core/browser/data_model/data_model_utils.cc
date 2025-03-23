@@ -128,7 +128,10 @@ bool IsValidDateFormat(std::u16string_view format) {
 
 bool ParseDate(std::u16string_view date,
                std::u16string_view format,
-               Date& result) {
+               Date& result,
+               const char16_t*& first_separator) {
+  first_separator = nullptr;
+
   // Consumes `part` (= YYYY, YY, MM, M, DD, or D) from `format` and the
   // corresponding numeric value from `date`. Returns that numeric value if
   // successful, and -1 otherwise.
@@ -142,8 +145,6 @@ bool ParseDate(std::u16string_view date,
     }
     return -1;
   };
-
-  const char16_t* first_separator = nullptr;
 
   while (!date.empty() && !format.empty()) {
     int num = -1;
