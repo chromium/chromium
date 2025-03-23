@@ -260,7 +260,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              std::unique_ptr<FormStructure> form) {
             DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
                                                  last_unlocked_credit_card_cvc,
-                                                 app_locale, form.get());
+                                                 app_locale, *form);
             return form;
           },
           std::move(copied_profiles), std::move(copied_credit_cards),
