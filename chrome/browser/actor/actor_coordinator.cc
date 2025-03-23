@@ -10,11 +10,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/actor/tools/tool_controller.h"
+#include "chrome/browser/actor/tools/tool_invocation.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tab_collections/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
+
+using content::WebContents;
+using optimization_guide::proto::ActionInformation;
+using optimization_guide::proto::BrowserAction;
+using tabs::TabInterface;
 
 namespace actor {
 
@@ -24,17 +31,16 @@ ActorCoordinator::~ActorCoordinator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ActorCoordinator::Act(
-    tabs::TabInterface* tab,
-    const optimization_guide::proto::BrowserAction& action,
-    ActionResultCallback callback) {
+void ActorCoordinator::Act(TabInterface& tab,
+                           const BrowserAction& action,
+                           ActionResultCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  content::WebContents& web_contents = *tab->GetContents();
+  content::WebContents& web_contents = *tab.GetContents();
 
   MayActOnTab(
-      *tab,
+      tab,
       base::BindOnce(
           &ActorCoordinator::OnMayActOnTabResponse,
           weak_ptr_factory_.GetWeakPtr(), web_contents.GetWeakPtr(), action,
@@ -43,8 +49,8 @@ void ActorCoordinator::Act(
 }
 
 void ActorCoordinator::OnMayActOnTabResponse(
-    base::WeakPtr<content::WebContents> web_contents,
-    const optimization_guide::proto::BrowserAction& action,
+    base::WeakPtr<WebContents> web_contents,
+    const BrowserAction& action,
     const url::Origin& evaluated_origin,
     ActionResultCallback callback,
     bool may_act) {
@@ -55,8 +61,7 @@ void ActorCoordinator::OnMayActOnTabResponse(
     return;
   }
 
-  tabs::TabInterface* tab =
-      tabs::TabInterface::GetFromContents(web_contents.get());
+  TabInterface* tab = TabInterface::GetFromContents(web_contents.get());
   CHECK(tab);
 
   if (!evaluated_origin.IsSameOriginWith(
@@ -74,9 +79,10 @@ void ActorCoordinator::OnMayActOnTabResponse(
     return;
   }
 
-  // TODO(https://crbug.com/402086021): Use actor tool framework.
-  NOTIMPLEMENTED();
-  std::move(callback).Run(/*succeeded=*/false);
+  // Currently, only one action at a time is supported.
+  CHECK_EQ(action.action_information_size(), 1);
+  ToolInvocation invocation(action.action_information().at(0), *tab);
+  tool_controller_.Invoke(invocation, std::move(callback));
 }
 
 }  // namespace actor

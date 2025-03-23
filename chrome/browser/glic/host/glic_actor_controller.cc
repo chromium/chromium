@@ -67,7 +67,7 @@ void GlicActorController::Act(
   CHECK(tab);
 
   actor_coordinator_->Act(
-      tab, action,
+      *tab, action,
       base::BindOnce(&GlicActorController::OnActionFinished, GetWeakPtr(),
                      focused_tab_data, options, std::move(callback)));
 }
