@@ -148,6 +148,10 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     resource_request.load_flags |= net::LOAD_VALIDATE_CACHE;
   }
 
+  // Because the flag indicating whether decoding has occurred is not stored in
+  // Service Worker Storage, we always decode on the network service side.
+  resource_request.client_side_content_decoding_enabled = false;
+
   mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer;
   version_->context()
       ->registry()
