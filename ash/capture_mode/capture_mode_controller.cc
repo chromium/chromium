@@ -1490,6 +1490,10 @@ void CaptureModeController::SendMultimodalSearch(const gfx::ImageSkia& image,
   RecordMultimodalSearchRequest();
 }
 
+bool CaptureModeController::ActiveUserDefaultSearchProviderIsGoogle() const {
+  return delegate_->ActiveUserDefaultSearchProviderIsGoogle();
+}
+
 void CaptureModeController::OnRecordingEnded(
     recording::mojom::RecordingStatus status,
     const gfx::ImageSkia& thumbnail) {

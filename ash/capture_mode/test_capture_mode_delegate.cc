@@ -284,4 +284,8 @@ void TestCaptureModeDelegate::DeleteRemoteFile(
   std::move(callback).Run(true);
 }
 
+bool TestCaptureModeDelegate::ActiveUserDefaultSearchProviderIsGoogle() const {
+  return true;
+}
+
 }  // namespace ash
