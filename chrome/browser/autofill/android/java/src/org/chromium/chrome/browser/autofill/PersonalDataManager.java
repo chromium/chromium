@@ -1120,13 +1120,6 @@ public class PersonalDataManager implements Destroyable {
     }
 
     /**
-     * @return Whether the Autofill feature is managed.
-     */
-    public boolean isAutofillManaged() {
-        return PersonalDataManagerJni.get().isAutofillManaged(mPersonalDataManagerAndroid);
-    }
-
-    /**
      * @return Whether the Autofill feature for Profiles (addresses) is managed.
      */
     public boolean isAutofillProfileManaged() {
@@ -1280,8 +1273,6 @@ public class PersonalDataManager implements Destroyable {
         boolean hasCreditCards(long nativePersonalDataManagerAndroid);
 
         boolean isFidoAuthenticationAvailable(long nativePersonalDataManagerAndroid);
-
-        boolean isAutofillManaged(long nativePersonalDataManagerAndroid);
 
         boolean isAutofillProfileManaged(long nativePersonalDataManagerAndroid);
 

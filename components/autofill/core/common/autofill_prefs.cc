@@ -155,10 +155,6 @@ void SetAutofillHasSeenIban(PrefService* prefs) {
   prefs->SetBoolean(kAutofillHasSeenIban, true);
 }
 
-bool IsAutofillManaged(const PrefService* prefs) {
-  return prefs->IsManagedPreference(kAutofillEnabledDeprecated);
-}
-
 bool IsAutofillProfileManaged(const PrefService* prefs) {
   return prefs->IsManagedPreference(kAutofillProfileEnabled);
 }
