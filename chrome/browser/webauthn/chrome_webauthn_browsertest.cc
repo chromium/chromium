@@ -69,6 +69,7 @@
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -1778,6 +1779,90 @@ IN_PROC_BROWSER_TEST_F(ChallengeUrlBrowserTest,
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_THAT(result, testing::HasSubstr("NotAllowedError"));
+}
+
+#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/393055190): There is segfault in Linux during the move of the
+// newly constructed `request_handler` to the `RequestState` in
+// `AuthenticatorCommonImpl::StartGetAssertionRequest`. Fix and re-enable.
+#define WebAuthnImmediateGetTest DISABLED_WebAuthnImmediateGetTest
+#else
+#define WebAuthnImmediateGetTest WebAuthnImmediateGetTest
+#endif
+
+class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
+ protected:
+  static constexpr std::string_view kRequestWithPasswordTemplate = R"(
+    navigator.credentials.get({
+    mediation: 'immediate',
+    password: $1,
+    publicKey: {
+      challenge: new Uint8Array([1,3,2,7,1,3,2,7]),
+      timeout: 10000,
+      userVerification: 'discouraged',
+    }}).then(c => 'webauthn: OK', e => 'error ' + e);
+  )";
+
+  static constexpr std::string_view kRequestWithAllowlistTemplate = R"(
+    navigator.credentials.get({
+    mediation: 'immediate',
+    publicKey: {
+      challenge: new Uint8Array([1,3,2,7,1,3,2,7]),
+      allowCredentials: [$1],
+      timeout: 10000,
+      userVerification: 'discouraged',
+    }}).then(c => 'webauthn: OK', e => 'error ' + e);
+  )";
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAuthenticationImmediateGet};
+};
+
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest, NoCreds_NotFoundError) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  for (const auto& request_password : {"false", "true"}) {
+    const auto& script = base::ReplaceStringPlaceholders(
+        kRequestWithPasswordTemplate, {request_password},
+        /*offsets=*/nullptr);
+    const auto& result = content::EvalJs(web_contents, script);
+    EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotFoundError"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest,
+                       Incognito_NoCreds_NotFoundError) {
+  auto* otr_browser = OpenURLOffTheRecord(
+      browser()->profile(),
+      https_server_.GetURL("www.example.com", "/title1.html"));
+  content::WebContents* web_contents =
+      otr_browser->tab_strip_model()->GetActiveWebContents();
+
+  for (const auto& request_password : {"false", "true"}) {
+    const auto& script = base::ReplaceStringPlaceholders(
+        kRequestWithPasswordTemplate, {request_password},
+        /*offsets=*/nullptr);
+    const auto& result = content::EvalJs(web_contents, script);
+    EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotFoundError"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest, Allowlist_NotAllowedError) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  const auto& script = base::ReplaceStringPlaceholders(
+      kRequestWithAllowlistTemplate,
+      {"{type: 'public-key', id: new Uint8Array([1,3,2,7])}"},
+      /*offsets=*/nullptr);
+  const auto& result = content::EvalJs(web_contents, script);
+  EXPECT_THAT(result.ExtractString(), testing::HasSubstr("NotAllowedError"));
 }
 
 }  // namespace
