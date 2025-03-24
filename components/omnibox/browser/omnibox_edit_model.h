@@ -233,10 +233,16 @@ class OmniboxEditModel {
   bool AcceptKeyword(
       metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method);
 
-  // Sets the current keyword to that of the user's default search provider and
-  // updates the view so the user sees the keyword chip in the omnibox.  Adjusts
+  // Sets the current keyword to that of the given `template_url` and updates
+  // the view so the user sees the keyword chip in the omnibox.  Adjusts
   // user_text_ and the selection based on the display text and the keyword
-  // entry method.
+  // entry method. Note, the default match may be updated in this process
+  // so the match must support this keyword mode or it will be exited.
+  void EnterKeywordMode(
+      metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method,
+      const TemplateURL* template_url);
+
+  // Enters keyword mode for user's default search provider, if enabled.
   void EnterKeywordModeForDefaultSearchProvider(
       metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method);
 
@@ -634,6 +640,10 @@ class OmniboxEditModel {
   // Returns view text if there is a view. Until the model is made the
   // primary data source, this should not be called when there's no view.
   std::u16string GetText() const;
+
+  // Always use these to set keyword members instead of mutating them directly.
+  void SetKeyword(const std::u16string& keyword);
+  void SetKeywordPlaceholder(const std::u16string& keyword_placeholder);
 
   // Owns this.
   raw_ptr<OmniboxController> controller_;

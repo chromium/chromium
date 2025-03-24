@@ -50,6 +50,14 @@ AutocompleteMatch CreateSearchMatch(std::u16string contents) {
   return match;
 }
 
+AutocompleteMatch CreateContextualSearchMatch(std::u16string contents) {
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
+  match.contents = contents;
+  match.subtypes.insert(omnibox::SUBTYPE_CONTEXTUAL_SEARCH);
+  return match;
+}
+
 AutocompleteMatch CreateStarterPackMatch(std::u16string keyword) {
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::Type::STARTER_PACK;
