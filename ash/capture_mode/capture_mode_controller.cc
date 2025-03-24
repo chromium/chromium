@@ -685,6 +685,125 @@ bool NeedsDownscale(const gfx::Image& image) {
           image.Height() > lens::kMaxPixelsForImageSearch);
 }
 
+// Attempts to parse the `response` as if it was a
+// `FetchQueryFormulationMetadataResponse` encoded in JSON, and store the
+// formatted text in `extracted_text`. Returns true if the response was
+// successfully parsed (even if the text was empty), and false otherwise. See
+// `google3/google/internal/lens/frontend/api/v1/service.proto` for more details
+// about the expected response.
+bool ParseQueryFormulationMetadataResponse(
+    const data_decoder::DataDecoder::ValueOrError& response,
+    std::string& extracted_text) {
+  if (!response.has_value() || !response->is_list() ||
+      response->GetList().empty()) {
+    return false;
+  }
+
+  const base::Value::List* metadata_response =
+      response->GetList()[0].GetIfList();
+  if (!metadata_response ||
+      metadata_response->size() < kQFMetadataResponseMinSize) {
+    return false;
+  }
+
+  // Verify we have the right type of response message.
+  const std::string* message_id =
+      (*metadata_response)[kQFMetadataResponseFieldMessageIdIdx].GetIfString();
+  if (!message_id || (*message_id) != kQFMetadataResponseMessageId) {
+    return false;
+  }
+
+  // Deconstruct the metadata response in order to build our string for Copy
+  // Text.
+  const base::Value::List* detected_text =
+      (*metadata_response)[kQFMetadataResponseFieldDetectedText].GetIfList();
+  if (!detected_text || detected_text->empty()) {
+    return false;
+  }
+
+  // If we don't have a `text_layout` object, then there may not be any text to
+  // detect, so we should return true.
+  const base::Value::List* text_layout =
+      (*detected_text)[kDetectedTextFieldTextLayout].GetIfList();
+  if (!text_layout) {
+    return true;
+  }
+  if (text_layout->empty()) {
+    return false;
+  }
+
+  const base::Value::List* paragraph_list =
+      (*text_layout)[kTextLayoutFieldParagraphs].GetIfList();
+  if (!paragraph_list || paragraph_list->empty()) {
+    return false;
+  }
+
+  // Begin constructing the extracted text by looping through a sequence of
+  // paragraphs, lines, and words.
+  for (int i = 0; i < static_cast<int>(paragraph_list->size()); i++) {
+    const base::Value::List* paragraph = (*paragraph_list)[i].GetIfList();
+    if (!paragraph || paragraph->size() < kParagraphMinSize) {
+      continue;
+    }
+
+    const base::Value::List* line_list =
+        (*paragraph)[kParagraphFieldLines].GetIfList();
+    if (!line_list || line_list->empty()) {
+      continue;
+    }
+
+    // Add an extra newline between each paragraph (i.e., before each
+    // paragraph after the first).
+    if (i > 0) {
+      extracted_text += "\n";
+    }
+
+    for (int j = 0; j < static_cast<int>(line_list->size()); j++) {
+      const base::Value::List* line = (*line_list)[j].GetIfList();
+      if (!line || line->empty()) {
+        continue;
+      }
+
+      const base::Value::List* word_list = (*line)[kLineFieldWords].GetIfList();
+      if (!word_list || word_list->empty()) {
+        continue;
+      }
+
+      // Add a newline between each line (i.e., before each line after the
+      // first).
+      if (j > 0) {
+        extracted_text += "\n";
+      }
+
+      for (const base::Value& word_value : *word_list) {
+        const base::Value::List* word = word_value.GetIfList();
+        if (!word || word->size() < kWordMinSize) {
+          continue;
+        }
+
+        const std::string* plain_text =
+            (*word)[kWordFieldPlainText].GetIfString();
+        if (!plain_text) {
+          continue;
+        }
+
+        extracted_text += *plain_text;
+
+        // Add the text separator if it exists.
+        const std::string* separator =
+            (*word)[kWordFieldTextSeparator].GetIfString();
+        if (!separator) {
+          continue;
+        }
+
+        extracted_text += *separator;
+      }
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -2177,7 +2296,15 @@ void CaptureModeController::OnAccessTokenAvailableForImageSearch(
     const gfx::Image& original_image,
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
     const std::string& access_token) {
-  if (!image_search_token || access_token.empty()) {
+  // If the session is no longer valid, we can just return early.
+  if (!image_search_token) {
+    return;
+  }
+
+  // If the access token is empty, let the user know that an error has occurred.
+  if (access_token.empty()) {
+    capture_mode_session_->ShowActionContainerError(
+        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
     return;
   }
 
@@ -2310,9 +2437,11 @@ void CaptureModeController::OnDispatchCompleteForImageSearch(
     response_code = simple_url_loader->ResponseInfo()->headers->response_code();
   }
 
-  // TODO: crbug.com/394648704 - Implement error handling when the response code
-  // is not a redirect.
+  // If the response code is not a success, return early and let the user know
+  // an error has occurred.
   if (!network::IsSuccessfulStatus(response_code)) {
+    capture_mode_session_->ShowActionContainerError(
+        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
     return;
   }
 
@@ -2324,6 +2453,8 @@ void CaptureModeController::OnDispatchCompleteForImageSearch(
   // No other actions to take if we are not using the Lens Web API for Copy
   // Text.
   if (!features::IsSunfishLensWebCopyTextEnabled()) {
+    capture_mode_session_->ShowActionContainerError(
+        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
     return;
   }
 
@@ -2350,7 +2481,16 @@ void CaptureModeController::OnDispatchCompleteForCopyText(
     uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
   };
 
-  if (!image_search_token || !response_body) {
+  // If the session is no longer valid, we can just return early.
+  if (!image_search_token) {
+    return;
+  }
+
+  // If there is no response body, return early and let the user know an error
+  // has occurred.
+  if (!response_body) {
+    capture_mode_session_->ShowActionContainerError(
+        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
     return;
   }
 
@@ -2367,109 +2507,17 @@ void CaptureModeController::OnDispatchCompleteForCopyText(
 
 void CaptureModeController::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_list() || result->GetList().empty()) {
-    return;
-  }
-
-  const base::Value::List* metadata_response = result->GetList()[0].GetIfList();
-  if (!metadata_response ||
-      metadata_response->size() < kQFMetadataResponseMinSize) {
-    return;
-  }
-
-  // Verify we have the right type of response message.
-  const std::string* message_id =
-      (*metadata_response)[kQFMetadataResponseFieldMessageIdIdx].GetIfString();
-  if (!message_id || (*message_id) != kQFMetadataResponseMessageId) {
-    return;
-  }
-
-  // Deconstruct the metadata response in order to build our string for Copy
-  // Text. See `FetchQueryFormulationMetadataResponse` in
-  // `google3/google/internal/lens/frontend/api/v1/service.proto` for details.
-
-  const base::Value::List* detected_text =
-      (*metadata_response)[kQFMetadataResponseFieldDetectedText].GetIfList();
-  if (!detected_text || detected_text->empty()) {
-    return;
-  }
-
-  const base::Value::List* text_layout =
-      (*detected_text)[kDetectedTextFieldTextLayout].GetIfList();
-  if (!text_layout || text_layout->empty()) {
-    return;
-  }
-
-  const base::Value::List* paragraph_list =
-      (*text_layout)[kTextLayoutFieldParagraphs].GetIfList();
-  if (!paragraph_list || paragraph_list->empty()) {
-    return;
-  }
-
-  // Begin constructing the extracted text by looping through a sequence of
-  // paragraphs, lines, and words.
   std::string extracted_text;
-  for (int i = 0; i < static_cast<int>(paragraph_list->size()); i++) {
-    const base::Value::List* paragraph = (*paragraph_list)[i].GetIfList();
-    if (!paragraph || paragraph->size() < kParagraphMinSize) {
-      continue;
-    }
-
-    const base::Value::List* line_list =
-        (*paragraph)[kParagraphFieldLines].GetIfList();
-    if (!line_list || line_list->empty()) {
-      continue;
-    }
-
-    // Add an extra newline between each paragraph (i.e., before each
-    // paragraph after the first).
-    if (i > 0) {
-      extracted_text += "\n";
-    }
-
-    for (int j = 0; j < static_cast<int>(line_list->size()); j++) {
-      const base::Value::List* line = (*line_list)[j].GetIfList();
-      if (!line || line->empty()) {
-        continue;
-      }
-
-      const base::Value::List* word_list = (*line)[kLineFieldWords].GetIfList();
-      if (!word_list || word_list->empty()) {
-        continue;
-      }
-
-      // Add a newline between each line (i.e., before each line after the
-      // first).
-      if (j > 0) {
-        extracted_text += "\n";
-      }
-
-      for (const base::Value& word_value : *word_list) {
-        const base::Value::List* word = word_value.GetIfList();
-        if (!word || word->size() < kWordMinSize) {
-          continue;
-        }
-
-        const std::string* plain_text =
-            (*word)[kWordFieldPlainText].GetIfString();
-        if (!plain_text) {
-          continue;
-        }
-
-        extracted_text += *plain_text;
-
-        // Add the text separator if it exists.
-        const std::string* separator =
-            (*word)[kWordFieldTextSeparator].GetIfString();
-        if (!separator) {
-          continue;
-        }
-
-        extracted_text += *separator;
-      }
-    }
+  // Attempty to parse the JSON further to get the extracted text. If
+  // unsuccessful, return early and let the user know an error has occurred.
+  if (!ParseQueryFormulationMetadataResponse(result, extracted_text)) {
+    capture_mode_session_->ShowActionContainerError(
+        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC));
+    return;
   }
 
+  // If the extracted text is empty, we can simply return without showing the
+  // Copy Text button.
   if (extracted_text.empty()) {
     return;
   }
