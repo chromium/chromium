@@ -878,42 +878,29 @@ void ToolbarView::OnThemeChanged() {
   SchedulePaint();
 }
 
-// The implementation of this method is subtle.
-// The goal is to create rounded corners in the top-left and top-right corners,
-// allowing background_view_left_ and background_view_right_ to peek through. In
-// order for the corners to look good, we must use antialiasing on the clip
-// paths. When there are fractional device scale factors (e.g. 1.5), it's easy
-// (common even) to have straight edges of the clip path end up on non-integral
-// boundaries (e.g. y=68.5). This is unavoidable. Antialiasing turns these
-// non-integral boundary clip paths into 2-pixel "fuzzy" boundaries, which in
-// turn causes misalignment with other views::Views which assume the boundaries
-// are exact. Solving this problem completely will require a rethink of how we
-// implement fractional device scale factors in Chrome. In the meanwhile, the
-// implementation of this method minimizes the length of straight edges of the
-// clip path to minimize issues. To do this we carve out the two corners, and
-// then take the inverse as our clip path.
 void ToolbarView::UpdateClipPath() {
   const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
-  SkPath path;
   const gfx::Rect local_bounds = GetLocalBounds();
-
-  // Carve out top-left.
-  path.moveTo(0, 0);
+  SkPath path;
+  // The bottom of the toolbar may be clipped more than necessary in
+  // certain scale factor so adds extra 2dp so that even if the origin
+  // and the height are rounded down, we still can paint til the
+  // bottom of the toolbar. The similar logic is applied to
+  // BookmarkBarView which can be the bottom component within the
+  // TopContainerView, and TopContainerView which is the parent and
+  // can also clip the paint region for child views.
+  // TODO(crbug.com/41344902): Remove this hack once the pixel canvas is
+  // enabled on all aura platforms.
+  const int extended_height = local_bounds.height() + 2;
+  path.moveTo(0, local_bounds.height());
   path.lineTo(0, corner_radius);
   path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
              SkPathDirection::kCW, corner_radius, 0);
-  path.lineTo(0, 0);
-
-  // Carve out top-right.
-  path.moveTo(local_bounds.width() - corner_radius, 0);
+  path.lineTo(local_bounds.width() - corner_radius, 0);
   path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
              SkPathDirection::kCW, local_bounds.width(), corner_radius);
-  path.lineTo(local_bounds.width(), 0);
-  path.lineTo(local_bounds.width() - corner_radius, 0);
-
-  // Take the inverse so we keep everything else. Artifacts are confined to the
-  // corners.
-  path.setFillType(SkPathFillType::kInverseWinding);
+  path.lineTo(local_bounds.width(), extended_height);
+  path.lineTo(0, extended_height);
   container_view_->SetClipPath(path);
 }
 
