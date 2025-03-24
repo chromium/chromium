@@ -789,6 +789,7 @@ class FileUploadDelegate::FinalContext
     auto resource_request = std::make_unique<::network::ResourceRequest>();
     resource_request->url = resumable_upload_url_;
     resource_request->headers.SetHeader(kUploadCommandHeader, "query");
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
     url_loader_ = delegate()->CreatePostLoader(std::move(resource_request));
 
