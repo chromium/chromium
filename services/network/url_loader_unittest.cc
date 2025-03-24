@@ -5002,6 +5002,12 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
  public:
   StorageAccessHeaderURLLoaderTest() = default;
 
+  void RegisterAdditionalHandlers() override {
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &StorageAccessHeaderURLLoaderTest::HandleLoadWithStorageAccessRequest,
+        base::Unretained(this)));
+  }
+
  protected:
   static constexpr char kStorageAccessRedirectLoadPath[] =
       "/redirect-load-with-storage-access";
@@ -5217,6 +5223,9 @@ TEST_F(StorageAccessHeaderURLLoaderTest, RedirectWithLoad) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
