@@ -66,7 +66,7 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
     return false;
   }
 
-  out->size = SkISize(image_info.width(), image_info.height());
+  out->size = gfx::Size(image_info.width(), image_info.height());
   out->sk_color_type = image_info.colorType();
   out->alpha_type = image_info.alphaType();
   out->sk_color_space = image_info.refColorSpace();

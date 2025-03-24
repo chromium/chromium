@@ -23,7 +23,7 @@ namespace blink {
 struct BLINK_COMMON_EXPORT AcceleratedImageInfo {
   gpu::ExportedSharedImage shared_image;
   gpu::SyncToken sync_token;
-  SkISize size;
+  gfx::Size size;
   SkColorType sk_color_type;
   SkAlphaType alpha_type;
   sk_sp<SkColorSpace> sk_color_space;
