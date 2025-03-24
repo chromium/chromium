@@ -463,8 +463,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Android.Performance.SpannableCreationTime"
-    units="ms" expires_after="2025-07-27">
+<histogram name="Accessibility.Android.Performance.SpannableCreationTime2"
+    units="microseconds" expires_after="2025-07-27">
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -473,6 +473,8 @@ chromium-metrics-reviews@google.com.
     performance impact of the AccessibilityTextFormatting feature and is meant
     to be temporary. The histogram is recorded immediately before the
     constructed Spannable is set on the node.
+
+    Note: This metric is only recorded on devices with high-resolution clocks.
   </summary>
 </histogram>
 
