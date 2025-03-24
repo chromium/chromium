@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] If selection crosses shadow boundaries, getRangeAt(0) should throw an IndexSizeError because the end is not in the document tree.
+  assert_throws_dom: function "function () { selection.getRangeAt(0) }" did not throw
+[FAIL] modify getRangeAt() range: setStart() crosses shadow boundary into the shadow DOM and after end, which collapses both live range and composed selection range.
+  assert_true: expected true got false
+Harness: the test ran to completion.
+
