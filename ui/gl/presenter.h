@@ -112,10 +112,15 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   // properties.
   virtual bool ScheduleCALayer(const ui::CARendererLayerParams& params);
 
+#if BUILDFLAG(IS_WIN)
   // Schedule a list of DCLayers to be shown at next Present(). Semantics is
   // similar to calling ScheduleOverlayPlane() for every overlay in a frame. All
   // arguments correspond to their DCLayer properties.
   virtual void ScheduleDCLayers(std::vector<DCLayerOverlayParams> overlays);
+
+  // Destroy all visual tree resources and commit, returning true on success.
+  virtual bool DestroyDCLayerTree();
+#endif
 
   // Presents current frame asynchronously. `completion_callback` will be called
   // once all necessary steps were taken to display the frame.

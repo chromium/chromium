@@ -56,7 +56,6 @@ class GL_EXPORT DCompPresenter : public Presenter,
   DCompPresenter(const DCompPresenter&) = delete;
   DCompPresenter& operator=(const DCompPresenter&) = delete;
 
-  void Destroy();
   gfx::VSyncProvider* GetVSyncProvider();
 
   // Presenter implementation.
@@ -69,6 +68,7 @@ class GL_EXPORT DCompPresenter : public Presenter,
   // An overlay plane must be scheduled before every `Present` to remain in the
   // layer tree. The primary plane should be included in `overlays`.
   void ScheduleDCLayers(std::vector<DCLayerOverlayParams> overlays) override;
+  bool DestroyDCLayerTree() override;
 
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,
