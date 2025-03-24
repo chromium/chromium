@@ -7,15 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/browser_context.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-}
 
 namespace enterprise_connectors {
 
@@ -51,24 +45,6 @@ class ReportingEventRouter : public KeyedService {
  private:
   raw_ptr<content::BrowserContext> context_;
   raw_ptr<RealtimeReportingClient> reporting_client_;
-};
-
-class ReportingEventRouterFactory : public BrowserContextKeyedServiceFactory {
- public:
-  static ReportingEventRouterFactory* GetInstance();
-  static ReportingEventRouter* GetForBrowserContext(
-      content::BrowserContext* context);
-
- private:
-  ReportingEventRouterFactory();
-  ~ReportingEventRouterFactory() override;
-  friend struct base::DefaultSingletonTraits<ReportingEventRouterFactory>;
-
-  // BrowserContextKeyedServiceFactory:
-  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace enterprise_connectors

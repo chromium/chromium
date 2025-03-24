@@ -172,6 +172,7 @@
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
