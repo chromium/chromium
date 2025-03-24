@@ -1621,6 +1621,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillAiIgnoreGeoIp",
+                        "AutofillAiVoteForFormatStringsFromMultipleFields",
                         "AutofillAiVoteForFormatStringsFromSingleFields",
                         "AutofillAiWithDataSchema"
                     ]

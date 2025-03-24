@@ -29,9 +29,9 @@ using ::autofill::test::CreateTestSelectField;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Matcher;
 using ::testing::Not;
 using ::testing::Pair;
-using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 // Fakes that a `form` has been seen (without its field value) and parsed and
@@ -716,6 +716,13 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
 // Test fixture for DeterminePossibleFormatStringsForUpload().
 class DeterminePossibleFormatStringsForUploadTest : public testing::Test {
  public:
+  DeterminePossibleFormatStringsForUploadTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAutofillAiVoteForFormatStringsFromSingleFields,
+         features::kAutofillAiVoteForFormatStringsFromMultipleFields},
+        {});
+  }
+
   static std::unique_ptr<AutofillField> CreateInput(
       std::string_view value,
       FormControlType form_control_type = FormControlType::kInputText) {
@@ -737,8 +744,7 @@ class DeterminePossibleFormatStringsForUploadTest : public testing::Test {
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillAiVoteForFormatStringsFromSingleFields};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that non-text <input> do not match any format string.
@@ -756,6 +762,12 @@ TEST_F(DeterminePossibleFormatStringsForUploadTest, InputNonText) {
 }
 
 struct DateSingleTextParam {
+  std::string ToString() const {
+    return base::StrCat({"value: ", value, "\n",  //
+                         "formats: [", base::JoinString(format_strings, ", "),
+                         "]"});
+  }
+
   std::string_view value;
   std::vector<std::string_view> format_strings;
 };
@@ -788,9 +800,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests that the values of <input type=text> match certain format strings.
 TEST_P(DeterminePossibleFormatStringsForUploadTest_SingleTextInput,
        SingleTextInput) {
-  SCOPED_TRACE(testing::Message()
-               << "value = " << GetParam().value << " and formats = "
-               << base::JoinString(GetParam().format_strings, ", "));
+  SCOPED_TRACE(testing::Message() << "Values are:\n" << GetParam().ToString());
   std::unique_ptr<AutofillField> field = CreateInput(GetParam().value);
   if (GetParam().format_strings.empty()) {
     EXPECT_THAT(
@@ -805,6 +815,127 @@ TEST_P(DeterminePossibleFormatStringsForUploadTest_SingleTextInput,
                                return base::UTF8ToUTF16(s);
                              })))));
   }
+}
+
+struct DateMultipleTextParam {
+  struct Field {
+    std::string ToString() const {
+      return base::StrCat({"- label: ", label, "\n",  //
+                           "  value: ", value, "\n",  //
+                           "  format strings: [",
+                           base::JoinString(format_strings, ", "), "]"});
+    }
+
+    std::string_view label;
+    std::string_view value;
+    std::vector<std::string_view> format_strings;
+  };
+
+  std::string ToString() const {
+    return base::JoinString(base::ToVector(fields, &Field::ToString), "\n");
+  }
+
+  std::vector<Field> fields;
+};
+
+// Test fixture for a sequences of <input type=text> whose combined values may
+// be a complete date.
+class DeterminePossibleFormatStringsForUploadTest_MultipleTextInput
+    : public DeterminePossibleFormatStringsForUploadTest,
+      public testing::WithParamInterface<DateMultipleTextParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeterminePossibleFormatStringsForUploadTest_MultipleTextInput,
+    testing::ValuesIn(std::vector<DateMultipleTextParam>{
+        {{{"Date", "2025", {"YYYY"}},
+          {"Date", "12", {"MM", "M"}},
+          {"Date", "31", {"DD", "D"}}}},
+        {{{"Date", "31", {"DD", "D"}},
+          {"/", "12", {"MM", "M"}},
+          {"/", "2025", {"YYYY"}}}},
+        {{{"Date", "31", {"DD", "D"}},
+          {".", "12", {"MM", "M"}},
+          {".", "2025", {"YYYY"}}}},
+        {{{"Date", "31", {"DD", "D"}},
+          {".", "12", {"MM", "M"}},
+          {".", "2025", {"YYYY"}}}},
+        {{{"Date", "31", {"DD"}},
+          {"Date", "01", {"MM"}},
+          {"Date", "2025", {"YYYY"}}}},
+        {{{"Date", "31", {}}, {"Date", "31", {}}, {"Date", "2025", {}}}},
+        {{{"Date", "12", {"DD", "D", "MM", "M", "YY"}},
+          {"Date", "12", {"DD", "D", "MM", "M"}},
+          {"Date", "12", {"DD", "D", "YY"}}}},
+        {{{"Date", "31", {"DD", "D", "YY"}},
+          {"Date", "12", {"MM", "M"}},
+          {"Date", "12", {"DD", "D", "YY"}}}},
+        {{{"Date", "12", {"MM", "M"}},
+          {"Date", "13", {"DD", "D"}},
+          {"Date", "12", {"YY"}}}},
+        {{{"Date", "12", {"DD", "D", "MM", "M"}},
+          {"Date", "12", {"DD", "D", "MM", "M"}},
+          {"Date", "32", {"YY"}}}},
+        {{{"Date", "13", {}}, {"Date", "13", {}}, {"Date", "12", {}}}},
+        {{{"Date", "1", {}},
+          {"Date", "2025", {"YYYY"}},
+          {"Date", "12", {"MM", "M"}},
+          {"Date", "31", {"DD", "D"}}}},
+        {{{"Date", "12", {"DD", "D", "MM", "M", "YY"}},
+          {"Date", "12", {"DD", "D", "MM", "M", "YY"}},
+          {"Date", "12", {"DD", "D", "MM", "M", "YY"}},
+          {"Date", "12", {"DD", "D", "YY"}}}},
+        {{{"Date", "31", {}},
+          {"Something else", "12", {}},
+          {"Something completely different", "2025", {}}}},
+        {{{"Date", "1", {}},
+          {"Date", "1", {}},
+          {"Date", "1", {}},
+          {"Date", "1", {}}}},
+        {{{"Date", "123", {}},
+          {"Date", "123", {}},
+          {"Date", "123", {}},
+          {"Date", "123", {}}}},
+        {{{"Date", "ash", {}},
+          {"Date", "sho", {}},
+          {"Date", "hte", {}},
+          {"Date", "tne", {}},
+          {"Date", "neo", {}}}}}));
+
+// Tests that the combined values of sequences of <input type=text> match
+// certain format strings. For example,
+//   <input type=text value=31>
+//   <input type=text value=12>
+//   <input type=text value=2025>
+// represents the date 31/12/2025 and the resulting format strings for the
+// three fields should be DD od D, MM or M, and YYYY, respectively.
+TEST_P(DeterminePossibleFormatStringsForUploadTest_MultipleTextInput,
+       MultipleTextInput) {
+  SCOPED_TRACE(testing::Message() << "Fields are:\n" << GetParam().ToString());
+  std::vector<std::unique_ptr<AutofillField>> fields = base::ToVector(
+      GetParam().fields, [](const DateMultipleTextParam::Field& field) {
+        std::unique_ptr<AutofillField> f = CreateInput(field.value);
+        f->set_label(base::UTF8ToUTF16(field.label));
+        return f;
+      });
+
+  std::vector<Matcher<std::pair<FieldGlobalId, base::flat_set<std::u16string>>>>
+      expectations;
+  for (size_t i = 0; i < GetParam().fields.size(); ++i) {
+    std::vector<std::u16string> format_strings =
+        base::ToVector(GetParam().fields[i].format_strings,
+                       [](std::string_view format_string) {
+                         return base::UTF8ToUTF16(format_string);
+                       });
+    if (!format_strings.empty()) {
+      expectations.emplace_back(
+          Pair(fields[i]->global_id(),
+               UnorderedElementsAreArray(std::move(format_strings))));
+    }
+  }
+
+  EXPECT_THAT(DeterminePossibleFormatStringsForUpload(fields),
+              UnorderedElementsAreArray(expectations));
 }
 
 }  // namespace

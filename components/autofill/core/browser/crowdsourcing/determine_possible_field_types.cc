@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
@@ -272,12 +273,7 @@ void DeterminePossibleFieldTypesForUpload(
 
 std::map<FieldGlobalId, base::flat_set<std::u16string>>
 DeterminePossibleFormatStringsForUpload(
-    base::span<const std::unique_ptr<AutofillField>> fields) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAiVoteForFormatStringsFromSingleFields)) {
-    return {};
-  }
-
+    const base::span<const std::unique_ptr<AutofillField>> fields) {
   // Cheap plausibility checks if the field is relevant for date matching.
   auto may_be_interesting = [](const std::unique_ptr<AutofillField>& field) {
     return field->form_control_type() == FormControlType::kInputText &&
@@ -299,15 +295,75 @@ DeterminePossibleFormatStringsForUpload(
            });
   };
 
+  // Cheap check if the field's value might contain a year, month, or day.
+  auto may_be_part_of_date = [](const std::unique_ptr<AutofillField>& field) {
+    const std::u16string& value = field->value(ValueSemantics::kCurrent);
+    return 1 <= value.size() && value.size() <= 4 &&
+           std::ranges::all_of(value, base::IsAsciiDigit<char16_t>);
+  };
+
+  // Cheap check if the three fields' values might together contain a year,
+  // month and day.
+  // TODO(crbug.com/396325496): Remove the label / separator comparisons if
+  // crrev.com/c/6360977 has landed.
+  auto may_be_split_date =
+      [&](base::span<const std::unique_ptr<AutofillField>, 3> group) {
+        return std::ranges::all_of(group, may_be_part_of_date) &&
+               (group[0]->label() == group[1]->label() ||
+                std::ranges::all_of(group[1]->label(),
+                                    data_util::IsDateSeparatorChar)) &&
+               group[1]->label() == group[2]->label();
+      };
+
   std::map<FieldGlobalId, base::flat_set<std::u16string>> formats_by_field;
-  for (const std::unique_ptr<AutofillField>& field : fields) {
-    if (!may_be_interesting(field) || !may_be_complete_date(field)) {
-      continue;
+
+  // Match formats against individual fields.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiVoteForFormatStringsFromSingleFields)) {
+    for (const std::unique_ptr<AutofillField>& field : fields) {
+      if (!may_be_interesting(field) || !may_be_complete_date(field)) {
+        continue;
+      }
+      const std::vector<std::u16string> formats =
+          GetMatchingCompleteDateFormats(
+              field->value(ValueSemantics::kCurrent));
+      if (!formats.empty()) {
+        formats_by_field.emplace(field->global_id(), std::move(formats));
+      }
     }
-    std::vector<std::u16string> formats =
-        GetMatchingCompleteDateFormats(field->value(ValueSemantics::kCurrent));
-    if (!formats.empty()) {
-      formats_by_field.emplace(field->global_id(), std::move(formats));
+  }
+
+  // Match formats against groups of three consecutive fields.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
+    for (size_t i = 0; i + 2 < fields.size(); ++i) {
+      const base::span<const std::unique_ptr<AutofillField>, 3> group =
+          fields.subspan(i).first<3>();
+      if (!std::ranges::all_of(group, may_be_interesting) ||
+          !may_be_split_date(group) ||
+          !base::FeatureList::IsEnabled(
+              features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
+        continue;
+      }
+      static constexpr std::u16string_view kSeparator = u"-";
+      static_assert(
+          std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
+      const std::u16string date =
+          base::JoinString({group[0]->value(ValueSemantics::kCurrent),
+                            group[1]->value(ValueSemantics::kCurrent),
+                            group[2]->value(ValueSemantics::kCurrent)},
+                           kSeparator);
+      for (const std::u16string& format :
+           GetMatchingCompleteDateFormats(date)) {
+        const std::vector<std::u16string> partial_formats = base::SplitString(
+            format, kSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        if (partial_formats.size() == 3) {
+          for (size_t j = 0; j < 3; ++j) {
+            formats_by_field[group[j]->global_id()].insert(
+                std::move(partial_formats[j]));
+          }
+        }
+      }
     }
   }
   return formats_by_field;
