@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_HATS_SERVICE_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_HATS_SERVICE_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,8 +35,26 @@ class PerformanceControlsHatsService
   // whether a HaTS survey should be shown.
   void OnMemorySaverModeChanged() override;
 
+  // Returns the delay that must pass after the session starts before showing
+  // the PPM survey.
+  base::TimeDelta delay_before_ppm_survey() const {
+    return delay_before_ppm_survey_;
+  }
+
+  // Lets tests override the random delay before showing the PPM survey.
+  void SetDelayBeforePPMSurveyForTesting(base::TimeDelta delay) {
+    delay_before_ppm_survey_ = delay;
+  }
+
  private:
+  // Returns true if the PPM survey can be shown at this time.
+  bool MayLaunchPPMSurvey() const;
+
   raw_ptr<Profile> profile_;
+
+  // Delay before showing the PPM UMA survey. Randomly generated when the
+  // service is created.
+  base::TimeDelta delay_before_ppm_survey_;
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_HATS_SERVICE_H_
