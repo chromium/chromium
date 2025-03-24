@@ -3254,21 +3254,15 @@ bool StyleEngine::HasComplexSafaAreaConstraints() {
 
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
-    if (const ComputedStyle* style = element->GetComputedStyle();
-        style && style->GetCounterDirectives()) {
-      MarkCountersDirty();
-    }
-    if (element->GetComputedStyle() &&
-        element->ComputedStyleRef().ContainsStyle()) {
-      MarkCountersDirty();
-    }
-    if (element->PseudoElementStylesAffectCounters()) {
-      MarkCountersDirty();
-    }
-    if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
-      if (element->GetComputedStyle() &&
-          element->ComputedStyleRef().ContainsStyle()) {
-        tree->RemoveScopeForElement(*element);
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (style->GetCounterDirectives() || style->ContainsStyle() ||
+          element->PseudoElementStylesAffectCounters()) {
+        MarkCountersDirty();
+      }
+      if (style->ContainsStyle()) {
+        if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
+          tree->RemoveScopeForElement(*element);
+        }
       }
     }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
