@@ -224,6 +224,11 @@ StubResolverConfigReader::GetDnsOverHttpsConfigSource() const {
   return default_doh_source_.get();
 }
 
+bool StubResolverConfigReader::GetHappyEyeballsV3Enabled() const {
+  // TODO(crbug.com/401410305): Add a policy and check the policy here.
+  return base::FeatureList::IsEnabled(net::features::kHappyEyeballsV3);
+}
+
 void StubResolverConfigReader::OnParentalControlsDelayTimer() {
   DCHECK(!parental_controls_delay_timer_.IsRunning());
 
@@ -345,8 +350,8 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
   }
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
-        GetInsecureStubResolverEnabled(), secure_dns_mode, doh_config,
-        additional_dns_query_types_enabled);
+        GetInsecureStubResolverEnabled(), GetHappyEyeballsV3Enabled(),
+        secure_dns_mode, doh_config, additional_dns_query_types_enabled);
   }
 
   return SecureDnsConfig(secure_dns_mode, std::move(doh_config),

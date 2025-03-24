@@ -10,21 +10,9 @@ source_set("ui_bundled") {
     "foreground_tab_animation_view.mm",
     "switch_to_tab_animation_view.h",
     "switch_to_tab_animation_view.mm",
-    "tab_strip_container_view.h",
-    "tab_strip_container_view.mm",
-    "tab_strip_controller.h",
-    "tab_strip_controller.mm",
-    "tab_strip_view.h",
-    "tab_strip_view.mm",
-    "tab_view.h",
-    "tab_view.mm",
-    "tab_view_delegate.h",
-    "target_frame_cache.h",
-    "target_frame_cache.mm",
   ]
   public_deps = [ "//ios/chrome/browser/tabs/model" ]
   deps = [
-    ":constants",
     "//base",
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
@@ -53,7 +41,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu:tab_item",
-    "//ios/chrome/browser/tabs/ui_bundled/requirements",
     "//ios/chrome/browser/tabs/ui_bundled/resources",
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/url_loading/model",
@@ -68,67 +55,6 @@ source_set("ui_bundled") {
     "//ios/web/public",
     "//ui/base",
     "//ui/gfx",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("coordinator") {
-  sources = [
-    "tab_strip_legacy_coordinator.h",
-    "tab_strip_legacy_coordinator.mm",
-  ]
-  deps = [
-    ":ui_bundled",
-    "//ios/chrome/browser/bubble/ui_bundled",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/coordinator/layout_guide",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/tabs/ui_bundled/requirements",
-  ]
-}
-
-source_set("constants") {
-  sources = [
-    "tab_strip_constants.h",
-    "tab_strip_constants.mm",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "tab_strip_controller_unittest.mm" ]
-  deps = [
-    ":ui_bundled",
-    "//base",
-    "//ios/chrome/browser/sessions/model:test_support",
-    "//ios/chrome/browser/shared/coordinator/layout_guide",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/tabs/model",
-    "//ios/web/public",
-    "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
-    "//testing/gtest",
-    "//third_party/ocmock",
-    "//ui/base",
-  ]
-}
-
-source_set("eg2_tests") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [ "tab_strip_egtest.mm" ]
-  deps = [
-    ":constants",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
 }

@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_tab_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
-#import "ios/chrome/browser/tabs/ui_bundled/requirements/tab_strip_highlighting.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/side_swipe_toolbar_interacting.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/device_form_factor.h"
@@ -583,7 +582,6 @@ const CGFloat kIpadTabSwipeDistance = 100;
     [[NSNotificationCenter defaultCenter]
         postNotificationName:kSideSwipeWillStartNotification
                       object:nil];
-    [self.tabStripDelegate setHighlightsSelectedTab:YES];
     _startingTabIndex = [self.tabsDelegate activeTabIndex];
   } else if (gesture.state == UIGestureRecognizerStateChanged) {
     // Side swipe for iPad involves changing the selected tab as the swipe moves
@@ -630,7 +628,6 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
     // Redisplay the view if it was in overlay preview mode.
     [_sideSwipeUIControllerDelegate sideSwipeRedisplayTabView];
-    [self.tabStripDelegate setHighlightsSelectedTab:NO];
     [[NSNotificationCenter defaultCenter]
         postNotificationName:kSideSwipeDidStopNotification
                       object:nil];

@@ -12,18 +12,19 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.view.ContextThemeWrapper;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.LinkedHashSet;
 
 /** Helper methods for supporting night mode. */
+@NullMarked
 public class NightModeUtils {
-    private static Boolean sNightModeSupportedForTest;
+    private static @Nullable Boolean sNightModeSupportedForTest;
 
     /**
      * @return Whether night mode is supported.
@@ -134,8 +135,7 @@ public class NightModeUtils {
      * @param theme The theme for which to return the title.
      * @return the title to display.
      */
-    public static @NonNull String getThemeSettingTitle(
-            @NonNull Context context, @ThemeType int theme) {
+    public static String getThemeSettingTitle(Context context, @ThemeType int theme) {
         switch (theme) {
             case ThemeType.DARK:
                 return context.getString(R.string.dark_mode);

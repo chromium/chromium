@@ -71,6 +71,7 @@ public class CustomTabTaskDescriptionHelperTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
+    @DisabledTest(message = "crbug.com/397827744")
     public void testPageHasThemeColorThemeColorInIntent() throws Exception {
         final int intentThemeColor = Color.GREEN;
 

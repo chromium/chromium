@@ -822,10 +822,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   PaintImage::ContentId cached_content_id_ = PaintImage::kInvalidContentId;
 };
 
-// This class does nothing except answering to ProduceCanvasResource() by piping
-// it to NewOrRecycledResource().  This ResourceProvider is meant to be used
-// with an imported external CanvasResource, and all drawing and lifetime logic
-// must be kept at a higher level.
+// This ResourceProvider is meant to be used with an imported external
+// CanvasResource, and all drawing and lifetime logic must be kept at a higher
+// level.
 class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
  public:
   CanvasResourceProviderPassThrough(
@@ -853,24 +852,29 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
  private:
   void ImportResource(
       scoped_refptr<ExternalCanvasResource>&& resource) override {
+    resource_ = resource;
+
     // Drop a previously-imported resource (if any), as it is now stale.
     ClearRecycledResources();
-    RegisterUnusedResource(std::move(resource));
+    RegisterUnusedResource(resource_);
   }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) final {
-    return NewOrRecycledResource();
+    return resource_;
   }
 
   sk_sp<SkSurface> CreateSkSurface() const override { NOTREACHED(); }
 
   scoped_refptr<StaticBitmapImage> Snapshot(FlushReason,
                                             ImageOrientation) override {
-    auto resource = GetImportedResource();
-    if (IsGpuContextLost() || !resource)
+    if (IsGpuContextLost() || !resource_) {
       return nullptr;
-    return resource->Bitmap();
+    }
+    return resource_->Bitmap();
   }
+
+ private:
+  scoped_refptr<ExternalCanvasResource> resource_;
 };
 
 // * Renders to back buffer of a shared image swap chain.
@@ -1956,17 +1960,6 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::NewOrRecycledResource() {
   canvas_resources_.pop_back();
   DCHECK(resource->HasOneRef());
   return resource;
-}
-
-scoped_refptr<CanvasResource> CanvasResourceProvider::GetImportedResource()
-    const {
-  if (!IsSingleBuffered()) {
-    return nullptr;
-  }
-  DCHECK_LE(canvas_resources_.size(), 1u);
-  if (canvas_resources_.empty())
-    return nullptr;
-  return canvas_resources_.back().resource;
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {

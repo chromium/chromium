@@ -122,7 +122,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
                         std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback handled_callback) override;
   void InputEventsDispatched(bool raf_aligned) override;
-  void SetNeedsMainFrame() override;
+  void SetNeedsMainFrame(bool urgent) override;
   bool RequestedMainFramePending() override;
 
   void DidFirstVisuallyNonEmptyPaint(const base::TimeTicks& first_paint_time);

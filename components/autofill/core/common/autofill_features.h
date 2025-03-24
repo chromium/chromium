@@ -39,6 +39,10 @@ extern const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults;
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAiVoteForFormatStringsFromSingleFields);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAiVoteForFormatStringsFromMultipleFields);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiWithDataSchema);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int>

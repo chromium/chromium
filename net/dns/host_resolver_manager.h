@@ -199,6 +199,7 @@ class NET_EXPORT HostResolverManager
 
   void SetIPv6ReachabilityOverride(bool reachability_override);
 
+  void SetIsHappyEyeballsV3Enabled(bool enabled);
   bool IsHappyEyeballsV3Enabled() const;
 
   // Support for invalidating cached per-context data on changes to network or
@@ -577,9 +578,8 @@ class NET_EXPORT HostResolverManager
   // When true, query AAAA even when the globally reachable check failed.
   bool ipv6_reachability_override_ = false;
 
-  // Optional boolean that explicitly enables or disables the HappyEyeballsV3
-  // feature.
-  const std::optional<bool> is_happy_eyeballs_v3_enabled_;
+  // Enables or disables the HappyEyeballsV3 feature.
+  bool is_happy_eyeballs_v3_enabled_;
 
   // Any resolver flags that should be added to a request by default.
   HostResolverFlags additional_resolver_flags_ = 0;

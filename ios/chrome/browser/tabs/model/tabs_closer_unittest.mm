@@ -778,8 +778,7 @@ TEST_F(TabsCloserTest, UndoCloseTabs_SavedTabs) {
     return;
   }
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+  feature_list.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
 
   WebStateList* web_state_list = browser()->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);

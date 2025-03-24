@@ -72,6 +72,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kGooglePasswordManager";
     case Suggestion::Icon::kGooglePay:
       return "kGooglePay";
+    case Suggestion::Icon::kHome:
+      return "kHome";
     case Suggestion::Icon::kHttpWarning:
       return "kHttpWarning";
     case Suggestion::Icon::kHttpsInvalid:
@@ -100,6 +102,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kUndo";
     case Suggestion::Icon::kVehicle:
       return "kVehicle";
+    case Suggestion::Icon::kWork:
+      return "kWork";
     case Suggestion::Icon::kCardGeneric:
       return "kCardGeneric";
     case Suggestion::Icon::kCardAmericanExpress:

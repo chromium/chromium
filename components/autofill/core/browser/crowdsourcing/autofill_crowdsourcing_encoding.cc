@@ -356,9 +356,12 @@ void PopulateRandomizedFieldMetadata(
 
 // Encodes the fields of `upload_fields` in the in-out parameter `upload`.
 // Helper function for EncodeUploadRequest().
-void EncodeFormFieldsForUpload(const FormStructure& form,
-                               base::span<AutofillField*> upload_fields,
-                               AutofillUploadContents* upload) {
+void EncodeFormFieldsForUpload(
+    const FormStructure& form,
+    const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
+        format_strings,
+    base::span<AutofillField*> upload_fields,
+    AutofillUploadContents* upload) {
   DCHECK(!IsMalformed(form));
 
   for (AutofillField* field : upload_fields) {
@@ -396,6 +399,18 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
           field->initial_value_changed().value());
     }
 
+    if (auto it = format_strings.find(field->global_id());
+        it != format_strings.end()) {
+      for (const std::u16string& format_string : it->second) {
+        DCHECK(data_util::IsValidDateFormat(format_string));
+        auto* added_format_string = added_field->add_format_string();
+        added_format_string->set_type(
+            AutofillUploadContents_Field_FormatString_Type_DATE);
+        added_format_string->set_format_string(
+            base::UTF16ToUTF8(format_string));
+      }
+    }
+
     added_field->set_signature(field->GetFieldSignature().value());
 
     if (field->properties_mask()) {
@@ -412,6 +427,7 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
       added_field->set_single_username_vote_type(
           field->single_username_vote_type().value());
     }
+
     switch (field->is_most_recent_single_username_candidate()) {
       case IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow:
         added_field->clear_is_most_recent_single_username_candidate();
@@ -672,7 +688,9 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
     const FieldTypeSet& available_field_types,
     std::string_view login_form_signature,
-    bool observed_submission) {
+    bool observed_submission,
+    const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
+        format_strings) {
   DCHECK_EQ(FirstNonCapturedType(form, available_field_types),
             MAX_VALID_FIELD_TYPE);
 
@@ -733,7 +751,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   std::vector<AutofillField*> upload_fields(form.fields().size());
   std::ranges::transform(form.fields(), upload_fields.begin(),
                          &std::unique_ptr<AutofillField>::get);
-  EncodeFormFieldsForUpload(form, upload_fields, &upload);
+  EncodeFormFieldsForUpload(form, format_strings, upload_fields, &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};
 
   // Build AutofillUploadContents for the renderer forms that have been
@@ -765,8 +783,9 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
                               (*subform_begin)->renderer_form_id();
                      });
     // SAFETY: The iterators are from the same container.
-    EncodeFormFieldsForUpload(
-        form, UNSAFE_BUFFERS({subform_begin, subform_end}), &uploads.back());
+    EncodeFormFieldsForUpload(form, format_strings,
+                              UNSAFE_BUFFERS({subform_begin, subform_end}),
+                              &uploads.back());
     subform_begin = subform_end;
   }
   return uploads;

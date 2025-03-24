@@ -63,8 +63,11 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // is true which happens when the scroll update is not consumed and the
   // overscroll_behavior on y axis is 'auto'.
   // This method is made virtual for mocking.
-  virtual void OnOverscrolled(
-      const cc::OverscrollBehavior& overscroll_behavior);
+  virtual void OnOverscrolled(const cc::OverscrollBehavior& behavior,
+                              gfx::Vector2dF accumulated_overscroll);
+
+  // Disables scroll consumption if the activation shouldn't have happened.
+  void MaybeDisableScrollConsumption(const gfx::Vector2dF& scroll_delta);
 
   // Returns true if the effect has consumed the |scroll_delta|.
   bool WillHandleScrollUpdate(const gfx::Vector2dF& scroll_delta);
@@ -121,7 +124,6 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   float scroll_begin_x_;
   float scroll_begin_y_;
   const float edge_width_;  // in px
-  gfx::Vector2dF cumulative_scroll_;
   const raw_ptr<OverscrollRefreshHandler, DanglingUntriaged> handler_;
 };
 

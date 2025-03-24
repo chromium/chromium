@@ -149,7 +149,9 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                                     String& result) override;
   bool TabsToLinks() override;
   void InvalidateContainer() override;
-  void ScheduleAnimation(const LocalFrameView*, base::TimeDelta delay) override;
+  void ScheduleAnimation(const LocalFrameView*,
+                         base::TimeDelta delay,
+                         bool urgent) override;
   gfx::Rect LocalRootToScreenDIPs(const gfx::Rect&,
                                   const LocalFrameView*) const override;
   float WindowToViewportScalar(LocalFrame*, const float) const override;

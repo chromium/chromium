@@ -887,10 +887,6 @@ const char kMetrickitNonCrashReportDescription[] =
     "Enables sending Metrickit reports for non crash type (hang, "
     "cpu-exception, diskwrite-exception)";
 
-const char kModernTabStripName[] = "Modern TabStrip";
-const char kModernTabStripDescription[] =
-    "When enabled, the newly implemented tabstrip can be tested.";
-
 const char kMostVisitedTilesHorizontalRenderGroupName[] =
     "MVTiles Horizontal Render Group";
 const char kMostVisitedTilesHorizontalRenderGroupDescription[] =

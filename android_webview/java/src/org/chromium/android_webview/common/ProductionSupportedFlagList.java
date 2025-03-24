@@ -1066,6 +1066,17 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.MEMORY_SAVER_MODE_RENDER_TUNING,
                 "Enables v8 memory saver mode on low memory thresholds."),
+        Flag.baseFeature(
+                NetworkServiceFeatures.RENDERER_SIDE_CONTENT_DECODING,
+                "Enable renderer-side content decoding (decompression)."),
+        Flag.commandLine(
+                AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
+                "When enabled, webview chromium initialization uses the startup tasks logic where"
+                        + " it:\n"
+                        + " - runs the startup tasks asynchronously if startup is triggered from a"
+                        + " background thread. Otherwise runs startup synchronously.\n"
+                        + " - caches any chromium startup exception and rethrows it if startup is"
+                        + " retried without a restart."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

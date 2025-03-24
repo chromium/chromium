@@ -2524,6 +2524,8 @@ rust_static_library("rust_logger") {
   allow_unsafe = true  # Unsafe needed for FFI.
   deps = [
     ":logging_log_severity_bindgen",
+    ":tracing_buildflags",
+    "//build:chromeos_buildflags",
     "//third_party/rust/log/v0_4:lib",
 
     # Needed because of circular dependency: base depends on this target and by

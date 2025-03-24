@@ -67,7 +67,7 @@ class FakeWebStateListDelegateWithSnapshotTabHelper
 class CreateTabGroupMediatorTest : public PlatformTest {
  protected:
   CreateTabGroupMediatorTest() {
-    feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+    feature_list_.InitWithFeatures({kTabGroupsIPad}, {});
     EXPECT_TRUE(
         builder_.BuildWebStateListFromDescription("a | b [ 0 c ] [ 1 d ]"));
     consumer_ = [[TabGroupCreationConsumer alloc] init];

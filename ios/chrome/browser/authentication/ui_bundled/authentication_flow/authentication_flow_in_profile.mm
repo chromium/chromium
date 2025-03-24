@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 namespace {
 
@@ -59,7 +60,7 @@ enum class AuthenticationFlowInProfileState {
   // sign-in flow is is in progress to ensure it outlives until the last step.
   AuthenticationFlowInProfile* _selfRetainer;
   signin_ui::SigninCompletionCallback _signInCompletion;
-  BOOL _error;
+  NSError* _error;
   id<SystemIdentity> _identityToSignIn;
   // `YES` if `_identityToSignIn` is a managed identity.
   BOOL _isManagedIdentity;
@@ -153,6 +154,27 @@ enum class AuthenticationFlowInProfileState {
   }
 
   return YES;
+}
+
+- (UIViewController*)findViewController {
+  UIViewController* viewController =
+      _browser->GetSceneState().rootViewController;
+  while (viewController.presentedViewController) {
+    viewController = viewController.presentedViewController;
+  }
+  return viewController;
+}
+
+- (void)handleAuthenticationError:(NSError*)error {
+  CHECK(error);
+  _error = error;
+  __weak AuthenticationFlowInProfile* weakSelf = self;
+  [_performer showAuthenticationError:_error
+                       withCompletion:^{
+                         [weakSelf continueFlow];
+                       }
+                       viewController:[self findViewController]
+                              browser:_browser];
 }
 
 #pragma mark - State machine management
@@ -280,10 +302,8 @@ enum class AuthenticationFlowInProfileState {
       base::Contains(accountsInProfile, GaiaId(_identityToSignIn.gaiaID),
                      &CoreAccountInfo::gaia);
   if (!isValidIdentityInProfile) {
-    _error = YES;
-    // TODO(crbug.com/375605482): Show an error to the user via
-    // `[_performer showAuthenticationError:...]`.
-    [self continueFlow];
+    [self handleAuthenticationError:ios::provider::
+                                        CreateMissingIdentitySigninError()];
     return;
   }
   AuthenticationService* authenticationService =

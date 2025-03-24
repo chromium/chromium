@@ -40,22 +40,26 @@ PerformanceControlsHatsServiceFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
+// static
+bool PerformanceControlsHatsServiceFactory::IsAnySurveyFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+             performance_manager::features::
+                 kPerformanceControlsPerformanceSurvey) ||
+         base::FeatureList::IsEnabled(
+             performance_manager::features::
+                 kPerformanceControlsBatteryPerformanceSurvey) ||
+         base::FeatureList::IsEnabled(
+             performance_manager::features::
+                 kPerformanceControlsMemorySaverOptOutSurvey) ||
+         base::FeatureList::IsEnabled(
+             performance_manager::features::
+                 kPerformanceControlsBatterySaverOptOutSurvey);
+}
+
 std::unique_ptr<KeyedService>
 PerformanceControlsHatsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (context->IsOffTheRecord() ||
-      (!base::FeatureList::IsEnabled(
-           performance_manager::features::
-               kPerformanceControlsPerformanceSurvey) &&
-       !base::FeatureList::IsEnabled(
-           performance_manager::features::
-               kPerformanceControlsBatteryPerformanceSurvey) &&
-       !base::FeatureList::IsEnabled(
-           performance_manager::features::
-               kPerformanceControlsMemorySaverOptOutSurvey) &&
-       !base::FeatureList::IsEnabled(
-           performance_manager::features::
-               kPerformanceControlsBatterySaverOptOutSurvey))) {
+  if (context->IsOffTheRecord() || !IsAnySurveyFeatureEnabled()) {
     return nullptr;
   }
 

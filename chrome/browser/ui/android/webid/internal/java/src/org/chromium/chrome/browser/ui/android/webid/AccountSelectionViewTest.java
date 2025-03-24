@@ -233,11 +233,12 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         mSheetAccountItems.addAll(
                 asList(
                         buildAccountItem(mAnaAccount, /* showIdp= */ true),
-                        buildAccountItem(mAnaAccountWithoutBrandIcons, /* showIdp= */ true)));
+                        buildAccountItem(mAnaAccountWithoutBrandIcons, /* showIdp= */ true),
+                        buildAccountItem(mNewUserAccount, /* showIdp= */ true)));
         ShadowLooper.shadowMainLooper().idle();
 
         assertEquals(View.VISIBLE, mContentView.getVisibility());
-        assertEquals("Incorrect account count", 2, getAccounts().getChildCount());
+        assertEquals("Incorrect account count", 3, getAccounts().getChildCount());
 
         TextView secondaryDescription = getAccountSecondaryDescriptionAt(0);
         assertEquals(
@@ -245,7 +246,8 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 View.VISIBLE,
                 secondaryDescription.getVisibility());
         assertEquals(
-                mAnaAccount.getSecondaryDescription(), secondaryDescription.getText().toString());
+                mAnaAccount.getSecondaryDescription() + " • You used on this site",
+                secondaryDescription.getText().toString());
 
         secondaryDescription = getAccountSecondaryDescriptionAt(1);
         assertEquals(
@@ -253,7 +255,17 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 View.VISIBLE,
                 secondaryDescription.getVisibility());
         assertEquals(
-                mAnaAccountWithoutBrandIcons.getSecondaryDescription(),
+                mAnaAccountWithoutBrandIcons.getSecondaryDescription() + " • You used on this site",
+                secondaryDescription.getText().toString());
+
+        secondaryDescription = getAccountSecondaryDescriptionAt(2);
+        assertEquals(
+                "Secondary description not visible",
+                View.VISIBLE,
+                secondaryDescription.getVisibility());
+        // This is a new account, so should not include "You used on this site".
+        assertEquals(
+                mNewUserAccount.getSecondaryDescription(),
                 secondaryDescription.getText().toString());
     }
 

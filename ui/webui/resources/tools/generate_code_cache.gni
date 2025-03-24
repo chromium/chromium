@@ -19,9 +19,13 @@ template("generate_code_cache") {
       deps += invoker.deps
     }
 
+    # Filter .html.js files out of in_files to avoid attempting to generate
+    # code cache for templatized modules.
+    in_files_filtered = filter_exclude(in_files, [ "*.html.js" ])
+
     inputs = []
     outputs = [ out_manifest ]
-    foreach(f, in_files) {
+    foreach(f, in_files_filtered) {
       extension = get_path_info(f, "extension")
       assert(extension == "js")
       inputs += [ "${in_folder}/${f}" ]
@@ -38,6 +42,6 @@ template("generate_code_cache") {
              "--out_manifest",
              rebase_path(out_manifest, root_build_dir),
              "--in_files",
-           ] + in_files
+           ] + in_files_filtered
   }
 }

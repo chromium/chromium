@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -73,10 +71,10 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.accessibility_preferences);
 
-        mPageZoomDefaultZoomPref = assumeNonNull(findPreference(PREF_PAGE_ZOOM_DEFAULT_ZOOM));
-        mPageZoomAlwaysShowPref = assumeNonNull(findPreference(PREF_PAGE_ZOOM_ALWAYS_SHOW));
+        mPageZoomDefaultZoomPref = findPreference(PREF_PAGE_ZOOM_DEFAULT_ZOOM);
+        mPageZoomAlwaysShowPref = findPreference(PREF_PAGE_ZOOM_ALWAYS_SHOW);
         mPageZoomIncludeOSAdjustment =
-                assumeNonNull(findPreference(PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT));
+                findPreference(PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
 
         // Set the initial values for the page zoom settings, and set change listeners.
         mPageZoomDefaultZoomPref.setInitialValue(
@@ -91,23 +89,23 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                     mDelegate.getTextSizeContrastAccessibilityDelegate());
         }
 
-        mForceEnableZoomPref = assumeNonNull(findPreference(PREF_FORCE_ENABLE_ZOOM));
+        mForceEnableZoomPref = findPreference(PREF_FORCE_ENABLE_ZOOM);
         mForceEnableZoomPref.setOnPreferenceChangeListener(this);
         mForceEnableZoomPref.setChecked(
                 mDelegate.getForceEnableZoomAccessibilityDelegate().getValue());
 
-        mJumpStartOmnibox = assumeNonNull(findPreference(OmniboxFeatures.KEY_JUMP_START_OMNIBOX));
+        mJumpStartOmnibox = findPreference(OmniboxFeatures.KEY_JUMP_START_OMNIBOX);
         mJumpStartOmnibox.setOnPreferenceChangeListener(this);
         mJumpStartOmnibox.setChecked(OmniboxFeatures.isJumpStartOmniboxEnabled());
         mJumpStartOmnibox.setVisible(OmniboxFeatures.sJumpStartOmnibox.isEnabled());
 
         ChromeSwitchPreference readerForAccessibilityPref =
-                assumeNonNull(findPreference(PREF_READER_FOR_ACCESSIBILITY));
+                findPreference(PREF_READER_FOR_ACCESSIBILITY);
         readerForAccessibilityPref.setChecked(
                 mDelegate.getReaderAccessibilityDelegate().getValue());
         readerForAccessibilityPref.setOnPreferenceChangeListener(this);
 
-        Preference captions = assumeNonNull(findPreference(PREF_CAPTIONS));
+        Preference captions = findPreference(PREF_CAPTIONS);
         captions.setOnPreferenceClickListener(
                 preference -> {
                     Intent intent = new Intent(Settings.ACTION_CAPTIONING_SETTINGS);
@@ -120,7 +118,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                     return true;
                 });
 
-        Preference zoomInfo = assumeNonNull(findPreference(PREF_ZOOM_INFO));
+        Preference zoomInfo = findPreference(PREF_ZOOM_INFO);
         zoomInfo.setVisible(true);
         zoomInfo.setOnPreferenceClickListener(
                 preference -> {
@@ -146,7 +144,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         }
 
         Preference imageDescriptionsPreference =
-                assumeNonNull(findPreference(PREF_IMAGE_DESCRIPTIONS));
+                findPreference(PREF_IMAGE_DESCRIPTIONS);
         imageDescriptionsPreference.setVisible(mDelegate.shouldShowImageDescriptionsSetting());
     }
 

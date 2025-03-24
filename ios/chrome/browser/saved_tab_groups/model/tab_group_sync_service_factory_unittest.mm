@@ -22,7 +22,6 @@ class TabGroupSyncServiceFactoryTest : public PlatformTest {
         {
             kTabGroupSync,
             kTabGroupsIPad,
-            kModernTabStrip,
         },
         /*disable_features=*/{});
     TestProfileIOS::Builder builder;

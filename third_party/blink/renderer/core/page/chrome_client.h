@@ -161,10 +161,15 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                           const LocalFrameView*) const = 0;
 
   void ScheduleAnimation(const LocalFrameView* view) {
-    ScheduleAnimation(view, base::TimeDelta());
+    ScheduleAnimation(view, base::TimeDelta(), /*urgent=*/false);
   }
-  virtual void ScheduleAnimation(const LocalFrameView*,
-                                 base::TimeDelta delay) = 0;
+  void ScheduleAnimation(const LocalFrameView* view, base::TimeDelta delay) {
+    ScheduleAnimation(view, delay, /*urgent=*/false);
+  }
+
+  virtual void ScheduleAnimation(const LocalFrameView* local_frame_view,
+                                 base::TimeDelta delay,
+                                 bool urgent) = 0;
 
   // Tells the browser that another page has accessed the DOM of the initial
   // empty document of a main frame.

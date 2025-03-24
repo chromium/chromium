@@ -3041,19 +3041,6 @@ const FeatureEntry::FeatureVariation kSystemShortcutBehaviorVariations[] = {
      nullptr},
 };
 
-const FeatureEntry::FeatureParam kMediaAppImageMantisModelV1[] = {
-    {"mantis_model", "v1"}};
-
-const FeatureEntry::FeatureParam kMediaAppImageMantisModelV2[] = {
-    {"mantis_model", "v2"}};
-
-const FeatureEntry::FeatureVariation kMediaAppImageMantisModelVariations[] = {
-    {"With V1", kMediaAppImageMantisModelV1,
-     std::size(kMediaAppImageMantisModelV1), nullptr},
-    {"With V2", kMediaAppImageMantisModelV2,
-     std::size(kMediaAppImageMantisModelV1), nullptr},
-};
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -8318,12 +8305,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"media-app-pdf-mahi", flag_descriptions::kMediaAppPdfMahiName,
      flag_descriptions::kMediaAppPdfMahiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMediaAppPdfMahi)},
-    {"media-app-image-mantis-model",
-     flag_descriptions::kMediaAppImageMantisModelName,
-     flag_descriptions::kMediaAppImageMantisModelDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kMediaAppImageMantisModel,
-                                    kMediaAppImageMantisModelVariations,
-                                    "MediaAppImageMantisModel")},
     {"on-device-app-controls", flag_descriptions::kOnDeviceAppControlsName,
      flag_descriptions::kOnDeviceAppControlsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kForceOnDeviceAppControlsForAllRegions)},

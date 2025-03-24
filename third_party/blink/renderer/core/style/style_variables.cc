@@ -8,114 +8,63 @@
 
 namespace blink {
 
-namespace {
-
-using OptionalData = StyleVariables::OptionalData;
-using OptionalValue = StyleVariables::OptionalValue;
-
-bool IsEqual(const OptionalData& a, const OptionalData& b) {
-  if (a.has_value() != b.has_value()) {
-    return false;
-  }
-  if (!a.has_value()) {
-    return true;
-  }
-  return base::ValuesEquivalent(a.value(), b.value());
-}
-
-bool IsEqual(const OptionalValue& a, const OptionalValue& b) {
-  if (a.has_value() != b.has_value()) {
-    return false;
-  }
-  if (!a.has_value()) {
-    return true;
-  }
-  return base::ValuesEquivalent(a.value(), b.value());
-}
-
-}  // namespace
-
 bool StyleVariables::operator==(const StyleVariables& other) const {
-  if (data_.size() != other.data_.size() ||
-      values_.size() != other.values_.size()) {
+  if (data_hash_ != other.data_hash_ || values_hash_ != other.values_hash_) {
     return false;
   }
 
-  if (equality_cache_partner_ == &other &&
-      other.equality_cache_partner_ == this) {
-    DCHECK_EQ(equality_cached_result_, other.equality_cached_result_);
-    return equality_cached_result_;
-  }
+  // NOTE: If two roots are equal but not the same, we set them
+  // to be the same (we arbitrarily pick the one with the lowest
+  // pointer value, so that we know we'll never flip-flop between
+  // three or more). We could have done this on HashTrieNode
+  // to get partial deduplication, but it doesn't seem to be worth it.
 
-  equality_cache_partner_ = &other;
-  other.equality_cache_partner_ = this;
-
-  for (const auto& pair : data_) {
-    if (!IsEqual(pair.value, other.GetData(pair.key))) {
-      equality_cached_result_ = other.equality_cached_result_ = false;
+  if (data_root_ != other.data_root_) {
+    if (*data_root_ == *other.data_root_) {
+      data_root_ = other.data_root_ = std::min(data_root_, other.data_root_);
+      data_root_->MakeShared();
+    } else {
       return false;
     }
   }
 
-  for (const auto& pair : values_) {
-    if (!IsEqual(pair.value, other.GetValue(pair.key))) {
-      equality_cached_result_ = other.equality_cached_result_ = false;
+  if (values_root_ != other.values_root_) {
+    if (*values_root_ == *other.values_root_) {
+      values_root_ = other.values_root_ =
+          std::min(values_root_, other.values_root_);
+      values_root_->MakeShared();
+    } else {
       return false;
     }
   }
 
-  equality_cached_result_ = other.equality_cached_result_ = true;
   return true;
 }
 
-StyleVariables::OptionalData StyleVariables::GetData(
-    const AtomicString& name) const {
-  auto i = data_.find(name);
-  if (i != data_.end()) {
-    return i->value.Get();
-  }
-  return std::nullopt;
-}
-
-StyleVariables::OptionalValue StyleVariables::GetValue(
-    const AtomicString& name) const {
-  auto i = values_.find(name);
-  if (i != values_.end()) {
-    return i->value.Get();
-  }
-  return std::nullopt;
-}
-
 void StyleVariables::SetData(const AtomicString& name, CSSVariableData* data) {
-  data_.Set(name, data);
-  equality_cache_partner_ = nullptr;
+  data_root_ = data_root_->Set(name, data, data_hash_);
 }
 
 void StyleVariables::SetValue(const AtomicString& name, const CSSValue* value) {
-  values_.Set(name, value);
-  equality_cache_partner_ = nullptr;
+  values_root_ = values_root_->Set(name, value, values_hash_);
 }
 
 bool StyleVariables::IsEmpty() const {
-  return data_.empty() && values_.empty();
+  return data_root_->empty() && values_root_->empty();
 }
 
 void StyleVariables::CollectNames(HashSet<AtomicString>& names) const {
-  for (const auto& pair : data_) {
-    names.insert(pair.key);
-  }
+  data_root_->CollectNames(names);
 }
 
 std::ostream& operator<<(std::ostream& stream,
                          const StyleVariables& variables) {
   stream << "[";
-  for (const auto& [key, value] : variables.data_) {
-    stream << key << ": " << value->Serialize() << ", ";
-  }
+  variables.data_root_->Serialize(
+      [](const CSSVariableData* data) { return data->Serialize(); }, stream);
   stream << "][";
-  for (const auto& [key, value] : variables.values_) {
-    stream << key << ": " << value->CssText() << ", ";
-  }
+  variables.values_root_->Serialize(
+      [](const CSSValue* value) { return value->CssText(); }, stream);
   return stream << "]";
 }
 

@@ -4,8 +4,6 @@
 
 package org.chromium.components.privacy_sandbox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
@@ -69,7 +67,6 @@ public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
         ChromeSwitchPreference ipProtectionSwitch = findPreference(PREF_IP_PROTECTION_SWITCH);
         TextMessagePreference ipProtectionSummary = findPreference(PREF_IP_PROTECTION_SUMMARY);
 
-        assumeNonNull(ipProtectionSwitch);
         ipProtectionSwitch.setChecked(mDelegate.isIpProtectionEnabled());
         ipProtectionSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -79,7 +76,6 @@ public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
                     return true;
                 });
 
-        assumeNonNull(ipProtectionSummary);
         ipProtectionSummary.setSummary(
                 SpanApplier.applySpans(
                         getResources().getString(R.string.privacy_sandbox_ip_protection_summary),

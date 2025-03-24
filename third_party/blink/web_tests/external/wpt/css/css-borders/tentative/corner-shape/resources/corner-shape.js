@@ -116,14 +116,15 @@ function render_rect_with_corner_shapes(style, ctx, width, height) {
     draw_inner_corner_from_params(corner_params[corner], phase, direction);
   }
 
-  ctx.beginPath();
-
-  draw_outer_corner("top-right");
-  draw_outer_corner("bottom-right");
-  draw_outer_corner("bottom-left");
-  draw_outer_corner("top-left");
-  ctx.closePath();
-  ctx.fill("nonzero");
+  function draw_outer_path() {
+    ctx.beginPath();
+    draw_outer_corner("top-right");
+    draw_outer_corner("bottom-right");
+    draw_outer_corner("bottom-left");
+    draw_outer_corner("top-left");
+    ctx.closePath();
+    ctx.fill("nonzero");
+  }
 
   const inner_rect = [
     style["border-left-width"],
@@ -131,6 +132,72 @@ function render_rect_with_corner_shapes(style, ctx, width, height) {
     width - style["border-right-width"],
     height - style["border-bottom-width"],
   ];
+
+
+  {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(corner_params['top-left'].inner_rect[2], corner_params['top-left'].inner_rect[1])
+    ctx.lineTo(corner_params['top-left'].inner_rect[2], inner_rect[1]);
+    ctx.lineTo(corner_params['top-right'].inner_rect[0], inner_rect[1]);
+    ctx.lineTo(corner_params['top-right'].inner_rect[0], corner_params['top-right'].inner_rect[3]);
+    ctx.lineTo(width, 0);
+    ctx.closePath();
+    ctx.clip();
+    ctx.fillStyle = style['border-top-color'];
+    draw_outer_path();
+    ctx.restore();
+  }
+
+  {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(width, 0);
+    ctx.lineTo(corner_params['top-right'].inner_rect[0], corner_params['top-right'].inner_rect[3]);
+    ctx.lineTo(inner_rect[2], corner_params['top-right'].inner_rect[3]);
+    ctx.lineTo(inner_rect[2], corner_params['bottom-right'].inner_rect[1]);
+    ctx.lineTo(corner_params['bottom-right'].inner_rect[2], corner_params['bottom-right'].inner_rect[1]);
+    ctx.lineTo(width, height);
+    ctx.closePath();
+    ctx.clip();
+    ctx.fillStyle = style['border-right-color'];
+    draw_outer_path();
+    ctx.restore();
+  }
+
+  {
+    ctx.save();
+    ctx.beginPath();
+    ctx.lineTo(width, height);
+    ctx.lineTo(corner_params['bottom-right'].inner_rect[2], corner_params['bottom-right'].inner_rect[1]);
+    ctx.lineTo(corner_params['bottom-right'].inner_rect[2], inner_rect[3]);
+    ctx.lineTo(corner_params['bottom-left'].inner_rect[0], inner_rect[3]);
+    ctx.lineTo(corner_params['bottom-left'].inner_rect[0], corner_params['bottom-left'].inner_rect[3]);
+    ctx.lineTo(0, height);
+    ctx.closePath();
+    ctx.clip();
+    ctx.fillStyle = style['border-bottom-color'];
+    draw_outer_path();
+    ctx.restore();
+  }
+
+  {
+    ctx.save();
+    ctx.beginPath();
+    ctx.lineTo(0, height);
+    ctx.lineTo(corner_params['bottom-left'].inner_rect[0], corner_params['bottom-left'].inner_rect[3]);
+    ctx.lineTo(inner_rect[0], corner_params['bottom-left'].inner_rect[3]);
+    ctx.lineTo(inner_rect[0], corner_params['top-left'].inner_rect[1]);
+    ctx.lineTo(corner_params['top-left'].inner_rect[2], corner_params['top-left'].inner_rect[1])
+    ctx.lineTo(0, 0);
+    ctx.closePath();
+    ctx.clip();
+    ctx.fillStyle = style['border-left-color'];
+    draw_outer_path();
+    ctx.restore();
+  }
+
   ctx.save();
   ctx.beginPath();
   draw_inner_corner("top-right");

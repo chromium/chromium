@@ -600,7 +600,24 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kEmail) {
       suggestion.icon = Suggestion::Icon::kEmail;
     } else if (contains_profile_related_fields) {
-      suggestion.icon = Suggestion::Icon::kAccount;
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableSupportForHomeAndWork)) {
+        // TODO(crbug.com/6373444): Confirm that the distance between icon and
+        // text is correct.
+        switch (profile.record_type()) {
+          case AutofillProfile::RecordType::kAccountHome:
+            suggestion.icon = Suggestion::Icon::kHome;
+            break;
+          case AutofillProfile::RecordType::kAccountWork:
+            suggestion.icon = Suggestion::Icon::kWork;
+            break;
+          case AutofillProfile::RecordType::kLocalOrSyncable:
+          case AutofillProfile::RecordType::kAccount:
+            suggestion.icon = Suggestion::Icon::kAccount;
+        }
+      } else {
+        suggestion.icon = Suggestion::Icon::kAccount;
+      }
     }
     // This is intentionally not using `profile.IsAccountProfile()` because the
     // IPH should only be shown for non-H/W profiles.

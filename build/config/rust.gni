@@ -225,8 +225,14 @@ if (is_linux || is_chromeos) {
     cargo_target_abi = ""
   } else if (android_abi_target == "arm-linux-androideabi") {
     # Android clang target specifications mostly match Rust, but this
-    # is an exception
-    rust_abi_target = "armv7-linux-androideabi"
+    # is an exception.
+    # See section above for Linux for thumbv7neon vs. armv7.
+    # Note that on Android, NEON is enabled for all builds except Cronet.
+    if (arm_use_neon) {
+      rust_abi_target = "thumbv7neon-linux-androideabi"
+    } else {
+      rust_abi_target = "armv7-linux-androideabi"
+    }
     cargo_target_abi = "eabi"
   } else if (android_abi_target == "mipsel-linux-android") {
     # There is no MIPS android target.

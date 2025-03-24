@@ -21,6 +21,12 @@ struct Date {
   int day = 0;
 };
 
+// Returns true if `c` is one of the possible date format characters.
+// See IsValidDateFormat() for details on separators.
+constexpr bool IsDateSeparatorChar(char16_t c) {
+  return c == '-' || c == '/' || c == '.' || c == ' ';
+}
+
 // Indicates if `format` is a date format string and nothing else.
 //
 // This is to ensure that `format` does not encode non-trivial information.
@@ -41,6 +47,7 @@ struct Date {
 // - YYYY (long) and YY (short) for year.
 // - MM (long) and M (short) for month.
 // - DD (long) and D (short) for day.
+//
 // The existing separators are /, ., -, optionally surrounded by one space on
 // each side, or space itself or the empty string.
 bool IsValidDateFormat(std::u16string_view format);

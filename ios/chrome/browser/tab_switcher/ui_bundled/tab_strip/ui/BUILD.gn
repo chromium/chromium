@@ -59,7 +59,6 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
-    "//ios/chrome/browser/tabs/ui_bundled:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
@@ -79,7 +78,6 @@ source_set("utils") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/features:features_utils",
     "//ios/chrome/common/ui/colors",
   ]
 }

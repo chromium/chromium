@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
@@ -58,6 +59,7 @@ public class WebappSplashScreenThemeColorTest {
     @Restriction({DeviceFormFactor.PHONE})
     // Customizing status bar color is disallowed for tablets.
     @Feature({"StatusBar", "Webapps"})
+    @DisabledTest(message = "crbug.com/405922441")
     public void testThemeColorNotUsedIfPagesHasOne() throws ExecutionException, TimeoutException {
         final int intentThemeColor = Color.MAGENTA;
         final int pageThemeColor = Color.RED;
