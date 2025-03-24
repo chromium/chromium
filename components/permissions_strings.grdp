@@ -189,6 +189,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_WEB_APP_INSTALLATION_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to install a web app.">
     Be able to install web apps
   </message>
+  <message name="IDS_LOCAL_NETWORK_ACCESS_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to access the user's local network.">
+    Look for and connect to any device on your local network
+  </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow
   </message>
@@ -368,6 +371,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_PERMISSIONS_HAND_TRACKING_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been denied.">
       Hand tracking not allowed
     </message>
+
 
     <message name="IDS_GEOLOCATION_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">
       Location blocked

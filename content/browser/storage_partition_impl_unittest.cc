@@ -2463,6 +2463,23 @@ TEST_F(StoragePartitionImplTest, PrivateNetworkAccessPermission) {
   EXPECT_FALSE(grant_permission.Get());
 }
 
+TEST_F(StoragePartitionImplTest, LocalNetworkAccessPermission) {
+  base::test::ScopedFeatureList features(
+      network::features::kLocalNetworkAccessChecks);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
+      partition->CreateAuthCertObserverForServiceWorker(
+          network::mojom::kBrowserProcessId));
+
+  base::test::TestFuture<bool> grant_permission;
+  observer->OnLocalNetworkAccessPermissionRequired(
+      base::BindOnce(grant_permission.GetCallback()));
+  EXPECT_FALSE(grant_permission.Get());
+}
+
 TEST_F(StoragePartitionImplTest, ClearDataStorageKeyDeletesPartitionedCookies) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());

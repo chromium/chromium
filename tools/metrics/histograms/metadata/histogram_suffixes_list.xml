@@ -1894,6 +1894,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="KeyboardAndPointerLock"
       label="Keyboard and pointer lock permission"/>
   <suffix name="KeyboardLock" label="Keyboard lock permission"/>
+  <suffix name="LocalNetworkAccess" label="Local network access permission"/>
   <suffix name="MidiSysEx" label="Midi SysEx permission"/>
   <suffix name="MultipleDownload" label="Multiple downloads permission"/>
   <suffix name="Nfc" label="NFC permission"/>
@@ -1934,6 +1935,8 @@ chromium-metrics-reviews@google.com.
       label="Keyboard and pointer lock permission"/>
   <suffix name="KeyboardLock" label="Keyboard lock permission"/>
   <suffix name="LocalFonts" label="Local fonts permission actions"/>
+  <suffix name="LocalNetworkAccess"
+      label="Local network access permission actions"/>
   <suffix name="MidiSysEx" label="Midi SysEx permsision actions"/>
   <suffix name="Nfc" label="Nfc permsision actions"/>
   <suffix name="Notifications" label="Notification permission actions"/>

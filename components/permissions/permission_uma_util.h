@@ -115,6 +115,7 @@ enum class RequestTypeForUma {
   MULTIPLE_KEYBOARD_AND_POINTER_LOCK = 39,
   PERMISSION_HAND_TRACKING = 40,
   PERMISSION_WEB_APP_INSTALLATION = 41,
+  PERMISSION_LOCAL_NETWORK_ACCESS = 42,
   // NUM must be the last value in the enum.
   NUM,
 };
