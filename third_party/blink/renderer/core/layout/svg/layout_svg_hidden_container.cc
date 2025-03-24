@@ -34,13 +34,6 @@ SVGLayoutResult LayoutSVGHiddenContainer::UpdateSVGLayout(
   SVGLayoutInfo child_layout_info = layout_info;
   child_layout_info.force_layout = SelfNeedsFullLayout();
 
-  if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
-    // When HasRelativeLengths() is false, no descendants have relative lengths
-    // (hence no one is interested in viewport size changes).
-    child_layout_info.viewport_changed =
-        layout_info.viewport_changed && GetElement()->HasRelativeLengths();
-  }
-
   const SVGLayoutResult content_result = Content().Layout(child_layout_info);
   const bool has_viewport_dependence = content_result.has_viewport_dependence ||
                                        GetElement()->SelfHasRelativeLengths();
