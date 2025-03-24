@@ -12,7 +12,6 @@ import org.jni_zero.JNINamespace;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
-import org.chromium.components.collaboration.messaging.AggregatedMessageData;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
 import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
@@ -28,6 +27,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -116,27 +116,25 @@ class ConversionUtils {
             @InstantNotificationLevel int level,
             @InstantNotificationType int type,
             String localizedMessage,
-            @Nullable MessageAttribution attribution,
-            @Nullable AggregatedMessageData aggregatedData) {
+            List<MessageAttribution> attributions) {
         InstantMessage message = new InstantMessage();
         message.collaborationEvent = collaborationEvent;
         message.level = level;
         message.type = type;
         message.localizedMessage = localizedMessage;
-        message.attribution = attribution;
-        message.aggregatedData = aggregatedData;
+        message.attributions = attributions;
 
         return message;
     }
 
     @CalledByNative
-    private static AggregatedMessageData addAttributionToAggregatedMessageData(
-            @Nullable AggregatedMessageData aggregatedMessageData, MessageAttribution attribution) {
-        if (aggregatedMessageData == null) {
-            aggregatedMessageData = new AggregatedMessageData();
+    private static List<MessageAttribution> addAttributionToList(
+            @Nullable List<MessageAttribution> attributions, MessageAttribution attribution) {
+        if (attributions == null) {
+            attributions = new ArrayList<>();
         }
-        aggregatedMessageData.attributions.add(attribution);
-        return aggregatedMessageData;
+        attributions.add(attribution);
+        return attributions;
     }
 
     @CalledByNative

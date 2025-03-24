@@ -31,13 +31,21 @@ public class MessageUtils {
     }
 
     /** Returns the id of the group, or null. */
+    public static @Nullable MessageAttribution getFirstAttribution(
+            @Nullable InstantMessage message) {
+        return message == null
+                ? null
+                : (message.attributions.isEmpty() ? null : message.attributions.get(0));
+    }
+
+    /** Returns the id of the group, or null. */
     public static @Nullable Token extractTabGroupId(@Nullable InstantMessage message) {
-        return message == null ? null : extractTabGroupId(message.attribution);
+        return message == null ? null : extractTabGroupId(getFirstAttribution(message));
     }
 
     /** Returns the sync id of the group, or null. */
     public static @Nullable String extractSyncTabGroupId(@Nullable InstantMessage message) {
-        return message == null ? null : extractSyncTabGroupId(message.attribution);
+        return message == null ? null : extractSyncTabGroupId(getFirstAttribution(message));
     }
 
     /** Returns the sync id of the group, or null. */
@@ -53,16 +61,16 @@ public class MessageUtils {
 
     /** Returns the tab title or the empty string. */
     public static @Nullable String extractTabTitle(@Nullable InstantMessage message) {
-        return message == null
-                        || message.attribution == null
-                        || message.attribution.tabMetadata == null
+        if (message == null) return "";
+        MessageAttribution attribution = getFirstAttribution(message);
+        return attribution == null || attribution.tabMetadata == null
                 ? ""
-                : message.attribution.tabMetadata.lastKnownTitle;
+                : attribution.tabMetadata.lastKnownTitle;
     }
 
     /** Returns the tab group title or the empty string. */
     public static @Nullable String extractTabGroupTitle(@Nullable InstantMessage message) {
-        return message == null ? "" : extractTabGroupTitle(message.attribution);
+        return message == null ? "" : extractTabGroupTitle(getFirstAttribution(message));
     }
 
     /** Returns the tab group title or the empty string. */
@@ -86,14 +94,14 @@ public class MessageUtils {
 
     /** Returns the collaboration id or null. */
     public static @Nullable String extractCollaborationId(@Nullable InstantMessage message) {
-        return message == null || message.attribution == null
-                ? null
-                : message.attribution.collaborationId;
+        if (message == null) return null;
+        MessageAttribution attribution = getFirstAttribution(message);
+        return attribution == null ? null : attribution.collaborationId;
     }
 
     /** Returns a GroupMember associated with the message, prioritizing affected over triggering. */
     public static @Nullable GroupMember extractMember(@Nullable InstantMessage message) {
-        return message == null ? null : extractMember(message.attribution);
+        return message == null ? null : extractMember(getFirstAttribution(message));
     }
 
     /** Returns a GroupMember associated with the message, prioritizing affected over triggering. */
@@ -113,11 +121,11 @@ public class MessageUtils {
 
     /** Returns the url of the tab or null. */
     public static @Nullable String extractTabUrl(@Nullable InstantMessage message) {
-        return message == null
-                        || message.attribution == null
-                        || message.attribution.tabMetadata == null
+        if (message == null) return null;
+        MessageAttribution attribution = getFirstAttribution(message);
+        return attribution == null || attribution.tabMetadata == null
                 ? null
-                : message.attribution.tabMetadata.lastKnownUrl;
+                : attribution.tabMetadata.lastKnownUrl;
     }
 
     private static @Nullable String extractSyncTabGroupId(
@@ -129,7 +137,9 @@ public class MessageUtils {
 
     /** Returns the message id or null. */
     public static @Nullable String extractMessageId(@Nullable InstantMessage message) {
-        return message == null || message.attribution == null ? null : message.attribution.id;
+        if (message == null) return null;
+        MessageAttribution attribution = getFirstAttribution(message);
+        return attribution == null ? null : attribution.id;
     }
 
     /** Returns the message id or null. */

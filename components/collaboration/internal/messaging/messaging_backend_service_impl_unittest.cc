@@ -1658,7 +1658,7 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
   auto db_message = GetLastMessageFromDB();
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
-  EXPECT_EQ(db_message_id, message.attribution->id);
+  EXPECT_EQ(db_message_id, message.attributions[0].id);
 
   // Verify that the dirty bit is chip only and no dot.
   EXPECT_FALSE(static_cast<int>(DirtyType::kDot) & db_message.dirty());
@@ -1715,7 +1715,7 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsRemoved) {
   auto db_message = GetLastMessageFromDB();
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
-  EXPECT_EQ(db_message_id, message.attribution->id);
+  EXPECT_EQ(db_message_id, message.attributions[0].id);
 
   EXPECT_EQ(CollaborationEvent::TAB_REMOVED, message.collaboration_event);
   EXPECT_EQ(InstantNotificationType::CONFLICT_TAB_REMOVED, message.type);
@@ -1837,11 +1837,11 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   auto db_message = GetLastMessageFromDB();
   EXPECT_NE("", db_message.uuid());
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
-  EXPECT_EQ(db_message_id, message.attribution->id);
+  EXPECT_EQ(db_message_id, message.attributions[0].id);
 
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED, message.collaboration_event);
   EXPECT_EQ(tab_group.saved_guid(),
-            message.attribution->tab_group_metadata->sync_tab_group_id);
+            message.attributions[0].tab_group_metadata->sync_tab_group_id);
   EXPECT_TRUE(static_cast<int>(DirtyType::kTombstoned) & db_message.dirty());
   EXPECT_TRUE(static_cast<int>(DirtyType::kMessageOnly) & db_message.dirty());
 
@@ -1961,11 +1961,11 @@ TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {
 
   EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
             message.collaboration_event);
-  EXPECT_TRUE(message.attribution.has_value());
-  EXPECT_EQ(member2.gaia_id, message.attribution->affected_user->gaia_id);
-  ASSERT_TRUE(message.attribution->tab_group_metadata);
+  const auto& attribution = message.attributions[0];
+  EXPECT_EQ(member2.gaia_id, attribution.affected_user->gaia_id);
+  ASSERT_TRUE(message.attributions[0].tab_group_metadata);
   EXPECT_EQ(tab_group.saved_guid(),
-            message.attribution->tab_group_metadata->sync_tab_group_id);
+            attribution.tab_group_metadata->sync_tab_group_id);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestMemberAddedOrRemovedIsOwner) {

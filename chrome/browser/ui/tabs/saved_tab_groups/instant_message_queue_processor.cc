@@ -27,8 +27,7 @@ namespace {
 
 // Returns the local tab group ID from the InstantMessage.
 std::optional<LocalTabGroupID> UnwrapTabGroupID(InstantMessage message) {
-  CHECK(message.attribution.has_value());
-  auto tab_group_metadata = message.attribution->tab_group_metadata;
+  auto tab_group_metadata = message.attributions[0].tab_group_metadata;
   if (tab_group_metadata.has_value()) {
     return tab_group_metadata->local_tab_group_id;
   }
@@ -179,7 +178,6 @@ std::optional<ToastParams> InstantMessageQueueProcessor::GetParamsForMessage(
     const InstantMessage& message) {
   using collaboration::messaging::TabGroupMessageMetadata;
   using collaboration::messaging::TabMessageMetadata;
-  CHECK(message.attribution.has_value());
 
   switch (message.collaboration_event) {
     case CollaborationEvent::TAB_REMOVED: {

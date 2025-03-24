@@ -172,16 +172,6 @@ struct MessageAttribution {
   bool triggering_user_is_self = false;
 };
 
-// Attribution for aggregated messages.
-struct AggregatedMessageData {
-  AggregatedMessageData();
-  AggregatedMessageData(const AggregatedMessageData& other);
-  ~AggregatedMessageData();
-
-  // Attributions for each related message.
-  std::vector<MessageAttribution> attributions;
-};
-
 // An instant notification that the UI to show something to the user
 // immediately. Depending on the type of message, it might represent
 // a single event or multiple events of similar type aggregated as a single
@@ -204,12 +194,10 @@ struct InstantMessage {
   // The message content to be shown in the UI.
   std::u16string localized_message;
 
-  // Set only if this message represents a single event.
-  std::optional<MessageAttribution> attribution;
-
-  // Set only if this message represents multiple messages aggregated into a
-  // single message.
-  std::optional<AggregatedMessageData> aggregated_data;
+  // The list of message attributions for the messages that it represents.
+  // For single message case, the size is 1. For aggregated message case, it
+  // will be greater than 1.
+  std::vector<MessageAttribution> attributions;
 };
 
 // A persistent notification that requires an ongoing UI affordance until
@@ -224,6 +212,10 @@ struct PersistentMessage {
   // The type of persistent notification to show.
   PersistentNotificationType type;
 };
+
+// Helper method to query whether the message represents a non-aggregated
+// message.
+bool IsSingleMessage(const InstantMessage& message);
 
 }  // namespace collaboration::messaging
 

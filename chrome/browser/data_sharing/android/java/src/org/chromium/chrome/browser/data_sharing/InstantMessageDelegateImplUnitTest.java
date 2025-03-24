@@ -171,7 +171,7 @@ public class InstantMessageDelegateImplUnitTest {
         attribution.tabGroupMetadata.syncTabGroupId = SYNC_GROUP_ID1;
         attribution.triggeringUser = GROUP_MEMBER1;
         InstantMessage instantMessage = new InstantMessage();
-        instantMessage.attribution = attribution;
+        instantMessage.attributions.add(attribution);
         instantMessage.collaborationEvent = collaborationEvent;
         instantMessage.level = InstantNotificationLevel.BROWSER;
         return instantMessage;
@@ -225,7 +225,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testTabRemoved_NullUrl() {
         InstantMessage message = newInstantMessage(CollaborationEvent.TAB_REMOVED);
-        message.attribution.tabMetadata.lastKnownUrl = null;
+        message.attributions.get(0).tabMetadata.lastKnownUrl = null;
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
@@ -296,7 +296,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testCollaborationMemberAdded() {
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
-        message.attribution.collaborationId = COLLABORATION_ID1;
+        message.attributions.get(0).collaborationId = COLLABORATION_ID1;
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
@@ -320,7 +320,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testCollaborationMemberAdded_NullCollaborationId() {
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
-        message.attribution.collaborationId = null;
+        message.attributions.get(0).collaborationId = null;
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
@@ -336,7 +336,7 @@ public class InstantMessageDelegateImplUnitTest {
     public void testCollaborationMemberAdded_FallbackTitle() {
         when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(TAB_COUNT_IN_GROUP);
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
-        message.attribution.tabGroupMetadata.lastKnownTitle = "";
+        message.attributions.get(0).tabGroupMetadata.lastKnownTitle = "";
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
@@ -377,7 +377,7 @@ public class InstantMessageDelegateImplUnitTest {
         when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(1);
 
         InstantMessage message = newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED);
-        message.attribution.tabGroupMetadata.lastKnownTitle = null;
+        message.attributions.get(0).tabGroupMetadata.lastKnownTitle = null;
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
@@ -397,7 +397,7 @@ public class InstantMessageDelegateImplUnitTest {
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(TAB_ID);
         when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(TAB_COUNT_IN_GROUP);
         InstantMessage message = newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED);
-        message.attribution.tabGroupMetadata.lastKnownTitle = "";
+        message.attributions.get(0).tabGroupMetadata.lastKnownTitle = "";
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
@@ -416,7 +416,8 @@ public class InstantMessageDelegateImplUnitTest {
     public void testSystemNotification() {
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.level = InstantNotificationLevel.SYSTEM;
-        message.attribution.id = UUID.fromString("00000000-0000-0000-0000-000000000009").toString();
+        message.attributions.get(0).id =
+                UUID.fromString("00000000-0000-0000-0000-000000000009").toString();
 
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 

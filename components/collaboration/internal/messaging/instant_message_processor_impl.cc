@@ -77,7 +77,7 @@ MessageAggregationKey CreateMessageAggregationKey(
   key.event = message.collaboration_event;
   if (message.collaboration_event ==
       CollaborationEvent::COLLABORATION_MEMBER_ADDED) {
-    key.collaboration_id = message.attribution->collaboration_id;
+    key.collaboration_id = message.attributions[0].collaboration_id;
   }
 
   return key;
@@ -138,14 +138,9 @@ void InstantMessageProcessorImpl::ProcessQueue() {
 
   for (const auto& message : aggregated_messages) {
     std::vector<base::Uuid> message_ids;
-    if (message.aggregated_data.has_value()) {
-      for (const auto& attribution : message.aggregated_data->attributions) {
-        CHECK(attribution.id.has_value());
-        message_ids.emplace_back(attribution.id.value());
-      }
-    } else {
-      CHECK(message.attribution->id.has_value());
-      message_ids.emplace_back(message.attribution->id.value());
+    for (const auto& attribution : message.attributions) {
+      CHECK(attribution.id.has_value());
+      message_ids.emplace_back(attribution.id.value());
     }
     instant_message_delegate_->DisplayInstantaneousMessage(
         message,
@@ -164,6 +159,7 @@ std::vector<InstantMessage> InstantMessageProcessorImpl::AggregateMessages(
 
   // Populate the aggregation map.
   for (const auto& message : messages) {
+    CHECK(IsSingleMessage(message));
     if (!ShouldAggregate(message)) {
       non_aggregated_messages.emplace_back(message);
       continue;
@@ -204,17 +200,18 @@ InstantMessage InstantMessageProcessorImpl::CreateAggregatedMessage(
   aggregated_message.type = messages[0].type;
 
   // Populate message attributions for the aggregated message.
-  aggregated_message.aggregated_data = AggregatedMessageData();
   for (const auto& message : messages) {
-    aggregated_message.aggregated_data->attributions.push_back(
-        message.attribution.value());
+    CHECK(IsSingleMessage(message));
+    aggregated_message.attributions.emplace_back(message.attributions[0]);
   }
 
   // Create message string for aggregation based on message type.
   switch (messages[0].collaboration_event) {
     case CollaborationEvent::COLLABORATION_MEMBER_ADDED: {
       std::string group_name =
-          messages[0].attribution->tab_group_metadata->last_known_title.value();
+          messages[0]
+              .attributions[0]
+              .tab_group_metadata->last_known_title.value();
       aggregated_message.localized_message = l10n_util::GetStringFUTF16(
           IDS_DATA_SHARING_TOAST_NEW_MEMBER_MULTIPLE_MEMBERS,
           base::UTF8ToUTF16(base::ToString(messages.size())),

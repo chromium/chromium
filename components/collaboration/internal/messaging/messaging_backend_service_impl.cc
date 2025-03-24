@@ -279,10 +279,9 @@ std::optional<tab_groups::SavedTabGroupTab> GetTabFromGroup(
 }
 
 std::u16string GetTitleForTabRemovedMessage(const InstantMessage& message) {
-  std::optional<data_sharing::GroupMember> user =
-      message.attribution->triggering_user;
-  std::optional<TabMessageMetadata> tab_metadata =
-      message.attribution->tab_metadata;
+  const auto& attribution = message.attributions[0];
+  std::optional<data_sharing::GroupMember> user = attribution.triggering_user;
+  std::optional<TabMessageMetadata> tab_metadata = attribution.tab_metadata;
   const bool has_title =
       tab_metadata.has_value() && tab_metadata->last_known_title.has_value();
   if (!user.has_value() || !has_title) {
@@ -295,10 +294,9 @@ std::u16string GetTitleForTabRemovedMessage(const InstantMessage& message) {
 }
 
 std::u16string GetTitleForTabUpdatedMessage(const InstantMessage& message) {
-  std::optional<data_sharing::GroupMember> user =
-      message.attribution->triggering_user;
-  std::optional<TabMessageMetadata> tab_metadata =
-      message.attribution->tab_metadata;
+  const auto& attribution = message.attributions[0];
+  std::optional<data_sharing::GroupMember> user = attribution.triggering_user;
+  std::optional<TabMessageMetadata> tab_metadata = attribution.tab_metadata;
   const bool has_title =
       tab_metadata.has_value() && tab_metadata->last_known_title.has_value();
   if (!user.has_value() || !has_title) {
@@ -311,10 +309,10 @@ std::u16string GetTitleForTabUpdatedMessage(const InstantMessage& message) {
 }
 
 std::u16string GetTitleForMemberAddedMessage(const InstantMessage& message) {
-  std::optional<data_sharing::GroupMember> user =
-      message.attribution->affected_user;
+  const auto& attribution = message.attributions[0];
+  std::optional<data_sharing::GroupMember> user = attribution.affected_user;
   std::optional<TabGroupMessageMetadata> tab_group_metadata =
-      message.attribution->tab_group_metadata;
+      attribution.tab_group_metadata;
   const bool has_group_title = tab_group_metadata.has_value() &&
                                tab_group_metadata->last_known_title.has_value();
   if (!user.has_value() || !has_group_title) {
@@ -328,8 +326,9 @@ std::u16string GetTitleForMemberAddedMessage(const InstantMessage& message) {
 
 std::u16string GetTitleForTabGroupRemovedMessage(
     const InstantMessage& message) {
+  const auto& attribution = message.attributions[0];
   std::optional<TabGroupMessageMetadata> tab_group_metadata =
-      message.attribution->tab_group_metadata;
+      attribution.tab_group_metadata;
   const bool has_group_title = tab_group_metadata.has_value() &&
                                tab_group_metadata->last_known_title.has_value();
   if (!has_group_title) {
@@ -914,8 +913,9 @@ void MessagingBackendServiceImpl::OnTabUpdated(
 
   if (!is_local && is_selected && instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message_base;
-    instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
-        message, std::nullopt, updated_tab);
+    instant_message_base.attributions.emplace_back(
+        CreateMessageAttributionForTabUpdates(message, std::nullopt,
+                                              updated_tab));
     instant_message_base.collaboration_event = CollaborationEvent::TAB_UPDATED;
     // TODO(crbug.com/391941212): CONFLICT_TAB_REMOVED and UNDEFINED don't seem
     // to be used. In that case, remove them.
@@ -1520,8 +1520,8 @@ InstantMessage MessagingBackendServiceImpl::CreateInstantMessage(
   InstantMessage instant_message;
   instant_message.collaboration_event =
       ToCollaborationEvent(message.event_type());
-  instant_message.attribution =
-      CreateMessageAttributionForTabUpdates(message, tab_group, tab);
+  instant_message.attributions.emplace_back(
+      CreateMessageAttributionForTabUpdates(message, tab_group, tab));
   return instant_message;
 }
 

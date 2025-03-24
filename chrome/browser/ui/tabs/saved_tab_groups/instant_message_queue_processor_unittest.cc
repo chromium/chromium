@@ -56,7 +56,7 @@ InstantMessage CreateMessage(CollaborationEvent event) {
   attribution.tab_group_metadata = tab_group_metadata;
 
   InstantMessage message;
-  message.attribution = attribution;
+  message.attributions.emplace_back(attribution);
   message.collaboration_event = event;
   message.level = InstantNotificationLevel::BROWSER;
   message.type = event == CollaborationEvent::TAB_REMOVED
@@ -133,7 +133,7 @@ TEST_F(InstantMessageQueueProcessorTest,
   auto message = CreateMessage(CollaborationEvent::TAB_REMOVED);
 
   // Remove user so that toast cannot be created from message.
-  message.attribution->triggering_user = std::nullopt;
+  message.attributions[0].triggering_user = std::nullopt;
 
   base::MockCallback<SuccessCallback> callback;
 

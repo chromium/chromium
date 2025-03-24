@@ -93,7 +93,7 @@ class InstantMessageProcessorImplTest : public testing::Test {
     message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
     message.collaboration_event = CollaborationEvent::TAB_REMOVED;
 
-    message.attribution = CreateAttribution1();
+    message.attributions.emplace_back(CreateAttribution1());
     return message;
   }
 
@@ -113,10 +113,10 @@ class InstantMessageProcessorImplTest : public testing::Test {
 TEST_F(InstantMessageProcessorImplTest, SingleMemberAddedMessage) {
   SetupInstantMessageDelegate();
   InstantMessage message = CreateInstantMessage();
-  message.attribution->id = msg_id1_;
+  message.attributions[0].id = msg_id1_;
   message.collaboration_event = CollaborationEvent::COLLABORATION_MEMBER_ADDED;
-  message.attribution->affected_user = data_sharing::GroupMember();
-  message.attribution->affected_user->gaia_id = GaiaId("affected1");
+  message.attributions[0].affected_user = data_sharing::GroupMember();
+  message.attributions[0].affected_user->gaia_id = GaiaId("affected1");
   message.localized_message = u"Random message title";
 
   // Save the last invocation of calls to the InstantMessageDelegate.
@@ -131,14 +131,13 @@ TEST_F(InstantMessageProcessorImplTest, SingleMemberAddedMessage) {
   task_environment_.FastForwardBy(base::Seconds(10));
 
   // Verify instant message.
+  EXPECT_TRUE(IsSingleMessage(actual_message));
   EXPECT_EQ(message.localized_message, actual_message.localized_message);
   EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
             actual_message.collaboration_event);
   EXPECT_EQ(message.level, actual_message.level);
   EXPECT_EQ(message.type, actual_message.type);
-  EXPECT_EQ(message.attribution.has_value(),
-            actual_message.attribution.has_value());
-  EXPECT_EQ(msg_id1_, actual_message.attribution->id);
+  EXPECT_EQ(msg_id1_, actual_message.attributions[0].id);
 
   // Invoke callback and verify that backend clears out the message from DB.
   EXPECT_CALL(
@@ -155,12 +154,12 @@ TEST_F(InstantMessageProcessorImplTest, AggregateMemberAddedMessage) {
   // Create 3 messages of COLLABORATION_MEMBER_ADDED type.
   InstantMessage message1 = CreateInstantMessage();
   message1.collaboration_event = CollaborationEvent::COLLABORATION_MEMBER_ADDED;
-  message1.attribution->id = msg_id1_;
+  message1.attributions[0].id = msg_id1_;
 
   InstantMessage message2 = message1;
-  message2.attribution->affected_user = data_sharing::GroupMember();
-  message2.attribution->affected_user->gaia_id = GaiaId("affected2");
-  message2.attribution->id = msg_id2_;
+  message2.attributions[0].affected_user = data_sharing::GroupMember();
+  message2.attributions[0].affected_user->gaia_id = GaiaId("affected2");
+  message2.attributions[0].id = msg_id2_;
 
   InstantMessage actual_message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
@@ -173,16 +172,15 @@ TEST_F(InstantMessageProcessorImplTest, AggregateMemberAddedMessage) {
   task_environment_.FastForwardBy(base::Seconds(10));
 
   // Verify the aggregated instant message.
+  EXPECT_FALSE(IsSingleMessage(actual_message));
   EXPECT_EQ(u"2 members joined \"My Awesome Group\" tab group",
             actual_message.localized_message);
   EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
             actual_message.collaboration_event);
   EXPECT_EQ(message1.level, actual_message.level);
   EXPECT_EQ(message1.type, actual_message.type);
-  EXPECT_FALSE(actual_message.attribution.has_value());
-  EXPECT_TRUE(actual_message.aggregated_data.has_value());
-  EXPECT_EQ(msg_id1_, actual_message.aggregated_data->attributions[0].id);
-  EXPECT_EQ(msg_id2_, actual_message.aggregated_data->attributions[1].id);
+  EXPECT_EQ(msg_id1_, actual_message.attributions[0].id);
+  EXPECT_EQ(msg_id2_, actual_message.attributions[1].id);
 
   // Invoke callback and verify that backend clears out the individual messages
   // from DB.
@@ -206,11 +204,11 @@ TEST_F(InstantMessageProcessorImplTest, AggregateTabGroupRemovedMessage) {
   // Create 3 messages of TAB_GROUP_REMOVED type.
   InstantMessage message1 = CreateInstantMessage();
   message1.collaboration_event = CollaborationEvent::TAB_GROUP_REMOVED;
-  message1.attribution->id = msg_id1_;
+  message1.attributions[0].id = msg_id1_;
   InstantMessage message2 = message1;
-  message2.attribution->id = msg_id2_;
+  message2.attributions[0].id = msg_id2_;
   InstantMessage message3 = message1;
-  message3.attribution->id = msg_id3_;
+  message3.attributions[0].id = msg_id3_;
 
   InstantMessage actual_message;
   MessagingBackendService::InstantMessageDelegate::SuccessCallback
@@ -224,17 +222,16 @@ TEST_F(InstantMessageProcessorImplTest, AggregateTabGroupRemovedMessage) {
   task_environment_.FastForwardBy(base::Seconds(10));
 
   // Verify the aggregated instant message.
+  EXPECT_FALSE(IsSingleMessage(actual_message));
   EXPECT_EQ(u"3 tab groups no longer available",
             actual_message.localized_message);
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED,
             actual_message.collaboration_event);
   EXPECT_EQ(message1.level, actual_message.level);
   EXPECT_EQ(message1.type, actual_message.type);
-  EXPECT_FALSE(actual_message.attribution.has_value());
-  EXPECT_TRUE(actual_message.aggregated_data.has_value());
-  EXPECT_EQ(msg_id1_, actual_message.aggregated_data->attributions[0].id);
-  EXPECT_EQ(msg_id2_, actual_message.aggregated_data->attributions[1].id);
-  EXPECT_EQ(msg_id3_, actual_message.aggregated_data->attributions[2].id);
+  EXPECT_EQ(msg_id1_, actual_message.attributions[0].id);
+  EXPECT_EQ(msg_id2_, actual_message.attributions[1].id);
+  EXPECT_EQ(msg_id3_, actual_message.attributions[2].id);
 
   // Invoke callback and verify that backend clears out the individual messages
   // from DB.
@@ -263,11 +260,11 @@ TEST_F(InstantMessageProcessorImplTest, ShouldNotAggregateTabRemovedMessage) {
   // Create 3 messages of TAB_REMOVED type.
   InstantMessage message1 = CreateInstantMessage();
   message1.collaboration_event = CollaborationEvent::TAB_REMOVED;
-  message1.attribution->id = msg_id1_;
+  message1.attributions[0].id = msg_id1_;
   message1.localized_message = u"Message text 1";
 
   InstantMessage message2 = message1;
-  message2.attribution->id = msg_id2_;
+  message2.attributions[0].id = msg_id2_;
   message2.localized_message = u"Message text 2";
 
   std::vector<InstantMessage> actual_messages;
@@ -290,18 +287,19 @@ TEST_F(InstantMessageProcessorImplTest, ShouldNotAggregateTabRemovedMessage) {
 
   // Verify the individual instant messages.
   EXPECT_EQ(2u, actual_messages.size());
+  EXPECT_TRUE(IsSingleMessage(actual_messages[0]));
   EXPECT_EQ(message1.collaboration_event,
             actual_messages[0].collaboration_event);
   EXPECT_EQ(message1.localized_message, actual_messages[0].localized_message);
   EXPECT_EQ(message1.level, actual_messages[0].level);
   EXPECT_EQ(message1.type, actual_messages[0].type);
-  EXPECT_TRUE(actual_messages[0].attribution.has_value());
-  EXPECT_EQ(msg_id1_, actual_messages[0].attribution->id);
+  EXPECT_EQ(msg_id1_, actual_messages[0].attributions[0].id);
 
+  EXPECT_TRUE(IsSingleMessage(actual_messages[1]));
   EXPECT_EQ(message2.collaboration_event,
             actual_messages[1].collaboration_event);
   EXPECT_EQ(message2.localized_message, actual_messages[1].localized_message);
-  EXPECT_EQ(msg_id2_, actual_messages[1].attribution->id);
+  EXPECT_EQ(msg_id2_, actual_messages[1].attributions[0].id);
 
   // Invoke callback and verify that backend clears out the individual messages
   // from DB.
@@ -328,12 +326,12 @@ TEST_F(InstantMessageProcessorImplTest,
   // COLLOABORATION_MEMBER_ADDED type.
   InstantMessage message1 = CreateInstantMessage();
   message1.collaboration_event = CollaborationEvent::TAB_GROUP_REMOVED;
-  message1.attribution->id = msg_id1_;
+  message1.attributions[0].id = msg_id1_;
   InstantMessage message2 = message1;
-  message2.attribution->id = msg_id2_;
+  message2.attributions[0].id = msg_id2_;
 
   InstantMessage message3 = message1;
-  message3.attribution->id = msg_id3_;
+  message3.attributions[0].id = msg_id3_;
   message3.localized_message = u"Some message";
   message3.collaboration_event = CollaborationEvent::COLLABORATION_MEMBER_ADDED;
 
@@ -358,22 +356,22 @@ TEST_F(InstantMessageProcessorImplTest,
 
   // Verify the aggregated instant message.
   EXPECT_EQ(2u, actual_messages.size());
+  EXPECT_FALSE(IsSingleMessage(actual_messages[0]));
   EXPECT_EQ(u"2 tab groups no longer available",
             actual_messages[0].localized_message);
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED,
             actual_messages[0].collaboration_event);
   EXPECT_EQ(message1.level, actual_messages[0].level);
   EXPECT_EQ(message1.type, actual_messages[0].type);
-  EXPECT_FALSE(actual_messages[0].attribution.has_value());
-  EXPECT_TRUE(actual_messages[0].aggregated_data.has_value());
-  EXPECT_EQ(msg_id1_, actual_messages[0].aggregated_data->attributions[0].id);
-  EXPECT_EQ(msg_id2_, actual_messages[0].aggregated_data->attributions[1].id);
+  EXPECT_EQ(msg_id1_, actual_messages[0].attributions[0].id);
+  EXPECT_EQ(msg_id2_, actual_messages[0].attributions[1].id);
 
   // Verify the single non-aggregated message.
+  EXPECT_TRUE(IsSingleMessage(actual_messages[1]));
   EXPECT_EQ(message3.collaboration_event,
             actual_messages[1].collaboration_event);
   EXPECT_EQ(message3.localized_message, actual_messages[1].localized_message);
-  EXPECT_EQ(msg_id3_, actual_messages[1].attribution->id);
+  EXPECT_EQ(msg_id3_, actual_messages[1].attributions[0].id);
 }
 
 TEST_F(InstantMessageProcessorImplTest,
@@ -383,11 +381,11 @@ TEST_F(InstantMessageProcessorImplTest,
   // Create 2 messages of TAB_GROUP_REMOVED type, but with different levels.
   InstantMessage message1 = CreateInstantMessage();
   message1.collaboration_event = CollaborationEvent::TAB_GROUP_REMOVED;
-  message1.attribution->id = msg_id1_;
+  message1.attributions[0].id = msg_id1_;
   message1.level = InstantNotificationLevel::SYSTEM;
 
   InstantMessage message2 = message1;
-  message2.attribution->id = msg_id2_;
+  message2.attributions[0].id = msg_id2_;
   message2.level = InstantNotificationLevel::BROWSER;
 
   std::vector<InstantMessage> actual_messages;
@@ -409,8 +407,8 @@ TEST_F(InstantMessageProcessorImplTest,
 
   // Verify that the messages are not aggregated.
   EXPECT_EQ(2u, actual_messages.size());
-  EXPECT_EQ(msg_id1_, actual_messages[1].attribution->id);
-  EXPECT_EQ(msg_id2_, actual_messages[0].attribution->id);
+  EXPECT_EQ(msg_id1_, actual_messages[1].attributions[0].id);
+  EXPECT_EQ(msg_id2_, actual_messages[0].attributions[0].id);
   EXPECT_EQ(message1.level, actual_messages[1].level);
   EXPECT_EQ(message2.level, actual_messages[0].level);
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED,
