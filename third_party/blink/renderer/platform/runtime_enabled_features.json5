@@ -718,6 +718,12 @@
       browser_process_read_write_access: true,
     },
     {
+      // This allows testing the canvas noise interventions in tests (which in
+      // most cases don't have a CPU). In practice the interventions are only
+      // enabled for GPU-rendered canvases.
+      name: "CanvasInterventionsOnCpuForTesting",
+    },
+    {
       // https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
       name: "CanvasPlaceElement",
       status: "experimental",
