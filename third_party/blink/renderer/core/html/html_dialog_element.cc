@@ -279,7 +279,6 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
         const_cast<HTMLDialogElement*>(dialog)->GetBoundingClientRect();
     if (!dialog_rect->IsPointInside(pointer_event.clientX(),
                                     pointer_event.clientY())) {
-      CHECK(dialog->GetPseudoElement(kPseudoIdBackdrop));
       return nullptr;  // Return nullptr for a backdrop click.
     }
   }
