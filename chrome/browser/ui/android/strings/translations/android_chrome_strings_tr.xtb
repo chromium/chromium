@@ -936,7 +936,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5326246328175179736">Bu hesabı kullanarak oturum açamazsınız</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile kullanın</translation>
 <translation id="5342314432463739672">İzin istekleri</translation>
-<translation id="534580735623577507"><ph name="TIME_PERIOD" /> itibarıyla ziyaret edilen site yok</translation>
+<translation id="534580735623577507"><ph name="TIME_PERIOD" /> içinde ziyaret edilen site yok</translation>
 <translation id="5355191726083956201">Gelişmiş Koruma açık</translation>
 <translation id="5375374982898812658">"<ph name="GROUP_NAME" />" sekme grubuna erişiminizi anında kaybedersiniz ve grup tüm cihazlarınızdan silinir</translation>
 <translation id="5375577065097716013">Google Lens ile görsel ara <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
@@ -1581,7 +1581,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8084864785646838999">Geçmişinizin bir kısmı burada görünmeyebilir. Tüm Chrome geçmişinizi görmek için Chrome geçmişinin tamamını açın. Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir.</translation>
 <translation id="8088176524274673045">Yakınlardaki kişilerle paylaşmak için bu QR Kodunu taramalarını sağlayın</translation>
 <translation id="8090732854597034573">Yardıma ihtiyacınız olursa ebeveyninize sorun</translation>
-<translation id="8101414242770404289"><ph name="TIME_PERIOD" /> itibarıyla sekme yok</translation>
+<translation id="8101414242770404289"><ph name="TIME_PERIOD" /> içinde açılan sekme yok</translation>
 <translation id="8103578431304235997">Gizli Sekme</translation>
 <translation id="8105613260829665809">Devam ederek <ph name="BEGIN_TOS_LINK" />Hizmet Şartları<ph name="END_TOS_LINK" />'nı kabul etmiş olursunuz.\nChrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_UMA_LINK" />Yönet<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
