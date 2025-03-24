@@ -1687,6 +1687,9 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   main_html_response->Done();
 
   // Clipboard apis require that the calling context is focused.
+#if BUILDFLAG(IS_MAC)
+  content::HandleMissingKeyWindow();
+#endif
   browser()->tab_strip_model()->GetActiveWebContents()->Focus();
   views::test::WaitForWidgetActive(
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget(),
