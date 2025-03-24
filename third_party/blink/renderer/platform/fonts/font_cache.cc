@@ -218,6 +218,11 @@ bool FontCache::IsPlatformFamilyMatchAvailable(
 bool FontCache::IsPlatformFontUniqueNameMatchAvailable(
     const FontDescription& font_description,
     const AtomicString& unique_font_name) {
+  // Return early to avoid attempting fallback.
+  if (unique_font_name.empty()) {
+    return false;
+  }
+
   return GetFontPlatformData(font_description,
                              FontFaceCreationParams(unique_font_name),
                              AlternateFontName::kLocalUniqueFace);
