@@ -63,6 +63,7 @@ class GIN_EXPORT V8Platform : public v8::Platform {
   double CurrentClockTimeMillisecondsHighResolution() override;
   StackTracePrinter GetStackTracePrinter() override;
   v8::TracingController* GetTracingController() override;
+  void DumpWithoutCrashing() override;
 
  private:
   friend struct base::LazyInstanceTraitsBase<V8Platform>;

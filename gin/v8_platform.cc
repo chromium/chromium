@@ -8,6 +8,7 @@
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -330,6 +331,10 @@ v8::TracingController* V8Platform::GetTracingController() {
 
 v8::Platform::StackTracePrinter V8Platform::GetStackTracePrinter() {
   return PrintStackTrace;
+}
+
+void V8Platform::DumpWithoutCrashing() {
+  base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace gin
