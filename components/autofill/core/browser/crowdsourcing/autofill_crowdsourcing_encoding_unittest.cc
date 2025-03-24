@@ -57,12 +57,14 @@ using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Not;
 using ::testing::Pointee;
 using ::testing::Property;
-using ::testing::Truly;
+using ::testing::ResultOf;
+using ::testing::UnorderedElementsAre;
 using ::version_info::GetProductNameAndVersionForUserAgent;
 using FieldPrediction = ::autofill::AutofillQueryResponse::FormSuggestion::
     FieldSuggestion::FieldPrediction;
@@ -80,11 +82,13 @@ template <typename T>
 auto SerializesSameAs(const T& expected) {
   std::string expected_string;
   CHECK(expected.SerializeToString(&expected_string));
-  return Truly([expected_string](const auto& actual) {
-    std::string actual_string;
-    CHECK(actual.SerializeToString(&actual_string));
-    return actual_string == expected_string;
-  });
+  return ResultOf(
+      [](const auto& actual) {
+        std::string actual_string;
+        CHECK(actual.SerializeToString(&actual_string));
+        return actual_string;
+      },
+      Eq(expected_string));
 }
 
 template <typename... Matchers>
@@ -320,6 +324,70 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
                   .empty());
 }
 
+TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
+  std::unique_ptr<FormStructure> form_structure;
+  FormData form;
+  form.set_url(GURL("http://www.foo.com/"));
+  form.set_renderer_id(test::MakeFormRendererId());
+  form.set_fields(
+      {CreateTestFormField("First Name", "firstname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Date", "date", "", FormControlType::kInputText)});
+
+  form_structure = std::make_unique<FormStructure>(form);
+  for (auto& fs_field : *form_structure) {
+    fs_field->set_host_form_signature(form_structure->form_signature());
+  }
+
+  // Prepare the expected proto string.
+  AutofillUploadContents upload;
+  upload.set_submission(true);
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
+  upload.set_form_signature(form_structure->form_signature().value());
+  upload.set_autofill_used(false);
+  upload.set_data_present("10");
+  upload.set_submission_event(
+      AutofillUploadContents_SubmissionIndicatorEvent_NONE);
+  upload.set_has_form_tag(true);
+
+  {
+    AutofillUploadContents::Field* upload_firstname_field =
+        upload.add_field_data();
+    upload_firstname_field->set_signature(
+        *form_structure->field(0)->GetFieldSignature());
+  }
+
+  {
+    AutofillUploadContents::Field* upload_date_field = upload.add_field_data();
+    upload_date_field->set_signature(
+        *form_structure->field(1)->GetFieldSignature());
+    {
+      auto* added_format_string = upload_date_field->add_format_string();
+      added_format_string->set_type(
+          AutofillUploadContents_Field_FormatString_Type_DATE);
+      added_format_string->set_format_string("DD/MM/YYYY");
+    }
+    {
+      auto* added_format_string = upload_date_field->add_format_string();
+      added_format_string->set_type(
+          AutofillUploadContents_Field_FormatString_Type_DATE);
+      added_format_string->set_format_string("MM/DD/YYYY");
+    }
+  }
+
+  // TODO(crbug.com/396325496): Also allow forms with empty
+  // `available_field_types`.
+  EXPECT_THAT(EncodeUploadRequest(
+                  *form_structure,
+                  /*available_field_types=*/{NAME_FIRST},
+                  /*login_form_signature=*/{}, true,
+                  std::map<FieldGlobalId, base::flat_set<std::u16string>>{
+                      {form_structure->fields()[1]->global_id(),
+                       {u"DD/MM/YYYY", u"MM/DD/YYYY"}}}),
+              ElementsSerializeSameAs(upload));
+}
+
 TEST_F(AutofillCrowdsourcingEncoding,
        EncodeUploadRequestWithAdditionalPasswordFormSignature) {
   std::unique_ptr<FormStructure> form_structure;
@@ -343,7 +411,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
   test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
   test::InitializePossibleTypes(possible_field_types, {USERNAME});
   test::InitializePossibleTypes(possible_field_types,
-
                                 {ACCOUNT_CREATION_PASSWORD});
 
   form_structure = std::make_unique<FormStructure>(form);

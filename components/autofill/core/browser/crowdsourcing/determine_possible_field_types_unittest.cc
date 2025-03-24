@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -27,7 +28,11 @@ using ::autofill::test::CreateTestFormField;
 using ::autofill::test::CreateTestSelectField;
 using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 // Fakes that a `form` has been seen (without its field value) and parsed and
 // then values have been entered. Returns the resulting FormStructure.
@@ -706,6 +711,100 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
 
   PreProcessStateMatchingTypes(client(), {profile()}, form_structure);
   EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
+}
+
+// Test fixture for DeterminePossibleFormatStringsForUpload().
+class DeterminePossibleFormatStringsForUploadTest : public testing::Test {
+ public:
+  static std::unique_ptr<AutofillField> CreateInput(
+      std::string_view value,
+      FormControlType form_control_type = FormControlType::kInputText) {
+    auto field = std::make_unique<AutofillField>(CreateTestFormField(
+        /*label=*/"", /*name=*/"", /*value=*/value, form_control_type));
+    field->set_is_user_edited(true);
+    return field;
+  }
+
+  static std::unique_ptr<AutofillField> CreateSelect(
+      std::string_view value,
+      const std::vector<const char*>& values) {
+    auto field = std::make_unique<AutofillField>(CreateTestSelectField(
+        /*label=*/"", /*name=*/"", /*value=*/value, /*values=*/values,
+        /*contents=*/values));
+    field->set_is_user_edited(true);
+    return field;
+  }
+
+ private:
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAiVoteForFormatStringsFromSingleFields};
+};
+
+// Tests that non-text <input> do not match any format string.
+TEST_F(DeterminePossibleFormatStringsForUploadTest, InputNonText) {
+  using enum FormControlType;
+  EXPECT_THAT(DeterminePossibleFormatStringsForUpload({
+                  CreateInput("2025-12-31", kInputDate),
+                  CreateInput("2025-12", kInputMonth),
+                  CreateInput("2025-12-31", kInputNumber),
+                  CreateInput("2025-12-31", kInputPassword),
+                  CreateInput("2025-12-31", kInputSearch),
+                  CreateInput("2025-12-31", kInputUrl),
+              }),
+              IsEmpty());
+}
+
+struct DateSingleTextParam {
+  std::string_view value;
+  std::vector<std::string_view> format_strings;
+};
+
+// Test fixture for a single <input type=text> whose value may be a complete
+// date.
+class DeterminePossibleFormatStringsForUploadTest_SingleTextInput
+    : public DeterminePossibleFormatStringsForUploadTest,
+      public testing::WithParamInterface<DateSingleTextParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DeterminePossibleFormatStringsForUploadTest_SingleTextInput,
+    testing::ValuesIn(std::vector<DateSingleTextParam>{
+        {"2025-12-31", {"YYYY-MM-DD", "YYYY-M-D"}},
+        {"31/12/2025", {"DD/MM/YYYY", "D/M/YYYY"}},
+        {"31.12.2025", {"DD.MM.YYYY", "D.M.YYYY"}},
+        {"31-01-2025", {"DD-MM-YYYY"}},
+        {"31-31-2025", {}},
+        {"31012025", {"DDMMYYYY"}},
+        {"12/12/12",
+         {"DD/MM/YY", "MM/DD/YY", "YY/MM/DD", "D/M/YY", "M/D/YY", "YY/M/D"}},
+        {"31/12/12", {"DD/MM/YY", "YY/MM/DD", "D/M/YY", "YY/M/D"}},
+        {"12/13/12", {"MM/DD/YY", "M/D/YY"}},
+        {"12/12/32", {"DD/MM/YY", "MM/DD/YY", "D/M/YY", "M/D/YY"}},
+        {"13/13/12", {}},
+        {"foobar", {}},
+    }));
+
+// Tests that the values of <input type=text> match certain format strings.
+TEST_P(DeterminePossibleFormatStringsForUploadTest_SingleTextInput,
+       SingleTextInput) {
+  SCOPED_TRACE(testing::Message()
+               << "value = " << GetParam().value << " and formats = "
+               << base::JoinString(GetParam().format_strings, ", "));
+  std::unique_ptr<AutofillField> field = CreateInput(GetParam().value);
+  if (GetParam().format_strings.empty()) {
+    EXPECT_THAT(
+        DeterminePossibleFormatStringsForUpload(base::span_from_ref(field)),
+        IsEmpty());
+  } else {
+    EXPECT_THAT(
+        DeterminePossibleFormatStringsForUpload(base::span_from_ref(field)),
+        ElementsAre(Pair(field->global_id(),
+                         UnorderedElementsAreArray(base::ToVector(
+                             GetParam().format_strings, [](std::string_view s) {
+                               return base::UTF8ToUTF16(s);
+                             })))));
+  }
 }
 
 }  // namespace
