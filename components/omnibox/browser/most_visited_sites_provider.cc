@@ -21,6 +21,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -327,6 +328,11 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
          (page_url.scheme() == url::kAboutScheme) ||
          (page_url.scheme() ==
           client_->GetEmbedderRepresentationOfAboutScheme())))) {
+    return false;
+  }
+
+  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled &&
+      page_url.scheme() == content::kChromeUIScheme) {
     return false;
   }
 

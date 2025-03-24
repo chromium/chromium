@@ -28,6 +28,9 @@ struct TestData {
   history::MostVisitedURL entry;
 };
 
+using OEP = metrics::OmniboxEventProto;
+using OFT = metrics::OmniboxFocusType;
+
 class FakeTopSites : public history::TopSites {
  public:
   FakeTopSites() = default;
@@ -377,9 +380,6 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedNavigateToSearchPage) {
 }
 
 TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
-  using OEP = metrics::OmniboxEventProto;
-  using OFT = metrics::OmniboxFocusType;
-
   // MostVisited should never deal with prefix suggestions.
   EXPECT_FALSE(
       provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
@@ -402,9 +402,6 @@ TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
 }
 
 TEST_F(MostVisitedSitesProviderTest, NoSRPCoverage) {
-  using OEP = metrics::OmniboxEventProto;
-  using OFT = metrics::OmniboxFocusType;
-
   EXPECT_FALSE(
       provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
           WEB_URL, WEB_URL, OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
@@ -542,6 +539,24 @@ TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedSitesDesktopMatches) {
   EXPECT_TRUE(top_sites_->EmitURLs(test_data));
   CheckDesktopMatchesEquivalentTo(test_data,
                                   scoped_config.Get().max_url_suggestions);
+}
+
+TEST_F(MostVisitedSitesProviderTest, DesktopProviderDoesNotAllowChromeSites) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+
+  const auto* chrome_url = u"chrome://omnibox";
+
+  // Verifies that non-permitted schemes are rejected.
+  EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(
+      BuildAutocompleteInputForWebOnFocus()));
+
+  // Verifies that non-permitted schemes are rejected.
+  EXPECT_FALSE(
+      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
+          chrome_url, chrome_url, OEP::OTHER, OFT::INTERACTION_FOCUS)));
 }
 
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))

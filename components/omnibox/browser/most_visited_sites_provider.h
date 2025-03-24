@@ -32,6 +32,8 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            AllowMostVisitedSitesSuggestions);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, NoSRPCoverage);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
+                           DesktopProviderDoesNotAllowChromeSites);
 
   ~MostVisitedSitesProvider() override;
 
