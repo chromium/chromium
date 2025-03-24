@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -69,6 +70,9 @@
   [super start];
 
   _profile = self.browser->GetProfile()->GetOriginalProfile();
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(TOSCommands)];
   base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
   default_browser::NotifyDefaultBrowserFREPromoShown(
@@ -82,6 +86,8 @@
 }
 
 - (void)stop {
+  [self.browser->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(TOSCommands)];
   _animatedViewController = nil;
   _staticViewController.delegate = nil;
   _staticViewController = nil;
