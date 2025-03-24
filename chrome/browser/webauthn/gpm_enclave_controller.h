@@ -290,7 +290,7 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   std::optional<std::vector<uint8_t>> selected_cred_id_;
 
   // Contains the bytes of a WrappedPIN structure, downloaded from the security
-  // domain service.
+  // domain service. This is only set if the PIN is usable for recovery.
   std::optional<trusted_vault::GpmPinMetadata> pin_metadata_;
 
   // The list of iCloud recovery key members known to the security domain

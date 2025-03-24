@@ -115,8 +115,9 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     const auto& pin_metadata =
         pin_member->member_metadata().google_password_manager_pin_metadata();
     return trusted_vault::GpmPinMetadata(
-        GetPinMemberPublicKey(), pin_metadata.encrypted_pin_hash(),
-        ToTime(pin_metadata.expiration_time()));
+        GetPinMemberPublicKey(), trusted_vault::UsableRecoveryPinMetadata(
+                                     pin_metadata.encrypted_pin_hash(),
+                                     ToTime(pin_metadata.expiration_time())));
   }
 
   base::span<const trusted_vault_pb::SecurityDomainMember> members()

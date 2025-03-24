@@ -715,8 +715,9 @@ TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
-                                    GetTestWrappedPIN().SerializeAsString(),
-                                    /*expiry=*/base::Time()),
+                                    trusted_vault::UsableRecoveryPinMetadata(
+                                        GetTestWrappedPIN().SerializeAsString(),
+                                        /*expiry=*/base::Time())),
       add_future.GetCallback()));
   EXPECT_TRUE(add_future.Wait());
 
@@ -741,9 +742,10 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
   BoolFuture add_future;
   // A wrapped PIN that isn't a valid protobuf should be rejected.
   EXPECT_FALSE(manager_.AddDeviceToAccount(
-      trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
-                                    "nonsense wrapped PIN",
-                                    /*expiry=*/base::Time()),
+      trusted_vault::GpmPinMetadata(
+          std::string(kTestPINPublicKey),
+          trusted_vault::UsableRecoveryPinMetadata("nonsense wrapped PIN",
+                                                   /*expiry=*/base::Time())),
       add_future.GetCallback()));
 
   // A valid protobuf, but which fails invariants, should be rejected.
@@ -751,8 +753,9 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
   wrapped_pin.set_wrapped_pin("too short");
   EXPECT_FALSE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
-                                    wrapped_pin.SerializeAsString(),
-                                    /*expiry=*/base::Time()),
+                                    trusted_vault::UsableRecoveryPinMetadata(
+                                        wrapped_pin.SerializeAsString(),
+                                        /*expiry=*/base::Time())),
       add_future.GetCallback()));
 }
 
@@ -1049,8 +1052,9 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceToAccount) {
   BoolFuture add_future;
   ASSERT_TRUE(manager_.AddDeviceToAccount(
       trusted_vault::GpmPinMetadata(std::string(kTestPINPublicKey),
-                                    GetTestWrappedPIN().SerializeAsString(),
-                                    /*expiry=*/base::Time()),
+                                    trusted_vault::UsableRecoveryPinMetadata(
+                                        GetTestWrappedPIN().SerializeAsString(),
+                                        /*expiry=*/base::Time())),
       add_future.GetCallback()));
   EXPECT_TRUE(add_future.Wait());
   EXPECT_FALSE(add_future.Get());
@@ -1211,9 +1215,10 @@ TEST_F(EnclaveManagerTest, PINChanged) {
   state.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
   state.key_version = kSecretVersion;
-  state.gpm_pin_metadata.emplace(user.pin_public_key(),
+  state.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
+      user.pin_public_key(), trusted_vault::UsableRecoveryPinMetadata(
                                  wrapped_pin.SerializeAsString(),
-                                 /*expiry=*/base::Time::FromTimeT(1));
+                                 /*expiry=*/base::Time::FromTimeT(1)));
 
   BoolFuture update_future;
   EXPECT_TRUE(
