@@ -71,7 +71,7 @@ const tests = [
   async function testRotateOrTwoUpViewTriggersDialog() {
     const toolbar = createToolbar();
     toolbar.annotationAvailable = true;
-    toolbar.pdfAnnotationsEnabled = true;
+    toolbar.strings = {'pdfAnnotationsEnabled': true, 'printingEnabled': true};
     toolbar.rotated = false;
     toolbar.twoUpViewEnabled = false;
 

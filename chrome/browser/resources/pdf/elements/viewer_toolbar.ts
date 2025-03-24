@@ -22,6 +22,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 // </if>
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -99,13 +100,11 @@ export class ViewerToolbarElement extends CrLitElement {
       },
 
       pageNo: {type: Number},
-      pdfAnnotationsEnabled: {type: Boolean},
       pdfCr23Enabled: {type: Boolean},
       // <if expr="enable_pdf_ink2">
       pdfInk2Enabled: {type: Boolean},
       // </if>
 
-      printingEnabled: {type: Boolean},
       rotated: {type: Boolean},
       strings: {type: Object},
       viewportZoom: {type: Number},
@@ -119,6 +118,8 @@ export class ViewerToolbarElement extends CrLitElement {
       },
 
       fittingType_: {type: Number},
+      pdfAnnotationsEnabled_: {type: Boolean},
+      printingEnabled_: {type: Boolean},
       viewportZoomPercent_: {type: Number},
 
       // <if expr="enable_ink">
@@ -138,11 +139,9 @@ export class ViewerToolbarElement extends CrLitElement {
   formFieldFocus: FormFieldFocusType = FormFieldFocusType.NONE;
   loadProgress: number = 0;
   pageNo: number = 0;
-  pdfAnnotationsEnabled: boolean = false;
   pdfCr23Enabled: boolean = false;
-  printingEnabled: boolean = false;
   rotated: boolean = false;
-  strings?: {[key: string]: string};
+  strings?: LoadTimeDataRaw;
   viewportZoom: number = 0;
   zoomBounds: {min: number, max: number} = {min: 0, max: 0};
   sidenavCollapsed: boolean = false;
@@ -151,6 +150,8 @@ export class ViewerToolbarElement extends CrLitElement {
   private fittingType_: FittingType = FittingType.FIT_TO_PAGE;
   protected moreMenuOpen_: boolean = false;
   protected loading_: boolean = true;
+  private pdfAnnotationsEnabled_: boolean = false;
+  protected printingEnabled_: boolean = false;
   private viewportZoomPercent_: number = 0;
 
   // <if expr="enable_ink or enable_pdf_ink2">
@@ -188,6 +189,10 @@ export class ViewerToolbarElement extends CrLitElement {
       this.loading_ = this.loadProgress < 100;
     }
 
+    if (changedProperties.has('strings') && this.strings) {
+      this.updateLoadTimeData_();
+    }
+
     if (changedProperties.has('viewportZoom')) {
       this.viewportZoomPercent_ = Math.round(100 * this.viewportZoom);
     }
@@ -206,6 +211,12 @@ export class ViewerToolbarElement extends CrLitElement {
     if (changedProperties.has('viewportZoom')) {
       this.getZoomInput_().value = `${this.viewportZoomPercent_}%`;
     }
+  }
+
+  private updateLoadTimeData_() {
+    this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
+    this.pdfAnnotationsEnabled_ =
+        loadTimeData.getBoolean('pdfAnnotationsEnabled');
   }
 
   protected onSidenavToggleClick_() {
@@ -255,19 +266,19 @@ export class ViewerToolbarElement extends CrLitElement {
     }
     // </if> enable_pdf_ink2
 
-    return this.pdfAnnotationsEnabled;
+    return this.pdfAnnotationsEnabled_;
   }
   // </if> enable_ink
 
   // <if expr="enable_pdf_ink2">
   protected showInk2Buttons_(): boolean {
-    return this.pdfInk2Enabled && this.pdfAnnotationsEnabled;
+    return this.pdfInk2Enabled && this.pdfAnnotationsEnabled_;
   }
   // </if>
 
   // <if expr="enable_ink">
   protected showAnnotationsBar_(): boolean {
-    return this.pdfAnnotationsEnabled && !this.loading_ &&
+    return this.pdfAnnotationsEnabled_ && !this.loading_ &&
         this.isInInk1AnnotationMode_();
   }
 

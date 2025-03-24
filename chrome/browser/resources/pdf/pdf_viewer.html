@@ -7,7 +7,6 @@
 <if expr="enable_pdf_ink2">
     .hasInk2Edits="${this.hasInk2Edits_}"
 </if>
-    .printingEnabled="${this.printingEnabled_}"
     .rotated="${this.isRotated_()}"
     .formFieldFocus="${this.formFieldFocus_}"
     .sidenavCollapsed="${this.sidenavCollapsed_}"
@@ -16,7 +15,6 @@
     .zoomBounds="${this.zoomBounds_}"
 <if expr="enable_ink or enable_pdf_ink2">
     .annotationAvailable="${this.annotationAvailable_()}"
-    .pdfAnnotationsEnabled="${this.pdfAnnotationsEnabled_}"
 </if>
     .pdfCr23Enabled="${this.pdfCr23Enabled}"
 <if expr="enable_pdf_ink2">
