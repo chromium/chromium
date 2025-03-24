@@ -61,6 +61,11 @@ StatisticsProvider::VpdStatus FakeStatisticsProvider::GetVpdStatus() const {
   return vpd_status_;
 }
 
+StatisticsProvider::LoadingState FakeStatisticsProvider::GetLoadingState()
+    const {
+  return loading_state_;
+}
+
 void FakeStatisticsProvider::SetMachineStatistic(const std::string& key,
                                                  const std::string& value) {
   machine_statistics_[key] = value;
@@ -85,6 +90,10 @@ void FakeStatisticsProvider::ClearMachineFlag(std::string_view key) {
 
 void FakeStatisticsProvider::SetVpdStatus(VpdStatus new_status) {
   vpd_status_ = new_status;
+}
+
+void FakeStatisticsProvider::SetLoadingState(LoadingState new_state) {
+  loading_state_ = new_state;
 }
 
 ScopedFakeStatisticsProvider::ScopedFakeStatisticsProvider() {

@@ -1199,6 +1199,21 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
       variants="AllCertProvisioningProtocolVersions"/>
 </histogram>
 
+<histogram name="ChromeOS.CountryCode.MissingVariationData"
+    enum="ChromeOSFallbackCountry" expires_after="2026-03-20">
+  <owner>cschlosser@chromium.org</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <summary>
+    Records an enum when constructing the regional capabilities service during
+    browser startup and there is no variations country available. On ChromeOS
+    and Linux the country in which the current device is should be sent by the
+    variation service. There are cases where CrOS devices don't receive these
+    updates and then have to fallback onto other mechanisms. This histogram
+    tracks if the fallback mechanism was triggered and whether it also failed to
+    determine a country and if so, why.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.CWP.CollectPerf"
     enum="ChromeOSProfileCollectionStatus" expires_after="2025-06-22">
   <owner>aalexand@google.com</owner>
