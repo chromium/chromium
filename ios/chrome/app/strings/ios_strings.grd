@@ -1420,6 +1420,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE" desc="The title of the settings to toggle the articles suggestions on the NTP on/off">
         Article suggestions
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_CONTEXT_MENU_TITLE" desc="Customize cards title for Price Drops on Tab Resumption">
+          This card shows a price drop on your tracked product from one of your synced devices
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_OPEN_TABS_ACCESSIBILITY_LABEL" desc="Accessibility label for Price Drop on Open Tabs">
           Price drop on your open tab, from <ph name="PREVIOUS_PRICE">$1<ex>$799</ex></ph> to <ph name="PRICE">$2<ex>$699</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Pixel phone</ex></ph>, <ph name="DOMAIN">$4<ex>store.google.com</ex></ph>
       </message>

@@ -304,7 +304,7 @@ const CGFloat kSeparatorHeight = 0.5;
     return;
   }
   _type = config.type;
-  [[self contextMenuInteractionHandler] configureWithType:_type];
+  [[self contextMenuInteractionHandler] configureWithType:_type config:config];
 
   _title.text = [MagicStackModuleContainer titleStringForModule:_type
                                                    inMagicStack:inMagicStack
