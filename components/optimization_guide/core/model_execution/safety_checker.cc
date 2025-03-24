@@ -132,14 +132,11 @@ SafetyChecker::Result SafetyChecker::Result::Merge(
 }
 
 SafetyChecker::SafetyChecker(base::WeakPtr<TextSafetyClient> client,
-                             on_device_model::TextSafetyLoaderParams params,
                              SafetyConfig safety_cfg)
     : client_(std::move(client)),
-      params_(std::move(params)),
       safety_cfg_(std::move(safety_cfg)) {}
 SafetyChecker::SafetyChecker(const SafetyChecker& orig)
     : client_(orig.client_),
-      params_(orig.params_),
       safety_cfg_(orig.safety_cfg_) {}
 SafetyChecker::~SafetyChecker() = default;
 
@@ -245,8 +242,7 @@ SafetyChecker::GetSession() {
   if (session_ || !client_) {
     return session_;
   }
-  client_->GetTextSafetyModelRemote(params_)->StartSession(
-      session_.BindNewPipeAndPassReceiver());
+  client_->StartSession(session_.BindNewPipeAndPassReceiver());
   return session_;
 }
 
