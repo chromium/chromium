@@ -4200,19 +4200,20 @@ public class StripLayoutHelper
         // 2. Anchor the popupMenu to the view associated with the tab
         View tabView = TabModelUtils.getCurrentTab(mModel).getView();
         mCloseButtonMenu.setAnchorView(tabView);
-        // 3. Set the vertical offset to align the tab menu with bottom of the tab strip
+        // 3. Set the vertical offset to align the close button menu with bottom of the tab strip
         int tabHeight = mManagerHost.getHeight();
         int verticalOffset =
                 -(tabHeight - (int) mContext.getResources().getDimension(R.dimen.tab_strip_height));
         mCloseButtonMenu.setVerticalOffset(verticalOffset);
 
-        // 4. Set the horizontal offset to align the tab menu with the right side of the tab
+        // 4. Set the horizontal offset to align the close button menu with the right side of the
+        // tab
         int horizontalOffset =
                 Math.round(
                                 (anchorTab.getDrawX() + anchorTab.getWidth())
                                         * mContext.getResources().getDisplayMetrics().density)
                         - mCloseButtonMenu.getWidth();
-        // Cap the horizontal offset so that the tab menu doesn't get drawn off screen.
+        // Cap the horizontal offset so that the close button menu doesn't get drawn off screen.
         horizontalOffset = Math.max(horizontalOffset, 0);
         mCloseButtonMenu.setHorizontalOffset(horizontalOffset);
 
@@ -4303,7 +4304,7 @@ public class StripLayoutHelper
     }
 
     /**
-     * @return true if the tab menu is showing
+     * @return true if the close button menu is showing
      */
     public boolean isCloseButtonMenuShowingForTesting() {
         return mCloseButtonMenu.isShowing();
