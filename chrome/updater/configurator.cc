@@ -80,7 +80,8 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
   GetNetworkFetcherFactory();
 #endif
   static crash_reporter::CrashKeyString<6> crash_key_managed("managed");
-  crash_key_managed.Set(base::ToString(is_managed_device_));
+  crash_key_managed.Set(is_managed_device_ ? base::ToString(*is_managed_device_)
+                                           : "n/a");
 }
 Configurator::~Configurator() = default;
 
