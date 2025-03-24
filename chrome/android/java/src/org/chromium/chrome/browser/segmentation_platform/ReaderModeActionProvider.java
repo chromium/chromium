@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Pair;
 
-import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -20,12 +21,16 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
         final TabDistillabilityProvider tabDistillabilityProvider =
                 TabDistillabilityProvider.get(tab);
+        // TODO(crbug.com/405420546): Consider emitting a signal from TabDistillabilityProvider when
+        // an observer is added if distillability is already determined.
         if (tabDistillabilityProvider.isDistillabilityDetermined()) {
-            notifyActionAvailable(
-                    tabDistillabilityProvider.isDistillable(),
-                    tabDistillabilityProvider.isMobileOptimized(),
-                    tab,
-                    signalAccumulator);
+            Pair<Boolean, Integer> result =
+                    ReaderModeManager.computeDistillationStatus(
+                            tab,
+                            tabDistillabilityProvider.isDistillable(),
+                            tabDistillabilityProvider.isMobileOptimized(),
+                            /* isLast= */ true);
+            notifyActionAvailable(result.second == DistillationStatus.POSSIBLE, signalAccumulator);
             return;
         }
 
@@ -38,9 +43,18 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                             boolean isDistillable,
                             boolean isLast,
                             boolean isMobileOptimized) {
-                        notifyActionAvailable(
-                                isDistillable, isMobileOptimized, tab, signalAccumulator);
-                        tabDistillabilityProvider.removeObserver(this);
+                        Pair<Boolean, Integer> result =
+                                ReaderModeManager.computeDistillationStatus(
+                                        tab,
+                                        tabDistillabilityProvider.isDistillable(),
+                                        tabDistillabilityProvider.isMobileOptimized(),
+                                        /* isLast= */ true);
+                        if (result.first) {
+                            notifyActionAvailable(
+                                    result.second == DistillationStatus.POSSIBLE,
+                                    signalAccumulator);
+                            tabDistillabilityProvider.removeObserver(this);
+                        }
                     }
                 };
         tabDistillabilityProvider.addObserver(distillabilityObserver);
@@ -66,30 +80,9 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
                         /* delayMillis= */ 500);
     }
 
-    private void notifyActionAvailable(
-            boolean isDistillable,
-            boolean isMobileOptimized,
-            Tab tab,
-            SignalAccumulator signalAccumulator) {
+    private void notifyActionAvailable(boolean isDistillable, SignalAccumulator signalAccumulator) {
         // TODO(shaktisahu): Can we merge these into a single method call?
-        signalAccumulator.setHasReaderMode(isDistillable && !isFilteredOut(tab, isMobileOptimized));
+        signalAccumulator.setHasReaderMode(isDistillable);
         signalAccumulator.notifySignalAvailable();
-    }
-
-    private boolean isFilteredOut(Tab tab, boolean isMobileOptimized) {
-        // Test if the user is requesting the desktop site. Ignore this if distiller is set to
-        // ALWAYS_TRUE.
-        boolean usingRequestDesktopSite =
-                tab.getWebContents() != null
-                        && tab.getWebContents().getNavigationController().getUseDesktopUserAgent()
-                        && !DomDistillerTabUtils.isHeuristicAlwaysTrue();
-
-        if (usingRequestDesktopSite) return true;
-
-        if (isMobileOptimized && DomDistillerTabUtils.shouldExcludeMobileFriendly(tab)) {
-            return true;
-        }
-
-        return false;
     }
 }

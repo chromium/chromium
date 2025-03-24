@@ -28,8 +28,13 @@ import org.chromium.chrome.browser.dom_distiller.DistillerHeuristicsType;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController.ActionProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -46,6 +51,9 @@ public class ReaderModeActionProviderTest {
     @Mock private Tab mMockTab;
     @Mock private ReaderModeManager mMockReaderModeManager;
     @Mock private SignalAccumulator mMockSignalAccumulator;
+    @Mock private Profile mProfile;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefService mPrefService;
 
     @Before
     public void setUp() {
@@ -58,6 +66,11 @@ public class ReaderModeActionProviderTest {
     private void initializeReaderModeBackend() {
         UserDataHost userDataHost = new UserDataHost();
         when(mMockTab.getUserDataHost()).thenReturn(userDataHost);
+        when(mMockTab.getProfile()).thenReturn(mProfile);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(Pref.READER_FOR_ACCESSIBILITY)).thenReturn(false);
+
         TabDistillabilityProvider.createForTab(mMockTab);
         DomDistillerTabUtils.setExcludeMobileFriendlyForTesting(true);
     }

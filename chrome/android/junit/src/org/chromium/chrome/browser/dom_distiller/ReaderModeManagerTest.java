@@ -156,6 +156,7 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     public void testUi_notTriggered_muted() {
+        when(mTab.isCustomTab()).thenReturn(true);
         mManager.muteSiteForTesting(mTab.getUrl());
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
@@ -168,6 +169,7 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     public void testUi_notTriggered_mutedByDomain() {
+        when(mTab.isCustomTab()).thenReturn(true);
         mManager.muteSiteForTesting(JUnitTestGURLs.GOOGLE_URL_DOG);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
@@ -183,10 +185,11 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     public void testUi_notTriggered_contextualPageActionUiEnabled() {
+        when(mTab.isIncognito()).thenReturn(false);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
-                "Distillation should be possible.",
-                DistillationStatus.POSSIBLE,
+                "Distillation isn't possible because it will be handled by the CPA.",
+                DistillationStatus.NOT_POSSIBLE,
                 mManager.getDistillationStatus());
         verify(
                         mMessageDispatcher,
@@ -286,6 +289,7 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     public void testDistillationMetricsOnDistillabilityResult() {
+        when(mTab.isCustomTab()).thenReturn(true);
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord(
@@ -305,7 +309,27 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
+    public void testDistillationMetricsOnDistillabilityResult_noMetricsRecordedForRegularTabs() {
+        when(mTab.isCustomTab()).thenReturn(false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ReaderModeManager.ACCESSIBILITY_SETTING_HISTOGRAM)
+                        .expectNoRecords(
+                                ReaderModeManager.DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM)
+                        .expectNoRecords(ReaderModeManager.PAGE_DISTILLABLE_RESULT_HISTOGRAM)
+                        .build();
+        mDistillabilityObserver.onIsPageDistillableResult(
+                mTab,
+                /* isDistillable= */ true,
+                /* isLast= */ true,
+                /* isMobileOptimized= */ false);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature("ReaderMode")
     public void testDistillationMetricsOnDistillabilityResult_mobilePageExcluded() {
+        when(mTab.isCustomTab()).thenReturn(true);
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord(
@@ -323,6 +347,7 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     public void testDistillationMetricsOnDistillabilityResult_mobilePageNotExcluded() {
+        when(mTab.isCustomTab()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.READER_FOR_ACCESSIBILITY)).thenReturn(true);
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
