@@ -12,6 +12,7 @@ proto_library("protocol") {
     "data_sharing_sdk.proto",
     "group_data.proto",
   ]
+  deps = [ "//components/sync/protocol" ]
 }
 
 if (is_android) {
@@ -23,6 +24,7 @@ if (is_android) {
       "data_sharing_sdk.proto",
       "group_data.proto",
     ]
+    deps = [ "//components/sync/protocol:protocol_java" ]
   }
 }
 
