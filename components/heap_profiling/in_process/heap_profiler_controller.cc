@@ -268,6 +268,12 @@ bool HeapProfilerController::StartIfEnabled() {
   if (sampling_rate_bytes > 0) {
     base::SamplingHeapProfiler::Get()->SetSamplingInterval(sampling_rate_bytes);
   }
+  const float hash_set_load_factor =
+      GetHashSetLoadFactorForProcess(process_type_);
+  if (hash_set_load_factor > 0) {
+    base::PoissonAllocationSampler::Get()->SetTargetHashSetLoadFactor(
+        hash_set_load_factor);
+  }
   base::SamplingHeapProfiler::Get()->Start();
 
   if (process_type_ != ProcessType::kBrowser) {

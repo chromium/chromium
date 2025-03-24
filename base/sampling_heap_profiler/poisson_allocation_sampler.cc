@@ -234,6 +234,12 @@ size_t PoissonAllocationSampler::SamplingInterval() const {
   return g_sampling_interval.load(std::memory_order_relaxed);
 }
 
+void PoissonAllocationSampler::SetTargetHashSetLoadFactor(
+    std::optional<float> load_factor) {
+  AutoLock lock(mutex_);
+  address_cache_target_load_factor_ = load_factor.value_or(1.0);
+}
+
 PoissonAllocationSamplerStats PoissonAllocationSampler::GetAndResetStats() {
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
@@ -393,7 +399,7 @@ void PoissonAllocationSampler::BalanceAddressesHashSet() {
   // All the readers continue to use the old one until the atomic switch
   // process takes place.
   LockFreeAddressHashSet& current_set = sampled_addresses_set();
-  if (current_set.load_factor() < 1) {
+  if (current_set.load_factor() < address_cache_target_load_factor_) {
     return;
   }
   auto new_set = std::make_unique<LockFreeAddressHashSet>(
