@@ -1498,9 +1498,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScreenTimeIntegrationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kScreenTimeIntegration)},
 #endif
-    {"modern-tab-strip", flag_descriptions::kModernTabStripName,
-     flag_descriptions::kModernTabStripDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kModernTabStrip)},
     {"ios-enable-delete-all-saved-credentials",
      flag_descriptions::kIOSEnableDeleteAllSavedCredentialsName,
      flag_descriptions::kIOSEnableDeleteAllSavedCredentialsDescription,

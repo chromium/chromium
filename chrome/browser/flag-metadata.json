@@ -6138,11 +6138,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "modern-tab-strip",
-    "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "mojo-linux-sharedmem",
     "owners": ["bgeffon@chromium.org", "rockot@chromium.org"],
     "expiry_milestone": 99

@@ -24,18 +24,6 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
-source_set("features_utils") {
-  sources = [
-    "features_utils.h",
-    "features_utils.mm",
-  ]
-  deps = [
-    ":features",
-    "//base",
-    "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
-  ]
-}
-
 source_set("system_flags") {
   sources = [
     "system_flags.h",

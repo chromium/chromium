@@ -165,10 +165,6 @@ BASE_FEATURE(kShareInWebContextMenuIOS,
              "ShareInWebContextMenuIOS",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kModernTabStrip,
-             "ModernTabStrip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              "IOSBrowserEditMenuMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -512,8 +508,7 @@ BASE_FEATURE(kTabGroupsIPad,
 bool IsTabGroupInGridEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (@available(iOS 17, *)) {
-      return base::FeatureList::IsEnabled(kTabGroupsIPad) &&
-             base::FeatureList::IsEnabled(kModernTabStrip);
+      return base::FeatureList::IsEnabled(kTabGroupsIPad);
     }
     return false;
   }

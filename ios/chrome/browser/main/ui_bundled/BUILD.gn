@@ -87,7 +87,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/model/inactive_tabs",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
-    "//ios/chrome/browser/tabs/ui_bundled:constants",
     "//ios/chrome/common/ui/colors",
 
     # Note: the deps below are not directly used according to `gn check` since
