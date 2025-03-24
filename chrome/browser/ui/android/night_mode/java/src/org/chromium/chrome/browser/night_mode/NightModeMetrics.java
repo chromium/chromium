@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.night_mode;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Records user actions and histograms related to the night mode state. */
+@NullMarked
 public class NightModeMetrics {
     /**
      * Entries that navigate the user into Theme Settings.
