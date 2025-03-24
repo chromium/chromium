@@ -27,9 +27,6 @@ std::string GetHtmlTagForPDF(ui::AXNode* ax_node, const std::string& html_tag);
 std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
                                     const std::string& html_tag);
 
-// Returns the node that was used for selection.
-ui::AXNode* GetParentForSelection(ui::AXNode* ax_node);
-
 // Returns the alt text for the given node.
 std::string GetAltText(ui::AXNode* ax_node);
 
