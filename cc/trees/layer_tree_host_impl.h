@@ -41,6 +41,8 @@
 #include "cc/metrics/event_latency_tracker.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
+#include "cc/metrics/frame_sequence_metrics.h"
+#include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/submit_info.h"
 #include "cc/metrics/total_frame_counter.h"
@@ -75,6 +77,7 @@
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
 class PointF;
@@ -214,9 +217,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   LayerTreeHostImpl& operator=(const LayerTreeHostImpl&) = delete;
 
-  // TODO(bokan): This getter is an escape-hatch for code that hasn't yet been
-  // cleaned up to decouple input from graphics. Callers should be cleaned up
-  // to avoid calling it and it should be removed.
+  // TODO(crbug.com/404586886): This getter is an escape-hatch for code that
+  // hasn't yet been cleaned up to decouple input from graphics. Callers should
+  // be cleaned up to avoid calling it and it should be removed.
   InputHandler& GetInputHandler();
   const InputHandler& GetInputHandler() const;
 
@@ -224,13 +227,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                bool anchor_point,
                                float page_scale,
                                base::TimeDelta duration);
-  void SetNeedsAnimateInput();
-  std::unique_ptr<LatencyInfoSwapPromiseMonitor>
-  CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency);
-  std::unique_ptr<EventsMetricsManager::ScopedMonitor>
-  GetScopedEventMetricsMonitor(
-      EventsMetricsManager::ScopedMonitor::DoneCallback done_callback);
-  void NotifyInputEvent();
 
   // BrowserControlsOffsetManagerClient implementation.
   float TopControlsHeight() const override;
@@ -296,6 +292,39 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void BindToInputHandler(
       std::unique_ptr<InputDelegateForCompositor> delegate) override;
   ScrollTree& GetScrollTree() const override;
+  void ScrollAnimationAbort(ElementId element_id) const override;
+  float GetBrowserControlsTopOffset() const override;
+  void ScrollBegin() const override;
+  void ScrollEnd() const override;
+  void StartScrollSequence(
+      FrameSequenceTrackerType type,
+      FrameInfo::SmoothEffectDrivingThread scrolling_thread) override;
+  void StopSequence(FrameSequenceTrackerType type) override;
+  void PinchBegin() const override;
+  void PinchEnd() const override;
+  void TickScrollAnimations() const override;
+  void ScrollbarAnimationMouseLeave(ElementId element_id) const override;
+  void ScrollbarAnimationMouseMove(
+      ElementId element_id,
+      gfx::PointF device_viewport_point) const override;
+  bool ScrollbarAnimationMouseDown(ElementId element_id) const override;
+  bool ScrollbarAnimationMouseUp(ElementId element_id) const override;
+  double PredictViewportBoundsDelta(
+      double current_bounds_delta,
+      gfx::Vector2dF scroll_distance) const override;
+  bool ElementHasImplOnlyScrollAnimation(ElementId) const override;
+  std::optional<gfx::PointF> UpdateImplAnimationScrollTargetWithDelta(
+      gfx::Vector2dF adjusted_delta,
+      int scroll_node_id,
+      base::TimeDelta delayed_by,
+      ElementId element_id) const override;
+  void SetNeedsAnimateInput() override;
+  std::unique_ptr<LatencyInfoSwapPromiseMonitor>
+  CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) override;
+  std::unique_ptr<EventsMetricsManager::ScopedMonitor>
+  GetScopedEventMetricsMonitor(
+      EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) override;
+  void NotifyInputEvent() override;
   bool HasAnimatedScrollbars() const override;
   // Already overridden for BrowserControlsOffsetManagerClient which declares a
   // method of the same name.
@@ -758,7 +787,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // by the desired amount without an animation.
   bool ScrollAnimationCreate(const ScrollNode& scroll_node,
                              const gfx::Vector2dF& scroll_amount,
-                             base::TimeDelta delayed_by);
+                             base::TimeDelta delayed_by) override;
   void AutoScrollAnimationCreate(const ScrollNode& scroll_node,
                                  const gfx::PointF& target_offset,
                                  float autoscroll_velocity);

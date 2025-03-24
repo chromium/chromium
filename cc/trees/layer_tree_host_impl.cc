@@ -73,6 +73,7 @@
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sequence_metrics.h"
+#include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/lcd_text_metrics_reporter.h"
 #include "cc/metrics/submit_info.h"
 #include "cc/metrics/ukm_dropped_frames_data.h"
@@ -4717,6 +4718,108 @@ void LayerTreeHostImpl::SetMayThrottleIfUndrawnFrames(
 
 ScrollTree& LayerTreeHostImpl::GetScrollTree() const {
   return active_tree_->property_trees()->scroll_tree_mutable();
+}
+
+void LayerTreeHostImpl::ScrollAnimationAbort(ElementId element_id) const {
+  return mutator_host_->ScrollAnimationAbort(element_id);
+}
+
+float LayerTreeHostImpl::GetBrowserControlsTopOffset() const {
+  return browser_controls_offset_manager_->ControlsTopOffset();
+}
+
+void LayerTreeHostImpl::ScrollBegin() const {
+  return browser_controls_offset_manager_->ScrollBegin();
+}
+
+void LayerTreeHostImpl::ScrollEnd() const {
+  return browser_controls_offset_manager_->ScrollEnd();
+}
+
+void LayerTreeHostImpl::StartScrollSequence(
+    FrameSequenceTrackerType type,
+    FrameInfo::SmoothEffectDrivingThread scrolling_thread) {
+  frame_trackers_.StartScrollSequence(type, scrolling_thread);
+}
+
+void LayerTreeHostImpl::StopSequence(FrameSequenceTrackerType type) {
+  return frame_trackers_.StopSequence(type);
+}
+
+void LayerTreeHostImpl::PinchBegin() const {
+  return browser_controls_offset_manager_->PinchBegin();
+}
+
+void LayerTreeHostImpl::PinchEnd() const {
+  return browser_controls_offset_manager_->PinchEnd();
+}
+
+void LayerTreeHostImpl::ScrollbarAnimationMouseLeave(
+    ElementId element_id) const {
+  ScrollbarAnimationController* animation_controller =
+      ScrollbarAnimationControllerForElementId(element_id);
+  if (animation_controller) {
+    animation_controller->DidMouseLeave();
+  }
+}
+
+void LayerTreeHostImpl::ScrollbarAnimationMouseMove(
+    ElementId element_id,
+    gfx::PointF device_viewport_point) const {
+  ScrollbarAnimationController* animation_controller =
+      ScrollbarAnimationControllerForElementId(element_id);
+  if (animation_controller) {
+    animation_controller->DidMouseMove(device_viewport_point);
+  }
+}
+
+bool LayerTreeHostImpl::ScrollbarAnimationMouseDown(
+    ElementId element_id) const {
+  ScrollbarAnimationController* animation_controller =
+      ScrollbarAnimationControllerForElementId(element_id);
+  if (animation_controller) {
+    animation_controller->DidMouseDown();
+    return true;
+  }
+  return false;
+}
+
+bool LayerTreeHostImpl::ScrollbarAnimationMouseUp(ElementId element_id) const {
+  ScrollbarAnimationController* animation_controller =
+      ScrollbarAnimationControllerForElementId(element_id);
+  if (animation_controller) {
+    animation_controller->DidMouseUp();
+    return true;
+  }
+  return false;
+}
+
+void LayerTreeHostImpl::TickScrollAnimations() const {
+  return mutator_host_->TickScrollAnimations(CurrentBeginFrameArgs().frame_time,
+                                             GetScrollTree());
+}
+
+double LayerTreeHostImpl::PredictViewportBoundsDelta(
+    double current_bounds_delta,
+    gfx::Vector2dF scroll_distance) const {
+  return browser_controls_offset_manager_->PredictViewportBoundsDelta(
+      current_bounds_delta, scroll_distance);
+}
+
+bool LayerTreeHostImpl::ElementHasImplOnlyScrollAnimation(
+    ElementId element_id) const {
+  return mutator_host_->ElementHasImplOnlyScrollAnimation(element_id);
+}
+
+std::optional<gfx::PointF>
+LayerTreeHostImpl::UpdateImplAnimationScrollTargetWithDelta(
+    gfx::Vector2dF adjusted_delta,
+    int scroll_node_id,
+    base::TimeDelta delayed_by,
+    ElementId element_id) const {
+  return mutator_host_->ImplOnlyScrollAnimationUpdateTarget(
+      adjusted_delta, GetScrollTree().MaxScrollOffset(scroll_node_id),
+      CurrentBeginFrameArgs().frame_time, delayed_by, element_id);
 }
 
 bool LayerTreeHostImpl::HasAnimatedScrollbars() const {
