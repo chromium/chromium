@@ -17,6 +17,7 @@
 #include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/mojom/features.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
@@ -80,8 +81,7 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
     base::FilePath dump_path = dump_directory.AppendASCII(
         base::StringPrintf("model%d.onnx", dump_count++));
 
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebNNOrtUseOpenvino)) {
+    if (!base::FeatureList::IsEnabled(mojom::features::kWebNNOrtOpenVino)) {
       CALL_ORT_FUNC(ort_api->SetOptimizedModelFilePath(
           session_options.get(), dump_path.value().c_str()));
     } else {
@@ -102,8 +102,8 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
     // supports it.
   }
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtDisableCpuFallback)) {
+  if (!base::FeatureList::IsEnabled(mojom::features::kWebNNOrtCpuFallback) &&
+      base::FeatureList::IsEnabled(mojom::features::kWebNNOrtOpenVino)) {
     CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
         session_options.get(),
         /*config_key=*/kOrtSessionOptionsDisableCPUEPFallback,
@@ -119,8 +119,7 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
       /*config_key=*/kOrtSessionOptionsConfigStrictShapeTypeInference,
       /*config_value=*/"1"));
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtUseOpenvino)) {
+  if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtOpenVino)) {
     std::vector<const char*> provider_options_keys;
     std::vector<const char*> provider_options_values;
     std::string gpu_precision;
@@ -182,8 +181,7 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
                             "OnnxRuntime OpenVINO EP is not supported."));
     }
 #if BUILDFLAG(IS_WIN)
-  } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                 switches::kWebNNOrtUseDmlGpu) &&
+  } else if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtDml) &&
              device_type == mojom::CreateContextOptions::Device::kGpu) {
     CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
         session_options.get(), GraphOptimizationLevel::ORT_ENABLE_BASIC));

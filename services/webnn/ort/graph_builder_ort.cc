@@ -19,6 +19,7 @@
 #include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/mojom/features.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_switches.h"
 #include "third_party/fp16/src/include/fp16.h"
@@ -357,8 +358,7 @@ base::expected<std::string, mojom::ErrorPtr> GraphBuilderOrt::CreateInitializer(
   ScopedOrtStatus status;
   // TODO(https://github.com/shiyi9801/chromium/issues/70): Remove this
   // workaround for OpenVINO EP once the invalid external data issue is fixed.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtUseOpenvino)) {
+  if (!base::FeatureList::IsEnabled(mojom::features::kWebNNOrtOpenVino)) {
     status = model_editor_.AddInitializer(name, int64_shape, byte_span,
                                           TensorTypeMap<DataType>::value);
 
@@ -659,8 +659,7 @@ GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
   ScopedOrtStatus status;
   // TODO(https://github.com/shiyi9801/chromium/issues/70): Remove this
   // workaround for OpenVINO EP once the invalid external data issue is fixed.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtUseOpenvino)) {
+  if (!base::FeatureList::IsEnabled(mojom::features::kWebNNOrtOpenVino)) {
     status = model_editor_.AddInitializer(name, int64_shape, operand.ByteSpan(),
                                           onnx_data_type);
   } else {
@@ -1437,8 +1436,7 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
 
     // Currently, OpenVINO only supports axis == 0 when scale.size == 2.
     // https://github.com/openvinotoolkit/openvino/blob/master/src/frontends/onnx/frontend/src/op/dequantize_linear.cpp#L228.
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebNNOrtUseOpenvino) &&
+    if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtOpenVino) &&
         std::is_same_v<DequantizeOrQuantizeLinear, mojom::DequantizeLinear>) {
       if (scale_shape.size() != 2) {
         // https://github.com/openvinotoolkit/openvino/blob/master/src/frontends/onnx/frontend/src/op/dequantize_linear.cpp#L220

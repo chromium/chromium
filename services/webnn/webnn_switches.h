@@ -27,24 +27,11 @@ inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
 #if BUILDFLAG(WEBNN_USE_ORT)
-inline constexpr char kWebNNUseOrt[] = "webnn-use-ort";
-
 // Save the generated ONNX model file to the folder specified by
 // --webnn-ort-dump-model. Note, the folder needs to be accessible from the
 // GPU process sandbox or --no-sandbox must be used.
 // Usage: --no-sandbox --webnn-ort-dump-model=./OnnxModels
 inline constexpr char kWebNNOrtDumpModel[] = "webnn-ort-dump-model";
-
-// Use DirectML EP of ONNX Runtime
-inline constexpr char kWebNNOrtUseDmlGpu[] = "webnn-ort-use-dml";
-
-// Use OpenVINO EP of ONNX Runtime, WebNN device type will map OpenVINO device
-// type.
-inline constexpr char kWebNNOrtUseOpenvino[] = "webnn-ort-use-openvino";
-
-// Disable CPU fallback for OpenVINO EP.
-inline constexpr char kWebNNOrtDisableCpuFallback[] =
-    "webnn-ort-disable-cpu-fallback";
 
 // For GPU, OV EP will use FP16 inference precision by default. You can specify
 // the flag to use FP32 or ACCURACY to get better accuracy, but it may result in

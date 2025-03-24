@@ -2580,6 +2580,33 @@ const char kWebNNDirectMLDescription[] =
     "NPU inference with the WebNN API. Disabling this flag enables a "
     "fallback to TFLite.";
 
+#if BUILDFLAG(WEBNN_USE_ORT)
+const char kWebNNOrtName[] = "ONNX Runtime backend for WebNN";
+const char kWebNNOrtDescription[] =
+    "Enables using ONNX Runtime for inference with the WebNN API. Runs on CPU "
+    "EP by default.";
+
+const char kWebNNOrtCpuFallbackName[] =
+    "Enables CPU fallback for ONNX Runtime backend for WebNN";
+const char kWebNNOrtCpuFallbackDescription[] =
+    "Allows ONNX Runtime OpenVINO EP falling back to CPU. Disabling this flag "
+    "leads to graph building failure when there is fallback for GPU or NPU "
+    "inference.";
+
+const char kWebNNOrtOpenVinoName[] =
+    "ONNX Runtime backend OpenVINO EP for WebNN";
+const char kWebNNOrtOpenVinoDescription[] =
+    "Enables using ONNX Runtime OpenVINO EP for CPU, GPU and NPU inference "
+    "with the WebNN API. Requires the \"ONNX Runtime backend for WebNN\" flag "
+    "to be enabled.";
+
+const char kWebNNOrtDmlName[] = "ONNX Runtime backend DirectML EP for WebNN";
+const char kWebNNOrtDmlDescription[] =
+    "Enables using ONNX Runtime DirectML EP for GPU inference with the WebNN "
+    "API. Requires the \"ONNX Runtime backend for WebNN\" flag "
+    "to be enabled.";
+#endif  // BUILDFLAG(WEBNN_USE_ORT)
+
 const char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";
 const char kSystemProxyForSystemServicesDescription[] =

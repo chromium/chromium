@@ -30,3 +30,33 @@ feature kWebNNDirectML {
   const string name = "WebNNDirectML";
   const bool default_state = true;
 };
+
+// Enables the ONNX Runtime backend for WebNN.
+[EnableIf=webnn_use_ort]
+feature kWebNNOrt {
+  const string name = "WebNNOrt";
+  const bool default_state = false;
+};
+
+// Allows the ONNX Runtime OpenVINO EP falling back to CPU for WebNN. When it's
+// set to false, ORT backend won't fall back to either default CPU EP or
+// OpenVINO EP CPU Plugin if graph build fails for GPU or NPU.
+[EnableIf=webnn_use_ort]
+feature kWebNNOrtCpuFallback {
+  const string name = "WebNNOrtCpuFallback";
+  const bool default_state = true;
+};
+
+// Enables the OpenVINO EP for ONNX Runtime backend for WebNN.
+[EnableIf=webnn_use_ort]
+feature kWebNNOrtOpenVino {
+  const string name = "WebNNOrtOpenVino";
+  const bool default_state = false;
+};
+
+// Enables the DirectML EP for ONNX Runtime backend for WebNN.
+[EnableIf=webnn_use_ort]
+feature kWebNNOrtDml {
+  const string name = "WebNNOrtDml";
+  const bool default_state = false;
+};

@@ -2508,6 +2508,7 @@ static_library("browser") {
     "//services/shape_detection/public/mojom",
     "//services/strings",
     "//services/video_effects/buildflags",
+    "//services/webnn:buildflags",
     "//services/webnn/public/mojom",
     "//skia",
     "//sql",

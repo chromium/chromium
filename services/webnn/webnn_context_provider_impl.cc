@@ -244,8 +244,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   RecordDeviceType(options->device);
 
 #if BUILDFLAG(WEBNN_USE_ORT)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNUseOrt)) {
+  if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrt)) {
     auto* platform_functions = ort::PlatformFunctions::GetInstance();
     if (!platform_functions) {
       std::move(callback).Run(ToError<mojom::CreateContextResult>(

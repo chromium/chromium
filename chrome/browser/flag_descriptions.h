@@ -23,6 +23,7 @@
 #include "net/net_buildflags.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/webnn/buildflags.h"
 #include "skia/buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
 
@@ -1492,6 +1493,20 @@ extern const char kWebNNCoreMLDescription[];
 
 extern const char kWebNNDirectMLName[];
 extern const char kWebNNDirectMLDescription[];
+
+#if BUILDFLAG(WEBNN_USE_ORT)
+extern const char kWebNNOrtName[];
+extern const char kWebNNOrtDescription[];
+
+extern const char kWebNNOrtCpuFallbackName[];
+extern const char kWebNNOrtCpuFallbackDescription[];
+
+extern const char kWebNNOrtOpenVinoName[];
+extern const char kWebNNOrtOpenVinoDescription[];
+
+extern const char kWebNNOrtDmlName[];
+extern const char kWebNNOrtDmlDescription[];
+#endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNewEtc1EncoderName[];

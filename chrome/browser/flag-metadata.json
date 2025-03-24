@@ -9696,6 +9696,26 @@
     "expiry_milestone": 146
   },
   {
+    "name": "webnn-ort",
+    "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
+    "expiry_milestone": 146
+  },
+  {
+    "name": "webnn-ort-cpu-fallback",
+    "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
+    "expiry_milestone": 146
+  },
+  {
+    "name": "webnn-ort-openvino",
+    "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
+    "expiry_milestone": 146
+  },
+  {
+    "name": "webnn-ort-dml",
+    "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "webpage-alternative-text-zoom",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 127

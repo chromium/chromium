@@ -504,6 +504,7 @@ include_rules = [
   "+services/video_effects/test",
   "+services/viz/public",
   "+services/viz/privileged",
+  "+services/webnn/buildflags.h",
   "+skia/buildflags.h",
   "+skia/ext",
   "+third_party/boringssl/src/include",
