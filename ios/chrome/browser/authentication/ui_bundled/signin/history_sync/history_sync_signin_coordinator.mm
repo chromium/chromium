@@ -53,6 +53,8 @@
 
 - (void)interruptAnimated:(BOOL)animated {
   [_syncPopupCoordinator interruptAnimated:animated];
+  _syncPopupCoordinator.delegate = nil;
+  _syncPopupCoordinator = nil;
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate
