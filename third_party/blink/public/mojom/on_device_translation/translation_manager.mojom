@@ -130,32 +130,6 @@ struct TranslatorCreateOptions {
   pending_remote<ModelDownloadProgressObserver>? observer_remote;
 };
 
-// The availability of a translation.
-enum TranslationAvailability {
-  kNo,
-  kReadily,
-  kAfterDownload,
-};
-
-// The information of a translator availability.
-struct TranslatorAvailabilityInfo {
-  // The language categories for the availability matrix.
-  // Each language code is the language code which is supported by the
-  // Translator API's implementation library.
-  // Note: `preferred` means that the language is in the user's accept language.
-  array<array<TranslatorLanguageCode>> language_categories;
-
-  // The availability matrix for each language category. The availability matrix
-  // is a 2D array, where the first dimension represents the source language
-  // category, and the second dimension represents the target language category.
-  // The size of the availability matrix must be len(language_categories) *
-  // len(language_categories).
-  array<array<TranslationAvailability>> language_availability_matrix;
-
-  // The availability of the translation service.
-  TranslationAvailability availability;
-};
-
 // Interface to manage translation between languages on-device. Process called
 // from the renderer and used to implement the translation in the browser process.
 interface TranslationManager {
@@ -178,9 +152,6 @@ interface TranslationManager {
   CreateTranslator(
     pending_remote<TranslationManagerCreateTranslatorClient> client,
     TranslatorCreateOptions options);
-
-  // Get the necessary information to calculate translator availability.
-  GetTranslatorAvailabilityInfo() => (TranslatorAvailabilityInfo info);
 
   // Returns the availability of the language pair translation.
   TranslationAvailable(

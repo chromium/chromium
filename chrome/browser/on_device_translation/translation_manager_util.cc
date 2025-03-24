@@ -18,137 +18,7 @@
 
 namespace on_device_translation {
 
-using blink::mojom::TranslationAvailability;
-using blink::mojom::TranslatorLanguageCode;
-using blink::mojom::TranslatorLanguageCodePtr;
-
-// The number of language categories in the availability matrix.
-constexpr size_t kLanguageCategoriesSize = 8u;
-
-TranslationAvailability CalculateTranslationAvailability(
-    const LanguageCategory& source,
-    const LanguageCategory& target,
-    bool accept_languages_check_enabled,
-    size_t installable_package_count) {
-  if (accept_languages_check_enabled) {
-    // If both the source and the destination language are not in the user's
-    // accept language, the translation is not available.
-    if (!(source.preferred || target.preferred)) {
-      return TranslationAvailability::kNo;
-    }
-    // If the languages which is not in the user's accept language is not a
-    // popular language, the translation is not available.
-    if ((!source.preferred && !source.popular) ||
-        (!target.preferred && !target.popular)) {
-      return TranslationAvailability::kNo;
-    }
-  }
-
-  // If both the source and the destination language are installed, the
-  // translation is available.
-  if (source.installed && target.installed) {
-    return TranslationAvailability::kReadily;
-  }
-  // If both the source and the destination language are not installed, that
-  // means the user has to download the two language packs.
-  if (!source.installed && !target.installed) {
-    // If the user can download two language packs, the translation is available
-    // after download, otherwise it is not available.
-    return installable_package_count >= 2
-               ? TranslationAvailability::kAfterDownload
-               : TranslationAvailability::kNo;
-  }
-
-  // If one of the source or the destination language is installed, that means
-  // the user only needs to download one language pack.
-  // So if the user can download one language pack, the translation is available
-  // after download, otherwise it is not available.
-  return installable_package_count >= 1
-             ? TranslationAvailability::kAfterDownload
-             : TranslationAvailability::kNo;
-}
-
-std::vector<std::vector<TranslationAvailability>> CreateAvailabilityMatrix(
-    bool accept_languages_check_enabled,
-    size_t installable_package_count) {
-  const std::vector<LanguageCategory> categories = CreateLanguageCategoryList();
-  std::vector<std::vector<TranslationAvailability>> matrix;
-  matrix.reserve(kLanguageCategoriesSize);
-  for (const auto& source : categories) {
-    std::vector<TranslationAvailability> availability_row;
-    availability_row.reserve(kLanguageCategoriesSize);
-    for (auto target : categories) {
-      availability_row.emplace_back(CalculateTranslationAvailability(
-          source, target, accept_languages_check_enabled,
-          installable_package_count));
-    }
-    matrix.emplace_back(std::move(availability_row));
-  }
-  return matrix;
-}
-
-std::vector<std::vector<TranslatorLanguageCodePtr>> CreateLanguageCategories(
-    const std::vector<std::string_view>& accept_languages,
-    const std::set<LanguagePackKey>& installed_packs,
-    bool is_en_preferred) {
-  std::vector<std::vector<TranslatorLanguageCodePtr>> language_categories(
-      kLanguageCategoriesSize);
-  language_categories[GetLanguageCategoryIndex(/*installed=*/true,
-                                               is_en_preferred,
-                                               /*popular=*/true)]
-      .emplace_back(TranslatorLanguageCode::New("en"));
-
-  for (const auto& it : kLanguagePackComponentConfigMap) {
-    const LanguagePackKey key = it.first;
-    const SupportedLanguage supported_language =
-        NonEnglishSupportedLanguageFromLanguagePackKey(key);
-    const std::string_view language_code = ToLanguageCode(supported_language);
-    const bool installed = installed_packs.contains(key);
-    const bool preferred = IsInAcceptLanguage(accept_languages, language_code);
-    const bool popular = IsPopularLanguage(supported_language);
-    const size_t index =
-        GetLanguageCategoryIndex(installed, preferred, popular);
-    language_categories[index].push_back(
-        TranslatorLanguageCode::New(std::string(language_code)));
-  }
-  return language_categories;
-}
-
-std::vector<LanguageCategory> CreateLanguageCategoryList() {
-  std::vector<LanguageCategory> list;
-  list.reserve(kLanguageCategoriesSize);
-  for (bool installed : {true, false}) {
-    for (bool preferred : {true, false}) {
-      for (bool popular : {true, false}) {
-        CHECK_EQ(GetLanguageCategoryIndex(installed, preferred, popular),
-                 list.size());
-        list.emplace_back(LanguageCategory{
-            .installed = installed,
-            .preferred = preferred,
-            .popular = popular,
-        });
-      }
-    }
-  }
-  return list;
-}
-
-const std::vector<std::string_view> GetAcceptLanguages(
-    content::BrowserContext* browser_context) {
-  CHECK(browser_context);
-
-  PrefService* profile_pref =
-      Profile::FromBrowserContext(browser_context)->GetPrefs();
-  const std::vector<std::string_view> accept_languages = base::SplitStringPiece(
-      profile_pref->GetString(language::prefs::kAcceptLanguages), ",",
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  return accept_languages;
-}
-
-size_t GetLanguageCategoryIndex(bool installed, bool preferred, bool popular) {
-  return (installed ? 0 : 4) + (preferred ? 0 : 2) + (popular ? 0 : 1);
-}
+namespace {
 
 bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
                         const std::string_view lang) {
@@ -166,6 +36,21 @@ bool IsSupportedPopularLanguage(const std::string& lang) {
     return false;
   }
   return IsPopularLanguage(*supported_lang);
+}
+
+}  // namespace
+
+const std::vector<std::string_view> GetAcceptLanguages(
+    content::BrowserContext* browser_context) {
+  CHECK(browser_context);
+
+  PrefService* profile_pref =
+      Profile::FromBrowserContext(browser_context)->GetPrefs();
+  const std::vector<std::string_view> accept_languages = base::SplitStringPiece(
+      profile_pref->GetString(language::prefs::kAcceptLanguages), ",",
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  return accept_languages;
 }
 
 bool IsTranslatorAllowed(content::BrowserContext* browser_context) {
