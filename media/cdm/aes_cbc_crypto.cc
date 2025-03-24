@@ -68,14 +68,11 @@ bool AesCbcCrypto::Initialize(base::span<const uint8_t> key,
   return true;
 }
 
-bool AesCbcCrypto::Initialize(const crypto::SymmetricKey& key,
-                              base::span<const uint8_t> iv) {
-  return Initialize(base::as_byte_span(key.key()), iv);
-}
-
 bool AesCbcCrypto::Decrypt(base::span<const uint8_t> encrypted_data,
-                           uint8_t* decrypted_data) {
+                           base::span<uint8_t> decrypted_data) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  CHECK_GE(decrypted_data.size(), encrypted_data.size());
 
   if (encrypted_data.size_bytes() % EVP_CIPHER_CTX_block_size(ctx_.get()) !=
       0) {
@@ -84,7 +81,7 @@ bool AesCbcCrypto::Decrypt(base::span<const uint8_t> encrypted_data,
   }
 
   int out_length;
-  if (!EVP_DecryptUpdate(ctx_.get(), decrypted_data, &out_length,
+  if (!EVP_DecryptUpdate(ctx_.get(), decrypted_data.data(), &out_length,
                          encrypted_data.data(), encrypted_data.size_bytes())) {
     DVLOG(1) << "EVP_DecryptUpdate() failed.";
     return false;
