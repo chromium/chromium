@@ -1038,7 +1038,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.DeclarativeNetRequest.EvaluateBeforeRequestTime.SingleExtension2"
-    units="microseconds" expires_after="2025-04-13">
+    units="microseconds" expires_after="2026-04-13">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1064,7 +1064,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.DeclarativeNetRequest.EvaluateRequestTime.AllExtensions3"
-    units="microseconds" expires_after="2025-02-02">
+    units="microseconds" expires_after="2026-02-02">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1073,6 +1073,9 @@ This is emitted for two scenarios when a worker may be unregistered:
     the extension rulesets. Emitted for non-sensitive network requests seen by
     the Extension System when there is at least one active extension ruleset.
     This is only emitted for users with high resolution clocks.
+
+    Note: this histogram was expired from 2025-02-02 to 2025-03-25; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -1089,12 +1092,15 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.IsLargeRegexRule"
-    enum="RegexRuleStatus" expires_after="2025-03-17">
+    enum="RegexRuleStatus" expires_after="2026-03-17">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
     Logs whether a regex rule wasn't indexed since it exceeded the per-rule
     memory limit. Emitted for every regex rule an extension adds.
+
+    Note: this histogram was expired from 2025-03-17 to 2025-03-25; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -1123,7 +1129,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ManifestEnabledRulesCount2"
-    units="rules" expires_after="2025-04-28">
+    units="rules" expires_after="2026-04-28">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
