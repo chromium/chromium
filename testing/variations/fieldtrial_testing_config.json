@@ -3065,7 +3065,7 @@
             ],
             "experiments": [
                 {
-                    "name": "IPHWithBackgroundCompressionAndFastEtc1Encoder",
+                    "name": "IPHWithFastEtc1Encoder",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
@@ -3078,7 +3078,6 @@
                     },
                     "enable_features": [
                         "BackForwardTransitions",
-                        "CompressBitmapAtBackgroundPriority",
                         "IPH_RtlGestureNavigation",
                         "MirrorBackForwardGesturesInRTL",
                         "NativePageTransitionHardwareCapture",
