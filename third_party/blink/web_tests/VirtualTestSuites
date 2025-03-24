@@ -1050,8 +1050,12 @@
       "http/tests/inspector-protocol/network/response-received-extra-info-exempted-cookie.js"
     ],
     "args": ["--test-third-party-cookie-phaseout"],
-    "expires": "May 1, 2025",
-    "owners": ["shuuran@chromium.org", "dylancutler@google.com"]
+    "expires": "May 1, 2026",
+    "owners": [
+      "shuuran@chromium.org",
+      "dylancutler@google.com",
+      "amaliev@chromium.com"
+    ]
   },
   {
     "prefix": "sandbox-allow-same-site-none-cookies-3PC-blocked",
