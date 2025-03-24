@@ -143,9 +143,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
   void OnClientDeleted(ClientId client_id);
 
   // Called when a client has changed its visibility.
-  virtual void OnClientVisibilityChanged(
-      const base::UnguessableToken& client_token,
-      bool visible);
+  void OnClientVisibilityChanged(const base::UnguessableToken& client_token,
+                                 bool visible);
 
   // Client functions:
 
