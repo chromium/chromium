@@ -1580,7 +1580,11 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
     // Since the dirty bits from the originating element (root element) are not
     // propagated to these pseudo elements during the default walk, we need to
     // invalidate style for these elements here.
-    if (this_element->IsDocumentElement()) {
+    bool mark_transition_pseudos =
+        RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
+            ? this_element->GetPseudoElement(kPseudoIdViewTransition) != nullptr
+            : this_element->IsDocumentElement();
+    if (mark_transition_pseudos) {
       auto update_style_change = [](PseudoElement* pseudo_element) {
         pseudo_element->SetNeedsStyleRecalc(
             kLocalStyleChange, StyleChangeReasonForTracing::Create(

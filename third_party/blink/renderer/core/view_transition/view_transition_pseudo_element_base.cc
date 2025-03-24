@@ -57,10 +57,8 @@ ViewTransitionPseudoElementBase::CustomStyleForLayoutObject(
     style_request.pseudo_ident_list =
         style_tracker_->GetViewTransitionClassList(view_transition_name());
   }
-  // Use the document element to get the style for the pseudo element, since the
-  // documentElement is the originating element for the view transition pseudo
-  // elements.
-  return GetDocument().documentElement()->StyleForPseudoElement(
+  // Use the originating element to get the style for the pseudo element.
+  return UltimateOriginatingElement().StyleForPseudoElement(
       style_recalc_context, style_request);
 }
 
