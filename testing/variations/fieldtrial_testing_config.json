@@ -11859,6 +11859,21 @@
             ]
         }
     ],
+    "IOSCleanupHangingPasswordFormExtractionRequests": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IosCleanupHangingPasswordFormExtractionRequests"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSCriteriaExperimentEnabled": [
         {
             "platforms": [
