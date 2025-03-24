@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.night_mode.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
 import android.os.Build;
@@ -47,7 +46,6 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         RadioButtonGroupThemePreference radioButtonGroupThemePreference =
                 (RadioButtonGroupThemePreference) findPreference(PREF_UI_THEME_PREF);
-        assumeNonNull(radioButtonGroupThemePreference);
         mWebContentsDarkModeEnabled =
                 WebContentsDarkModeController.isGlobalUserSettingsEnabled(getProfile());
         radioButtonGroupThemePreference.initialize(

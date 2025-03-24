@@ -39,7 +39,7 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
 
     private Website mSite;
     private Boolean mIsAllowed;
-    private @Nullable TextMessagePreference mSubtitle;
+    private TextMessagePreference mSubtitle;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
@@ -59,8 +59,6 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
 
         mIsAllowed = getArguments().getBoolean(StorageAccessSubpageSettings.EXTRA_ALLOWED);
         mSubtitle = (TextMessagePreference) findPreference(SUBTITLE_KEY);
-        assumeNonNull(mSubtitle);
-
         mSubtitle.setTitle(
                 getContext()
                         .getString(
