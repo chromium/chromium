@@ -121,6 +121,12 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     return rare_data_ && rare_data_->is_block_end_trimmable_line();
   }
 
+  // Returns true if this line box is not the last line in its IFC, but only
+  // because it has a line-clamp ellipsis that pushed content to the next line.
+  bool WouldBeLastLineIfNotForEllipsis() const {
+    return rare_data_ && rare_data_->would_be_last_line_if_not_for_ellipsis();
+  }
+
   // Return true if this is an orthogonal writing-mode root that depends on the
   // size of the initial containing block.
   bool HasOrthogonalFallbackInlineSize() const {
@@ -659,6 +665,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         NeedsAnchorPositionScrollAdjustmentInYFlag::DefineNextValue<uint8_t, 3>;
     using IsBlockEndTrimmableLineFlag =
         DataUnionTypeValue::DefineNextValue<bool, 1>;
+    using WouldBeLastLineIfNotForEllipsis =
+        IsBlockEndTrimmableLineFlag::DefineNextValue<bool, 1>;
 
     struct FlexData {
       FlexData() = default;
@@ -762,6 +770,13 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     }
     void set_is_block_end_trimmable_line() {
       bit_field.set<IsBlockEndTrimmableLineFlag>(true);
+    }
+
+    bool would_be_last_line_if_not_for_ellipsis() const {
+      return bit_field.get<WouldBeLastLineIfNotForEllipsis>();
+    }
+    void set_would_be_last_line_if_not_for_ellipsis() {
+      bit_field.set<WouldBeLastLineIfNotForEllipsis>(true);
     }
 
     template <typename DataType>

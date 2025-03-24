@@ -147,6 +147,13 @@ class CORE_EXPORT FragmentBuilder {
     lines_until_clamp_ = value;
   }
 
+  bool WouldBeLastLineIfNotForEllipsis() {
+    return would_be_last_line_if_not_for_ellipsis_;
+  }
+  void SetWouldBeLastLineIfNotForEllipsis() {
+    would_be_last_line_if_not_for_ellipsis_ = true;
+  }
+
   bool IsBlockEndTrimmableLine() const { return is_block_end_trimmable_line_; }
   void SetIsBlockEndTrimmableLine() { is_block_end_trimmable_line_ = true; }
 
@@ -648,6 +655,7 @@ class CORE_EXPORT FragmentBuilder {
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
   bool is_block_end_trimmable_line_ = false;
+  bool would_be_last_line_if_not_for_ellipsis_ = false;
   bool has_final_size_ = false;
 
   bool oof_candidates_may_have_anchor_queries_ = false;
