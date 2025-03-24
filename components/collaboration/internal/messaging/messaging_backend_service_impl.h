@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "components/collaboration/internal/messaging/configuration.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier.h"
+#include "components/collaboration/internal/messaging/instant_message_processor.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/collaboration/public/messaging/message.h"
@@ -47,6 +48,7 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
       std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
       std::unique_ptr<DataSharingChangeNotifier> data_sharing_change_notifier,
       std::unique_ptr<MessagingBackendStore> messaging_backend_store,
+      std::unique_ptr<InstantMessageProcessor> instant_message_processor,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
       data_sharing::DataSharingService* data_sharing_service,
       signin::IdentityManager* identity_manager);
@@ -268,6 +270,10 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   // data sharing service.
   DataSharingChangeNotifier::FlushCallback data_sharing_flush_callback_;
 
+  // Queues and processes instant messages. Invokes the delegate to ask UI to
+  // show the instant message.
+  std::unique_ptr<InstantMessageProcessor> instant_message_processor_;
+
   // Service providing information about tabs and tab groups.
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
 
@@ -276,10 +282,6 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
 
   // Service providing information about sign in.
   raw_ptr<signin::IdentityManager> identity_manager_;
-
-  // The single delegate for when we need to inform the UI about instant
-  // (one-off) messages.
-  raw_ptr<InstantMessageDelegate> instant_message_delegate_;
 
   // The list of observers for any changes to persistent messages.
   base::ObserverList<PersistentMessageObserver> persistent_message_observers_;

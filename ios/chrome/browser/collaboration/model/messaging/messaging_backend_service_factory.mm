@@ -9,6 +9,7 @@
 #import "components/collaboration/internal/messaging/configuration.h"
 #import "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #import "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
+#import "components/collaboration/internal/messaging/instant_message_processor_impl.h"
 #import "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
 #import "components/collaboration/internal/messaging/storage/empty_messaging_backend_database.h"
 #import "components/collaboration/internal/messaging/storage/messaging_backend_database_impl.h"
@@ -85,6 +86,8 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
 
   auto messaging_backend_store = std::make_unique<MessagingBackendStoreImpl>(
       std::move(messaging_backend_database));
+  auto instant_message_processor =
+      std::make_unique<InstantMessageProcessorImpl>();
 
   // iOS does not need any specialized configuration.
   MessagingBackendConfiguration configuration;
@@ -93,7 +96,8 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
       std::make_unique<MessagingBackendServiceImpl>(
           configuration, std::move(tab_group_change_notifier),
           std::move(data_sharing_change_notifier),
-          std::move(messaging_backend_store), tab_group_sync_service,
+          std::move(messaging_backend_store),
+          std::move(instant_message_processor), tab_group_sync_service,
           data_sharing_service, identity_manager);
 
   auto* instant_messaging_service =

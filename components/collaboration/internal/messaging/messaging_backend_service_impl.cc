@@ -353,6 +353,8 @@ DirtyType GetDirtyTypeFromPersistentNotificationTypeForQuery(
     return DirtyType::kChip;
   } else if (*type == PersistentNotificationType::TOMBSTONED) {
     return DirtyType::kTombstoned;
+  } else if (*type == PersistentNotificationType::INSTANT_MESSAGE) {
+    return DirtyType::kMessageOnly;
   } else {
     // Ask for all dirty messages.
     return DirtyType::kAll;
@@ -428,6 +430,7 @@ MessagingBackendServiceImpl::MessagingBackendServiceImpl(
     std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
     std::unique_ptr<DataSharingChangeNotifier> data_sharing_change_notifier,
     std::unique_ptr<MessagingBackendStore> messaging_backend_store,
+    std::unique_ptr<InstantMessageProcessor> instant_message_processor,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     data_sharing::DataSharingService* data_sharing_service,
     signin::IdentityManager* identity_manager)
@@ -435,9 +438,11 @@ MessagingBackendServiceImpl::MessagingBackendServiceImpl(
       tab_group_change_notifier_(std::move(tab_group_change_notifier)),
       data_sharing_change_notifier_(std::move(data_sharing_change_notifier)),
       store_(std::move(messaging_backend_store)),
+      instant_message_processor_(std::move(instant_message_processor)),
       tab_group_sync_service_(tab_group_sync_service),
       data_sharing_service_(data_sharing_service),
       identity_manager_(identity_manager) {
+  instant_message_processor_->SetMessagingBackendService(this);
   store_->Initialize(
       base::BindOnce(&MessagingBackendServiceImpl::OnStoreInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -447,13 +452,8 @@ MessagingBackendServiceImpl::~MessagingBackendServiceImpl() = default;
 
 void MessagingBackendServiceImpl::SetInstantMessageDelegate(
     InstantMessageDelegate* instant_message_delegate) {
-  // We must be either setting a delegate where there was none before or
-  // we should be resetting a non-null delegate.
-  CHECK((instant_message_delegate_ == nullptr &&
-         instant_message_delegate != nullptr) ||
-        (instant_message_delegate_ != nullptr &&
-         instant_message_delegate == nullptr));
-  instant_message_delegate_ = instant_message_delegate;
+  instant_message_processor_->SetInstantMessageDelegate(
+      instant_message_delegate);
 }
 
 void MessagingBackendServiceImpl::AddPersistentMessageObserver(
@@ -730,7 +730,7 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
   NotifyDisplayPersistentMessagesForTypes(
       persistent_message, {PersistentNotificationType::TOMBSTONED});
 
-  if (instant_message_delegate_) {
+  if (instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message =
         CreateInstantMessage(message, removed_group, /*tab=*/std::nullopt);
     instant_message.type = InstantNotificationType::UNDEFINED;
@@ -849,7 +849,7 @@ void MessagingBackendServiceImpl::OnTabRemoved(
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            removed_tab.saved_group_guid());
 
-  if (!is_local && is_selected && instant_message_delegate_) {
+  if (!is_local && is_selected && instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message =
         CreateInstantMessage(message, /*tab_group=*/std::nullopt, removed_tab);
     instant_message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
@@ -912,7 +912,7 @@ void MessagingBackendServiceImpl::OnTabUpdated(
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            updated_tab.saved_group_guid());
 
-  if (!is_local && is_selected && instant_message_delegate_) {
+  if (!is_local && is_selected && instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message_base;
     instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
         message, std::nullopt, updated_tab);
@@ -1080,7 +1080,7 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
   message.set_affected_user_gaia_id(member_gaia_id.ToString());
   store_->AddMessage(message);
 
-  if (instant_message_delegate_) {
+  if (instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message =
         CreateInstantMessage(message, tab_group, /*tab=*/std::nullopt);
     instant_message.localized_message =
@@ -1655,14 +1655,10 @@ void MessagingBackendServiceImpl::DisplayInstantMessage(
     const base::Uuid& db_message_uuid,
     const InstantMessage& base_message,
     const std::vector<InstantNotificationLevel>& levels) {
-  CHECK(instant_message_delegate_);
   for (InstantNotificationLevel level : levels) {
     InstantMessage instant_message = base_message;
     instant_message.level = level;
-    instant_message_delegate_->DisplayInstantaneousMessage(
-        instant_message,
-        base::BindOnce(&MessagingBackendServiceImpl::ClearMessageDirtyBit,
-                       weak_ptr_factory_.GetWeakPtr(), db_message_uuid));
+    instant_message_processor_->DisplayInstantMessage(instant_message);
   }
 }
 

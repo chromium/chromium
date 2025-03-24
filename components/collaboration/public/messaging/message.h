@@ -84,6 +84,8 @@ enum class PersistentNotificationType {
   // A marker that an entity (tab or tab group) has been deleted and the user
   // has not seen it yet.
   TOMBSTONED,
+  // The message was an instant message.
+  INSTANT_MESSAGE,
 };
 
 // Metadata about the tab group a message is attributed to.

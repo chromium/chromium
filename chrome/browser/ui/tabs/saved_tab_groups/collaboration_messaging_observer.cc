@@ -191,6 +191,7 @@ void CollaborationMessagingObserver::DispatchMessage(
       HandleChip(message, display);
       break;
     case PersistentNotificationType::TOMBSTONED:
+    case PersistentNotificationType::INSTANT_MESSAGE:
     case PersistentNotificationType::UNDEFINED:
       // These notifications have no associated UI on Desktop.
       // Ignore gracefully.
