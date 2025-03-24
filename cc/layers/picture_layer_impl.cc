@@ -1791,6 +1791,15 @@ bool PictureLayerImpl::CalculateRasterTranslation(
     return false;
   }
 
+  // Besides the RasterScalesApproximatelyEqual() condition for
+  // ScreenSpaceTransform() and DrawTransform() in PixelAlignmentOffset(),
+  // here we also check if the scale of DrawTransform() approximately equals
+  // raster_contents_scale_.
+  if (!draw_property_utils::RasterScalesApproximatelyEqual(
+          DrawTransform().To2dScale(), raster_contents_scale_)) {
+    return false;
+  }
+
   if (auto offset = draw_property_utils::PixelAlignmentOffset(
           ScreenSpaceTransform(), DrawTransform())) {
     raster_translation = *offset;
