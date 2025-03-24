@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "components/ukm/content/source_url_recorder.h"
+#include "content/browser/btm/btm_browsertest_utils.h"
 #include "content/browser/btm/btm_page_visit_observer_test_utils.h"
 #include "content/browser/btm/btm_test_utils.h"
 #include "content/browser/btm/btm_utils.h"
@@ -590,20 +591,40 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
                        IframeNavigationCookie) {
   const GURL url1 = embedded_https_test_server().GetURL(
       "a.test", "/page_with_blank_iframe.html");
-  const GURL url2 =
-      embedded_https_test_server().GetURL("b.test", "/empty.html");
-  const GURL url3 =
-      embedded_https_test_server().GetURL("c.test", "/empty.html");
+  const GURL url2 = embedded_https_test_server().GetURL(
+      "b.test", "/page_with_blank_iframe.html");
+  const GURL url3 = embedded_https_test_server().GetURL(
+      "c.test", "/page_with_blank_iframe.html");
+  const GURL url4 =
+      embedded_https_test_server().GetURL("d.test", "/empty.html");
   WebContents* web_contents = shell()->web_contents();
   BtmPageVisitRecorder recorder(web_contents);
 
+  // End index-0 page visit; start index-1 page visit.
   ASSERT_TRUE(NavigateToURL(web_contents, url1));
-  ASSERT_TRUE(NavigateIframeToURL(
-      web_contents, "test_iframe",
-      embedded_https_test_server().GetURL("a.test", "/set-cookie?foo=bar")));
+  const GURL iframe_1p_cookie_url = embedded_https_test_server().GetURL(
+      url1.host_piece(), "/set-cookie?foo=bar");
+  ASSERT_TRUE(
+      NavigateIframeToURL(web_contents, "test_iframe", iframe_1p_cookie_url));
+  // End index-1 page visit; start index-2 page visit.
   ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  const GURL iframe_3p_unpartitioned_cookie_url =
+      embedded_https_test_server().GetURL(
+          "a.test", "/set-cookie?bar=baz;SameSite=None;Secure;");
+  ASSERT_TRUE(NavigateIframeToURL(web_contents, "test_iframe",
+                                  iframe_3p_unpartitioned_cookie_url));
+  // End index-2 page visit; start index-3 page visit.
   ASSERT_TRUE(NavigateToURL(web_contents, url3));
-  ASSERT_TRUE(recorder.WaitForSize(3));
+  const GURL iframe_3p_partitioned_cookie_url =
+      embedded_https_test_server().GetURL(
+          "a.test",
+          "/set-cookie?__Host-baz=quux;SameSite=None;Secure;Path=/"
+          ";Partitioned;");
+  ASSERT_TRUE(NavigateIframeToURL(web_contents, "test_iframe",
+                                  iframe_3p_partitioned_cookie_url));
+  // End index-3 page visit.
+  ASSERT_TRUE(NavigateToURL(web_contents, url4));
+  ASSERT_TRUE(recorder.WaitForSize(4));
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
@@ -613,43 +634,88 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
   const BtmPageVisitObserver::VisitTuple& second_visit = recorder.visits()[1];
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
+  // 1P cookie accesses in iframes should be reported.
   EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
   EXPECT_EQ(second_visit.url, url2);
 
   const BtmPageVisitObserver::VisitTuple& third_visit = recorder.visits()[2];
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
+  // Non-CHIPS 3P cookie accesses in iframes should be ignored.
   EXPECT_FALSE(third_visit.prev_page.had_qualifying_storage_access);
   EXPECT_EQ(third_visit.url, url3);
 
-  EXPECT_EQ(recorder.visits().size(), 3u);
+  const BtmPageVisitObserver::VisitTuple& fourth_visit = recorder.visits()[3];
+  EXPECT_THAT(fourth_visit.prev_page,
+              HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
+  // CHIPS 3P cookie accesses in iframes should be reported.
+  EXPECT_TRUE(fourth_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_EQ(fourth_visit.url, url4);
+
+  EXPECT_EQ(recorder.visits().size(), 4u);
 }
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, IframeDocumentCookie) {
   const GURL url1 =
       embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
-  const GURL url2 =
-      embedded_https_test_server().GetURL("b.test", "/empty.html");
-  const GURL url3 =
-      embedded_https_test_server().GetURL("c.test", "/empty.html");
+  const GURL url2 = embedded_https_test_server().GetURL(
+      "b.test", "/page_with_blank_iframe.html");
+  const GURL url3 = embedded_https_test_server().GetURL(
+      "c.test", "/page_with_blank_iframe.html");
+  const GURL url4 =
+      embedded_https_test_server().GetURL("d.test", "/empty.html");
   WebContents* web_contents = shell()->web_contents();
   BtmPageVisitRecorder recorder(web_contents);
+  // If the bfcache is disabled, we often don't receive cookie access
+  // notifications unless we wait for them before navigating away. If the
+  // bfcache *is* enabled, we *don't* want to wait — part of the point of this
+  // test is to make sure we properly handle late notifications.
+  bool should_await_cookie_access_notifications =
+      !base::FeatureList::IsEnabled(features::kBackForwardCache);
 
+  // End index-0 page visit; start index-1 page visit.
   ASSERT_TRUE(NavigateToURL(web_contents, url1));
-  RenderFrameHost* iframe = ChildFrameAt(web_contents, 0);
-  FrameCookieAccessObserver cookie_observer(web_contents, iframe,
-                                            CookieOperation::kChange);
-  ASSERT_TRUE(ExecJs(iframe, "document.cookie = 'foo=bar';"));
-  if (!base::FeatureList::IsEnabled(features::kBackForwardCache)) {
-    // If the bfcache is disabled, we often don't receive the cookie
-    // notification unless we wait for it before navigating away. (If the
-    // bfcache *is* enabled, we *don't* want to wait -- that's part of the point
-    // of this test.)
-    cookie_observer.Wait();
+  RenderFrameHost* iframe1 = ChildFrameAt(web_contents, 0);
+  FrameCookieAccessObserver cookie_observer1(web_contents, iframe1,
+                                             CookieOperation::kChange);
+  ASSERT_TRUE(ExecJs(iframe1, "document.cookie = '1PC=1';"));
+  if (should_await_cookie_access_notifications) {
+    cookie_observer1.Wait();
   }
+  // End index-1 page visit; start index-2 page visit.
   ASSERT_TRUE(NavigateToURL(web_contents, url2));
+  RenderFrameHost* iframe2 = ChildFrameAt(web_contents, 0);
+  ASSERT_TRUE(NavigateIframeToURL(
+      web_contents, "test_iframe",
+      embedded_https_test_server().GetURL("d.test", "/title1.html")));
+  iframe2 = ChildFrameAt(web_contents, 0);
+  FrameCookieAccessObserver cookie_observer2(web_contents, iframe2,
+                                             CookieOperation::kChange);
+  ASSERT_TRUE(
+      ExecJs(iframe2,
+             "document.cookie = "
+             "'__Host-CHIPS_3PC=1;SameSite=None;Secure;Path=/;Partitioned;';"));
+  if (should_await_cookie_access_notifications) {
+    cookie_observer2.Wait();
+  }
+  // End index-2 page visit; start index-3 page visit.
   ASSERT_TRUE(NavigateToURL(web_contents, url3));
-  ASSERT_TRUE(recorder.WaitForSize(3));
+  RenderFrameHost* iframe3 = ChildFrameAt(web_contents, 0);
+  ASSERT_TRUE(NavigateIframeToURL(
+      web_contents, "test_iframe",
+      embedded_https_test_server().GetURL("d.test", "/title1.html")));
+  iframe3 = ChildFrameAt(web_contents, 0);
+  FrameCookieAccessObserver cookie_observer3(web_contents, iframe3,
+                                             CookieOperation::kChange);
+  ASSERT_TRUE(ExecJs(
+      iframe3,
+      "document.cookie = 'unpartitioned_3PC=1;SameSite=None;Secure;Path=/;';"));
+  if (should_await_cookie_access_notifications) {
+    cookie_observer3.Wait();
+  }
+  // End index-3 page visit.
+  ASSERT_TRUE(NavigateToURL(web_contents, url4));
+  ASSERT_TRUE(recorder.WaitForSize(4));
 
   const BtmPageVisitObserver::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
@@ -659,16 +725,25 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, IframeDocumentCookie) {
   const BtmPageVisitObserver::VisitTuple& second_visit = recorder.visits()[1];
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
+  // Iframe 1P cookie accesses should be reported.
   EXPECT_TRUE(second_visit.prev_page.had_qualifying_storage_access);
   EXPECT_EQ(second_visit.url, url2);
 
   const BtmPageVisitObserver::VisitTuple& third_visit = recorder.visits()[2];
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
-  EXPECT_FALSE(third_visit.prev_page.had_qualifying_storage_access);
+  // CHIPS 3PC accesses should be reported.
+  EXPECT_TRUE(third_visit.prev_page.had_qualifying_storage_access);
   EXPECT_EQ(third_visit.url, url3);
 
-  EXPECT_EQ(recorder.visits().size(), 3u);
+  const BtmPageVisitObserver::VisitTuple& fourth_visit = recorder.visits()[3];
+  EXPECT_THAT(fourth_visit.prev_page,
+              HasUrlAndMatchingSourceId(url3, &ukm_recorder()));
+  // Non-CHIPS 3PC accesses should be ignored.
+  EXPECT_FALSE(fourth_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_EQ(fourth_visit.url, url4);
+
+  EXPECT_EQ(recorder.visits().size(), 4u);
 }
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
