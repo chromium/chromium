@@ -140,7 +140,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       const KURL& base_url,
                                       ExecutionContext* context,
                                       bool is_browser_injected,
-                                      AtomicString tag,
+                                      std::optional<AtomicString> ruleset_tag,
                                       String* out_error,
                                       Vector<String>& out_warnings) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
@@ -451,7 +451,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   return MakeGarbageCollected<SpeculationRule>(
       std::move(urls), document_rule_predicate, requires_anonymous_client_ip,
       target_hint, referrer_policy, eagerness, std::move(no_vary_search),
-      injection_type, std::move(tag));
+      injection_type, std::move(ruleset_tag));
 }
 
 }  // namespace
@@ -630,7 +630,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
     result->AddWarnings(base::span_from_ref(duplicate_key_warning));
   }
 
-  AtomicString tag;
+  std::optional<AtomicString> ruleset_tag;
   if (RuntimeEnabledFeatures::SpeculationRulesTagEnabled(context)) {
     JSONValue* tag_value = parsed->Get("tag");
     if (tag_value) {
@@ -642,7 +642,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
         result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
                          "Tag value is invalid: must be ASCII printable.");
       } else {
-        tag = AtomicString(tag_str);
+        ruleset_tag = AtomicString(tag_str);
       }
     }
   }
@@ -686,7 +686,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           String error_message;
           SpeculationRule* rule = ParseSpeculationRule(
               input_rule, base_url, context, source->IsFromBrowserInjected(),
-              tag, &error_message, warning_messages);
+              ruleset_tag, &error_message, warning_messages);
 
           // If parse failed for a rule, then ignore it and continue.
           if (!rule) {

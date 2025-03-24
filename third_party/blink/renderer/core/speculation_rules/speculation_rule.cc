@@ -19,7 +19,7 @@ SpeculationRule::SpeculationRule(
     mojom::blink::SpeculationEagerness eagerness,
     network::mojom::blink::NoVarySearchPtr no_vary_search_hint,
     mojom::blink::SpeculationInjectionType injection_type,
-    std::optional<AtomicString> tag)
+    std::optional<AtomicString> ruleset_tag)
     : urls_(std::move(urls)),
       predicate_(predicate),
       requires_anonymous_client_ip_(requires_anonymous_client_ip),
@@ -28,7 +28,7 @@ SpeculationRule::SpeculationRule(
       eagerness_(eagerness),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
       injection_type_(injection_type),
-      tag_(std::move(tag)) {}
+      ruleset_tag_(std::move(ruleset_tag)) {}
 
 SpeculationRule::~SpeculationRule() = default;
 
