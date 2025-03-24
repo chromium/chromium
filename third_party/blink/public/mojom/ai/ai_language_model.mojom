@@ -42,10 +42,8 @@ struct AILanguageModelInstanceInfo {
   // The number of tokens that are already in the context.
   uint64 current_tokens;
 
-  // The following values are the same as the one provided by the caller when
-  // creating the AILanguageModel.
+  // The sampling params provided by the caller when creating the instance.
   AILanguageModelSamplingParams sampling_params;
-  array<AILanguageCode>? expected_input_languages;
 };
 
 // The role for a given prompt. See AILanguageModelPromptRole in IDL.
@@ -53,6 +51,20 @@ enum AILanguageModelPromptRole {
   kSystem = 0,
   kUser = 1,
   kAssistant = 2,
+};
+
+// The type of data for a given prompt. See LanguageModelPromptType in IDL.
+enum AILanguageModelPromptType {
+  kText = 0,
+  kImage = 1,
+  kAudio = 2,
+};
+
+// The expected data type and languages specified with session creation.
+// See AILanguageModelExpectedInput in IDL.
+struct AILanguageModelExpectedInput {
+  AILanguageModelPromptType type;
+  array<AILanguageCode>? languages;
 };
 
 // The supported prompt input content types. These each contain arbitrary data
@@ -80,7 +92,7 @@ struct AILanguageModelCreateOptions {
   // This can be any arbitrary string taken from the JavaScript API.
   string? system_prompt;
   array<AILanguageModelPrompt> initial_prompts;
-  array<AILanguageCode>? expected_input_languages;
+  array<AILanguageModelExpectedInput>? expected_inputs;
 };
 
 // The client interface that receives an AILanguageModel or errors from an

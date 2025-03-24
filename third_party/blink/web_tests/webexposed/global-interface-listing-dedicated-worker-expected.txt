@@ -30,7 +30,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AILanguageModel : EventTarget
 [Worker]     attribute @@toStringTag
-[Worker]     getter expectedInputLanguages
 [Worker]     getter maxTokens
 [Worker]     getter oncontextoverflow
 [Worker]     getter temperature

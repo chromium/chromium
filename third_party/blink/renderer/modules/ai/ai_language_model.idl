@@ -58,8 +58,6 @@ interface AILanguageModel : EventTarget {
   readonly attribute unsigned long topK;
   [Measure]
   readonly attribute float temperature;
-  [Measure]
-  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
 
   attribute EventHandler oncontextoverflow;
 
