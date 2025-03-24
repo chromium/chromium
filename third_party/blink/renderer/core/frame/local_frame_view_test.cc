@@ -55,7 +55,8 @@ class AnimationMockChromeClient : public RenderingTestChromeClient {
   }
 
   void ScheduleAnimation(const LocalFrameView*,
-                         base::TimeDelta = base::TimeDelta()) override {
+                         base::TimeDelta = base::TimeDelta(),
+                         bool urgent = false) override {
     has_scheduled_animation_ = true;
   }
   bool has_scheduled_animation_;

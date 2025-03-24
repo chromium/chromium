@@ -29,7 +29,7 @@ class ShareKitServiceFactoryTest : public PlatformTest {
  protected:
   ShareKitServiceFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
-        {kTabGroupsIPad, kModernTabStrip, kTabGroupSync,
+        {kTabGroupsIPad, kTabGroupSync,
          data_sharing::features::kDataSharingFeature,
          data_sharing::features::kDataSharingJoinOnly},
         {});

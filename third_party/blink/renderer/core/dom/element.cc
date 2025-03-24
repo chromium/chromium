@@ -4319,6 +4319,10 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       UpdateFirstLetterPseudoElement(StyleUpdatePhase::kRecalc,
                                      child_recalc_context);
     }
+    // RecalcTransitionPseudoTreeStyle generally manages the transition pseudo
+    // tree, but it won't be called after the transition is finished, so we need
+    // to clean up here.
+    ClearTransitionPseudoTreeIfNeeded(child_change);
   }
 
   ClearChildNeedsStyleRecalc();
@@ -10963,6 +10967,16 @@ void Element::RecalcTransitionPseudoTreeStyle(
   // (typically) no children / dirty child style. However, here we do need to
   // clear the child dirty bit.
   transition_pseudo->ClearChildNeedsStyleRecalc();
+}
+
+void Element::ClearTransitionPseudoTreeIfNeeded(
+    const StyleRecalcChange change) {
+  PseudoElement* element =
+      GetPseudoElement(kPseudoIdViewTransition, g_null_atom);
+  if (element && change.ShouldUpdatePseudoElement(*element) &&
+      !ViewTransitionUtils::GetTransition(*this)) {
+    ClearPseudoElement(kPseudoIdViewTransition, g_null_atom);
+  }
 }
 
 void Element::RebuildTransitionPseudoLayoutTree(

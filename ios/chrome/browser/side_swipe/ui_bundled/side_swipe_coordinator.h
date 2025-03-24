@@ -12,7 +12,6 @@
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol SideSwipeUIControllerDelegate;
-@protocol TabStripHighlighting;
 
 // The side swipe coordinator.
 @interface SideSwipeCoordinator : ChromeCoordinator
@@ -34,9 +33,6 @@
 
 // The card swipe delegate.
 @property(nonatomic, weak) id<CardSwipeViewDelegate> cardSwipeViewDelegate;
-
-// Delegate for tab strip highlighting.
-@property(nonatomic, weak) id<TabStripHighlighting> tabStripDelegate;
 
 // Set up swipe gesture recognizers to the given view.
 - (void)addHorizontalGesturesToView:(UIView*)view;

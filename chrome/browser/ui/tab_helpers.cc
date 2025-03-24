@@ -220,6 +220,7 @@
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_helper.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
 #include "chrome/browser/ui/shared_highlighting/shared_highlighting_promo.h"
 #endif
 
@@ -697,17 +698,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           features::kHappinessTrackingSurveysForDesktopDemo) ||
       base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey) ||
       base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2) ||
-      base::FeatureList::IsEnabled(performance_manager::features::
-                                       kPerformanceControlsPerformanceSurvey) ||
-      base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kPerformanceControlsBatteryPerformanceSurvey) ||
-      base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kPerformanceControlsMemorySaverOptOutSurvey) ||
-      base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kPerformanceControlsBatterySaverOptOutSurvey) ||
+      PerformanceControlsHatsServiceFactory::IsAnySurveyFeatureEnabled() ||
       base::FeatureList::IsEnabled(
           page_info::kMerchantTrustEvaluationControlSurvey) ||
       base::FeatureList::IsEnabled(

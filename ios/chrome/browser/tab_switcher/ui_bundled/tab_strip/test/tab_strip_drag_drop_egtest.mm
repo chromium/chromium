@@ -5,7 +5,6 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -91,12 +90,6 @@ void AssertRegularCellMovedToNewPosition(unsigned int tab_index,
 @end
 
 @implementation TabStripDragDropTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kModernTabStrip);
-  return config;
-}
 
 // Checks that dragging a regular cell to a new position correctly moves the
 // cell.

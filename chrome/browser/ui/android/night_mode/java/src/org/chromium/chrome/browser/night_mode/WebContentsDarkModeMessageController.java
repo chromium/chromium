@@ -11,11 +11,11 @@ import android.os.Bundle;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,6 +46,7 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
  * A controller class for the messages that will educate the user about the auto-dark web contents
  * feature.
  */
+@NullMarked
 public class WebContentsDarkModeMessageController {
     @VisibleForTesting static final String FEEDBACK_DIALOG_PARAM = "feedback_dialog";
     @VisibleForTesting static final String OPT_OUT_PARAM = "opt_out";
@@ -162,7 +163,7 @@ public class WebContentsDarkModeMessageController {
     private static void sendOptInMessage(
             Activity activity,
             Profile profile,
-            WebContents webContents,
+            @Nullable WebContents webContents,
             MessageDispatcher messageDispatcher) {
         Resources resources = activity.getResources();
         PropertyModel message =
@@ -218,7 +219,7 @@ public class WebContentsDarkModeMessageController {
      * The primary action associated with the created message for the opt-in arm. In this case, the
      * global setting is enabled.
      */
-    private static void onOptInPrimaryAction(Profile profile, WebContents webContents) {
+    private static void onOptInPrimaryAction(Profile profile, @Nullable WebContents webContents) {
         WebContentsDarkModeController.setGlobalUserSettings(profile, true);
         if (webContents != null) {
             webContents.notifyRendererPreferenceUpdate();
@@ -375,7 +376,7 @@ public class WebContentsDarkModeMessageController {
         }
 
         @Override
-        public void onClick(@NonNull View view) {
+        public void onClick(View view) {
             openSettings(mContext);
         }
     }

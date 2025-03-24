@@ -71,17 +71,17 @@ public class SiteSettings extends BaseSiteSettingsFragment
         return false;
     }
 
-    private @Nullable Preference findPreference(@Type int type) {
+    private Preference findPreference(@Type int type) {
         return findPreference(SiteSettingsCategory.preferenceKey(type));
     }
 
     private void configurePreferences() {
         if (getSiteSettingsDelegate().shouldShowTrackingProtectionUi()) {
             Preference thirdPartyCookiesPref =
-                    assumeNonNull(findPreference(Type.THIRD_PARTY_COOKIES));
+                    findPreference(Type.THIRD_PARTY_COOKIES);
             thirdPartyCookiesPref.setVisible(false);
             Preference trackingProtectionPref =
-                    assumeNonNull(findPreference(Type.TRACKING_PROTECTION));
+                    findPreference(Type.TRACKING_PROTECTION);
             trackingProtectionPref.setVisible(true);
         }
 
@@ -90,7 +90,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
                 type < SiteSettingsCategory.Type.NUM_ENTRIES;
                 type++) {
             if (!getSiteSettingsDelegate().isCategoryVisible(type)) {
-                Preference pref = assumeNonNull(findPreference(type));
+                Preference pref = findPreference(type);
                 getPreferenceScreen().removePreference(pref);
             }
         }
@@ -98,9 +98,9 @@ public class SiteSettings extends BaseSiteSettingsFragment
         // Remove the permission autorevocation preference if Safety Hub is not enabled.
         if (!getSiteSettingsDelegate().isSafetyHubEnabled()) {
             Preference autorevocationPref =
-                    assumeNonNull(findPreference(PERMISSION_AUTOREVOCATION_PREF));
+                    findPreference(PERMISSION_AUTOREVOCATION_PREF);
             getPreferenceScreen().removePreference(autorevocationPref);
-            Preference dividerPref = assumeNonNull(findPreference(DIVIDER_PREF));
+            Preference dividerPref = findPreference(DIVIDER_PREF);
             getPreferenceScreen().removePreference(dividerPref);
         }
     }

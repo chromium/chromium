@@ -400,7 +400,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         } else {
             resourceId = R.string.website_settings_blocked_group_heading;
         }
-        assumeNonNull(blockedGroup);
         blockedGroup.setTitle(getHeaderTitle(resourceId, numBlocked));
         blockedGroup.setExpanded(mBlockListExpanded);
     }
@@ -416,7 +415,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         // Set the title and arrow icons for the header.
         int resourceId = R.string.website_settings_managed_group_heading;
-        assumeNonNull(managedGroup);
         managedGroup.setTitle(getHeaderTitle(resourceId, numManaged));
         managedGroup.setExpanded(mManagedListExpanded);
     }
@@ -1024,11 +1022,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         } else {
             // Group sites into Allowed/Blocked lists.
             PreferenceGroup allowedGroup = getPreferenceScreen().findPreference(ALLOWED_GROUP);
-            assumeNonNull(allowedGroup);
             PreferenceGroup blockedGroup = getPreferenceScreen().findPreference(BLOCKED_GROUP);
-            assumeNonNull(blockedGroup);
             PreferenceGroup managedGroup = getPreferenceScreen().findPreference(MANAGED_GROUP);
-            assumeNonNull(managedGroup);
 
             Set<String> delegatedOrigins =
                     mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS
@@ -1157,12 +1152,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
                 TriStateSiteSettingsPreference triStateToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_TOGGLE_KEY);
-                assumeNonNull(triStateToggle);
                 return (triStateToggle.getCheckedSetting() == ContentSettingValues.BLOCK);
             case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
                 TriStateCookieSettingsPreference triStateCookieToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_COOKIE_TOGGLE);
-                assumeNonNull(triStateCookieToggle);
                 Integer state = assumeNonNull(triStateCookieToggle.getState());
                 return state != CookieControlsMode.OFF;
             case GlobalToggleLayout.BINARY_TOGGLE:
@@ -1243,27 +1236,27 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         // Find all preferences on the current preference screen. Some preferences are
         // not needed for the current category and will be removed in the steps below.
         ChromeSwitchPreference binaryToggle =
-                assumeNonNull(screen.findPreference(BINARY_TOGGLE_KEY));
+                screen.findPreference(BINARY_TOGGLE_KEY);
         BinaryStatePermissionPreference binaryRadioButton =
-                assumeNonNull(screen.findPreference(BINARY_RADIO_BUTTON_KEY));
+                screen.findPreference(BINARY_RADIO_BUTTON_KEY);
         TriStateSiteSettingsPreference triStateToggle =
-                assumeNonNull(screen.findPreference(TRI_STATE_TOGGLE_KEY));
+                screen.findPreference(TRI_STATE_TOGGLE_KEY);
         TriStateCookieSettingsPreference triStateCookieToggle =
-                assumeNonNull(screen.findPreference(TRI_STATE_COOKIE_TOGGLE));
+                screen.findPreference(TRI_STATE_COOKIE_TOGGLE);
         Preference notificationsVibrate =
-                assumeNonNull(screen.findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY));
+                screen.findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
         mNotificationsQuietUiPref =
-                assumeNonNull(screen.findPreference(NOTIFICATIONS_QUIET_UI_TOGGLE_KEY));
+                screen.findPreference(NOTIFICATIONS_QUIET_UI_TOGGLE_KEY);
         mNotificationsTriStatePref =
-                assumeNonNull(screen.findPreference(NOTIFICATIONS_TRI_STATE_PREF_KEY));
-        mLocationTriStatePref = assumeNonNull(screen.findPreference(LOCATION_TRI_STATE_PREF_KEY));
+                screen.findPreference(NOTIFICATIONS_TRI_STATE_PREF_KEY);
+        mLocationTriStatePref = screen.findPreference(LOCATION_TRI_STATE_PREF_KEY);
         mDesktopSiteWindowPref =
-                assumeNonNull(screen.findPreference(DESKTOP_SITE_WINDOW_TOGGLE_KEY));
+                screen.findPreference(DESKTOP_SITE_WINDOW_TOGGLE_KEY);
         LearnMorePreference explainProtectedMediaKey =
-                assumeNonNull(screen.findPreference(EXPLAIN_PROTECTED_MEDIA_KEY));
-        PreferenceGroup allowedGroup = assumeNonNull(screen.findPreference(ALLOWED_GROUP));
-        PreferenceGroup blockedGroup = assumeNonNull(screen.findPreference(BLOCKED_GROUP));
-        PreferenceGroup managedGroup = assumeNonNull(screen.findPreference(MANAGED_GROUP));
+                screen.findPreference(EXPLAIN_PROTECTED_MEDIA_KEY);
+        PreferenceGroup allowedGroup = screen.findPreference(ALLOWED_GROUP);
+        PreferenceGroup blockedGroup = screen.findPreference(BLOCKED_GROUP);
+        PreferenceGroup managedGroup = screen.findPreference(MANAGED_GROUP);
         boolean permissionBlockedByOs = mCategory.showPermissionBlockedMessage(getContext());
 
         if (mGlobalToggleLayout != GlobalToggleLayout.BINARY_TOGGLE) {
@@ -1293,7 +1286,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 break;
         }
 
-        Preference infoText = assumeNonNull(screen.findPreference(INFO_TEXT_KEY));
+        Preference infoText = screen.findPreference(INFO_TEXT_KEY);
         @StringRes int res_id = getTextInfoResourceId();
         if (mCategory.getType() == SiteSettingsCategory.Type.STORAGE_ACCESS) {
             infoText.setSummary(getStorageAccessSummary());
@@ -1309,22 +1302,16 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         // Hide the anti-abuse text preferences, as needed.
         if (mCategory.getType() != SiteSettingsCategory.Type.ANTI_ABUSE) {
             Preference antiAbuseWhenOnHeader = screen.findPreference(ANTI_ABUSE_WHEN_ON_HEADER);
-            assumeNonNull(antiAbuseWhenOnHeader);
             Preference antiAbuseWhenOnSectionOne =
                     screen.findPreference(ANTI_ABUSE_WHEN_ON_SECTION_ONE);
-            assumeNonNull(antiAbuseWhenOnSectionOne);
             Preference antiAbuseWhenOnSectionTwo =
                     screen.findPreference(ANTI_ABUSE_WHEN_ON_SECTION_TWO);
-            assumeNonNull(antiAbuseWhenOnSectionTwo);
             Preference antiAbuseWhenOnSectionThree =
                     screen.findPreference(ANTI_ABUSE_WHEN_ON_SECTION_THREE);
-            assumeNonNull(antiAbuseWhenOnSectionThree);
             Preference antiAbuseThingsToConsiderHeader =
                     screen.findPreference(ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER);
-            assumeNonNull(antiAbuseThingsToConsiderHeader);
             Preference antiAbuseThingsToConsiderSectionOne =
                     screen.findPreference(ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE);
-            assumeNonNull(antiAbuseThingsToConsiderSectionOne);
 
             screen.removePreference(antiAbuseWhenOnHeader);
             screen.removePreference(antiAbuseWhenOnSectionOne);

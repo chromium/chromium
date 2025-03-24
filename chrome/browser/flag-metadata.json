@@ -4718,7 +4718,7 @@
   {
     "name": "files-local-image-search",
     "owners": [ "majewski@chromium.org", "//ui/file_manager/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "files-materialized-views",
@@ -6024,13 +6024,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "media-app-image-mantis-model",
-    "owners": [
-      "cros-mantis@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "media-app-pdf-a11y-ocr",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 130
@@ -6136,11 +6129,6 @@
     "name": "mixed-content-autoupgrade-ios",
     "owners": [ "meacer@chromium.org", "trusty-transport@chromium.org" ],
     "expiry_milestone": 114
-  },
-  {
-    "name": "modern-tab-strip",
-    "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 137
   },
   {
     "name": "mojo-linux-sharedmem",

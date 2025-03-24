@@ -607,26 +607,26 @@ class FormDataImporterTest : public testing::Test {
   void ExtractAddressProfiles(bool extraction_successful,
                               const FormStructure& form,
                               bool allow_save_prompts = true) {
-    std::vector<FormDataImporterTestApi::AddressProfileImportCandidate>
-        address_profile_import_candidates;
+    std::vector<FormDataImporterTestApi::ExtractedAddressProfile>
+        extracted_address_profiles;
 
-    EXPECT_EQ(extraction_successful,
-              test_api(form_data_importer())
-                      .ExtractAddressProfiles(
-                          form, &address_profile_import_candidates) > 0);
+    EXPECT_EQ(
+        extraction_successful,
+        test_api(form_data_importer())
+                .ExtractAddressProfiles(form, &extracted_address_profiles) > 0);
 
     if (!extraction_successful) {
       EXPECT_FALSE(test_api(form_data_importer())
-                       .ProcessAddressProfileImportCandidates(
-                           address_profile_import_candidates,
-                           allow_save_prompts, ukm_source_id()));
+                       .ProcessExtractedAddressProfiles(
+                           extracted_address_profiles, allow_save_prompts,
+                           ukm_source_id()));
       return;
     }
 
     EXPECT_EQ(test_api(form_data_importer())
-                  .ProcessAddressProfileImportCandidates(
-                      address_profile_import_candidates, allow_save_prompts,
-                      ukm_source_id()),
+                  .ProcessExtractedAddressProfiles(extracted_address_profiles,
+                                                   allow_save_prompts,
+                                                   ukm_source_id()),
               allow_save_prompts);
   }
 
@@ -666,8 +666,8 @@ class FormDataImporterTest : public testing::Test {
             .ExtractFormData(form, profile_autofill_enabled,
                              payment_methods_autofill_enabled);
     test_api(form_data_importer())
-        .ProcessAddressProfileImportCandidates(
-            extracted_data.address_profile_import_candidates,
+        .ProcessExtractedAddressProfiles(
+            extracted_data.extracted_address_profiles,
             /*allow_prompt=*/true, ukm_source_id());
     return extracted_data;
   }
@@ -2545,7 +2545,7 @@ TEST_F(FormDataImporterTest,
       /*payment_methods_autofill_enabled=*/false);
   // |credit_card_import_type_| should be NO_CARD because no
   // valid card was imported from the form.
-  EXPECT_NE(0u, extracted_data3.address_profile_import_candidates.size());
+  EXPECT_NE(0u, extracted_data3.extracted_address_profiles.size());
   ASSERT_TRUE(test_api(form_data_importer()).credit_card_import_type() ==
               FormDataImporter::CreditCardImportType::kNoCard);
 }

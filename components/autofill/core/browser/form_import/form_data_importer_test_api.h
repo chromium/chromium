@@ -18,8 +18,7 @@ namespace autofill {
 
 class FormDataImporterTestApi {
  public:
-  using AddressProfileImportCandidate =
-      FormDataImporter::AddressProfileImportCandidate;
+  using ExtractedAddressProfile = FormDataImporter::ExtractedAddressProfile;
   using ExtractedFormData = FormDataImporter::ExtractedFormData;
 
   explicit FormDataImporterTestApi(FormDataImporter* fdi) : fdi_(*fdi) {}
@@ -65,11 +64,10 @@ class FormDataImporterTestApi {
     return fdi_->ExtractCreditCard(form);
   }
 
-  size_t ExtractAddressProfiles(const FormStructure& form,
-                                std::vector<AddressProfileImportCandidate>*
-                                    address_profile_import_candidates) {
-    return fdi_->ExtractAddressProfiles(form,
-                                        address_profile_import_candidates);
+  size_t ExtractAddressProfiles(
+      const FormStructure& form,
+      std::vector<ExtractedAddressProfile>* extracted_address_profiles) {
+    return fdi_->ExtractAddressProfiles(form, extracted_address_profiles);
   }
 
   base::flat_map<FieldType, std::u16string> GetObservedFieldValues(
@@ -95,13 +93,12 @@ class FormDataImporterTestApi {
     return has_invalid_field_types;
   }
 
-  bool ProcessAddressProfileImportCandidates(
-      const std::vector<AddressProfileImportCandidate>&
-          address_profile_import_candidates,
+  bool ProcessExtractedAddressProfiles(
+      const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
       bool allow_prompt,
       ukm::SourceId ukm_source_id) {
-    return fdi_->ProcessAddressProfileImportCandidates(
-        address_profile_import_candidates, allow_prompt, ukm_source_id);
+    return fdi_->ProcessExtractedAddressProfiles(extracted_address_profiles,
+                                                 allow_prompt, ukm_source_id);
   }
 
   ExtractedFormData ExtractFormData(const FormStructure& form,

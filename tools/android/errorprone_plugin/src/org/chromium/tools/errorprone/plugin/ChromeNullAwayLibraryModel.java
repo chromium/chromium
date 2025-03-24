@@ -69,9 +69,24 @@ public class ChromeNullAwayLibraryModel implements LibraryModels {
     @Override
     public ImmutableSet<MethodRef> nonNullReturns() {
         return ImmutableSet.of(
+                // While findViewById() can return null, call sites are generally pretty confident
+                // that they don't since we use generated constants that map to XML layouts.
                 methodRef("androidx.appcompat.app.AppCompatDelegate", "findViewById(int)"),
                 methodRef("androidx.appcompat.app.AppCompatDialog", "findViewById(int)"),
-                methodRef("androidx.preference.PreferenceViewHolder", "findViewById(int)"));
+                methodRef("androidx.preference.PreferenceViewHolder", "findViewById(int)"),
+                // For correct inputs, findPreference() basically always returns non-null.
+                methodRef(
+                        "androidx.preference.PreferenceGroup",
+                        "<T>findPreference(java.lang.CharSequence)"),
+                methodRef(
+                        "androidx.preference.PreferenceManager",
+                        "<T>findPreference(java.lang.CharSequence)"),
+                methodRef(
+                        "androidx.preference.PreferenceFragment",
+                        "<T>findPreference(java.lang.CharSequence)"),
+                methodRef(
+                        "androidx.preference.PreferenceFragmentCompat",
+                        "<T>findPreference(java.lang.CharSequence)"));
     }
 
     @Override

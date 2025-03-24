@@ -522,9 +522,6 @@ extern const char kManualLogUploadsInFREDescription[];
 extern const char kMetrickitNonCrashReportName[];
 extern const char kMetrickitNonCrashReportDescription[];
 
-extern const char kModernTabStripName[];
-extern const char kModernTabStripDescription[];
-
 extern const char kMostVisitedTilesHorizontalRenderGroupName[];
 extern const char kMostVisitedTilesHorizontalRenderGroupDescription[];
 

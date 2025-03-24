@@ -363,8 +363,11 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
   }
 
   dpb_.emplace(max_num_ref_frames_);
-  dpb_->InitializeTextureArray(device_.Get(), config.input_visible_size,
-                               input_format_);
+  if (!dpb_->InitializeTextureArray(device_.Get(), config.input_visible_size,
+                                    input_format_)) {
+    return {EncoderStatus::Codes::kEncoderInitializationError,
+            "Failed to initialize DPB."};
+  }
   sequence_header_ =
       FillAV1BuilderSequenceHeader(profile, input_size_, tier_level);
   picture_id_ = -1;

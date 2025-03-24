@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
@@ -534,7 +535,7 @@ void MainThreadEventQueue::PossiblyScheduleMainFrame() {
     }
   }
   if (needs_main_frame)
-    SetNeedsMainFrame();
+    SetNeedsMainFrame(/*urgent=*/false);
 }
 
 void MainThreadEventQueue::DispatchEvents() {
@@ -734,8 +735,12 @@ void MainThreadEventQueue::QueueEvent(
 
   if (needs_post_task)
     PostTaskToMainThread();
-  if (needs_main_frame)
-    SetNeedsMainFrame();
+  if (needs_main_frame) {
+    // This main frame request is coming from input, make it urgent.
+    bool urgent =
+        base::FeatureList::IsEnabled(blink::features::kUrgentMainFrameForInput);
+    SetNeedsMainFrame(urgent);
+  }
 }
 
 bool MainThreadEventQueue::IsRawUpdateEvent(
@@ -817,21 +822,22 @@ bool MainThreadEventQueue::HandleEventOnMainThread(
   return handled;
 }
 
-void MainThreadEventQueue::SetNeedsMainFrame() {
+void MainThreadEventQueue::SetNeedsMainFrame(bool urgent) {
   if (main_task_runner_->BelongsToCurrentThread()) {
     if (raf_fallback_timer_) {
       raf_fallback_timer_->Start(
           FROM_HERE, kMaxRafDelay,
           base::BindOnce(&MainThreadEventQueue::RafFallbackTimerFired, this));
     }
-    if (client_)
-      client_->SetNeedsMainFrame();
+    if (client_) {
+      client_->SetNeedsMainFrame(urgent);
+    }
     return;
   }
 
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&MainThreadEventQueue::SetNeedsMainFrame, this));
+      base::BindOnce(&MainThreadEventQueue::SetNeedsMainFrame, this, urgent));
 }
 
 void MainThreadEventQueue::ClearClient() {

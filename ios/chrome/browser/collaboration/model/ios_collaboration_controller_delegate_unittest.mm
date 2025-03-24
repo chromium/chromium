@@ -95,7 +95,6 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         {
             kTabGroupSync,
             kTabGroupsIPad,
-            kModernTabStrip,
             data_sharing::features::kDataSharingFeature,
         },
         /*disable_features=*/{});

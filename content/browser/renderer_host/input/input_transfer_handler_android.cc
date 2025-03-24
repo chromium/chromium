@@ -5,9 +5,12 @@
 #include "content/browser/renderer_host/input/input_transfer_handler_android.h"
 
 #include "base/android/jni_android.h"
+#include "base/debug/crash_logging.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/values.h"
 #include "components/input/utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -18,6 +21,23 @@
 namespace content {
 
 namespace {
+
+// TODO(crbug.com/401270990): Remove crash key after crash investigation is
+// over.
+constexpr int kCrashKeyLengthSize = 256;
+
+std::string MotionEventToString(const ui::MotionEventAndroid& event) {
+  base::Value::Dict query_dict = base::Value::Dict();
+  base::TimeDelta delta = event.GetEventTime() - event.GetDownTime();
+  query_dict.Set("delta", base::TimeDeltaToValue(delta));
+  query_dict.Set("tooltype", static_cast<int>(event.GetToolType()));
+  query_dict.Set("unique_event_id", static_cast<int>(event.GetUniqueEventId()));
+  std::string debug_string = query_dict.DebugString();
+  if (debug_string.size() >= kCrashKeyLengthSize) {
+    return "";
+  }
+  return debug_string;
+}
 
 // Histogram min, max and no. of buckets.
 constexpr int kTouchMoveCountsMin = 1;
@@ -107,7 +127,11 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
   // precision as well for accurate comparison.
   const int64_t delta =
       (event.GetEventTime() - event.GetDownTime()).InMilliseconds();
-  CHECK_GE(delta, 0);
+  {
+    SCOPED_CRASH_KEY_STRING256("crbug401270990", "event",
+                               MotionEventToString(event));
+    CHECK_GE(delta, 0);
+  }
   const bool is_transferred_back_sequence = delta > 0;
   if (is_transferred_back_sequence) {
     // We don't want to retransfer this sequence which was transferred back from

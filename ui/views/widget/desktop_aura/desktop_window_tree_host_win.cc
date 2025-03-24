@@ -30,6 +30,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/win/event_creation_utils.h"
+#include "ui/base/win/hwnd_metrics.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -974,6 +975,22 @@ void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size_px,
 
 bool DesktopWindowTreeHostWin::GetClientAreaInsets(gfx::Insets* insets,
                                                    HMONITOR monitor) const {
+  // WS_THICKFRAME style has a system titlebar. Remove this titlebar for
+  // borderless windows.
+  if (desktop_native_widget_aura_->widget_type() ==
+          Widget::InitParams::TYPE_WINDOW_FRAMELESS &&
+      (GetWindowLong(GetHWND(), GWL_STYLE) & WS_THICKFRAME)) {
+    int frame_thickness = ui::GetFrameThickness(monitor);
+    *insets = gfx::Insets(frame_thickness);
+    // In non-maximized window, the top-border inset must be zero, otherwise
+    // Windows will draw a full native titlebar.
+    if (!IsMaximized()) {
+      insets->set_top(0);
+    }
+
+    return true;
+  }
+
   return false;
 }
 

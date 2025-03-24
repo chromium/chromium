@@ -2366,6 +2366,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
                 Optional(IsOk()));
     limit_respecting_requesters.pop_front();
   }
+
+  // Ensure that the total connecting stream count is decremented appropriately.
+  ASSERT_EQ(pool().TotalConnectingStreamCount(), 0u);
 }
 
 // Regression test for crbug.com/397535403.

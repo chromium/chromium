@@ -1164,6 +1164,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       Pointee(DictionaryHasValues(
           base::Value::Dict()
               .Set(shill::kGuidProperty, "{user-policy-for-Wifi1}")
+              .Set(shill::kAutoConnectProperty, false)
               .Set(shill::kProfileProperty, kUserProfilePath)
               .Set(shill::kStateProperty, shill::kStateIdle))));
 

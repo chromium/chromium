@@ -167,6 +167,41 @@ TEST_F(StyleVariablesTest, DifferentDataSize) {
   EXPECT_NE(vars1, vars2);
 }
 
+// Add enough values that we cannot keep all of them in the root trie node.
+TEST_F(StyleVariablesTest, ManyValues) {
+  StyleVariables vars1;
+  for (int i = 0; i < 100; ++i) {
+    char key[64], value[64];
+    snprintf(key, sizeof(key), "--prop-%d", i);
+    snprintf(value, sizeof(value), "value%d", i);
+    vars1.SetData(AtomicString(key),
+                  css_test_helpers::CreateVariableData(value));
+  }
+  StyleVariables vars2(vars1);
+  for (int i = 100; i < 200; ++i) {
+    char key[64], value[64];
+    snprintf(key, sizeof(key), "--prop-%d", i);
+    snprintf(value, sizeof(value), "value%d", i);
+    vars2.SetData(AtomicString(key),
+                  css_test_helpers::CreateVariableData(value));
+  }
+  EXPECT_NE(vars1, vars2);
+
+  for (int i = 0; i < 200; ++i) {
+    char key[64], value[64];
+    snprintf(key, sizeof(key), "--prop-%d", i);
+    snprintf(value, sizeof(value), "value%d", i);
+    if (i < 100) {
+      ASSERT_TRUE(vars1.GetData(AtomicString(key)).has_value());
+      EXPECT_EQ((*vars1.GetData(AtomicString(key)))->OriginalText(), value);
+    } else {
+      EXPECT_FALSE(vars1.GetData(AtomicString(key)).has_value());
+    }
+    ASSERT_TRUE(vars2.GetData(AtomicString(key)).has_value());
+    EXPECT_EQ((*vars2.GetData(AtomicString(key)))->OriginalText(), value);
+  }
+}
+
 // CSSValue
 
 TEST_F(StyleVariablesTest, IsEmptyValue) {

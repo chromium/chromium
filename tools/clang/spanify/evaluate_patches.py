@@ -14,6 +14,7 @@ import os
 import random
 import shutil
 import subprocess
+import getpass
 import sys
 import re
 from datetime import datetime
@@ -167,6 +168,7 @@ today_underscore = today.replace("/", "_")
 scratch_dir = os.path.expanduser("~/scratch")
 creds = getGoogleCreds()
 spreadsheet = getSpreadsheet(creds)
+user = getpass.getuser()
 
 
 print("Running evaluate_patches.py...")
@@ -271,6 +273,7 @@ try:
                 "fail",
                 error_msg,
                 diff,
+                user,
             ])
             run("git restore .", "Failed to restore after failed patch.")
 
@@ -368,5 +371,5 @@ finally:
     # to the shared google drive for easy debugging of either compile errors or
     # the evaluate_patches tool itself.
     unique_id = random.randint(1, 10000)
-    file_name = f"{today_underscore}_evaluate_patches_{unique_id}.zip"
+    file_name = f"{today_underscore}_evaluate_patches_{user}_{unique_id}.zip"
     uploadScratch(creds, file_name, scratch_dir)

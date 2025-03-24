@@ -19,7 +19,57 @@
 #include "chrome/browser/regional_capabilities/android/jni_headers/RegionalCapabilitiesServiceClientAndroid_jni.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
+#endif
+
 namespace regional_capabilities {
+#if BUILDFLAG(IS_CHROMEOS)
+namespace {
+std::optional<int> GetVpdCountry() {
+  using enum ChromeOSFallbackCountry;
+
+  ash::system::StatisticsProvider* sys_info =
+      ash::system::StatisticsProvider::GetInstance();
+  if (!sys_info) {
+    base::UmaHistogramEnumeration(kCrOSMissingVariationData,
+                                  kNoStatisticsProvider);
+    return {};
+  }
+
+  if (sys_info->GetLoadingState() !=
+      ash::system::StatisticsProvider::LoadingState::kFinished) {
+    base::UmaHistogramEnumeration(kCrOSMissingVariationData,
+                                  kStatisticsLoadingNotFinished);
+    return {};
+  }
+
+  const std::string vpd_region = base::ToUpperASCII(
+      sys_info->GetMachineStatistic(ash::system::kRegionKey).value_or(""));
+  if (vpd_region == "GCC" || vpd_region == "LATAM-ES-419" ||
+      vpd_region == "NORDIC") {
+    // TODO: crbug.com/377475851 - Implement a lookup for the groupings.
+    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kGroupedRegion);
+    return {};
+  }
+
+  if (vpd_region.size() < 2) {
+    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooShort);
+    return {};
+  } else if (vpd_region.size() > 2) {
+    base::UmaHistogramEnumeration(kCrOSMissingVariationData, kRegionTooLong);
+    return {};
+  }
+
+  const int country_code =
+      country_codes::CountryCharsToCountryID(vpd_region[0], vpd_region[1]);
+  base::UmaHistogramEnumeration(kCrOSMissingVariationData, kValidCountryCode);
+  return country_code;
+}
+}  // namespace
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 RegionalCapabilitiesServiceClient::RegionalCapabilitiesServiceClient(
@@ -39,6 +89,12 @@ RegionalCapabilitiesServiceClient::~RegionalCapabilitiesServiceClient() =
     default;
 
 int RegionalCapabilitiesServiceClient::GetFallbackCountryId() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (const std::optional<int> vpd_country = GetVpdCountry();
+      vpd_country.has_value()) {
+    return *vpd_country;
+  }
+#endif
   return country_codes::GetCurrentCountryID();
 }
 

@@ -344,7 +344,7 @@ constexpr MessageInfo kRendererMainThreadTaskExecution = {
     kRendererMainThreadTaskExecutionIndices, nullptr};
 
 // Proto Message: EventLatency
-constexpr int kEventLatencyIndices[] = {1, 2, 4, 5, 6, 7, 8, -1};
+constexpr int kEventLatencyIndices[] = {1, 2, 4, 5, 6, 7, 8, 9, -1};
 constexpr MessageInfo kEventLatency = {kEventLatencyIndices, nullptr};
 
 // Proto Message: ProcessSingleton

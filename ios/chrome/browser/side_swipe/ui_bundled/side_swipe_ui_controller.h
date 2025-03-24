@@ -20,7 +20,6 @@ class FullscreenController;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol SideSwipeUIControllerDelegate;
-@protocol TabStripHighlighting;
 class WebStateList;
 
 // Controls how an edge gesture is processed, either as tab change or a page
@@ -53,9 +52,6 @@ class WebStateList;
 // Handler for the toolbar interaction.
 @property(nonatomic, weak) id<SideSwipeToolbarInteracting>
     toolbarInteractionHandler;
-
-// Delegate for tab strip highlighting.
-@property(nonatomic, weak) id<TabStripHighlighting> tabStripDelegate;
 
 // Snapshot provider for top and bottom toolbars.
 @property(nonatomic, weak) id<SideSwipeToolbarSnapshotProviding>

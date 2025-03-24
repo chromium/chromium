@@ -1669,6 +1669,7 @@ bool SchedulerStateMachine::ImplLatencyTakesPriority() const {
 }
 
 void SchedulerStateMachine::SetNeedsBeginMainFrame(bool now) {
+  TRACE_EVENT1("cc", __PRETTY_FUNCTION__, "now", now);
   needs_begin_main_frame_ = true;
 
   if (now) {
