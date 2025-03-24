@@ -112,10 +112,8 @@ class AXMediaAppUntrustedService
 
   void OnOCRServiceInitialized(bool is_successful);
 
-#if BUILDFLAG(IS_CHROMEOS)
   void OnAshAccessibilityModeChanged(
       const ash::AccessibilityStatusEventDetails& details);
-#endif
 
   // ui::AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& action_data) override;
@@ -192,10 +190,8 @@ class AXMediaAppUntrustedService
                       ui::AXNode& starting_node) const;
   std::unique_ptr<gfx::Transform> MakeTransformFromOffsetAndScale() const;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Observes whether spoken feedback is enabled in Ash.
   base::CallbackListSubscription accessibility_status_subscription_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
   // This `BrowserContext` will always outlive the WebUI, so this is safe.
   raw_ref<content::BrowserContext> browser_context_;
   gfx::NativeWindow native_window_;
