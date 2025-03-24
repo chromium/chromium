@@ -1369,7 +1369,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
                               NetworkErrorLoggingService::kOuterUrlKey);
   base::ExpectDictStringValue(kInnerUrl_.spec(), *sxg_body,
                               NetworkErrorLoggingService::kInnerUrlKey);
-  base::ExpectStringValue(
+  EXPECT_EQ(
       kCertUrl_.spec(),
       sxg_body->Find(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
 }
@@ -1423,7 +1423,7 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
                               NetworkErrorLoggingService::kOuterUrlKey);
   base::ExpectDictStringValue(kInnerUrl_.spec(), *sxg_body,
                               NetworkErrorLoggingService::kInnerUrlKey);
-  base::ExpectStringValue(
+  EXPECT_EQ(
       kCertUrl_.spec(),
       sxg_body->Find(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
 }

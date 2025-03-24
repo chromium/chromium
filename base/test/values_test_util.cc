@@ -58,12 +58,6 @@ void ExpectDictValue(const Value& expected_value,
   EXPECT_EQ(*found_value, expected_value) << path;
 }
 
-void ExpectStringValue(const std::string& expected_str, const Value& actual) {
-  const std::string* maybe_string = actual.GetIfString();
-  ASSERT_TRUE(maybe_string);
-  EXPECT_EQ(expected_str, *maybe_string);
-}
-
 namespace test {
 
 namespace {
