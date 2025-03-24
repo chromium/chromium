@@ -66,6 +66,13 @@ void AXTreeFixingServicesRouter::IdentifyMainNode(
         std::make_unique<AXTreeFixingScreenAIService>(*this, profile_);
   }
 
+  // We must wait for the ScreenAI service to be ready for requests.
+  if (!can_make_main_node_identification_requests_) {
+    // TODO(crbug.com/401308988): Give a signal to requesters that they need to
+    // re-request? Or, queue requests to be made once service is ready?
+    return;
+  }
+
   // Store the callback for later use, and make a request to ScreenAI.
   pending_callbacks_.emplace_back(next_request_id_, std::move(callback));
   screen_ai_service_->IdentifyMainNode(ax_tree, next_request_id_);
@@ -73,7 +80,7 @@ void AXTreeFixingServicesRouter::IdentifyMainNode(
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-void AXTreeFixingServicesRouter::OnAXModeAdded(ui::AXMode mode) override {
+void AXTreeFixingServicesRouter::OnAXModeAdded(ui::AXMode mode) {
   if ((!current_ax_mode_.has_mode(ui::AXMode::kExtendedProperties) &&
        mode.has_mode(ui::AXMode::kExtendedProperties)) ||
       (current_ax_mode_.has_mode(ui::AXMode::kExtendedProperties) &&
@@ -104,7 +111,16 @@ void AXTreeFixingServicesRouter::OnMainNodeIdentified(ui::AXTreeID tree_id,
   NOTREACHED();
 }
 
+void AXTreeFixingServicesRouter::OnServiceStateChanged(bool service_ready) {
+  can_make_main_node_identification_requests_ = service_ready;
+  // TODO(crbug.com/401308988): Follow-up state change by sending or clearing
+  // queued requests (if a queue exists)? Should a signal be sent to clients?
+}
+
 void AXTreeFixingServicesRouter::ToggleAccessibilityState() {
+  // TODO(crbug.com/401308988): Downstream service instances such as
+  // screen_ai_service_ need to be cleared when accessibility (or user pref) is
+  // disabled.
   std::unique_ptr<content::RenderWidgetHostIterator> widgets(
       content::RenderWidgetHost::GetRenderWidgetHosts());
   while (content::RenderWidgetHost* rwh = widgets->GetNextHost()) {

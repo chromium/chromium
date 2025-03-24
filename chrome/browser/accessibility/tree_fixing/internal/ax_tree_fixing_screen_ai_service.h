@@ -14,8 +14,23 @@
 
 namespace tree_fixing {
 
+// This class provides a connection to the ScreenAI service for requests such as
+// main node identification or main content extraction. Upon construction, this
+// class will ensure that the required models are downloaded/loaded. This
+// service should only be constructed by clients when the client requires the
+// ScreenAI service (and not earlier). The client that constructs this service
+// owns the object and needs to handle tear-down.
 class AXTreeFixingScreenAIService final {
  public:
+  // The possible initialization states of the ScreenAI service.
+  enum class InitializationState {
+    kUninitialized,
+    kInitializing,
+    kInitialized,
+    kDisconnected,
+    kInitializationFailed
+  };
+
   // Delegate for clients that want to perform main node identification.
   class MainNodeIdentificationDelegate {
    protected:
@@ -39,6 +54,13 @@ class AXTreeFixingScreenAIService final {
     virtual void OnMainNodeIdentified(ui::AXTreeID tree_id,
                                       ui::AXNodeID node_id,
                                       int request_id) = 0;
+
+    // This method is used to communicate to the delegate (owner) of this
+    // instance, the current status of the ScreenAI service. This initialization
+    // is done asynchronously, and requires both downloading and loading the
+    // ScreenAI model. |This| service will inform the client once it is
+    // initialized, beforehand requests will fail.
+    virtual void OnServiceStateChanged(bool service_ready);
   };
 
   AXTreeFixingScreenAIService(MainNodeIdentificationDelegate& delegate,
@@ -56,6 +78,15 @@ class AXTreeFixingScreenAIService final {
   void IdentifyMainNode(const ui::AXTreeUpdate& ax_tree_update, int request_id);
 
  private:
+  // Internal methods related to managing ScreenAI service connection.
+  void Initialize();
+  void ServiceInitializationCallback(bool success);
+  void HandleServiceDisconnect();
+  uint32_t initialization_attempt_count_ = 0;
+  InitializationState initialization_state_ =
+      InitializationState::kUninitialized;
+  bool previously_attempted_reconnect_ = false;
+
   // Internal method that processes results from the ScreenAI service before
   // returning the results to the owner of this instance via the provided
   // delegate.
