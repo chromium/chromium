@@ -80,3 +80,7 @@ DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS,
 // |VectorDrawableCompat|. We do not display these icons for autofill popup.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_SETTINGS, R.drawable.ic_settings_black)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CREATE, R.drawable.ic_edit_24dp)
+
+// Home and work icons.
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_HOME, R.drawable.home_logo)
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_WORK, R.drawable.work_logo)
