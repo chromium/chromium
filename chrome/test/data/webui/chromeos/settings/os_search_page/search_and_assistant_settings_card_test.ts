@@ -174,9 +174,8 @@ suite('<search-and-assistant-settings-card>', () => {
       const subItems = new Map<settingMojom.Setting, string>([
         [settingMojom.Setting.kMahiOnOff, '#helpMeReadToggle'],
         [settingMojom.Setting.kShowOrca, '#helpMeWriteToggle'],
-        // <if expr="_google_chrome" >
         [settingMojom.Setting.kLobsterOnOff, '#lobsterToggle'],
-        // </if>
+
       ]);
 
       for (const [setting, element] of subItems) {
@@ -596,69 +595,258 @@ suite('<search-and-assistant-settings-card>', () => {
     });
 
     suite('Lobster setting toggle', () => {
-      [{
-        isMagicBoostFeatureEnabled: false,
-        isLobsterSettingsToggleVisible: false,
-        expectedVisibility: false,
-      },
-       {
-         isMagicBoostFeatureEnabled: false,
-         isLobsterSettingsToggleVisible: true,
-         expectedVisibility: false,
-       },
-       {
-         isMagicBoostFeatureEnabled: true,
-         isLobsterSettingsToggleVisible: false,
-         expectedVisibility: false,
-       },
-       {
-         isMagicBoostFeatureEnabled: true,
-         isLobsterSettingsToggleVisible: true,
-         expectedVisibility: true,
-       },
-      ].forEach(({
+      suite('should be hidden', () => {
+        [{
+          isMagicBoostFeatureEnabled: false,
+          isLobsterSettingsToggleVisible: false,
+        },
+         {
+           isMagicBoostFeatureEnabled: false,
+           isLobsterSettingsToggleVisible: true,
+         },
+         {
+           isMagicBoostFeatureEnabled: true,
+           isLobsterSettingsToggleVisible: false,
+         }].forEach(({
+                      isMagicBoostFeatureEnabled,
+                      isLobsterSettingsToggleVisible,
+                    }) => {
+          test(
+              `when isMagicBoostFeatureEnabled is ${
+                  isMagicBoostFeatureEnabled
+                      .toString()} and isLobsterSettingsToggleVisible is ${
+                  isLobsterSettingsToggleVisible.toString()}`,
+              () => {
+                loadTimeData.overrideValues({
                   isMagicBoostFeatureEnabled,
                   isLobsterSettingsToggleVisible,
-                  expectedVisibility,
-                }) => {
-        test(
-            `should ${
-                expectedVisibility ?
-                    '' :
-                    'not'} show if isMagicBoostFeatureEnabled is ${
-                isMagicBoostFeatureEnabled ?
-                    'true' :
-                    'false'} and isLobsterSettingsToggleVisible is ${
-                isLobsterSettingsToggleVisible ? 'true' : 'false'}`,
-            () => {
-              loadTimeData.overrideValues({
-                isMagicBoostFeatureEnabled,
-                isLobsterSettingsToggleVisible,
-              });
-              createSearchAndAssistantCard();
-              const fakePrefs = {
-                settings: {
-                  magic_boost_enabled: {
-                    value: true,
+                });
+                createSearchAndAssistantCard();
+                searchAndAssistantSettingsCard.prefs = {
+                  settings: {
+                    magic_boost_enabled: {
+                      value: true,
+                    },
                   },
-                },
-              };
-              searchAndAssistantSettingsCard.prefs = fakePrefs;
-              flush();
-              // <if expr="_google_chrome" >
-              assertEquals(
-                  isVisible(
-                      searchAndAssistantSettingsCard.shadowRoot!.querySelector(
-                          '#lobsterToggle')),
-                  expectedVisibility);
-              // </if>
-              // <if expr="not _google_chrome" >
-              assertFalse(isVisible(
-                  searchAndAssistantSettingsCard.shadowRoot!.querySelector(
-                      '#lobsterToggle')));
-              // </if>
-            });
+                };
+                flush();
+                assertFalse(isVisible(
+                    searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+                        '#lobsterToggle')));
+                assertFalse(isVisible(
+                    searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+                        '#lobsterEnterpriseToggle')));
+              });
+        });
       });
+
+      suite(
+          'should be visible when isMagicBoostFeatureEnabled and' +
+              ' isLobsterSettingsToggleVisible are both true, and ',
+          () => {
+            setup(() => {
+              loadTimeData.overrideValues({
+                isMagicBoostFeatureEnabled: true,
+                isLobsterSettingsToggleVisible: true,
+              });
+            });
+            suite('when Lobster enterprise policy enables the feature', () => {
+              for (const {desc, value} of ALLOWED_ENTERPRISE_POLICIES) {
+                suite(`is ${desc}`, () => {
+                  let lobsterToggle: SettingsToggleButtonElement;
+
+                  setup(() => {
+                    createSearchAndAssistantCard();
+                    searchAndAssistantSettingsCard.prefs = {
+                      settings: {
+                        magic_boost_enabled: {
+                          value: true,
+                          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                        },
+                        lobster: {
+                          enterprise_settings: {
+                            value: value,
+                            type: chrome.settingsPrivate.PrefType.NUMBER,
+                          },
+                        },
+                        lobster_enabled: {
+                          value: true,
+                          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                        },
+                      },
+                    };
+                    flush();
+
+                    const nullableLobsterToggle =
+                        searchAndAssistantSettingsCard.shadowRoot!
+                            .querySelector<SettingsToggleButtonElement>(
+                                '#lobsterToggle');
+                    assertTrue(nullableLobsterToggle !== null);
+                    lobsterToggle = nullableLobsterToggle;
+                  });
+
+                  test('Lobster toggle should appear', () => {
+                    assertTrue(isVisible(lobsterToggle));
+                  });
+
+                  test('Lobster enterprise toggle should not appear', () => {
+                    const lobsterEnterpriseToggle =
+                        searchAndAssistantSettingsCard.shadowRoot!
+                            .querySelector<SettingsToggleButtonElement>(
+                                '#lobsterEnterpriseToggle');
+                    assertFalse(isVisible(lobsterEnterpriseToggle));
+                  });
+
+                  test('Lobster toggle reflects pref value', () => {
+                    assertTrue(isVisible(lobsterToggle));
+                    assertTrue(lobsterToggle.checked);
+                    assertTrue(searchAndAssistantSettingsCard.get(
+                        'prefs.settings.lobster_enabled.value'));
+
+                    lobsterToggle.click();
+                    assertFalse(lobsterToggle.checked);
+                    assertFalse(searchAndAssistantSettingsCard.get(
+                        'prefs.settings.lobster_enabled.value'));
+                  });
+
+                  test(
+                      'then changes to disallowed, Lobster enterprise toggle' +
+                          ' is deep-linkable',
+                      async () => {
+                        searchAndAssistantSettingsCard.set(
+                            'prefs.settings.lobster.enterprise_settings.value',
+                            2);
+                        flush();
+
+                        const lobsterEnterpriseToggle =
+                            searchAndAssistantSettingsCard.shadowRoot!
+                                .querySelector<SettingsToggleButtonElement>(
+                                    '#lobsterEnterpriseToggle');
+                        assertTrue(lobsterEnterpriseToggle !== null);
+
+                        const setting = settingMojom.Setting.kLobsterOnOff;
+                        const params = new URLSearchParams();
+                        params.append('settingId', setting.toString());
+                        Router.getInstance().navigateTo(defaultRoute, params);
+
+                        await waitAfterNextRender(lobsterEnterpriseToggle);
+                        assertEquals(
+                            lobsterEnterpriseToggle,
+                            searchAndAssistantSettingsCard.shadowRoot!
+                                .activeElement,
+                            `Element should be focused for settingId=${
+                                setting}.'`);
+                      });
+                });
+              }
+            });
+            suite('when Lobster enterprise policy disables the feature, ', () => {
+              let lobsterEnterpriseToggle: SettingsToggleButtonElement;
+              setup(() => {
+                createSearchAndAssistantCard();
+                searchAndAssistantSettingsCard.prefs = {
+                  settings: {
+                    lobster: {
+                      enterprise_settings: {
+                        value: 2,
+                        type: chrome.settingsPrivate.PrefType.NUMBER,
+                      },
+                    },
+                    lobster_enabled: {
+                      value: true,
+                      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                    },
+                    magic_boost_enabled: {
+                      value: true,
+                      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+                    },
+                  },
+                };
+                flush();
+                const nullableLobsterEnterpriseToggle =
+                    searchAndAssistantSettingsCard.shadowRoot!
+                        .querySelector<SettingsToggleButtonElement>(
+                            '#lobsterEnterpriseToggle');
+                assertTrue(nullableLobsterEnterpriseToggle !== null);
+                lobsterEnterpriseToggle = nullableLobsterEnterpriseToggle;
+              });
+
+              test('Lobster enterprise toggle should appear', () => {
+                assertTrue(isVisible(lobsterEnterpriseToggle));
+              });
+
+              test('Lobster toggle should not appear', () => {
+                const lobsterToggle =
+                    searchAndAssistantSettingsCard.shadowRoot!
+                        .querySelector<SettingsToggleButtonElement>(
+                            '#lobsterToggle');
+                assertFalse(isVisible(lobsterToggle));
+              });
+
+              test('Lobster enterprise toggle appears unchecked', () => {
+                assertTrue(isVisible(lobsterEnterpriseToggle));
+                assertFalse(lobsterEnterpriseToggle.checked);
+              });
+
+              test(
+                  'Lobster enterprise toggle does not respond to clicks',
+                  () => {
+                    assertTrue(isVisible(lobsterEnterpriseToggle));
+                    lobsterEnterpriseToggle.click();
+
+                    assertFalse(lobsterEnterpriseToggle.checked);
+                    assertTrue(searchAndAssistantSettingsCard.get(
+                        'prefs.settings.lobster_enabled.value'));
+                    assertEquals(
+                        2,
+                        searchAndAssistantSettingsCard.get(
+                            'prefs.settings.lobster.enterprise_settings.value'));
+                  });
+
+              test('Lobster enterprise toggle is deep-linkable', async () => {
+                const setting = settingMojom.Setting.kLobsterOnOff;
+                const params = new URLSearchParams();
+                params.append('settingId', setting.toString());
+                Router.getInstance().navigateTo(defaultRoute, params);
+
+                await waitAfterNextRender(lobsterEnterpriseToggle);
+                assertEquals(
+                    lobsterEnterpriseToggle,
+                    searchAndAssistantSettingsCard.shadowRoot!.activeElement,
+                    `Element should be focused for settingId=${setting}.'`);
+              });
+
+              for (const {desc, value} of ALLOWED_ENTERPRISE_POLICIES) {
+                test(
+                    `then changes to ${desc}, Lobster toggle is deep-linkable`,
+                    async () => {
+                      searchAndAssistantSettingsCard.set(
+                          'prefs.settings.lobster.enterprise_settings.value',
+                          value);
+                      flush();
+
+                      const lobsterToggle =
+                          searchAndAssistantSettingsCard.shadowRoot!
+                              .querySelector<SettingsToggleButtonElement>(
+                                  '#lobsterToggle');
+                      assertTrue(lobsterToggle !== null);
+
+                      const setting = settingMojom.Setting.kLobsterOnOff;
+                      const params = new URLSearchParams();
+                      params.append('settingId', setting.toString());
+                      Router.getInstance().navigateTo(defaultRoute, params);
+
+                      await waitAfterNextRender(lobsterToggle);
+                      assertEquals(
+                          lobsterToggle,
+                          searchAndAssistantSettingsCard.shadowRoot!
+                              .activeElement,
+                          `Element should be focused for settingId=${
+                              setting}.'`);
+                    });
+              }
+            });
+          });
     });
   });
 

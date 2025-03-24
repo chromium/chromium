@@ -38,6 +38,7 @@ namespace ash {
 using kiosk::test::CurrentProfile;
 using kiosk::test::EnterpriseKioskAppV1;
 using kiosk::test::TheKioskChromeApp;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -124,7 +125,7 @@ class KioskIdentityTest : public MixinBasedInProcessBrowserTest {
     // Needed so requests reach the fake GAIA server.
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
   FakeGaia& fake_gaia() { return CHECK_DEREF(fake_gaia_.fake_gaia()); }

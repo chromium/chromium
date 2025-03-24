@@ -142,8 +142,10 @@ resources.
 #### How to Batch restarting the Activity between tests
 
 1. Add `@Batch(Batch.PER_CLASS)` to the test class.
-2. Get the first station in each test case from a non-batched entry point, e.g.
-   `ChromeTabbedActivityPublicTransitEntryPoints#startOnBlankPageNonBatched()`.
+2. Use the `@Rule` returned by
+   `ChromeTransitTestRules.freshChromeTabbedActivityRule()`.
+3. Get the first station in each test case from the test rule. e.g.
+   `mCtaTestRule.startOnBlankPage()`.
 
 The `BatchedPublicTransitRule` is not necessary. Returning to the home station
 is not necessary. However, this does not run as fast as "reusing the Activity"
@@ -152,10 +154,10 @@ below, especially in Release.
 #### How to Batch reusing the Activity between tests
 
 1. Add `@Batch(Batch.PER_CLASS)` to the test class.
-2. Add the [`BatchedPublicTransitRule<>`] specifying the home station. The *home
-   station* is where each test starts and ends.
-3. Get the first station in each test case from a batched entry point, e.g.
-   `ChromeTabbedActivityPublicTransitEntryPoints#startOnBlankPage()`.
+2. Use a "reused" `@Rule` such as
+   `ChromeTransitTestRules.blankPageStartReusedActivityRule()`.
+3. Get the first station in each test case from the test rule:
+   `mCtaTestRule#start()`.
 4. Each test should return to the home station. If a test does not end in the
    home station, it will fail (if it already hasn't) with a descriptive message.
    The following tests will also fail right at the start.
@@ -164,7 +166,6 @@ In Chrome, in many situations, [`BlankCTATabInitialStatePublicTransitRule`] is
 more practical to use to automatically reset Tab state. It also acts as entry
 point.
 
-[`BatchedPublicTransitRule<>`]: https://source.chromium.org/search?q=symbol:BatchedPublicTransitRule&ss=chromium
 [`BlankCTATabInitialStatePublicTransitRule`]: https://source.chromium.org/search?q=symbol:BlankCTATabInitialStatePublicTransitRule&ss=chromium
 
 ### ViewPrinter

@@ -37,8 +37,6 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/window/dialog_delegate.h"
 
-using ExtensionPopupInteractiveUiTest = extensions::ExtensionApiTest;
-
 namespace {
 
 // A helper class for waiting until the devtools is attached to the given
@@ -83,15 +81,6 @@ views::UniqueWidgetPtr CreateTestTopLevelWidget() {
   return widget;
 }
 
-// Create a dialog widget as a child of `parent` widget.
-views::UniqueWidgetPtr CreateTestDialogWidget(views::Widget* parent) {
-  auto dialog_delegate = std::make_unique<views::DialogDelegateView>();
-  return std::unique_ptr<views::Widget>(
-      views::DialogDelegate::CreateDialogWidget(dialog_delegate.release(),
-                                                gfx::NativeWindow(),
-                                                parent->GetNativeView()));
-}
-
 void ExpectWidgetDestroy(base::WeakPtr<views::Widget> widget) {
   if (widget) {
     views::test::WidgetDestroyedWaiter(widget.get()).Wait();
@@ -123,6 +112,19 @@ base::WeakPtr<views::Widget> OpenExtensionPopup(
 }
 
 }  // namespace
+
+class ExtensionPopupInteractiveUiTest : public extensions::ExtensionApiTest {
+ public:
+  // Create a dialog widget as a child of `parent` widget.
+  static views::UniqueWidgetPtr CreateTestDialogWidget(views::Widget* parent) {
+    auto dialog_delegate = std::make_unique<views::DialogDelegateView>(
+        views::DialogDelegateView::CreatePassKey());
+    return std::unique_ptr<views::Widget>(
+        views::DialogDelegate::CreateDialogWidget(dialog_delegate.release(),
+                                                  gfx::NativeWindow(),
+                                                  parent->GetNativeView()));
+  }
+};
 
 // Tests unloading an extension while its popup is actively under inspection.
 // Regression test for https://crbug.com/1304499.
@@ -449,7 +451,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
       OpenExtensionPopup(browser(), extension);
 
   // Show a web dialog.
-  auto web_dialog = std::make_unique<views::DialogDelegateView>();
+  auto web_dialog = std::make_unique<views::DialogDelegateView>(
+      views::DialogDelegateView::CreatePassKey());
   web_dialog->SetPreferredSize(gfx::Size(100, 100));
   web_dialog->SetModalType(ui::mojom::ModalType::kChild);
   web_dialog->SetCanActivate(true);

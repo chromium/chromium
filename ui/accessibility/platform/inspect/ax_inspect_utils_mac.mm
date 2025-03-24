@@ -35,7 +35,7 @@ const char kChromiumTitle[] = "Chromium";
 const char kFirefoxTitle[] = "Firefox";
 const char kSafariTitle[] = "Safari";
 
-NSArray* AXChildrenOf(const id node) {
+NSArray* AXChildrenOf(id node) {
   return AXElementWrapper(node).Children();
 }
 

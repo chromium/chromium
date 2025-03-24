@@ -15,23 +15,33 @@ FULL_PASS = common_data_types.FULL_PASS
 NEVER_PASS = common_data_types.NEVER_PASS
 PARTIAL_PASS = common_data_types.PARTIAL_PASS
 
+NON_WILDCARD = common_data_types.WildcardType.NON_WILDCARD
+SIMPLE_WILDCARD = common_data_types.WildcardType.SIMPLE_WILDCARD
+FULL_WILDCARD = common_data_types.WildcardType.FULL_WILDCARD
+
 
 class WebTestExpectationUnittest(unittest.TestCase):
-    def testCompareWildcard(self) -> None:
-        """Tests that wildcard comparisons work as expected."""
-        e = data_types.WebTestExpectation('test*', ['tag1'], 'Failure')
-        self.assertTrue(e._CompareWildcard('testing123'))
+
+    def testCompareSimpleWildcard(self) -> None:
+        """Tests that simple wildcard comparisons work as expected."""
+        e = data_types.WebTestExpectation('test*', ['tag1'], 'Failure',
+                                          SIMPLE_WILDCARD)
+        self.assertTrue(e._CompareSimpleWildcard('testing123'))
         self.assertTrue(
-            e._CompareWildcard('virtual/some-identifier/testing123'))
-        self.assertTrue(e._CompareWildcard('test'))
-        self.assertTrue(e._CompareWildcard('virtual/some-identifier/test'))
-        self.assertFalse(e._CompareWildcard('tes'))
-        self.assertFalse(e._CompareWildcard('/virtual/some-identifier/test'))
-        self.assertFalse(e._CompareWildcard('virtual/some/malformed/test'))
+            e._CompareSimpleWildcard('virtual/some-identifier/testing123'))
+        self.assertTrue(e._CompareSimpleWildcard('test'))
+        self.assertTrue(
+            e._CompareSimpleWildcard('virtual/some-identifier/test'))
+        self.assertFalse(e._CompareSimpleWildcard('tes'))
+        self.assertFalse(
+            e._CompareSimpleWildcard('/virtual/some-identifier/test'))
+        self.assertFalse(
+            e._CompareSimpleWildcard('virtual/some/malformed/test'))
 
     def testCompareNonWildcard(self) -> None:
         """Tests that non-wildcard comparisons work as expected."""
-        e = data_types.WebTestExpectation('test', ['tag1'], 'Failure')
+        e = data_types.WebTestExpectation('test', ['tag1'], 'Failure',
+                                          NON_WILDCARD)
         self.assertTrue(e._CompareNonWildcard('test'))
         self.assertTrue(e._CompareNonWildcard('virtual/some-identifier/test'))
         self.assertFalse(e._CompareNonWildcard('tes'))
@@ -39,9 +49,19 @@ class WebTestExpectationUnittest(unittest.TestCase):
             e._CompareNonWildcard('/virtual/some-identifier/test'))
         self.assertFalse(e._CompareNonWildcard('virtual/some/malformed/test'))
 
+    def testCompareFullWildcard(self):
+        """Tests that full wildcard comparisons fail as expected."""
+        e = data_types.WebTestExpectation('t*st', ['tag1'], 'Failure',
+                                          FULL_WILDCARD)
+        with self.assertRaisesRegexp(
+                RuntimeError,
+                'Full wildcards are not supported for Blink tests'):
+            e._CompareFullWildcard('test')
+
     def testProcessTagsForFileUse(self) -> None:
         """Tests that tags are properly capitalized for use in files."""
-        e = data_types.WebTestExpectation('test', ['tag1'], 'Failure')
+        e = data_types.WebTestExpectation('test', ['tag1'], 'Failure',
+                                          NON_WILDCARD)
         self.assertEqual(e.AsExpectationFileString(),
                          '[ Tag1 ] test [ Failure ]')
 
@@ -112,7 +132,8 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
 
     def testNeverNeededExpectationSlowExpectation(self) -> None:
         """Tests that special logic is used for Slow-only expectations."""
-        expectation = data_types.WebTestExpectation('foo', ['debug'], 'Slow')
+        expectation = data_types.WebTestExpectation('foo', ['debug'], 'Slow',
+                                                    NON_WILDCARD)
         stats = data_types.WebTestBuildStats()
         # The fact that this failed should be ignored.
         stats.AddFailedBuild('build_id', frozenset())
@@ -123,7 +144,8 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
     def testNeverNeededExpectationMixedSlowExpectation(self) -> None:
         """Tests that special logic is used for mixed Slow expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'],
-                                                    ['Slow', 'Failure'])
+                                                    ['Slow', 'Failure'],
+                                                    NON_WILDCARD)
         stats = data_types.WebTestBuildStats()
         # This should only return true if there are no slow builds AND there
         # are no failed builds.
@@ -144,7 +166,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
     def testNeverNeededExpectationNoSlowExpectation(self) -> None:
         """Tests that no special logic is used for non-Slow expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'],
-                                                    'Failure')
+                                                    'Failure', NON_WILDCARD)
         stats = data_types.WebTestBuildStats()
         stats.AddPassedBuild(frozenset())
         self.assertTrue(stats.NeverNeededExpectation(expectation))
@@ -156,7 +178,8 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
 
     def testAlwaysNeededExpectationSlowExpectation(self) -> None:
         """Tests that special logic is used for Slow-only expectations."""
-        expectation = data_types.WebTestExpectation('foo', ['debug'], 'Slow')
+        expectation = data_types.WebTestExpectation('foo', ['debug'], 'Slow',
+                                                    NON_WILDCARD)
         stats = data_types.WebTestBuildStats()
         # The fact that this failed should be ignored.
         stats.AddFailedBuild('build_id', frozenset())
@@ -167,7 +190,8 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
     def testAlwaysNeededExpectationMixedSlowExpectations(self) -> None:
         """Tests that special logic is used for mixed Slow expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'],
-                                                    ['Slow', 'Failure'])
+                                                    ['Slow', 'Failure'],
+                                                    NON_WILDCARD)
         stats = data_types.WebTestBuildStats()
         # This should return true if either all builds failed OR all builds were
         # slow.
@@ -188,7 +212,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
     def testAlwaysNeededExpectationNoSlowExpectation(self) -> None:
         """Tests that no special logic is used for non-Slow expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'],
-                                                    'Failure')
+                                                    'Failure', NON_WILDCARD)
         stats = data_types.WebTestBuildStats()
         stats.AddFailedBuild('build_id', frozenset())
         self.assertTrue(stats.AlwaysNeededExpectation(expectation))

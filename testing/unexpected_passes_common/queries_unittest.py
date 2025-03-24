@@ -264,7 +264,8 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
                                 True),
     ]
 
-    expectation = data_types.Expectation('foo', ['win'], 'RetryOnFailure')
+    expectation = data_types.Expectation('foo', ['win'], 'RetryOnFailure',
+                                         data_types.WildcardType.NON_WILDCARD)
     expectation_map = data_types.TestExpectationMap({
         'foo':
         data_types.ExpectationBuilderMap({

@@ -4,8 +4,8 @@
 
 package org.chromium.android_webview.test;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwServiceWorkerClient;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 

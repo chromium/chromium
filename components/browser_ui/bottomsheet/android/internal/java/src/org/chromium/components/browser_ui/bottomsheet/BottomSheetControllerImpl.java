@@ -79,6 +79,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
+    /**
+     * An observer that observes changes to the bottom sheet content {@code
+     * BottomSheetContent#mBackPressStateChangedSupplier} and updates the {@code
+     * BottomSheetControllerImpl#mBackPressStateChangedSupplier}.
+     */
+    private final Callback<Boolean> mContentBackPressStateChangedObserver =
+            contentWillHandleBackPress -> updateBackPressStateChangedSupplier();
+
     /** A handle to the {@link BottomSheet} that this class controls. */
     private @MonotonicNonNull BottomSheet mBottomSheet;
 
@@ -105,13 +113,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
     /** The content being shown prior to the sheet being suppressed. */
     private @Nullable BottomSheetContent mContentWhenSuppressed;
-
-    /**
-     * An observer that observes changes to the bottom sheet content {@code
-     * BottomSheetContent#mBackPressStateChangedSupplier} and updates the {@code
-     * BottomSheetControllerImpl#mBackPressStateChangedSupplier}.
-     */
-    private @Nullable Callback<Boolean> mContentBackPressStateChangedObserver;
 
     private int mAppHeaderHeight;
     private int mBottomControlsHeight;
@@ -654,8 +655,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
         }
         if (nextContent != null) {
             mKeyboardVisibilityDelegate.hideKeyboard(mBottomSheetContainer);
-            mContentBackPressStateChangedObserver =
-                    (contentWillHandleBackPress) -> updateBackPressStateChangedSupplier();
             nextContent
                     .getBackPressStateChangedSupplier()
                     .addObserver(mContentBackPressStateChangedObserver);

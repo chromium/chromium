@@ -42,6 +42,7 @@ using kiosk::test::CachePolicy;
 using kiosk::test::CurrentProfile;
 using kiosk::test::DidKioskCloseNewWindow;
 using kiosk::test::TheKioskWebApp;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -130,7 +131,7 @@ class NewWindowsInKioskAllowedTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
   KioskMixin kiosk_{&mixin_host_,

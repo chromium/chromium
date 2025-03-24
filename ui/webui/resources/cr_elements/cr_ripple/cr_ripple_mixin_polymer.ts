@@ -31,11 +31,12 @@ export const CrRippleMixinPolymer =
             noink: {
               type: Boolean,
               observer: 'onNoinkChanged_',
+              value: false,
             },
           };
         }
 
-        noink: boolean = false;
+        declare noink: boolean;
         rippleContainer: HTMLElement|null = null;
 
         private ripple_: CrRippleElement|null = null;

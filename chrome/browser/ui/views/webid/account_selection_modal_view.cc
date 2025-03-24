@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/monogram_utils.h"
@@ -379,8 +380,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateAccountRows(
 void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list,
-    bool show_back_button,
-    bool is_choose_an_account) {
+    bool show_back_button) {
   DCHECK(!show_back_button);
   CHECK_EQ(idp_list.size(), 1u);
   ShowAccounts(accounts, /*is_single_account_chooser=*/false);
@@ -690,13 +690,6 @@ void AccountSelectionModalView::OnUseOtherAccountButtonClicked(
   }
 
   owner_->OnLoginToIdP(idp_config_url, idp_login_url, event);
-}
-
-void AccountSelectionModalView::ShowSingleReturningAccountDialog(
-    const std::vector<IdentityRequestAccountPtr>& accounts,
-    const std::vector<IdentityProviderDataPtr>& idp_list) {
-  NOTREACHED() << "ShowSingleReturningAccountDialog is only implemented for "
-                  "AccountSelectionBubbleView";
 }
 
 std::unique_ptr<views::View> AccountSelectionModalView::CreateIconHeaderView() {

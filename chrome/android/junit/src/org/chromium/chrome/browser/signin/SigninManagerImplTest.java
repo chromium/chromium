@@ -73,12 +73,10 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link SigninManagerImpl}. */
@@ -184,66 +182,7 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    public void signinAndTurnSyncOn() {
-        createSigninManager();
-        when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
-                .thenReturn(PrimaryAccountError.NO_ERROR);
-        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
-
-        // There is no signed in account. Sign in is allowed.
-        assertTrue(mSigninManager.isSigninAllowed());
-        // Sign out is not allowed.
-        assertFalse(mSigninManager.isSignOutAllowed());
-
-        List<AccountInfo> accounts =
-                AccountManagerFacadeProvider.getInstance().getAccounts().getResult();
-
-        doAnswer(
-                        (args) -> {
-                            // A sign in operation is in progress, so we do not allow a new sign
-                            // in/out operation.
-                            assertFalse(mSigninManager.isSigninAllowed());
-                            assertFalse(mSigninManager.isSignOutAllowed());
-
-                            ((Runnable) args.getArgument(2)).run();
-                            return null;
-                        })
-                .when(mNativeMock)
-                .fetchAndApplyCloudPolicy(
-                        eq(NATIVE_SIGNIN_MANAGER), eq(TestAccounts.ACCOUNT1), any());
-
-        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-        mSigninManager.signinAndEnableSync(
-                TestAccounts.ACCOUNT1, SigninAccessPoint.START_PAGE, callback);
-
-        verify(mIdentityMutator)
-                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-                        accounts, TestAccounts.ACCOUNT1.getId());
-        verify(mIdentityMutator)
-                .setPrimaryAccount(
-                        eq(TestAccounts.ACCOUNT1.getId()),
-                        eq(ConsentLevel.SYNC),
-                        eq(SigninAccessPoint.START_PAGE),
-                        any());
-        verify(mSyncService).setSyncRequested();
-        // Signin should be complete and callback should be invoked.
-        verify(callback).onSignInComplete();
-        verify(callback, never()).onSignInAborted();
-
-        // The primary account is now present and consented to sign in and sync.  We do not allow
-        // another account to be signed in.
-        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                        eq(NATIVE_IDENTITY_MANAGER), anyInt()))
-                .thenReturn(TestAccounts.ACCOUNT1);
-        assertFalse(mSigninManager.isSigninAllowed());
-        // Signing out is allowed.
-        assertTrue(mSigninManager.isSignOutAllowed());
-    }
-
-    @Test
-    public void signinNoTurnSyncOn() {
+    public void testSignin() {
         createSigninManager();
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
@@ -666,7 +605,7 @@ public class SigninManagerImplTest {
                 .when(mNativeMock)
                 .fetchAndApplyCloudPolicy(anyLong(), any(), any());
 
-        mSigninManager.signinAndEnableSync(TestAccounts.ACCOUNT1, SigninAccessPoint.UNKNOWN, null);
+        mSigninManager.signin(TestAccounts.ACCOUNT1, SigninAccessPoint.UNKNOWN, null);
         assertEquals(1, callCount.get());
     }
 
@@ -687,7 +626,7 @@ public class SigninManagerImplTest {
                 .when(mIdentityMutator)
                 .setPrimaryAccount(
                         eq(TestAccounts.ACCOUNT1.getId()),
-                        eq(ConsentLevel.SYNC),
+                        eq(ConsentLevel.SIGNIN),
                         eq(SigninAccessPoint.START_PAGE),
                         any());
 
@@ -702,8 +641,7 @@ public class SigninManagerImplTest {
                 .when(mNativeMock)
                 .fetchAndApplyCloudPolicy(anyLong(), any(), any());
 
-        mSigninManager.signinAndEnableSync(
-                TestAccounts.ACCOUNT1, SigninAccessPoint.START_PAGE, null);
+        mSigninManager.signin(TestAccounts.ACCOUNT1, SigninAccessPoint.START_PAGE, null);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mSignInStateObserver).onSignOutAllowedChanged();

@@ -4,16 +4,18 @@
 
 package org.chromium.chrome.browser.ui.settings_promo_card;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardProvider.State;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator;
@@ -23,6 +25,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Controller for Default browser settings promo card when Chrome is not the default browser */
+@NullMarked
 public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
     private final Context mContext;
     private final DefaultBrowserPromoUtils mPromoUtils;
@@ -30,7 +33,7 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
     private final Runnable mOnDisplayStateChanged;
 
     private @State int mState = State.PROMO_HIDDEN;
-    @Nullable private PromoCardCoordinator mCardCoordinator;
+    private @Nullable PromoCardCoordinator mCardCoordinator;
 
     /**
      * Construct and initialize DefaultBrowserPromoCard view, to be added to the
@@ -89,6 +92,7 @@ public class DefaultBrowserPromoCard implements SettingsPromoCardProvider {
 
     @Override
     public View getView() {
+        assumeNonNull(mCardCoordinator);
         return mCardCoordinator.getView();
     }
 

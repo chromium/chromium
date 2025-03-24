@@ -1870,6 +1870,9 @@ const FeatureEntry::FeatureParam
         {"has_background", "true"},
         {"reverse_button_order", "true"}};
 
+const FeatureEntry::FeatureParam kTabSearchToolbarButton[] = {
+    {"tab_search_toolbar_button", "true"}};
+
 const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
     {" - with background", kTabstripComboButtonBackground,
      std::size(kTabstripComboButtonBackground)},
@@ -1878,6 +1881,8 @@ const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
     {" - reverse button order & with background",
      kTabstripComboButtonReverseButtonOrderBackground,
      std::size(kTabstripComboButtonReverseButtonOrderBackground)},
+    {" - toolbar button", kTabSearchToolbarButton,
+     std::size(kTabSearchToolbarButton)},
 };
 
 #endif
@@ -4855,6 +4860,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-cros-privacy-hub", flag_descriptions::kCrosPrivacyHubName,
      flag_descriptions::kCrosPrivacyHubDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCrosPrivacyHub)},
+    {"enable-cros-separate-geo-api-key",
+     flag_descriptions::kCrosSeparateGeoApiKeyName,
+     flag_descriptions::kCrosSeparateGeoApiKeyDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kCrosSeparateGeoApiKey)},
     {"cros-components", flag_descriptions::kCrosComponentsName,
      flag_descriptions::kCrosComponentsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrosComponents)},
@@ -5883,6 +5892,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityTextFormattingName,
      flag_descriptions::kAccessibilityTextFormattingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAccessibilityTextFormatting)},
+    {"enable-accessibility-on-screen-mode",
+     flag_descriptions::kAccessibilityOnScreenModeName,
+     flag_descriptions::kAccessibilityOnScreenModeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAccessibilityOnScreenMode)},
     {"enable-accessibility-unified-snapshots",
      flag_descriptions::kAccessibilityUnifiedSnapshotsName,
      flag_descriptions::kAccessibilityUnifiedSnapshotsDescription, kOsAndroid,
@@ -6801,11 +6814,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDoubleTapToZoomInTabletMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {flag_descriptions::kTabGroupsDeferRemoteNavigationsId,
-     flag_descriptions::kTabGroupsDeferRemoteNavigationsName,
-     flag_descriptions::kTabGroupsDeferRemoteNavigationsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(tab_groups::kTabGroupsDeferRemoteNavigations)},
-
     {flag_descriptions::kTabGroupSyncServiceDesktopMigrationId,
      flag_descriptions::kTabGroupSyncServiceDesktopMigrationName,
      flag_descriptions::kTabGroupSyncServiceDesktopMigrationDescription,
@@ -7583,6 +7591,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"allow-dsp-based-agc", flag_descriptions::kCrOSDspBasedAgcAllowedName,
      flag_descriptions::kCrOSDspBasedAgcAllowedDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(media::kCrOSDspBasedAgcAllowed)},
+    {"enforce-mono-audio-capture",
+     flag_descriptions::kCrOSEnforceMonoAudioCaptureName,
+     flag_descriptions::kCrOSEnforceMonoAudioCaptureDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kCrOSEnforceMonoAudioCapture)},
     {"enforce-system-aec", flag_descriptions::kCrOSEnforceSystemAecName,
      flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(media::kCrOSEnforceSystemAec)},
@@ -11894,6 +11906,18 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kIsPaintableChecksResourceProviderInsteadOfBridge)},
+    {"enable-web-app-update-token-parsing",
+     flag_descriptions::kEnableWebAppUpdateTokenParsingName,
+     flag_descriptions::kEnableWebAppUpdateTokenParsingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kWebAppEnableUpdateTokenParsing)},
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+    {"root-scrollbar-follows-browser-theme",
+     flag_descriptions::kRootScrollbarFollowsTheme,
+     flag_descriptions::kRootScrollbarFollowsThemeDescription,
+     kOsLinux | kOsWin,
+     FEATURE_VALUE_TYPE(blink::features::kRootScrollbarFollowsBrowserTheme)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"scanner-disclaimer-debug-override",

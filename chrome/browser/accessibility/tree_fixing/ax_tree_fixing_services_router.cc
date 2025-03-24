@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/tree_fixing/internal/ax_tree_fixing_screen_ai_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_view_host.h"
@@ -121,7 +122,9 @@ void AXTreeFixingServicesRouter::ToggleAccessibilityState() {
       continue;
     }
     if (web_contents->GetAccessibilityMode().has_mode(
-            ui::AXMode::kExtendedProperties)) {
+            ui::AXMode::kExtendedProperties) ||
+        accessibility_state_utils::IsScreenReaderEnabled() ||
+        accessibility_state_utils::IsSelectToSpeakEnabled()) {
       web_contents_observers_.AddObserver(
           new WebContentsObserver(*web_contents));
     } else {

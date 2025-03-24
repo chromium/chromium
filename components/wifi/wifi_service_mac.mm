@@ -5,8 +5,8 @@
 #include "components/wifi/wifi_service.h"
 
 #import <CoreWLAN/CoreWLAN.h>
-#import <netinet/in.h>
 #import <SystemConfiguration/SystemConfiguration.h>
+#import <netinet/in.h>
 
 #include <map>
 #include <memory>
@@ -15,6 +15,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -439,7 +440,7 @@ std::string WiFiServiceMac::GetNetworkConnectionState(
 
   // Check whether WiFi network is reachable.
   struct sockaddr_in local_wifi_address;
-  bzero(&local_wifi_address, sizeof(local_wifi_address));
+  UNSAFE_TODO(bzero(&local_wifi_address, sizeof(local_wifi_address)));
   local_wifi_address.sin_len = sizeof(local_wifi_address);
   local_wifi_address.sin_family = AF_INET;
   local_wifi_address.sin_addr.s_addr = htonl(IN_LINKLOCALNETNUM);

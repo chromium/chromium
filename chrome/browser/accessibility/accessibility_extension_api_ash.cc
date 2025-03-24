@@ -948,11 +948,9 @@ AccessibilityPrivateSetNativeAccessibilityEnabledFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
   bool enabled = args()[0].GetBool();
   if (enabled) {
-    content::BrowserAccessibilityState::GetInstance()
-        ->EnableProcessAccessibility();
+    content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   } else {
-    content::BrowserAccessibilityState::GetInstance()
-        ->DisableProcessAccessibility();
+    content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
   }
   return RespondNow(NoArguments());
 }

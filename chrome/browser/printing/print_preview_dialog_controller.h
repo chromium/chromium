@@ -11,8 +11,8 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/printing/common/print.mojom.h"
+#include "components/tab_collections/public/tab_interface.h"
 
 class GURL;
 

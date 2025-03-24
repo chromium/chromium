@@ -125,7 +125,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
   // Called when the availability of a long-press gesture may have changed, e.g.
   // when Assistant becomes enabled.
-  void OnAssistantAvailabilityChanged();
+  void OnIconUpdated();
 
   // True if the app list is shown for the display containing this button.
   bool IsShowingAppList() const;

@@ -40,6 +40,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="2758123043070977469">Probléma volt a hitelesítéssel. Jelentkezzen be újra.</translation>
 <translation id="2803375539583399270">PIN-kód megadása</translation>
 <translation id="2919669478609886916">Ezt a gépet jelenleg megosztja egy másik felhasználóval. Szeretné folytatni a megosztást?</translation>
+<translation id="2929683002824598593">Eszköz megosztása</translation>
 <translation id="2939145106548231838">Hitelesítés a gazdagépen</translation>
 <translation id="3027681561976217984">Érintő mód</translation>
 <translation id="3106379468611574572">A távoli számítógép nem válaszol a csatlakozási kérésekre. Kérjük, ellenőrizze, hogy a távoli gép onlinekapcsolatban van-e, majd próbálja újra.</translation>
@@ -117,10 +118,12 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="6178645564515549384">Natív üzenetváltási szerver távoli segítségnyújtáshoz</translation>
 <translation id="618120821413932081">A távoli asztal felbontásának módosítása, hogy illeszkedjen az ablakhoz</translation>
 <translation id="6223301979382383752">Képernyőrögzítési beállítások megnyitása</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> hozzáférési engedélyt kért az Ön képernyőjének megtekintésére, illetve az egér és a billentyűzet vezérlésére. Szeretné megosztani az eszközét?</translation>
 <translation id="6284412385303060032">A konzol logikai képernyőjén futó gazdagép leállt, hogy támogassa a rejtett üzemmódot úgy, hogy felhasználóspecifikus munkamenetben futó gazdagépre váltott.</translation>
 <translation id="6542902059648396432">Hiba bejelentése…</translation>
 <translation id="6583902294974160967">Támogatás</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del küldése</translation>
+<translation id="6625262630437221505">{0,plural, =1{Ha nem tesz semmit, az eszköz automatikusan elkezdi a megosztást # másodperc múlva.}other{Ha nem tesz semmit, az eszköz automatikusan elkezdi a megosztást # másodperc múlva.}}</translation>
 <translation id="6654753848497929428">Megosztás</translation>
 <translation id="677755392401385740">Gazdagép elindítva a következő felhasználó számára: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Segédalkalmazás URL-ek <ph name="PRODUCT_NAME" />-kliensben való megnyitásához</translation>

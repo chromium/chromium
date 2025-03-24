@@ -960,11 +960,12 @@ TEST(FileDeathTest, InvalidFlags) {
         // temporary folder in TMP, which is set by the test runner parent
         // process to a temporary folder for the test. This means that the
         // folder created here is always deleted during test runner cleanup.
-        std::string tmp_folder;
-        ASSERT_TRUE(Environment::Create()->GetVar("TMP", &tmp_folder));
+        std::optional<std::string> tmp_folder =
+            Environment::Create()->GetVar("TMP");
+        ASSERT_TRUE(tmp_folder.has_value());
         ScopedTempDir temp_dir;
         ASSERT_TRUE(temp_dir.CreateUniqueTempDirUnderPath(
-            FilePath(UTF8ToWide(tmp_folder))));
+            FilePath(UTF8ToWide(tmp_folder.value()))));
         FilePath file_path = temp_dir.GetPath().AppendASCII("file");
 
         File file(file_path, File::FLAG_CREATE | File::FLAG_WIN_EXECUTE |

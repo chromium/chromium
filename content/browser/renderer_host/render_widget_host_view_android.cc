@@ -1329,10 +1329,8 @@ void RenderWidgetHostViewAndroid::SendStateOnTouchTransfer(
   TRACE_EVENT("input", "RenderWidgetHostViewAndroid::StateOnTouchTransfer");
   CHECK(host());
   auto* remote = host()->delegate()->GetRenderInputRouterDelegateRemote();
-  // Negate the offset. The calculation usually looks like this:
-  // `GetRayY + offset = GetY`. But MotionEvent returns the offset as GetRawY -
-  // GetY.
-  int y_offset_pix = -(std::round(event.GetRawOffsetY() * view_.GetDipScale()));
+  const float y_offset_pix =
+      host()->delegate()->GetCurrentTouchSequenceYOffset();
   remote->StateOnTouchTransfer(input::mojom::TouchTransferState::New(
       event.GetDownTime(), GetFrameSinkId(), y_offset_pix, view_.GetDipScale(),
       browser_would_have_handled));

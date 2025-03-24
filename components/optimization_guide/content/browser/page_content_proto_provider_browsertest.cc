@@ -57,11 +57,14 @@ void AssertRectsEqual(const optimization_guide::proto::BoundingRect& a,
   EXPECT_EQ(a.y(), b.y());
 }
 
-void AssertValidURL(std::string url, std::string host) {
-  GURL gurl(url);
-  EXPECT_TRUE(gurl.is_valid());
-  EXPECT_TRUE(gurl.SchemeIsHTTPOrHTTPS());
-  EXPECT_EQ(gurl.host(), host);
+void AssertValidOrigin(
+    const optimization_guide::proto::SecurityOrigin& proto_origin,
+    const url::Origin& expected) {
+  EXPECT_EQ(proto_origin.opaque(), expected.opaque());
+
+  url::Origin actual = url::Origin::Create(GURL(proto_origin.value()));
+  EXPECT_TRUE(actual.IsSameOriginWith(expected))
+      << "actual: " << actual << ", expected: " << expected;
 }
 
 class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
@@ -195,6 +198,26 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Selection) {
   EXPECT_EQ(selection.selected_text(), "Non empty simple page");
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       RelativePathOnIframe) {
+  LoadPage(https_server()->GetURL("a.com", "/relative_path.html"));
+
+  const auto& main_frame_origin =
+      page_content().main_frame_data().security_origin();
+  const auto& iframe_origin = page_content()
+                                  .root_node()
+                                  .children_nodes()[0]
+                                  .content_attributes()
+                                  .iframe_data()
+                                  .frame_data()
+                                  .security_origin();
+  AssertValidOrigin(
+      main_frame_origin,
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(main_frame_origin.opaque(), iframe_origin.opaque());
+  EXPECT_EQ(main_frame_origin.value(), iframe_origin.value());
+}
+
 class PageContentProtoProviderBrowserTestActionableElements
     : public PageContentProtoProviderBrowserTest {
  public:
@@ -256,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   const auto& image_data = image_node.content_attributes().image_data();
   // TODO(crbug.com/382558422): Propagate image source URLs, this should be
   // a.com.
-  EXPECT_TRUE(image_data.source_url().empty());
+  EXPECT_TRUE(image_data.security_origin().value().empty());
 }
 
 namespace {
@@ -291,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   const auto& image_data = image_node.content_attributes().image_data();
   // TODO(crbug.com/382558422): Propagate image source URLs, this should be
   // b.com.
-  EXPECT_TRUE(image_data.source_url().empty());
+  EXPECT_TRUE(image_data.security_origin().value().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -304,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
-  EXPECT_TRUE(iframe_data.url().empty());
+  EXPECT_TRUE(iframe_data.frame_data().security_origin().opaque());
   EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);
@@ -320,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& iframe_data = iframe.content_attributes().iframe_data();
-  EXPECT_TRUE(iframe_data.url().empty());
+  EXPECT_TRUE(iframe_data.frame_data().security_origin().value().empty());
   EXPECT_FALSE(iframe_data.likely_ad_frame());
 
   EXPECT_EQ(iframe.children_nodes().size(), 1);
@@ -551,7 +574,9 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   EXPECT_EQ(b_frame.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& b_frame_data = b_frame.content_attributes().iframe_data();
-  AssertValidURL(b_frame_data.url(), "b.com");
+  AssertValidOrigin(b_frame_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+                        ->GetLastCommittedOrigin());
   EXPECT_FALSE(b_frame_data.likely_ad_frame());
 
   EXPECT_EQ(b_frame.children_nodes().size(), 1);
@@ -564,7 +589,9 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   EXPECT_EQ(c_frame.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& c_frame_data = c_frame.content_attributes().iframe_data();
-  AssertValidURL(c_frame_data.url(), "c.com");
+  AssertValidOrigin(c_frame_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1)
+                        ->GetLastCommittedOrigin());
   EXPECT_FALSE(c_frame_data.likely_ad_frame());
   EXPECT_EQ(b_frame.children_nodes().size(), 1);
   AssertHasText(c_frame.children_nodes()[0], "This page has no title.\n\n");
@@ -610,7 +637,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestFencedFrame,
   EXPECT_EQ(b_frame.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   const auto& b_frame_data = b_frame.content_attributes().iframe_data();
-  AssertValidURL(b_frame_data.url(), "b.com");
+  AssertValidOrigin(b_frame_data.frame_data().security_origin(),
+                    fenced_frame_rfh->GetLastCommittedOrigin());
   EXPECT_FALSE(b_frame_data.likely_ad_frame());
   EXPECT_EQ(b_frame.children_nodes().size(), 1);
   AssertHasText(b_frame.children_nodes()[0], "Non empty simple page\n\n");
@@ -686,8 +714,17 @@ int TreeDepth(const optimization_guide::proto::ContentNode& node) {
   return depth + 1;
 }
 
+// TODO(gklassen): Flaky on ASAN.  Retry with trimmed depths.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DeepTree DISABLED_DeepTree
+#define MAYBE_DeepSparseTree DISABLED_DeepSparseTree
+#else
+#define MAYBE_DeepTree DeepTree
+#define MAYBE_DeepSparseTree DeepSparseTree
+#endif
+
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
-                       DeepTree) {
+                       MAYBE_DeepTree) {
   LoadPage(https_server()->GetURL("/deep.html"));
 
   // deep.html has a tree depth of 300.  Expect mojo encoding to trim to less
@@ -696,7 +733,7 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
 }
 
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
-                       DeepSparseTree) {
+                       MAYBE_DeepSparseTree) {
   LoadPage(https_server()->GetURL("/deep_sparse.html"));
 
   // deep_sparse.html has a dom tree depth of 300. Every other DIV is one that

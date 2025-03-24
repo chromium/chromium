@@ -12,6 +12,7 @@ import org.jni_zero.JNINamespace;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
+import org.chromium.components.collaboration.messaging.AggregatedMessageData;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
 import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
@@ -110,43 +111,32 @@ class ConversionUtils {
     }
 
     @CalledByNative
-    private static ArrayList<InstantMessage> createInstantMessageList() {
-        return new ArrayList<InstantMessage>();
-    }
-
-    @CalledByNative
-    private static InstantMessage createInstantMessageAndMaybeAddToList(
-            @Nullable ArrayList<InstantMessage> list,
-            MessageAttribution attribution,
-            @CollaborationEvent int collaborationEvent,
-            @InstantNotificationLevel int level,
-            @InstantNotificationType int type) {
-        InstantMessage message = new InstantMessage();
-        message.attribution = attribution;
-        message.collaborationEvent = collaborationEvent;
-        message.level = level;
-        message.type = type;
-
-        if (list != null) {
-            list.add(message);
-        }
-
-        return message;
-    }
-
-    @CalledByNative
     private static InstantMessage createInstantMessage(
-            MessageAttribution attribution,
             @CollaborationEvent int collaborationEvent,
             @InstantNotificationLevel int level,
-            @InstantNotificationType int type) {
+            @InstantNotificationType int type,
+            String localizedMessage,
+            @Nullable MessageAttribution attribution,
+            @Nullable AggregatedMessageData aggregatedData) {
         InstantMessage message = new InstantMessage();
-        message.attribution = attribution;
         message.collaborationEvent = collaborationEvent;
         message.level = level;
         message.type = type;
+        message.localizedMessage = localizedMessage;
+        message.attribution = attribution;
+        message.aggregatedData = aggregatedData;
 
         return message;
+    }
+
+    @CalledByNative
+    private static AggregatedMessageData addAttributionToAggregatedMessageData(
+            @Nullable AggregatedMessageData aggregatedMessageData, MessageAttribution attribution) {
+        if (aggregatedMessageData == null) {
+            aggregatedMessageData = new AggregatedMessageData();
+        }
+        aggregatedMessageData.attributions.add(attribution);
+        return aggregatedMessageData;
     }
 
     @CalledByNative

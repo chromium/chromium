@@ -178,14 +178,18 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+  using performance_manager::policies::DiscardEligibilityPolicy;
   using performance_manager::policies::FreezingOptOutChecker;
-  using performance_manager::policies::PageDiscardingHelper;
 
   graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
 
-  auto page_discarding_helper = std::make_unique<PageDiscardingHelper>();
-  auto weak_page_discarding_helper = page_discarding_helper->GetWeakPtr();
-  graph->PassToGraph(std::move(page_discarding_helper));
+  auto discard_eligibility_policy =
+      std::make_unique<DiscardEligibilityPolicy>();
+  auto weak_discard_eligibility_policy =
+      discard_eligibility_policy->GetWeakPtr();
+  graph->PassToGraph(std::move(discard_eligibility_policy));
+  graph->PassToGraph(
+      std::make_unique<performance_manager::policies::PageDiscardingHelper>());
 
 #if URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
   graph->PassToGraph(
@@ -213,8 +217,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   std::unique_ptr<FreezingOptOutChecker> freezing_opt_out_checker;
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kFreezingFollowsDiscardOptOut)) {
-    freezing_opt_out_checker =
-        std::make_unique<FreezingOptOutChecker>(weak_page_discarding_helper);
+    freezing_opt_out_checker = std::make_unique<FreezingOptOutChecker>(
+        weak_discard_eligibility_policy);
   }
   graph->PassToGraph(std::make_unique<performance_manager::FreezingPolicy>(
       std::make_unique<FreezingDiscarder>(),

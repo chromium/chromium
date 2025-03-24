@@ -227,15 +227,15 @@ void DeterminePossibleFieldTypesForUpload(
     const std::vector<CreditCard>& credit_cards,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
-    FormStructure* form) {
-  for (const std::unique_ptr<AutofillField>& field : *form) {
+    FormStructure& form) {
+  for (const std::unique_ptr<AutofillField>& field : form) {
     // DeterminePossibleFieldTypesForUpload may be called multiple times. Reset
     // the values so that the first call does not affect later calls.
     field->set_possible_types({});
   }
-  FindAndSetPossibleFieldTypes(
-      profiles, credit_cards, last_unlocked_credit_card_cvc, app_locale, *form);
-  DisambiguatePossibleFieldTypes(*form);
+  FindAndSetPossibleFieldTypes(profiles, credit_cards,
+                               last_unlocked_credit_card_cvc, app_locale, form);
+  DisambiguatePossibleFieldTypes(form);
 }
 
 }  // namespace autofill

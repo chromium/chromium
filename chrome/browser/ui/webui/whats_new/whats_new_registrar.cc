@@ -7,6 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/lens/lens_features.h"
 #include "components/performance_manager/public/features.h"
@@ -49,9 +50,11 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {
   // Register editions here.
+#if BUILDFLAG(ENABLE_GLIC)
   registry->RegisterEdition(WhatsNewEdition(
       ::features::kGlic, "tommasin@chromium.org",
       std::vector<BrowserCommand>{BrowserCommand::kOpenGlic}));
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 std::unique_ptr<WhatsNewRegistry> CreateWhatsNewRegistry() {

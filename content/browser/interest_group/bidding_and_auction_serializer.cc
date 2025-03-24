@@ -1064,6 +1064,8 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   std::optional<std::vector<uint8_t>> maybe_msg = cbor::Writer::Write(message);
   DCHECK(maybe_msg);
   DCHECK_EQ(static_cast<size_t>(total_size.ValueOrDie()), maybe_msg->size());
+  base::UmaHistogramCounts100000(
+    "Ads.InterestGroup.ServerAuction.Request.UnpaddedSize", maybe_msg->size());
 
   base::CheckedNumeric<uint32_t> desired_size;
   if (config->per_buyer_configs.empty()) {

@@ -400,6 +400,10 @@ class ASH_EXPORT CaptureModeController
   // Called by `SearchResultsView` when a search result is opened.
   void OnSearchResultClicked();
 
+  // Returns true if Google is the default search engine for the active user,
+  // and false otherwise.
+  bool ActiveUserDefaultSearchProviderIsGoogle() const;
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;

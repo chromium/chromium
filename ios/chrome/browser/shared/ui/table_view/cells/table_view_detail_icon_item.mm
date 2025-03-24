@@ -192,7 +192,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
     _textStackView.spacing = kDefaultTextLabelSpacing;
     [contentView addSubview:_textStackView];
 
-    // Set up the constraints for when the icon is visible and hidden.  One of
+    // Set up the constraints for when the icon is visible and hidden. One of
     // these will be active at a time, defaulting to hidden.
     _iconHiddenConstraint = [_textStackView.leadingAnchor
         constraintEqualToAnchor:contentView.leadingAnchor

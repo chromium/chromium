@@ -1712,131 +1712,115 @@ void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
       LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
   LayoutUnit rule_thickness(style.ColumnRuleWidth().GetLegacyValue());
 
-  // Count all the spanners
-  int span_count = 0;
+  WritingModeConverter converter(style.GetWritingDirection(),
+                                 box_fragment_.Size());
+  std::optional<LayoutUnit> current_row_block_offset;
+  // Count spanners and additional rows. Spanners and row wrapping may result in
+  // more than one row.
+  int items_until_last_row = 0;
   for (const PhysicalFragmentLink& child : box_fragment_.Children()) {
-    if (!child->IsColumnBox()) {
-      span_count++;
+    if (child->IsColumnBox()) {
+      LogicalRect current_rect =
+          converter.ToLogical(PhysicalRect(child.offset, child->Size()));
+      LayoutUnit column_block_offset = current_rect.offset.block_offset;
+      if (!current_row_block_offset) {
+        // No directly preceding row, either because it's the first row
+        // altogether, or because we're after a spanner.
+        current_row_block_offset.emplace(column_block_offset);
+      } else if (*current_row_block_offset != column_block_offset) {
+        // Wrapped to a new row.
+        *current_row_block_offset = column_block_offset;
+        items_until_last_row++;
+      }
+    } else {
+      // Assuming this is a spanner.
+      items_until_last_row++;
+      current_row_block_offset.reset();
     }
   }
 
-  PhysicalRect previous_column;
-  bool past_first_column_in_row = false;
+  LayoutUnit rule_block_start_offset;
+  LayoutUnit rule_block_end_offset;
+  LayoutUnit previous_column_inline_end;
+  LayoutUnit previous_column_block_end;
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+  current_row_block_offset.reset();
   for (const PhysicalFragmentLink& child : box_fragment_.Children()) {
     if (!child->IsColumnBox()) {
       // Column spanner. Continue in the next row, if there are 2 columns or
       // more there.
-      past_first_column_in_row = false;
-      previous_column = PhysicalRect();
-
-      span_count--;
-      CHECK_GE(span_count, 0);
+      items_until_last_row--;
+      CHECK_GE(items_until_last_row, 0);
+      current_row_block_offset.reset();
       continue;
     }
 
-    PhysicalRect current_column(child.offset, child->Size());
-    if (!past_first_column_in_row) {
+    LogicalRect current_rect =
+        converter.ToLogical(PhysicalRect(child.offset, child->Size()));
+    LayoutUnit column_block_offset = current_rect.BlockStartOffset();
+    if (!current_row_block_offset) {
+      // No directly preceding row, either because it's the first row
+      // altogether, or because we're after a spanner.
+      current_row_block_offset.emplace(column_block_offset);
+
+      rule_block_start_offset = current_rect.BlockStartOffset();
+      rule_block_end_offset = current_rect.BlockEndOffset();
       // Rules are painted *between* columns. Need to see if we have a second
       // one before painting anything.
-      past_first_column_in_row = true;
-      previous_column = current_column;
-      continue;
-    }
+    } else if (*current_row_block_offset != column_block_offset) {
+      // Wrapped to a new row.
+      *current_row_block_offset = column_block_offset;
+      items_until_last_row--;
+      CHECK_GE(items_until_last_row, 0);
 
-    PhysicalRect rule;
-    BoxSide box_side;
-    if (style.IsHorizontalWritingMode()) {
-      LayoutUnit center;
-      if (style.IsLeftToRightDirection()) {
-        center = (previous_column.X() + current_column.Right()) / 2;
-        box_side = BoxSide::kLeft;
-      } else {
-        center = (current_column.X() + previous_column.Right()) / 2;
-        box_side = BoxSide::kRight;
-      }
-
-      // Paint column rules as tall as the entire multicol container, but only
-      // when we're past all spanners.
-      LayoutUnit rule_length;
-      if (!span_count) {
-        const LayoutUnit column_box_bottom = box_fragment_.Size().height -
-                                             box_fragment_.Borders().bottom -
-                                             box_fragment_.Padding().bottom -
-                                             box_fragment_.OwnerLayoutBox()
-                                                 ->ComputeLogicalScrollbars()
-                                                 .block_end;
-        rule_length = column_box_bottom - previous_column.offset.top;
-        // For the case when the border or the padding is included in the
-        // multicol container.
-        // TODO(layout-dev): Get rid of this clamping, and fix any underlying
-        // issues
-        rule_length = std::max(rule_length, previous_column.Height());
-      } else {
-        rule_length = previous_column.Height();
-      }
-
-      DCHECK_GE(rule_length, current_column.Height());
-      rule.offset.top = previous_column.offset.top;
-      rule.size.height = rule_length;
-      rule.offset.left = center - rule_thickness / 2;
-      rule.size.width = rule_thickness;
+      // Paint rules in the preceding row-gap as well. Note that this isn't
+      // ideal for styles like dotted or dashed, since dot or dash painting will
+      // restart at this offset. Instead they ought to be painted as one
+      // operation, from the first row to the last.
+      rule_block_start_offset = previous_column_block_end;
+      rule_block_end_offset = current_rect.BlockEndOffset();
     } else {
-      // Vertical writing-mode.
-      const auto writing_direction = style.GetWritingDirection();
-      LayoutUnit center;
-      if (writing_direction.InlineEnd() == PhysicalDirection::kDown) {
-        // Top to bottom.
-        center = (previous_column.Y() + current_column.Bottom()) / 2;
-        box_side = BoxSide::kTop;
-      } else {
-        // Bottom to top.
-        center = (current_column.Y() + previous_column.Bottom()) / 2;
-        box_side = BoxSide::kBottom;
-      }
+      LayoutUnit center =
+          (current_rect.InlineStartOffset() + previous_column_inline_end) / 2;
 
-      LayoutUnit rule_length;
-      LayoutUnit rule_left = previous_column.offset.left;
-      if (!span_count) {
-        if (writing_direction.BlockEnd() == PhysicalDirection::kRight) {
-          const LayoutUnit column_box_right = box_fragment_.Size().width -
-                                              box_fragment_.Borders().right -
-                                              box_fragment_.Padding().right -
-                                              box_fragment_.OwnerLayoutBox()
-                                                  ->ComputeLogicalScrollbars()
-                                                  .block_end;
-          rule_length = column_box_right - previous_column.offset.left;
-        } else {
-          // Vertical-rl or sideways-rl writing-mode
-          const LayoutUnit column_box_left = box_fragment_.ContentOffset().left;
-          rule_length = previous_column.Width() +
-                        (previous_column.offset.left - column_box_left);
-          rule_left = column_box_left;
-        }
-
+      LayoutUnit rule_length = rule_block_end_offset - rule_block_start_offset;
+      // Paint column rules as tall as the entire multicol container, but only
+      // when at the last row.
+      if (!items_until_last_row) {
+        BoxStrut scrollbars =
+            box_fragment_.OwnerLayoutBox()->ComputeLogicalScrollbars();
+        LayoutUnit multicol_block_end_offset =
+            converter.ToLogical(box_fragment_.ContentRect()).BlockEndOffset() -
+            scrollbars.block_end;
+        LayoutUnit stretched_rule_length =
+            multicol_block_end_offset - rule_block_start_offset;
         // TODO(layout-dev): Get rid of this clamping, and fix any underlying
         // issues
-        rule_length = std::max(rule_length, previous_column.Width());
-        rule_left = std::min(rule_left, previous_column.offset.left);
-      } else {
-        rule_length = previous_column.Width();
+        rule_length = std::max(rule_length, stretched_rule_length);
       }
 
-      DCHECK_GE(rule_length, current_column.Width());
-      rule.offset.left = rule_left;
-      rule.size.width = rule_length;
-      rule.offset.top = center - rule_thickness / 2;
-      rule.size.height = rule_thickness;
+      LogicalRect logical_rule(center - rule_thickness / 2,
+                               rule_block_start_offset, rule_thickness,
+                               rule_length);
+      PhysicalRect rule = converter.ToPhysical(logical_rule);
+      rule.Move(paint_offset);
+
+      // Which of the inline edges we pick here doesn't matter (as long as it
+      // *is* an inline edge), since the rule style types where this matters
+      // (inset / outset) have been converted to a style where it doesn't
+      // matter. See ComputedStyle::CollapsedBorderStyle(().
+      BoxSide box_side =
+          style.IsHorizontalWritingMode() ? BoxSide::kLeft : BoxSide::kTop;
+
+      gfx::Rect snapped_rule = ToPixelSnappedRect(rule);
+      BoxBorderPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
+                                    rule_color, rule_style, auto_dark_mode);
+      recorder.UniteVisualRect(snapped_rule);
     }
 
-    rule.Move(paint_offset);
-    gfx::Rect snapped_rule = ToPixelSnappedRect(rule);
-    BoxBorderPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
-                                  rule_color, rule_style, auto_dark_mode);
-    recorder.UniteVisualRect(snapped_rule);
-
-    previous_column = current_column;
+    previous_column_inline_end = current_rect.InlineEndOffset();
+    previous_column_block_end = current_rect.BlockEndOffset();
   }
 }
 

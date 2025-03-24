@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">သင်နှင့် Google</translation>
 <translation id="3737319253362202215">ဘာသာပြန်ဆက်တင်များ</translation>
 <translation id="3738139272394829648">ရှာရန် ထိပါ</translation>
+<translation id="3739455665973395693">သင့် Google Account တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် မရှိပါ</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> တွင် လိပ်စာအဖြစ် သိမ်းဆည်းပါ</translation>
 <translation id="3740525748616366977">ဤစက်တွင် အသံဖြင့်ရှာဖွေမှု မရနိုင်ပါ</translation>
 <translation id="376561056759077985">ဒေတာအချို့ကို မသိမ်းရသေးပါ</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> ကို ထပ်မံဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
 <translation id="3987993985790029246">လင့်ခ်ကူးယူမည်</translation>
 <translation id="4000212216660919741">အော့ဖ်လိုင်း ပင်မစာမျက်နှာ</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{သင့် Google Account တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် ၁ ခု ရှိသည်}other{သင့် Google Account တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် # ခု ရှိသည်}}</translation>
 <translation id="4016425174436051808">လိုက်ကြည့်၍ မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
 <translation id="4024768890073681126">သင့်ဘရောင်ဇာကို သင့်မိဘက စီမံခန့်ခွဲသည်</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# နာရီ}other{# နာရီ}}</translation>
@@ -692,6 +694,7 @@
 <translation id="4270730597186910506">ကုန်ပစ္စည်းတစ်ခုကို စောင့်ကြည့်ရန် (သို့) စောင့်မကြည့်ရန်။</translation>
 <translation id="4277529130885813215">စက်နောက်တစ်ခု သုံးရန်</translation>
 <translation id="4282440837784183472">သင့်အဖွဲ့အစည်းဖြစ်သည့် <ph name="MANAGED_DOMAIN" /> သည် သင်လက်မှတ်ထိုးဝင်နေသော အကောင့်နှင့် Chrome အား အသုံးပြုနိုင်ပုံကို စီမံခန့်ခွဲသည်။ သင့်စီမံခန့်ခွဲသူသည် အင်္ဂါရပ်အချို့ကို စနစ်ထည့်သွင်းနိုင်သည် (သို့) ကန့်သတ်နိုင်သည်။</translation>
+<translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="4285846616383034558">ကွတ်ကီး၊ ကက်ရှ်နှင့် အခြား ဝဘ်ဆိုက်ဒေတာများ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ဆက်တင်များတွင် ဖန်သားပြင်လော့ခ်ဖွင့်ရန်<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">ရုပ်ဖျက်တဘ် အသစ်</translation>
@@ -831,6 +834,7 @@
 <translation id="4881695831933465202">ဖွင့်</translation>
 <translation id="488187801263602086">ဖိုင်ကို အမည်ပြောင်းခြင်း</translation>
 <translation id="4885273946141277891">Chrome ဖြစ်စဉ်များ၏ အရေအတွက်ကို ပံ့ပိုးမပေးပါ။</translation>
+<translation id="4890973535105146893">သင့် Google Account တွင် သိမ်းထားသောစကားဝှက် မရှိပါ</translation>
 <translation id="4905823827770127520">စာမျက်နှာသို့ လင့်ခ်ထည့်ရန်</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">ငွေပေးချေ အက်ပ်များ</translation>
@@ -920,6 +924,7 @@
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5319359161174645648">Google က Chrome ကို အသုံးပြုရန် အကြံပြုထားပါသည်</translation>
 <translation id="5326246328175179736">ဤအကောင့်သုံးပြီး လက်မှတ်ထိုးဝင်၍မရပါ</translation>
+<translation id="5327248766486351172">အမည်</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် အသုံးပြုပါ</translation>
 <translation id="5342314432463739672">ခွင့်ပြုချက် တောင်းဆိုမှုများ</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> အတွင်း ဝဘ်ဆိုက်များမရှိပါ</translation>
@@ -1075,6 +1080,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">သင့်သတင်းများနှင့် လုပ်ဆောင်ချက်ကို ဤနေရာတွင် ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="6071995715087444295">ကျိုးပေါက်ထားသည့် စကားဝှက်များကို စစ်ရန် သင့် Google Account သို့လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="6078323886959318429">ဖြတ်လမ်းလင့်ခ် ထည့်ပါ</translation>
 <translation id="6085886413119427067">လုံခြုံသည့် ချိတ်ဆက်မှုမှတစ်ဆင့် ဝဘ်ဆိုက်များသို့ ချိတ်ဆက်ရန်နည်းလမ်းကို ဆုံးဖြတ်ပေးသည်</translation>
 <translation id="6087286598828478206">အုပ်စုကို ပိတ်ထားပြီး ထွက်မလား။</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> နာရီ ကျန်သည်</translation>
@@ -1702,6 +1708,7 @@
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>
 <translation id="8699120352855309748">ဤဘာသာစကားများကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
+<translation id="8715286883001906001">သင့် Google Account ရှိ စကားဝှက်များကို အားကောင်းအောင်လုပ်ပါ</translation>
 <translation id="8723453889042591629">ဤစာမျက်နှာကို အမြန်ဘာသာပြန်ပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် တို့ထိ၍ဖိထားပါ။</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
 <translation id="8731268612289859741">လုံခြုံရေးကုဒ်</translation>
@@ -1829,6 +1836,7 @@
 <translation id="970715775301869095"><ph name="MINUTES" /> မိနစ် ကျန်သည်</translation>
 <translation id="981121421437150478">အော့ဖ်လိုင်း</translation>
 <translation id="983192555821071799">တဘ်အားလုံး ပိတ်ရန်</translation>
+<translation id="984756705737569814">သင့် Google Account ရှိ စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="987264212798334818">အထွေထွေ</translation>
 <translation id="988091779042748639">သင့်စက်မှ ရုပ်ဖျက် ကြည့်ရှုမှုမှတ်တမ်းကို ဖျက်ရန် ရုပ်ဖျက်တဘ်အားလုံး ပိတ်ပါ။</translation>
 <translation id="992745192656291733">တဘ် <ph name="TAB_COUNT" /> ခု</translation>

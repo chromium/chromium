@@ -87,9 +87,6 @@ features = [ "std", "release_max_level_info" ]
 default-features = false
 version = "0.22"
 
-[dependencies.rstest_reuse]
-version = "0.7"
-
 [dependencies.rustversion]
 version = "1"
 

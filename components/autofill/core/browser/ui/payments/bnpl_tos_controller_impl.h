@@ -8,14 +8,16 @@
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
 
+class AutofillClient;
 class BnplTosView;
 
 class BnplTosControllerImpl : public BnplTosController {
  public:
-  BnplTosControllerImpl();
+  explicit BnplTosControllerImpl(AutofillClient* client);
 
   BnplTosControllerImpl(const BnplTosControllerImpl&) = delete;
   BnplTosControllerImpl& operator=(const BnplTosControllerImpl&) = delete;
@@ -32,7 +34,7 @@ class BnplTosControllerImpl : public BnplTosController {
   std::u16string GetApproveText() const override;
   TextWithLink GetLinkText() const override;
   const LegalMessageLines& GetLegalMessageLines() const override;
-  const AccountInfo& GetAccountInfo() const override;
+  AccountInfo GetAccountInfo() const override;
   const std::string& GetIssuerId() const override;
   base::WeakPtr<BnplTosController> GetWeakPtr() override;
 
@@ -56,6 +58,8 @@ class BnplTosControllerImpl : public BnplTosController {
 
   base::OnceClosure accept_callback_;
   base::OnceClosure cancel_callback_;
+
+  const raw_ref<AutofillClient> client_;
 
   base::WeakPtrFactory<BnplTosControllerImpl> weak_ptr_factory_{this};
 };

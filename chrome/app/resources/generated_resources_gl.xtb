@@ -267,6 +267,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1175572348579024023">Desprazarse</translation>
 <translation id="1175914831232945926">Díxitos</translation>
 <translation id="1176471985365269981">Permiso denegado para editar ficheiros ou cartafoles do teu dispositivo</translation>
+<translation id="1176864681932214421">Crea imaxes coa IA</translation>
 <translation id="1177073277575830464">Completouse a configuración rápida de Android. Continúa coa configuración no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">Podes conectarte a calquera rede de telefonía móbil que cumpra os requisitos en Configuración</translation>
 <translation id="1177548198167638471">Non preguntar de novo</translation>
@@ -616,7 +617,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="142655739075382478">A aplicación <ph name="APP_NAME" /> está bloqueada</translation>
 <translation id="1427179946227469514">Ton da conversión de texto a voz</translation>
 <translation id="1427269577154060167">País</translation>
-<translation id="1427506552622340174">Fai clic co botón dereito para escribir textos con máis confianza, resumir contido, obter definicións e moito máis. De momento, a dispoñibilidade desta opción é limitada.</translation>
 <translation id="142765311413773645">Caducou a licenza de <ph name="APP_NAME" /></translation>
 <translation id="1428373049397869723">Podes abrir e editar ficheiros compatibles con esta aplicación desde Finder ou outras aplicacións. Para controlar os ficheiros que se abren nesta aplicación de forma predeterminada, consulta <ph name="BEGIN_LINK" />como definir aplicacións predeterminadas no teu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Gardaches unha nota dun contrasinal neste sitio. Para vela, na barra de busca e de enderezos selecciona a opción Xestionar os teus contrasinais.</translation>
@@ -1879,6 +1879,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">O ficheiro non estaba dispoñible no sitio</translation>
 <translation id="2300383962156589922">Personaliza e controla <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Declaracións de certificados cualificados</translation>
 <translation id="2301382460326681002">O directorio raíz da extensión non é válido.</translation>
 <translation id="2301402091755573488">Pestana compartida</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Funcións de depuración<ph name="END_H3" />
@@ -3582,6 +3583,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3503995387997205657">Xa podes restaurar as aplicacións antigas</translation>
 <translation id="3505100368357440862">Suxestións de compras</translation>
 <translation id="3507132249039706973">A protección estándar está activada</translation>
+<translation id="3507650052590605702">Xestionar contrasinal</translation>
 <translation id="3507888235492474624">Volver buscar dispositivos Bluetooth</translation>
 <translation id="3508492320654304609">Non se puideron eliminar os teus datos de inicio de sesión</translation>
 <translation id="3508920295779105875">Escoller outro cartafol...</translation>
@@ -3684,6 +3686,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3582057310199111521">Escribiuse nun sitio enganoso e viuse implicado nunha violación da seguranza dos datos</translation>
 <translation id="3582299299336701326">Escurece as pantallas claras e aclarea as escuras. Para activar e desactivar a inversión da cor, preme Buscar + Control + H.</translation>
 <translation id="3584169441612580296">Ler e modificar fotos, música e outros ficheiros multimedia do teu ordenador</translation>
+<translation id="3586741240886978899">Usáchela neste sitio</translation>
 <translation id="3586806079541226322">Non se pode abrir este ficheiro</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587279952965197737">Debe ter <ph name="MAX_CHARACTER_COUNT" /> caracteres ou menos</translation>
@@ -6604,7 +6607,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5643717184207603910">Manter a rapidez no rendemento</translation>
 <translation id="5646376287012673985">Localización</translation>
 <translation id="5646558797914161501">Home de negocios</translation>
-<translation id="5646994841348250879">Escolle unha conta para iniciar sesión en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5651308944918885595">Detectabilidade de Compartir por Nearby</translation>
@@ -9352,6 +9354,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7650582458329409456">{COUNT,plural, =1{Hai configurada 1 impresión dixital}other{Hai configuradas {COUNT} impresións dixitais}}</translation>
 <translation id="7650677314924139716">A configuración de uso de datos actual é Só por wifi</translation>
 <translation id="7650920359639954963">Non está habilitada: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">Para poder acceder a este marcador en todos os teus dispositivos, verifica a túa identidade</translation>
 <translation id="7651400349472467012">Zona wifi instantánea dispoñible</translation>
 <translation id="7651784568388208829">Continuación de tarefas a través de O meu teléfono</translation>
 <translation id="765293928828334535">Non se poden engadir aplicacións, extensións nin scripts de usuarios desde este sitio web</translation>
@@ -9390,6 +9393,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7670434942695515800">Actualiza á versión máis recente para conseguir un rendemento óptimo. É recomendable facer unha copia de seguranza dos ficheiros por se acaso non se pode completar a actualización. Linux pecharase en canto se inicie a actualización. Garda os ficheiros que teñas abertos antes de continuar. <ph name="LINK_START" />Máis información<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Subtítulos</translation>
 <translation id="7671130400130574146">Utilizar a barra de título e os bordos do sistema</translation>
+<translation id="7671139479636735732">Fai clic co botón dereito para visualizar facilmente as túas ideas</translation>
 <translation id="767127784612208024">Toca a chave para confirmar o seu restablecemento</translation>
 <translation id="7671472752213333268"><ph name="EXTENSION_NAME" /> quere escanear documentos desde <ph name="SCANNER_NAME" />.</translation>
 <translation id="7672504401554182757">Escolle o dispositivo que ten a clave de acceso para <ph name="APP_NAME" /></translation>
@@ -9409,6 +9413,9 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7680416688940118410">Calibración da pantalla táctil</translation>
 <translation id="7681095912841365527">O sitio pode usar o Bluetooth</translation>
 <translation id="7681597159868843240">Os sitios adoitan usar os sensores de movemento do dispositivo para ofrecerche determinadas funcións (por exemplo, as relacionadas coa realidade virtual ou co seguimento da forma física)</translation>
+<translation id="7681757571815416227">Para usar o teu dispositivo co perfil de <ph name="DOMAIN" />, a túa organización necesita información sobre o aparello.
+
+Pode tratarse de información sobre o software instalado, os ficheiros, o navegador, o sistema operativo do dispositivo e os enderezos IP.</translation>
 <translation id="7683373461016844951">Para continuar, fai clic en Aceptar e, despois, en Engadir persoa se queres crear un perfil para o teu enderezo de correo electrónico de <ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">Ferramentas de visualización para persoas con problemas de vista</translation>
 <translation id="7684212569183643648">Extensión instalada polo administrador</translation>
@@ -10189,6 +10196,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8217399928341212914">Continuar bloqueando as descargas automáticas de varios ficheiros</translation>
 <translation id="8219785583603399823">Consulta as valoracións desta tenda</translation>
 <translation id="822050276545350872">De agora en diante xa non tes que esperar</translation>
+<translation id="8221942262855134126">Xestionar contrasinal</translation>
 <translation id="8222112516148944758">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos</translation>
 <translation id="8222674561049363989">O ficheiro non é un documento válido</translation>
 <translation id="822347941086490485">Buscando dispositivos de interface humana…</translation>
@@ -10525,7 +10533,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8452105022015742247">Transferindo información da Conta de Google desde o teu teléfono Android</translation>
 <translation id="8455775311562941553">Conexión con: <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Define o teu navegador predeterminado</translation>
-<translation id="8456200178779628126">Usa a IA de Google para obter axuda ao ler e escribir</translation>
 <translation id="845702320058262034">Non se puido establecer conexión. Asegúrate de que o Bluetooth do teléfono estea activado.</translation>
 <translation id="8457251154056341970">Non volverás ver <ph name="MODULE_NAME" /> nesta páxina</translation>
 <translation id="8457451314607652708">Importar marcadores</translation>
@@ -10980,6 +10987,9 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8767069439158587614">Mostrar todas as buscas de <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Actualizar Chrome para todos os usuarios automaticamente</translation>
 <translation id="8768049274922835860">Todos</translation>
+<translation id="8769047324653576116">Para usar o teu dispositivo co perfil da túa organización, esta necesita información sobre o aparello.
+
+Pode tratarse de información sobre o software instalado, os ficheiros, o navegador, o sistema operativo do dispositivo e os enderezos IP.</translation>
 <translation id="876956356450740926">Utiliza editores, contornos de desenvolvemento integrado e ferramentas para programadores. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Directorio raíz da extensión</translation>
 <translation id="8773535891252326047">Copiouse a ligazón ao contido destacado</translation>
@@ -11420,7 +11430,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Rato USB conectado</translation>
 <translation id="9075413375877487220">A función Navegación segura mellorada non confía nesta extensión.</translation>
-<translation id="9075985558450420812">Escribe unha solicitude personalizada ou destaca texto para crear unha imaxe.</translation>
 <translation id="9076523132036239772">Non se puido verificar o teu correo electrónico ou contrasinal. Primeiro tenta conectarte a unha rede.</translation>
 <translation id="9076821103818989526">Panel lateral</translation>
 <translation id="9076977315710973122">Ficheiros compartidos por SMB</translation>

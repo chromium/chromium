@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">भाषासम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1459693405370120464">मौसम</translation>
 <translation id="1460620680449458626">भोल्युम म्युट गरिएको छ।</translation>
+<translation id="1462439140224375968">Google डकुमेन्ट बनाइएको छ</translation>
 <translation id="14648076227129703">यसले <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> र क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="1467432559032391204">बाँया</translation>
 <translation id="146902737843070955">तपाईंका एड्मिनले यो सेटिङ बदल्न अनुरोध गर्नुभएको छ</translation>
@@ -215,6 +216,7 @@
 <translation id="1679841710523778799">उज्यालोपना बढाउनुहोस्‌</translation>
 <translation id="1680659827022803830">भिडियो कलसम्बन्धी सेटिङ</translation>
 <translation id="169515659049020177">सिफ्ट</translation>
+<translation id="1696984622403682083">तपाईं जुनसुकै बेला सेटिङमा गई यो सुविधा अफ गर्न सक्नुहुन्छ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ठेगाना: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">सक्रिय विन्डो बायाँतिर डक गरिएको छ।</translation>
@@ -592,6 +594,7 @@
 <translation id="301584155502740476">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। हटस्पट अफ छ।</translation>
 <translation id="3017079585324758401">पृष्ठभूमि</translation>
 <translation id="3018135054368884502">मिडिया फास्ट फर्वार्ड गर्नुहोस्</translation>
+<translation id="3026897869154397692">पात्रोमा हालिएको छ</translation>
 <translation id="3033545621352269033">अन</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> मा संयोजन गर्नुहोस्</translation>
 <translation id="3036649622769666520">खुल्ला फाइलहरू</translation>
@@ -967,6 +970,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इन्स्टल गरिएको एप, अस्थायी रूपमा रोकिएको</translation>
 <translation id="4228078597006700451">सेटिङ सेटअप गरिएको छैन</translation>
 <translation id="4230560241506423345">नयाँ</translation>
+<translation id="4236726631849783264">सिफारिस गरिएका कारबाहीहरूका बारेमा रिमाइन्डर</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">परिदृश्य मोड</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
@@ -983,7 +987,6 @@
 <translation id="4275663329226226506">मिडिया</translation>
 <translation id="4279490309300973883">प्रतिबिम्ब गर्दै</translation>
 <translation id="4280601795273309128">सुरक्षासम्बन्धी अपडेट प्राप्त गर्ने सुविधाको म्याद सकियो। आफ्नो डिभाइस अपग्रेड गर्नुहोस्।</translation>
-<translation id="4281739221820540368">Google Docs प्रयोग गरी डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="4283888303416325161">थप सुरक्षाका लागि पासवर्ड हाल्नुहोस्</translation>
 <translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
 <translation id="428715201724021596">प्रोफाइलमा कनेक्ट गरिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
@@ -1044,6 +1047,7 @@
 <translation id="4471354919263203780">वाक् पहिचान गर्न प्रयोग गरिने फाइलहरू डाउनलोड गरिँदै... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{अहिले नै डिभाइस रिस्टार्ट गर्नुहोस्}=1{१ सेकेन्डभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# सेकेन्डभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
 <translation id="4472575034687746823">सुरु गर्नुहोस्</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">अर्को ट्र्याक</translation>
 <translation id="4477751544736611934">यसो गर्दा प्रयोग हुने डेटाबापत शुल्क तिर्नु पर्ने हुन सक्छ।
 एउटा डिभाइस कनेक्ट गरिएको छ।</translation>
@@ -1070,6 +1074,7 @@
 <translation id="4545950850562423083">हालको पेजलाई बुकमार्कका रूपमा सेभ गर्नुहोस्</translation>
 <translation id="4548482551627849548">सक्रिय विन्डो सारेर बायाँतिरको डेस्कमा लैजानुहोस्</translation>
 <translation id="4552748006424994716">प्रतिध्वनि उत्पन्न हुन नदिन तपाईं तारवाला हेडफोनबाट मात्र आफ्नो माइक सुन्न सक्नुहुन्छ।</translation>
+<translation id="4556953949326137018">तपाईंले “पात्रोमा हाल्नुहोस्” वा “Google Docs बनाउनुहोस्” जस्ता सिफारिस गरिएका कारबाहीहरू प्रयोग गर्नुभयो भने चयन गरिएको क्षेत्रबाट प्राप्त कन्टेन्ट <ph name="LINK_TO_SERVICE_TERMS" /> बमोजिम कारबाहीहरू सिफारिस गर्ने प्रयोजनका लागि Google का सर्भरहरूमा पठाइन्छ। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश नगर्नुहोस्।</translation>
 <translation id="4560576029703263363">अन</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
@@ -1153,6 +1158,7 @@
 <translation id="481455355267255546">यसपछि</translation>
 <translation id="481749895090480684">कामहरूको सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
+<translation id="4828935196674083554">हालिँदै छ...</translation>
 <translation id="482908187605862807">Play स्टोरमा उपलब्ध एपहरू</translation>
 <translation id="4831034276697007977">तपाईंले स्वचालित क्लिक सुविधा निष्क्रिय पार्न चाहनुभएकै हो?</translation>
 <translation id="4835677468087803981">PIN लुकाउनुहोस्</translation>
@@ -1650,6 +1656,7 @@
 <translation id="641817663353603351">पेज अप</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">सबै सूचनाहरू हटाउनुहोस्</translation>
+<translation id="6426905245930183644">बनाइँदै छ...</translation>
 <translation id="6430225033895752525">फोकस मोडका सेटिङ देखाइयोस्</translation>
 <translation id="643147933154517414">सबै सम्पन्न भयो</translation>
 <translation id="6431865393913628856">स्क्रिन रेकर्ड</translation>
@@ -1716,7 +1723,6 @@
 <translation id="6612889377159412215">उपकार्य</translation>
 <translation id="6613765291890844037">कुल भण्डारण <ph name="STORAGE_TOTAL_SIZE" /> मध्ये <ph name="STORAGE_IN_USE_SIZE" /> प्रयोग भइरहेको छ</translation>
 <translation id="6614169507485700968">गोपनीयताको स्क्रिन सक्रिय छ</translation>
-<translation id="6618277154885124991">Google Sheets प्रयोग गरी पाना बनाउनुहोस्</translation>
 <translation id="6622679827379792051">आफ्नो फोनमा भएका एपहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="662279009180869175">स्प्लिट स्क्रिनको आकार बदल्न लेफ्ट तथा राइट एरो प्रयोग गर्नुहोस्</translation>
 <translation id="6624493541160101248">हालको डेस्क: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" /> वटामध्ये <ph name="DESK_INDEX" /> औँ डेस्क।</translation>
@@ -1890,6 +1896,7 @@
 <translation id="7228968829656641943">आफ्नो स्क्रिनमा भएको आफूले खोज्न चाहेको क्षेत्र चयन गर्नुहोस्। किबोर्डमार्फत नेभिगेट गर्न ट्याब अनि स्पेस की थिच्नुहोस्।</translation>
 <translation id="7229029500464092426">कुल <ph name="TOTAL_MEMORY" /> मध्ये <ph name="AVAILABLE_MEMORY" /> मेमोरी प्रयोग गरिएको छ</translation>
 <translation id="7239814253344511868">माउसका दुवै बटन</translation>
+<translation id="7240636904654154599">Google पाना बनाइएको छ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ। आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। कुनै अद्यावधिक लागू गर्न यो Chromebook पुनः सुरु गर्नु पर्ने हुन्छ। यो प्रक्रिया पूरा हुन १ मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="7256057185598509352">ExpressKey २</translation>
@@ -2400,6 +2407,8 @@
 <translation id="8921624153894383499">Google सहायकले यो भाषा बोल्दैन।</translation>
 <translation id="8926951137623668982">सेल्फ सधैँ लुकेको हुन्छ</translation>
 <translation id="8929566928381252430">क्याप्स लक की प्रयोग गर्न खोज्दै हुनुहुन्छ? निम्न कीहरू थिच्नुहोस्:</translation>
+<translation id="8929623844713377237">कन्ट्याक्ट बनाइएको छ</translation>
+<translation id="8934418770423095813">Google कागजात प्रयोग गरी डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="8936501819958976551">निष्क्रिय पारियो</translation>
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>

@@ -56,6 +56,8 @@ class PageActionModelInterface {
   virtual void SetOverrideTooltip(
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_tooltip) = 0;
+  virtual void SetShouldHidePageAction(base::PassKey<PageActionController>,
+                                       bool should_hide) = 0;
 
   virtual bool GetVisible() const = 0;
   virtual bool GetShowSuggestionChip() const = 0;
@@ -104,6 +106,9 @@ class PageActionModel : public PageActionModelInterface {
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_tooltip) override;
 
+  void SetShouldHidePageAction(base::PassKey<PageActionController>,
+                               bool should_hide) override;
+
   // The model distills all visibility properties into a single result.
   bool GetVisible() const override;
   bool GetShowSuggestionChip() const override;
@@ -149,6 +154,10 @@ class PageActionModel : public PageActionModelInterface {
 
   // When set, it will always take precedence over `text_`.
   std::optional<std::u16string> override_text_;
+
+  // Tracks whether we should forcibly hide the page action (e.g., Omnibox is
+  // getting updated).
+  bool should_hide_ = false;
 
   // Flag used to disallow reentrant behaviour.
   bool is_notifying_observers_ = false;

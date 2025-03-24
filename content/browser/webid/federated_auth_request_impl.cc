@@ -1979,14 +1979,13 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
 
   const std::string idp_for_display =
       webid::FormatUrlForDisplay(idp_config_url);
-  gfx::Image idp_brand_icon;
   auto it = downloaded_images_.find(idp_info->metadata.brand_icon_url);
   if (it != downloaded_images_.end()) {
-    idp_brand_icon = it->second;
+    idp_info->metadata.brand_decoded_icon = it->second;
   }
   idp_info->data = base::MakeRefCounted<IdentityProviderData>(
       idp_for_display, idp_info->metadata,
-      ClientMetadata{GURL(), GURL(), GURL(), std::move(idp_brand_icon)},
+      ClientMetadata{GURL(), GURL(), GURL(), gfx::Image()},
       idp_info->rp_context, GetDisclosureFields(*idp_info->provider),
       /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);
@@ -2333,7 +2332,6 @@ void FederatedAuthRequestImpl::OnAllAccountPicturesAndBrandIconUrlReceived(
     idp_info->metadata.brand_decoded_icon = it->second;
   }
 
-  downloaded_images_.clear();
   OnFetchDataForIdpSucceeded(std::move(idp_info), std::move(accounts),
                              client_metadata, rp_brand_icon);
 }

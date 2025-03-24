@@ -44,6 +44,7 @@ class TestVotesUploader : public VotesUploader {
       ukm::SourceId ukm_source_id) override;
 
   void UploadVote(std::unique_ptr<FormStructure> submitted_form,
+                  std::vector<AutofillUploadContents> upload_contents,
                   base::TimeTicks initial_interaction_timestamp,
                   base::TimeTicks submission_timestamp,
                   bool observed_submission,

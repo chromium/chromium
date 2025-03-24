@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">អ្នក និង Google</translation>
 <translation id="3737319253362202215">ការកំណត់ការបកប្រែ</translation>
 <translation id="3738139272394829648">ប៉ះដើម្បីស្វែងរក</translation>
+<translation id="3739455665973395693">គ្មាន​ពាក្យសម្ងាត់​ដែល​រងការលុកលុយ​នៅក្នុង​គណនី Google របស់អ្នក​ទេ</translation>
 <translation id="3739899004075612870">បាន​ដាក់​ចំណាំ​នៅ​ក្នុង <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">មិនអាចប្រើការស្វែងរក​តាម​សំឡេង​នៅ​លើ​ឧបករណ៍​នេះ​បានទេ</translation>
 <translation id="376561056759077985">ទិន្នន័យ​មួយចំនួន​មិនទាន់​ត្រូវបាន​រក្សាទុក​ទេ</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">តើអ្នកចង់ទាញយក <ph name="FILE_NAME" /> ម្តងទៀតដែរទេ?</translation>
 <translation id="3987993985790029246">ចម្លងតំណ</translation>
 <translation id="4000212216660919741">Home គ្មាន​អ៊ីនធឺណិតទេ</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{មាន​ពាក្យសម្ងាត់​ដែល​រងការលុកលុយ 1 នៅក្នុង​គណនី Google របស់អ្នក}other{មាន​ពាក្យសម្ងាត់​ដែល​រងការលុកលុយ # នៅក្នុង​គណនី Google របស់អ្នក}}</translation>
 <translation id="4016425174436051808">មិនអាច​តាមដានបានទេ។ មានអ្វីមួយខុសប្រក្រតី។</translation>
 <translation id="4024768890073681126">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ត្រូវបានគ្រប់គ្រង​ដោយ​មាតាបិតារបស់អ្នក</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ម៉ោង​}other{# ម៉ោង}}</translation>
@@ -692,6 +694,7 @@
 <translation id="4270730597186910506">តាមដាន ឬឈប់តាមដានផលិតផល។</translation>
 <translation id="4277529130885813215">ប្រើ​ឧបករណ៍​ផ្សេងទៀត</translation>
 <translation id="4282440837784183472">ស្ថាប័ន​របស់អ្នក <ph name="MANAGED_DOMAIN" /> គ្រប់គ្រង​គណនី​ដែលអ្នក​កំពុងចូល និង​របៀបដែល Chrome អាចត្រូវបានប្រើ។ អ្នកគ្រប់គ្រង​របស់អ្នក​អាចរៀបចំ ឬ​ដាក់កំហិត​លើមុខងារ​ជាក់លាក់បាន។</translation>
+<translation id="4285498937028063278">ដកការដៅ</translation>
 <translation id="4285846616383034558">ខូគី ឃ្លាំងបម្រុង និង​ទិន្នន័យ​គេហទំព័រ​ផ្សេងទៀត</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />បើក​ការចាក់សោអេក្រង់​នៅក្នុង​ការកំណត់ Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">ផ្ទាំងឯកជន​ថ្មី</translation>
@@ -831,6 +834,7 @@
 <translation id="4881695831933465202">បើក</translation>
 <translation id="488187801263602086">ប្តូរ​ឈ្មោះ​ឯកសារ</translation>
 <translation id="4885273946141277891">លេខមិនគាំទ្ររបស់ Chrome instances។</translation>
+<translation id="4890973535105146893">គ្មាន​ពាក្យ​សម្ងាត់​ដែលបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក​ទេ</translation>
 <translation id="4905823827770127520">រួមបញ្ចូល​តំណទៅកាន់​ទំព័រ</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">កម្មវិធី​បង់ប្រាក់</translation>
@@ -920,6 +924,7 @@
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5319359161174645648">Google ណែនាំ Chrome</translation>
 <translation id="5326246328175179736">អ្នក​មិនអាច​ចូល​ដោយប្រើ​គណនីនេះ​បានទេ</translation>
+<translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5328542107300944283">ប្រើ​តាមរយៈ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">សំណើសុំ​ការអនុញ្ញាត</translation>
 <translation id="534580735623577507">មិនមាន​គេហទំព័រ​ពីរយៈពេល <ph name="TIME_PERIOD" />ទេ</translation>
@@ -1075,6 +1080,7 @@
 <translation id="605721222689873409">ឆ្នាំ</translation>
 <translation id="6059830886158432458">គ្រប់គ្រង​អត្ថបទ និង​សកម្មភាព​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6071995715087444295">ដើម្បីពិនិត្យរកមើលពាក្យសម្ងាត់ដែល​រងការលុកលុយ សូមចូលគណនី Google របស់អ្នក</translation>
+<translation id="6078323886959318429">បន្ថែម​ផ្លូវកាត់</translation>
 <translation id="6085886413119427067">កំណត់របៀបភ្ជាប់​គេហទំព័រ​តាមរយៈការតភ្ជាប់ដែលមានសុវត្ថិភាព</translation>
 <translation id="6087286598828478206">ទប់ស្កាត់ និង​ចាកចេញ​ពីក្រុមឬ?</translation>
 <translation id="60923314841986378">នៅសល់ <ph name="HOURS" /> ម៉ោងទៀត</translation>
@@ -1703,6 +1709,7 @@
 <translation id="869891660844655955">កាលបរិច្ឆេទការផុតកំណត់</translation>
 <translation id="8699120352855309748">មិនផ្ដល់ការបកប្រែភាសាទាំងនេះទេ</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
+<translation id="8715286883001906001">ធ្វើឱ្យ​ពាក្យសម្ងាត់​របស់អ្នក​នៅក្នុង​គណនី Google របស់អ្នក​ខ្លាំង</translation>
 <translation id="8723453889042591629">បកប្រែ​ទំព័រ​នេះ​យ៉ាង​រហ័ស។ ដើម្បីកែផ្លូវកាត់នេះ សូមចុចឱ្យជាប់។</translation>
 <translation id="8725066075913043281">ព្យាយាមម្តងទៀត</translation>
 <translation id="8731268612289859741">លេខ​កូដ​សុវត្ថិភាព</translation>
@@ -1830,6 +1837,7 @@
 <translation id="970715775301869095">នៅសល់ <ph name="MINUTES" /> នាទីទៀត</translation>
 <translation id="981121421437150478">ក្រៅបណ្តាញ</translation>
 <translation id="983192555821071799">បិទផ្ទាំងទាំងអស់</translation>
+<translation id="984756705737569814">មិនអាច​ពិនិត្យមើល​ពាក្យ​សម្ងាត់​នៅក្នុង​គណនី Google របស់អ្នក​បានទេ</translation>
 <translation id="987264212798334818">ទូទៅ</translation>
 <translation id="988091779042748639">ដើម្បី​លុប​ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​នៃមុខងារ​ឯកជន​ចេញពី​ឧបករណ៍​របស់អ្នក សូមបិទ​ផ្ទាំងឯកជន​ទាំងអស់។</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ផ្ទាំង</translation>

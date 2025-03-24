@@ -1055,10 +1055,19 @@ void AuthenticatorCommonImpl::MakeCredential(
   const std::string relying_party_id = options->relying_party.id;
   const blink::mojom::RemoteDesktopClientOverridePtr&
       remote_desktop_client_override = options->remote_desktop_client_override;
+  std::optional<url::Origin> remote_desktop_override_origin;
+  if (remote_desktop_client_override) {
+    // SECURITY: RemoteDesktopClientOverride comes from the renderer process and
+    // is untrusted. This `remote_desktop_override_origin` is only used after
+    // ValidateDomainAndRelyingPartyID verifies that the `caller_origin` is
+    // explicitly allowlisted via enterprise policy in
+    // WebAuthenticationDelegateBase::OriginMayUseRemoteDesktopClientOverride().
+    remote_desktop_override_origin = remote_desktop_client_override->origin;
+  }
   std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
       remote_validation = security_checker_->ValidateDomainAndRelyingPartyID(
           caller_origin, relying_party_id, request_type,
-          remote_desktop_client_override,
+          remote_desktop_override_origin,
           base::BindOnce(
               &AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck,
               weak_factory_.GetWeakPtr(), GetRequestKey(), caller_origin,
@@ -1469,10 +1478,19 @@ void AuthenticatorCommonImpl::GetCredential(
   const blink::mojom::RemoteDesktopClientOverridePtr&
       remote_desktop_client_override =
           options->extensions->remote_desktop_client_override;
+  std::optional<url::Origin> remote_desktop_override_origin;
+  if (remote_desktop_client_override) {
+    // SECURITY: RemoteDesktopClientOverride comes from the renderer process and
+    // is untrusted. This `remote_desktop_override_origin` is only used after
+    // ValidateDomainAndRelyingPartyID verifies that the `caller_origin` is
+    // explicitly allowlisted via enterprise policy in
+    // WebAuthenticationDelegateBase::OriginMayUseRemoteDesktopClientOverride().
+    remote_desktop_override_origin = remote_desktop_client_override->origin;
+  }
   std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
       remote_validation = security_checker_->ValidateDomainAndRelyingPartyID(
           caller_origin, relying_party_id, request_type,
-          remote_desktop_client_override,
+          remote_desktop_override_origin,
           base::BindOnce(
               &AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck,
               weak_factory_.GetWeakPtr(), GetRequestKey(), caller_origin,
@@ -1929,7 +1947,7 @@ void AuthenticatorCommonImpl::Report(
       remote_validation = security_checker_->ValidateDomainAndRelyingPartyID(
           req_state_->caller_origin, req_state_->relying_party_id,
           WebAuthRequestSecurityChecker::RequestType::kReport,
-          /*remote_desktop_client_override=*/nullptr,
+          /*remote_desktop_client_override_origin=*/std::nullopt,
           base::BindOnce(&AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck,
                          weak_factory_.GetWeakPtr(), GetRequestKey(),
                          std::move(options)));

@@ -17,13 +17,13 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -107,7 +107,7 @@ views::View* AuthenticatorRequestSheetView::GetInitiallyFocusedView() {
   if (should_focus_step_specific_content_ == AutoFocus::kYes) {
     return child_views_.step_specific_content_;
   }
-  if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
     // Focus the title label if a screen reader is detected to nudge it to
     // announce the title when the sheet changes.
     return child_views_.title_label_;
@@ -223,7 +223,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
     title_label->SetAllowCharacterBreak(true);
-    if (ui::AXPlatform::GetInstance().IsScreenReaderActive() &&
+    if (accessibility_state_utils::IsScreenReaderEnabled() &&
         should_focus_step_specific_content_ == AutoFocus::kNo) {
       title_label->SetFocusBehavior(FocusBehavior::ALWAYS);
     }

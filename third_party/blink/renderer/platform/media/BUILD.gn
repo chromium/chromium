@@ -16,6 +16,8 @@ component("media") {
   ]
   output_name = "blink_platform_media"
   sources = [
+    "buffered_data_source_host_impl.cc",
+    "buffered_data_source_host_impl.h",
     "cache_util.cc",
     "cache_util.h",
     "cdm_result_promise.h",
@@ -27,8 +29,12 @@ component("media") {
     "create_cdm_uma_helper.h",
     "interval_map.h",
     "key_system_config_selector.cc",
+    "learning_experiment_helper.cc",
+    "learning_experiment_helper.h",
     "multi_buffer.cc",
     "multi_buffer.h",
+    "multi_buffer_data_source.cc",
+    "multi_buffer_data_source.h",
     "multi_buffer_reader.cc",
     "multi_buffer_reader.h",
     "new_session_cdm_result_promise.cc",
@@ -38,6 +44,8 @@ component("media") {
     "resource_fetch_context.h",
     "resource_multi_buffer_data_provider.cc",
     "resource_multi_buffer_data_provider.h",
+    "smoothness_helper.cc",
+    "smoothness_helper.h",
     "url_index.cc",
     "url_index.h",
     "video_decode_stats_reporter.cc",
@@ -52,6 +60,8 @@ component("media") {
     "web_content_decryption_module_session_impl.h",
     "web_encrypted_media_client_impl.cc",
     "web_media_player_builder.cc",
+    "web_media_player_impl.cc",
+    "web_media_player_impl.h",
     "web_media_source_impl.cc",
     "web_media_source_impl.h",
     "web_source_buffer_impl.cc",
@@ -66,9 +76,11 @@ component("media") {
     "//base",
     "//cc",
     "//media",
+    "//media/learning/common",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom:mojom_blink",
+    "//services/media_session/public/cpp:base_cpp",
     "//third_party/blink/public:blink",
     "//third_party/blink/renderer/platform:platform_export",
     "//ui/gfx/geometry",
@@ -78,36 +90,15 @@ component("media") {
     "//components/viz/common",
     "//media:media_buildflags",
     "//media:shared_memory_support",
+    "//media/learning/mojo/public/cpp",
     "//net",
     "//services/network/public/cpp",
     "//third_party/blink/public/common",
     "//third_party/blink/public/mojom:mojom_platform",
+    "//third_party/blink/public/strings:strings_grit",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
     "//third_party/blink/renderer/platform:platform",
   ]
-
-  if (media_use_ffmpeg || !is_android) {
-    sources += [
-      "buffered_data_source_host_impl.cc",
-      "buffered_data_source_host_impl.h",
-      "learning_experiment_helper.cc",
-      "learning_experiment_helper.h",
-      "multi_buffer_data_source.cc",
-      "multi_buffer_data_source.h",
-      "smoothness_helper.cc",
-      "smoothness_helper.h",
-      "web_media_player_impl.cc",
-      "web_media_player_impl.h",
-    ]
-    public_deps += [
-      "//media/learning/common",
-      "//services/media_session/public/cpp:base_cpp",
-    ]
-    deps += [
-      "//media/learning/mojo/public/cpp",
-      "//third_party/blink/public/strings:strings_grit",
-    ]
-  }
 
   if (enable_hls_demuxer) {
     sources += [
@@ -128,12 +119,16 @@ source_set("unit_tests") {
   #configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
   configs += [ "//third_party/blink/renderer:inside_blink" ]
   sources = [
+    "buffered_data_source_host_impl_unittest.cc",
     "cache_util_unittest.cc",
     "interval_map_unittest.cc",
     "key_system_config_selector_unittest.cc",
+    "learning_experiment_helper_unittest.cc",
+    "multi_buffer_data_source_unittest.cc",
     "multi_buffer_unittest.cc",
     "power_status_helper_unittest.cc",
     "resource_multi_buffer_data_provider_unittest.cc",
+    "smoothness_helper_unittest.cc",
     "url_index_unittest.cc",
     "video_decode_stats_reporter_unittest.cc",
     "video_frame_compositor_unittest.cc",
@@ -146,9 +141,11 @@ source_set("unit_tests") {
     "//components/viz/common",
     "//media",
     "//media:test_support",
+    "//media/learning/common",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink",
@@ -156,19 +153,6 @@ source_set("unit_tests") {
     "//third_party/blink/public/platform/media",
     "//third_party/blink/renderer/platform:test_support",
   ]
-
-  if (media_use_ffmpeg || !is_android) {
-    sources += [
-      "buffered_data_source_host_impl_unittest.cc",
-      "learning_experiment_helper_unittest.cc",
-      "multi_buffer_data_source_unittest.cc",
-      "smoothness_helper_unittest.cc",
-    ]
-    deps += [
-      "//media/learning/common",
-      "//services/network/public/mojom",
-    ]
-  }
 }
 
 source_set("test_support") {

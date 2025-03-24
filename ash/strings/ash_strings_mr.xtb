@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">उजळपणा वाढवा</translation>
 <translation id="1680659827022803830">व्हिडिओ कॉल नियंत्रणे</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">तुम्ही हे वैशिष्ट्य सेटिंग्ज मध्ये कधीही बंद करू शकता. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टायमर· <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 पत्ता: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">अ‍ॅक्टिव्ह विंडो डावीकडे डॉक केली आहे.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप, थांबवले आहे</translation>
 <translation id="4228078597006700451">नियंत्रणे सेट केलेली नाहीत</translation>
 <translation id="4230560241506423345">नवीन</translation>
+<translation id="4236726631849783264">सुचवलेल्या कृतींबद्दल रिमाइंडर</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">अवलोकन मोड</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">माध्यम</translation>
 <translation id="4279490309300973883">मिररिंग</translation>
 <translation id="4280601795273309128">सुरक्षा अपडेट पूर्ण झाली आहेत. तुमचे डिव्हाइस अपग्रेड करा.</translation>
-<translation id="4281739221820540368">Google Docs तयार करा</translation>
 <translation id="4283888303416325161">आणखी सुरक्षिततेसाठी पासवर्ड एंटर करा</translation>
 <translation id="4285498937028063278">अनपिन</translation>
 <translation id="428715201724021596">प्रोफाइलशी कनेक्ट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">स्पीच रेकग्निशन फाइल डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Update device now}=1{डिव्हाइस एका सेकंदाच्या आत अपडेट करा}other{डिव्हाइस # सेकंदाच्या आत अपडेट करा}}</translation>
 <translation id="4472575034687746823">सुरुवात करा</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">पुढील ट्रॅक</translation>
 <translation id="4477751544736611934">यासाठी डेटा शुल्क लागू शकते.
 १ डिव्हाइस कनेक्ट केले आहे.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">सद्य पेज बुकमार्क म्हणून सेव्ह करा</translation>
 <translation id="4548482551627849548">डावीकडील डेस्‍कवर अ‍ॅक्टिव्ह विंडो हलवा</translation>
 <translation id="4552748006424994716">प्रतिध्वनी टाळण्यासाठी, तुम्ही फक्त वायर्ड हेडफोन वापरून तुमचा माइक ऐकू शकता.</translation>
+<translation id="4556953949326137018">तुम्ही “Calendar मध्ये जोडा” किंवा “Google दस्तऐवज तयार करा” यासारख्या सुचवलेल्या कृती वापरता, तेव्हा निवडलेल्या भागामधील आशय कृती सुचवण्यासाठी <ph name="LINK_TO_SERVICE_TERMS" /> च्या अधीन राहून Google सर्व्हरला पाठवला जातो. कोणत्याही वैयक्तिक, संवेदनशील किंवा गोपनीय गोष्टीचा समावेश करू नका.</translation>
 <translation id="4560576029703263363">सुरू</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">पुढील</translation>
 <translation id="481749895090480684">टास्क सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
+<translation id="4828935196674083554">जोडत आहे...</translation>
 <translation id="482908187605862807">Play Store वर उपलब्ध असलेली ॲप्स</translation>
 <translation id="4831034276697007977">तुम्हाला ऑटोमेटिक क्लिक नक्की बंद करायचे आहे का?</translation>
 <translation id="4835677468087803981">पिन लपवा</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">पेज अप</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">सर्व सूचना साफ करा</translation>
+<translation id="6426905245930183644">तयार करत आहे...</translation>
 <translation id="6430225033895752525">फोकस सेटिंग्ज दाखवा</translation>
 <translation id="643147933154517414">सर्व पूर्ण झाले</translation>
 <translation id="6431865393913628856">स्क्रीन रेकॉर्ड करा</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">उपटास्क</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> स्टोरेज वापरात आहे | <ph name="STORAGE_TOTAL_SIZE" /> एकूण</translation>
 <translation id="6614169507485700968">गोपनीयता स्क्रीन सुरू आहे</translation>
-<translation id="6618277154885124991">Google Sheets तयार करा</translation>
 <translation id="6622679827379792051">तुमच्या फोनमधील ॲप्स पाहणे सेट करा</translation>
 <translation id="662279009180869175">स्प्लिट स्क्रीनचा आकार बदलण्यासाठी लेफ्ट आणि राइट अ‍ॅरो वापरा</translation>
 <translation id="6624493541160101248">सध्याचा डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
@@ -2400,6 +2404,7 @@
 <translation id="8921624153894383499">Google Assistant ही भाषा बोलत नाही.</translation>
 <translation id="8926951137623668982">शेल्फ नेहमी लपवलेले आहे</translation>
 <translation id="8929566928381252430">कॅप्स लॉक वापरण्याचा प्रयत्न करत आहात का? वापरा</translation>
+<translation id="8934418770423095813">Google Doc तयार करा</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{१ फाइल}other{# फाइल}}</translation>
 <translation id="8936501819958976551">डीॲक्टिव्हेट केले आहे</translation>
 <translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>

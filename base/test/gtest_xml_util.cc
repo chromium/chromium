@@ -11,12 +11,17 @@
 
 #include <stdint.h>
 
+#include <optional>
+#include <utility>
+#include <vector>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_launcher.h"
+#include "base/test/launcher/test_result.h"
 #include "third_party/libxml/chromium/libxml_utils.h"
 #include "third_party/libxml/chromium/xml_reader.h"
 
@@ -93,6 +98,8 @@ bool ProcessGTestOutput(const base::FilePath& output_file,
   std::vector<Property> properties;
 
   std::vector<Tag> tags;
+
+  std::vector<SubTestResult> sub_test_results;
 
   while (xml_reader.Read()) {
     xml_reader.SkipToElement();
@@ -217,7 +224,34 @@ bool ProcessGTestOutput(const base::FilePath& output_file,
             }
           }
           tags.clear();
+          for (SubTestResult& sub_test_result : sub_test_results) {
+            result.AddSubTestResult(std::move(sub_test_result));
+          }
+          sub_test_results.clear();
           results->push_back(result);
+        } else if (node_name == "x-sub-test-result" &&
+                   !xml_reader.IsClosingElement()) {
+          SubTestResult sub_test_result;
+          if (!xml_reader.NodeAttribute("name", &sub_test_result.name) ||
+              !xml_reader.NodeAttribute("classname",
+                                        &sub_test_result.classname) ||
+              !xml_reader.NodeAttribute("subname", &sub_test_result.subname)) {
+            return false;
+          }
+          if (std::string failure_message;
+              xml_reader.NodeAttribute("failure_message", &failure_message)) {
+            std::string failure_message_decoded;
+            if (!Base64Decode(failure_message, &failure_message_decoded)) {
+              return false;
+            }
+            sub_test_result.failure_message = failure_message_decoded;
+          } else {
+            sub_test_result.failure_message = std::nullopt;
+          }
+          sub_test_results.push_back(sub_test_result);
+        } else if (node_name == "x-sub-test-result" &&
+                   xml_reader.IsClosingElement()) {
+          // Deliberately empty.
         } else if (node_name == "link" && !xml_reader.IsClosingElement()) {
           Link link;
           if (!xml_reader.NodeAttribute("name", &link.name)) {

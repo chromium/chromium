@@ -434,7 +434,7 @@ BASE_FEATURE(kTabstripComboButton,
              "TabstripComboButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsTabstripComboButtonEnabled() {
+bool IsTabSearchMoving() {
   return base::FeatureList::IsEnabled(features::kTabstripComboButton);
 }
 
@@ -444,14 +444,23 @@ const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
 const base::FeatureParam<bool> kTabstripComboButtonHasReverseButtonOrder{
     &kTabstripComboButton, "reverse_button_order", false};
 
+const base::FeatureParam<bool> kTabSearchToolbarButton{
+    &kTabstripComboButton, "tab_search_toolbar_button", false};
+
 bool HasTabstripComboButtonWithBackground() {
-  return IsTabstripComboButtonEnabled() &&
-         features::kTabstripComboButtonHasBackground.Get();
+  return IsTabSearchMoving() &&
+         features::kTabstripComboButtonHasBackground.Get() &&
+         !features::kTabSearchToolbarButton.Get();
 }
 
 bool HasTabstripComboButtonWithReverseButtonOrder() {
-  return IsTabstripComboButtonEnabled() &&
-         features::kTabstripComboButtonHasReverseButtonOrder.Get();
+  return IsTabSearchMoving() &&
+         features::kTabstripComboButtonHasReverseButtonOrder.Get() &&
+         !features::kTabSearchToolbarButton.Get();
+}
+
+bool HasTabSearchToolbarButton() {
+  return IsTabSearchMoving() && features::kTabSearchToolbarButton.Get();
 }
 
 // Force Privacy Guide to be available even if it would be unavailable

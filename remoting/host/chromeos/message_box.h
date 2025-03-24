@@ -17,13 +17,15 @@
 
 namespace gfx {
 class ImageSkia;
-}  // namespace gfx
+}
 
 namespace views {
 class DialogDelegate;
-}  // namespace views
+}
 
 namespace remoting {
+
+class MessageBoxCore;
 
 // Overview:
 // Shows a system modal message box with OK and cancel buttons. This class
@@ -35,7 +37,7 @@ class MessageBox {
 
   // ResultCallback will be invoked with Result::Cancel if the user closes the
   // MessageBox without clicking on any buttons.
-  typedef base::OnceCallback<void(Result)> ResultCallback;
+  using ResultCallback = base::OnceCallback<void(Result)>;
 
   MessageBox(const std::u16string& title_label,
              const std::u16string& message_label,
@@ -65,9 +67,11 @@ class MessageBox {
 
   views::DialogDelegate& GetDialogDelegate();
 
+  // Called by MessageBoxCore when it is about to be destroyed.
+  void OnMessageBoxCoreDestroying();
+
  private:
-  class Core;
-  raw_ptr<Core> core_;
+  raw_ptr<MessageBoxCore> core_;
   base::ThreadChecker thread_checker_;
 };
 

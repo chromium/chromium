@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
@@ -141,7 +142,9 @@ class TestAutofillClientTemplate : public T {
   }
 
   EntityDataManager* GetEntityDataManager() override {
-    return entity_data_manager_.get();
+    return entity_data_manager_non_owning_
+               ? entity_data_manager_non_owning_.get()
+               : entity_data_manager_.get();
   }
 
   MockAutofillOptimizationGuide* GetAutofillOptimizationGuide() const override {
@@ -451,15 +454,9 @@ class TestAutofillClientTemplate : public T {
   }
 
   // Sets up prefs and identity state to simulate an opted-in AutofillAI user.
-  void SetUpPrefsAndIdentityForAutofillAi() {
+  // Returns `true` iff the setup was successful.
+  bool SetUpPrefsAndIdentityForAutofillAi() {
     SetAutofillProfileEnabled(true);
-    // TODO(crbug.com/397881703): Remove feature guards once the pref is
-    // migrated to a GAIA-keyed dictionary.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled, true);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
     GetPrefs()->registry()->RegisterIntegerPref(
         optimization_guide::prefs::
             kAutofillPredictionImprovementsEnterprisePolicyAllowed,
@@ -471,6 +468,7 @@ class TestAutofillClientTemplate : public T {
         "foo@gmail.com", signin::ConsentLevel::kSignin);
     SetCanUseModelExecutionFeatures(true);
     SetVariationConfigCountryCode(GeoIpCountryCode("US"));
+    return SetAutofillAiOptInStatus(*this, true);
   }
 
   // Updates whether the currently signed in primary account can use model
@@ -487,7 +485,13 @@ class TestAutofillClientTemplate : public T {
 
   void set_entity_data_manager(
       std::unique_ptr<EntityDataManager> entity_data_manager) {
+    entity_data_manager_non_owning_ = nullptr;
     entity_data_manager_ = std::move(entity_data_manager);
+  }
+
+  void set_entity_data_manager(EntityDataManager* entity_data_manager) {
+    entity_data_manager_.reset();
+    entity_data_manager_non_owning_ = entity_data_manager;
   }
 
   void set_payments_autofill_client(
@@ -609,6 +613,7 @@ class TestAutofillClientTemplate : public T {
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
   std::unique_ptr<EntityDataManager> entity_data_manager_;
+  raw_ptr<EntityDataManager> entity_data_manager_non_owning_ = nullptr;
   // The below objects must be destroyed before `TestPersonalDataManager`
   // because they keep a reference to it.
   std::unique_ptr<payments::TestPaymentsAutofillClient>

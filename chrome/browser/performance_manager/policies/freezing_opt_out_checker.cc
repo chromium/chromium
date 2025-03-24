@@ -10,33 +10,32 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "url/gurl.h"
 
 namespace performance_manager::policies {
 
 FreezingOptOutChecker::FreezingOptOutChecker(
-    base::WeakPtr<PageDiscardingHelper> discarding_helper)
-    : discarding_helper_(std::move(discarding_helper)) {}
+    base::WeakPtr<DiscardEligibilityPolicy> eligibility_policy)
+    : eligibility_policy_(std::move(eligibility_policy)) {}
 
 FreezingOptOutChecker::~FreezingOptOutChecker() = default;
 
 void FreezingOptOutChecker::SetOptOutPolicyChangedCallback(
     OnPolicyChangedForBrowserContextCallback callback) {
-  if (discarding_helper_) {
-    discarding_helper_->SetOptOutPolicyChangedCallback(std::move(callback));
+  if (eligibility_policy_) {
+    eligibility_policy_->SetOptOutPolicyChangedCallback(std::move(callback));
   }
 }
 
 bool FreezingOptOutChecker::IsPageOptedOutOfFreezing(
     std::string_view browser_context_id,
     const GURL& main_frame_url) {
-  if (!discarding_helper_) {
-    // If PageDiscardingHelper is deleted before FreezingOptOutChecker, the
+  if (!eligibility_policy_) {
+    // If DiscardEligibilityPolicy is deleted before FreezingOptOutChecker, the
     // opt-out policy is unavailable. Assume the page *could* be opted out.
     return true;
   }
-  return discarding_helper_->IsPageOptedOutOfDiscarding(
+  return eligibility_policy_->IsPageOptedOutOfDiscarding(
       std::string(browser_context_id), main_frame_url);
 }
 

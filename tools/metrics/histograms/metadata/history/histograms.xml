@@ -2711,6 +2711,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.QueryMostVisitedURLsTime" units="ms"
+    expires_after="2026-03-21">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The amount of time for HistoryBackend::QueryMostVisitedURLs() to extract up
+    to the requested number of most visited URLs from the HistoryDatabase db_
+    and sort them by descending frecency scores. Excludes the case where local
+    HistoryDatabase db_ is unavailable and the query doesn't really happen.
+    Emitted on NTP load and on Omnibox popup focus.
+  </summary>
+</histogram>
+
 <histogram name="History.SearchResultClicked.Index{HistoryResultType}"
     units="index" expires_after="2025-08-24">
   <owner>orinj@chromium.org</owner>

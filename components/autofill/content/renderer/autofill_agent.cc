@@ -1395,16 +1395,11 @@ void AutofillAgent::ShowSuggestions(
 
   last_queried_element_ = FieldRef(element);
 
-  // Manual fallbacks override any prioritization done based on the field type.
+  // Password manager takes precedence over Autofill, but not about manual
+  // fallbacks.
   // TODO(crbug.com/333990908): Test manual fallback on different form types.
-  if (IsPlusAddressesManuallyTriggered(trigger_source)) {
-    QueryAutofillSuggestions(element, trigger_source, form_cache);
-    return;
-  }
-
-  // Proceed with generating suggestions based on the field type.
-  if (const WebInputElement input_element =
-          element.DynamicTo<WebInputElement>()) {
+  if (auto input_element = element.DynamicTo<WebInputElement>();
+      input_element && !IsPlusAddressesManuallyTriggered(trigger_source)) {
     if (IsPasswordsAutofillManuallyTriggered(trigger_source)) {
       is_popup_possibly_visible_ = password_autofill_agent_->ShowSuggestions(
           input_element, trigger_source, form_cache);
@@ -1434,7 +1429,37 @@ void AutofillAgent::ShowSuggestions(
     }
   }
 
-  QueryAutofillSuggestions(element, trigger_source, form_cache);
+  if (config_.secure_context_required &&
+      !element.GetDocument().IsSecureContext()) {
+    LOG(WARNING) << "Autofill suggestions are disabled because the document "
+                    "isn't a secure context.";
+    return;
+  }
+
+  std::optional<FormAndField> form_and_field =
+      form_util::FindFormAndFieldForFormControlElement(
+          element, field_data_manager(),
+          GetCallTimerState(kQueryAutofillSuggestions),
+          {form_util::ExtractOption::kDatalist,
+           form_util::ExtractOption::kBounds},
+          form_cache);
+  if (!form_and_field) {
+    return;
+  }
+  auto& [form, field] = *form_and_field;
+
+  if (ShouldThrottleAskForValuesToFill(field->renderer_id())) {
+    return;
+  }
+
+  is_popup_possibly_visible_ = true;
+  if (auto* autofill_driver = unsafe_autofill_driver()) {
+    if (auto* render_frame = unsafe_render_frame()) {
+      autofill_driver->AskForValuesToFill(form, field->renderer_id(),
+                                          GetCaretBounds(*render_frame),
+                                          trigger_source);
+    }
+  }
 }
 
 void AutofillAgent::ShowSuggestionsForContentEditable(
@@ -1472,46 +1497,6 @@ void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
   } else {
     form_util::TraverseDomForFourDigitCombinations(
         document, std::move(potential_matches));
-  }
-}
-
-void AutofillAgent::QueryAutofillSuggestions(
-    const WebFormControlElement& element,
-    AutofillSuggestionTriggerSource trigger_source,
-    const SynchronousFormCache& form_cache) {
-  DCHECK(element.DynamicTo<WebInputElement>() ||
-         form_util::IsTextAreaElement(element));
-
-  std::optional<FormAndField> form_and_field =
-      form_util::FindFormAndFieldForFormControlElement(
-          element, field_data_manager(),
-          GetCallTimerState(kQueryAutofillSuggestions),
-          {form_util::ExtractOption::kDatalist,
-           form_util::ExtractOption::kBounds},
-          form_cache);
-  if (!form_and_field) {
-    return;
-  }
-  auto& [form, field] = *form_and_field;
-
-  if (config_.secure_context_required &&
-      !element.GetDocument().IsSecureContext()) {
-    LOG(WARNING) << "Autofill suggestions are disabled because the document "
-                    "isn't a secure context.";
-    return;
-  }
-
-  if (ShouldThrottleAskForValuesToFill(field->renderer_id())) {
-    return;
-  }
-
-  is_popup_possibly_visible_ = true;
-  if (auto* autofill_driver = unsafe_autofill_driver()) {
-    if (auto* render_frame = unsafe_render_frame()) {
-      autofill_driver->AskForValuesToFill(form, field->renderer_id(),
-                                          GetCaretBounds(*render_frame),
-                                          trigger_source);
-    }
   }
 }
 

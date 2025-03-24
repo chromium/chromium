@@ -540,49 +540,16 @@ namespace {
 // the bottom of the list, not here at the top.
 
 #if BUILDFLAG(IS_WIN)
-// Deprecated 03/2024
-constexpr char kOsCryptAppBoundFixedData2PrefName[] =
-    "os_crypt.app_bound_fixed_data2";
 // Deprecated 06/2024
 constexpr char kOsCryptAppBoundFixedData3PrefName[] =
     "os_crypt.app_bound_fixed_data3";
 #endif  // BUILDFLAG(IS_WIN)
 
-// Deprecated 03/2024.
-constexpr char kPlusAddressLastFetchedTime[] = "plus_address.last_fetched_time";
-
-// Deprecated 03/2024.
-constexpr char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
-
 #if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 03/2024
-constexpr char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
 // Deprecated 04/2024
 constexpr char kLastUploadedEuiccStatusPrefLegacy[] =
     "esim.last_upload_euicc_status";
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Deprecated 03/2024.
-constexpr char kShowInternalAccessibilityTree[] =
-    "accessibility.show_internal_accessibility_tree";
-
-// Deprecated 03/2024.
-// A `kDefaultSearchProviderChoicePending` pref persists (migrated to a new
-// pref name to reset the data), so the variable name has been changed here.
-constexpr char kDefaultSearchProviderChoicePendingDeprecated[] =
-    "default_search_provider.choice_pending";
-
-// Deprecated 03/2024.
-constexpr char kTrackingProtectionSentimentSurveyGroup[] =
-    "tracking_protection.tracking_protection_sentiment_survey_group";
-constexpr char kTrackingProtectionSentimentSurveyStartTime[] =
-    "tracking_protection.tracking_protection_sentiment_survey_start_time";
-constexpr char kTrackingProtectionSentimentSurveyEndTime[] =
-    "tracking_protection.tracking_protection_sentiment_survey_end_time";
-
-// Deprecated 03/2024
-constexpr char kPreferencesMigratedToBasic[] =
-    "browser.clear_data.preferences_migrated_to_basic";
 
 // Deprecated 04/2024.
 inline constexpr char kOmniboxInstantKeywordUsed[] =
@@ -1101,22 +1068,22 @@ inline constexpr char kShouldRetrieveDeviceState[] =
 inline constexpr char kAutoEnrollmentPowerLimit[] = "AutoEnrollmentPowerLimit";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Deprecated 03/2025.
+inline constexpr char kDeviceRestrictionScheduleHighestSeenTime[] =
+    "device_restriction_schedule_highest_seen_time";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN)
-  // Deprecated 03/2024.
-  registry->RegisterStringPref(kOsCryptAppBoundFixedData2PrefName,
-                               std::string());
   // Deprecated 06/2024.
   registry->RegisterStringPref(kOsCryptAppBoundFixedData3PrefName,
                                std::string());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 03/2024.
-  registry->RegisterBooleanPref(kOobeGuestAcceptedTos, false);
-
   // Deprecated 05/2024.
   registry->RegisterTimePref(kDeviceRegisteredTime, base::Time());
   registry->RegisterDictionaryPref(kArcKioskDictionaryName);
@@ -1205,35 +1172,18 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kShouldAutoEnroll, false);
   registry->RegisterIntegerPref(kAutoEnrollmentPowerLimit, -1);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 03/2025.
+  registry->RegisterTimePref(kDeviceRestrictionScheduleHighestSeenTime,
+                             base::Time());
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  // Deprecated 03/2024.
-  registry->RegisterTimePref(kPlusAddressLastFetchedTime, base::Time());
-
-  // Deprecated 03/2024.
-  registry->RegisterBooleanPref(kPrivacySandboxApisEnabled, true);
-
-  // Deprecated 03/2024.
-  registry->RegisterBooleanPref(kShowInternalAccessibilityTree, false);
-
-  // Deprecated 03/2024.
-  registry->RegisterBooleanPref(kDefaultSearchProviderChoicePendingDeprecated,
-                                false);
-
-  // Deprecated 03/2024
-  registry->RegisterIntegerPref(kTrackingProtectionSentimentSurveyGroup, 0);
-  registry->RegisterTimePref(kTrackingProtectionSentimentSurveyStartTime,
-                             base::Time());
-  registry->RegisterTimePref(kTrackingProtectionSentimentSurveyEndTime,
-                             base::Time());
-
-  // Deprecated 03/2024.
-  registry->RegisterBooleanPref(kPreferencesMigratedToBasic, false);
 
   // Deprecated 04/2024.
   registry->RegisterBooleanPref(kOmniboxInstantKeywordUsed, false);
@@ -2344,16 +2294,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
 #if BUILDFLAG(IS_WIN)
-  // Deprecated 03/2024.
-  local_state->ClearPref(kOsCryptAppBoundFixedData2PrefName);
   // Deprecated 06/2024.
   local_state->ClearPref(kOsCryptAppBoundFixedData3PrefName);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Added 03/2024.
-  local_state->ClearPref(kOobeGuestAcceptedTos);
-
   // Added 05/2024.
   local_state->ClearPref(kDeviceRegisteredTime);
   local_state->ClearPref(kArcKioskDictionaryName);
@@ -2450,6 +2395,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kAutoEnrollmentPowerLimit);
 #endif
 
+  // Added 03/2025.
+#if BUILDFLAG(IS_CHROMEOS)
+  local_state->ClearPref(kDeviceRestrictionScheduleHighestSeenTime);
+#endif
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2504,26 +2454,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   password_manager_android_util::SetUsesSplitStoresAndUPMForLocal(profile_prefs,
                                                                   profile_path);
 #endif
-
-  // Added 03/2024.
-  profile_prefs->ClearPref(kPlusAddressLastFetchedTime);
-
-  // Added 03/2024.
-  profile_prefs->ClearPref(kPrivacySandboxApisEnabled);
-
-  // Added 03/2024.
-  profile_prefs->ClearPref(kDefaultSearchProviderChoicePendingDeprecated);
-
-  // Added 03/2024.
-  profile_prefs->ClearPref(kShowInternalAccessibilityTree);
-
-  // Added 03/2024.
-  profile_prefs->ClearPref(kTrackingProtectionSentimentSurveyGroup);
-  profile_prefs->ClearPref(kTrackingProtectionSentimentSurveyStartTime);
-  profile_prefs->ClearPref(kTrackingProtectionSentimentSurveyEndTime);
-
-  // Added 03/2024
-  profile_prefs->ClearPref(kPreferencesMigratedToBasic);
 
   // Added 04/2024.
   profile_prefs->ClearPref(kOmniboxInstantKeywordUsed);

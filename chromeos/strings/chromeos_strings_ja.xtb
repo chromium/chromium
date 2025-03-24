@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
 <translation id="1908234395526491708">UDP リクエストに失敗しました</translation>
 <translation id="1908394185991500139">左矢印</translation>
+<translation id="1911678930322867245">右上に移動</translation>
 <translation id="1914144885717544695">金曜日</translation>
 <translation id="1915960750806557358">フィードバックまたは問題の内容を記入します。個人情報や機密情報は含めないようにしてください。</translation>
 <translation id="1923388006036088459">アクセント カラー</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ビーチ</translation>
 <translation id="819278132617411009">Google AI を使用して生産性を高める</translation>
-<translation id="82003371436638355">[独自に作成] を選択した場合は、カスタム プロンプトを入力します。または、[テーマを選択] を選択した後、下線付きの単語を選択して AI 壁紙をカスタマイズすることもできます。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          [ひらめきがほしい] を選択すると、より個性的で多様な AI 画像オプションが表示されます。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          独自の壁紙を作成すると、<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google の利用規約とプライバシー ポリシー<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />に沿ってプロンプトが Google サーバーに送信され、画像の生成とサービスの改善に使用されます。個人情報や機密情報は含めないでください。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          生成 AI は間違った画像（人物に関する画像など）を生成することがあるため、生成された画像は再確認するようにしてください。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />詳細<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8833620912470026819">サボテンの森</translation>
 <translation id="8834539327799336565">現在接続中のデバイス</translation>
+<translation id="8842526499753992487">左上に移動</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8849799913685544685">灯台</translation>
 <translation id="8851859208664803097">停止しました - プリンタにアクセスできません</translation>

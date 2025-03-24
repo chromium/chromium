@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">Ви й Google</translation>
 <translation id="3737319253362202215">Налаштування перекладу</translation>
 <translation id="3738139272394829648">Пошук дотиком</translation>
+<translation id="3739455665973395693">В обліковому записі Google немає зламаних паролів</translation>
 <translation id="3739899004075612870">Створено закладку в продукті <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Голосовий пошук недоступний на цьому пристрої</translation>
 <translation id="376561056759077985">Деякі дані ще не збережено</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">Завантажити файл "<ph name="FILE_NAME" />" повторно?</translation>
 <translation id="3987993985790029246">Копіювати</translation>
 <translation id="4000212216660919741">Дім у режимі офлайн</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 пароль у вашому обліковому записі Google зламано}one{# пароль у вашому обліковому записі Google зламано}few{# паролі у вашому обліковому записі Google зламано}many{# паролів у вашому обліковому записі Google зламано}other{# пароля у вашому обліковому записі Google зламано}}</translation>
 <translation id="4016425174436051808">Не вдалося підписатися. Сталася помилка.</translation>
 <translation id="4024768890073681126">Веб-переглядачем керує один із твоїх батьків</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# год}one{# год}few{# год}many{# год}other{# год}}</translation>
@@ -692,6 +694,7 @@
 <translation id="4270730597186910506">Почати або припинити відстежувати ціну на товар.</translation>
 <translation id="4277529130885813215">Скористатись іншим пристроєм</translation>
 <translation id="4282440837784183472">Ваша організація (<ph name="MANAGED_DOMAIN" />) керує обліковим записом, у який ви входите, і тим, як може використовуватися Chrome. Адміністратор може налаштовувати певні функції або обмежувати до них доступ.</translation>
+<translation id="4285498937028063278">Відкріпити</translation>
 <translation id="4285846616383034558">Файли cookie, кеш і інші дані сайтів</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Увімкніть блокування екрана в налаштуваннях Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Нова анонімна вкладка</translation>
@@ -831,6 +834,7 @@
 <translation id="4881695831933465202">Відкрити</translation>
 <translation id="488187801263602086">Перейменувати файл</translation>
 <translation id="4885273946141277891">Забагато копій Chrome.</translation>
+<translation id="4890973535105146893">В обліковому записі Google немає збережених паролів</translation>
 <translation id="4905823827770127520">Додати посилання на сторінку</translation>
 <translation id="4908869848243824489">Рекомендації від Google</translation>
 <translation id="4910889077668685004">Додатки для платежів</translation>
@@ -920,6 +924,7 @@
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5319359161174645648">Google рекомендує Chrome</translation>
 <translation id="5326246328175179736">Не можна ввійти за допомогою цього облікового запису</translation>
+<translation id="5327248766486351172">Ім’я</translation>
 <translation id="5328542107300944283">Використовувати сайт з обліковим записом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Запити на дозволи</translation>
 <translation id="534580735623577507">Немає сайтів за <ph name="TIME_PERIOD" /></translation>
@@ -1075,6 +1080,7 @@
 <translation id="605721222689873409">РР</translation>
 <translation id="6059830886158432458">Керуйте новинами й діями тут</translation>
 <translation id="6071995715087444295">Щоб перевірити, чи немає у вас зламаних паролів, увійдіть в обліковий запис Google</translation>
+<translation id="6078323886959318429">Додати ярлик</translation>
 <translation id="6085886413119427067">Визначає, як безпечно підключатися до веб-сайтів</translation>
 <translation id="6087286598828478206">Заблокувати користувача й вийти з групи?</translation>
 <translation id="60923314841986378">Залишилося <ph name="HOURS" /> год</translation>
@@ -1703,6 +1709,7 @@
 <translation id="869891660844655955">Діє до</translation>
 <translation id="8699120352855309748">Не пропонувати перекладати ці мови</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8715286883001906001">Зробіть паролі в обліковому записі Google надійнішими</translation>
 <translation id="8723453889042591629">Швидко перекладайте цю сторінку. Щоб змінити функцію цієї кнопки, натисніть і утримуйте її.</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8731268612289859741">Код безпеки</translation>
@@ -1830,6 +1837,7 @@
 <translation id="970715775301869095">Залишилося <ph name="MINUTES" /> хв</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрити всі вкладки</translation>
+<translation id="984756705737569814">Не вдалося перевірити паролі в обліковому записі Google</translation>
 <translation id="987264212798334818">Загальне</translation>
 <translation id="988091779042748639">Щоб видалити з пристрою історію вебперегляду в анонімному режимі, закрийте всі анонімні вкладки.</translation>
 <translation id="992745192656291733">Вкладок: <ph name="TAB_COUNT" /></translation>

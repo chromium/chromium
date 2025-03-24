@@ -3763,6 +3763,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   GetDocument().GetLayoutView()->UpdateCountersAfterStyleChange(
       container.GetLayoutObject());
   GetDocument().InvalidatePendingSVGResources();
+  GetDocument().UpdateScrollMarkerGroupRelations();
+  GetDocument().UpdateScrollMarkerGroupToScrollableAreasMap();
 }
 
 void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
@@ -3991,6 +3993,8 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
       tree->UpdateQuotes();
     }
     UpdateCounters();
+    GetDocument().UpdateScrollMarkerGroupRelations();
+    GetDocument().UpdateScrollMarkerGroupToScrollableAreasMap();
   } else {
     style_recalc_root_.Clear();
   }

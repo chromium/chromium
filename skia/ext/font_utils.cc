@@ -14,6 +14,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/skia/include/ports/SkFontMgr_android.h"
+#include "third_party/skia/include/ports/SkFontScanner_Fontations.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -59,7 +60,11 @@ static sk_sp<SkFontMgr> fontmgr_factory() {
     return sk_ref_sp(g_fontmgr_override);
   }
 #if BUILDFLAG(IS_ANDROID)
-  return SkFontMgr_New_Android(nullptr);
+  if (base::FeatureList::IsEnabled(skia::kFontationsAndroidSystemFonts)) {
+    return SkFontMgr_New_Android(nullptr, SkFontScanner_Make_Fontations());
+  } else {
+    return SkFontMgr_New_Android(nullptr);
+  }
 #elif BUILDFLAG(IS_APPLE)
   return SkFontMgr_New_CoreText(nullptr);
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

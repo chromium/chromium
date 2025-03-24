@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">Зголемете ја осветленоста</translation>
 <translation id="1680659827022803830">Контроли за видеоповици</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Функцијава може да ја исклучите кога сакате во „Поставки“. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Тајмер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 адреса: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Активниот прозорец е приклучен на док на левата страна.</translation>
@@ -968,6 +969,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
 <translation id="4228078597006700451">Контролите не се поставени</translation>
 <translation id="4230560241506423345">Ново</translation>
+<translation id="4236726631849783264">Потсетник за предложените дејства</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим на преглед</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
@@ -984,7 +986,6 @@
 <translation id="4275663329226226506">Аудиовизуелни содржини</translation>
 <translation id="4279490309300973883">Отсликување</translation>
 <translation id="4280601795273309128">Безбедносните ажурирања завршија. Надградете го уредот.</translation>
-<translation id="4281739221820540368">Создајте документ на Docs</translation>
 <translation id="4283888303416325161">Внесете лозинка за поголема безбедност</translation>
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="428715201724021596">Се поврзува со профилот. Може да потрае неколку минути.</translation>
@@ -1045,6 +1046,7 @@
 <translation id="4471354919263203780">Се преземаат датотеки за препознавање говор… <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Ажурирајте го уредот веднаш}=1{Ажурирајте го уредот во рок од 1 секунда}one{Ажурирајте го уредот во рок од # секунда}other{Ажурирајте го уредот во рок од # секунди}}</translation>
 <translation id="4472575034687746823">Започнете</translation>
+<translation id="4473489370276014885">Контакти на Google</translation>
 <translation id="4477350412780666475">Следна песна</translation>
 <translation id="4477751544736611934">Може да ви се наплати за мобилен интернет.
 Поврзан е 1 уред.</translation>
@@ -1071,6 +1073,7 @@
 <translation id="4545950850562423083">Зачувајте ја тековната картичка како обележувач</translation>
 <translation id="4548482551627849548">Преместете го активниот прозорец во работната површина одлево</translation>
 <translation id="4552748006424994716">За да избегнете ехо, слушајте го микрофонот само со жичени слушалки.</translation>
+<translation id="4556953949326137018">Кога користите предложени дејства како „додај во „Календар“ или „создај документ на Docs“, содржините од избраната област се испраќаат до серверите на Google за да предлагаат дејства, што подлежи на <ph name="LINK_TO_SERVICE_TERMS" />. Не внесувајте лични, чувствителни или доверливи податоци.</translation>
 <translation id="4560576029703263363">Вклучено</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Скриј ја лозинката</translation>
@@ -1154,6 +1157,7 @@
 <translation id="481455355267255546">Следни настани</translation>
 <translation id="481749895090480684">Список со задачи: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
+<translation id="4828935196674083554">Се додава…</translation>
 <translation id="482908187605862807">Достапни апликации од Play Store</translation>
 <translation id="4831034276697007977">Дали сигурно сакате да ги исклучите автоматските кликови?</translation>
 <translation id="4835677468087803981">Скриј го PIN-кодот</translation>
@@ -1651,6 +1655,7 @@
 <translation id="641817663353603351">страница нагоре</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Избриши ги сите известувања</translation>
+<translation id="6426905245930183644">Се создава…</translation>
 <translation id="6430225033895752525">Приказ на поставките за „Режим за концентрација“</translation>
 <translation id="643147933154517414">Готово</translation>
 <translation id="6431865393913628856">Снимање екран</translation>
@@ -1717,7 +1722,6 @@
 <translation id="6612889377159412215">подзадача</translation>
 <translation id="6613765291890844037">Искористен простор: <ph name="STORAGE_IN_USE_SIZE" /> | вкупен простор: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Вклучен е екранот за приватност</translation>
-<translation id="6618277154885124991">Создајте табела на Sheets</translation>
 <translation id="6622679827379792051">Поставете прегледување на апликациите на телефонот</translation>
 <translation id="662279009180869175">Користете ги копчињата со стрелки налево и надесно за променување на големината на поделениот екран</translation>
 <translation id="6624493541160101248">Тековна работна површина: <ph name="DESK_NAME" /> Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
@@ -2401,6 +2405,7 @@
 <translation id="8921624153894383499">„Помошникот на Google“ не зборува на овој јазик.</translation>
 <translation id="8926951137623668982">Полицата е секогаш скриена</translation>
 <translation id="8929566928381252430">Се обидувате да го искористите копчето Caps Lock? Користете</translation>
+<translation id="8934418770423095813">Создај документ на Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
 <translation id="8938800817013097409">USB-Ц уред (десна порта од задната страна)</translation>

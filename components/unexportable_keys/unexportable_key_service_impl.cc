@@ -170,8 +170,9 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
     std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
     return;
   }
+  // TODO(crbug.com/400903525): expose `max_retries` as a parameter.
   task_manager_->SignSlowlyAsync(it->second, data, priority,
-                                 std::move(callback));
+                                 /*max_retries=*/0, std::move(callback));
 }
 
 ServiceErrorOr<std::vector<uint8_t>>

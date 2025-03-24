@@ -18,7 +18,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -68,16 +67,6 @@ void DefaultErrorHandler(const Error* error, const char* request_name) {
 void DefaultIOErrorHandler() {
   LOG(ERROR) << "X connection error received.";
 }
-
-// Kill switch for XSyncCounter extension, which may be responsible for reports
-// of blank windows after restore.
-// TODO(crbug.com/381224161): Remove this after verifying whether it fixes the
-// issue.
-#if !BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kUseX11SyncCounter,
-             "UseX11SyncCounter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 class UnknownError : public Error {
  public:
@@ -648,17 +637,9 @@ void Connection::InitializeExtensions() {
   if (auto response = shm_future.Sync()) {
     shm_version_ = {response->major_version, response->minor_version};
   }
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Chrome for ChromeOS can be run with X11 on a Linux desktop. In this case,
-  // NotifySwapAfterResize is never called as the compositor does not notify
-  // about swaps after resize. Thus, simply disable usage of XSyncCounter on
-  // ChromeOS builds.
-  if (base::FeatureList::IsEnabled(kUseX11SyncCounter)) {
-    if (auto response = sync_future.Sync()) {
-      sync_version_ = {response->major_version, response->minor_version};
-    }
+  if (auto response = sync_future.Sync()) {
+    sync_version_ = {response->major_version, response->minor_version};
   }
-#endif
   if (auto response = xinput_future.Sync()) {
     xinput_version_ = {response->major_version, response->minor_version};
   }

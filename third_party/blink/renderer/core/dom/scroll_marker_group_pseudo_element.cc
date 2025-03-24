@@ -44,7 +44,7 @@ ScrollMarkerGroupPseudoElement::FindPreviousScrollMarker(
 }
 
 void ScrollMarkerGroupPseudoElement::RemoveFromFocusGroup(
-    const ScrollMarkerPseudoElement& scroll_marker) {
+    ScrollMarkerPseudoElement& scroll_marker) {
   scroll_marker_group_data_->RemoveFromFocusGroup(scroll_marker);
 }
 

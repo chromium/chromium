@@ -63,6 +63,9 @@ struct ProbabilisticRevealToken {
   string u;
   // Compress-serialized `elgamal::Ciphertext` elliptic curve point `e`.
   string e;
+  // The id of the epoch in which the tokens were issued, used to identify the
+  // corresponding key used to decrypt the tokens.
+  string epoch_id;
 };
 
 enum TryGetProbabilisticRevealTokensStatus {
@@ -80,7 +83,8 @@ enum TryGetProbabilisticRevealTokensStatus {
   kInvalidPublicKey,
   kInvalidNumTokensWithSignal,
   kRequestBackedOff,
-  kNoGoogleChromeBranding
+  kNoGoogleChromeBranding,
+  kInvalidEpochIdSize
 };
 
 struct TryGetProbabilisticRevealTokensResult {

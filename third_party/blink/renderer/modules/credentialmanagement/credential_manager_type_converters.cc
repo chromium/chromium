@@ -238,8 +238,6 @@ TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
   }
 #endif
   if (extensions->echo_large_blob) {
-    DCHECK(blink::RuntimeEnabledFeatures::
-               WebAuthenticationLargeBlobExtensionEnabled());
     blink::AuthenticationExtensionsLargeBlobOutputs* large_blob_outputs =
         blink::AuthenticationExtensionsLargeBlobOutputs::Create();
     if (extensions->large_blob) {

@@ -171,9 +171,8 @@ TEST(ProtocolTraits, DictValueJSONConversion) {
   std::string json;
   json::ConvertCBORToJSON(SpanFrom(bytes), &json);
 
-  auto result = base::JSONReader::ReadDict(json);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(*result, base::test::DictionaryHasValues(dict));
+  EXPECT_THAT(base::JSONReader::ReadDict(json),
+              testing::Optional(base::test::DictionaryHasValues(dict)));
 }
 
 }  // namespace

@@ -122,9 +122,6 @@ class KioskAppData : public KioskAppDataBase,
 
   // extensions::WebstoreDataFetcherDelegate overrides:
   void OnWebstoreRequestFailure(const std::string& extension_id) override;
-  void OnWebstoreItemJSONAPIResponseParseSuccess(
-      const std::string& extension_id,
-      const base::Value::Dict& webstore_data) override;
   void OnFetchItemSnippetParseSuccess(
       const std::string& extension_id,
       extensions::FetchItemSnippetResponse item_snippet) override;

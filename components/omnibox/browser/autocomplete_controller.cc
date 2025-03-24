@@ -54,6 +54,7 @@
 #include "components/omnibox/browser/builtin_provider.h"
 #include "components/omnibox/browser/calculator_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
+#include "components/omnibox/browser/contextual_search_provider.h"
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/enterprise_search_aggregator_provider.h"
 #include "components/omnibox/browser/featured_search_provider.h"
@@ -1078,7 +1079,7 @@ bool AutocompleteController::ShouldRunProvider(
       if (keyword_turl->starter_pack_id() ==
           TemplateURLStarterPackData::kPage) {
         return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
-               provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST;
+               provider->type() == AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH;
       }
       switch (provider->type()) {
         // Keyword provider creates the suggestion attached to the keyword chip
@@ -1172,6 +1173,10 @@ bool AutocompleteController::ShouldRunProvider(
     case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
       return history_embeddings::GetFeatureParameters().omnibox_unscoped;
 #endif
+    case AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH:
+      // This provider is only run in '@page' scope, handled with early return
+      // above.
+      return false;
     default:
       break;
   }
@@ -1248,6 +1253,10 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
     unscoped_extension_provider_ =
         new UnscopedExtensionProvider(provider_client_.get(), this);
     providers_.push_back(unscoped_extension_provider_.get());
+  }
+  if (provider_types & AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH) {
+    providers_.push_back(
+        new ContextualSearchProvider(provider_client_.get(), this));
   }
 }
 

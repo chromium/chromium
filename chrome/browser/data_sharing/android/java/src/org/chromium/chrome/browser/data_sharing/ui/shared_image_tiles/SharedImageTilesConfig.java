@@ -10,6 +10,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DimenRes;
 import androidx.annotation.StyleRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -17,6 +18,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
  * Config class for the SharedImageTiles UI. By default this component is dynamically colored with a
  * size of 28dp for each image tiles.
  */
+@NullMarked
 public class SharedImageTilesConfig {
     // --- Sizes ---
     public final @DimenRes int iconSizeDp;

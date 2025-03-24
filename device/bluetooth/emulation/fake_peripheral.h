@@ -60,6 +60,13 @@ class FakePeripheral : public device::BluetoothDevice {
   // after IsGattDiscoveryComplete is called.
   void SetNextGATTDiscoveryResponse(uint16_t code);
 
+  // Simulate a response to a pending GATT connection request with |code|.
+  void SimulateGATTConnectionResponse(uint16_t code);
+
+  // Simulate a response to a pending GATT service discovery request with
+  // |code|.
+  void SimulateGATTDiscoveryResponse(uint16_t code);
+
   // Returns true if there are no pending responses for this peripheral or any
   // of its GATT services.
   bool AllResponsesConsumed();
@@ -145,8 +152,8 @@ class FakePeripheral : public device::BluetoothDevice {
   void DisconnectGatt() override;
 
  private:
-  void DispatchConnectionResponse();
-  void DispatchDiscoveryResponse();
+  void DispatchConnectionEvent();
+  void DispatchDiscoveryEvent();
 
   const std::string address_;
   std::optional<std::string> name_;

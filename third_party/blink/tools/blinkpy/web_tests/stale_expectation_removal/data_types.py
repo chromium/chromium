@@ -24,13 +24,16 @@ class WebTestExpectation(data_types.BaseExpectation):
     of virtual tests falling back to non-virtual expectations.
     """
 
-    def _CompareWildcard(self, result_test_name: str) -> bool:
+    def _CompareSimpleWildcard(self, result_test_name: str) -> bool:
         success = super(WebTestExpectation,
-                        self)._CompareWildcard(result_test_name)
+                        self)._CompareSimpleWildcard(result_test_name)
         if not success and result_test_name.startswith(VIRTUAL_PREFIX):
             result_test_name = _StripOffVirtualPrefix(result_test_name)
             success = fnmatch.fnmatch(result_test_name, self.test)
         return success
+
+    def _CompareFullWildcard(self, result_test_name: str) -> bool:
+        raise RuntimeError('Full wildcards are not supported for Blink tests')
 
     def _CompareNonWildcard(self, result_test_name: str) -> bool:
         success = super(WebTestExpectation,

@@ -375,8 +375,7 @@ TEST_F(ReportPageProcessesPolicyTest, MarkedPagesAreNotReported) {
   AdvanceClock(base::Minutes(30));
 
   // Set process 1 as marked
-  PageDiscardingHelper::GetFromGraph(graph())
-      ->AddDiscardAttemptMarkerForTesting(page_node1.get());
+  DiscardEligibilityPolicy::AddDiscardAttemptMarker(page_node1.get());
 
   // Trigger page node event manually.
   policy()->HandlePageNodeEvents();

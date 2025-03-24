@@ -6,7 +6,7 @@ import os
 import sys
 import json
 import itertools
-from typing import Any, List, Set
+from typing import Any
 import unittest
 
 import gpu_path_util
@@ -40,7 +40,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _SuiteSupportsParallelTests(cls) -> bool:
     return True
 
-  def _GetSerialGlobs(self) -> Set[str]:
+  def _GetSerialGlobs(self) -> set[str]:
     serial_globs = set()
     if host_information.IsWindows() and host_information.IsNvidiaGpu():
       serial_globs |= {
@@ -50,7 +50,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       }
     return serial_globs
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     serial_tests = set()
     if host_information.IsWindows() and host_information.IsArmCpu():
       serial_tests |= {
@@ -337,7 +337,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.SetStaticServerDirs([html_path, data_path])
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'webcodecs_expectations.txt')

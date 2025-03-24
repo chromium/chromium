@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -21,10 +22,12 @@
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
+#include "device/bluetooth/bluetooth_socket_android.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 
@@ -533,6 +536,51 @@ void BluetoothTestAndroid::SimulateGattDescriptorWriteWillFailSynchronouslyOnce(
   Java_FakeBluetoothGattDescriptor_setWriteDescriptorWillFailSynchronouslyOnce(
       base::android::AttachCurrentThread(),
       descriptor_android->GetJavaObject());
+}
+
+void BluetoothTestAndroid::FailNextServiceConnection(
+    BluetoothDevice* device,
+    const std::string& error_message) {
+  BluetoothDeviceAndroid* device_android =
+      static_cast<BluetoothDeviceAndroid*>(device);
+  Java_FakeBluetoothDevice_failNextServiceConnection(
+      base::android::AttachCurrentThread(), device_android->GetJavaObject(),
+      error_message);
+}
+
+std::vector<uint8_t> BluetoothTestAndroid::GetSentBytes(
+    BluetoothSocket* socket) {
+  BluetoothSocketAndroid* socket_android =
+      static_cast<BluetoothSocketAndroid*>(socket);
+  base::android::ScopedJavaLocalRef<jbyteArray> j_sent_bytes =
+      Java_FakeBluetoothSocket_getSentBytes(
+          base::android::AttachCurrentThread(),
+          socket_android->GetJavaObject());
+  std::vector<uint8_t> sent_bytes;
+  base::android::JavaByteArrayToByteVector(base::android::AttachCurrentThread(),
+                                           j_sent_bytes, &sent_bytes);
+  return sent_bytes;
+}
+
+void BluetoothTestAndroid::SetReceivedBytes(BluetoothSocket* socket,
+                                            const std::vector<uint8_t>& bytes) {
+  BluetoothSocketAndroid* socket_android =
+      static_cast<BluetoothSocketAndroid*>(socket);
+  base::android::ScopedJavaLocalRef<jbyteArray> j_bytes =
+      base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
+                                     bytes);
+  Java_FakeBluetoothSocket_setReceivedBytes(
+      base::android::AttachCurrentThread(), socket_android->GetJavaObject(),
+      j_bytes);
+}
+
+void BluetoothTestAndroid::FailNextOperation(BluetoothSocket* socket,
+                                             const std::string& error_message) {
+  BluetoothSocketAndroid* socket_android =
+      static_cast<BluetoothSocketAndroid*>(socket);
+  Java_FakeBluetoothSocket_setNextOperationExceptionMessage(
+      base::android::AttachCurrentThread(), socket_android->GetJavaObject(),
+      error_message);
 }
 
 void BluetoothTestAndroid::OnFakeBluetoothDeviceConnectGattCalled(JNIEnv* env) {

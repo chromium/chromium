@@ -122,19 +122,19 @@ ScopedJavaLocalRef<jobject> CreatePersistentMessageAndMaybeAddToListHelper(
   return jmessage;
 }
 
-// Helper method to provide a consistent way to create a InstantMessage
-// across multiple entry points.
-ScopedJavaLocalRef<jobject> CreateInstantMessageAndMaybeAddToListHelper(
+ScopedJavaLocalRef<jobject> AggregatedMessageMetadataToJava(
     JNIEnv* env,
-    ScopedJavaLocalRef<jobject> jlist,
-    const InstantMessage& message) {
-  ScopedJavaLocalRef<jobject> jmessage =
-      Java_ConversionUtils_createInstantMessageAndMaybeAddToList(
-          env, jlist, MessageAttributionToJava(env, message.attribution),
-          static_cast<int>(message.collaboration_event),
-          static_cast<int>(message.level), static_cast<int>(message.type));
+    const AggregatedMessageData& aggregated_data) {
+  ScopedJavaLocalRef<jobject> j_aggregated_data;
 
-  return jmessage;
+  for (const auto& attribution : aggregated_data.attributions) {
+    auto j_attribution = MessageAttributionToJava(env, attribution);
+    j_aggregated_data =
+        Java_ConversionUtils_addAttributionToAggregatedMessageData(
+            env, j_aggregated_data, j_attribution);
+  }
+
+  return j_aggregated_data;
 }
 
 }  // namespace
@@ -161,23 +161,20 @@ ScopedJavaLocalRef<jobject> PersistentMessagesToJava(
 ScopedJavaLocalRef<jobject> InstantMessageToJava(
     JNIEnv* env,
     const InstantMessage& message) {
+  ScopedJavaLocalRef<jobject> j_attribution =
+      message.attribution.has_value()
+          ? MessageAttributionToJava(env, message.attribution.value())
+          : ScopedJavaLocalRef<jobject>();
+  ScopedJavaLocalRef<jobject> j_aggregated_data =
+      message.aggregated_data.has_value()
+          ? AggregatedMessageMetadataToJava(env,
+                                            message.aggregated_data.value())
+          : ScopedJavaLocalRef<jobject>();
   return Java_ConversionUtils_createInstantMessage(
-      env, MessageAttributionToJava(env, message.attribution),
-      static_cast<int>(message.collaboration_event),
-      static_cast<int>(message.level), static_cast<int>(message.type));
-}
-
-ScopedJavaLocalRef<jobject> InstantMessagesToJava(
-    JNIEnv* env,
-    const std::vector<InstantMessage>& messages) {
-  ScopedJavaLocalRef<jobject> jlist =
-      Java_ConversionUtils_createInstantMessageList(env);
-
-  for (const auto& message : messages) {
-    CreateInstantMessageAndMaybeAddToListHelper(env, jlist, message);
-  }
-
-  return jlist;
+      env, static_cast<int>(message.collaboration_event),
+      static_cast<int>(message.level), static_cast<int>(message.type),
+      ConvertUTF16ToJavaString(env, message.localized_message), j_attribution,
+      j_aggregated_data);
 }
 
 ScopedJavaLocalRef<jobject> ActivityLogItemsToJava(

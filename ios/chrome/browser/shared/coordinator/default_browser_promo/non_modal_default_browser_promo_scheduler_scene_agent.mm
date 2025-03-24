@@ -41,7 +41,7 @@ constexpr base::TimeDelta kShowPromoWebpageLoadWaitTime = base::Seconds(3);
 constexpr base::TimeDelta kShowPromoPostShareWaitTime = base::Seconds(1);
 
 // Timeout before the promo is dismissed.
-constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
+constexpr base::TimeDelta kPromoTimeout = base::Seconds(10);
 
 NonModalPromoTriggerType MetricTypeForPromoReason(
     NonModalDefaultBrowserPromoReason reason) {

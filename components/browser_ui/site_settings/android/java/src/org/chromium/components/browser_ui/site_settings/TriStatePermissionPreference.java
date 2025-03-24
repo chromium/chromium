@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.ENABLE_GEOLOCATION_CPSS;
 import static org.chromium.components.content_settings.PrefNames.ENABLE_NOTIFICATION_CPSS;
 import static org.chromium.components.content_settings.PrefNames.ENABLE_QUIET_GEOLOCATION_PERMISSION_UI;
@@ -81,11 +80,8 @@ public class TriStatePermissionPreference extends Preference
     @SuppressWarnings("NullAway")
     public void onBindViewHolder(PreferenceViewHolder holder) {
         mQuiet = (RadioButtonWithDescription) holder.findViewById(R.id.quiet);
-        assumeNonNull(mQuiet);
         mCpss = (RadioButtonWithDescription) holder.findViewById(R.id.cpss);
-        assumeNonNull(mCpss);
         mLoud = (RadioButtonWithDescription) holder.findViewById(R.id.loud);
-        assumeNonNull(mLoud);
         mTitleView = (TextView) holder.findViewById(R.id.radio_button_title);
         if (mShowTitle) {
             mTitleView.setVisibility(View.VISIBLE);
@@ -93,7 +89,6 @@ public class TriStatePermissionPreference extends Preference
             mTitleView.setVisibility(View.GONE);
         }
         mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
-        assumeNonNull(mRadioGroup);
         mRadioGroup.setOnCheckedChangeListener(this);
         RadioButtonWithDescription selectedRadioButton = getSelectedRadioButton();
         if (selectedRadioButton != null) selectedRadioButton.setChecked(true);

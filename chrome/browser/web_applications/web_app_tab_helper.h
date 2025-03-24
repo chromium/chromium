@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -24,10 +24,13 @@ namespace content {
 class WebContents;
 }
 
+namespace webapps {
+class LaunchQueue;
+}
+
 namespace web_app {
 
 class WebAppProvider;
-class WebAppLaunchQueue;
 
 // Per-tab web app helper. Allows to associate a tab (web page) with a web app.
 class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
@@ -120,7 +123,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
     is_pinned_home_tab_ = is_pinned_home_tab;
   }
 
-  WebAppLaunchQueue& EnsureLaunchQueue();
+  webapps::LaunchQueue& EnsureLaunchQueue();
 
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(
@@ -204,7 +207,7 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   // Use unique_ptr for lazy instantiation as most browser tabs have no need to
   // incur this memory overhead.
-  std::unique_ptr<WebAppLaunchQueue> launch_queue_;
+  std::unique_ptr<webapps::LaunchQueue> launch_queue_;
 
   // A callback that runs whenever the `tab` is destroyed, navigates or goes to
   // the background.

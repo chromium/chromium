@@ -7,17 +7,17 @@ import Foundation
 import SwiftUI
 import WidgetKit
 
-struct ProfileQuery: EntityQuery {
-  func entities(for identifiers: [String]) async throws -> [ProfileDetail] {
-    ProfileDetail.allProfiles().filter { identifiers.contains($0.id) }
+struct AccountQuery: EntityQuery {
+  func entities(for identifiers: [String]) async throws -> [AccountDetail] {
+    AccountDetail.allAccounts().filter { identifiers.contains($0.id) }
   }
 
-  func suggestedEntities() async throws -> [ProfileDetail] {
-    ProfileDetail.allProfiles()
+  func suggestedEntities() async throws -> [AccountDetail] {
+    AccountDetail.allAccounts()
   }
 
-  func defaultResult() async -> ProfileDetail? {
-    let noAccount = ProfileDetail(id: "No account", gaia: "Default")
+  func defaultResult() async -> AccountDetail? {
+    let noAccount = AccountDetail(id: "No account", gaia: "Default")
 
     guard let accounts = try? await suggestedEntities()
     else { return noAccount }
@@ -29,56 +29,56 @@ struct ProfileQuery: EntityQuery {
     else { return noAccount }
     for account in accounts {
       if account.gaia == primaryAccount {
-        return ProfileDetail(id: account.id, gaia: account.gaia)
+        return AccountDetail(id: account.id, gaia: account.gaia)
       }
     }
     return noAccount
   }
 }
 
-struct ProfileDetail: AppEntity {
+struct AccountDetail: AppEntity {
   let id: String
   let gaia: String
 
-  static var typeDisplayRepresentation: TypeDisplayRepresentation = "Profile"
-  static var defaultQuery = ProfileQuery()
+  static var typeDisplayRepresentation: TypeDisplayRepresentation = "Account"
+  static var defaultQuery = AccountQuery()
 
   var displayRepresentation: DisplayRepresentation {
     DisplayRepresentation(title: "\(id)")
   }
 
-  static func allProfiles() -> [ProfileDetail] {
+  static func allAccounts() -> [AccountDetail] {
     guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
     else { return [] }
     guard
-      let profiles = sharedDefaults.object(forKey: "ios.registered_accounts_on_device")
+      let accounts = sharedDefaults.object(forKey: "ios.registered_accounts_on_device")
         as? [String: [String: Any]]
     else { return [] }
 
-    var profilesDetail: [ProfileDetail] = []
+    var accountsDetail: [AccountDetail] = []
 
-    profilesDetail.append(ProfileDetail(id: "No account", gaia: "Default"))
+    accountsDetail.append(AccountDetail(id: "No account", gaia: "Default"))
 
-    for (key, value) in profiles {
+    for (key, value) in accounts {
       if let email = value["email"] as? String {
-        profilesDetail.append(ProfileDetail(id: email, gaia: key))
+        accountsDetail.append(AccountDetail(id: email, gaia: key))
       }
     }
-    return profilesDetail
+    return accountsDetail
   }
 }
 
 @available(iOS 17, *)
-struct SelectProfileIntent: WidgetConfigurationIntent {
-  static var title: LocalizedStringResource = "Select Profile"
-  static var description = IntentDescription("Selects the profile to display shortcuts for.")
+struct SelectAccountIntent: WidgetConfigurationIntent {
+  static var title: LocalizedStringResource = "Select Account"
+  static var description = IntentDescription("Selects the account to display shortcuts for.")
 
-  @Parameter(title: "Profile")
-  var profile: ProfileDetail?
+  @Parameter(title: "Account")
+  var account: AccountDetail?
 
   // Returns the avatar linked to the account.
   func avatar() -> Image? {
-    guard let gaia = profile?.gaia
+    guard let gaia = account?.gaia
     else { return nil }
 
     let avatarFilePath =
@@ -92,7 +92,7 @@ struct SelectProfileIntent: WidgetConfigurationIntent {
 
   // Returns the gaiaID linked to the account.
   func gaia() -> String? {
-    guard let gaia = profile?.gaia
+    guard let gaia = account?.gaia
     else { return nil }
 
     return gaia

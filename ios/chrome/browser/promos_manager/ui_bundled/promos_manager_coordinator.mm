@@ -181,8 +181,7 @@
   };
 
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
 }
 
@@ -216,8 +215,7 @@
     }
 
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(
-            self.browser->GetProfile());
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
     tracker->Dismissed(*it->feature_engagement_feature);
   }
   _currentPromoData = std::nullopt;
@@ -583,7 +581,7 @@
   _displayHandlerPromos[promos_manager::Promo::WhatsNew] =
       [[WhatsNewPromoDisplayHandler alloc]
           initWithPromosManager:PromosManagerFactory::GetForProfile(
-                                    self.browser->GetProfile())];
+                                    self.profile)];
 
   // Credentials provider promo handler.
   _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =

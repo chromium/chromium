@@ -4,6 +4,8 @@
 
 module chrome.mojom;
 
+[EnableIf=enable_glic]
+import "chrome/common/actor.mojom";
 import "components/lens/lens_metadata.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "skia/public/mojom/bitmap.mojom";
@@ -98,4 +100,9 @@ interface ChromeRenderFrame {
   // Sets whether the frame needs to defer media loading when it is in
   // background.
   SetShouldDeferMediaLoad(bool should_defer);
+
+  // Requests invoking of a tool from the actor automation framework. See
+  // chrome/browser/actor
+  [EnableIf=enable_glic]
+  InvokeTool(actor.mojom.ToolInvocation request) => (bool success);
 };

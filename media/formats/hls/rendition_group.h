@@ -49,6 +49,12 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
       const GURL& playlist_uri,
       uint64_t rendition_unique_id);
 
+  // Adds the "virtual" rendition created from the required default URL in a
+  // VariantStream. The label, ID, and name are all "default".
+  RenditionTrack MakeImplicitRendition(base::PassKey<MultivariantPlaylist>,
+                                       const GURL& default_rendition_uri,
+                                       uint64_t rendition_unique_id);
+
   // Returns the set of renditions that belong to this group with the media
   // track object that can be exposed to the web.
   const base::flat_map<MediaTrack::Id, RenditionTrack>& GetRenditionMapping()

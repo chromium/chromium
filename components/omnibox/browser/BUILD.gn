@@ -193,6 +193,8 @@ static_library("browser") {
     "calculator_provider.h",
     "clipboard_provider.cc",
     "clipboard_provider.h",
+    "contextual_search_provider.cc",
+    "contextual_search_provider.h",
     "document_provider.cc",
     "document_provider.h",
     "document_suggestions_service.cc",

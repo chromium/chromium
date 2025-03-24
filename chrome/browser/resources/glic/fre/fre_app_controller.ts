@@ -34,6 +34,15 @@ export class FreAppController {
     this.onNewWindow = this.onNewWindow.bind(this);
 
     this.webview = this.createWebView();
+
+    window.addEventListener('load', () => {
+      // Allow WebUI close button to close the window. This close button is
+      // present on all UI states except for `FreWebUiState.kReady`.
+      document.querySelector('.close-button')!.addEventListener('click', () => {
+        freHandler.dismissFre();
+      });
+    });
+
     this.setState(FreWebUiState.kBeginLoading);
   }
 

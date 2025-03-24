@@ -263,7 +263,8 @@ public class TabArchiverImpl implements TabArchiver {
         ThreadUtils.assertOnUiThread();
         unarchiveAndRestoreTabs(
                 regularTabCreator,
-                TabModelUtils.convertTabListToListOfTabs(mArchivedTabGroupModelFilter),
+                TabModelUtils.convertTabListToListOfTabs(
+                        mArchivedTabGroupModelFilter.getTabModel()),
                 /* updateTimestamp= */ false,
                 /* areTabsBeingOpened= */ false);
         RecordUserAction.record("Tabs.ArchivedTabRescued");

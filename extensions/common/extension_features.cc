@@ -179,10 +179,6 @@ BASE_FEATURE(kIncludeJSCallStackInExtensionApiRequest,
              "IncludeJSCallStackInExtensionApiRequest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseItemSnippetsAPI,
-             "UseItemSnippetsAPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseNewServiceWorkerTaskQueue,
              "UseNewServiceWorkerTaskQueue",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -209,6 +205,6 @@ BASE_FEATURE(kDebuggerAPIRestrictedToDevMode,
 
 BASE_FEATURE(kExtensionBrowserNamespaceAlternative,
              "ExtensionBrowserNamespaceAlternative",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

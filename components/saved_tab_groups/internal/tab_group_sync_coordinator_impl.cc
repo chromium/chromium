@@ -38,13 +38,13 @@ void TabGroupSyncCoordinatorImpl::InitializeTabGroupSync() {
 
   // At this point, there should be no unsaved local groups. Update them to
   // match sync state.
-  for (const auto& saved_tab_group : service_->GetAllGroups()) {
-    if (!saved_tab_group.local_group_id()) {
+  for (const SavedTabGroup* saved_tab_group : service_->ReadAllGroups()) {
+    if (!saved_tab_group->local_group_id()) {
       continue;
     }
 
-    base::Uuid sync_group_id = saved_tab_group.saved_guid();
-    LocalTabGroupID local_group_id = saved_tab_group.local_group_id().value();
+    base::Uuid sync_group_id = saved_tab_group->saved_guid();
+    LocalTabGroupID local_group_id = saved_tab_group->local_group_id().value();
     ConnectLocalTabGroup(sync_group_id, local_group_id);
 
     // Update the local to group to match sync. As the group was modified, query

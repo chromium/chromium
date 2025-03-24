@@ -27,13 +27,14 @@ extern const char kProtocolVersion[];
 // precision of integer numbers greater than 2^53 is lost.
 inline constexpr int64_t kProtocolMaxInt = 1LL << 53;
 
-// Event type codes as described in //docs/updater/protocol_3_1.md.
+// Event type codes as described in //docs/updater/protocol_4.md.
 inline constexpr int kEventInstall = 2;
 inline constexpr int kEventUpdate = 3;
 inline constexpr int kEventUninstall = 4;
 inline constexpr int kEventDownload = 14;
+inline constexpr int kEventPuff = 62;
 
-// Event result codes as described in //docs/updater/protocol_3_1.md.
+// Event result codes as described in //docs/updater/protocol_4.md.
 inline constexpr int kEventResultError = 0;
 inline constexpr int kEventResultSuccess = 1;
 inline constexpr int kEventResultCancelled = 4;

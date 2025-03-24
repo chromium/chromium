@@ -1911,6 +1911,17 @@ class FilterZipSanitizer(BaseActionSanitizer):
     self._set_value_arg("--input", "$(in)")
     self._set_value_arg("--output", "$(out)")
 
+    def keep_native_libraries(globs):
+      # TODO: crbug.com/405373567 - Stop preventing NativeLibraries from
+      # being filtered out. Instead, do the right thing and generate a
+      # non-placeholder NativeLibraries.
+      globs = globs[1:-1]
+      globs = [glob for glob in globs.split(', ') if "NativeLibraries" not in glob]
+      globs = ", ".join(globs)
+      return f'[{globs}]'
+
+    self._update_value_arg('--exclude-globs', keep_native_libraries)
+
     # TODO: we shouldn't have to do this here - it should be done automatically.
     def escape(s):
       return s.replace('$', '$$')

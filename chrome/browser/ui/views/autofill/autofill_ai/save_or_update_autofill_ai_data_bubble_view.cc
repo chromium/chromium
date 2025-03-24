@@ -26,6 +26,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -41,7 +42,8 @@ constexpr int kHeaderPadding = 20;
 constexpr int kBubbleWidth = 320;
 
 constexpr int kNewOrUpdatedAttributeDotSize = 4;
-constexpr int kNewOrUpdatedAttributeDotSpacing = 4;
+constexpr int kNewOrUpdatedAttributeDotRightSpacing = 4;
+constexpr int kNewOrUpdatedAttributeDotTopSpacing = 8;
 
 int GetVerticaSpaceBetweenDialogSections() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -49,16 +51,50 @@ int GetVerticaSpaceBetweenDialogSections() {
          2;
 }
 
+gfx::Insets GetBubbleInnerMargins() {
+  return ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl);
+}
+
+int GetEntityAttributeAndValueLabelMaxWidth() {
+  // The maximum width is the bubble size minus its margin divided by two.
+  // One half is for the entity attribute name and the other for the value.
+  return (kBubbleWidth - GetBubbleInnerMargins().width() -
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL)) /
+         2;
+}
+
+std::unique_ptr<views::BoxLayoutView> GetEntityAttributeAndValueLayout(
+    views::BoxLayout::CrossAxisAlignment aligment) {
+  auto row =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetCrossAxisAlignment(aligment)
+          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+          // The minimum width is also set because we want to always reserve the
+          // same size for both the attribute name and its value, meaning no
+          // resizing/stretching.
+          .SetMinimumCrossAxisSize(GetEntityAttributeAndValueLabelMaxWidth())
+          .Build();
+  return row;
+}
+
 std::unique_ptr<views::View> GetAttributeValueView(
     const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
         detail,
     bool is_save_prompt) {
+  std::unique_ptr<views::BoxLayoutView> atribute_value_row_wrapper =
+      GetEntityAttributeAndValueLayout(
+          views::BoxLayout::CrossAxisAlignment::kEnd);
   std::unique_ptr<views::Label> label =
       views::Builder<views::Label>()
           .SetText(detail.attribute_value)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
           .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
           .SetAccessibleRole(ax::mojom::Role::kDefinition)
+          .SetMultiLine(true)
+          .SetMaximumWidth(GetEntityAttributeAndValueLabelMaxWidth())
           .Build();
 
   // Only update dialogs have a dot circle in front of added or updated values.
@@ -68,21 +104,28 @@ std::unique_ptr<views::View> GetAttributeValueView(
           SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
               kNewEntityAttributeUnchanged;
   if (!existing_entity_added_or_updated_attribute) {
-    return label;
+    atribute_value_row_wrapper->AddChildView(std::move(label));
+    return atribute_value_row_wrapper;
   }
-  auto row =
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
-          .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-          .Build();
 
-  views::BoxLayoutView* updated_entity_dot = row->AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetProperty(
-              views::kMarginsKey,
-              gfx::Insets::TLBR(0, 0, 0, kNewOrUpdatedAttributeDotSpacing))
-          .Build());
+  views::View* updated_entity_dot_and_value_wrapper =
+      atribute_value_row_wrapper->AddChildView(
+          views::Builder<views::BoxLayoutView>()
+              .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+              .SetCrossAxisAlignment(
+                  views::BoxLayout::CrossAxisAlignment::kStart)
+              .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+              .Build());
+  views::BoxLayoutView* updated_entity_dot =
+      updated_entity_dot_and_value_wrapper->AddChildView(
+          views::Builder<views::BoxLayoutView>()
+              .SetProperty(
+                  views::kMarginsKey,
+                  // The top margin is done to roughly center the dot at the
+                  // middle of the first line of the attribute value.
+                  gfx::Insets::TLBR(kNewOrUpdatedAttributeDotTopSpacing, 0, 0,
+                                    kNewOrUpdatedAttributeDotRightSpacing))
+              .Build());
   updated_entity_dot->SetPreferredSize(
       gfx::Size(kNewOrUpdatedAttributeDotSize, kNewOrUpdatedAttributeDotSize));
   updated_entity_dot->SizeToPreferredSize();
@@ -95,8 +138,9 @@ std::unique_ptr<views::View> GetAttributeValueView(
           ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
           : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
       detail.attribute_value));
-  row->AddChildView(std::move(label));
-  return row;
+  updated_entity_dot_and_value_wrapper->AddChildView(std::move(label));
+
+  return atribute_value_row_wrapper;
 }
 
 // Helper to create a row displayed in the dialog. This row contains information
@@ -109,12 +153,18 @@ std::unique_ptr<views::View> BuildEntityAttributeRow(
                  .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                  .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
                  .Build();
-  row->AddChildView(
+
+  views::BoxLayoutView* entity_attribute_wrapper =
+      row->AddChildView(GetEntityAttributeAndValueLayout(
+          views::BoxLayout::CrossAxisAlignment::kStart));
+  entity_attribute_wrapper->AddChildView(
       views::Builder<views::Label>()
           .SetText(detail.attribute_name)
           .SetTextStyle(views::style::STYLE_BODY_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .SetAccessibleRole(ax::mojom::Role::kTerm)
+          .SetElideBehavior(gfx::ELIDE_TAIL)
+          .SetMaximumWidthSingleLine(GetEntityAttributeAndValueLabelMaxWidth())
           .Build());
   row->AddChildView(GetAttributeValueView(detail, is_save_prompt));
   // Set every child to expand with the same ratio.
@@ -163,8 +213,7 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
   set_fixed_width(kBubbleWidth);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::DialogContentType::kControl, views::DialogContentType::kControl));
+  set_margins(GetBubbleInnerMargins());
   SetAccessibleTitle(controller_->GetDialogTitle());
 
   auto* main_content_wrapper = AddChildView(

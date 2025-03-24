@@ -6,8 +6,6 @@ static_library("browser") {
   sources = [
     "bad_message.cc",
     "bad_message.h",
-    "content_credential_manager.cc",
-    "content_credential_manager.h",
     "content_password_manager_driver.cc",
     "content_password_manager_driver.h",
     "content_password_manager_driver_factory.cc",
@@ -93,7 +91,6 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_credential_manager_unittest.cc",
     "content_password_manager_driver_factory_unittest.cc",
     "content_password_manager_driver_unittest.cc",
     "form_submission_tracker_util_unittest.cc",

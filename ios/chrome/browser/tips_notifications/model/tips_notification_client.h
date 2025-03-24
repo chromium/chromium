@@ -34,6 +34,11 @@ class TipsNotificationClient : public PushNotificationClient {
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
   void OnSceneActiveForegroundBrowserReady() override;
 
+  // Called when the user Taps a provisional notification, but has not yet
+  // opted-in to Tips notifications.
+  void OptInIfAuthorized(base::WeakPtr<ProfileIOS> weak_profile,
+                         UNNotificationSettings* settings);
+
   // Called when the scene becomes "active foreground" and the browser is
   // ready. The closure will be called when all async operations are done.
   void OnSceneActiveForegroundBrowserReady(base::OnceClosure closure);

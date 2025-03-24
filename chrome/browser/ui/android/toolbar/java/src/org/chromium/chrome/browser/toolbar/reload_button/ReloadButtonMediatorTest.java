@@ -63,6 +63,8 @@ public class ReloadButtonMediatorTest {
         when(mResources.getInteger(R.integer.reload_button_level_reload)).thenReturn(RELOAD_LEVEL);
         when(mResources.getString(R.string.refresh)).thenReturn(RELOAD_TOAST_MSG);
         when(mResources.getString(R.string.menu_stop_refresh)).thenReturn(STOP_TOAST_MSG);
+        when(mThemeColorProvider.getBrandedColorScheme())
+                .thenReturn(BrandedColorScheme.APP_DEFAULT);
 
         mModel = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
         mMediator =
@@ -173,6 +175,50 @@ public class ReloadButtonMediatorTest {
                 "Activity focus tint list should be used, but was another tint",
                 mModel.get(ReloadButtonProperties.TINT_LIST),
                 focusTint);
+    }
+
+    @Test
+    public void testThemeChangedToAppDefault_shouldSetDefaultRippleBackground() {
+        var tint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, tint, BrandedColorScheme.APP_DEFAULT);
+
+        assertEquals(
+                "Background ripple effect should be default",
+                mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
+                R.drawable.toolbar_button_ripple);
+    }
+
+    @Test
+    public void testThemeChangedToLightTheme_shouldSetDefaultRippleBackground() {
+        var tint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, tint, BrandedColorScheme.DARK_BRANDED_THEME);
+
+        assertEquals(
+                "Background ripple effect should be default",
+                mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
+                R.drawable.toolbar_button_ripple);
+    }
+
+    @Test
+    public void testThemeChangedToDarkTheme_shouldSetDefaultRippleBackground() {
+        var tint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, tint, BrandedColorScheme.DARK_BRANDED_THEME);
+
+        assertEquals(
+                "Background ripple effect should be default",
+                mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
+                R.drawable.toolbar_button_ripple);
+    }
+
+    @Test
+    public void testThemeChangedToIncognito_shouldSetIncognitoRipple() {
+        var tint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, tint, BrandedColorScheme.INCOGNITO);
+
+        assertEquals(
+                "Background ripple effect should be incognito",
+                mModel.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE),
+                R.drawable.toolbar_button_ripple_incognito);
     }
 
     @Test

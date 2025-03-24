@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/json/values_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "content/public/browser/identity_request_account.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
@@ -173,8 +175,9 @@ FederatedIdentityIdentityProviderSigninStatusContext::GetSigninStatus(
   return granted_object->value.FindBool(kIdpSigninStatusKey);
 }
 
-std::vector<LoginStatusAccount>
-FederatedIdentityIdentityProviderSigninStatusContext::GetAccountProfiles(
+// TODO(crbug.com/405194067) Clean up the types for accounts in LightweightFedCM
+std::vector<scoped_refptr<content::IdentityRequestAccount>>
+FederatedIdentityIdentityProviderSigninStatusContext::GetAccounts(
     const url::Origin& identity_provider) {
   auto granted_object =
       GetGrantedObject(identity_provider, identity_provider.Serialize());
@@ -185,7 +188,22 @@ FederatedIdentityIdentityProviderSigninStatusContext::GetAccountProfiles(
     base::Value::Dict* options_dict =
         granted_object->value.FindDict(kIdpSigninOptionsKey);
     if (is_logged_in && options_dict && !IsExpired(options_dict)) {
-      return LoginStatusOptionsFromDict(options_dict).accounts;
+      const std::vector<blink::common::webid::LoginStatusAccount>&
+          login_status_accounts =
+              LoginStatusOptionsFromDict(options_dict).accounts;
+      std::vector<scoped_refptr<content::IdentityRequestAccount>>
+          request_accounts;
+
+      request_accounts.reserve(login_status_accounts.size());
+      std::transform(
+          login_status_accounts.begin(), login_status_accounts.end(),
+          std::inserter(request_accounts, request_accounts.begin()),
+          [](const auto& login_status_account) {
+            return base::MakeRefCounted<content::IdentityRequestAccount>(
+                login_status_account);
+          });
+
+      return request_accounts;
     }
   }
 

@@ -5,7 +5,7 @@
 
 import collections
 import copy
-import fnmatch
+import enum
 import functools
 import logging
 from typing import (Any, Dict, FrozenSet, Generator, Iterable, List, Optional,
@@ -16,6 +16,7 @@ import six
 
 # //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
+from typ import reduced_glob
 
 # //testing imports.
 from unexpected_passes_common import registry
@@ -64,6 +65,15 @@ def SetTestExpectationMapImplementation(impl: Type['BaseTestExpectationMap']
   TestExpectationMap = impl
 
 
+class WildcardType(enum.Enum):
+  # Exact string match.
+  NON_WILDCARD = 1
+  # Single wildcard at end of test, i.e. check for a prefix.
+  SIMPLE_WILDCARD = 2
+  # Potentially multiple wildcards anywhere within the test.
+  FULL_WILDCARD = 3
+
+
 class BaseExpectation():
   """Container for a test expectation.
 
@@ -78,10 +88,13 @@ class BaseExpectation():
                test: str,
                tags: Iterable[str],
                expected_results: Union[str, Iterable[str]],
+               wildcard_type: WildcardType,
                bug: Optional[str] = None):
     self._test_id = registry.RegisterTestName(test)
     self._tags_id = registry.RegisterTagSet(frozenset(tags))
     self._bug_id = registry.RegisterBug(bug or '')
+    self._reduced_glob = None
+    self.wildcard_type = wildcard_type
     if isinstance(expected_results, str):
       expected_results = frozenset([expected_results])
     else:
@@ -89,26 +102,31 @@ class BaseExpectation():
     self._expected_results_id = registry.RegisterExpectedResults(
         expected_results)
 
-    # We're going to be making a lot of comparisons, and fnmatch is *much*
-    # slower (~40x from rough testing) than a straight comparison, so only use
-    # it if necessary.
-    if self._IsWildcard():
-      self._comp = self._CompareWildcard
-    else:
+    # We're going to be making a lot of comparisons, so only use slower wildcard
+    # comparisons as necessary.
+    if self.wildcard_type == WildcardType.NON_WILDCARD:
       self._comp = self._CompareNonWildcard
+    elif self.wildcard_type == WildcardType.SIMPLE_WILDCARD:
+      self._comp = self._CompareSimpleWildcard
+    elif self.wildcard_type == WildcardType.FULL_WILDCARD:
+      self._comp = self._CompareFullWildcard
+      self._reduced_glob = reduced_glob.ReducedGlob(self.test)
+    else:
+      raise ValueError(f'Unsupported wildcard type {self.wildcard_type.name}')
 
   def __eq__(self, other: Any) -> bool:
     return (isinstance(other, BaseExpectation) and self.test == other.test
             and self.tags == other.tags
             and self.expected_results == other.expected_results
-            and self.bug == other.bug)
+            and self.bug == other.bug
+            and self.wildcard_type == other.wildcard_type)
 
   def __ne__(self, other: Any) -> bool:
     return not self.__eq__(other)
 
   def __hash__(self) -> int:
-    return hash(
-        (self._test_id, self._tags_id, self._expected_results_id, self._bug_id))
+    return hash((self._test_id, self._tags_id, self._expected_results_id,
+                 self._bug_id, self.wildcard_type))
 
   @property
   def test(self) -> str:
@@ -130,12 +148,11 @@ class BaseExpectation():
   def expected_results(self) -> FrozenSet[str]:
     return registry.RetrieveExpectedResults(self._expected_results_id)
 
-  def _IsWildcard(self) -> bool:
-    # This logic is the same as typ's expectation parser.
-    return not self.test.endswith('\\*') and self.test.endswith('*')
+  def _CompareSimpleWildcard(self, result_test_name: str) -> bool:
+    return result_test_name.startswith(self.test[:-1])
 
-  def _CompareWildcard(self, result_test_name: str) -> bool:
-    return fnmatch.fnmatch(result_test_name, self.test)
+  def _CompareFullWildcard(self, result_test_name: str) -> bool:
+    return self._reduced_glob.matchcase(result_test_name)
 
   def _CompareNonWildcard(self, result_test_name: str) -> bool:
     return result_test_name == self.test
@@ -174,6 +191,9 @@ class BaseExpectation():
       A string containing all of the information in the expectation in a format
       that is compatible with expectation files.
     """
+    is_glob = self.wildcard_type != WildcardType.NON_WILDCARD
+    full_wildcard_support = self.wildcard_type == WildcardType.FULL_WILDCARD
+
     typ_expectation = expectations_parser.Expectation(
         reason=self.bug,
         test=self.test,
@@ -182,7 +202,8 @@ class BaseExpectation():
         # This logic is normally handled by typ when parsing a file, but since
         # we're manually creating an expectation, we have to specify the
         # glob-ness manually.
-        is_glob=self._IsWildcard())
+        is_glob=is_glob,
+        full_wildcard_support=full_wildcard_support)
     return typ_expectation.to_string()
 
   def _ProcessTagsForFileUse(self) -> List[str]:

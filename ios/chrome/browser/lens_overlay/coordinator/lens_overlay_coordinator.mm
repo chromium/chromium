@@ -193,7 +193,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   // The mediator might destroy lens UI if the search engine doesn't support
   // lens.
   _mediator.templateURLService =
-      ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
+      ios::TemplateURLServiceFactory::GetForProfile(self.profile);
 
   _networkIssuePresenter = [[LensOverlayNetworkIssuePresenter alloc]
       initWithBaseViewController:_containerViewController];
@@ -209,9 +209,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   LensOverlayConfigurationFactory* lensConfigurationFactory =
       [[LensOverlayConfigurationFactory alloc] init];
-  LensConfiguration* config = [lensConfigurationFactory
-      configurationForEntrypoint:_entrypoint
-                         profile:self.browser->GetProfile()];
+  LensConfiguration* config =
+      [lensConfigurationFactory configurationForEntrypoint:_entrypoint
+                                                   profile:self.profile];
 
   LensOverlayOverflowMenuFactory* overflowMenuFactory =
       [[LensOverlayOverflowMenuFactory alloc] initWithBrowser:self.browser
@@ -271,7 +271,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  CHECK(IsLensOverlayAvailable(self.browser->GetProfile()->GetPrefs()));
+  CHECK(IsLensOverlayAvailable(self.profile->GetPrefs()));
   [super start];
 
   Browser* browser = self.browser;
@@ -516,8 +516,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     _associatedTabHelper->RecordSheetDimensionState(SheetDimensionStateHidden);
     _associatedTabHelper->ClearViewportSnapshot();
     _associatedTabHelper->UpdateSnapshot();
-    if (self.browser && IsLensOverlaySameTabNavigationEnabled(
-                            self.browser->GetProfile()->GetPrefs())) {
+    if (self.browser &&
+        IsLensOverlaySameTabNavigationEnabled(self.profile->GetPrefs())) {
       _associatedTabHelper->ClearInvokationNavigationId();
     }
   }
@@ -726,8 +726,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     _associatedTabHelper->RecordSheetDimensionState(
         _resultsPagePresenter.sheetDimension);
   }
-  if (IsLensOverlaySameTabNavigationEnabled(
-          self.browser->GetProfile()->GetPrefs())) {
+  if (IsLensOverlaySameTabNavigationEnabled(self.profile->GetPrefs())) {
     [self openURLInSameTab:URL];
   } else {
     [self openURLInNewTab:URL];
@@ -784,8 +783,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 #pragma mark - LensOverlayConsentViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  self.browser->GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kLensOverlayConditionsAccepted, true);
+  self.profile->GetPrefs()->SetBoolean(prefs::kLensOverlayConditionsAccepted,
+                                       true);
   _consentViewController = nil;
   [_metricsRecorder recordPermissionsAccepted];
 
@@ -841,7 +840,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return NO;
   }
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   if (!profile) {
     return NO;
   }
@@ -861,7 +860,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     return;
   }
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   if (!profile) {
     return;
   }
@@ -952,7 +951,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)openURLInNewTab:(GURL)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:URL
-                   inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
+                   inIncognito:self.profile->IsOffTheRecord()];
 
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
       openURLInNewTab:command];
@@ -1002,12 +1001,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 // Return whether or not the terms of service has been accepted.
 - (BOOL)termsOfServiceAccepted {
-  if (!self.browser || !self.browser->GetProfile() ||
-      !self.browser->GetProfile()->GetPrefs()) {
+  if (!self.browser || !self.profile || !self.profile->GetPrefs()) {
     return NO;
   }
 
-  return self.browser->GetProfile()->GetPrefs()->GetBoolean(
+  return self.profile->GetPrefs()->GetBoolean(
       prefs::kLensOverlayConditionsAccepted);
 }
 
@@ -1141,7 +1139,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   if (!self.browser) {
     return NO;
   }
-  return IsLVFEscapeHatchEnabled(self.browser->GetProfile()->GetPrefs()) &&
+  return IsLVFEscapeHatchEnabled(self.profile->GetPrefs()) &&
          !lens::IsLVFEntrypoint(_entrypoint) &&
          !lens::IsImageContextMenuEntrypoint(_entrypoint);
 }
@@ -1304,8 +1302,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   // The Lens overlay is locked to portrait. Skip displaying the restoration
   // window on landscape to avoid stretching the snapshot.
-  if (IsLandscape(sceneWindow) && !IsLensOverlayLandscapeOrientationEnabled(
-                                      self.browser->GetProfile()->GetPrefs())) {
+  if (IsLandscape(sceneWindow) &&
+      !IsLensOverlayLandscapeOrientationEnabled(self.profile->GetPrefs())) {
     return;
   }
 

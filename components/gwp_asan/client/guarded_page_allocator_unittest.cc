@@ -51,6 +51,8 @@ class BaseGpaTest : public testing::Test {
         is_partition_alloc);
   }
 
+  void TearDown() override { gpa_.DestructForTesting(); }
+
   GuardedPageAllocator gpa_;
   bool allocator_oom_ = false;
 };

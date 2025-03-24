@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -51,7 +49,6 @@ public class ImageButtonPreference extends ChromeBasePreference implements View.
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         ChromeImageButton imageButton = (ChromeImageButton) holder.findViewById(R.id.image_button);
-        assumeNonNull(imageButton);
         imageButton.setImageResource(mImage);
         if (mContentDescription != null) {
             imageButton.setContentDescription(mContentDescription);

@@ -10,8 +10,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A convenience class for displaying keyed values in a dropdown. */
 @JNINamespace("autofill")
+@NullMarked
 public class DropdownKeyValue extends Pair<String, String> {
     @CalledByNative
     public DropdownKeyValue(

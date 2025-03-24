@@ -935,11 +935,16 @@ bool BrowserTabStripController::IsFrameButtonsRightAligned() const {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void BrowserTabStripController::OnSplitViewAdded(std::vector<int> indices) {
-  for (int i : indices) {
+void BrowserTabStripController::OnSplitTabCreated(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    TabStripModelObserver::SplitTabAddReason reason,
+    tabs::SplitTabLayout tab_layout) {
+  for (const auto& tab_pair : tabs) {
+    int index = tab_pair.second;
     // TODO(agale): Splits should ultimately have ids so the tab strip can keep
     // track of multiple splits.
-    tabstrip_->AddTabToSplit(i);
+    tabstrip_->AddTabToSplit(index);
   }
 }
 

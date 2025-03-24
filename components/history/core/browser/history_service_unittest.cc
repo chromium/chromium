@@ -550,6 +550,8 @@ TEST_F(HistoryServiceTest, SetTitle) {
 }
 
 TEST_F(HistoryServiceTest, MostVisitedURLs) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_TRUE(history_service_.get());
 
   const GURL url0("http://www.google.com/url0/");
@@ -569,6 +571,7 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
                             history::SOURCE_BROWSED, false);
 
   QueryMostVisitedURLs();
+  histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
 
   EXPECT_EQ(2U, most_visited_urls_.size());
   EXPECT_EQ(url0, most_visited_urls_[0].url);
@@ -580,6 +583,7 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
                             history::SOURCE_BROWSED, false);
 
   QueryMostVisitedURLs();
+  histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 2);
 
   EXPECT_EQ(3U, most_visited_urls_.size());
   EXPECT_EQ(url0, most_visited_urls_[0].url);
@@ -592,6 +596,7 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
                             history::SOURCE_BROWSED, false);
 
   QueryMostVisitedURLs();
+  histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 3);
 
   EXPECT_EQ(3U, most_visited_urls_.size());
   EXPECT_EQ(url2, most_visited_urls_[0].url);
@@ -604,6 +609,7 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
                             history::SOURCE_BROWSED, false);
 
   QueryMostVisitedURLs();
+  histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 4);
 
   EXPECT_EQ(3U, most_visited_urls_.size());
   EXPECT_EQ(url1, most_visited_urls_[0].url);
@@ -617,6 +623,7 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
                             history::SOURCE_BROWSED, false);
 
   QueryMostVisitedURLs();
+  histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 5);
 
   EXPECT_EQ(4U, most_visited_urls_.size());
   EXPECT_EQ(url1, most_visited_urls_[0].url);

@@ -79,6 +79,9 @@ std::string AXMode::ToString() const {
       case AXMode::kFormsAndLabelsOnly:
         flag_name = "kFormsAndLabelsOnly";
         break;
+      case AXMode::kOnScreenOnly:
+        flag_name = "kOnScreenOnly";
+        break;
     }
 
     DCHECK(!flag_name.empty());

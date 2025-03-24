@@ -103,6 +103,9 @@ struct _GdkColor {
   guint16 blue;
 };
 
+// Not defined in GTK.
+constexpr int GSK_RENDER_NODE_MAX_VALUE = GSK_SUBSURFACE_NODE;
+
 constexpr int GTK_ICON_LOOKUP_USE_BUILTIN = 1 << 2;
 constexpr int GTK_ICON_LOOKUP_GENERIC_FALLBACK = 1 << 3;
 constexpr int GTK_ICON_LOOKUP_FORCE_SIZE = 1 << 4;

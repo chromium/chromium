@@ -304,7 +304,8 @@ void MultiProfileSupportTest::SetUp() {
   cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
       ash::DeviceSettingsService::Get(),
       TestingBrowserProcess::GetGlobal()->local_state());
-  ChromeAshTestBase::SetUp(std::make_unique<TestShellDelegateChromeOS>());
+  set_shell_delegate(std::make_unique<TestShellDelegateChromeOS>());
+  ChromeAshTestBase::SetUp();
   GetSessionControllerClient()->set_pref_service_must_exist(true);
 
   profile_manager_ = std::make_unique<TestingProfileManager>(

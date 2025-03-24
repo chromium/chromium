@@ -1289,10 +1289,6 @@ const std::vector<EngineAndTier> GetPrepopulationSetFromCountryID(
     UNHANDLED_COUNTRY(G, N)  // Guinea
     UNHANDLED_COUNTRY(G, P)  // Guadeloupe
     UNHANDLED_COUNTRY(H, T)  // Haiti
-#if BUILDFLAG(IS_WIN)
-    UNHANDLED_COUNTRY(I, P)  // Clipperton Island ('IP' is an WinXP-ism; ISO
-                             //                    includes it with France)
-#endif
     UNHANDLED_COUNTRY(M, F)  // Saint Martin
     UNHANDLED_COUNTRY(M, L)  // Mali
     UNHANDLED_COUNTRY(M, Q)  // Martinique

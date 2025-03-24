@@ -213,7 +213,7 @@ class TabListEditorMediator
                                 mCurrentTabGroupModelFilterSupplier.get(), tabIdList);
                     });
         }
-        updateColors(mCurrentTabGroupModelFilterSupplier.get().isIncognito());
+        updateColors(mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognito());
     }
 
     /** {@link TabListEditorCoordinator.TabListEditorController} implementation. */
@@ -238,7 +238,7 @@ class TabListEditorMediator
         mModel.set(
                 TabListEditorProperties.TOOLBAR_TITLE,
                 mContext.getString(R.string.tab_selection_editor_toolbar_select_tabs));
-        updateColors(mCurrentTabGroupModelFilterSupplier.get().isIncognito());
+        updateColors(mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognito());
     }
 
     @Override
@@ -269,7 +269,7 @@ class TabListEditorMediator
             mActionListModel.add(action.getPropertyModel());
         }
 
-        updateColors(mCurrentTabGroupModelFilterSupplier.get().isIncognito());
+        updateColors(mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognito());
     }
 
     @Override
@@ -434,7 +434,7 @@ class TabListEditorMediator
             // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
             // Non-incognito mode and incognito in both light/dark themes in dark theme all look
             // dark.
-            updateColors(newFilter.isIncognito());
+            updateColors(newFilter.getTabModel().isIncognito());
             newFilter.addObserver(mTabModelObserver);
         }
     }

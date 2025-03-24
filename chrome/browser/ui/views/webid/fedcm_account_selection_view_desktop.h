@@ -313,10 +313,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     // Shown after the user has triggered a button flow and while the accounts
     // are being fetched.
     LOADING,
-
-    // Shown when we wish to display only a single returning account. Used when
-    // there are multiple IDPs and exactly one returning account.
-    SINGLE_RETURNING_ACCOUNT_PICKER
   };
 
   // This enum describes the outcome of the mismatch dialog and is used for
@@ -454,8 +450,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
-      bool show_back_button,
-      bool is_choose_an_account);
+      bool show_back_button);
 
   // PictureInPictureOcclusionObserver:
   void OnOcclusionStateChanged(bool occluded) override;
@@ -550,16 +545,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // completing the flow, this boolean prevents us from double counting the
   // Blink.FedCm.IdpSigninStatus.MismatchDialogResult metric.
   bool is_mismatch_continue_clicked_{false};
-
-  // Whether the current dialog started as a single returning account dialog.
-  // Used to determine whether the multi IDP picker needs to show a back button
-  // or not.
-  bool started_as_single_returning_account_{false};
-
-  // Whether the last ShowMultiAccountPicker() is from a "Choose an account"
-  // button. This is used to determine whether to show this title when coming
-  // back from the single account confirmation dialog.
-  bool last_multi_account_is_choose_an_account_{false};
 
   // Time when IdentityProvider.close() was called for metrics purposes.
   base::TimeTicks idp_close_popup_time_;

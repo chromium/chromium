@@ -893,7 +893,7 @@ void AutocompleteResult::AttachContextualSearchActionToMatches() {
             match.destination_url, match.type,
             match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
       }
-      return;
+      continue;
     }
     // TODO(crbug.com/400952597): Add a check on the provider type once one
     // provider is created for @page suggestions. That also means we can cleanup

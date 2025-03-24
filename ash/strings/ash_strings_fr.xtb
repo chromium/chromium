@@ -215,6 +215,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1679841710523778799">Augmenter la luminosité</translation>
 <translation id="1680659827022803830">Commandes pour les appels vidéo</translation>
 <translation id="169515659049020177">Maj</translation>
+<translation id="1696984622403682083">Vous pouvez désactiver cette fonctionnalité à tout moment dans les paramètres. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Minuteur de <ph name="TOTAL_TIME" /> – <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresse IPv6 : <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Fenêtre active épinglée à gauche.</translation>
@@ -967,6 +968,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4221957499226645091"><ph name="APP_NAME" />, appli installée, en pause</translation>
 <translation id="4228078597006700451">Commandes non configurées</translation>
 <translation id="4230560241506423345">Nouveau</translation>
+<translation id="4236726631849783264">Rappel concernant les actions suggérées</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode Aperçu</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -983,7 +985,6 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4275663329226226506">Médias</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4280601795273309128">Mises à jour de sécurité terminées. Mettez à niveau votre appareil.</translation>
-<translation id="4281739221820540368">Créer un document Google Docs</translation>
 <translation id="4283888303416325161">Veuillez saisir votre mot de passe pour renforcer la sécurité</translation>
 <translation id="4285498937028063278">Retirer</translation>
 <translation id="428715201724021596">Connexion au profil… Cela peut prendre quelques minutes.</translation>
@@ -1044,6 +1045,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4471354919263203780">Téléchargement des fichiers de reconnaissance vocale… <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Mettre à jour l'appareil maintenant}=1{Mettre à jour l'appareil d'ici 1 seconde}one{Mettre à jour l'appareil d'ici # seconde}other{Mettre à jour l'appareil d'ici # secondes}}</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">Titre suivant</translation>
 <translation id="4477751544736611934">La consommation de données peut entraîner des frais.
 1 appareil connecté.</translation>
@@ -1070,6 +1072,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4545950850562423083">Enregistrer la page active dans les favoris</translation>
 <translation id="4548482551627849548">Déplacer la fenêtre active vers le bureau à gauche</translation>
 <translation id="4552748006424994716">Pour éviter l'écho, vous pouvez n'écouter votre micro qu'avec un casque filaire.</translation>
+<translation id="4556953949326137018">Lorsque vous utilisez des actions suggérées comme "Ajouter à Agenda" ou "Créer un document Google Docs", le contenu de la zone sélectionnée est envoyé aux serveurs Google pour suggérer des actions, conformément aux <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel, sensible ou confidentiel.</translation>
 <translation id="4560576029703263363">Activé</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
@@ -1153,6 +1156,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="481455355267255546">Événement suivant</translation>
 <translation id="481749895090480684">Liste de tâches : <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">votre caméra et votre micro</translation>
+<translation id="4828935196674083554">Ajout...</translation>
 <translation id="482908187605862807">Applis disponibles sur le Play Store</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques ?</translation>
 <translation id="4835677468087803981">Masquer le code</translation>
@@ -1650,6 +1654,7 @@ Aucun appareil connecté.</translation>
 <translation id="641817663353603351">Page précédente</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Effacer toutes les notifications</translation>
+<translation id="6426905245930183644">Création...</translation>
 <translation id="6430225033895752525">Afficher les paramètres du mode Sans distractions</translation>
 <translation id="643147933154517414">Terminé</translation>
 <translation id="6431865393913628856">Enregistrer l'écran</translation>
@@ -1716,7 +1721,6 @@ Nouvelle installation</translation>
 <translation id="6612889377159412215">tâche secondaire</translation>
 <translation id="6613765291890844037">Espace de stockage : <ph name="STORAGE_IN_USE_SIZE" /> utilisés | <ph name="STORAGE_TOTAL_SIZE" /> au total</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
-<translation id="6618277154885124991">Créer un document Google Sheets</translation>
 <translation id="6622679827379792051">Configurer l'affichage des applis de votre téléphone</translation>
 <translation id="662279009180869175">Utilisez les flèches vers la gauche et vers la droite pour redimensionner l'écran partagé</translation>
 <translation id="6624493541160101248">Bureau actuel : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> sur <ph name="DESK_COUNT" />.</translation>
@@ -2400,6 +2404,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8921624153894383499">L'Assistant Google ne parle pas cette langue.</translation>
 <translation id="8926951137623668982">Étagère toujours masquée</translation>
 <translation id="8929566928381252430">Vous essayez d'utiliser Verr Maj ? Utilisez</translation>
+<translation id="8934418770423095813">Créer un document Google Docs</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">a désactivé</translation>
 <translation id="8938800817013097409">Appareil USB de type C (port situé sur l'arrière de l'appareil, à droite)</translation>

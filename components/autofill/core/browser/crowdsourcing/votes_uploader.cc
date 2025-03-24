@@ -247,25 +247,40 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
   PreProcessStateMatchingTypes(*client_, copied_profiles, *form);
 
-  // TODO(crbug.com/368306576): Bound the size of `copied_profiles` and
-  // `copied_credit_cards` by `kMaxDataConsideredForPossibleTypes` and make
-  // the call to DeterminePossibleFieldTypesForUpload() synchronous.
   task_runner().PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](const std::vector<AutofillProfile>& profiles,
              const std::vector<CreditCard>& credit_cards,
              const std::u16string& last_unlocked_credit_card_cvc,
-             const std::string& app_locale,
+             const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form) {
             DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
                                                  last_unlocked_credit_card_cvc,
-                                                 app_locale, form.get());
-            return form;
+                                                 app_locale, *form);
+
+            FieldTypeSet non_empty_types;
+            for (const AutofillProfile& profile : profiles) {
+              profile.GetNonEmptyTypes(app_locale, &non_empty_types);
+            }
+            for (const CreditCard& card : credit_cards) {
+              card.GetNonEmptyTypes(app_locale, &non_empty_types);
+            }
+            // As CVC is not stored, treat it separately.
+            if (!last_unlocked_credit_card_cvc.empty() ||
+                non_empty_types.contains(CREDIT_CARD_NUMBER)) {
+              non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
+            }
+
+            std::vector<AutofillUploadContents> upload_contents =
+                EncodeUploadRequest(*form, non_empty_types,
+                                    /*login_form_signature=*/{},
+                                    observed_submission);
+            return std::pair(std::move(form), std::move(upload_contents));
           },
           std::move(copied_profiles), std::move(copied_credit_cards),
           last_unlocked_credit_card_cvc, client_->GetAppLocale(),
-          std::move(form)),
+          observed_submission, std::move(form)),
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),
@@ -280,13 +295,16 @@ void VotesUploader::OnFieldTypesDetermined(
     bool observed_submission,
     const std::u16string& last_unlocked_credit_card_cvc,
     ukm::SourceId ukm_source_id,
-    std::unique_ptr<FormStructure> form) {
+    std::pair<std::unique_ptr<FormStructure>,
+              std::vector<AutofillUploadContents>> form_and_upload_contents) {
+  auto& [form, upload_contents] = form_and_upload_contents;
   LocalFrameToken frame = form->global_id().frame_token;
   WipePendingVotesForForm(form->form_signature());
   if (observed_submission) {
-    UploadVote(std::move(form), initial_interaction_timestamp,
-               submission_timestamp, observed_submission,
-               last_unlocked_credit_card_cvc, ukm_source_id);
+    UploadVote(std::move(form), std::move(upload_contents),
+               initial_interaction_timestamp, submission_timestamp,
+               observed_submission, last_unlocked_credit_card_cvc,
+               ukm_source_id);
     FlushPendingVotesForFrame(frame);
   } else {
     FlushOldestPendingVotesIfNecessary();
@@ -295,9 +313,10 @@ void VotesUploader::OnFieldTypesDetermined(
          .form_signature = form->form_signature(),
          .upload_vote = base::BindOnce(
              &VotesUploader::UploadVote, weak_ptr_factory_.GetWeakPtr(),
-             std::move(form), initial_interaction_timestamp,
-             submission_timestamp, observed_submission,
-             last_unlocked_credit_card_cvc, ukm_source_id)});
+             std::move(form), std::move(upload_contents),
+             initial_interaction_timestamp, submission_timestamp,
+             observed_submission, last_unlocked_credit_card_cvc,
+             ukm_source_id)});
   }
 }
 
@@ -317,6 +336,7 @@ void VotesUploader::FlushOldestPendingVotesIfNecessary() {
 
 void VotesUploader::UploadVote(
     std::unique_ptr<FormStructure> submitted_form,
+    std::vector<AutofillUploadContents> upload_contents,
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks submission_timestamp,
     bool observed_submission,
@@ -382,25 +402,8 @@ void VotesUploader::UploadVote(
         client_->GetUkmRecorder(), ukm_source_id, *submitted_form,
         submission_timestamp);
   }
-  const PersonalDataManager& pdm = client_->GetPersonalDataManager();
-  FieldTypeSet non_empty_types;
-  for (const AutofillProfile* profile :
-       pdm.address_data_manager().GetProfiles()) {
-    profile->GetNonEmptyTypes(client_->GetAppLocale(), &non_empty_types);
-  }
-  for (const CreditCard* card : pdm.payments_data_manager().GetCreditCards()) {
-    card->GetNonEmptyTypes(client_->GetAppLocale(), &non_empty_types);
-  }
-  // As CVC is not stored, treat it separately.
-  if (!last_unlocked_credit_card_cvc.empty() ||
-      non_empty_types.contains(CREDIT_CARD_NUMBER)) {
-    non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
-  }
   client_->GetCrowdsourcingManager().StartUploadRequest(
-      /*upload_contents=*/EncodeUploadRequest(*submitted_form, non_empty_types,
-                                              /*login_form_signature=*/{},
-                                              observed_submission),
-      submitted_form->submission_source(),
+      std::move(upload_contents), submitted_form->submission_source(),
       /*is_password_manager_upload=*/false);
 }
 

@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                            "Chrome Settings", group_id, "Vacation");
 
   EXPECT_CALL(cb, Run(true));
-  observer()->DisplayInstantaneousMessage({message}, cb.Get());
+  observer()->DisplayInstantaneousMessage(message, cb.Get());
 
   auto* toast_controller =
       browser()->browser_window_features()->toast_controller();
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
       "Chrome Settings", group_id, "Vacation");
 
   EXPECT_CALL(cb, Run(true));
-  observer()->DisplayInstantaneousMessage({message}, cb.Get());
+  observer()->DisplayInstantaneousMessage(message, cb.Get());
 
   auto* toast_controller =
       browser()->browser_window_features()->toast_controller();
@@ -458,10 +458,11 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   auto message = CreateInstantMessage(
       "User", CollaborationEvent::COLLABORATION_MEMBER_ADDED, test_url,
       "Chrome Settings", std::nullopt, "Vacation");
-  message.attribution.tab_group_metadata->sync_tab_group_id = sync_tab_group_id;
+  message.attribution->tab_group_metadata->sync_tab_group_id =
+      sync_tab_group_id;
 
   EXPECT_CALL(cb, Run(true));
-  observer()->DisplayInstantaneousMessage({message}, cb.Get());
+  observer()->DisplayInstantaneousMessage(message, cb.Get());
 
   auto* toast_controller =
       browser()->browser_window_features()->toast_controller();
@@ -502,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
                            test_url, "Chrome Settings", group_id, "Vacation");
 
   EXPECT_CALL(cb, Run(true));
-  observer()->DisplayInstantaneousMessage({message}, cb.Get());
+  observer()->DisplayInstantaneousMessage(message, cb.Get());
 
   auto* toast_controller =
       browser()->browser_window_features()->toast_controller();

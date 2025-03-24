@@ -1,0 +1,5 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"None selected listbox" viewIdResName:"none-selected-listbox" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++ListView text:"None selected listbox" stateDescription:"multiselectable, none selected." clickable focusable CollectionInfo:[rows=4, cols=1] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", roleDescription="list box"]
+++TextView text:"Some selected listbox" viewIdResName:"some-selected-listbox" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++ListView text:"Some selected listbox" stateDescription:"multiselectable, none selected." clickable focusable CollectionInfo:[rows=4, cols=1] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", roleDescription="list box"]

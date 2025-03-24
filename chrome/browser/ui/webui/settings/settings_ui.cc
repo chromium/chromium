@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
@@ -668,6 +669,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableDeleteBrowsingDataRevamp",
       base::FeatureList::IsEnabled(features::kDbdRevampDesktop));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // A11y page
+  html_source->AddBoolean(
+      "enableToastRefinements",
+      base::FeatureList::IsEnabled(toast_features::kToastRefinements));
+#endif
 
   TryShowHatsSurveyWithTimeout();
 }

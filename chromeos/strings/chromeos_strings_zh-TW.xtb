@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">超過嘗試次數上限。</translation>
 <translation id="1908234395526491708">UDP 要求失敗</translation>
 <translation id="1908394185991500139">向左鍵</translation>
+<translation id="1911678930322867245">移到右上角</translation>
 <translation id="1914144885717544695">星期五</translation>
 <translation id="1915960750806557358">分享意見回饋或說明你的問題。請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="1923388006036088459">強調色</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">海灘</translation>
 <translation id="819278132617411009">運用 Google AI 提升工作效率</translation>
-<translation id="82003371436638355">如果選取「自製桌布」，請自行輸入提示。或者，你可以選取「選擇主題」，然後選取畫底線的字詞，打造個人化 AI 桌布。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          選取「給我靈感」可取得更多獨特而有變化的 AI 圖像選項。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          自訂桌布時，系統會將提示傳送到 Google 伺服器，以產生圖像及提升產品品質，過程中會遵守《<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 服務條款和隱私權政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />》的規定。請勿加入任何個人、敏感或機密資訊。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          生成式 AI 提供的內容未必準確 (包括人物相關資訊)，因此請多加查證。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />瞭解詳情<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8206859287963243715">手機</translation>
 <translation id="8208861521865154048">獎勵</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8833620912470026819">仙人掌森林</translation>
 <translation id="8834539327799336565">目前已連線的裝置</translation>
+<translation id="8842526499753992487">移到左上角</translation>
 <translation id="8845001906332463065">尋求協助</translation>
 <translation id="8849799913685544685">燈塔</translation>
 <translation id="8851859208664803097">已停止 - 無法連結印表機</translation>

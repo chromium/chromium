@@ -25,6 +25,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/enterprise_companion/constants.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
@@ -247,8 +249,10 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
       std::unique_ptr<policy::DeviceManagementService::Configuration> config,
       CloudPolicyClientProvider cloud_policy_client_provider,
       scoped_refptr<device_management_storage::DMStorage> dm_storage,
-      PolicyFetchResponseValidator policy_fetch_response_validator)
-      : dm_service_(std::move(config)),
+      PolicyFetchResponseValidator policy_fetch_response_validator,
+      base::TimeDelta task_timeout)
+      : task_timeout_(task_timeout),
+        dm_service_(std::move(config)),
         cloud_policy_client_(
             std::move(cloud_policy_client_provider).Run(&dm_service_)),
         dm_storage_(dm_storage),
@@ -265,7 +269,13 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     }
     UpdateCachedPolicyInfo();
   }
-  ~DMClientImpl() override { cloud_policy_client_->RemoveObserver(this); }
+
+  ~DMClientImpl() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    cloud_policy_client_->RemoveObserver(this);
+    VLOG_IF(1, pending_callback_)
+        << "DMClient destroyed while task in-flight. Callback will be dropped";
+  }
 
   // Overrides for DMClient.
   void RegisterPolicyAgent(
@@ -280,9 +290,9 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     }
 
     dm_storage_->RemoveAllPolicies();
-    pending_callback_ = base::BindPostTaskToCurrentDefault(base::BindOnce(
+    SetPendingCallback(base::BindPostTaskToCurrentDefault(base::BindOnce(
         &EnterpriseCompanionEventLogger::LogRegisterPolicyAgentEvent,
-        event_logger, base::Time::Now(), std::move(callback)));
+        event_logger, base::Time::Now(), std::move(callback))));
     cloud_policy_client_->RegisterPolicyAgentWithEnrollmentToken(
         dm_storage_->GetEnrollmentToken(), dm_storage_->GetDeviceID(),
         client_data_delegate_);
@@ -313,7 +323,7 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
       return;
     }
 
-    pending_callback_ = std::move(callback);
+    SetPendingCallback(std::move(callback));
     UpdateCachedPolicyInfo();
     cloud_policy_client_->FetchPolicy(reason);
   }
@@ -401,17 +411,6 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
   }
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  policy::DeviceManagementService dm_service_;
-  std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
-  scoped_refptr<device_management_storage::DMStorage> dm_storage_;
-  PolicyFetchResponseValidator policy_fetch_response_validator_;
-  ClientDataDelegate client_data_delegate_;
-  StatusCallback pending_callback_;
-  std::unique_ptr<device_management_storage::CachedPolicyInfo>
-      cached_policy_info_;
-
   bool ShouldSkipRegistration() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (dm_storage_->GetEnrollmentToken().empty()) {
@@ -453,6 +452,37 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
           cached_policy_info_->key_version());
     }
   }
+
+  void HandleTaskTimeout() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // If the callback has already been responded to, the task did not time out.
+    if (pending_callback_) {
+      VLOG(1) << "DMClient task timed out before CloudPolicyClient response";
+      std::move(pending_callback_)
+          .Run(EnterpriseCompanionStatus(
+              ApplicationError::kCloudPolicyClientTimeout));
+    }
+  }
+
+  void SetPendingCallback(StatusCallback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    task_timer_.Start(FROM_HERE, task_timeout_,
+                      base::BindOnce(&DMClientImpl::HandleTaskTimeout,
+                                     base::Unretained(this)));
+    pending_callback_ = std::move(callback);
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  const base::TimeDelta task_timeout_;
+  policy::DeviceManagementService dm_service_;
+  std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
+  scoped_refptr<device_management_storage::DMStorage> dm_storage_;
+  PolicyFetchResponseValidator policy_fetch_response_validator_;
+  ClientDataDelegate client_data_delegate_;
+  StatusCallback pending_callback_;
+  base::OneShotTimer task_timer_;
+  std::unique_ptr<device_management_storage::CachedPolicyInfo>
+      cached_policy_info_;
 };
 
 }  // namespace
@@ -507,10 +537,11 @@ std::unique_ptr<DMClient> CreateDMClient(
     CloudPolicyClientProvider cloud_policy_client_provider,
     scoped_refptr<device_management_storage::DMStorage> dm_storage,
     PolicyFetchResponseValidator policy_fetch_response_validator,
-    std::unique_ptr<policy::DeviceManagementService::Configuration> config) {
+    std::unique_ptr<policy::DeviceManagementService::Configuration> config,
+    base::TimeDelta task_timeout) {
   return std::make_unique<BufferedDMClient>(std::make_unique<DMClientImpl>(
       std::move(config), std::move(cloud_policy_client_provider), dm_storage,
-      policy_fetch_response_validator));
+      policy_fetch_response_validator, task_timeout));
 }
 
 }  // namespace enterprise_companion

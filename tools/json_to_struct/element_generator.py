@@ -86,10 +86,10 @@ def _GenerateArray(element_name, field_info, content, lines, indent,
 def _GenerateStruct(element_name, field_info, content, lines, indent,
                     field_name_count):
   """Generates a struct to be included in a static structure initializer. If
-  content is not specified, uses {0}.
+  content is not specified, uses {}.
   """
   if content is None:
-    lines.append(indent + '{0},')
+    lines.append(indent + '{},')
     return
 
   fields = field_info['fields']

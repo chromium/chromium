@@ -33,7 +33,7 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
  public:
   ActorSitePolicyBrowserTest() {
     base::FieldTrialParams params;
-    params["allowlist"] = "a.test,b.test";
+    params["allowlist"] = "a.com,b.com";
     params["allowlist_only"] = "false";
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kGlicActionAllowlist, std::move(params));
@@ -44,7 +44,7 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
  protected:
@@ -65,7 +65,7 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ActorSitePolicyBrowserTest, Basic) {
   const GURL allowed_url =
-      embedded_test_server()->GetURL("a.test", "/title1.html");
+      embedded_https_test_server().GetURL("a.com", "/title1.html");
   CheckUrl(allowed_url, true);
 }
 
@@ -126,7 +126,7 @@ class ActorSitePolicyDelayedWarningBrowserTest
 IN_PROC_BROWSER_TEST_F(ActorSitePolicySafeBrowsingBrowserTest,
                        BlockDangerousSite) {
   const GURL dangerous_url =
-      embedded_test_server()->GetURL("evil.com", "/title1.html");
+      embedded_https_test_server().GetURL("c.com", "/title1.html");
   AddDangerousUrl(dangerous_url);
   CheckUrl(dangerous_url, false);
 }
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicySafeBrowsingBrowserTest,
 IN_PROC_BROWSER_TEST_F(ActorSitePolicyDelayedWarningBrowserTest,
                        BlockPhishingSiteWithDelayedWarning) {
   const GURL phishing_url =
-      embedded_test_server()->GetURL("evil.com", "/title1.html");
+      embedded_https_test_server().GetURL("c.com", "/title1.html");
   AddPhishingUrl(phishing_url);
   CheckUrl(phishing_url, false);
 }

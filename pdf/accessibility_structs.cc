@@ -81,6 +81,10 @@ AccessibilityImageInfo::AccessibilityImageInfo(
 
 AccessibilityImageInfo::~AccessibilityImageInfo() = default;
 
+AccessibilityDocInfo::AccessibilityDocInfo() = default;
+
+AccessibilityDocInfo::~AccessibilityDocInfo() = default;
+
 bool AccessibilityDocInfo::operator==(const AccessibilityDocInfo& other) const {
   return page_count == other.page_count && is_tagged == other.is_tagged &&
          text_accessible == other.text_accessible &&

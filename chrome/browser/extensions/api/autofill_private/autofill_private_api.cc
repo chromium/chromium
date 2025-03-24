@@ -54,6 +54,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1209,6 +1210,27 @@ AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction::Run() {
   return RespondNow(ArgumentList(
       autofill_private::GetAllAttributeTypesForEntityTypeName::Results::Create(
           result)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateSetAutofillAiOptInStatusFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateSetAutofillAiOptInStatusFunction::Run() {
+  std::optional<autofill_private::SetAutofillAiOptInStatus::Params> parameters =
+      autofill_private::SetAutofillAiOptInStatus::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+  if (!autofill::SetAutofillAiOptInStatus(*autofill_client(),
+                                          parameters->opted_in)) {
+    return RespondNow(Error(kErrorAutofillAiUnavailable));
+  }
+
+  if (parameters->opted_in) {
+    autofill_client()->NotifyIphFeatureUsed(
+        autofill::AutofillClient::IphFeature::kAutofillAi);
+  }
+
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

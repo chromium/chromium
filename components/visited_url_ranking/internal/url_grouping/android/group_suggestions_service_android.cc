@@ -117,7 +117,7 @@ class GroupSuggestionsServiceAndroid::SuggestionDelegateBridge
   void OnDumpStateForFeedback(const std::string& dump_state) override;
 
  private:
-  ScopedJavaLocalRef<jobject> java_obj_;
+  ScopedJavaGlobalRef<jobject> java_obj_;
   raw_ptr<GroupSuggestionsService> group_suggestions_service_;
 };
 
@@ -126,7 +126,9 @@ GroupSuggestionsServiceAndroid::SuggestionDelegateBridge::
         GroupSuggestionsService* group_suggestions_service,
         GroupSuggestionsServiceAndroid* group_suggestions_service_android)
     : group_suggestions_service_(group_suggestions_service) {
-  java_obj_ = group_suggestions_service_android->GetJavaDelegateBridge();
+  java_obj_ = ScopedJavaGlobalRef<jobject>(
+      AttachCurrentThread(),
+      group_suggestions_service_android->GetJavaDelegateBridge());
   // TODO(crbug.com/397221723): Specify correct window information in scope to
   // handle multi-window.
   group_suggestions_service->RegisterDelegate(this,
@@ -163,8 +165,7 @@ void GroupSuggestionsServiceAndroid::SuggestionDelegateBridge::ShowSuggestion(
   }
   Java_DelegateBridge_showSuggestion(
       env, java_obj_,
-      Java_GroupSuggestions_createGroupSuggestions(
-          env, base::android::ToJavaArrayOfObjects(env, suggestions)),
+      Java_GroupSuggestions_createGroupSuggestions(env, suggestions),
       base::android::ToJniCallback(env, std::move(response_callback)));
 }
 

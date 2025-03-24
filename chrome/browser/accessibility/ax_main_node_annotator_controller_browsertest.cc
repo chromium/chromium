@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -27,7 +28,6 @@
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
-#include "ui/accessibility/platform/ax_platform.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -243,8 +243,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
                        EnabledByPreference) {
   // If the test is run with --force-renderer-accessibility, then initializing
   // the class causes the service to kick off. We need to force it to complete.
-  bool screen_reader = ui::AXPlatform::GetInstance().IsScreenReaderActive();
-  if (screen_reader) {
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
     CompleteServiceInitialization();
   } else {
     Connect();
@@ -259,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
 
   // If the test is run without --force-renderer-accessibility, then no screen
   // reader should have been detected yet, and the feature should be off.
-  if (!screen_reader) {
+  if (!accessibility_state_utils::IsScreenReaderEnabled()) {
     EXPECT_FALSE(web_contents->GetAccessibilityMode().has_mode(
         ui::AXMode::kAnnotateMainNode));
     EnableScreenReader(true);

@@ -25,8 +25,10 @@
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -111,6 +113,21 @@ bool IsValidBrowsingContextNameOrKeyword(const String& name_or_keyword) {
   return false;
 }
 
+bool IsValidTag(const String& tag) {
+  if (!tag.ContainsOnlyASCIIOrEmpty()) {
+    return false;
+  }
+
+  return WTF::VisitCharacters(tag, [](const auto& chars) {
+    for (char ch : chars) {
+      if (!WTF::IsASCIIPrintable(ch)) {
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
 // If `out_error` is provided and hasn't already had a message set, sets it to
 // `message`.
 void SetParseErrorMessage(String* out_error, String message) {
@@ -123,6 +140,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       const KURL& base_url,
                                       ExecutionContext* context,
                                       bool is_browser_injected,
+                                      AtomicString tag,
                                       String* out_error,
                                       Vector<String>& out_warnings) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
@@ -134,6 +152,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
       "source",      "urls",        "where",
       "requires",    "target_hint", "referrer_policy",
       "relative_to", "eagerness",   "expects_no_vary_search"};
+
   for (wtf_size_t i = 0; i < input->size(); ++i) {
     const String& input_key = input->at(i).first;
     if (!base::Contains(kKnownKeys, input_key)) {
@@ -432,7 +451,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   return MakeGarbageCollected<SpeculationRule>(
       std::move(urls), document_rule_predicate, requires_anonymous_client_ip,
       target_hint, referrer_policy, eagerness, std::move(no_vary_search),
-      injection_type);
+      injection_type, std::move(tag));
 }
 
 }  // namespace
@@ -611,6 +630,23 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
     result->AddWarnings(base::span_from_ref(duplicate_key_warning));
   }
 
+  AtomicString tag;
+  if (RuntimeEnabledFeatures::SpeculationRulesTagEnabled(context)) {
+    JSONValue* tag_value = parsed->Get("tag");
+    if (tag_value) {
+      String tag_str;
+      if (!tag_value->AsString(&tag_str)) {
+        result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                         "Tag value must be a string.");
+      } else if (!IsValidTag(tag_str)) {
+        result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                         "Tag value is invalid: must be ASCII printable.");
+      } else {
+        tag = AtomicString(tag_str);
+      }
+    }
+  }
+
   const auto parse_for_action =
       [&](const char* key, HeapVector<Member<SpeculationRule>>& destination,
           bool allow_target_hint,
@@ -650,7 +686,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           String error_message;
           SpeculationRule* rule = ParseSpeculationRule(
               input_rule, base_url, context, source->IsFromBrowserInjected(),
-              &error_message, warning_messages);
+              tag, &error_message, warning_messages);
 
           // If parse failed for a rule, then ignore it and continue.
           if (!rule) {

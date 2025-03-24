@@ -35,7 +35,7 @@ void DeterminePossibleFieldTypesForUpload(
     const std::vector<CreditCard>& credit_cards,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
-    FormStructure* form);
+    FormStructure& form);
 
 }  // namespace autofill
 

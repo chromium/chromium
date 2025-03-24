@@ -247,7 +247,12 @@ template("msvc_toolchain") {
     }
 
     tool("rc") {
-      command = "\"$python_path\" $_tool_wrapper_path rc-wrapper $env rc.exe /nologo $sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
+      if (treat_warnings_as_errors) {
+        werror = "-Werror "
+      } else {
+        werror = ""
+      }
+      command = "\"$python_path\" $_tool_wrapper_path rc-wrapper $env rc.exe /nologo $werror$sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
       depsformat = "msvc"
       outputs = [ "$object_subdir/{{source_name_part}}.res" ]
       description = "RC {{output}}"

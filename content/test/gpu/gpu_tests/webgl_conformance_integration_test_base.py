@@ -3,12 +3,12 @@
 # found in the LICENSE file.
 """Base class for WebGL conformance tests."""
 
-import collections
+from collections.abc import Mapping
 import logging
 import json
 import os
 import time
-from typing import Any, List, Optional, Set, Tuple
+from typing import Any
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
@@ -62,24 +62,24 @@ def _CompareVersion(version1: str, version2: str) -> int:
 @dataclasses.dataclass
 class WebGLTestArgs():
   """Struct-like class for passing args to a WebGLConformance test."""
-  webgl_version: Optional[int] = None
-  extension: Optional[str] = None
-  extension_list: Optional[List[str]] = None
+  webgl_version: int | None = None
+  extension: str | None = None
+  extension_list: list[str] | None = None
 
 
 class WebGLConformanceIntegrationTestBase(
     gpu_integration_test.GpuIntegrationTest):
 
-  _webgl_version: Optional[int] = None
+  _webgl_version: int | None = None
   _crash_count = 0
-  _original_environ: Optional[collections.abc.Mapping] = None
+  _original_environ: Mapping | None = None
   page_loaded = False
 
   # Scripts read from file during process start up.
-  _conformance_harness_script: Optional[str] = None
-  _extension_harness_additional_script: Optional[str] = None
+  _conformance_harness_script: str | None = None
+  _extension_harness_additional_script: str | None = None
 
-  websocket_server: Optional[wss.WebsocketServer] = None
+  websocket_server: wss.WebsocketServer | None = None
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
@@ -89,7 +89,7 @@ class WebGLConformanceIntegrationTestBase(
   def _SuiteSupportsParallelTests(cls) -> bool:
     return True
 
-  def _GetSerialGlobs(self) -> Set[str]:
+  def _GetSerialGlobs(self) -> set[str]:
     serial_globs = set()
     if host_information.IsMac():
       if host_information.IsAmdGpu():
@@ -106,7 +106,7 @@ class WebGLConformanceIntegrationTestBase(
         }
     return serial_globs
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     serial_tests = set()
     if host_information.IsLinux() and host_information.IsNvidiaGpu():
       serial_tests |= {
@@ -205,7 +205,7 @@ class WebGLConformanceIntegrationTestBase(
                           ])
 
   @classmethod
-  def _GetExtensionList(cls) -> List[str]:
+  def _GetExtensionList(cls) -> list[str]:
     raise NotImplementedError()
 
   @classmethod
@@ -405,7 +405,7 @@ class WebGLConformanceIntegrationTestBase(
             self._extension_harness_additional_script)
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -491,9 +491,10 @@ class WebGLConformanceIntegrationTestBase(
 
   @classmethod
   def _ParseTests(cls, path: str, version: str, webgl2_only: bool,
-                  folder_min_version: Optional[str]) -> List[str]:
-    def _ParseTestNameAndVersions(line: str
-                                  ) -> Tuple[str, Optional[str], Optional[str]]:
+                  folder_min_version: str | None) -> list[str]:
+
+    def _ParseTestNameAndVersions(
+        line: str) -> tuple[str, str | None, str | None]:
       """Parses any min/max versions and the test name on the given line.
 
       Args:
@@ -562,11 +563,11 @@ class WebGLConformanceIntegrationTestBase(
     return test_paths
 
   @classmethod
-  def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
+  def GetPlatformTags(cls, browser: ct.Browser) -> list[str]:
     assert cls._webgl_version is not None
     tags = super().GetPlatformTags(browser)
     return tags
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     raise NotImplementedError()

@@ -166,8 +166,7 @@ class AccountSelectionViewBase {
   virtual void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
-      bool show_back_button,
-      bool is_choose_an_account) = 0;
+      bool show_back_button) = 0;
 
   // Updates the FedCM dialog to show the "verifying" sheet.
   virtual void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
@@ -194,13 +193,6 @@ class AccountSelectionViewBase {
   // Updates the FedCM dialog to show the "request permission" sheet.
   virtual void ShowRequestPermissionDialog(
       const IdentityRequestAccountPtr& account) = 0;
-
-  // Updates to show a single account along with a button to show all options.
-  // Currently used when there are multiple IDPs and exactly one returning
-  // account.
-  virtual void ShowSingleReturningAccountDialog(
-      const std::vector<IdentityRequestAccountPtr>& accounts,
-      const std::vector<IdentityProviderDataPtr>& idp_list) = 0;
 
   // Gets the title of the dialog.
   virtual std::string GetDialogTitle() const = 0;

@@ -14,7 +14,9 @@
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/device_local_account_type.h"
 
 namespace ash::kiosk::test {
 
@@ -33,6 +35,25 @@ namespace ash::kiosk::test {
 // Returns the Kiosk app configured in the system. Checks if there is not
 // exactly one app.
 [[nodiscard]] KioskApp TheKioskApp();
+
+// Returns the `KioskApp` known by the system given its corresponding
+// `account_id` configured in policies.
+[[nodiscard]] std::optional<KioskApp> GetAppByAccountId(
+    std::string_view account_id);
+
+// Launches the given `app`, simulating a manual launch from the login screen.
+// Returns true if the launch started.
+[[nodiscard]] bool LaunchAppManually(const KioskApp& app);
+
+// Launches the app identified by the given `account_id`, simulating a manual
+// launch from the login screen. Returns true if the launch started.
+//
+// `account_id` must have been previously configured in policies.
+[[nodiscard]] bool LaunchAppManually(std::string_view account_id);
+
+// Waits until a Kiosk session launched. Returns true if the launch was
+// successful.
+[[nodiscard]] bool WaitKioskLaunched();
 
 // Tells `KioskLaunchController` to block kiosk launch until the `AutoReset` is
 // destroyed.
@@ -103,6 +124,11 @@ void CloseAppWindow(const KioskApp& app);
 void CachePolicy(const std::string& account_id,
                  base::FunctionRef<void(policy::UserPolicyBuilder&)> setup);
 
+// The account ID as configured in policies is different from the `AccountId`
+// that identify users in Chrome. This function converts the policy `account_id`
+// of a Kiosk app of the given `type` to a Chrome `AccountId`.
+AccountId CreateDeviceLocalAccountId(std::string_view account_id,
+                                     policy::DeviceLocalAccountType type);
 }  // namespace ash::kiosk::test
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_TEST_UTILS_H_

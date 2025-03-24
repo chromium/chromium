@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] e.style['flex'] = "calc(10 + (sign(20cqw - 10px) * 5)) calc(10 + (sign(20cqw - 10px) * 5)) 1px" should set the property value
-  assert_equals: serialization should be canonical expected "calc(10 + (5 * sign(20cqw - 10px))) calc(10 + (5 * sign(20cqw - 10px))) 1px" but got "15 15 1px"
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['flex'] = "1 1 calc(10px + (sign(20cqw - 10px) * 5px))" should set the property value
   assert_equals: serialization should be canonical expected "1 1 calc(10px + (5px * sign(20cqw - 10px)))" but got "1 1 calc(10px + sign(20cqw - 10px) * 5px)"
 [FAIL] e.style['flex'] = "calc(1) calc(2 + 1) calc(3px)" should set the property value

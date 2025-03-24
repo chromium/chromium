@@ -57,9 +57,9 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.TabSwitcherSearchStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
@@ -82,10 +82,8 @@ public class TabSwitcherSearchTest {
     private static final String URL_PREFIX = "127.0.0.1:" + SERVER_PORT;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    private final ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(mActivityTestRule);
+    public FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private EmbeddedTestServer mTestServer;
     private WebPageStation mInitialPage;
@@ -94,10 +92,10 @@ public class TabSwitcherSearchTest {
     public void setUp() {
         mTestServer =
                 TabSwitcherSearchTestUtils.setServerPortAndGetTestServer(
-                        mActivityTestRule, SERVER_PORT);
-        mInitialPage = mEntryPoints.startOnBlankPageNonBatched();
+                        mCtaTestRule.getActivityTestRule(), SERVER_PORT);
+        mInitialPage = mCtaTestRule.startOnBlankPage();
 
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
     }
 
@@ -110,7 +108,7 @@ public class TabSwitcherSearchTest {
     @MediumTest
     @Restriction(PHONE)
     public void testHubSearchBox_Phone() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         mInitialPage.openRegularTabSwitcher();
 
         View tabSwitcher = cta.findViewById(R.id.tab_switcher_view_holder);
@@ -122,7 +120,7 @@ public class TabSwitcherSearchTest {
     @MediumTest
     @Restriction(TABLET)
     public void testHubSearchLoupe_Tablet() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         mInitialPage.openRegularTabSwitcher();
 
         View tabSwitcher = cta.findViewById(R.id.tab_switcher_view_holder);
@@ -155,7 +153,7 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     public void testZeroPrefixSuggestions_OpenSuggestion() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         List<String> urlsToOpen =
                 Arrays.asList(
                         "/chrome/test/data/android/test.html",
@@ -178,14 +176,14 @@ public class TabSwitcherSearchTest {
         CriteriaHelper.pollUiThread(
                 () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
         assertEquals(
-                mActivityTestRule.getTestServer().getURL(urlsToOpen.get(0)),
+                mCtaTestRule.getTestServer().getURL(urlsToOpen.get(0)),
                 cta.getCurrentTabModel().getCurrentTabSupplier().get().getUrl().getSpec());
     }
 
     @Test
     @MediumTest
     public void testZeroPrefixSuggestions_OpenSameTab() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 TabSwitcherSearchTestUtils.openUrls(
@@ -205,7 +203,7 @@ public class TabSwitcherSearchTest {
         CriteriaHelper.pollUiThread(
                 () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
         assertEquals(
-                mActivityTestRule.getTestServer().getURL(urlsToOpen.get(0)),
+                mCtaTestRule.getTestServer().getURL(urlsToOpen.get(0)),
                 cta.getCurrentTabModel().getCurrentTabSupplier().get().getUrl().getSpec());
     }
 
@@ -213,7 +211,7 @@ public class TabSwitcherSearchTest {
     @MediumTest
     // Regression test for the currently selected tab being included/excluded randomly.
     public void testZeroPrefixSuggestions_IgnoresHiddenTabs() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         List<String> urlsToOpen =
                 Arrays.asList(
                         "/chrome/test/data/android/test.html",
@@ -289,7 +287,7 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     public void testTypedSuggestions_OpenSuggestion() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         List<String> urlsToOpen =
                 Arrays.asList(
                         "/chrome/test/data/android/test.html",
@@ -313,14 +311,14 @@ public class TabSwitcherSearchTest {
         CriteriaHelper.pollUiThread(
                 () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
         assertEquals(
-                mActivityTestRule.getTestServer().getURL(urlsToOpen.get(0)),
+                mCtaTestRule.getTestServer().getURL(urlsToOpen.get(0)),
                 cta.getCurrentTabModel().getCurrentTabSupplier().get().getUrl().getSpec());
     }
 
     @Test
     @MediumTest
     public void testTypedSuggestions_OpenSameTab() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 TabSwitcherSearchTestUtils.openUrls(
@@ -341,7 +339,7 @@ public class TabSwitcherSearchTest {
         CriteriaHelper.pollUiThread(
                 () -> cta.getLayoutManager().isLayoutVisible(LayoutType.BROWSING));
         assertEquals(
-                mActivityTestRule.getTestServer().getURL(urlsToOpen.get(0)),
+                mCtaTestRule.getTestServer().getURL(urlsToOpen.get(0)),
                 cta.getCurrentTabModel().getCurrentTabSupplier().get().getUrl().getSpec());
     }
 
@@ -349,7 +347,7 @@ public class TabSwitcherSearchTest {
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_press_enter_to_search/true")
     public void testTypedSuggestions_OpenSuggestionWithEnter() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         List<String> urlsToOpen =
                 Arrays.asList(
                         "/chrome/test/data/android/navigate/one.html",
@@ -399,7 +397,7 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     public void testTypedSuggestions_OpenSearchSuggestion() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 mInitialPage.openRegularTabSwitcher().openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("foobar");
@@ -426,7 +424,7 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     public void testTypedSuggestions_OpenSearchSuggestion_Incognito() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 TabSwitcherSearchTestUtils.openUrls(
@@ -468,7 +466,7 @@ public class TabSwitcherSearchTest {
         // Click star button to bookmark the current tab.
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
+                mCtaTestRule.getActivity(),
                 R.id.bookmark_this_page_id);
 
         TabSwitcherSearchStation tabSwitcherSearchStation =
@@ -501,7 +499,7 @@ public class TabSwitcherSearchTest {
                 runOnUiThreadBlocking(
                         () ->
                                 new BrowsingHistoryBridge(
-                                        mActivityTestRule
+                                        mCtaTestRule
                                                 .getActivity()
                                                 .getProfileProviderSupplier()
                                                 .get()
@@ -547,7 +545,7 @@ public class TabSwitcherSearchTest {
                                 isDescendantOfA(
                                         withId(
                                                 getTabSwitcherAncestorId(
-                                                        mActivityTestRule.getActivity()))),
+                                                        mCtaTestRule.getActivity()))),
                                 withId(R.id.tab_list_recycler_view)))
                 .check(matches(isCompletelyDisplayed()));
     }

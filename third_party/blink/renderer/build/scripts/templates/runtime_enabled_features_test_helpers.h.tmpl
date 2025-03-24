@@ -16,7 +16,7 @@ namespace blink {
 class RuntimeEnabledFeaturesTestHelpers {
  public:
   template <bool& data_member>
-  class ScopedRuntimeEnabledFeature {
+  class [[nodiscard]] ScopedRuntimeEnabledFeature {
    public:
     ScopedRuntimeEnabledFeature(bool enabled)
         : enabled_(enabled), original_(data_member) { data_member = enabled; }
@@ -30,7 +30,7 @@ class RuntimeEnabledFeaturesTestHelpers {
   };
 
   template <base::ProtectedMemory<bool>& data_member>
-  class ScopedRuntimeEnabledProtectedFeature {
+  class [[nodiscard]] ScopedRuntimeEnabledProtectedFeature {
    public:
     ScopedRuntimeEnabledProtectedFeature(bool enabled)
         : enabled_(enabled), original_(*data_member) {

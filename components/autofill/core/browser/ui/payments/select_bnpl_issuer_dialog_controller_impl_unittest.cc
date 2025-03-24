@@ -30,26 +30,30 @@ class SelectBnplIssuerDialogControllerImplTest : public testing::Test {
 
   void InitController() {
     controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>(
-        issuers_, selected_issuer_callback_.Get(), cancel_callback_.Get());
+        issuer_contexts_, /*app_locale=*/"en-US",
+        selected_issuer_callback_.Get(), cancel_callback_.Get());
   }
 
-  void SetIssuers(std::vector<BnplIssuer> issuers) {
-    issuers_ = std::move(issuers);
+  void SetIssuerContexts(std::vector<BnplIssuerContext> issuer_contexts) {
+    issuer_contexts_ = std::move(issuer_contexts);
   }
 
  protected:
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl> controller_;
-  std::vector<BnplIssuer> issuers_;
+  std::vector<BnplIssuerContext> issuer_contexts_;
   base::MockOnceCallback<void(const std::string&)> selected_issuer_callback_;
   base::MockOnceClosure cancel_callback_;
 };
 
 TEST_F(SelectBnplIssuerDialogControllerImplTest, Getters) {
-  SetIssuers({test::GetTestLinkedBnplIssuer()});
+  SetIssuerContexts(
+      {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
+                         BnplIssuerEligibilityForPage::kIsEligible)});
   InitController();
-  EXPECT_EQ(controller_->GetIssuers(), issuers_);
-  EXPECT_CALL(selected_issuer_callback_, Run(issuers_[0].issuer_id()));
-  controller_->OnAccepted(issuers_[0].issuer_id());
+  EXPECT_EQ(controller_->GetIssuerContexts(), issuer_contexts_);
+  EXPECT_CALL(selected_issuer_callback_,
+              Run(issuer_contexts_[0].issuer.issuer_id()));
+  controller_->OnAccepted(issuer_contexts_[0].issuer.issuer_id());
   EXPECT_CALL(cancel_callback_, Run());
   controller_->OnCancel();
 }
@@ -60,7 +64,15 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, GetTitle) {
             GetStringUTF16(IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_TITLE));
 }
 
-TEST_F(SelectBnplIssuerDialogControllerImplTest, GetSelectionOptionText) {
+TEST_F(SelectBnplIssuerDialogControllerImplTest,
+       GetSelectionOptionText_IsEligible) {
+  SetIssuerContexts(
+      {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
+                         BnplIssuerEligibilityForPage::kIsEligible),
+       BnplIssuerContext(test::GetTestLinkedBnplIssuer(kBnplZipIssuerId),
+                         BnplIssuerEligibilityForPage::kIsEligible),
+       BnplIssuerContext(test::GetTestLinkedBnplIssuer(kBnplAfterpayIssuerId),
+                         BnplIssuerEligibilityForPage::kIsEligible)});
   InitController();
 
   EXPECT_EQ(controller_->GetSelectionOptionText(kBnplZipIssuerId),
@@ -76,6 +88,98 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, GetSelectionOptionText) {
       controller_->GetSelectionOptionText(kBnplAfterpayIssuerId),
       GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY));
+}
+
+TEST_F(SelectBnplIssuerDialogControllerImplTest,
+       GetSelectionOptionText_NotEligible) {
+  SetIssuerContexts(
+      {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
+                         BnplIssuerEligibilityForPage::
+                             kNotEligibleIssuerDoesNotSupportMerchant),
+       BnplIssuerContext(
+           test::GetTestLinkedBnplIssuer(kBnplZipIssuerId),
+           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow),
+       BnplIssuerContext(
+           test::GetTestLinkedBnplIssuer(kBnplAfterpayIssuerId),
+           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)});
+  InitController();
+
+  EXPECT_EQ(
+      controller_->GetSelectionOptionText(kBnplAffirmIssuerId),
+      GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT));
+
+  EXPECT_EQ(
+      controller_->GetSelectionOptionText(kBnplZipIssuerId),
+      GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          u"$50.00"));
+
+  EXPECT_EQ(
+      controller_->GetSelectionOptionText(kBnplAfterpayIssuerId),
+      GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
+          u"$200.00"));
+}
+
+TEST_F(SelectBnplIssuerDialogControllerImplTest,
+       GetSelectionOptionText_NotEligible_LargeNumberFormatting) {
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", /*price_lower_bound=*/50'000'000,
+      /*price_upper_bound=*/30'000'000'000);
+  issuer.set_eligible_price_ranges({price_range});
+
+  SetIssuerContexts({BnplIssuerContext(
+      issuer,
+      BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)});
+  InitController();
+
+  EXPECT_EQ(
+      controller_->GetSelectionOptionText(kBnplAffirmIssuerId),
+      GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
+          u"$30,000.00"));
+}
+
+TEST_F(SelectBnplIssuerDialogControllerImplTest,
+       GetSelectionOptionText_NotEligible_DecimalFormatting) {
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", /*price_lower_bound=*/49'491'234,
+      /*price_upper_bound=*/30'000'000'000);
+  issuer.set_eligible_price_ranges({price_range});
+
+  SetIssuerContexts({BnplIssuerContext(
+      issuer, BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)});
+  InitController();
+
+  // Check that `$49.491234` truncates to `$49.49`.
+  EXPECT_EQ(
+      controller_->GetSelectionOptionText(kBnplAffirmIssuerId),
+      GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          u"$49.49"));
+}
+
+TEST_F(SelectBnplIssuerDialogControllerImplTest,
+       GetSelectionOptionText_NotEligible_DecimalRounding) {
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  BnplIssuer::EligiblePriceRange price_range(
+      /*currency=*/"USD", /*price_lower_bound=*/99'999'999,
+      /*price_upper_bound=*/30'000'000'000);
+  issuer.set_eligible_price_ranges({price_range});
+
+  SetIssuerContexts({BnplIssuerContext(
+      issuer, BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)});
+  InitController();
+
+  // Check that `$99.9999` rounds up to `$100.00`.
+  EXPECT_EQ(
+      controller_->GetSelectionOptionText(kBnplAffirmIssuerId),
+      GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          u"$100.00"));
 }
 
 TEST_F(SelectBnplIssuerDialogControllerImplTest, GetLinkText) {

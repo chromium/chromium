@@ -6,7 +6,7 @@ import logging
 import os
 import sys
 import time
-from typing import Any, List, Optional, Tuple
+from typing import Any
 import unittest
 
 from devil.android.sdk import version_codes
@@ -67,7 +67,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.SetStaticServerDirs([data_path])
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -183,9 +183,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('%s %s workarounds: %s' % (workaround_name, error_message,
                                            gpu_driver_bug_workarounds))
 
-  def _ValidateDriverBugWorkarounds(self, expected_workaround: Optional[str],
-                                    unexpected_workaround: Optional[str]
-                                    ) -> None:
+  def _ValidateDriverBugWorkarounds(self, expected_workaround: str | None,
+                                    unexpected_workaround: str | None) -> None:
     if not expected_workaround and not unexpected_workaround:
       return
     if expected_workaround:
@@ -205,7 +204,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return True
 
   def _CompareAndCaptureDriverBugWorkarounds(
-      self) -> Tuple[List[str], Optional[str]]:
+      self) -> tuple[list[str], str | None]:
     tab = self.tab
     if not tab.EvaluateJavaScript('chrome.gpuBenchmarking.hasGpuProcess()'):
       self.fail('No GPU process detected')
@@ -800,7 +799,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._NavigateAndWait(test_path)
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',

@@ -616,7 +616,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 - (void)recalculatePreferredHeightDetent {
   self.sheetPresentationController.detents = @[
     [self preferredHeightDetent],
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent largeDetent]
   ];
 }
 

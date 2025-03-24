@@ -6,6 +6,7 @@
 # pylint: disable=too-many-lines
 
 import collections
+from collections.abc import Generator
 import datetime
 from enum import Enum
 import gzip
@@ -16,7 +17,7 @@ import posixpath
 import subprocess
 import sys
 import tempfile
-from typing import Any, Generator, List, Optional, Set, Tuple
+from typing import Any
 import unittest
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
@@ -159,7 +160,7 @@ class _TraceTestOrigin(Enum):
 @dataclasses.dataclass
 class _TraceTestArguments():
   """Struct-like object for passing trace test arguments instead of dicts."""
-  browser_args: List[str]
+  browser_args: list[str]
   category: str
   test_harness_script: str
   finish_js_condition: str
@@ -194,13 +195,13 @@ class _CacheTraceTestArguments():
   for the restarted browser case because each browser restart seeds a new
   temporary directory with only the contents after the first load page.
   """
-  browser_args: List[str]
+  browser_args: list[str]
   category: str
   test_harness_script: str
   finish_js_condition: str
   first_load_eval_func: str
   cache_eval_func: str
-  cache_pages: List[str]
+  cache_pages: list[str]
   cache_page_origin: _TraceTestOrigin = _TraceTestOrigin.DEFAULT
   test_renavigation: bool = True
 
@@ -215,8 +216,8 @@ class _CacheTraceTestArguments():
                                restart_browser=True)
 
   def GenerateCacheHitTests(
-      self, cache_args: Optional[dict]
-  ) -> Generator[Tuple[str, _TraceTestArguments], None, None]:
+      self, cache_args: dict | None
+  ) -> Generator[tuple[str, _TraceTestArguments], None, None]:
     """Returns a generator for all cache hit trace tests.
 
     First pass of tests just do a re-navigation, second pass restarts with a
@@ -271,7 +272,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _SuiteSupportsParallelTests(cls) -> bool:
     return True
 
-  def _GetSerialGlobs(self) -> Set[str]:
+  def _GetSerialGlobs(self) -> set[str]:
     serial_globs = set()
     if host_information.IsWindows():
       serial_globs |= {
@@ -285,7 +286,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       }
     return serial_globs
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     serial_tests = set()
     if host_information.IsMac():
       serial_tests |= {
@@ -449,7 +450,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                      test_renavigation=False)
              ])
 
-  def _GetLocalPerfettoTraceProcessorPath(self) -> Optional[str]:
+  def _GetLocalPerfettoTraceProcessorPath(self) -> str | None:
     """Gets the path to the local Perfetto trace_processor_shell binary.
 
     Returns:
@@ -527,8 +528,8 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _RunActualGpuTraceTest(self,
                              test_path: str,
                              args: _TraceTestArguments,
-                             profile_dir: Optional[str] = None,
-                             profile_type: Optional[str] = None) -> dict:
+                             profile_dir: str | None = None,
+                             profile_type: str | None = None) -> dict:
     """Returns a dictionary generated via the success evaluation."""
     if args.restart_browser:
       # The version of this test in the old GPU test harness restarted the
@@ -633,7 +634,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super().TearDownProcess()
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -652,7 +653,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @staticmethod
   def _SwapChainPresentationModeListToStr(
-      presentation_mode_list: List[int]) -> str:
+      presentation_mode_list: list[int]) -> str:
     modes = [
         overlay_support.PresentationModeEventToStr(m)
         for m in presentation_mode_list
@@ -1175,7 +1176,7 @@ FROM
         self.fail(f'No {event_name} events found')
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
@@ -1186,10 +1187,10 @@ FROM
 @dataclasses.dataclass
 class _VideoExpectations():
   """Struct-like object for passing around video test expectations."""
-  pixel_format: Optional[str] = None
-  zero_copy: Optional[bool] = None
-  no_overlay: Optional[bool] = None
-  presentation_mode: Optional[str] = None
+  pixel_format: str | None = None
+  zero_copy: bool | None = None
+  no_overlay: bool | None = None
+  presentation_mode: str | None = None
 
 
 def _MergePerfettoTraces(trace_builder: trace_data.TraceDataBuilder) -> bytes:

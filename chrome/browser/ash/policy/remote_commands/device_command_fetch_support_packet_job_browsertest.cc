@@ -58,7 +58,9 @@
 
 namespace em = enterprise_management;
 
+using ash::kiosk::test::LaunchAppManually;
 using ash::kiosk::test::TheKioskApp;
+using ash::kiosk::test::WaitKioskLaunched;
 using base::test::IsJson;
 using ::testing::_;
 using ::testing::WithArg;
@@ -326,9 +328,9 @@ class DeviceCommandFetchSupportPacketBrowserTestKioskSession
     DeviceCommandFetchSupportPacketBrowserTestBase<
         MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
     if (IsManualLaunch()) {
-      ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+      ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
     }
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
  private:

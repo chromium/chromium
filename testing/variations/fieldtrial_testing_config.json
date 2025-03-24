@@ -3238,22 +3238,6 @@
             ]
         }
     ],
-    "BatteryStatusAndPowerSavingBroadcastReceiversInBackground": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BatteryStatusManagerBroadcastReceiverInBackground",
-                        "PowerSavingModeBroadcastReceiverInBackground"
-                    ]
-                }
-            ]
-        }
-    ],
     "BiometricAuthPwdFillAndroid": [
         {
             "platforms": [
@@ -7078,6 +7062,21 @@
             ]
         }
     ],
+    "CrosSeparateGeoApiKey": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrosSeparateGeoApiKey"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosSwitcher": [
         {
             "platforms": [
@@ -8704,6 +8703,22 @@
                     },
                     "enable_features": [
                         "PrefetchUseContentRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EarlyEstablishGpuChannelAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "EarlyEstablishGpuChannel",
+                    "enable_features": [
+                        "EarlyEstablishGpuChannel"
                     ]
                 }
             ]
@@ -11761,6 +11776,37 @@
             ]
         }
     ],
+    "IOSChromnientDenseText": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensVsintParamEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSChromnientEscapeHatch": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_iOSLensOverlayEscapeHatchTip",
+                        "LensOverlayEnableLVFEscapeHatch"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSCriteriaExperimentEnabled": [
         {
             "platforms": [
@@ -12358,6 +12404,21 @@
             ]
         }
     ],
+    "IOSSignInButtonWithoutAvatar": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SignInButtonNoAvatar"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSignInUff": [
         {
             "platforms": [
@@ -12522,6 +12583,21 @@
                     },
                     "enable_features": [
                         "TabResumptionImages"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSTailoredNonModalDBPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TailoredNonModalDBPromo"
                     ]
                 }
             ]
@@ -12694,10 +12770,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithSettings",
-                    "params": {
-                        "identity-disc-account-menu-with-settings-button": "true"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "IdentityConfirmationSnackbar",
                         "IdentityDiscAccountMenu"
@@ -13826,6 +13899,22 @@
                         "LobsterDogfood",
                         "LobsterQuickInsertZeroState",
                         "LobsterRightClickMenu"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LocalWebApprovalsIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LocalWebApprovals",
+                        "SupervisedUserBlockInterstitialV3"
                     ]
                 }
             ]
@@ -16923,6 +17012,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "EarlyEstablishGpuChannel",
+                        "EstablishGpuChannelAsync",
                         "ExpandedPrefetchRange",
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
@@ -16940,6 +17031,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "EarlyEstablishGpuChannel",
+                        "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
                         "NumberOfCoresWithCpuSecurityMitigation",
@@ -16959,6 +17052,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "EarlyEstablishGpuChannel",
+                        "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
                         "MojoBindingsInlineSLS",
                         "ReduceCpuUtilization2",
@@ -17124,21 +17219,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootMigrateToModernPin"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PinweaverPasswords": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootPinweaverForPassword"
                     ]
                 }
             ]
@@ -18222,26 +18302,6 @@
                     "name": "Disabled",
                     "disable_features": [
                         "DefaultAllowPrivacySandboxAttestations"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrivacySandboxEqualizedPromptButtons": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxEqualizedPromptButtons"
                     ]
                 }
             ]
@@ -19910,6 +19970,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RenderPassDrawnRect"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RendererSideContentDecoding": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RendererSideContentDecoding"
                     ]
                 }
             ]
@@ -24519,24 +24599,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UseGMSCoreForBrandingInfo"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseItemSnippetsAPI": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseItemSnippetsAPI"
                     ]
                 }
             ]

@@ -222,7 +222,7 @@ class MockPdfAccessibilityDataHandler : public PdfAccessibilityDataHandler {
               (override));
   MOCK_METHOD(void,
               SetAccessibilityDocInfo,
-              (AccessibilityDocInfo),
+              (std::unique_ptr<AccessibilityDocInfo>),
               (override));
   MOCK_METHOD(void,
               SetAccessibilityPageInfo,
@@ -1022,24 +1022,26 @@ TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithCopyAndPrintAllowed) {
 }
 
 TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithNoPermissions) {
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
+  std::unique_ptr<AccessibilityDocInfo> doc_info =
+      plugin_->GetAccessibilityDocInfoForTesting();
 
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_FALSE(doc_info.is_tagged);
-  EXPECT_FALSE(doc_info.text_accessible);
-  EXPECT_FALSE(doc_info.text_copyable);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info->page_count);
+  EXPECT_FALSE(doc_info->is_tagged);
+  EXPECT_FALSE(doc_info->text_accessible);
+  EXPECT_FALSE(doc_info->text_copyable);
 }
 
 TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithPDFDocTagged) {
   base::test::ScopedFeatureList scoped_feature_list(features::kPdfTags);
   EXPECT_CALL(*engine_ptr_, IsPDFDocTagged).WillRepeatedly(Return(true));
 
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
+  std::unique_ptr<AccessibilityDocInfo> doc_info =
+      plugin_->GetAccessibilityDocInfoForTesting();
 
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_TRUE(doc_info.is_tagged);
-  EXPECT_FALSE(doc_info.text_accessible);
-  EXPECT_FALSE(doc_info.text_copyable);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info->page_count);
+  EXPECT_TRUE(doc_info->is_tagged);
+  EXPECT_FALSE(doc_info->text_accessible);
+  EXPECT_FALSE(doc_info->text_copyable);
 }
 
 TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAccessibleAllowed) {
@@ -1047,12 +1049,13 @@ TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAccessibleAllowed) {
   EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopyAccessible))
       .WillRepeatedly(Return(true));
 
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
+  std::unique_ptr<AccessibilityDocInfo> doc_info =
+      plugin_->GetAccessibilityDocInfoForTesting();
 
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_FALSE(doc_info.is_tagged);
-  EXPECT_TRUE(doc_info.text_accessible);
-  EXPECT_FALSE(doc_info.text_copyable);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info->page_count);
+  EXPECT_FALSE(doc_info->is_tagged);
+  EXPECT_TRUE(doc_info->text_accessible);
+  EXPECT_FALSE(doc_info->text_copyable);
 }
 
 TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAllowed) {
@@ -1060,12 +1063,13 @@ TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAllowed) {
   EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopy))
       .WillRepeatedly(Return(true));
 
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
+  std::unique_ptr<AccessibilityDocInfo> doc_info =
+      plugin_->GetAccessibilityDocInfoForTesting();
 
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_FALSE(doc_info.is_tagged);
-  EXPECT_FALSE(doc_info.text_accessible);
-  EXPECT_TRUE(doc_info.text_copyable);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info->page_count);
+  EXPECT_FALSE(doc_info->is_tagged);
+  EXPECT_FALSE(doc_info->text_accessible);
+  EXPECT_TRUE(doc_info->text_copyable);
 }
 
 TEST_F(PdfViewWebPluginTest,
@@ -1076,12 +1080,13 @@ TEST_F(PdfViewWebPluginTest,
   EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopyAccessible))
       .WillRepeatedly(Return(true));
 
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
+  std::unique_ptr<AccessibilityDocInfo> doc_info =
+      plugin_->GetAccessibilityDocInfoForTesting();
 
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_FALSE(doc_info.is_tagged);
-  EXPECT_TRUE(doc_info.text_accessible);
-  EXPECT_TRUE(doc_info.text_copyable);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info->page_count);
+  EXPECT_FALSE(doc_info->is_tagged);
+  EXPECT_TRUE(doc_info->text_accessible);
+  EXPECT_TRUE(doc_info->text_copyable);
 }
 
 TEST_F(
@@ -1095,12 +1100,13 @@ TEST_F(
   EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopyAccessible))
       .WillRepeatedly(Return(true));
 
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
+  std::unique_ptr<AccessibilityDocInfo> doc_info =
+      plugin_->GetAccessibilityDocInfoForTesting();
 
-  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
-  EXPECT_TRUE(doc_info.is_tagged);
-  EXPECT_TRUE(doc_info.text_accessible);
-  EXPECT_TRUE(doc_info.text_copyable);
+  EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info->page_count);
+  EXPECT_TRUE(doc_info->is_tagged);
+  EXPECT_TRUE(doc_info->text_accessible);
+  EXPECT_TRUE(doc_info->text_copyable);
 }
 
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {

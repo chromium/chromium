@@ -8,6 +8,7 @@
 #include <Foundation/Foundation.h>
 
 #include "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -2484,8 +2485,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 - (id)AXStringForRange:(id)parameter {
   if (![parameter isKindOfClass:[NSValue class]] ||
-      (0 != strcmp([parameter objCType], @encode(NSRange))))
+      (0 != UNSAFE_TODO(strcmp([parameter objCType], @encode(NSRange))))) {
     return nil;
+  }
 
   return [self accessibilityStringForRange:[parameter rangeValue]];
 }

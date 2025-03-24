@@ -1213,10 +1213,12 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     TRACE_EVENT_INSTANT("devtools.timeline", "EventCreation", track_id,
                         entry->GetEventTimingReportingInfo()->creation_time,
                         flow_id);
-    TRACE_EVENT_INSTANT(
-        "devtools.timeline", "EventEnqueuedToMainThread", track_id,
-        entry->GetEventTimingReportingInfo()->enqueued_to_main_thread_time,
-        flow_id);
+    auto enqueued_to_main_thread_time =
+        entry->GetEventTimingReportingInfo()->enqueued_to_main_thread_time;
+    if (!enqueued_to_main_thread_time.is_null()) {
+      TRACE_EVENT_INSTANT("devtools.timeline", "EventEnqueuedToMainThread",
+                          track_id, enqueued_to_main_thread_time, flow_id);
+    }
 
     TRACE_EVENT_BEGIN(
         "devtools.timeline", "EventProcessing", track_id,

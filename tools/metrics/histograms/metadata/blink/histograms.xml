@@ -1417,17 +1417,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.FedCm.ChooseAnAccountSelected.Desktop" enum="BooleanHit"
-    expires_after="2025-08-12">
-  <owner>npm@chromium.org</owner>
-  <owner>web-identity-eng@google.com</owner>
-  <summary>
-    Records a 1 each time the &quot;Choose an account&quot; FedCM desktop button
-    is clicked. This button is only shown in the FedCM UI showing multiple
-    identity providers.
-  </summary>
-</histogram>
-
 <histogram name="Blink.FedCm.ClosedSheetType.Android" enum="FedCmSheetType"
     expires_after="2025-08-12">
   <owner>npm@chromium.org</owner>
@@ -2252,6 +2241,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FencedFrame.DisableUntrustedNetworkOutcome"
+    enum="FencedFrameDisableUntrustedNetworkOutcome" expires_after="2025-09-12">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    Records the outcome from calling disableUntrustedNetwork() in a fenced
+    frame. This is called either when the promise resolves, or when some error
+    is encountered that prevents network from being disabled. Note that this
+    histogram is not logged when the promise remains unresolved throughout the
+    lifetime of the fenced frame (i.e. it gets stuck waiting for a child fenced
+    frame to have its network disabled).
+  </summary>
+</histogram>
+
 <histogram name="Blink.FencedFrame.FailedSandboxLoadInTopLevelFrame"
     enum="BooleanYesNo" expires_after="2025-08-04">
   <owner>shivanisha@chromium.org</owner>
@@ -2306,6 +2309,30 @@ chromium-metrics-reviews@google.com.
     creation fails due to sandbox flags not being permissive enough. If multiple
     sandbox flags are incorrectly set, it will log every sandbox flag that was
     not set correctly for each failed load.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FencedFrame.NotifyEventOutcome"
+    enum="FencedFrameNotifyEventOutcome" expires_after="2025-09-12">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    Records the outcome from calling window.fence.notifyEvent() in a fenced
+    frame, whether successful or not. Note that this only logs for notifyEvent()
+    calls from within a fenced frame; calls outside of fenced frames (which will
+    fail) are not logged.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FencedFrame.SharedStorageGetInFencedFrameOutcome"
+    enum="SharedStorageGetInFencedFrameOutcome" expires_after="2025-09-12">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    Records the outcome from calling sharedStorage.get() in a fenced frame,
+    whether successful or not. Note that this only logs for get() calls from
+    within a fenced frame; calls outside of fenced frames (which will fail) are
+    not logged.
   </summary>
 </histogram>
 
@@ -4067,6 +4094,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.PermissionElement.UserInteractionAccepted"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether a user interaction (e.g., user click on the permission
+    element) is accepted. This metric is emitted once for every user interaction
+    that has been handled.
+  </summary>
+</histogram>
+
 <histogram name="Blink.PermissionElement.UserInteractionDeniedReason"
     enum="PermissionElementUserInteractionDeniedReason"
     expires_after="2025-08-24">
@@ -4314,6 +4352,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4335,6 +4375,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4357,6 +4399,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4380,6 +4424,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4401,6 +4447,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4422,6 +4470,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4443,6 +4493,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4465,6 +4517,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4488,6 +4542,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4509,6 +4565,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4530,6 +4588,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram
@@ -4552,6 +4612,8 @@ chromium-metrics-reviews@google.com.
 
     The metric is reported for {PerAnimationFrameInteractionType}.
   </summary>
+  <token key="PerAnimationFrameInteractionType"
+      variants="PerAnimationFrameInteractionType"/>
 </histogram>
 
 <histogram

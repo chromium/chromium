@@ -6,7 +6,6 @@
 
 #import "chrome/browser/ui/cocoa/history_overlay_controller.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
 namespace {
@@ -163,14 +162,6 @@ BOOL forceMagicMouse = NO;
   }
 
   return [self handleScrollWheelEvent:event];
-}
-
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed {
-  if (event.phase != blink::WebMouseWheelEvent::kPhaseBegan) {
-    return;
-  }
-  _firstScrollUnconsumed = !consumed;
 }
 
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event

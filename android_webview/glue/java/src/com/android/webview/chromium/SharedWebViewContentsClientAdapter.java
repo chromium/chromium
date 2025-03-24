@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwHistogramRecorder;
 import org.chromium.android_webview.AwRenderProcess;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.SafeBrowsingAction;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
@@ -78,9 +79,11 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
         return mWebViewClient != SharedWebViewChromium.sNullWebViewClient;
     }
 
-    /** @see AwContentsClient#shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest) */
+    /**
+     * @see AwContentsClient#shouldOverrideUrlLoading(AwWebResourceRequest)
+     */
     @Override
-    public final boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+    public final boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICallback.WebViewClient.shouldOverrideUrlLoading")) {
             if (TRACE) Log.i(TAG, "shouldOverrideUrlLoading=" + request.url);

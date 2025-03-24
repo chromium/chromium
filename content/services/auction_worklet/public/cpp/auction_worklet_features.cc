@@ -61,6 +61,11 @@ BASE_FEATURE_PARAM(int,
                    &kFledgePrepareBidderContextsInAdvance,
                    "BidderContextsMultiplier",
                    1);
+BASE_FEATURE_PARAM(bool,
+                   kFledgeWaitForPromisesToPrepareContexts,
+                   &kFledgePrepareBidderContextsInAdvance,
+                   "WaitForPromisesToPrepareContexts",
+                   false);
 
 BASE_FEATURE(kFledgeBidderUseBalancingThreadSelector,
              "FledgeBidderUseBalancingThreadSelector",

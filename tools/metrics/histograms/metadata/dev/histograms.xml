@@ -306,16 +306,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="DevTools.Launch" units="ms"
+<histogram name="DevTools.Launch{DevToolsLaunchPanels}" units="ms"
     expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="DevToolsLaunchPanels" -->
-
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>
     Measures the time until a given tool is interactive during a cold start of
-    DevTools.
+    DevTools. {DevToolsLaunchPanels}
   </summary>
+  <token key="DevToolsLaunchPanels">
+    <variant name=".Console" summary="DevTools launched to the Console panel"/>
+    <variant name=".Elements"
+        summary="DevTools launched to the Elements panel"/>
+    <variant name=".Network" summary="DevTools launched to the Network panel"/>
+    <variant name=".Sources" summary="DevTools launched to the Sources panel"/>
+  </token>
 </histogram>
 
 <histogram name="DevTools.LighthouseCategoryUsed"

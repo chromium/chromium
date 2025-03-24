@@ -29,7 +29,7 @@ export class CrIconElement extends CrLitElement {
     };
   }
 
-  icon: string = '';
+  accessor icon: string = '';
   private iconsetName_: string = '';
   private iconName_: string = '';
   private iconset_: CrIconsetElement|null = null;

@@ -29,8 +29,12 @@ class TabEventTrackerImpl : public TabEventTracker {
   void DidMoveTab(int tab_id, int new_index, int current_index) override;
   void DidEnterTabSwitcher() override;
 
+  int GetSelectedCount(int tab_id) const;
+
  private:
   OnNewEventCallback on_new_event_callback_;
+
+  std::map<int, int> tab_id_to_selected_count_;
 };
 
 }  // namespace visited_url_ranking

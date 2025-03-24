@@ -9,10 +9,11 @@
 #include <vector>
 
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/check.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/app_mode/test/kiosk_session_initialized_waiter.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/scoped_device_settings.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"  // IWYU pragma: keep
@@ -20,7 +21,12 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace ash {
+
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -34,8 +40,6 @@ AccountId ToWebKioskAccountId(const GURL& app_install_url) {
 }
 
 }  // anonymous namespace
-
-namespace ash {
 
 WebKioskBaseTest::WebKioskBaseTest()
     : app_install_url_(kDefaultInstallUrl),
@@ -95,7 +99,7 @@ void WebKioskBaseTest::InitializeRegularOnlineKiosk(bool simulate_online) {
   }
   PrepareAppLaunch();
   LaunchApp();
-  KioskSessionInitializedWaiter().Wait();
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 void WebKioskBaseTest::SetAppInstallUrl(const GURL& app_install_url) {

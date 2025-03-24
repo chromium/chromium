@@ -113,8 +113,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1_V2},
       {"m1ConsentLearnmoreBullet2V2",
        IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_V2},
-      {"m1ConsentLearnmoreBullet2DescriptionNoLink",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION_NO_LINK},
       {"m1ConsentLearnmoreBullet3V2",
        IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3_V2},
 
@@ -156,8 +154,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_LABEL},
       {"m1NoticeEEASiteSuggestedAdsLearnMoreBullet1",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1},
-      {"m1NoticeEEASiteSuggestedAdsLearnMoreBullet1DescriptionNoLink",
-       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1_DESCRIPTION_NO_LINK},
       {"m1NoticeEEASiteSuggestedAdsLearnMoreBullet2",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_2},
       {"m1NoticeEEAAdMeasurementTitle",
@@ -211,15 +207,11 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2_V2},
       {"m1NoticeRowLearnMoreHeading3",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_3},
-      {"m1NoticeRowLearnMoreDescription5V2NoLink",
-       IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2_NO_LINK},
       {"m1NoticeRowLastText", IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT},
 
       // Strings for the EEA Consent with the Ad Topics Content Parity.
       {"m1ConsentDescription1ContentParity",
        IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_1_CONTENT_PARITY},
-      {"m1ConsentLearnMoreBullet2DescriptionNoLinkContentParity",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION_NO_LINK_CONTENT_PARITY},
 
       // Strings for the restricted notice dialog (kM1NoticeRestricted).
       {"m1NoticeRestrictedTitle",
@@ -250,8 +242,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
           l10n_util::GetStringUTF16(
               IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION),
           kPrivacyPolicyFunc));
-  source->AddLocalizedString("m1ConsentLearnMoreLink",
-                             IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK);
 
   source->AddBoolean("isPrivacySandboxAdsApiUxEnhancementsEnabled",
                      base::FeatureList::IsEnabled(

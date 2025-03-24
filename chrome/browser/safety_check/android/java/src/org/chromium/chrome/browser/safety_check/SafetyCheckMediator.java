@@ -27,6 +27,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -134,8 +135,8 @@ class SafetyCheckMediator {
     private long mCheckStartTime = -1;
 
     /**
-     * UMA histogram values for Safety check interactions. Some value don't apply to Android.
-     * Note: this should stay in sync with SettingsSafetyCheckInteractions in enums.xml.
+     * UMA histogram values for Safety check interactions. Some value don't apply to Android. Note:
+     * this should stay in sync with SettingsSafetyCheckInteractions in enums.xml.
      */
     @IntDef({
         SafetyCheckInteractions.STARTED,
@@ -373,16 +374,19 @@ class SafetyCheckMediator {
             mSafetyCheckModel.set(
                     SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.UNCHECKED);
             mSafetyCheckModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.UNCHECKED);
-
-            // If the new Password Manager backend is out of date, attempting to fetch breached
-            // credentials will expectedly fail and display an error message. This error is
-            // designed to be only shown when user explicitly runs the check (or it was ran
-            // recently). For this case, breached credential fetch is skipped.
-            if (mPasswordManagerHelper.canUseUpm()
-                    && !PasswordManagerUtilBridge.areMinUpmRequirementsMet()) {
-                setPasswordsState(mPasswordsCheckAccountStorageModel, PasswordsState.UNCHECKED);
-                setPasswordsState(mPasswordsCheckLocalStorageModel, PasswordsState.UNCHECKED);
-                return;
+            // After login DB deprecation, every invocation of SafetyCheck is guaranteed to only
+            // be made if the user can access UPM.
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
+                // If the new Password Manager backend is out of date, attempting to fetch breached
+                // credentials will expectedly fail and display an error message. This error is
+                // designed to be only shown when user explicitly runs the check (or it was ran
+                // recently). For this case, breached credential fetch is skipped.
+                if (mPasswordManagerHelper.canUseUpm()
+                        && !PasswordManagerUtilBridge.areMinUpmRequirementsMet()) {
+                    setPasswordsState(mPasswordsCheckAccountStorageModel, PasswordsState.UNCHECKED);
+                    setPasswordsState(mPasswordsCheckLocalStorageModel, PasswordsState.UNCHECKED);
+                    return;
+                }
             }
         }
         setPasswordsState(mPasswordsCheckAccountStorageModel, PasswordsState.CHECKING);
@@ -628,10 +632,14 @@ class SafetyCheckMediator {
                                 SafetyCheckInteractions.PASSWORDS_MANAGE,
                                 SafetyCheckInteractions.MAX_VALUE);
                         // Open the Password Check UI.
-                        if (!mPasswordManagerHelper.canUseUpm()) {
-                            PasswordCheckFactory.getOrCreate()
-                                    .showUi(p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
-                        } else {
+                        if (ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
+                                || mPasswordManagerHelper.canUseUpm()) {
+                            // This UI surface was deprecated for all use-cases apart form the
+                            // PhishGuard dialog. The dialog option leading to SafetyCheck, implies
+                            // that there are passwords saved in both local and account stores. This
+                            // means that UPM
+                            // is guaranteed to be available.
                             String account =
                                     getAccountNameForPasswordStorageType(
                                             passwordStorageType, mSyncService);
@@ -641,6 +649,9 @@ class SafetyCheckMediator {
                                     mModalDialogManagerSupplier,
                                     account,
                                     mSettingsCustomTabLauncher);
+                        } else {
+                            PasswordCheckFactory.getOrCreate()
+                                    .showUi(p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
                         }
                         return true;
                     };

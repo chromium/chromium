@@ -9,28 +9,37 @@ import unittest
 
 class StructGeneratorTest(unittest.TestCase):
   def testGenerateIntField(self):
-    self.assertEquals('const int foo_bar',
-        GenerateField({'type': 'int', 'field': 'foo_bar'}))
+    self.assertEqual('const int foo_bar',
+                     GenerateField({
+                         'type': 'int',
+                         'field': 'foo_bar'
+                     }))
 
   def testGenerateStringField(self):
-    self.assertEquals('const char* const bar_foo',
-        GenerateField({'type': 'string', 'field': 'bar_foo'}))
+    self.assertEqual('const char* const bar_foo',
+                     GenerateField({
+                         'type': 'string',
+                         'field': 'bar_foo'
+                     }))
 
   def testGenerateString16Field(self):
-    self.assertEquals('const char16_t* const foo_bar',
-                      GenerateField({
-                          'type': 'string16',
-                          'field': 'foo_bar'
-                      }))
+    self.assertEqual('const char16_t* const foo_bar',
+                     GenerateField({
+                         'type': 'string16',
+                         'field': 'foo_bar'
+                     }))
 
   def testGenerateEnumField(self):
-    self.assertEquals('const MyEnumType foo_foo',
-        GenerateField({'type': 'enum',
-                       'field': 'foo_foo',
-                       'ctype': 'MyEnumType'}))
+    self.assertEqual(
+        'const MyEnumType foo_foo',
+        GenerateField({
+            'type': 'enum',
+            'field': 'foo_foo',
+            'ctype': 'MyEnumType'
+        }))
 
   def testGenerateArrayField(self):
-    self.assertEquals(
+    self.assertEqual(
         'const base::span<const int> bar_bar',
         GenerateField({
             'type': 'array',
@@ -41,7 +50,7 @@ class StructGeneratorTest(unittest.TestCase):
         }))
 
   def testGenerateClassField(self):
-    self.assertEquals(
+    self.assertEqual(
         'const std::optional<bool> bar',
         GenerateField({
             'type': 'class',
@@ -67,7 +76,7 @@ class StructGeneratorTest(unittest.TestCase):
               '  const char* const bar_foo;\n'
               '  const base::span<const MyEnumType> bar_bar;\n'
               '};\n')
-    self.assertEquals(struct, GenerateStruct('MyTypeName', schema))
+    self.assertEqual(struct, GenerateStruct('MyTypeName', schema))
 
   def testGenerateArrayOfStruct(self):
     schema = [
@@ -92,7 +101,7 @@ class StructGeneratorTest(unittest.TestCase):
               'struct MyTypeName {\n'
               '  const base::span<const InnerTypeName> bar_bar;\n'
               '};\n')
-    self.assertEquals(struct, GenerateStruct('MyTypeName', schema))
+    self.assertEqual(struct, GenerateStruct('MyTypeName', schema))
 
 if __name__ == '__main__':
   unittest.main()

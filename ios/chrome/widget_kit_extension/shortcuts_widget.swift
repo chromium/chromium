@@ -27,7 +27,7 @@ struct ConfigureShortcutsWidgetEntry: TimelineEntry {
   let isExpired: Bool
   // Expiration date of the widget if it hasn't expired.
   let expirationDate: Date?
-  // Profile avatar (to be used when multiprofile flag is enabled).
+  // Account avatar (to be used when multiprofile flag is enabled).
   let avatar: Image?
   let gaiaID: String?
 
@@ -107,7 +107,7 @@ struct ShortcutsWidget: Widget {
     var body: some WidgetConfiguration {
       AppIntentConfiguration(
         kind: kind,
-        intent: SelectProfileIntent.self,
+        intent: SelectAccountIntent.self,
         provider: ConfigurableShortcutsWidgetEntryProvider()
       ) { entry in
         ShortcutsWidgetEntryView(entry: entry)
@@ -142,7 +142,7 @@ struct ShortcutsWidget: Widget {
     }
 
     // Provides a timeline entry that represents the current time and state of a widget.
-    func snapshot(for configuration: SelectProfileIntent, in context: Context) async -> Entry {
+    func snapshot(for configuration: SelectAccountIntent, in context: Context) async -> Entry {
 
       let avatar: Image? = configuration.avatar()
       let gaiaID: String? = configuration.gaia()
@@ -152,7 +152,7 @@ struct ShortcutsWidget: Widget {
     }
 
     // Provides an array of timeline entries for the current time.
-    func timeline(for configuration: SelectProfileIntent, in context: Context) async -> Timeline<
+    func timeline(for configuration: SelectAccountIntent, in context: Context) async -> Timeline<
       Entry
     > {
       let avatar: Image? = configuration.avatar()

@@ -154,6 +154,19 @@ MATCHER_P(ReferrerPolicyIs,
   return arg->referrer_policy() == policy;
 }
 
+MATCHER_P(HasTags, tag, std::string(tag) + " is in the tag list") {
+  for (auto& tag_ : arg->tags) {
+    if (tag_ == tag) {
+      return true;
+    }
+  }
+  return false;
+}
+
+MATCHER_P(HasTag, tag, "has tag " + std::string(tag)) {
+  return arg->tag().value() == tag;
+}
+
 class SpeculationRuleSetTest : public ::testing::Test {
  public:
   SpeculationRuleSetTest()
@@ -2099,20 +2112,22 @@ TEST_F(DocumentRulesTest, EvaluateHrefMatches) {
   EXPECT_TRUE(pass_fail->Matches(*link));
 }
 
-HTMLAnchorElement* AddAnchor(ContainerNode& parent, const String& href) {
-  HTMLAnchorElement* link =
-      MakeGarbageCollected<HTMLAnchorElement>(parent.GetDocument());
+template <typename T = HTMLAnchorElement>
+T* AddAnchor(ContainerNode& parent,
+             const String& href,
+             const Vector<std::pair<const QualifiedName&, AtomicString>>&
+                 attributes = {}) {
+  auto* link = MakeGarbageCollected<T>(parent.GetDocument());
   link->setHref(href);
+  for (const auto& [attribute, value] : attributes) {
+    link->setAttribute(attribute, value);
+  }
   parent.appendChild(link);
   return link;
 }
 
 HTMLAreaElement* AddAreaElement(ContainerNode& parent, const String& href) {
-  HTMLAreaElement* area =
-      MakeGarbageCollected<HTMLAreaElement>(parent.GetDocument());
-  area->setHref(href);
-  parent.appendChild(area);
-  return area;
+  return AddAnchor<HTMLAreaElement>(parent, href);
 }
 
 // Tests that speculation candidates based of existing links are reported after
@@ -4413,6 +4428,98 @@ TEST_F(SpeculationRuleSetTest, ImplicitSource) {
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesPredicate(Href({URLPattern("/foo")})),
                           MatchesListOfURLs("https://example.com/bar")));
+}
+
+TEST_F(SpeculationRuleSetTest, ParseValidTag) {
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "tag": "example/foo",
+        "prefetch": [{
+          "where": {"href_matches": "/foo"}
+        }, {
+          "where": {"href_matches": "/bar"}
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(HasTag("example/foo"), HasTag("example/foo")));
+
+  // \"null\" string is valid.
+  auto* rule_set2 = CreateRuleSet(
+      R"({
+        "tag": "null",
+        "prefetch": [{
+          "where": {"href_matches": "/foo"}
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(rule_set2->prefetch_rules(), ElementsAre(HasTag("null")));
+}
+
+TEST_F(SpeculationRuleSetTest, InvalidTag) {
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "tag": null,
+        "prefetch": [{
+          "where": {"href_matches": "/foo"}
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains("Tag value"))
+      << rule_set->error_message();
+
+  const char* tag =
+      "Qu\xe9"
+      "bec";
+  rule_set = CreateRuleSet(String::Format(R"({
+        "tag": "%s",
+        "prefetch": [{
+          "where": {"href_matches": "/foo"}
+        }]
+      })",
+                                          tag),
+                           KURL("https://example.com/"), execution_context());
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains("Tag value"))
+      << rule_set->error_message();
+}
+
+TEST_F(SpeculationRuleSetTest, CandidatesSharesTheSameTag) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  AddAnchor(*document.body(), "https://example.com/foo",
+            {{html_names::kClassAttr, AtomicString("bar")}});
+  AddAnchor(*document.body(), "https://example.com/baz",
+            {{html_names::kClassAttr, AtomicString("bar")}});
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, String(R"({
+        "tag": "example/foo",
+        "prefetch": [{
+          "where": {"href_matches": "https://example.com/foo"}
+        }, {
+          "where": {"selector_matches": ".bar"},
+          "eagerness": "moderate"
+        }]
+      })"));
+
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(
+      candidates,
+      UnorderedElementsAre(
+          AllOf(HasURL(KURL("https://example.com/foo")),
+                HasEagerness(blink::mojom::SpeculationEagerness::kConservative),
+                HasTags("example/foo")),
+          AllOf(HasURL(KURL("https://example.com/foo")),
+                HasEagerness(blink::mojom::SpeculationEagerness::kModerate),
+                HasTags("example/foo")),
+          AllOf(HasURL(KURL("https://example.com/baz")),
+                HasEagerness(blink::mojom::SpeculationEagerness::kModerate),
+                HasTags("example/foo"))));
 }
 
 // Regression test for crbug.com/386547460.

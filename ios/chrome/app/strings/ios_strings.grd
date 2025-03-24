@@ -5930,6 +5930,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL" is_accessibility_with_no_ui="true" desc="The content description for the account picker. Opens the 'Choose an account' dialog.">
         <ph name="NAME">$1<ex>John Doe</ex></ph>, <ph name="EMAIL">$2<ex>john.doe@example.com</ex></ph> currently selected. Choose an account.
       </message>
+      <message name="IDS_IOS_SIGNIN_BUTTON_TEXT" desc="Button that the user can press if they want to sign-in.">
+        Sign in
+      </message>
       <message name="IDS_IOS_SIGNIN_PROMO_BOOKMARKS" desc="This string is on a promo intended to promote signing in to Chrome with the user's Google Account. It appears on the Bookmarks page when the user is not signed in. We want users to read this promo and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight. [Length: 90em]">
         Sign in to get your bookmarks on all your devices.
       </message>

@@ -25,6 +25,7 @@
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/tab_slider_button.h"
@@ -35,6 +36,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/base/class_property.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -270,6 +272,14 @@ bool IsCaptureWindowSelectable(aura::Window* window) {
     return false;
 
   return !IsWindowFullyOccluded(window);
+}
+
+std::u16string GetA11yNameForFineTunePosition(
+    FineTunePosition fine_tune_position) {
+  return l10n_util::GetStringUTF16(
+      fine_tune_position == FineTunePosition::kCenter
+          ? IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME
+          : IDS_ASH_SCREEN_CAPTURE_SELECTED_DRAG_HANDLE_ACCESSIBLE_TITLE);
 }
 
 }  // namespace
@@ -516,8 +526,11 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
           FocusGroup::kNone, FocusGroup::kStartRecordingButton,
           FocusGroup::kCameraPreview, FocusGroup::kSettingsMenu,
           FocusGroup::kSettingsClose},
-      groups_for_sunfish_{FocusGroup::kNone, FocusGroup::kSearchResultsPanel,
-                          FocusGroup::kSelection, FocusGroup::kActionButtons,
+      groups_for_sunfish_{FocusGroup::kNone,
+                          FocusGroup::kSearchResultsPanel,
+                          FocusGroup::kSearchResultsPanelWebContents,
+                          FocusGroup::kSelection,
+                          FocusGroup::kActionButtons,
                           FocusGroup::kSettingsClose},
       session_(session),
       scoped_a11y_overrider_(
@@ -579,8 +592,19 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
   if (reverse)
     MaybeFocusHighlightableWindow(current_views);
 
-  // Focus the new item.
-  if (!current_views.empty()) {
+  // Focus the new item. If it's the web view, then we want to request actual
+  // focus so the user can properly use the keyboard like they would with a
+  // regular search page.
+  if (current_focus_group_ == FocusGroup::kSearchResultsPanelWebContents) {
+    SearchResultsPanel* panel =
+        CaptureModeController::Get()->GetSearchResultsPanel();
+    if (panel) {
+      views::View* web_view = panel->GetWebViewForFocus();
+      CHECK(web_view);
+      web_view->AboutToRequestFocusFromTabTraversal(reverse);
+      web_view->RequestFocus();
+    }
+  } else if (!current_views.empty()) {
     DCHECK_LT(focus_index_, current_views.size());
     current_views[focus_index_]->PseudoFocus();
   }
@@ -643,8 +667,8 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
       auto ax_virtual_view = std::make_unique<views::AXVirtualView>();
       ax_virtual_views_[fine_tune_position] = ax_virtual_view.get();
       ax_virtual_view->SetRole(ax::mojom::Role::kButton);
-      // TODO(crbug.com/401066100): Add strings.
-      ax_virtual_view->SetName(u"To be determined");
+      ax_virtual_view->SetName(
+          GetA11yNameForFineTunePosition(fine_tune_position));
       const views::AXVirtualView::AXVirtualViews& ax_virtual_children =
           ax_widget_->GetRootView()->GetViewAccessibility().virtual_children();
       CHECK_EQ(ax_virtual_children.size(), 1u);
@@ -806,6 +830,24 @@ void CaptureModeSessionFocusCycler::OnDisclaimerWidgetClosed() {
   scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
       GetA11yOverrideWindow());
   GetGroupItems(current_focus_group_)[focus_index_]->PseudoFocus();
+}
+
+void CaptureModeSessionFocusCycler::AdvanceFocusAfterSearchResultsPanel(
+    bool reverse) {
+  // Fully remove focus from the web view if available.
+  SearchResultsPanel* panel =
+      CaptureModeController::Get()->GetSearchResultsPanel();
+  if (panel) {
+    views::FocusManager* focus_manager = panel->GetFocusManager();
+    focus_manager->SetStoredFocusView(nullptr);
+    focus_manager->ClearFocus();
+  }
+
+  // Override the current focus parameters in case we did not naturally cycle
+  // focus to the web view before.
+  current_focus_group_ = FocusGroup::kSearchResultsPanelWebContents;
+  focus_index_ = 0u;
+  AdvanceFocus(reverse);
 }
 
 void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {
@@ -991,6 +1033,9 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
     case FocusGroup::kSearchResultsPanel: {
       return CaptureModeController::Get()->IsSearchResultsPanelVisible();
     }
+    case FocusGroup::kSearchResultsPanelWebContents: {
+      return CaptureModeController::Get()->IsSearchResultsPanelVisible();
+    }
   }
 }
 
@@ -1008,6 +1053,9 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
     case FocusGroup::kSelection:
     case FocusGroup::kPendingSettings:
     case FocusGroup::kPendingRecordingType:
+    // The web contents does not contain any highlightable views, as we want its
+    // `FocusManager` to handle tab traversal and focus.
+    case FocusGroup::kSearchResultsPanelWebContents:
       break;
     case FocusGroup::kTypeSource: {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
@@ -1151,6 +1199,7 @@ aura::Window* CaptureModeSessionFocusCycler::GetA11yOverrideWindow() const {
     case FocusGroup::kActionButtons:
       return session_->action_container_widget()->GetNativeWindow();
     case FocusGroup::kSearchResultsPanel:
+    case FocusGroup::kSearchResultsPanelWebContents:
       return CaptureModeController::Get()
           ->search_results_panel_widget()
           ->GetNativeWindow();

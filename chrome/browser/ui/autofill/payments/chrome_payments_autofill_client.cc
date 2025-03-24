@@ -720,7 +720,8 @@ void ChromePaymentsAutofillClient::ShowBnplTos(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback) {
   if (!bnpl_tos_controller_) {
-    bnpl_tos_controller_ = std::make_unique<BnplTosControllerImpl>();
+    bnpl_tos_controller_ =
+        std::make_unique<BnplTosControllerImpl>(&client_.get());
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -730,6 +731,15 @@ void ChromePaymentsAutofillClient::ShowBnplTos(
       std::move(bnpl_tos_model), std::move(accept_callback),
       std::move(cancel_callback));
 #endif
+}
+
+void ChromePaymentsAutofillClient::CloseBnplTos() {
+  if (!bnpl_tos_controller_) {
+    return;
+  }
+
+  bnpl_tos_controller_->Dismiss();
+  bnpl_tos_controller_.reset();
 }
 
 VirtualCardEnrollmentManager*

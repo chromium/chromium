@@ -43,6 +43,10 @@ BASE_DECLARE_FEATURE(kLightweightExtensionOverrideConfirmations);
 BASE_DECLARE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault);
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+BASE_DECLARE_FEATURE(kPdfInfoBar);
+#endif
+
 BASE_DECLARE_FEATURE(kPreloadTopChromeWebUI);
 // This enum entry values must be in sync with
 // WebUIContentsPreloadManager::PreloadMode.

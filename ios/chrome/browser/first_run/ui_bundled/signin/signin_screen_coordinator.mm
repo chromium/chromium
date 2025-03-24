@@ -133,6 +133,8 @@
 }
 
 - (void)stop {
+  [self.browser->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(TOSCommands)];
   [self stopIdentityChooserCoordinator];
   self.delegate = nil;
   self.viewController = nil;

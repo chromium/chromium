@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">উজ্জ্বলতা বাড়ান</translation>
 <translation id="1680659827022803830">Video call controls</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">আপনি সেটিংস থেকে যেকোনও সময় এই ফিচার বন্ধ করে দিতে পারবেন। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-এর টাইমার · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ঠিকানা: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">অ্যাক্টিভ উইন্ডোটি বাঁদিকে ডক করা আছে।</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনস্টল করা অ্যাপ, পজ করা হয়েছে</translation>
 <translation id="4228078597006700451">কন্ট্রোল সেট-আপ করা নেই</translation>
 <translation id="4230560241506423345">নতুন</translation>
+<translation id="4236726631849783264">সাজেস্ট করা অ্যাকশন সম্পর্কে রিমাইন্ডার</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">এক নজরে দেখার মোড</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">মাধ্যম</translation>
 <translation id="4279490309300973883">অনুকরণ করা হচ্ছে</translation>
 <translation id="4280601795273309128">নিরাপত্তা আপডেট শেষ হয়েছে। আপনার ডিভাইস আপগ্রেড করুন।</translation>
-<translation id="4281739221820540368">Google Docs তৈরি করুন</translation>
 <translation id="4283888303416325161">আরও নিরাপত্তার জন্য পাসওয়ার্ড লিখুন</translation>
 <translation id="4285498937028063278">আনপিন</translation>
 <translation id="428715201724021596">প্রোফাইলের সাথে কানেক্ট করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">স্পিচ শনাক্তকরণ ফাইল ডাউনলোড করা হচ্ছে... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{এখনই ডিভাইস আপডেট করুন}=1{১ সেকেন্ডের মধ্যে ডিভাইস আপডেট করুন}one{# সেকেন্ডের মধ্যে ডিভাইস আপডেট করুন}other{# সেকেন্ডের মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="4472575034687746823">শুরু করা যাক</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">পরের ট্র্যাক চালান</translation>
 <translation id="4477751544736611934">এর ফলে ডেটার চার্জ প্রযোজ্য হতে পারে।
 ১টি ডিভাইস কানেক্ট করা হয়েছে।</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">বর্তমান পৃষ্ঠাটি বুকমার্ক হিসেবে সেভ করুন</translation>
 <translation id="4548482551627849548">চালু থাকা উইন্ডো বাঁদিকের ডেস্কে সরান</translation>
 <translation id="4552748006424994716">ইকো যাতে না হয়, তার জন্য শুধুমাত্র তারযুক্ত হেডফোনের মাধ্যমে আপনার মাইক্রোফোন শুনতে পারবেন।</translation>
+<translation id="4556953949326137018">"Calendar-এ যোগ করুন" বা "Google Docs তৈরি করুন", এই ধরনের সাজেস্ট করা অ্যাকশন আপনি ব্যবহার করলে, <ph name="LINK_TO_SERVICE_TERMS" /> অনুযায়ী অ্যাকশন সাজেস্ট করার জন্য বেছে নেওয়া বিষয় থেকে কন্টেন্ট Google সার্ভারে পাঠানো হয়। ব্যক্তিগত, সংবেদনশীল, বা গোপনীয় তথ্য অন্তর্ভুক্ত করবেন না।</translation>
 <translation id="4560576029703263363">চালু করা আছে</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">পাসওয়ার্ড লুকান</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">এর পরে</translation>
 <translation id="481749895090480684">টাস্ক লিস্ট: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
+<translation id="4828935196674083554">যোগ করা হচ্ছে...</translation>
 <translation id="482908187605862807">Play Store-এ উপলভ্য অ্যাপ</translation>
 <translation id="4831034276697007977">অটোমেটিক ক্লিক বন্ধ করতে চান কিনা সেই বিষয়টি ভাল করে দেখে নিন?</translation>
 <translation id="4835677468087803981">পিন লুকান</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">সমস্ত বিজ্ঞপ্তি মুছে ফেলুন</translation>
+<translation id="6426905245930183644">তৈরি করা হচ্ছে...</translation>
 <translation id="6430225033895752525">ফোকাস মোড সংক্রান্ত সেটিংস দেখুন</translation>
 <translation id="643147933154517414">সব সম্পন্ন!</translation>
 <translation id="6431865393913628856">স্ক্রিন রেকর্ড</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">সাবটাস্ক</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_TOTAL_SIZE" />-এর মধ্যে | <ph name="STORAGE_IN_USE_SIZE" /> স্টোরেজ ব্যবহার হচ্ছে</translation>
 <translation id="6614169507485700968">গোপনীয়তা স্ক্রিন চালু করা আছে</translation>
-<translation id="6618277154885124991">Google Sheets তৈরি করুন</translation>
 <translation id="6622679827379792051">আপনার ফোনের অ্যাপ দেখা সংক্রান্ত পদ্ধতি সেট-আপ করুন</translation>
 <translation id="662279009180869175">স্প্লিট স্ক্রিনের সাইজ ছোট বড় করতে ডান বা বাঁদিকের তীরচিহ্ন ব্যবহার করুন</translation>
 <translation id="6624493541160101248">বর্তমান ডেস্ক: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />টির মধ্যে <ph name="DESK_INDEX" /> নম্বর ডেস্ক।</translation>
@@ -2401,6 +2405,7 @@
 <translation id="8921624153894383499">Google অ্যাসিস্ট্যান্ট এই ভাষায় কথা বলে না।</translation>
 <translation id="8926951137623668982">শেল্ফ সবসময় লুকানো থাকবে</translation>
 <translation id="8929566928381252430">ক্যাপস লক কী ব্যবহার করতে চাইছেন? এটি ব্যবহার করুন</translation>
+<translation id="8934418770423095813">Google Doc তৈরি করুন</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{১টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="8936501819958976551">বন্ধ আছে</translation>
 <translation id="8938800817013097409">USB-C ডিভাইস (পিছনের ডান পোর্ট)</translation>

@@ -60,6 +60,14 @@ class AITranslator final : public ScriptWrappable {
                                      AITranslatorTranslateOptions* options,
                                      ExceptionState& exception_state);
 
+  ScriptPromise<IDLDouble> measureInputUsage(
+      ScriptState* script_state,
+      const WTF::String& input,
+      AITranslatorTranslateOptions* options,
+      ExceptionState& exception_state);
+
+  double inputQuota() const;
+
   void destroy(ScriptState*);
 
  private:

@@ -23,17 +23,16 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
-#include "chrome/browser/ui/toasts/toast_dismiss_menu_model.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_metrics.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/prefs/pref_service.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -44,14 +43,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/fullscreen_util_mac.h"
 #endif
-
-namespace {
-bool ShouldAddDismissMenuOptions(const ToastSpecification* spec) {
-  return base::FeatureList::IsEnabled(toast_features::kToastRefinements) &&
-         !spec->has_close_button() && !spec->has_menu();
-}
-
-}  // namespace
 
 ToastParams::ToastParams(ToastId id) : toast_id(id) {}
 ToastParams::ToastParams(ToastParams&& other) noexcept = default;
@@ -240,8 +231,7 @@ void ToastController::ShowToast(ToastParams params) {
   currently_showing_toast_id_ = params.toast_id;
   const bool is_actionable =
       current_toast_spec->action_button_string_id().has_value() ||
-      current_toast_spec->has_menu() ||
-      ShouldAddDismissMenuOptions(current_toast_spec);
+      current_toast_spec->has_menu();
   base::TimeDelta timeout =
       is_actionable ? toast_features::kToastTimeout.Get()
                     : toast_features::kToastWithoutActionTimeout.Get();
@@ -300,11 +290,6 @@ void ToastController::CreateToast(ToastParams params,
 
   if (spec->has_menu()) {
     toast_view->AddMenu(std::move(params.menu_model));
-  }
-
-  if (ShouldAddDismissMenuOptions(spec)) {
-    toast_view->AddMenu(
-        std::make_unique<ToastDismissMenuModel>(params.toast_id));
   }
 
   toast_view_ = toast_view.get();

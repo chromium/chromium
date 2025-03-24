@@ -107,9 +107,13 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
     CSSPrimitiveValue::ValueRange = CSSPrimitiveValue::ValueRange::kInteger);
 CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream&,
                                           const CSSParserContext&);
-bool ConsumeNumberRaw(CSSParserTokenStream&,
-                      const CSSParserContext& context,
-                      double& result);
+// All <numbers> should allow calc() expressions, and calc() expressions are not
+// always possible to reduce to a number at parse time. This method will fail
+// for valid values like `sibling-index()` and `sign(1em - 20px)`.
+// Use ConsumeNumber() instead.
+bool ConsumeNumberRaw_DO_NOT_USE(CSSParserTokenStream&,
+                                 const CSSParserContext& context,
+                                 double& result);
 CSSPrimitiveValue* ConsumeNumber(CSSParserTokenStream&,
                                  const CSSParserContext&,
                                  CSSPrimitiveValue::ValueRange);
@@ -462,7 +466,7 @@ CSSShadowValue* ParseSingleShadow(CSSParserTokenStream&,
                                   AllowInsetAndSpread);
 
 CSSValue* ConsumeColumnCount(CSSParserTokenStream&, const CSSParserContext&);
-CSSValue* ConsumeColumnWidth(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumeColumnLength(CSSParserTokenStream&, const CSSParserContext&);
 bool ConsumeColumnWidthOrCount(CSSParserTokenStream&,
                                const CSSParserContext&,
                                CSSValue*&,

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
+#include "cc/base/features.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/raster/categorized_worker_pool.h"
 #include "cc/trees/layer_tree_host.h"
@@ -751,6 +752,24 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
         base::FeatureList::IsEnabled(
             features::kUseBeginFramePresentationFeedback);
     params->synthetic_begin_frame_source = CreateSyntheticBeginFrameSource();
+  }
+
+  // Don't enable the cc side internal begin frame source if using headless,
+  // since cc won't receive ExternalBeginFrame issued by headless tests when
+  // internal begin frame source is started.
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (base::FeatureList::IsEnabled(
+          ::features::kInternalBeginFrameSourceOnManyDidNotProduceFrame) &&
+      !params->synthetic_begin_frame_source &&
+      !settings.single_thread_proxy_scheduler &&
+      !settings.using_synchronous_renderer_compositor &&
+      !command_line.HasSwitch(switches::kAllowPreCommitInput)) {
+    static const uint64_t num_did_not_produce_frame = static_cast<uint64_t>(
+        ::features::kNumDidNotProduceFrameBeforeInternalBeginFrameSource.Get());
+    params->num_did_not_produce_frame_before_internal_begin_frame_source =
+        num_did_not_produce_frame;
+    params->auto_needs_begin_frame = true;
   }
 
   mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>

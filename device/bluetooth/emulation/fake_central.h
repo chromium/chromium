@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -58,6 +59,11 @@ class FakeCentral final : public mojom::FakeCentral,
       const std::string& address,
       uint16_t code,
       SetNextGATTDiscoveryResponseCallback callback) override;
+  void SimulateGATTOperationResponse(
+      mojom::GATTOperationType type,
+      const std::string& address,
+      uint16_t code,
+      SimulateGATTOperationResponseCallback callback) override;
   bool AllResponsesConsumed();
   void SimulateGATTDisconnection(
       const std::string& address,
@@ -146,6 +152,8 @@ class FakeCentral final : public mojom::FakeCentral,
       const std::string& service_id,
       const std::string& peripheral_address,
       GetLastWrittenDescriptorValueCallback callback) override;
+  void SetClient(::mojo::PendingAssociatedRemote<mojom::FakeCentralClient>
+                     client) override;
 
   // BluetoothAdapter overrides:
   void Initialize(base::OnceClosure callback) override;
@@ -223,6 +231,9 @@ class FakeCentral final : public mojom::FakeCentral,
   void RemovePairingDelegateInternal(
       device::BluetoothDevice::PairingDelegate* pairing_delegate) override;
 
+  void DispatchGATTOperationEvent(mojom::GATTOperationType type,
+                                  const std::string& peripheral_address);
+
  private:
   ~FakeCentral() override;
 
@@ -243,6 +254,7 @@ class FakeCentral final : public mojom::FakeCentral,
 
   mojom::CentralState state_;
   mojo::Receiver<mojom::FakeCentral> receiver_;
+  mojo::AssociatedRemote<mojom::FakeCentralClient> client_;
   base::WeakPtrFactory<FakeCentral> weak_ptr_factory_{this};
 };
 

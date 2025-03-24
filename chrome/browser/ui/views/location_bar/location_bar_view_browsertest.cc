@@ -488,3 +488,97 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionMigrationTest,
   FocusNextView(focus_manager);
   EXPECT_EQ(bookmark_page_action_view, focus_manager->GetFocusedView());
 }
+
+class LocationBarViewPageActionHideWhileEditingTests
+    : public InProcessBrowserTest {
+ public:
+  LocationBarViewPageActionHideWhileEditingTests() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{::features::kPageActionsMigration, {}}}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    // 1. Ensure the Zoom action is globally visible/enabled.
+    auto* zoom_action =
+        actions::ActionManager::Get().FindAction(kActionZoomNormal);
+    ASSERT_TRUE(zoom_action);
+    zoom_action->SetVisible(true);
+    zoom_action->SetEnabled(true);
+
+    // 2. For the active tab, actually show it in the new PageActionController.
+    auto* tab_features = browser()->GetActiveTabInterface()->GetTabFeatures();
+    ASSERT_TRUE(tab_features);
+    page_actions::PageActionController* controller =
+        tab_features->page_action_controller();
+    ASSERT_TRUE(controller);
+    controller->Show(kActionZoomNormal);
+
+    // 3. Make the Zoom icon visible by actually adjusting page zoom from 100%.
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
+    ASSERT_TRUE(zoom_controller);
+    zoom_controller->SetZoomLevel(
+        blink::ZoomFactorToZoomLevel(/*zoom_factor=*/1.5));
+  }
+
+ protected:
+  page_actions::PageActionView* GetZoomPageActionView() {
+    return GetLocationBarView()->page_action_container()->GetPageActionView(
+        kActionZoomNormal);
+  }
+
+  LocationBarView* GetLocationBarView() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetLocationBarView();
+  }
+
+  OmniboxView* GetOmniboxView() {
+    return GetLocationBarView()->GetOmniboxView();
+  }
+
+  void EnsureLayout() { views::test::RunScheduledLayout(GetLocationBarView()); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionHideWhileEditingTests,
+                       ZoomHiddenWhenOmniboxIsEdited) {
+  page_actions::PageActionView* zoom_view = GetZoomPageActionView();
+  ASSERT_TRUE(zoom_view);
+  EXPECT_TRUE(zoom_view->GetVisible());
+
+  // Now simulate “editing” the Omnibox:
+  OmniboxView* omnibox_view = GetOmniboxView();
+  omnibox_view->SetFocus(/*is_user_initiated=*/true);
+  omnibox_view->SetUserText(u"Typing in the Omnibox...");
+  EnsureLayout();
+
+  // The Zoom page action should now be hidden.
+  EXPECT_FALSE(zoom_view->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionHideWhileEditingTests,
+                       ZoomReAppearsAfterEditCleared) {
+  page_actions::PageActionView* zoom_view = GetZoomPageActionView();
+  ASSERT_TRUE(zoom_view);
+
+  // 1) Confirm visible to start.
+  EXPECT_TRUE(zoom_view->GetVisible());
+
+  // 2) Start editing => hidden.
+  OmniboxView* omnibox_view = GetOmniboxView();
+  omnibox_view->SetFocus(/*is_user_initiated=*/true);
+  omnibox_view->SetUserText(u"typing...");
+  EnsureLayout();
+  EXPECT_FALSE(zoom_view->GetVisible());
+
+  // 3) Clear text.
+  omnibox_view->SetUserText(std::u16string());
+  EnsureLayout();
+
+  // Force the Omnibox to revert (like pressing ESC).
+  omnibox_view->RevertAll();
+
+  EnsureLayout();
+  EXPECT_TRUE(zoom_view->GetVisible());
+}

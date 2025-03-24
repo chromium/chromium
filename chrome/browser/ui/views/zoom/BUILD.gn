@@ -2,29 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android, "Page actions are for desktop platforms only")
+assert(!is_android, "Zoom Page actions are for desktop platforms only")
 
-source_set("zoom_page_action") {
-  public = [ "zoom_page_action_controller.h" ]
-
-  sources = [ "zoom_page_action_controller.cc" ]
-
-  public_deps = [
-    "//base",
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser:primitives",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/views/page_action",
-    "//components/zoom",
-  ]
-}
+# TODO(crbug.com/376284060): Fix cycle dependency with chrome/browser/ui.
 
 source_set("interactive_ui_tests") {
   testonly = true
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "zoom_page_action_interactive_ui_tests.cc" ]
+  sources = [ "zoom_view_interactive_ui_tests.cc" ]
 
   deps = [
     "//chrome/browser/ui:ui",

@@ -45,6 +45,11 @@ public class CaptionBarInsetsRectProvider extends InsetsRectProvider {
 
         WindowInsetsCompat processedCaptionBarInsets =
                 super.onApplyWindowInsets(view, windowInsetsCompat);
+        if (processedCaptionBarInsets
+                .getInsets(WindowInsetsCompat.Type.captionBar())
+                .equals(rawCaptionBarInsets)) {
+            return processedCaptionBarInsets;
+        }
 
         // Account for any consumed caption bar insets in the rest of the system bars insets. If and
         // when the caption bar overlaps with the status bar / navigation bar, we should also

@@ -30,6 +30,7 @@ blink::mojom::AIPageContentPtr CreatePageContent() {
   page_content->root_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
   page_content->frame_data = blink::mojom::AIPageContentFrameData::New();
+  page_content->frame_data->title = "Page Title";
   page_content->frame_data->frame_interaction_info =
       blink::mojom::AIPageContentFrameInteractionInfo::New();
   return page_content;
@@ -100,6 +101,16 @@ void CheckTextNodeProto(const proto::ContentNode& node_proto,
   EXPECT_EQ(text_data.text_style().text_size(), text_size);
   EXPECT_EQ(text_data.text_style().has_emphasis(), has_emphasis);
   EXPECT_EQ(text_data.text_style().color(), color);
+}
+
+void AssertValidOrigin(
+    const optimization_guide::proto::SecurityOrigin& proto_origin,
+    const url::Origin& expected) {
+  EXPECT_EQ(proto_origin.opaque(), expected.opaque());
+
+  url::Origin actual = url::Origin::Create(GURL(proto_origin.value()));
+  EXPECT_TRUE(actual.IsSameOriginWith(expected))
+      << "actual: " << actual << ", expected: " << expected;
 }
 
 TEST(PageContentProtoUtilTest, IframeNodeWithNoData) {
@@ -262,8 +273,9 @@ TEST(PageContentProtoUtilTest, ConvertImageInfo) {
   image_node->content_attributes->image_info =
       blink::mojom::AIPageContentImageInfo::New();
   image_node->content_attributes->image_info->image_caption = "image caption";
-  image_node->content_attributes->image_info->source_origin =
+  const auto expected_origin =
       url::Origin::Create(GURL("https://example.com/image.png"));
+  image_node->content_attributes->image_info->source_origin = expected_origin;
   root_content->root_node->children_nodes.emplace_back(std::move(image_node));
 
   AIPageContentResult page_content;
@@ -283,7 +295,7 @@ TEST(PageContentProtoUtilTest, ConvertImageInfo) {
                                .content_attributes()
                                .image_data();
   EXPECT_EQ(image_data.image_caption(), "image caption");
-  EXPECT_EQ(image_data.source_url(), GURL("https://example.com"));
+  AssertValidOrigin(image_data.security_origin(), expected_origin);
 }
 
 TEST(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Image) {
@@ -359,6 +371,14 @@ TEST(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Anchor) {
 
   AIPageContentResult page_content;
   EXPECT_FALSE(ConvertAIPageContentToProto(root_content, page_content));
+}
+
+TEST(PageContentProtoUtilTest, TitleSet) {
+  auto root_content = CreatePageContent();
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, page_content));
+  EXPECT_EQ("Page Title", page_content.proto.main_frame_data().title());
 }
 
 TEST(PageContentProtoUtilTest, ConvertTableData) {

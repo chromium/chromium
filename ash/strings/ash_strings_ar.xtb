@@ -216,6 +216,7 @@
 <translation id="1679841710523778799">زيادة السطوع</translation>
 <translation id="1680659827022803830">عناصر التحكّم في مكالمات الفيديو</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">يمكنك إيقاف هذه الميزة في أي وقت من خلال "الإعدادات". <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">مؤقت <ph name="TOTAL_TIME" />   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">‏عنوان IPv6:‏ <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">تم إرساء النافذة النشطة على يمين الشاشة.</translation>
@@ -965,6 +966,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />، تطبيق مثبّت ومتوقف مؤقتًا</translation>
 <translation id="4228078597006700451">لم يتم إعداد عناصر التحكّم.</translation>
 <translation id="4230560241506423345">جديد</translation>
+<translation id="4236726631849783264">تذكير بشأن الإجراءات المقترَحة</translation>
 <translation id="4239069858505860023">‏شبكة GPRS</translation>
 <translation id="4240486403425279990">وضع "النظرة العامة"</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
@@ -981,7 +983,6 @@
 <translation id="4275663329226226506">الوسائط</translation>
 <translation id="4279490309300973883">النسخ المطابق</translation>
 <translation id="4280601795273309128">انتهت تحديثات الأمان المتوفّرة لهذا الجهاز. يُرجى ترقية الجهاز.</translation>
-<translation id="4281739221820540368">‏إنشاء مستند Google</translation>
 <translation id="4283888303416325161">أدخِل كلمة المرور لزيادة مستوى الأمان</translation>
 <translation id="4285498937028063278">إزالة التثبيت</translation>
 <translation id="428715201724021596">جارٍ الاتصال بالملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
@@ -1042,6 +1043,7 @@
 <translation id="4471354919263203780">جارٍ تنزيل ملفات التعرّف على الكلام... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{تحديث الجهاز الآن}=1{تحديث الجهاز خلال ثانية واحدة}two{تحديث الجهاز خلال ثانيتين}few{تحديث الجهاز خلال # ثوانٍ}many{تحديث الجهاز خلال # ثانية}other{تحديث الجهاز خلال # ثانية}}</translation>
 <translation id="4472575034687746823">الخطوات الأولى</translation>
+<translation id="4473489370276014885">‏جهات اتصال Google</translation>
 <translation id="4477350412780666475">المقطع الصوتي التالي</translation>
 <translation id="4477751544736611934">قد يتم تحصيل رسوم منك مقابل ذلك.
 تم توصيل جهاز واحد.</translation>
@@ -1068,6 +1070,7 @@
 <translation id="4545950850562423083">حفظ الصفحة الحالية كإشارة مرجعية</translation>
 <translation id="4548482551627849548">نقل النافذة النشطة إلى سطح المكتب على يمين الشاشة</translation>
 <translation id="4552748006424994716">لتجنّب صدى الصوت، يمكنك استخدام سمّاعة رأس سلكية فقط للاستماع إلى الميكروفون.</translation>
+<translation id="4556953949326137018">‏عند استخدام الإجراءات المقترَحة مثل "الإضافة إلى التقويم" أو "إنشاء مستند Google"، يتم إرسال المحتوى من المنطقة المحدَدة إلى خوادم Google لاقتراح الإجراءات، وذلك وفقًا لـ <ph name="LINK_TO_SERVICE_TERMS" />. يُرجى عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.</translation>
 <translation id="4560576029703263363">مُفعَّل</translation>
 <translation id="4561267230861221837">شبكة الجيل الثالث</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
@@ -1151,6 +1154,7 @@
 <translation id="481455355267255546">الحدث التالي</translation>
 <translation id="481749895090480684">قائمة المهام: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
+<translation id="4828935196674083554">جارٍ الإضافة...</translation>
 <translation id="482908187605862807">‏التطبيقات المتوفّرة من "متجر Play"</translation>
 <translation id="4831034276697007977">هل تريد فعلاً إيقاف النقرات التلقائية؟</translation>
 <translation id="4835677468087803981">إخفاء رقم التعريف الشخصي</translation>
@@ -1648,6 +1652,7 @@
 <translation id="641817663353603351">‏مفتاح PageUp</translation>
 <translation id="6424520630891723617">حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">محو جميع الإشعارات</translation>
+<translation id="6426905245930183644">جارٍ الإنشاء...</translation>
 <translation id="6430225033895752525">عرض إعدادات "وضع التركيز"</translation>
 <translation id="643147933154517414">ليس لديك أي إشعارات</translation>
 <translation id="6431865393913628856">تسجيل الشاشة</translation>
@@ -1714,7 +1719,6 @@
 <translation id="6612889377159412215">مهمة فرعية</translation>
 <translation id="6613765291890844037">مساحة التخزين المستخدَمة: <ph name="STORAGE_IN_USE_SIZE" /> | إجمالي مساحة التخزين: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">تم تفعيل شاشة الخصوصية.</translation>
-<translation id="6618277154885124991">‏إنشاء جداول بيانات Google</translation>
 <translation id="6622679827379792051">إعداد ميزة عرض التطبيقات في هاتفك</translation>
 <translation id="662279009180869175">استخدِم السهمين المتّجهَين لليسار ولليمين لتغيير حجم الشاشة المنقسمة</translation>
 <translation id="6624493541160101248">سطح المكتب الحالي: <ph name="DESK_NAME" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
@@ -2399,6 +2403,7 @@
 <translation id="8921624153894383499">‏لا يتحدث مساعد Google هذه اللغة.</translation>
 <translation id="8926951137623668982">إخفاء الرف دائمًا</translation>
 <translation id="8929566928381252430">‏هل تحاول استخدام مفتاح Caps Lock؟ استخدِم</translation>
+<translation id="8934418770423095813">‏إنشاء مستند Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ملف واحد}zero{‫# ملف}two{ملفان}few{‫# ملفات}many{‫# ملفًا}other{‫# ملف}}</translation>
 <translation id="8936501819958976551">غير مفعّلة</translation>
 <translation id="8938800817013097409">‏جهاز USB-C (المنفذ الأيمن في الخلف)</translation>

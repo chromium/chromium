@@ -32,12 +32,14 @@ namespace {
 using kiosk::test::CachedChromeAppVersion;
 using kiosk::test::CurrentProfile;
 using kiosk::test::InstalledChromeAppVersion;
+using kiosk::test::LaunchAppManually;
 using kiosk::test::LocalFsChromeAppV1;
 using kiosk::test::LocalFsChromeAppV2;
 using kiosk::test::OfflineEnabledChromeAppV1;
 using kiosk::test::OfflineEnabledChromeAppV2;
 using kiosk::test::OfflineEnabledChromeAppV2WithPermissionChange;
 using kiosk::test::TheKioskChromeApp;
+using kiosk::test::WaitKioskLaunched;
 
 void ServeAppOnFakeCws(FakeCWS& fake_cws,
                        const KioskMixin::CwsChromeAppOption& app) {
@@ -76,7 +78,7 @@ class KioskChromeAppUpdateTest : public MixinBasedInProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(KioskChromeAppUpdateTest,
                        PRE_UpdatesAppOfflineFromCache) {
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 
   // External cache has app version 1.
   std::string app_id = TheKioskChromeApp().id().app_id.value();
@@ -104,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(KioskChromeAppUpdateTest,
 
 IN_PROC_BROWSER_TEST_F(KioskChromeAppUpdateTest, UpdatesAppOfflineFromCache) {
   network_state_.SimulateOffline();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 
   EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), TheKioskChromeApp()),
             OfflineEnabledChromeAppV2().crx_version);
@@ -113,14 +115,14 @@ IN_PROC_BROWSER_TEST_F(KioskChromeAppUpdateTest, UpdatesAppOfflineFromCache) {
 IN_PROC_BROWSER_TEST_F(KioskChromeAppUpdateTest,
                        PRE_LaunchesAppWhenItHasNoUpdate) {
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskChromeAppUpdateTest, LaunchesAppWhenItHasNoUpdate) {
   kiosk_.fake_cws().SetNoUpdate(OfflineEnabledChromeAppV1().app_id);
   network_state_.SimulateOnline();
 
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 
   EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), TheKioskChromeApp()),
             OfflineEnabledChromeAppV1().crx_version);
@@ -140,8 +142,7 @@ class KioskManualLaunchChromeAppUpdateTest
   ~KioskManualLaunchChromeAppUpdateTest() override = default;
 
   bool LaunchTheAppAndWaitSession() {
-    return kiosk_.LaunchManually(TheKioskChromeApp()) &&
-           kiosk_.WaitSessionLaunched();
+    return LaunchAppManually(TheKioskChromeApp()) && WaitKioskLaunched();
   }
 
   NetworkStateMixin network_state_{&mixin_host_};
@@ -232,7 +233,7 @@ class KioskChromeAppDataUpdateTest : public MixinBasedInProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(KioskChromeAppDataUpdateTest,
                        PRE_PreservesLocalDataAcrossUpdates) {
   extensions::ResultCatcher catcher;
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -241,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(KioskChromeAppDataUpdateTest,
   ServeAppOnFakeCws(kiosk_.fake_cws(), LocalFsChromeAppV2());
 
   extensions::ResultCatcher catcher;
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

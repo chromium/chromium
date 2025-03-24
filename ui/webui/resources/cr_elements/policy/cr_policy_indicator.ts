@@ -43,9 +43,9 @@ export class CrPolicyIndicatorElement extends CrLitElement {
     };
   }
 
-  iconAriaLabel: string = '';
-  indicatorType: CrPolicyIndicatorType = CrPolicyIndicatorType.NONE;
-  indicatorSourceName: string = '';
+  accessor iconAriaLabel: string = '';
+  accessor indicatorType: CrPolicyIndicatorType = CrPolicyIndicatorType.NONE;
+  accessor indicatorSourceName: string = '';
 
   /**
    * @return True if the indicator should be shown.

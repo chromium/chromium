@@ -9,6 +9,7 @@
 #include <utility>
 
 #import "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
@@ -173,7 +174,8 @@ std::vector<SettingsItem> GetSettingItems(
                    base::apple::ObjCCast<NSNumber>(value_ptr)) {
       // Differentiating between integer and float types.
       const char* value_type = value_num.objCType;
-      if (strcmp(value_type, "d") == 0 || strcmp(value_type, "f") == 0) {
+      if (UNSAFE_TODO(strcmp(value_type, "d")) == 0 ||
+          UNSAFE_TODO(strcmp(value_type, "f")) == 0) {
         double setting_num = value_num.doubleValue;
         item.setting_json_value = base::StringPrintf("%f", setting_num);
       } else {

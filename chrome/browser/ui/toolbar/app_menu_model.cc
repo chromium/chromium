@@ -891,6 +891,12 @@ void ToolsMenuModel::Build(Browser* browser) {
   is_tablet_mode = display::Screen::GetScreen()->InTabletMode();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   if (!is_tablet_mode) {
+    if (features::HasTabSearchToolbarButton()) {
+      // TODO(crbug.com/404319632): Update with proper icon
+      AddItemWithStringIdAndVectorIcon(this, IDC_TAB_SEARCH,
+                                       IDS_TAB_SEARCH_MENU, kSearchMenuIcon);
+    }
+
     if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
         TabOrganizationUtils::GetInstance()->IsEnabled(browser->profile())) {
       auto* const tab_organization_service =

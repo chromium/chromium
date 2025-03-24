@@ -354,6 +354,14 @@ struct PaymentCredentialInstrument {
   bool iconMustBeShown;
 };
 
+// RemoteDesktopClientOverride allows an allowlisted origin to perform WebAuthn
+// operations on behalf of another origin. This enables remote desktop clients
+// to proxy WebAuthn requests from a remote machine.
+//
+// SECURITY: This field comes from the renderer process and MUST NOT be trusted
+// without validation. The browser process will only honor this override if the
+// "caller origin" is explicitly allowlisted via an enterprise policy.
+//
 // https://github.com/w3c/webauthn/wiki/Explainer:-WebAuthn-Remote-Desktop-Support
 struct RemoteDesktopClientOverride {
   url.mojom.Origin origin;

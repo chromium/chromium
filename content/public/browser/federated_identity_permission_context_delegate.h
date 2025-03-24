@@ -9,14 +9,18 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/types/optional_ref.h"
+#include "content/public/browser/identity_request_account.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {
+
+class IdentityRequestAccount;
 
 // Delegate interface for the FedCM implementation in content to query and
 // manage permission grants associated with the ability to share identity
@@ -100,9 +104,12 @@ class FederatedIdentityPermissionContextDelegate {
 
   // Returns the stored profile information for the passed-in
   // `identity_provider`. If the signin status is false or no profile
-  // information was stored, returns an empty vector.
-  virtual std::vector<blink::common::webid::LoginStatusAccount>
-  GetAccountProfiles(const url::Origin& identity_provider) = 0;
+  // information was stored, returns an empty vector. This returns
+  // IdentityRequestAccounts owned by scoped_refptrs because ultimately
+  // these objects will be shared between the auth request logic and the
+  // account picker UI.
+  virtual std::vector<scoped_refptr<content::IdentityRequestAccount>>
+  GetAccounts(const url::Origin& identity_provider) = 0;
 
   // Updates the IDP sign-in status. This could be called by
   //   1. IdpSigninStatus API

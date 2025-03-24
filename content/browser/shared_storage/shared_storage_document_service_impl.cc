@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "url/url_constants.h"
 
@@ -201,6 +202,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
   }
 
   if (!CheckSecureContext(render_frame_host())) {
+    RecordSharedStorageGetInFencedFrameOutcome(
+        blink::SharedStorageGetInFencedFrameOutcome::kInsecureContext);
     std::move(callback).Run(
         blink::mojom::SharedStorageGetStatus::kError,
         /*error_message=*/kSharedStorageMethodFromInsecureContextMessage,
@@ -213,6 +216,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
 
   if (!IsFencedStorageReadAllowed(
           /*accessing_origin=*/render_frame_host().GetLastCommittedOrigin())) {
+    RecordSharedStorageGetInFencedFrameOutcome(
+        blink::SharedStorageGetInFencedFrameOutcome::kDisabled);
     std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kError,
                             /*error_message=*/
                             kFencedStorageReadDisabledMessage,
@@ -222,6 +227,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
 
   if (!(static_cast<RenderFrameHostImpl&>(render_frame_host())
             .CanReadFromSharedStorage())) {
+    RecordSharedStorageGetInFencedFrameOutcome(
+        blink::SharedStorageGetInFencedFrameOutcome::kWithoutRevokeNetwork);
     std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kError,
                             /*error_message=*/
                             kFencedStorageReadWithoutRevokeNetworkMessage,
@@ -240,6 +247,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
         // resolve the promise to undefined.
         if (result.result == OperationResult::kNotFound ||
             result.result == OperationResult::kExpired) {
+          RecordSharedStorageGetInFencedFrameOutcome(
+              blink::SharedStorageGetInFencedFrameOutcome::kKeyNotFound);
           std::move(callback).Run(
               blink::mojom::SharedStorageGetStatus::kNotFound,
               /*error_message=*/"sharedStorage.get() could not find key",
@@ -248,12 +257,16 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
         }
 
         if (result.result != OperationResult::kSuccess) {
+          RecordSharedStorageGetInFencedFrameOutcome(
+              blink::SharedStorageGetInFencedFrameOutcome::kGetError);
           std::move(callback).Run(
               blink::mojom::SharedStorageGetStatus::kError,
               /*error_message=*/"sharedStorage.get() failed", /*value=*/{});
           return;
         }
 
+        RecordSharedStorageGetInFencedFrameOutcome(
+            blink::SharedStorageGetInFencedFrameOutcome::kSuccess);
         std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kSuccess,
                                 /*error_message=*/{}, /*value=*/result.data);
       },

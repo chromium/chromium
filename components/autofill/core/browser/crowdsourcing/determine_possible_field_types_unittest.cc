@@ -321,7 +321,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
       ConstructFormStructureFromFormData(form);
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &*form_structure);
+                                       "en-us", *form_structure);
 
   ASSERT_EQ(1U, form_structure->field_count());
 
@@ -368,7 +368,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
   form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, kCvc16, "en-us",
-                                       &*form_structure);
+                                       *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(
       *form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
@@ -416,7 +416,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &*form_structure);
+                                       "en-us", *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -464,7 +464,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &*form_structure);
+                                       "en-us", *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -511,7 +511,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &*form_structure);
+                                       "en-us", *form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 1,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -558,7 +558,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &*form_structure);
+                                       "en-us", *form_structure);
   CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
@@ -602,7 +602,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &*form_structure);
+                                       "en-us", *form_structure);
 
   CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);

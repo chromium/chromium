@@ -494,6 +494,15 @@ using tab_groups::SharingState;
 // Handles the result of the add to group block.
 - (void)handleAddWebState:(web::WebStateID)webStateID
                   toGroup:(const TabGroup*)group {
+  Browser* originBrowser = GetBrowserForTabWithCriteria(
+      BrowserListFactory::GetForProfile(_profile),
+      WebStateSearchCriteria{.identifier = webStateID}, _incognito);
+  if (!originBrowser) {
+    // It is possible that the tab is closed before this callback is called (for
+    // example long pressing on a NTP and backgrounding the app).
+    return;
+  }
+
   if (group == nullptr) {
     [self.contextMenuDelegate createNewTabGroupWithIdentifier:webStateID
                                                     incognito:self.incognito];

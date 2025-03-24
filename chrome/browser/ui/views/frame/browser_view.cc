@@ -3768,7 +3768,11 @@ void BrowserView::TabChangedAt(content::WebContents* contents,
   UpdateAccessibleURLForRootView(contents->GetURL());
 }
 
-void BrowserView::OnSplitViewAdded(std::vector<int> indices) {
+void BrowserView::OnSplitTabCreated(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    SplitTabAddReason reason,
+    tabs::SplitTabLayout tab_layout) {
   const tabs::TabInterface* active_tab =
       browser_->tab_strip_model()->GetActiveTab();
   if (active_tab->IsSplit()) {

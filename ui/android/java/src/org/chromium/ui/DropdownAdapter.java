@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.MarginLayoutParamsCompat;
-import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -36,7 +35,6 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
     private final Context mContext;
     private final @Nullable Set<Integer> mSeparators;
     private final boolean mAreAllItemsEnabled;
-    private final int mLabelMargin;
 
     /**
      * Creates an {@code ArrayAdapter} with specified parameters.
@@ -53,8 +51,6 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
         addAll(items);
         mSeparators = separators;
         mAreAllItemsEnabled = checkAreAllItemsEnabled();
-        mLabelMargin =
-                context.getResources().getDimensionPixelSize(R.dimen.dropdown_item_label_margin);
     }
 
     private boolean checkAreAllItemsEnabled() {
@@ -106,24 +102,16 @@ public class DropdownAdapter extends ArrayAdapter<DropdownItem> {
         // it doesn't regress.
         // http://crbug.com/429364
         LinearLayout wrapper = (LinearLayout) layout.findViewById(R.id.dropdown_label_wrapper);
-        if (item.isMultilineLabel()) height = LayoutParams.WRAP_CONTENT;
         wrapper.setOrientation(LinearLayout.VERTICAL);
         wrapper.setLayoutParams(new LinearLayout.LayoutParams(0, height, 1));
 
         // Layout of the main label view.
         TextView labelView = (TextView) layout.findViewById(R.id.dropdown_label);
         labelView.setText(item.getLabel());
-        labelView.setSingleLine(!item.isMultilineLabel());
-        if (item.isMultilineLabel()) {
-            // If there is a multiline label, we add extra padding at the top and bottom because
-            // WRAP_CONTENT, defined above for multiline labels, leaves none.
-            int existingStart = ViewCompat.getPaddingStart(labelView);
-            int existingEnd = ViewCompat.getPaddingEnd(labelView);
-            labelView.setPaddingRelative(existingStart, mLabelMargin, existingEnd, mLabelMargin);
-        }
+        labelView.setSingleLine(true);
 
         labelView.setEnabled(item.isEnabled());
-        if (item.isGroupHeader() || item.isBoldLabel()) {
+        if (item.isGroupHeader()) {
             labelView.setTypeface(null, Typeface.BOLD);
         } else {
             labelView.setTypeface(null, Typeface.NORMAL);

@@ -15,17 +15,19 @@ namespace test {
 void SetUpdateTreeID(ui::AXTreeUpdate* update, ui::AXTreeID tree_id);
 std::unique_ptr<ui::AXTreeUpdate> CreateInitialUpdate();
 
-std::vector<ui::AXTreeUpdate> CreateSimpleUpdateList(std::vector<int> child_ids,
-                                                     ui::AXTreeID tree_id);
+std::vector<ui::AXTreeUpdate> CreateSimpleUpdateList(
+    std::vector<ui::AXNodeID> child_ids,
+    ui::AXTreeID tree_id);
 
 // Helpers for creating AXNodeData objects to be used in testing.
-ui::AXNodeData TextNode(int id, std::u16string text_content);
-ui::AXNodeData TextNode(int id);
-ui::AXNodeData TextNodeWithTextFromId(int id);
-ui::AXNodeData ExplicitlyEmptyTextNode(int id);
-ui::AXNodeData LinkNode(int id, std::string url);
-ui::AXNodeData GenericContainerNode(int id);
-ui::AXNodeData SuperscriptNode(int id, std::u16string text_content);
+ui::AXNodeData TextNode(ui::AXNodeID id, const std::u16string& text_content);
+ui::AXNodeData TextNode(ui::AXNodeID id);
+ui::AXNodeData TextNodeWithTextFromId(ui::AXNodeID id);
+ui::AXNodeData ExplicitlyEmptyTextNode(ui::AXNodeID id);
+ui::AXNodeData LinkNode(ui::AXNodeID id, const std::string& url);
+ui::AXNodeData GenericContainerNode(ui::AXNodeID id);
+ui::AXNodeData SuperscriptNode(ui::AXNodeID id,
+                               const std::u16string& text_content);
 
 }  // namespace test
 

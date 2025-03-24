@@ -72,7 +72,8 @@ class BackGestureEventHandlerTest : public AshTestBase {
       delegate = std::make_unique<TestShellDelegate>();
       delegate->SetCanGoBack(false);
     }
-    AshTestBase::SetUp(std::move(delegate));
+    set_shell_delegate(std::move(delegate));
+    AshTestBase::SetUp();
 
     RecreateTopWindow(chromeos::AppType::BROWSER);
     TabletModeControllerTestApi().EnterTabletMode();

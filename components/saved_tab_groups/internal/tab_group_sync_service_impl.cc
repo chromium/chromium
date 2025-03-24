@@ -37,6 +37,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/public/utils.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -171,6 +172,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SavedTabGroupModel> model,
     std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
+    std::unique_ptr<SyncDataTypeConfiguration>
+        shared_tab_group_account_configuration,
     PrefService* pref_service,
     std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
@@ -189,6 +192,11 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
       logger_(logger),
       pref_service_(pref_service),
       opt_guide_(optimization_guide_decider) {
+  if (shared_tab_group_account_configuration) {
+    shared_tab_group_account_data_bridge_ =
+        std::make_unique<SharedTabGroupAccountDataSyncBridge>(
+            std::move(shared_tab_group_account_configuration));
+  }
   collaboration_finder_->SetClient(this);
   model_->AddObserver(this);
   if (opt_guide_) {
@@ -306,6 +314,13 @@ TabGroupSyncServiceImpl::GetSavedTabGroupControllerDelegate() {
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
   return sync_bridge_mediator_->GetSharedTabGroupControllerDelegate();
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+TabGroupSyncServiceImpl::GetSharedTabGroupAccountControllerDelegate() {
+  CHECK(shared_tab_group_account_data_bridge_);
+  return shared_tab_group_account_data_bridge_->change_processor()
+      ->GetControllerDelegate();
 }
 
 void TabGroupSyncServiceImpl::SetTabGroupSyncDelegate(
@@ -765,36 +780,54 @@ void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
       local_group_id, CollaborationId(std::string(collaboration_id)));
 }
 
+bool TabGroupSyncServiceImpl::ShouldExposeSavedTabGroupInList(
+    const SavedTabGroup& group) const {
+  // TODO(crbug.com/395160538): Simplify the logic of filtering out groups
+  // that are in transition between saved and shared.
+  if (group.saved_tabs().empty() || group.is_hidden()) {
+    return false;
+  }
+
+  // Skip group that are in the middle of migration between shared and saved.
+  // For a migrating group, the originating group should not be hidden.
+  const auto originating_group_id = group.GetOriginatingTabGroupGuid();
+  if (originating_group_id) {
+    const SavedTabGroup* originating_group =
+        model_->Get(originating_group_id.value());
+    if (originating_group && !originating_group->is_hidden()) {
+      return false;
+    }
+  }
+
+  if (base::Contains(shared_tab_groups_waiting_for_collaboration_,
+                     group.saved_guid(),
+                     [](const auto& entry) { return std::get<1>(entry); })) {
+    // The shared tab group should not be returned while its collaboration is
+    // not available.
+    return false;
+  }
+
+  return true;
+}
+
+std::vector<const SavedTabGroup*> TabGroupSyncServiceImpl::ReadAllGroups()
+    const {
+  std::vector<const SavedTabGroup*> tab_groups;
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (ShouldExposeSavedTabGroupInList(group)) {
+      tab_groups.push_back(&group);
+    }
+  }
+  return tab_groups;
+}
+
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() const {
   std::vector<SavedTabGroup> tab_groups;
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
-    // TODO(crbug.com/395160538): Simplify the logic of filtering out groups
-    // that are in transition between saved and shared.
-    if (group.saved_tabs().empty() || group.is_hidden()) {
-      continue;
+    if (ShouldExposeSavedTabGroupInList(group)) {
+      tab_groups.push_back(group);
     }
-    // Skip group that are in the middle of migration between shared and saved.
-    // For a migrating group, the originating group should not be hidden.
-    std::optional<base::Uuid> originating_tab_group_guid =
-        group.GetOriginatingTabGroupGuid();
-    if (originating_tab_group_guid.has_value()) {
-      const SavedTabGroup* originating_group =
-          model_->Get(originating_tab_group_guid.value());
-      if (originating_group && !originating_group->is_hidden()) {
-        continue;
-      }
-    }
-
-    if (base::Contains(shared_tab_groups_waiting_for_collaboration_,
-                       group.saved_guid(),
-                       [](const auto& entry) { return std::get<1>(entry); })) {
-      // The shared tab group should not be returned while its collaboration is
-      // not available.
-      continue;
-    }
-    tab_groups.push_back(group);
   }
-
   return tab_groups;
 }
 

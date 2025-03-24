@@ -11,6 +11,7 @@ import android.os.ParcelUuid;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -23,15 +24,17 @@ import org.chromium.device.bluetooth.wrapper.BluetoothGattCharacteristicWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattServiceWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattWrapper;
+import org.chromium.device.bluetooth.wrapper.BluetoothSocketWrapper;
 import org.chromium.device.bluetooth.wrapper.ThreadUtilsWrapper;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
- * Exposes android.bluetooth.BluetoothDevice as necessary for C++
- * device::BluetoothDeviceAndroid.
+ * Exposes android.bluetooth.BluetoothDevice as necessary for C++ device::BluetoothDeviceAndroid.
  *
- * Lifetime is controlled by device::BluetoothDeviceAndroid.
+ * <p>Lifetime is controlled by device::BluetoothDeviceAndroid.
  */
 @JNINamespace("device")
 @NullMarked
@@ -119,6 +122,32 @@ final class ChromeBluetoothDevice {
             uuidStrings[i] = uuids[i].toString();
         }
         return uuidStrings;
+    }
+
+    // Implements BluetoothDeviceAndroid::ConnectToService.
+    @CalledByNative
+    @Nullable
+    private Outcome<BluetoothSocketWrapper> connectToService(
+            @JniType("std::string") String uuidString) {
+        try {
+            return new Outcome(
+                    mDevice.createRfcommSocketToServiceRecord(UUID.fromString(uuidString)));
+        } catch (IOException e) {
+            return new Outcome(e);
+        }
+    }
+
+    // Implements BluetoothDeviceAndroid::ConnectToServiceInsecurely.
+    @CalledByNative
+    @Nullable
+    private Outcome<BluetoothSocketWrapper> connectToServiceInsecurely(
+            @JniType("std::string") String uuidString) {
+        try {
+            return new Outcome(
+                    mDevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString(uuidString)));
+        } catch (IOException e) {
+            return new Outcome(e);
+        }
     }
 
     // Implements BluetoothDeviceAndroid::CreateGattConnectionImpl.

@@ -5,7 +5,7 @@
 #include "components/fingerprinting_protection_filter/interventions/browser/interventions_web_contents_helper.h"
 
 #include "base/feature_list.h"
-#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
+#include "components/fingerprinting_protection_filter/interventions/browser/interventions_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -19,7 +19,8 @@ namespace fingerprinting_protection_interventions {
 
 // static
 void InterventionsWebContentsHelper::CreateForWebContents(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    bool is_incognito) {
   // Do nothing if a InterventionsWebContentsHelper
   // already exists for the current WebContents.
   if (FromWebContents(web_contents)) {
@@ -27,29 +28,28 @@ void InterventionsWebContentsHelper::CreateForWebContents(
   }
 
   content::WebContentsUserData<
-      InterventionsWebContentsHelper>::CreateForWebContents(web_contents);
+      InterventionsWebContentsHelper>::CreateForWebContents(web_contents,
+                                                            is_incognito);
 }
 
 // private
 InterventionsWebContentsHelper::InterventionsWebContentsHelper(
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    bool is_incognito)
     : content::WebContentsUserData<InterventionsWebContentsHelper>(
           *web_contents),
-      content::WebContentsObserver(web_contents) {}
+      content::WebContentsObserver(web_contents),
+      is_incognito_(is_incognito) {}
 
 InterventionsWebContentsHelper::~InterventionsWebContentsHelper() = default;
 
 void InterventionsWebContentsHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   // TODO(crbug.com/380461005): Add URL-level exceptions.
-  // At the moment, this is just a sanity check to ensure the state of the
-  // CanvasInterventions feature is the same in both blink and the browser.
-  // Other factors, including URL-level exceptions can alter the state of the
-  // CanvasInterventions feature.
   auto& mutable_runtime_feature_state =
       navigation_handle->GetMutableRuntimeFeatureStateContext();
   bool canvas_base_feature_enabled =
-      features::IsCanvasInterventionsFeatureEnabled();
+      features::IsCanvasInterventionsEnabledForIncognitoState(is_incognito_);
 
   if (mutable_runtime_feature_state.IsCanvasInterventionsEnabled() !=
       canvas_base_feature_enabled) {

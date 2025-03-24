@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
 <translation id="1908234395526491708">‏تعذَّر طلب بروتوكول UDP.</translation>
 <translation id="1908394185991500139">سهم متّجه لليسار</translation>
+<translation id="1911678930322867245">النقل إلى أعلى اليمين</translation>
 <translation id="1914144885717544695">يوم الجمعة</translation>
 <translation id="1915960750806557358">يُرجى إخبارنا بملاحظاتك أو توضيح مشكلتك، مع الحرص على عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.</translation>
 <translation id="1923388006036088459">ألوان التمييز</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">شاطئ</translation>
 <translation id="819278132617411009">‏استخدام تكنولوجيات الذكاء الاصطناعي من Google لتعزيز إنتاجيتك</translation>
-<translation id="82003371436638355">‏عند اختيار "إنشاء خلفيتك الخاصة"، يمكنك كتابة طلب مخصّص أو النقر على "اختيار مظهر" ثم اختيار الكلمات التي تحتها خط لتخصيص خلفيتك القائمة على الذكاء الاصطناعي.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          للحصول على صور فريدة ومتنوعة تستند إلى الذكاء الاصطناعي، انقر على "أريد أفكارًا جديدة".
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          عند إنشاء خلفية خاصة بك، يتم إرسال الطلب إلى خوادم Google لإنشاء الصور وتحسين المنتج، ويتم إجراء ذلك مع مراعاة <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />بنود الخدمة وسياسة الخصوصية الساريتَين في Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. يُرجى عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          قد يعرض الذكاء الاصطناعي التوليدي معلومات خاطئة، بما فيها تلك المتعلقة بالأشخاص، لذا ننصحك بالتحقّق من ردوده. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />مزيد من المعلومات<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="8833620912470026819">غابة من نبات الصبّار</translation>
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>
+<translation id="8842526499753992487">النقل إلى أعلى اليسار</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
 <translation id="8849799913685544685">منارة</translation>
 <translation id="8851859208664803097">تم إيقاف مَهمّة الطباعة: لا يمكن الوصول إلى الطابعة.</translation>

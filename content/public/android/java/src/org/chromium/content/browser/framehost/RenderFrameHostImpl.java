@@ -212,6 +212,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialGetAssertion,
+            @Nullable Origin remoteDesktopClientOverrideOrigin,
             Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
             var result =
@@ -226,6 +227,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                         relyingPartyId,
                         effectiveOrigin,
                         isPaymentCredentialGetAssertion,
+                        remoteDesktopClientOverrideOrigin,
                         callback);
     }
 
@@ -245,6 +247,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
+            @Nullable Origin remoteDesktopClientOverrideOrigin,
             Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
             var result =
@@ -260,6 +263,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                         relyingPartyId,
                         effectiveOrigin,
                         isPaymentCredentialCreation,
+                        remoteDesktopClientOverrideOrigin,
                         callback);
     }
 
@@ -334,6 +338,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 String relyingPartyId,
                 Origin effectiveOrigin,
                 boolean isPaymentCredentialGetAssertion,
+                @Nullable Origin remoteDesktopClientOverrideOrigin,
                 Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
 
         void performMakeCredentialWebAuthSecurityChecks(
@@ -341,6 +346,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 String relyingPartyId,
                 Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation,
+                @Nullable Origin remoteDesktopClientOverrideOrigin,
                 Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
 
         int getLifecycleState(long nativeRenderFrameHostAndroid);

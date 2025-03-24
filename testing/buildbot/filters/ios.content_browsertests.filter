@@ -838,8 +838,8 @@
 
 # TODO(crbug.com/384770166): These tests have been failing since
 # https://crrev.com/c/6101118.
--PrerenderBrowserTest.ActivateOnWindowOpen_NewTab
--PrerenderBrowserTest.ActivateOnWindowOpen_PopUp
+-PrerenderTargetHintEnabledBrowserTest.ActivateOnWindowOpen_NewTab
+-PrerenderTargetHintEnabledBrowserTest.ActivateOnWindowOpen_PopUp
 
 # TODO(crbug.com/393431139): These tests have been failing since
 # https://crrev.com/c/5201204.
@@ -853,7 +853,6 @@
 # doesn't work on iOS correctly.
 -PrerenderTargetHintEnabledBrowserTest.ActivateOnLinkClick_TargetBlankWithNoopener_WithTargetHintBlank
 -PrerenderTargetHintEnabledBrowserTest.ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
--PrerenderTargetHintEnabledBrowserTest.ActivateOnWindowOpen_PopUp
 -PrerenderTargetHintEnabledBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
 -PrerenderTargetHintEnabledBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
 -PrerenderTargetHintOriginTrialBrowserTest.Prerender2InNewTabOriginTrial

@@ -36,6 +36,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace content {
 
@@ -67,17 +68,22 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
     return static_cast<RenderFrameHostImpl*>(main_rfh());
   }
 
+  struct SpeculationRulesPrefetchContainerOptions {
+    SpeculationRulesTags speculation_rules_tags;
+    base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager;
+  };
+
   std::unique_ptr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(
       const GURL& prefetch_url,
-      base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager =
-          nullptr) {
+      SpeculationRulesPrefetchContainerOptions options = {}) {
     return std::make_unique<PrefetchContainer>(
         *main_rfhi(), blink::DocumentToken(), prefetch_url,
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/true,
                      blink::mojom::SpeculationEagerness::kEager),
         blink::mojom::Referrer(),
-        /*no_vary_search_hint=*/std::nullopt, prefetch_document_manager,
+        std::make_optional(std::move(options.speculation_rules_tags)),
+        /*no_vary_search_hint=*/std::nullopt, options.prefetch_document_manager,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
   }
@@ -285,6 +291,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
       blink::mojom::Referrer(),
+      std::make_optional(SpeculationRulesTags({"example"})),
       /*no_vary_search_hint=*/std::nullopt,
       /*prefetch_document_manager=*/nullptr,
       PreloadPipelineInfo::Create(
@@ -303,6 +310,14 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
   EXPECT_EQ(prefetch_container.key(),
             PrefetchContainer::Key(document_token, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
+
+  // Speculation rules prefetch with tags should contain the tags in the header
+  // field.
+  prefetch_container.MakeResourceRequest(net::HttpRequestHeaders());
+  EXPECT_EQ(prefetch_container.GetResourceRequest()
+                ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
+                .value(),
+            "\"example\"");
 }
 
 TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
@@ -330,6 +345,8 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   EXPECT_EQ(prefetch_container.key(),
             PrefetchContainer::Key(std::nullopt, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
+  // Embedder-initiated prefetch shouldn't include any tag.
+  EXPECT_FALSE(prefetch_container.HasSpeculationRulesTags());
 }
 
 TEST_P(PrefetchContainerTest, PrefetchStatus) {
@@ -811,7 +828,8 @@ TEST_P(PrefetchContainerTest, EligibilityCheck) {
           &web_contents()->GetPrimaryPage().GetMainDocument());
 
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
-      kTestUrl1, prefetch_document_manager->GetWeakPtr());
+      kTestUrl1,
+      {.prefetch_document_manager = prefetch_document_manager->GetWeakPtr()});
 
   prefetch_container->MakeResourceRequest({});
 
@@ -846,7 +864,8 @@ TEST_P(PrefetchContainerTest, IneligibleRedirect) {
           &web_contents()->GetPrimaryPage().GetMainDocument());
 
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
-      kTestUrl1, prefetch_document_manager->GetWeakPtr());
+      kTestUrl1,
+      {.prefetch_document_manager = prefetch_document_manager->GetWeakPtr()});
 
   prefetch_container->MakeResourceRequest({});
 
@@ -893,7 +912,7 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms2) {
         GURL("https://test.com/?nvsparam=1"),
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/true, test_case.eagerness),
-        blink::mojom::Referrer(),
+        blink::mojom::Referrer(), std::make_optional(SpeculationRulesTags()),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         PreloadPipelineInfo::Create(
@@ -1524,6 +1543,33 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
       EXPECT_EQ(serving_url_loader_client->body_content(), content);
     }
   }
+}
+
+TEST_P(PrefetchContainerTest, SpeculationRulesTagsAddedToRequestHeader) {
+  auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
+      GURL("https://test.com"),
+      {.speculation_rules_tags = SpeculationRulesTags({"tag1", "tag2"})});
+  prefetch_container->MakeResourceRequest(net::HttpRequestHeaders());
+  EXPECT_TRUE(prefetch_container->GetResourceRequest()
+                  ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
+                  .has_value());
+  EXPECT_EQ(prefetch_container->GetResourceRequest()
+                ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
+                .value(),
+            "\"tag1\", \"tag2\"");
+}
+
+TEST_P(PrefetchContainerTest, SpeculationRulesNoTagAddedToRequestHeader) {
+  auto prefetch_container =
+      CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"), {});
+  prefetch_container->MakeResourceRequest(net::HttpRequestHeaders());
+  EXPECT_TRUE(prefetch_container->GetResourceRequest()
+                  ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
+                  .has_value());
+  EXPECT_EQ(prefetch_container->GetResourceRequest()
+                ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
+                .value(),
+            "null");
 }
 
 std::vector<std::vector<Event>> ValidEventPermutations(bool has_second_client) {

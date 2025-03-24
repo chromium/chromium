@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -37,7 +39,8 @@ class CORE_EXPORT SpeculationRule final
       std::optional<network::mojom::ReferrerPolicy>,
       mojom::blink::SpeculationEagerness,
       network::mojom::blink::NoVarySearchPtr,
-      mojom::blink::SpeculationInjectionType);
+      mojom::blink::SpeculationInjectionType,
+      std::optional<AtomicString> tag);
   ~SpeculationRule();
 
   const Vector<KURL>& urls() const { return urls_; }
@@ -59,6 +62,7 @@ class CORE_EXPORT SpeculationRule final
   mojom::blink::SpeculationInjectionType injection_type() const {
     return injection_type_;
   }
+  std::optional<AtomicString> tag() const { return tag_; }
 
   void Trace(Visitor*) const;
 
@@ -73,6 +77,7 @@ class CORE_EXPORT SpeculationRule final
   network::mojom::blink::NoVarySearchPtr no_vary_search_hint_;
   mojom::blink::SpeculationInjectionType injection_type_ =
       mojom::blink::SpeculationInjectionType::kNone;
+  std::optional<AtomicString> tag_;
 };
 
 }  // namespace blink

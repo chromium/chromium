@@ -176,8 +176,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
     CreateAccountSelectionBubble();
     dialog_->ShowMultiAccountPicker(account_list, {idp_data_},
-                                    /*show_back_button=*/false,
-                                    /*is_choose_an_account=*/false);
+                                    /*show_back_button=*/false);
   }
 
   void CreateAndShowMultiIdpAccountPicker(
@@ -455,24 +454,6 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     } else {
       EXPECT_EQ(GetHoverButtonTitle(idp_button), u"Use a different account");
     }
-  }
-
-  void CheckChooseAnAccount(
-      const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
-      size_t& accounts_index,
-      std::u16string expected_subtitle) {
-    EXPECT_TRUE(IsViewClass<views::Separator>(accounts[accounts_index++]));
-    views::View* button = accounts[accounts_index++];
-    EXPECT_TRUE(IsViewClass<HoverButton>(button));
-    HoverButton* choose_account_button = static_cast<HoverButton*>(button);
-    ASSERT_TRUE(choose_account_button);
-    EXPECT_EQ(GetHoverButtonTitle(choose_account_button), u"Choose an account");
-    ASSERT_TRUE(GetHoverButtonSubtitle(choose_account_button));
-    EXPECT_EQ(GetHoverButtonSubtitle(choose_account_button)->GetText(),
-              expected_subtitle);
-    ASSERT_TRUE(GetHoverButtonIconView(choose_account_button));
-    EXPECT_EQ(GetHoverButtonIconView(choose_account_button)->size(),
-              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   }
 
   void SetUp() override {
@@ -964,8 +945,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
                             /*expect_idp=*/true);
 }
 
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
-       ShowSingleReturningAccountDialog) {
+TEST_F(MultipleIdpAccountSelectionBubbleViewTest, ShowSingleReturningAccount) {
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   const std::vector<std::string> kAccountSuffixes2 = {"3"};
   idp_list_ = {base::MakeRefCounted<content::IdentityProviderData>(
@@ -998,12 +978,11 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
+  ASSERT_EQ(children.size(), 2u);
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
                       /*expect_idp_brand_icon_in_header=*/false);
-  EXPECT_TRUE(IsViewClass<views::Separator>(children[1]));
 
-  views::View* wrapper = children[2];
+  views::View* wrapper = children[1];
 
   views::BoxLayout* layout_manager =
       static_cast<views::BoxLayout*>(wrapper->GetLayoutManager());
@@ -1012,31 +991,17 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
             views::BoxLayout::Orientation::kVertical);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> contents =
-      wrapper->children();
-  ASSERT_EQ(3u, contents.size());
+      GetContents(children[1]);
+  ASSERT_EQ(6u, contents.size());
 
-  // Check the first IDP.
   size_t accounts_index = 0;
   CheckHoverableAccountRows(contents, kAccountSuffixes2, accounts_index,
                             /*expect_idp=*/true);
-  EXPECT_TRUE(IsViewClass<views::Separator>(contents[1]));
-  CheckChooseAnAccount(contents, accounts_index,
-                       u"idp3.com, idp4.com, idp-example.com");
-
-  // Simulate clicking on the choose an account button.
-  dialog_->ShowMultiAccountPicker(accounts_, idp_list_,
-                                  /*show_back_button=*/true,
-                                  /*is_choose_an_account=*/true);
-
-  children = dialog()->children();
-  ASSERT_EQ(children.size(), 2u);
-
-  // Check title text.
-  views::Label* title_view =
-      static_cast<views::Label*>(GetViewWithClassName(children[0], "Label"));
-  ASSERT_TRUE(title_view);
-  EXPECT_EQ(title_view->GetText(),
-            u"Choose an account to sign in to rp-example.com");
+  CheckHoverableAccountRows(contents, kAccountSuffixes1, accounts_index,
+                            /*expect_idp=*/true);
+  EXPECT_TRUE(IsViewClass<views::Separator>(contents[accounts_index++]));
+  CheckMismatchIdp(contents[accounts_index++], u"idp3.com");
+  CheckMismatchIdp(contents[accounts_index++], u"idp4.com");
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
@@ -1311,8 +1276,7 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccount) {
   // The backend will invoke ShowMultiAccountPicker with a single account since
   // there are filtered out accounts.
   dialog_->ShowMultiAccountPicker({account}, {idp_data_},
-                                  /*show_back_button=*/false,
-                                  /*is_choose_an_account=*/false);
+                                  /*show_back_button=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
@@ -1346,8 +1310,7 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleDisabledAccounts) {
   }
   CreateAccountSelectionBubble();
   dialog_->ShowMultiAccountPicker(accounts_list, {idp_data_},
-                                  /*show_back_button=*/false,
-                                  /*is_choose_an_account=*/false);
+                                  /*show_back_button=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
@@ -1386,8 +1349,7 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
 
   CreateAccountSelectionBubble();
   dialog_->ShowMultiAccountPicker(accounts_list, {idp_data_},
-                                  /*show_back_button=*/false,
-                                  /*is_choose_an_account=*/false);
+                                  /*show_back_button=*/false);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();

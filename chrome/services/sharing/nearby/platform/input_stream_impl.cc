@@ -34,6 +34,7 @@ void LogReadResult(connections::mojom::Medium medium, bool success) {
     case connections::mojom::Medium::kBleL2Cap:
     case connections::mojom::Medium::kUsb:
     case connections::mojom::Medium::kWebRtcNonCellular:
+    case connections::mojom::Medium::kAwdl:
       break;
   }
 }

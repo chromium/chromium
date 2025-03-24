@@ -450,13 +450,13 @@ class CORE_EXPORT StyleCascade {
     // Arguments are resolved eagerly at the call site, and locals are resolved
     // through the process described in "Application of Local Variables"
     // near `ApplyLocalVariables` in this file.
-    const HeapHashMap<String, Member<const CSSValue>>& arguments;
-    HeapHashMap<String, Member<const CSSValue>> locals;
+    const HeapHashMap<String, Member<CSSVariableData>>& arguments;
+    HeapHashMap<String, Member<CSSVariableData>> locals;
 
     // Contains the *specified* locals, with any var() (etc) intact.
     // This is needed by the process that populates the `locals` map,
     // see "Application of Local Variables".
-    const HeapHashMap<String, Member<const CSSValue>>& unresolved_locals;
+    const HeapHashMap<String, Member<CSSVariableData>>& unresolved_locals;
     // Despite local variables always being untyped in the API,
     // FunctionContext (and the related evaluation code) supports
     // typed locals. This is for the benefit of resolving defaulted arguments,
@@ -558,16 +558,16 @@ class CORE_EXPORT StyleCascade {
                            const CSSParserContext& context,
                            FunctionContext* function_context,
                            TokenSequence& out);
-  bool ResolveArgumentOrLocalInto(const CSSValue* value,
+  bool ResolveArgumentOrLocalInto(CSSVariableData* data,
                                   const TokenSequence* fallback,
                                   TokenSequence& out);
 
-  const CSSValue* ResolveFunctionExpression(const CSSValue& unresolved,
-                                            const TreeScope*,
-                                            const CSSSyntaxDefinition* type,
-                                            CascadeResolver&,
-                                            const CSSParserContext&,
-                                            FunctionContext*);
+  CSSVariableData* ResolveFunctionExpression(CSSVariableData& unresolved,
+                                             const TreeScope*,
+                                             const CSSSyntaxDefinition* type,
+                                             CascadeResolver&,
+                                             const CSSParserContext&,
+                                             FunctionContext*);
 
   // Application of Local Variables
   // ==============================
@@ -601,12 +601,12 @@ class CORE_EXPORT StyleCascade {
                                    CascadeResolver&,
                                    const CSSParserContext&,
                                    FunctionContext&);
-  const CSSValue* ResolveLocalVariable(const AtomicString& name,
-                                       const CSSValue&,
-                                       const CSSSyntaxDefinition* type,
-                                       CascadeResolver&,
-                                       const CSSParserContext&,
-                                       FunctionContext&);
+  CSSVariableData* ResolveLocalVariable(const AtomicString& name,
+                                        CSSVariableData&,
+                                        const CSSSyntaxDefinition* type,
+                                        CascadeResolver&,
+                                        const CSSParserContext&,
+                                        FunctionContext&);
   // @function rules can contain conditional rules, such as @media.
   // When these rules are encountered, they either evaluate to "true",
   // in which case we should behave as if the contents of the conditional rule
@@ -624,10 +624,11 @@ class CORE_EXPORT StyleCascade {
   // place).
   //
   // [1] https://drafts.csswg.org/css-mixins-1/#conditional-rules
-  void FlattenFunctionBody(StyleRuleGroup&,
-                           const TreeScope* function_tree_scope,
-                           const CSSUnparsedDeclarationValue*& result,
-                           HeapHashMap<String, Member<const CSSValue>>& locals);
+  void FlattenFunctionBody(
+      StyleRuleGroup&,
+      const TreeScope* function_tree_scope,
+      CSSVariableData*& result,
+      HeapHashMap<String, Member<CSSVariableData>>& locals);
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,

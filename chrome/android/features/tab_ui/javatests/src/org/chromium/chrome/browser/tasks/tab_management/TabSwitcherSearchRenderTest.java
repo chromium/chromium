@@ -31,9 +31,9 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.TabSwitcherSearchStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -56,7 +56,8 @@ public class TabSwitcherSearchRenderTest {
     private static final int SERVER_PORT = 13245;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -64,9 +65,6 @@ public class TabSwitcherSearchRenderTest {
                     .setRevision(11)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .build();
-
-    private final ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(mActivityTestRule);
 
     private EmbeddedTestServer mTestServer;
     private WebPageStation mInitialPage;
@@ -92,8 +90,8 @@ public class TabSwitcherSearchRenderTest {
     public void setUp() throws ExecutionException {
         mTestServer =
                 TabSwitcherSearchTestUtils.setServerPortAndGetTestServer(
-                        mActivityTestRule, SERVER_PORT);
-        mInitialPage = mEntryPoints.startOnBlankPageNonBatched();
+                        mCtaTestRule.getActivityTestRule(), SERVER_PORT);
+        mInitialPage = mCtaTestRule.startOnBlankPage();
     }
 
     @After
@@ -106,7 +104,7 @@ public class TabSwitcherSearchRenderTest {
     @Feature({"RenderTest"})
     @Restriction(PHONE)
     public void testHubSearchBox_Phone() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         mInitialPage.openRegularTabSwitcher();
 
         mRenderTestRule.render(
@@ -118,7 +116,7 @@ public class TabSwitcherSearchRenderTest {
     @Feature({"RenderTest"})
     @Restriction(PHONE)
     public void testHubSearchBox_Phone_Incognito() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         TabSwitcherSearchTestUtils.openUrls(
                         mTestServer,
                         mInitialPage,
@@ -135,7 +133,7 @@ public class TabSwitcherSearchRenderTest {
     @Feature({"RenderTest"})
     @Restriction(PHONE)
     public void testHubSearchBox_PhoneLandscape() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         ActivityTestUtils.rotateActivityToOrientation(cta, ORIENTATION_LANDSCAPE);
         mInitialPage.openRegularTabSwitcher();
 
@@ -150,7 +148,7 @@ public class TabSwitcherSearchRenderTest {
     @Restriction(TABLET)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testHubSearchLoupe_Tablet(boolean nightModeEnabled) throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         mInitialPage.openRegularTabSwitcher();
 
         mRenderTestRule.render(
@@ -162,7 +160,7 @@ public class TabSwitcherSearchRenderTest {
     @Feature({"RenderTest"})
     @Restriction(TABLET)
     public void testHubSearchLoupe_Tablet_Incognito() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         TabSwitcherSearchTestUtils.openUrls(
                         mTestServer,
                         mInitialPage,
