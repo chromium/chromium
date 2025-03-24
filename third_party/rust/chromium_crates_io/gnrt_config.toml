@@ -225,9 +225,6 @@ configs_to_add = ['//build/config/compiler:optimize']
 # Configures the has_total_cmp feature, not necessary
 remove_build_rs = true
 
-[crate.nom]
-remove_deps = ['minimal-lexical']
-
 [crate.png.extra_kv]
 # Web tests (aka WPT tests, also formerly known as Layout Tests) require fast
 # PNG encoding and decoding even in Debug builds.  See

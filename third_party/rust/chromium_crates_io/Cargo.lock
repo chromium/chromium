@@ -121,11 +121,9 @@ dependencies = [
  "font-types",
  "hex",
  "icu_capi",
- "itertools",
  "lazy_static",
  "libc",
  "log",
- "nom",
  "png",
  "proc-macro2",
  "prost",
@@ -140,8 +138,6 @@ dependencies = [
  "skrifa",
  "small_ctor",
  "static_assertions",
- "strum",
- "strum_macros",
  "syn",
  "temporal_capi",
  "tinyvec",
@@ -348,11 +344,6 @@ dependencies = [
 [[package]]
 name = "hashbrown"
 version = "0.15.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "heck"
-version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -898,26 +889,12 @@ version = "2.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "minimal-lexical"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
 name = "miniz_oxide"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "adler2",
  "simd-adler32",
-]
-
-[[package]]
-name = "nom"
-version = "7.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "memchr",
- "minimal-lexical",
 ]
 
 [[package]]
@@ -1203,23 +1180,6 @@ dependencies = [
 name = "strsim"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "strum"
-version = "0.25.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "strum_macros"
-version = "0.25.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "heck",
- "proc-macro2",
- "quote",
- "rustversion",
- "syn",
-]
 
 [[package]]
 name = "syn"
