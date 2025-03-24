@@ -92,8 +92,9 @@ class FFmpegGlueDestructionTest : public ::testing::Test {
 
   void Initialize(const char* filename) {
     data_ = ReadTestDataFile(filename);
-    protocol_ = std::make_unique<InMemoryUrlProtocol>(data_->data(),
-                                                      data_->size(), false);
+    auto data_span = base::span(*data_);
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(data_span.data(),
+                                                      data_span.size(), false);
     glue_ = std::make_unique<FFmpegGlue>(protocol_.get());
     CHECK(glue_->format_context());
     CHECK(glue_->format_context()->pb);

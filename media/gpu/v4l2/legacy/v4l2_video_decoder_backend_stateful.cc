@@ -232,12 +232,12 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
   DCHECK(current_decode_request_.has_value());
   DCHECK(current_input_buffer_.has_value());
 
-  const DecoderBuffer* current_buffer = current_decode_request_->buffer.get();
-  DCHECK_LT(current_decode_request_->bytes_used, current_buffer->size());
-  const uint8_t* const data =
-      current_buffer->data() + current_decode_request_->bytes_used;
-  const size_t data_size =
-      current_buffer->size() - current_decode_request_->bytes_used;
+  DCHECK_LT(current_decode_request_->bytes_used,
+            current_decode_request_->buffer.get()->size());
+  auto current_buffer_span = base::span(*current_decode_request_->buffer.get())
+                                 .subspan(current_decode_request_->bytes_used);
+  const uint8_t* const data = current_buffer_span.data();
+  const size_t data_size = current_buffer_span.size();
   size_t bytes_to_copy = 0;
 
   if (!frame_splitter_->AdvanceFrameFragment(data, data_size, &bytes_to_copy)) {

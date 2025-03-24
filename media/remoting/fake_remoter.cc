@@ -59,6 +59,7 @@ bool FakeRemotingDataStreamSender::ValidateFrameBuffer(size_t index,
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
   scoped_refptr<DecoderBuffer> media_buffer = received_frame_list_[index];
+  auto media_buffer_span = base::span(*media_buffer);
 
   // Checks if pts is correct or not
   if (media_buffer->timestamp().InMilliseconds() != pts_ms) {
@@ -75,16 +76,16 @@ bool FakeRemotingDataStreamSender::ValidateFrameBuffer(size_t index,
   }
 
   // Checks if frame buffer size is correct or not
-  if (media_buffer->size() != size) {
-    VLOG(1) << "Buffer size should be:" << size << "(" << media_buffer->size()
-            << ")";
+  if (media_buffer_span.size() != size) {
+    VLOG(1) << "Buffer size should be:" << size << "("
+            << media_buffer_span.size() << ")";
     return false;
   }
 
   // Checks if frame buffer is correct or not.
   bool return_value = true;
-  const uint8_t* buffer = media_buffer->data();
-  for (size_t i = 0; i < media_buffer->size(); ++i) {
+  const uint8_t* buffer = media_buffer_span.data();
+  for (size_t i = 0; i < media_buffer_span.size(); ++i) {
     uint32_t value = static_cast<uint32_t>(i & 0xFF);
     if (value != static_cast<uint32_t>(buffer[i])) {
       VLOG(1) << "buffer index: " << i << " should be "

@@ -111,9 +111,9 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
     AppendSideData(*decoder_buffer, frame_sizes);
 
     AppendVP9SuperFrameIndex(decoder_buffer);
-
     Vp9Parser vp9_parser(/*parsing_compressed_header=*/false);
-    vp9_parser.SetStream(decoder_buffer->data(), decoder_buffer->size(),
+    auto decoder_buffer_span = base::span(*decoder_buffer);
+    vp9_parser.SetStream(decoder_buffer_span.data(), decoder_buffer_span.size(),
                          /*stream_config=*/nullptr);
 
     // Parse the merged buffer with the created superframe index.

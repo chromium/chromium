@@ -780,7 +780,8 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
     if (buffer) {
       DVLOGF(4) << "reading input_id="
                 << decoder_current_bitstream_buffer_->input_id
-                << ", addr=" << buffer->data() << ", size=" << buffer->size();
+                << ", addr=" << base::span(*buffer).data()
+                << ", size=" << buffer->size();
     } else {
       DCHECK_EQ(decoder_current_bitstream_buffer_->input_id, kFlushBufferId);
       DVLOGF(4) << "reading input_id=kFlushBufferId";
@@ -816,10 +817,10 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
     schedule_task = true;
   } else {
     // This is a buffer queued from the client, with actual contents.  Decode.
-    const uint8_t* const data =
-        buffer->data() + decoder_current_bitstream_buffer_->bytes_used;
-    const size_t data_size =
-        buffer->size() - decoder_current_bitstream_buffer_->bytes_used;
+    auto buffer_span = base::span(*buffer).subspan(
+        decoder_current_bitstream_buffer_->bytes_used);
+    const uint8_t* const data = buffer_span.data();
+    const size_t data_size = buffer_span.size();
 
     if (!frame_splitter_->AdvanceFrameFragment(data, data_size,
                                                &decoded_size)) {

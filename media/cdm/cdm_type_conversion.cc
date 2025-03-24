@@ -559,8 +559,9 @@ void ToCdmInputBuffer(const DecoderBuffer& encrypted_buffer,
   if (encrypted_buffer.end_of_stream())
     return;
 
-  input_buffer->data = encrypted_buffer.data();
-  input_buffer->data_size = encrypted_buffer.size();
+  auto encrypted_buffer_span = base::span(encrypted_buffer);
+  input_buffer->data = encrypted_buffer_span.data();
+  input_buffer->data_size = encrypted_buffer_span.size();
   input_buffer->timestamp = encrypted_buffer.timestamp().InMicroseconds();
 
   const DecryptConfig* decrypt_config = encrypted_buffer.decrypt_config();

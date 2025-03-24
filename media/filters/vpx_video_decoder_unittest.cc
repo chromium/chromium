@@ -326,7 +326,8 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
 
   scoped_refptr<DecoderBuffer> data =
       ReadTestDataFile("vp9-duplicate-frame.webm");
-  InMemoryUrlProtocol protocol(data->data(), data->size(), false);
+  auto data_span = base::span(*data);
+  InMemoryUrlProtocol protocol(data_span.data(), data_span.size(), false);
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
 

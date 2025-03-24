@@ -30,11 +30,11 @@ VmoBufferWriterQueue::PendingBuffer::PendingBuffer(PendingBuffer&& other) =
     default;
 
 const uint8_t* VmoBufferWriterQueue::PendingBuffer::data() const {
-  return buffer->data() + buffer_pos;
+  return base::span(*buffer).subspan(buffer_pos).data();
 }
 
 size_t VmoBufferWriterQueue::PendingBuffer::bytes_left() const {
-  return buffer->size() - buffer_pos;
+  return base::span(*buffer).subspan(buffer_pos).size();
 }
 
 void VmoBufferWriterQueue::PendingBuffer::AdvanceCurrentPos(size_t bytes) {

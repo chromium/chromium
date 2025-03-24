@@ -579,15 +579,17 @@ cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_2& encrypted_buffer,
   scoped_refptr<DecoderBuffer> buffer;
   cdm::Status status = DecryptToMediaDecoderBuffer(encrypted_buffer, &buffer);
 
-  if (status != cdm::kSuccess)
+  if (status != cdm::kSuccess) {
     return status;
+  }
 
-  DCHECK(buffer->data());
+  auto buffer_span = base::span(*buffer);
+  DCHECK(!buffer_span.empty());
   decrypted_block->SetDecryptedBuffer(
-      cdm_host_proxy_->Allocate(buffer->size()));
+      cdm_host_proxy_->Allocate(buffer_span.size()));
   memcpy(reinterpret_cast<void*>(decrypted_block->DecryptedBuffer()->Data()),
-         buffer->data(), buffer->size());
-  decrypted_block->DecryptedBuffer()->SetSize(buffer->size());
+         buffer_span.data(), buffer_span.size());
+  decrypted_block->DecryptedBuffer()->SetSize(buffer_span.size());
   decrypted_block->SetTimestamp(buffer->timestamp().InMicroseconds());
 
   return cdm::kSuccess;
@@ -712,12 +714,13 @@ cdm::Status ClearKeyCdm::DecryptAndDecodeSamples(
     return status;
 
 #if defined(CLEAR_KEY_CDM_USE_FFMPEG_DECODER)
-  const uint8_t* data = NULL;
+  const uint8_t* data = nullptr;
   int32_t size = 0;
   int64_t timestamp = 0;
   if (!buffer->end_of_stream()) {
-    data = buffer->data();
-    size = buffer->size();
+    auto buffer_span = base::span(*buffer);
+    data = buffer_span.data();
+    size = buffer_span.size();
     timestamp = encrypted_buffer.timestamp;
   }
 

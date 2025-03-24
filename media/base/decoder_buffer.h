@@ -167,16 +167,6 @@ class MEDIA_EXPORT DecoderBuffer
     duration_ = duration;
   }
 
-  // The pointer to the start of the buffer. Prefer to construct a span around
-  // the buffer, such as `base::span(decoder_buffer)`.
-  // TODO(crbug.com/365814210): Remove in favor of AsSpan().
-  const uint8_t* data() const {
-    DCHECK(!end_of_stream());
-    if (external_memory_)
-      return external_memory_->Span().data();
-    return data_.data();
-  }
-
   // The number of bytes in the buffer.
   size_t size() const {
     DCHECK(!end_of_stream());

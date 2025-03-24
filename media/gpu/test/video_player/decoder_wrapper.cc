@@ -290,8 +290,10 @@ void DecoderWrapper::DecodeNextFragmentTask() {
   bool has_config_info = false;
   if (input_video_codec_ == media::VideoCodec::kH264 ||
       input_video_codec_ == media::VideoCodec::kHEVC) {
+    auto bitstream_buffer_span = base::span(*bitstream_buffer);
     has_config_info = media::test::EncodedDataHelper::HasConfigInfo(
-        bitstream_buffer->data(), bitstream_buffer->size(), input_video_codec_);
+        bitstream_buffer_span.data(), bitstream_buffer_span.size(),
+        input_video_codec_);
   }
 
   VideoDecoder::DecodeCB decode_cb = base::BindOnce(

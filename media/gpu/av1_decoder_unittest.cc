@@ -117,8 +117,9 @@ MATCHER(NonEmptyTileBuffers, "") {
 }
 
 MATCHER_P(MatchesFrameData, decoder_buffer, "") {
-  return arg.data() == decoder_buffer->data() &&
-         arg.size() == decoder_buffer->size();
+  auto decoder_buffer_span = base::span(*decoder_buffer);
+  return arg.data() == decoder_buffer_span.data() &&
+         arg.size() == decoder_buffer_span.size();
 }
 
 class MockAV1Accelerator : public AV1Decoder::AV1Accelerator {
