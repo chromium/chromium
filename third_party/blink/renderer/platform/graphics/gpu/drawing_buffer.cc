@@ -1179,16 +1179,9 @@ bool DrawingBuffer::CopyToVideoFrame(
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
           const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
           const gfx::Size& src_size) -> std::optional<gpu::SyncToken> {
-    bool succeeded = frame_pool->CopyRGBATextureToVideoFrame(
+    return frame_pool->CopyRGBATextureToVideoFrame(
         src_size, src_shared_image, produce_sync_token, dst_color_space,
         std::move(callback));
-    if (!succeeded) {
-      return std::nullopt;
-    }
-
-    gpu::SyncToken sync_token;
-    raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-    return sync_token;
   };
   return CopyToPlatformInternal(raster_interface, /*dst_is_unpremul_gl=*/false,
                                 src_buffer, copy_function);
