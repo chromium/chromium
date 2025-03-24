@@ -874,7 +874,7 @@ gfx::Size BubbleDialogDelegate::GetAvailableSpaceToPlaceBubble(
 }
 
 void BubbleDialogDelegate::OnAnchorBoundsChanged() {
-  if (!GetWidget()) {
+  if (!GetWidget() || !GetBubbleFrameView()) {
     return;
   }
   // TODO(pbos): Reconsider whether to update the anchor when the view isn't
