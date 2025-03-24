@@ -110,6 +110,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     public static final String DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM =
             "DomDistiller.Android.OnDistillableResult.DistillableMobilePageExcluded";
 
+    /** Histogram name for whether a distillable mobile page was excluded. */
+    public static final String DISTILLABLE_PAGE_RDS_EXCLUDED_HISTOGRAM =
+            "DomDistiller.Android.OnDistillableResult.DistillablePageExcludedByRequestDesktopSite";
+
     /** Histogram name for the end distillability result. */
     public static final String PAGE_DISTILLABLE_RESULT_HISTOGRAM =
             "DomDistiller.Android.OnDistillableResult.PageDistillable";
@@ -738,6 +742,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             RecordHistogram.recordBooleanHistogram(
                     DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM,
                     isDistillable && excludeCurrentMobilePage);
+            RecordHistogram.recordBooleanHistogram(
+                    DISTILLABLE_PAGE_RDS_EXCLUDED_HISTOGRAM,
+                    isDistillable && excludeRequestDesktopSite);
             RecordHistogram.recordBooleanHistogram(
                     PAGE_DISTILLABLE_RESULT_HISTOGRAM,
                     distillationStatus == DistillationStatus.POSSIBLE);

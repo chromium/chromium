@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -46,6 +47,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.GURL;
@@ -297,6 +299,8 @@ public class ReaderModeManagerTest {
                         .expectBooleanRecord(
                                 ReaderModeManager.DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM, false)
                         .expectBooleanRecord(
+                                ReaderModeManager.DISTILLABLE_PAGE_RDS_EXCLUDED_HISTOGRAM, false)
+                        .expectBooleanRecord(
                                 ReaderModeManager.PAGE_DISTILLABLE_RESULT_HISTOGRAM, true)
                         .build();
         mDistillabilityObserver.onIsPageDistillableResult(
@@ -316,6 +320,7 @@ public class ReaderModeManagerTest {
                         .expectNoRecords(ReaderModeManager.ACCESSIBILITY_SETTING_HISTOGRAM)
                         .expectNoRecords(
                                 ReaderModeManager.DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM)
+                        .expectNoRecords(ReaderModeManager.DISTILLABLE_PAGE_RDS_EXCLUDED_HISTOGRAM)
                         .expectNoRecords(ReaderModeManager.PAGE_DISTILLABLE_RESULT_HISTOGRAM)
                         .build();
         mDistillabilityObserver.onIsPageDistillableResult(
@@ -337,6 +342,8 @@ public class ReaderModeManagerTest {
                         .expectBooleanRecord(
                                 ReaderModeManager.DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM, true)
                         .expectBooleanRecord(
+                                ReaderModeManager.DISTILLABLE_PAGE_RDS_EXCLUDED_HISTOGRAM, false)
+                        .expectBooleanRecord(
                                 ReaderModeManager.PAGE_DISTILLABLE_RESULT_HISTOGRAM, false)
                         .build();
         mDistillabilityObserver.onIsPageDistillableResult(
@@ -356,10 +363,43 @@ public class ReaderModeManagerTest {
                         .expectBooleanRecord(
                                 ReaderModeManager.DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM, false)
                         .expectBooleanRecord(
+                                ReaderModeManager.DISTILLABLE_PAGE_RDS_EXCLUDED_HISTOGRAM, false)
+                        .expectBooleanRecord(
                                 ReaderModeManager.PAGE_DISTILLABLE_RESULT_HISTOGRAM, true)
                         .build();
         mDistillabilityObserver.onIsPageDistillableResult(
                 mTab, /* isDistillable= */ true, /* isLast= */ true, /* isMobileOptimized= */ true);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testDistillationMetricsOnDistillabilityResult_requestDestkopSiteExcluded() {
+        when(mTab.isCustomTab()).thenReturn(true);
+
+        WebContents mockWebContents = mock(WebContents.class);
+        NavigationController mockNavigationController = mock(NavigationController.class);
+        // Set "request desktop page" on.
+        when(mockNavigationController.getUseDesktopUserAgent()).thenReturn(true);
+        when(mockWebContents.getNavigationController()).thenReturn(mockNavigationController);
+        when(mTab.getWebContents()).thenReturn(mockWebContents);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                ReaderModeManager.ACCESSIBILITY_SETTING_HISTOGRAM, false)
+                        .expectBooleanRecord(
+                                ReaderModeManager.DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM, false)
+                        .expectBooleanRecord(
+                                ReaderModeManager.DISTILLABLE_PAGE_RDS_EXCLUDED_HISTOGRAM, true)
+                        .expectBooleanRecord(
+                                ReaderModeManager.PAGE_DISTILLABLE_RESULT_HISTOGRAM, false)
+                        .build();
+        mDistillabilityObserver.onIsPageDistillableResult(
+                mTab,
+                /* isDistillable= */ true,
+                /* isLast= */ true,
+                /* isMobileOptimized= */ false);
         watcher.assertExpected();
     }
 

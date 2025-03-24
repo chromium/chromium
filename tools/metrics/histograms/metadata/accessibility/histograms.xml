@@ -3542,6 +3542,18 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram
+    name="DomDistiller.Android.OnDistillableResult.DistillablePageExcludedByRequestDesktopSite"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records whether the current page is not distillable only because the user is
+    requesting the desktop site. Recorded when ReaderModeManager gets a
+    distillation result.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.Android.OnDistillableResult.PageDistillable"
     enum="Boolean" expires_after="2025-08-24">
   <owner>wylieb@google.com</owner>
