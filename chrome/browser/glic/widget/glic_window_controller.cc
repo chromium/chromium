@@ -297,18 +297,35 @@ void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
   // Always reset `glic_loaded_` since the web client has changed.
   glic_loaded_ = false;
 
-  if (state_ == State::kOpenAnimation ||
-      state_ == State::kWaitingForGlicToLoad) {
-    if (web_client_) {
-      WaitForGlicToLoad();
-    } else {
-      // TODO(crbug.com/388328847): The web client could disconnect without a
-      // WebClientInitializeFailed() call, for example, if the renderer crashes.
-      // Determine the correct behavior in this case.
-      LOG(ERROR) << "Glic web client disconnected before showing the window.";
-      show_start_time_ = base::TimeTicks();
-      ShowFinish();
-    }
+  switch (state_) {
+    case State::kOpenAnimation:
+    case State::kWaitingForGlicToLoad:
+      if (web_client_) {
+        WaitForGlicToLoad();
+      } else {
+        // TODO(crbug.com/388328847): The web client could disconnect without a
+        // WebClientInitializeFailed() call, for example, if the renderer
+        // crashes. Determine the correct behavior in this case.
+        LOG(ERROR) << "Glic web client disconnected before showing the window.";
+        show_start_time_ = base::TimeTicks();
+        ShowFinish();
+      }
+      break;
+    case State::kOpen:
+    case State::kDetaching:
+    case State::kClosingToReopenDetached:
+      if (web_client_) {
+        // If the web client reloads while it's already shown, we need to signal
+        // the web client so that it can be shown.
+        web_client_->PanelWillOpen(
+            CreatePanelOpeningData(true, attached_browser_,
+                                   mojom::InvocationSource::kUnsupported),
+            base::BindOnce(&GlicWindowController::GlicLoaded, GetWeakPtr()));
+      }
+      break;
+    case State::kClosed:
+    case State::kCloseAnimation:
+      break;
   }
 }
 

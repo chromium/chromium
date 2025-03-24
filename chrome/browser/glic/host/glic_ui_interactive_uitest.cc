@@ -245,11 +245,11 @@ IN_PROC_BROWSER_TEST_F(GlicUiConnectedUiTest, DoesNavigateToSupportedOrigin) {
       WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
       InAnyContext(ExecuteJs(test::kGlicContentsElementId,
                              R"js(()=>{location = './notexist';})js")),
-      // Page should navigate, and result in an error page.
-      InAnyContext(WaitForJsResult(test::kGlicContentsElementId,
-                                   R"js(()=>window.location.href)js",
-                                   testing::Eq("chrome-error://chromewebdata/"),
-                                   /*continue_across_navigation=*/true)));
+      // It should navigate to a 404, and then reload the webview successfully.
+      InAnyContext(WaitForState(kGlicUiStateHistory,
+                                IsNotCurrently(WebUiState::kReady))),
+      InAnyContext(
+          WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady))));
 }
 
 // Tests the network being unavailable at startup.
