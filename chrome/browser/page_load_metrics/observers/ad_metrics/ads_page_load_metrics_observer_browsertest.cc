@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
@@ -60,6 +61,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -1683,6 +1685,12 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
       "<html><body></body><script src=\"ad_script.js\"></script></html>");
   main_html_response->Send(std::string(1024, ' '));
   main_html_response->Done();
+
+  // Clipboard apis require that the calling context is focused.
+  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  views::test::WaitForWidgetActive(
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget(),
+      /*active=*/true);
 
   ad_script_response->WaitForRequest();
   ad_script_response->Send(page_load_metrics::kHttpOkResponseHeader);
