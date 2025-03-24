@@ -140,28 +140,28 @@ WHERE
   OR "RetryOnFailure" IN UNNEST(typ_expectations)
 ORDER BY builder_name DESC"""
 
+
+def _PartitionedSubmittedBuildsFor(project_view: str) -> str:
+  return queries_module.PARTITIONED_SUBMITTED_BUILDS_TEMPLATE.format(
+      project_view=project_view)
+
+
 # Gets the Buildbucket IDs for all the public trybots that:
 #   1. Run GPU tests
 #   2. Were used for CL submission (i.e. weren't for intermediate patchsets)
-PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY = """\
+PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY = f"""\
   submitted_builds AS (
-{chromium_builds_subquery}
+{_PartitionedSubmittedBuildsFor('chromium')}
     UNION ALL
-{angle_builds_subquery}
-  )""".format(
-    chromium_builds_subquery=queries_module.
-    PARTITIONED_SUBMITTED_BUILDS_TEMPLATE.format(project_view='chromium'),
-    angle_builds_subquery=queries_module.PARTITIONED_SUBMITTED_BUILDS_TEMPLATE.
-    format(project_view='angle'))
+{_PartitionedSubmittedBuildsFor('angle')}
+  )"""
 
 # The same as PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY, but for internal trybots.
 # There are no internal ANGLE tryjobs, so no need to look for attempts there.
-INTERNAL_TRY_SUBMITTED_BUILDS_SUBQUERY = """\
+INTERNAL_TRY_SUBMITTED_BUILDS_SUBQUERY = f"""\
   submitted_builds AS (
-{chrome_builds_subquery}
-  )""".format(chrome_builds_subquery=queries_module.
-              PARTITIONED_SUBMITTED_BUILDS_TEMPLATE.format(
-                  project_view='chrome'))
+{_PartitionedSubmittedBuildsFor('chrome')}
+  )"""
 
 
 class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
@@ -173,61 +173,55 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     # the same as the one used by ResultDB (Python module), so convert here.
     self._suite = name_mapping[self._suite].__module__.split('.')[-1]
 
+  def _CiBuildsFor(self, project: str) -> str:
+    """Helper function to generate a CI builds subquery."""
+    return CI_BUILDS_SUBQUERY.format(project=project,
+                                     num_builds=self._num_samples)
+
+  def _TryBuildsFor(self, project: str) -> str:
+    """Helper function to generate a try builds subquery."""
+    return TRY_BUILDS_SUBQUERY.format(project=project,
+                                      num_builds=self._num_samples)
+
+  def _ResultsFor(self, project: str, ci_or_try: str) -> str:
+    """Helper function to generate a results subquery."""
+    return RESULTS_SUBQUERY.format(project=project,
+                                   ci_or_try=ci_or_try,
+                                   suite=self._suite)
+
   def _GetPublicCiQuery(self) -> str:
-    return """\
+    return f"""\
 WITH
-{builds_subquery},
-{results_subquery}
-{final_selector_query}
-""".format(builds_subquery=CI_BUILDS_SUBQUERY.format(
-        project='chromium', num_builds=self._num_samples),
-           results_subquery=RESULTS_SUBQUERY.format(project='chromium',
-                                                    ci_or_try='ci',
-                                                    suite=self._suite),
-           final_selector_query=FINAL_SELECTOR_QUERY)
+{self._CiBuildsFor('chromium')},
+{self._ResultsFor('chromium', 'ci')}
+{FINAL_SELECTOR_QUERY}
+"""
 
   def _GetInternalCiQuery(self) -> str:
-    return """\
+    return f"""\
 WITH
-{builds_subquery},
-{results_subquery}
-{final_selector_query}
-""".format(builds_subquery=CI_BUILDS_SUBQUERY.format(
-        project='chrome', num_builds=self._num_samples),
-           results_subquery=RESULTS_SUBQUERY.format(project='chrome',
-                                                    ci_or_try='ci',
-                                                    suite=self._suite),
-           final_selector_query=FINAL_SELECTOR_QUERY)
+{self._CiBuildsFor('chrome')},
+{self._ResultsFor('chrome', 'ci')}
+{FINAL_SELECTOR_QUERY}
+"""
 
   def _GetPublicTryQuery(self) -> str:
-    return """\
+    return f"""\
 WITH
-{submitted_builds_subquery},
-{builds_subquery},
-{results_subquery}
-{final_selector_query}
-""".format(submitted_builds_subquery=PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY,
-           builds_subquery=TRY_BUILDS_SUBQUERY.format(
-               project='chromium', num_builds=self._num_samples),
-           results_subquery=RESULTS_SUBQUERY.format(project='chromium',
-                                                    ci_or_try='try',
-                                                    suite=self._suite),
-           final_selector_query=FINAL_SELECTOR_QUERY)
+{PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY},
+{self._TryBuildsFor('chromium')},
+{self._ResultsFor('chromium', 'try')}
+{FINAL_SELECTOR_QUERY}
+"""
 
   def _GetInternalTryQuery(self) -> str:
-    return """\
+    return f"""\
 WITH
-{submitted_builds_subquery},
-{builds_subquery},
-{results_subquery}
-{final_selector_query}
-""".format(submitted_builds_subquery=INTERNAL_TRY_SUBMITTED_BUILDS_SUBQUERY,
-           builds_subquery=TRY_BUILDS_SUBQUERY.format(
-               project='chrome', num_builds=self._num_samples),
-           results_subquery=RESULTS_SUBQUERY.format(project='chrome',
-                                                    ci_or_try='try',
-                                                    suite=self._suite),
-           final_selector_query=FINAL_SELECTOR_QUERY)
+{INTERNAL_TRY_SUBMITTED_BUILDS_SUBQUERY},
+{self._TryBuildsFor('chrome')},
+{self._ResultsFor('chrome', 'try')}
+{FINAL_SELECTOR_QUERY}
+"""
 
   def _GetRelevantExpectationFilesForQueryResult(
       self, _: queries_module.QueryResult) -> Optional[Iterable[str]]:

@@ -54,7 +54,7 @@ class QueryBuilderUnittest(unittest.TestCase):
 
     def assertSuiteInQuery(suite: str, call_args: tuple) -> None:
       query = call_args[0][0]
-      s = 'gpu_tests\\\\.%s\\\\.' % suite
+      s = f'gpu_tests\\\\.{suite}\\\\.'
       self.assertIn(s, query)
 
     for suite, module in suites_to_modules.items():
