@@ -59,7 +59,7 @@ bool PageActionView::IsChipVisible() const {
   return ShouldShowLabel();
 }
 
-base::CallbackListSubscription PageActionView::AddChipVisibiltyChangedCallback(
+base::CallbackListSubscription PageActionView::AddChipVisibilityChangedCallback(
     ChipVisibilityChanged callback) {
   return chip_visibility_changed_callbacks_.Add(std::move(callback));
 }

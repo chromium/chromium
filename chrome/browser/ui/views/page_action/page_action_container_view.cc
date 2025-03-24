@@ -43,7 +43,7 @@ PageActionContainerView::PageActionContainerView(
         AddChildView(std::make_unique<PageActionView>(action_item, params));
     page_action_views_[action_item->GetActionId().value()] = view;
     chip_state_changed_callbacks_.push_back(
-        view->AddChipVisibiltyChangedCallback(base::BindRepeating(
+        view->AddChipVisibilityChangedCallback(base::BindRepeating(
             &PageActionContainerView::OnPageActionSuggestionChipStateChanged,
             base::Unretained(this))));
 
