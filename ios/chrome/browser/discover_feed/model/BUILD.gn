@@ -47,6 +47,7 @@ source_set("discover_feed_factory") {
     ":model",
     "//base",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/ntp/shared/metrics",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
