@@ -42,7 +42,7 @@
   viewController.modalPresentationStyle = UIModalPresentationFormSheet;
   viewController.sheetPresentationController.detents = @[
     viewController.preferredHeightDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   self.viewController = viewController;
 
