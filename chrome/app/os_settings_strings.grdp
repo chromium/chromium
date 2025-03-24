@@ -810,13 +810,13 @@
    「」・
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE_SQUARE_BRACKET_SLASH" translateable="false">
-    []／
+   ［］／
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE_CORNER_BRACKET_SLASH" translateable="false">
    「」／
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE_SQUARE_BRACKET_MIDDLE_DOT" translateable="false">
-    []・
+   ［］・
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE" desc="The label for the Space input option within the Japanese settings page. It allows users of Japanese input settings to choose between fullwidth and halfwidth input modes. . In Japanese, this string should be 'スペースの入力'.">
     Space Input Style
