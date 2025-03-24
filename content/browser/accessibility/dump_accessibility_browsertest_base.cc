@@ -481,7 +481,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   // Start with no AXMode, so that in case the test was run with
   // --force-renderer-accessibility, we can still set the correct mode for the
   // test, e.g. form controls mode.
-  BrowserAccessibilityState::GetInstance()->DisableAccessibility();
+  BrowserAccessibilityState::GetInstance()->DisableProcessAccessibility();
 
   if (enable_accessibility_after_navigating_ &&
       web_contents->GetAccessibilityMode().is_mode_off()) {
