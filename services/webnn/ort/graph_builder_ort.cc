@@ -1740,6 +1740,7 @@ GraphBuilderOrt::AddGruOperation(const GruType& gru) {
   uint32_t checked_three_times_hidden_size = hidden_size * 3;
   std::vector<uint32_t> bias_dims = {num_directions,
                                      checked_three_times_hidden_size};
+  std::string concatenated_bias;
   if (!gru.bias_operand_id.has_value() &&
       !gru.recurrent_bias_operand_id.has_value()) {
     // When both bias and currentBias are not present, set ONNX gru input "B" as
@@ -1755,7 +1756,7 @@ GraphBuilderOrt::AddGruOperation(const GruType& gru) {
                      CreateOrReshapeBias(gru.recurrent_bias_operand_id,
                                          input_data_type, bias_dims));
     // Concat bias and recurrent_bias
-    std::string concatenated_bias = GenerateNextOperandName();
+    concatenated_bias = GenerateNextOperandName();
     std::array<const char*, 2> bias_inputs = {bias.c_str(),
                                               recurrent_bias.c_str()};
     std::array<const char*, 1> bias_outputs = {concatenated_bias.c_str()};
@@ -2231,6 +2232,7 @@ GraphBuilderOrt::AddLstmOperation(const LstmType& lstm) {
   uint32_t checked_four_times_hidden_size = hidden_size * 4;
   std::vector<uint32_t> bias_dims = {num_directions,
                                      checked_four_times_hidden_size};
+  std::string concatenated_bias;
   if (!lstm.bias_operand_id.has_value() &&
       !lstm.recurrent_bias_operand_id.has_value()) {
     // When both bias and currentBias are not present, set ONNX LSTM input "B"
@@ -2246,7 +2248,7 @@ GraphBuilderOrt::AddLstmOperation(const LstmType& lstm) {
                      CreateOrReshapeBias(lstm.recurrent_bias_operand_id,
                                          input_data_type, bias_dims));
     // Concat bias and recurrent_bias
-    std::string concatenated_bias = GenerateNextOperandName();
+    concatenated_bias = GenerateNextOperandName();
     std::array<const char*, 2> bias_inputs = {bias.c_str(),
                                               recurrent_bias.c_str()};
     std::array<const char*, 1> bias_outputs = {concatenated_bias.c_str()};
