@@ -482,6 +482,12 @@ bool PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported() {
 
 // static
 bool PreFreezeBackgroundMemoryTrimmer::ShouldContinueSelfCompaction(
+    const PreFreezeBackgroundMemoryTrimmer::CompactionState& state) {
+  return ShouldContinueSelfCompaction(state.triggered_at_);
+}
+
+// static
+bool PreFreezeBackgroundMemoryTrimmer::ShouldContinueSelfCompaction(
     base::TimeTicks self_compaction_triggered_at) {
   base::AutoLock locker(lock());
   return Instance().self_compaction_last_cancelled_ <
@@ -489,50 +495,40 @@ bool PreFreezeBackgroundMemoryTrimmer::ShouldContinueSelfCompaction(
 }
 
 void PreFreezeBackgroundMemoryTrimmer::MaybePostSelfCompactionTask(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::vector<debug::MappedMemoryRegion> regions,
-    scoped_refptr<CompactionMetric> metric,
-    uint64_t max_size,
-    base::TimeTicks triggered_at) {
+    std::unique_ptr<CompactionState> state,
+    scoped_refptr<CompactionMetric> metric) {
   TRACE_EVENT0("base", "MaybePostSelfCompactionTask");
-  if (ShouldContinueSelfCompaction(triggered_at) && !regions.empty()) {
+  if (ShouldContinueSelfCompaction(*state) && !state->regions_.empty()) {
+    auto task_runner = state->task_runner_;
     task_runner->PostDelayedTask(
         FROM_HERE,
         // |base::Unretained| is safe here because we never destroy |this|.
         base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::SelfCompactionTask,
-                       base::Unretained(this), task_runner, std::move(regions),
-                       std::move(metric), max_size, triggered_at),
+                       base::Unretained(this), std::move(state),
+                       std::move(metric)),
         GetDelayBetweenSelfCompaction());
   } else {
-    FinishSelfCompaction(std::move(metric), triggered_at);
+    FinishSelfCompaction(std::move(state), std::move(metric));
   }
 }
 
 void PreFreezeBackgroundMemoryTrimmer::SelfCompactionTask(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::vector<debug::MappedMemoryRegion> regions,
-    scoped_refptr<CompactionMetric> metric,
-    uint64_t max_size,
-    base::TimeTicks triggered_at) {
-  if (!ShouldContinueSelfCompaction(triggered_at)) {
+    std::unique_ptr<CompactionState> state,
+    scoped_refptr<CompactionMetric> metric) {
+  if (!ShouldContinueSelfCompaction(*state)) {
     return;
   }
 
   TRACE_EVENT0("base", "SelfCompactionTask");
 
-  CompactMemory(&regions, max_size);
+  CompactMemory(&state->regions_, state->max_bytes_);
 
-  MaybePostSelfCompactionTask(std::move(task_runner), std::move(regions),
-                              std::move(metric), max_size, triggered_at);
+  MaybePostSelfCompactionTask(std::move(state), std::move(metric));
 }
 
 void PreFreezeBackgroundMemoryTrimmer::StartSelfCompaction(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::vector<debug::MappedMemoryRegion> regions,
-    uint64_t max_bytes,
-    base::TimeTicks triggered_at) {
-  scoped_refptr<CompactionMetric> metric =
-      MakeRefCounted<CompactionMetric>(triggered_at, base::TimeTicks::Now());
+    std::unique_ptr<CompactionState> state) {
+  scoped_refptr<CompactionMetric> metric = state->MakeCompactionMetric();
   TRACE_EVENT0("base", "StartSelfCompaction");
   base::trace_event::EmitNamedTrigger("start-self-compaction");
   {
@@ -545,19 +541,18 @@ void PreFreezeBackgroundMemoryTrimmer::StartSelfCompaction(
     }
   }
   metric->RecordBeforeMetrics();
-  MaybePostSelfCompactionTask(std::move(task_runner), std::move(regions),
-                              std::move(metric), max_bytes, triggered_at);
+  MaybePostSelfCompactionTask(std::move(state), std::move(metric));
 }
 
 void PreFreezeBackgroundMemoryTrimmer::FinishSelfCompaction(
-    scoped_refptr<CompactionMetric> metric,
-    base::TimeTicks triggered_at) {
+    std::unique_ptr<CompactionState> state,
+    scoped_refptr<CompactionMetric> metric) {
   TRACE_EVENT0("base", "FinishSelfCompaction");
   {
     base::AutoLock locker(lock());
     self_compaction_last_finished_ = base::TimeTicks::Now();
   }
-  if (ShouldContinueSelfCompaction(triggered_at)) {
+  if (ShouldContinueSelfCompaction(*state)) {
     metric->RecordDelayedMetrics();
     base::AutoLock locker(lock());
     metric->RecordTimeMetrics(self_compaction_last_finished_,
@@ -595,6 +590,25 @@ void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompactionInternal(
       base::TimeTicks::Now();
 }
 
+PreFreezeBackgroundMemoryTrimmer::CompactionState::CompactionState(
+    scoped_refptr<SequencedTaskRunner> task_runner,
+    std::vector<debug::MappedMemoryRegion> regions,
+    base::TimeTicks triggered_at,
+    uint64_t max_bytes)
+    : task_runner_(std::move(task_runner)),
+      regions_(std::move(regions)),
+      triggered_at_(triggered_at),
+      max_bytes_(max_bytes) {}
+
+PreFreezeBackgroundMemoryTrimmer::CompactionState::~CompactionState() = default;
+
+scoped_refptr<PreFreezeBackgroundMemoryTrimmer::CompactionMetric>
+PreFreezeBackgroundMemoryTrimmer::CompactionState::MakeCompactionMetric()
+    const {
+  return MakeRefCounted<CompactionMetric>(triggered_at_,
+                                          base::TimeTicks::Now());
+}
+
 // static
 void PreFreezeBackgroundMemoryTrimmer::CompactSelf(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -627,9 +641,9 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf(
   UmaHistogramEnumeration("Memory.SelfCompact2.Renderer.ReadProcMaps",
                           did_read_proc_maps);
 
-  Instance().StartSelfCompaction(std::move(task_runner), std::move(regions),
-                                 MiBToBytes(kShouldFreezeSelfMaxSize.Get()),
-                                 triggered_at);
+  Instance().StartSelfCompaction(std::make_unique<CompactionState>(
+      std::move(task_runner), std::move(regions), triggered_at,
+      MiBToBytes(kShouldFreezeSelfMaxSize.Get())));
 }
 
 // static
