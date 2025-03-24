@@ -127,6 +127,7 @@ void RegistrationTokenHelper::SignHeaderAndPayload(
 
   unexportable_key_service_->SignSlowlyAsync(
       *binding_key, base::as_byte_span(*header_and_payload), kTaskPriority,
+      /*max_retries=*/0,
       base::BindOnce(&RegistrationTokenHelper::CreateRegistrationToken,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::string(*header_and_payload), *binding_key,

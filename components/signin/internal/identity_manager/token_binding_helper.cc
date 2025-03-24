@@ -30,8 +30,9 @@ namespace {
 
 constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
 
-unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
+constexpr unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
+constexpr size_t kMaxRetriesToSignAssertionToken = 3;
 
 base::expected<std::string, TokenBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
@@ -183,7 +184,7 @@ void TokenBindingHelper::SignAssertionToken(
 
   unexportable_key_service_->SignSlowlyAsync(
       *binding_key, base::as_byte_span(*header_and_payload),
-      kTokenBindingPriority,
+      kTokenBindingPriority, kMaxRetriesToSignAssertionToken,
       base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm)
           .Then(base::BindOnce(&RunCallbackAndRecordMetrics,
                                std::move(callback))));

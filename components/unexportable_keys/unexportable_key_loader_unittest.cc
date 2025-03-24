@@ -187,9 +187,9 @@ TEST_F(UnexportableKeyLoaderTest, SignDataAfterLoading) {
   key_loader->InvokeCallbackAfterKeyLoaded(base::BindLambdaForTesting(
       [&](ServiceErrorOr<UnexportableKeyId> key_id_or_error) {
         ASSERT_TRUE(key_id_or_error.has_value());
-        service().SignSlowlyAsync(*key_id_or_error,
-                                  std::vector<uint8_t>({1, 2, 3}),
-                                  kTaskPriority, sign_future.GetCallback());
+        service().SignSlowlyAsync(
+            *key_id_or_error, std::vector<uint8_t>({1, 2, 3}), kTaskPriority,
+            /*max_retries=*/0, sign_future.GetCallback());
       }));
   EXPECT_FALSE(sign_future.IsReady());
   RunBackgroundTasks();

@@ -166,7 +166,8 @@ TEST_F(SessionBindingHelperTest, ReloadKeyAfterFailure) {
     EXPECT_CALL(mock_unexportable_key_service,
                 FromWrappedSigningKeySlowlyAsync(base::span(wrapped_key), _, _))
         .WillOnce(RunOnceCallback<2>(key_id));
-    EXPECT_CALL(mock_unexportable_key_service, SignSlowlyAsync(key_id, _, _, _))
+    EXPECT_CALL(mock_unexportable_key_service,
+                SignSlowlyAsync(key_id, _, _, _, _))
         .WillOnce(Invoke(
             &unexportable_key_service(),
             &unexportable_keys::UnexportableKeyService::SignSlowlyAsync));
