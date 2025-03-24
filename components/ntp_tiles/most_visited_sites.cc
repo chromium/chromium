@@ -161,7 +161,8 @@ MostVisitedSites::MostVisitedSites(
     std::unique_ptr<PopularSites> popular_sites,
     std::unique_ptr<CustomLinksManager> custom_links,
     std::unique_ptr<IconCacher> icon_cacher,
-    bool is_default_chrome_app_migrated)
+    bool is_default_chrome_app_migrated,
+    bool is_custom_links_mixable)
     : prefs_(prefs),
       identity_manager_(identity_manager),
       supervised_user_service_(supervised_user_service),
@@ -170,8 +171,8 @@ MostVisitedSites::MostVisitedSites(
       custom_links_(std::move(custom_links)),
       icon_cacher_(std::move(icon_cacher)),
       is_default_chrome_app_migrated_(is_default_chrome_app_migrated),
+      is_custom_links_mixable_(is_custom_links_mixable),
       max_num_sites_(0u),
-      mv_source_(TileSource::TOP_SITES),
       is_observing_(false) {
   DCHECK(prefs_);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -284,6 +285,8 @@ void MostVisitedSites::InitializeCustomLinks() {
     return;
   }
 
+  // TODO(crbug.com/397422358): Convert |current_tiles_| to |custom_links_|
+  // only if |is_custom_links_mixable_| is false.
   if (custom_links_->Initialize(current_tiles_.value())) {
     custom_links_action_count_ = 0;
   }
@@ -300,11 +303,12 @@ void MostVisitedSites::UninitializeCustomLinks() {
 }
 
 bool MostVisitedSites::IsCustomLinksInitialized() {
-  if (!custom_links_ || !IsCustomLinksEnabled()) {
-    return false;
-  }
+  return custom_links_ && IsCustomLinksEnabled() &&
+         custom_links_->IsInitialized();
+}
 
-  return custom_links_->IsInitialized();
+bool MostVisitedSites::IsExclusivelyCustomLinks() {
+  return !is_custom_links_mixable_ && IsCustomLinksInitialized();
 }
 
 void MostVisitedSites::EnableCustomLinks(bool enable) {
@@ -432,9 +436,8 @@ void MostVisitedSites::InitiateTopSitesQuery() {
 
 void MostVisitedSites::OnMostVisitedURLsAvailable(
     const history::MostVisitedURLList& visited_list) {
-  // Ignore the event if tiles are provided by custom links, which take
-  // precedence.
-  if (IsCustomLinksInitialized()) {
+  // Ignore the event if tiles are exclusively provided by custom links.
+  if (IsExclusivelyCustomLinks()) {
     return;
   }
 
@@ -468,17 +471,15 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
     tiles.push_back(std::move(tile));
   }
 
-  mv_source_ = TileSource::TOP_SITES;
   InitiateNotificationForNewTiles(std::move(tiles));
 }
 
 void MostVisitedSites::BuildCurrentTiles() {
-  if (IsCustomLinksInitialized()) {
+  if (IsExclusivelyCustomLinks()) {
     BuildCustomLinks(custom_links_->GetLinks());
     return;
   }
 
-  mv_source_ = TileSource::TOP_SITES;
   InitiateTopSitesQuery();
 }
 
@@ -681,7 +682,6 @@ void MostVisitedSites::BuildCustomLinks(
     tiles.push_back(std::move(tile));
   }
 
-  mv_source_ = TileSource::CUSTOM_LINKS;
   SaveTilesAndNotify(std::move(tiles), std::map<SectionType, NTPTilesVector>());
 }
 
@@ -826,8 +826,7 @@ void MostVisitedSites::TopSitesLoaded(TopSites* top_sites) {}
 
 void MostVisitedSites::TopSitesChanged(TopSites* top_sites,
                                        ChangeReason change_reason) {
-  if (mv_source_ == TileSource::TOP_SITES) {
-    // The displayed tiles are invalidated.
+  if (!IsExclusivelyCustomLinks()) {
     InitiateTopSitesQuery();
   }
 }
