@@ -212,6 +212,7 @@ ExtensionService::ExtensionService(
       ready_(ready),
       component_loader_(std::make_unique<ComponentLoader>(system_, profile_)),
       error_controller_(error_controller),
+      external_install_manager_(ExternalInstallManager::Get(profile)),
       shared_module_service_(new SharedModuleService(profile_)),
       extension_registrar_delegate_(
           std::make_unique<ChromeExtensionRegistrarDelegate>(
@@ -276,8 +277,7 @@ ExtensionService::ExtensionService(
   is_first_run_ = !extension_prefs_->SetAlertSystemFirstRun();
 
   error_controller_->set_is_first_run(is_first_run_);
-  external_install_manager_ =
-      std::make_unique<ExternalInstallManager>(profile_, is_first_run_);
+  external_install_manager_->set_is_first_run(is_first_run_);
 
   extension_action_storage_manager_ =
       std::make_unique<ExtensionActionStorageManager>(profile_);
@@ -323,6 +323,7 @@ void ExtensionService::Shutdown() {
   external_provider_manager_ = nullptr;
   error_controller_ = nullptr;
   allowlist_ = nullptr;
+  external_install_manager_ = nullptr;
 }
 
 void ExtensionService::Init() {

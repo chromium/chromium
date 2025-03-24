@@ -214,6 +214,11 @@ source_set("extensions") {
     "extension_web_ui_override_registrar.h",
     "extension_webkit_preferences.cc",
     "extension_webkit_preferences.h",
+    "external_install_error.h",
+    "external_install_manager.cc",
+    "external_install_manager.h",
+    "external_install_manager_factory.cc",
+    "external_install_manager_factory.h",
     "favicon/favicon_util.cc",
     "favicon/favicon_util.h",
     "forced_extensions/assessment_assistant_tracker.cc",
@@ -367,6 +372,8 @@ source_set("extensions") {
       "api/identity/identity_unimplemented_functions_android.h",
       "extension_error_ui_android.cc",
       "extension_error_ui_android.h",
+      "external_install_error_android.cc",
+      "external_install_error_android.h",
     ]
   }
   if (enable_extensions) {
@@ -657,10 +664,8 @@ source_set("extensions") {
       "extension_view_host_factory.h",
       "external_component_loader.cc",
       "external_component_loader.h",
-      "external_install_error.cc",
-      "external_install_error.h",
-      "external_install_manager.cc",
-      "external_install_manager.h",
+      "external_install_error_desktop.cc",
+      "external_install_error_desktop.h",
       "external_loader.cc",
       "external_loader.h",
       "external_policy_loader.cc",

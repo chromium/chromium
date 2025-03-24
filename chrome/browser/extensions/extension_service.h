@@ -388,10 +388,6 @@ class ExtensionService : public ExtensionServiceInterface,
     return shared_module_service_.get();
   }
 
-  ExternalInstallManager* external_install_manager() {
-    return external_install_manager_.get();
-  }
-
   ForceInstalledTracker* force_installed_tracker() {
     return &force_installed_tracker_;
   }
@@ -578,8 +574,8 @@ class ExtensionService : public ExtensionServiceInterface,
   raw_ptr<ExtensionErrorController> error_controller_ = nullptr;
 
   // The manager for extensions that were externally installed that is
-  // responsible for prompting the user about suspicious extensions.
-  std::unique_ptr<ExternalInstallManager> external_install_manager_;
+  // responsible for prompting the user about suspicious extensions. Not owned.
+  raw_ptr<ExternalInstallManager> external_install_manager_ = nullptr;
 
   std::unique_ptr<ExtensionActionStorageManager>
       extension_action_storage_manager_;
