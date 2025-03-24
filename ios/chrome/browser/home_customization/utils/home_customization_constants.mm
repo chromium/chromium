@@ -38,6 +38,8 @@ NSString* const kCustomizationToggleParcelTrackingIdentifier =
     @"kCustomizationToggleParcelTrackingIdentifier";
 NSString* const kCustomizationToggleShopCardPriceTrackingIdentifier =
     @"kCustomizationToggleShopCardPriceTrackingIdentifier";
+NSString* const kCustomizationToggleShopCardReviewsIdentifier =
+    @"kCustomizationToggleShopCardReviewsIdentifier";
 NSString* const kCustomizationToggleTipsIdentifier =
     @"kCustomizationToggleTipsIdentifier";
 

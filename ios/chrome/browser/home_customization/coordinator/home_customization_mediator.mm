@@ -91,12 +91,12 @@
                       [self isMagicStackCardEnabledForType:
                                 CustomizationToggleType::kMostVisited]});
   }
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
+      commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) {
     toggleMap.insert({CustomizationToggleType::kShopCard,
                       [self isMagicStackCardEnabledForType:
                                 CustomizationToggleType::kShopCard]});
   }
-  // TODO(crbug.com/404335872) Implement for reviews (arm 2).
   [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
@@ -150,8 +150,11 @@
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return _prefService->GetBoolean(
             prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled);
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        return _prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled);
       } else {
-        // TODO(crbug.com/404335872) Implement for reviews (arm 2).
         return false;
       }
     default:
@@ -206,8 +209,11 @@
         _prefService->SetBoolean(
             prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled,
             enabled);
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        _prefService->SetBoolean(
+            prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled, enabled);
       }
-      // TODO(crbug.com/404335872) Implement for reviews (arm 2).
       break;
   }
 }

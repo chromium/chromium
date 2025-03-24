@@ -39,6 +39,7 @@ extern NSString* const kCustomizationToggleSafetyCheckIdentifier;
 extern NSString* const kCustomizationToggleTabResumptionIdentifier;
 extern NSString* const kCustomizationToggleParcelTrackingIdentifier;
 extern NSString* const kCustomizationToggleShopCardPriceTrackingIdentifier;
+extern NSString* const kCustomizationToggleShopCardReviewsIdentifier;
 extern NSString* const kCustomizationToggleTipsIdentifier;
 
 // The identifiers for the navigable portions of the main page toggle cells.

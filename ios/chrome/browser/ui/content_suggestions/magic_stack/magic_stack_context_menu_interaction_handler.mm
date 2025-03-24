@@ -46,7 +46,8 @@ BOOL AllowsLongPressForModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kMostVisited:
       return YES;
     case ContentSuggestionsModuleType::kShopCard:
-      return commerce::kShopCardVariation.Get() == commerce::kShopCardArm1;
+      return commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
+             commerce::kShopCardVariation.Get() == commerce::kShopCardArm2;
     default:
       return NO;
   }
@@ -95,8 +96,11 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_TITLE);
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_ALT_TITLE);
       }
-      // TODO(crbug.com/404335870) Implement for arm 2 (reviews).
       return @"";
     default:
       NOTREACHED();
@@ -150,6 +154,10 @@ NSString* GetContextMenuHideDescriptionForType(
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE);
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_HIDE_ALT);
       }
       return @"";
     default:
