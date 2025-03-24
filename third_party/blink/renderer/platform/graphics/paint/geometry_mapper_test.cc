@@ -930,7 +930,7 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {
   output.Intersect(clip_below_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(20, 30, 90, 80), output);
   // 3. effect (the outset is 3 times of blur amount).
-  output = filters.MapRect(output);
+  output = gfx::RectF(filters.MapRect(gfx::ToEnclosingRect(output)));
   EXPECT_EQ(gfx::RectF(-40, -30, 210, 200), output);
   // 4. clip_above_effect
   output.Intersect(clip_above_effect->LayoutClipRect().Rect());
@@ -981,7 +981,7 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransformsWithAlias) {
   output.Intersect(clip_below_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(20, 30, 90, 80), output);
   // 3. effect (the outset is 3 times of blur amount).
-  output = filters.MapRect(output);
+  output = gfx::RectF(filters.MapRect(gfx::ToEnclosingRect(output)));
   EXPECT_EQ(gfx::RectF(-40, -30, 210, 200), output);
   // 4. clipAboveEffect
   output.Intersect(clip_above_effect->LayoutClipRect().Rect());

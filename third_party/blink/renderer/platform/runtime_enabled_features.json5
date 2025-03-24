@@ -3596,7 +3596,7 @@
     },
     {
       // Killswitch M136.
-      name: "ReferenceFilterMapsReferenceBox",
+      name: "ReferenceFilterOutputBounds",
       status: "stable",
     },
     {

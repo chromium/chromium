@@ -25,8 +25,7 @@ namespace blink {
 namespace {
 
 bool HasReferenceFilterEffect(const ObjectPaintProperties& properties) {
-  return properties.Filter() &&
-         properties.Filter()->Filter().HasReferenceFilter();
+  return properties.Filter() && properties.Filter()->HasReferenceFilter();
 }
 
 }  // namespace

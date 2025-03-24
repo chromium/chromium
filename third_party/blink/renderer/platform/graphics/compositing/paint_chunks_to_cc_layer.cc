@@ -673,7 +673,7 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
     return action;
   }
 
-  bool has_filter = !effect.Filter().IsEmpty();
+  bool has_filter = !!effect.Filter();
   bool has_opacity = effect.Opacity() != 1.f;
   // TODO(crbug.com/1334293): Normally backdrop filters should be composited and
   // effect.BackdropFilter() should be null, but compositing can be disabled in
@@ -702,7 +702,7 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
     // bounds, which we never generate.
     cc::PaintFlags filter_flags;
     filter_flags.setImageFilter(cc::RenderSurfaceFilters::BuildImageFilter(
-        effect.Filter().AsCcFilterOperations()));
+        effect.Filter()->AsCcFilterOperations()));
     save_layer_id = push<cc::SaveLayerOp>(filter_flags);
   }
   result_.EndPaintOfPairedBegin();
@@ -718,27 +718,17 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
   current_clip_ = input_clip;
   current_effect_ = &effect;
 
-  if (effect.Filter().HasReferenceFilter()) {
-    // Map the input rect through the filter to determine the bounds of the
-    // effect on an empty source. For empty chunks, or chunks with empty bounds,
-    // with a filter applied that produces output even when there's no input
-    // this will expand the bounds to match.
-    gfx::RectF input_rect;
-    if (RuntimeEnabledFeatures::ReferenceFilterMapsReferenceBoxEnabled()) {
-      // Use the reference box as the input rect.
-      input_rect = effect.Filter().ReferenceBox();
-    } else {
-      // Use a random point as the input rect.
-      input_rect = gfx::RectF(effect.Filter().ReferenceBox().CenterPoint(),
-                              gfx::SizeF());
-    }
-    gfx::RectF filtered_bounds = current_effect_->MapRect(input_rect);
-    effect_bounds_stack_.back().bounds = filtered_bounds;
+  if (effect.HasReferenceFilter()) {
+    // For empty chunks, or chunks with empty bounds, with a filter applied
+    // that produces output even when there's no input this will expand the
+    // bounds to match.
+    gfx::Rect filtered_bounds = effect.FilterOutputBounds();
+    effect_bounds_stack_.back().bounds = gfx::RectF(filtered_bounds);
     // Emit an empty paint operation to add the filtered bounds (mapped to layer
     // space) to the visual rect of the filter's SaveLayerOp.
     result_.StartPaint();
-    result_.EndPaintOfUnpaired(chunk_to_layer_mapper_.MapVisualRect(
-        gfx::ToEnclosingRect(filtered_bounds)));
+    result_.EndPaintOfUnpaired(
+        chunk_to_layer_mapper_.MapVisualRect(filtered_bounds));
   }
   return {};
 }
@@ -771,18 +761,18 @@ void ConversionContext<Result>::EndEffect() {
   DCHECK(effect_bounds_stack_.size());
   const auto& bounds_info = effect_bounds_stack_.back();
   gfx::RectF bounds = bounds_info.bounds;
-  if (current_effect_->Filter().IsEmpty()) {
+  if (!current_effect_->Filter()) {
     if (!bounds.IsEmpty()) {
       result_.UpdateSaveLayerBounds(bounds_info.save_layer_id,
                                     gfx::RectFToSkRect(bounds));
     }
   } else {
-    // We need an empty bounds for empty filter to avoid performance issue of
-    // PDF renderer. See crbug.com/740824.
+    // Don't check bounds.IsEmpty() because we need an empty bounds for empty
+    // filter to avoid performance issue of PDF renderer. See crbug.com/740824.
     result_.UpdateSaveLayerBounds(bounds_info.save_layer_id,
                                   gfx::RectFToSkRect(bounds));
     // We need to propagate the filtered bounds to the parent.
-    bounds = current_effect_->MapRect(bounds);
+    bounds = gfx::RectF(current_effect_->MapRect(gfx::ToEnclosingRect(bounds)));
   }
 
   effect_bounds_stack_.pop_back();
