@@ -40,6 +40,7 @@
 <translation id="2758123043070977469">验证您的身份时出问题了，请重新登录。</translation>
 <translation id="2803375539583399270">输入 PIN 码</translation>
 <translation id="2919669478609886916">您目前正在与其他用户共享此计算机。您希望继续共享吗？</translation>
+<translation id="2929683002824598593">共用设备</translation>
 <translation id="2939145106548231838">向主机验证身份</translation>
 <translation id="3027681561976217984">触摸模式</translation>
 <translation id="3106379468611574572">远程计算机没有对连接请求做出响应。请确保其在线，然后重试。</translation>
@@ -117,10 +118,12 @@
 <translation id="6178645564515549384">用于远程协助的本地消息传递主机</translation>
 <translation id="618120821413932081">更新远程桌面的分辨率以适合浏览器窗口的大小</translation>
 <translation id="6223301979382383752">打开“屏幕录制”偏好设置</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> 已请求获权查看您的屏幕并控制您的键盘和鼠标。您想共用设备吗？</translation>
 <translation id="6284412385303060032">在控制台逻辑屏幕运行的主机已关闭。这是为了切换到在用户特定会话中运行的主机，以便为 Curtain 模式提供支持。</translation>
 <translation id="6542902059648396432">报告问题…</translation>
 <translation id="6583902294974160967">支持</translation>
 <translation id="6612717000975622067">发送Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{如果您不采取行动，您的设备将在 # 秒后自动开始共用。}other{如果您不采取行动，您的设备将在 # 秒后自动开始共用。}}</translation>
 <translation id="6654753848497929428">共享</translation>
 <translation id="677755392401385740">已为用户<ph name="HOST_USERNAME" />启动主机。</translation>
 <translation id="6902524959760471898">助手应用，用于在 <ph name="PRODUCT_NAME" />客户端打开网址</translation>

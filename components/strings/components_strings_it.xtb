@@ -506,6 +506,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1846432862466000825">Plastica (archivio)</translation>
 <translation id="1848640291751752317">download</translation>
 <translation id="1848982255014129637">Foto (lucida)</translation>
+<translation id="1849438148665368129">L'acquisto deve avere un importo inferiore a <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Registrazione della carta virtuale chiusa</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
 <translation id="1855370856221982654">Boxe</translation>
@@ -902,6 +903,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2539524384386349900">Rileva</translation>
 <translation id="2541219929084442027">Le pagine visualizzate nelle schede di navigazione in incognito non vengono memorizzate nella cronologia del browser, nello spazio di archiviazione dei cookie o nella cronologia delle ricerche dopo avere chiuso tutte le schede di navigazione in incognito. I file scaricati o i preferiti creati verranno conservati.</translation>
 <translation id="2542106216580219892">Surf</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> - Per uscire dalla modalità a schermo intero, tieni premuto |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Il tuo amministratore ha riavviato il dispositivo</translation>
 <translation id="2544644783021658368">Documento singolo</translation>
 <translation id="254524874071906077">Imposta Chrome come browser predefinito</translation>
@@ -2168,6 +2170,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4796594887379589189">ID account lavoro</translation>
 <translation id="4798269756263412078">Ricevi avvisi se il prezzo cala su qualsiasi sito. Gli avvisi verranno inviati al tuo indirizzo email.</translation>
 <translation id="4800132727771399293">Controlla la data di scadenza e il codice CVC, poi riprova</translation>
+<translation id="4800546479758254481">AR consentita</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Istruzioni dell'amministratore del tuo dispositivo:</translation>
 <translation id="4811450222531576619">Scopri la fonte e l'argomento</translation>
@@ -3029,6 +3032,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6327065120806001832">accesso alla rete locale</translation>
 <translation id="6328639280570009161">Prova a disattivare la previsione della rete</translation>
 <translation id="6335029926534404762">Scarpe da atletica</translation>
+<translation id="6336948221660696475">VR non consentita</translation>
 <translation id="6337133576188860026">Consente di liberare meno di <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="6337534724793800597">Filtra le policy per nome</translation>
 <translation id="633770708279464947">Il valore <ph name="SECURE_DNS_SALT" /> non è valido e non verrà utilizzato.</translation>
@@ -3072,6 +3076,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6391700400718590966">Le credenziali per il pagamento sicuro non corrispondono: riquadro inferiore chiuso</translation>
 <translation id="6392799395081100092">Carta (pergamena)</translation>
 <translation id="6393156038355142111">Suggerisci password efficace</translation>
+<translation id="6393310910507376797">Non supportato dal commerciante</translation>
 <translation id="6393956493820063117">La possibilità di incollare da <ph name="ORIGIN_NAME" /> a questa posizione è stata bloccata da una policy dell'amministratore</translation>
 <translation id="6394852772105848029">Questo sito vuole aprire l'app <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Scooter e ciclomotori</translation>
@@ -3224,6 +3229,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6668389483194953109">Trovato formato carta "custom", ma la proprietà "custom_size" è vuota o non valida.</translation>
 <translation id="6671169470640320959">Finanziamenti per l'acquisto di automobili</translation>
 <translation id="6671697161687535275">Rimuovere il suggerimento per i moduli da Chromium?</translation>
+<translation id="6675846980676550611">AR non consentita</translation>
 <translation id="6677351035258626477">Fast food</translation>
 <translation id="6679354743514146922">Il browser Chrome sta cercando di inserire la password su <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC salvato</translation>
@@ -3712,6 +3718,7 @@ Ulteriori dettagli:
 <translation id="7512685745044087310">Questa policy non può essere impostata su "True" ed essere configurata come obbligatoria, pertanto è diventata consigliata.</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">VR consentita questa volta</translation>
 <translation id="7517201160922869406">Veicoli fuoristrada</translation>
 <translation id="7517414872996418597">Busta C10</translation>
 <translation id="7518003948725431193">Nessuna pagina web trovata per l'indirizzo web: <ph name="URL" /></translation>
@@ -3931,6 +3938,7 @@ Ulteriori dettagli:
 <translation id="7887885240995164102">Attiva Picture in picture</translation>
 <translation id="7888575728750733395">Stampa intent di rendering</translation>
 <translation id="7890748547282909375">Accedi a Microsoft OneDrive per salvare lo screenshot</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> - Per mostrare il cursore, premi |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">impostazioni di pagamento</translation>
 <translation id="7894280532028510793">Se l'ortografia è corretta, <ph name="BEGIN_LINK" />prova a eseguire lo strumento Diagnostica di rete<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Busta 7 x 9 pollici</translation>
@@ -4612,6 +4620,7 @@ Ulteriori dettagli:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Il browser Chrome vorrebbe usare l'impronta per compilare automaticamente le password</translation>
 <translation id="9141013498910525015">Gestisci gli indirizzi</translation>
+<translation id="9141672681283222114">AR consentita questa volta</translation>
 <translation id="9143898823728499852">Puoi usare la compilazione automatica per questa carta perché il tuo account <ph name="CARD_ISSUER_NAME" /> è collegato a Google Pay</translation>
 <translation id="9144951720726881238">Data di scadenza:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Accedi<ph name="END_LINK" /> di nuovo, quindi torna a questa scheda per ricevere aiuto per la scrittura</translation>
@@ -4624,6 +4633,7 @@ Ulteriori dettagli:
 <translation id="9155646082713385498">Riviste</translation>
 <translation id="9157595877708044936">Configurazione in corso...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Il file <ph name="FILE_NAME" /> potrebbe includere contenuti sensibili}other{<ph name="FILE_COUNT" /> file potrebbero includere contenuti sensibili}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> - Per uscire dalla modalità a schermo intero, premi |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">I siti che visiti possono anche stabilire i tuoi interessi in base alla tua attività sul sito. Ad esempio, se visiti un sito che vende scarpe da corsa per lunghe distanze, il sito potrebbe decidere che ti interessa partecipare a maratone.</translation>
 <translation id="9166851138617700776">Scopri di più sugli annunci suggeriti dai siti e sulla misurazione degli annunci</translation>
 <translation id="9167054383925257837">Informazioni sul browser e sul sistema operativo del dispositivo (ad esempio, versioni del browser e del sistema operativo)</translation>
@@ -4668,6 +4678,7 @@ Ulteriori dettagli:
 <translation id="922152298093051471">Personalizza Chrome</translation>
 <translation id="9222403027701923763">Istruzione primaria e secondaria</translation>
 <translation id="93020190163435405">Tirocini</translation>
+<translation id="931598121743515856">L'acquisto deve avere un importo superiore a <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Vuoi consentire all'app <ph name="APP_NAME" /> di configurare le reti Wi-Fi?</translation>
 <translation id="936602727769022409">Potresti non riuscire più ad accedere al tuo Account Google. Chromium consiglia di cambiare subito la password. Ti verrà chiesto di eseguire l'accesso.</translation>
@@ -4684,6 +4695,7 @@ Ulteriori dettagli:
 <translation id="949314938206378263">Hai chiesto di poter visitare questo sito. Uno dei tuoi genitori può rispondere in Family Link.</translation>
 <translation id="950736567201356821">Tripla perforatura in alto</translation>
 <translation id="950926967802086924">Passkey • Gestore delle password di Google</translation>
+<translation id="955429569736351433">VR consentita</translation>
 <translation id="95721182352849470">Giallo 2</translation>
 <translation id="961663415146723894">Rilegatura in basso</translation>
 <translation id="961856697154696964">Elimina dati navigazione</translation>

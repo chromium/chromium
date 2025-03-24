@@ -2226,6 +2226,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
         Saate seadeid kohandada kaardimenüüs või näha rohkem valikuid jaotises Chrome'i kohandamine.</translation>
 <translation id="2514326558286966059">Sõrmejäljega kiiremini avamine</translation>
 <translation id="2514465118223423406">Kui hiir on ühendatud</translation>
+<translation id="2514938842036917377">See kustutab <ph name="TOTAL_USAGE" /> ulatuses saidi <ph name="SITE_NAME" />, seotud saitide ja installitud rakenduste salvestatud andmeid</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Kinnitage oma kasutajanimi</translation>
 <translation id="2517472476991765520">Kontrolli</translation>
@@ -2344,7 +2345,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2606568927909309675">Ingliskeelse heli ja video puhul luuakse automaatselt subtiitrid. Heli ja subtiitreid ei saadeta kunagi seadmest väljapoole.</translation>
 <translation id="2606890864830643943">Diagnostikaandmete importimine</translation>
 <translation id="2607101320794533334">Subjekti avaliku võtme teave</translation>
-<translation id="2608837922830967145">Ära seda sõnumit enam kuva</translation>
 <translation id="2609896558069604090">Loo otseteid ...</translation>
 <translation id="2609980095400624569">Ühendust ei õnnestunud luua</translation>
 <translation id="2610157865375787051">Unerežiim</translation>
@@ -9086,6 +9086,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7443806024147773267">Pääsete oma paroolidele juurde alati, kui olete oma Google'i kontole sisse logitud</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Küpsisefailid blokeeritakse täna uuesti}=1{Küpsisefailid blokeeritakse homme uuesti}other{# päeva, kuni küpsisefailid uuesti blokeeritakse}}</translation>
 <translation id="7444983668544353857">Keela <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">See kustutab <ph name="TOTAL_USAGE" /> ulatuses saidi <ph name="SITE_NAME" /> ja seotud saitide salvestatud andmeid</translation>
 <translation id="7448430327655618736">Rakenduste automaatne installimine</translation>
 <translation id="7448664748118305024">Andmed, mille saidid on teie seadmesse salvestanud, kustutatakse pärast kõigi akende sulgemist</translation>
 <translation id="7450761244949417357">Brauser <ph name="ALTERNATIVE_BROWSER_NAME" /> avatakse kohe</translation>

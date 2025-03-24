@@ -133,6 +133,7 @@
 <translation id="1513858653616922153">刪除密碼</translation>
 <translation id="1517166097004694782">隱藏「繼續使用此分頁」</translation>
 <translation id="1520027731907768768">接收已追蹤產品的減價通知。</translation>
+<translation id="1521366073263497277">前往分頁網格</translation>
 <translation id="1521774566618522728">今天已使用</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
 <translation id="1531038290222364269">顯示分頁</translation>
@@ -534,6 +535,7 @@
 <translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
 <translation id="3245744387817103524">無法儲存您的變更。</translation>
 <translation id="3254806613790954367">在你的所有裝置上顯示最後開啟的分頁</translation>
+<translation id="325717987950204592">輕按 [私隱權和安全性]</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3273510436356991673">自訂主畫面</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
@@ -567,6 +569,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="344589138074534176">進一步瞭解「Google 智能鏡頭」</translation>
 <translation id="3447332786336558089">當你登出後，系統會關閉此裝置上的分頁並刪除未儲存的帳戶資料，包括密碼、記錄等項目。</translation>
+<translation id="3449029510150690417">為新分頁群組命名並選擇顏色，即可建立群組</translation>
 <translation id="345348365500626747">找到地址</translation>
 <translation id="3464194322481586217">無法追蹤價格。</translation>
 <translation id="3469117812148449995">儲存密碼選項</translation>
@@ -648,6 +651,7 @@
 <translation id="3838691874161539578">請檢查已儲存的密碼，以提升安全性，並確保網上安全</translation>
 <translation id="3838985624086228724">你追蹤嘅產品減價，由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3850952228519377137">隱藏「透過已開啟的分頁追蹤價格」</translation>
 <translation id="3851938967634752633">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶的密碼，但不會刪除您的帳戶。</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3868495844258915202">顯示完整網址</translation>
@@ -1129,6 +1133,7 @@
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5868644772996939262">自動填入密碼與密鑰</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
+<translation id="5873179562631407582">按住任何開啟的分頁</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />。由你的機構管理。</translation>
 <translation id="5888889603768021126">目前登入身分</translation>
 <translation id="5889333064153755823">刪除瀏覽資料</translation>
@@ -1314,6 +1319,7 @@
 <translation id="6583087784430677195">如要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「自動填入密碼」。</translation>
 <translation id="6585048665672348661">刪除瀏覽資料…</translation>
 <translation id="6585618849026997638">您可新增書籤，以便快速返回您認為重要的網頁</translation>
+<translation id="659407965921887085">此資訊卡會顯示目前追蹤產品在網絡上的減價資訊</translation>
 <translation id="6596481460663245319">透過 Google 搜尋圖片</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 個密碼}other{# 個密碼}}</translation>
 <translation id="6601302169302852717">圖片已儲存至 <ph name="USER_EMAIL" /> 的「Google 相片」</translation>
@@ -1351,6 +1357,7 @@
 <translation id="6680416467695217368">自訂選單</translation>
 <translation id="6681586159478273915">語音搜尋</translation>
 <translation id="6681791404926413601">{count,plural, =1{鍵盤上方顯示 {count} 個付款方法選項。}other{鍵盤上方顯示 {count} 個付款方法選項。}}</translation>
+<translation id="6684262542644248484">登入網站</translation>
 <translation id="6685259053455152195">運用捷徑快速修改設定及使用網址列的功能。</translation>
 <translation id="6689685206615181381">只能使用無痕模式</translation>
 <translation id="6708501134077648845">密碼選項</translation>
@@ -1369,6 +1376,7 @@
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6790502149545262384">不久後，您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
+<translation id="6791425686608802741">輕按 [將分頁加入新群組]</translation>
 <translation id="6794476726485507147">選擇要提醒自己再次瀏覽此頁的日期和時間</translation>
 <translation id="6807287147325542056">其他應用程式中的密碼</translation>
 <translation id="681368974849482173">已建立項目</translation>
@@ -1556,6 +1564,7 @@
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="764827086632467055">輕按 [預設瀏覽器應用程式]</translation>
 <translation id="7649070708921625228">說明</translation>
+<translation id="765631330137769217">輕按 [儲存]，下次登入時就能輕鬆取用此密碼</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662316065255305764">網站資料</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
@@ -1725,6 +1734,7 @@
 <translation id="8307481894409578819">無法上載這個檔案</translation>
 <translation id="8319076807703933069">新搜尋</translation>
 <translation id="8320212361750431956">近期活動</translation>
+<translation id="8325455175867928593">隱藏「按興趣顯示的評論」</translation>
 <translation id="833647236762414178">建立、儲存及管理密碼和密鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8349305172487531364">書籤列</translation>

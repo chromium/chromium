@@ -2237,6 +2237,7 @@
         카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="2514326558286966059">지문으로 신속하게 잠금 해제</translation>
 <translation id="2514465118223423406">마우스가 연결되어 있을 때</translation>
+<translation id="2514938842036917377"><ph name="SITE_NAME" />, 관련 사이트 및 설치된 앱에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">사용자 이름 확인</translation>
 <translation id="2517472476991765520">스캔</translation>
@@ -2355,7 +2356,6 @@
 <translation id="2606568927909309675">영어 음성 및 영상 자막을 자동으로 생성합니다. 오디오와 자막은 기기 외부로 유출되지 않습니다.</translation>
 <translation id="2606890864830643943">진단 데이터 내보내기</translation>
 <translation id="2607101320794533334">대상 공개 키 정보</translation>
-<translation id="2608837922830967145">이 메시지를 다시 표시하지 않음</translation>
 <translation id="2609896558069604090">바로가기 만들기...</translation>
 <translation id="2609980095400624569">연결을 설정할 수 없음</translation>
 <translation id="2610157865375787051">절전 모드</translation>
@@ -9095,6 +9095,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7443806024147773267">Google 계정에 로그인되어 있으면 어디서나 비밀번호에 액세스할 수 있습니다.</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{오늘 쿠키가 다시 차단됩니다.}=1{내일 쿠키가 다시 차단됩니다.}other{#일 후 쿠키가 다시 차단됩니다.}}</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> 사용 중지</translation>
+<translation id="7446716846072322308"><ph name="SITE_NAME" /> 및 관련 사이트에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="7448430327655618736">앱 자동 설치</translation>
 <translation id="7448664748118305024">창을 전부 닫으면 사이트에서 기기에 저장한 데이터 삭제</translation>
 <translation id="7450761244949417357">지금 <ph name="ALTERNATIVE_BROWSER_NAME" />에서 여는 중</translation>

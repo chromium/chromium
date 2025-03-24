@@ -5,6 +5,7 @@
 <translation id="1014750484722996375">Рабочие столы</translation>
 <translation id="1018219910092211213">Не удается выполнить DNS-преобразование.</translation>
 <translation id="1018656279737460067">Отменено</translation>
+<translation id="1019971142067430077">Не удалось создать названия записей для этого контента.</translation>
 <translation id="1020274983236703756">Эксклюзивный контент для <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Движения земли</translation>
 <translation id="102432830749687801">Используйте приложение "Перенос контента" от Google, чтобы заранее перенести информацию из учебного аккаунта в личный.</translation>
@@ -101,6 +102,7 @@
 <translation id="1418991483994088776">орхидея</translation>
 <translation id="142205161612889714">WebM</translation>
 <translation id="142228117786570094">У меня есть пара ключей</translation>
+<translation id="1422912431241997307">Название изменено.</translation>
 <translation id="1423591390236870726">Клавиша <ph name="KEY_NAME" /> не нажата</translation>
 <translation id="1432110487435300883">Чтобы получить приблизительный результат, разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Каждый месяц объем переданных данных автоматически обнуляется в указанный день</translation>
@@ -343,6 +345,7 @@
 <translation id="2418150275289244458">Перейти к настройкам</translation>
 <translation id="2421798028054665193">Изображение: <ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="242825218556404975">Речь не распознана.</translation>
+<translation id="2438248248625638801">Создание названий записей</translation>
 <translation id="2446553403094072641">Точность чисел с плавающей запятой</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2468124392950503650">Выберите запрос или посмотрите <ph name="BEGIN_LINK_PROMPTING_GUIDE" />руководство по его составлению<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
@@ -421,6 +424,7 @@
 <translation id="2873483161362553159">Навигация в браузере</translation>
 <translation id="2874939134665556319">Предыдущий трек</translation>
 <translation id="2875812231449496375">Для оптимальной работы обоев включите этот параметр. Вы сможете отключить его в любое время.</translation>
+<translation id="2878126681324394319">Скачать модель для создания названий и кратких пересказов</translation>
 <translation id="2878387241690264070">Батарея разрядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="2880569433548999039">Динамическая заставка с облаками</translation>
 <translation id="2882230315487799269">Настроить запрос для ИИ</translation>
@@ -493,6 +497,7 @@
 <translation id="3303855915957856445">Ничего не найдено</translation>
 <translation id="3305294846493618482">ещё</translation>
 <translation id="3310640316857623290">Задержка на сервере доменных имен существенно превышает допустимое значение.</translation>
+<translation id="3316495615885967552">Модель для создания названий и кратких пересказов скачана</translation>
 <translation id="3321030238473337787">Скорость воспроизведения</translation>
 <translation id="3327613592010997943">Вы сможете снова использовать это устройство <ph name="DAY" /> в <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Идет проверка</translation>
@@ -583,6 +588,7 @@
 <translation id="3767737419527918477">Поиск файлов записей</translation>
 <translation id="3771294271822695279">Видеофайлы</translation>
 <translation id="3771694256347217732">Условия использования Google</translation>
+<translation id="3772164567520167489">Не удалось создать названия записей для этого языка расшифровки.</translation>
 <translation id="3780740315729837296">Назначьте клавишу</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
 <translation id="3785643128701396311">пиксельная графика</translation>
@@ -597,6 +603,7 @@
 <translation id="3845880861638660475">Чтобы закрыть диалоговое окно, нажмите <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">клавиатура уменьшение яркости</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3852931845120288955">По названию (от А до Я)</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3862598938296403232">Введите описание.</translation>
 <translation id="386280020966669610">Случайные обои</translation>
@@ -651,6 +658,7 @@
 <translation id="4093865285251893588">Изображение профиля</translation>
 <translation id="409427325554347132">Сохранить данные</translation>
 <translation id="409469431304488632">Эксперимент</translation>
+<translation id="4095155732125588500">Скачивание модели для создания названий и кратких пересказов</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Выбрать альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="4111761024568264522">Сенсорная панель USB</translation>
@@ -675,6 +683,7 @@
 <translation id="4171077696775491955">уменьшить яркость</translation>
 <translation id="4176463684765177261">Отключено</translation>
 <translation id="4176659219503619100">Панель управления</translation>
+<translation id="4192913637640303603">Не удалось создать названия записей</translation>
 <translation id="4193496492959950834">Настройки Диктофона</translation>
 <translation id="4198398257084619072">панды</translation>
 <translation id="420283545744377356">Не использовать заставку</translation>
@@ -957,6 +966,7 @@
 <translation id="550600468576850160">луг</translation>
 <translation id="551689408806449779">Устройство отключено. Подключите его снова, чтобы продолжить тестирование.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="552644173505433109">Подробнее о кратком пересказе и создании названий</translation>
 <translation id="5527146180235316490">Настройки микрофона</translation>
 <translation id="5534900277405737921">Рельеф</translation>
 <translation id="554067135846762198">коралловый и светло-коричневый</translation>
@@ -1055,6 +1065,7 @@
 <translation id="5982621672636444458">Сортировать</translation>
 <translation id="5984145644188835034">Обои по умолчанию</translation>
 <translation id="5996832681196460718">шелк</translation>
+<translation id="6016750809509395299">Созданные названия:</translation>
 <translation id="6017514345406065928">Зеленый</translation>
 <translation id="6019566113895157499">Сочетания клавиш</translation>
 <translation id="6034694447310538551">Включить ежемесячный автоматический сброс показателя</translation>
@@ -1092,6 +1103,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">Не удается подключиться к интернету</translation>
 <translation id="6156030503438652198">темно-бордовых и розовых</translation>
+<translation id="6163318050265152852">Не удалось создать названия, так как расшифровка слишком длинная.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6185263894115593524">Чтобы другие не могли использовать микрофон и камеру вашего устройства, сбросьте настройки. Предоставляйте разрешения только тем сайтам, которым вы доверяете.</translation>
@@ -1171,6 +1183,7 @@
 <translation id="6500818810472529210">Посмотрите результат в Google Поиске.</translation>
 <translation id="650266656685499220">Чтобы создать альбомы, перейдите в Google Фото</translation>
 <translation id="6505750420152840539">От рассвета до заката</translation>
+<translation id="6515056490985026110">Не удалось создать названия, так как расшифровка слишком короткая.</translation>
 <translation id="6516990319416533844">Чтобы проверить скорость зарядки батареи, разрядите ее в течение короткого промежутка времени.</translation>
 <translation id="6517239166834772319">Возможности</translation>
 <translation id="6526200165918397681">Подобрать цвет под обои</translation>
@@ -1256,11 +1269,13 @@
 <translation id="6910312834584889076">Открыта крышка сканера. Закройте крышку и повторите попытку.</translation>
 <translation id="6910845598686542904">создавать образцы распознанных на записи голосов с помощью вычислительных методов;</translation>
 <translation id="6911383237894364323">Не удалось подключиться к медиасерверам.</translation>
+<translation id="6926069762081461162">Название записи</translation>
 <translation id="6930242544192836755">Продолжительность</translation>
 <translation id="6930597342185648547">О фоне</translation>
 <translation id="6939766318048400022">Кафе</translation>
 <translation id="6942253772720771875">Оставьте отзыв или опишите проблему.</translation>
 <translation id="6943893908656559156">Удаленное удостоверение (необязательно)</translation>
+<translation id="694981048020558038">Поиск названия записи</translation>
 <translation id="6953137545147683679">золотой</translation>
 <translation id="6957231940976260713">Название службы</translation>
 <translation id="695776212669661671">стрелка вправо</translation>
@@ -1335,6 +1350,7 @@
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
 <translation id="7223952304612664117">Системные службы смогут использовать точность геолокации, чтобы определять ваше местоположение. Функция обрабатывает данные датчиков и сведения о беспроводных сигналах. Это позволяет ей точнее определять местоположение устройства.</translation>
 <translation id="7233782086689993269">Сочетание клавиш восстановлено</translation>
+<translation id="723419678599947502">Создать название, используя ИИ от Google</translation>
 <translation id="725133483556299729">Выбор адреса электронной почты</translation>
 <translation id="7255187042098209569">розовый и пурпурный</translation>
 <translation id="7267918995585557751">Чтобы убедиться, что стартовая страница по умолчанию – не фишинговый сайт, сбросьте настройки. Используйте только те сайты, которым вы доверяете.</translation>
@@ -1483,6 +1499,7 @@
 <translation id="7897043345768902965">тротуар</translation>
 <translation id="7902285181767404769">Отключить звук уведомлений во время записи</translation>
 <translation id="7903695460270716054">Выбрать произведения искусства и красивые фото</translation>
+<translation id="7908543555831145677">Названия записей созданы</translation>
 <translation id="7912005977894000746">Вернуться на главную страницу</translation>
 <translation id="7915220255123750251">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом.</translation>
 <translation id="7915759923880480519">Чтобы защитить данные, передаваемые по вашим сетям, сбросьте настройки. Используйте только те сети, которым вы доверяете.</translation>
@@ -1557,6 +1574,7 @@
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8262870577632766028">1 час</translation>
 <translation id="827422111966801947">Индиго</translation>
+<translation id="8280687443902283243">Изменить название</translation>
 <translation id="8286154143153872371">Чтобы посмотреть обои, подключитесь к сети и обновите страницу.</translation>
 <translation id="8291967909914612644">Страна провайдера</translation>
 <translation id="8294431847097064396">Источник</translation>
@@ -1564,6 +1582,7 @@
 <translation id="8308787307410010965">Настройки контента</translation>
 <translation id="8312330582793120272">воспроизвести медиаконтент</translation>
 <translation id="8318753676953949627">Нет изображений</translation>
+<translation id="8319809980370328428">Краткий пересказ записей и создание названий</translation>
 <translation id="8320910311642849813">лес</translation>
 <translation id="8322464149031882595">Нажмите, чтобы перейти вперед</translation>
 <translation id="8329018942023753850">приложение "Калькулятор"</translation>

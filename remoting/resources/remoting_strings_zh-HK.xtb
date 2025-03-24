@@ -40,6 +40,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="2758123043070977469">發生驗證問題，請再次登入。</translation>
 <translation id="2803375539583399270">請輸入 PIN</translation>
 <translation id="2919669478609886916">您目前正與另一位使用者共用這部電腦，您要繼續共用嗎？</translation>
+<translation id="2929683002824598593">共用裝置</translation>
 <translation id="2939145106548231838">主機驗證</translation>
 <translation id="3027681561976217984">觸控模式</translation>
 <translation id="3106379468611574572">遠端電腦未回應您的連線要求。請確認遠端電腦已經在線，然後再試一次。</translation>
@@ -117,10 +118,12 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="6178645564515549384">用於遠端協助的內置訊息傳遞主機</translation>
 <translation id="618120821413932081">更新遠端桌面的解像度以符合視窗大小</translation>
 <translation id="6223301979382383752">開啟「畫面錄影功能」偏好設定</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> 要求你授予螢幕的檢視權限和鍵盤與滑鼠的控制權限。要共用你的裝置嗎？</translation>
 <translation id="6284412385303060032">在控制器邏輯螢幕執行的主機已關閉，並切換到在使用者自訂工作階段執行的主機，以支援簾幕模式。</translation>
 <translation id="6542902059648396432">報告問題…</translation>
 <translation id="6583902294974160967">支援</translation>
 <translation id="6612717000975622067">傳送 Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{如不採取行動，裝置將在 # 秒後自動開始共用。}other{如不採取行動，裝置將在 # 秒後自動開始共用。}}</translation>
 <translation id="6654753848497929428">共用</translation>
 <translation id="677755392401385740">已為下列使用者啟動主機：<ph name="HOST_USERNAME" />`</translation>
 <translation id="6902524959760471898">協助在「<ph name="PRODUCT_NAME" />」用戶端上開啟網址的輔助應用程式</translation>

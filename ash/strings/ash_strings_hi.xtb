@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">भाषा सेटिंग दिखाएं</translation>
 <translation id="1459693405370120464">मौसम</translation>
 <translation id="1460620680449458626">आवाज़ को म्यूट किया गया है.</translation>
+<translation id="1462439140224375968">Google दस्तावेज़ बनाया गया</translation>
 <translation id="14648076227129703">यह <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा ऐक्सेस करने देता है जिनके पास इसकी अनुमति है</translation>
 <translation id="1467432559032391204">बाएं</translation>
 <translation id="146902737843070955">आपके एडमिन ने इस बदलाव का अनुरोध किया है</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">हॉटस्पॉट की जानकारी दिखाएं. हॉटस्पॉट बंद है.</translation>
 <translation id="3017079585324758401">बैकग्राउंड</translation>
 <translation id="3018135054368884502">मीडिया को तेज़ी से आगे बढ़ाएं</translation>
+<translation id="3026897869154397692">Calendar में जोड़ा गया</translation>
 <translation id="3033545621352269033">चालू है</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> के साथ जोड़ें</translation>
 <translation id="3036649622769666520">फ़ाइलें खोलें</translation>
@@ -1895,6 +1897,7 @@
 <translation id="7228968829656641943">खोजने के लिए, स्क्रीन का कोई हिस्सा चुनें. कीबोर्ड का इस्तेमाल करके नेविगेट करने के लिए, tab और फिर space दबाएं.</translation>
 <translation id="7229029500464092426">मेमोरी उपलब्ध <ph name="AVAILABLE_MEMORY" /> | कुल मेमोरी <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">माउस के दोनों बटन</translation>
+<translation id="7240636904654154599">Google शीट बनाई गई</translation>
 <translation id="7244725679040769470">बैटरी <ph name="PERCENTAGE" />% बची है. अपने डिवाइस को चार्ज करें.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. किसी अपडेट को लागू करने के लिए इस Chromebook को रीस्टार्ट करना ज़रूरी है. इसमें एक मिनट तक लग सकता है.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2408,7 @@
 <translation id="8921624153894383499">Google Assistant सेवा इस भाषा में उपलब्ध नहीं है.</translation>
 <translation id="8926951137623668982">शेल्फ़ को हमेशा के लिए छिपाकर रखा गया है</translation>
 <translation id="8929566928381252430">क्या आपको Caps Lock का इस्तेमाल करना है? इनका इस्तेमाल करें</translation>
+<translation id="8929623844713377237">संपर्क बनाया गया</translation>
 <translation id="8934418770423095813">Google दस्तावेज़ बनाएं</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="8936501819958976551">बंद की गई</translation>

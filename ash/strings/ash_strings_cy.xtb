@@ -149,6 +149,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1455242230282523554">Dangos y gosodiadau iaith</translation>
 <translation id="1459693405370120464">Tywydd</translation>
 <translation id="1460620680449458626">Mae'r sain wedi'i ddistewi.</translation>
+<translation id="1462439140224375968">Crëwyd Google Doc</translation>
 <translation id="14648076227129703">Mae hyn yn caniatáu mynediad camera ar gyfer <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, a phob ap a gwefan gyda chaniatâd y camera</translation>
 <translation id="1467432559032391204">Wedi gadael</translation>
 <translation id="146902737843070955">Mae eich gweinyddwr wedi gofyn am y newid hwn</translation>
@@ -593,6 +594,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="301584155502740476">Dangos manylion y boethfan. Mae'r boethfan wedi'i diffodd.</translation>
 <translation id="3017079585324758401">Cefndir</translation>
 <translation id="3018135054368884502">Cyflymu cyfryngau</translation>
+<translation id="3026897869154397692">Ychwanegwyd at y Calendar</translation>
 <translation id="3033545621352269033">Ymlaen</translation>
 <translation id="3033912566804961911">Cyfuno gyda <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Agor Ffeiliau</translation>
@@ -1894,6 +1896,7 @@ Gosodiad newydd</translation>
 <translation id="7228968829656641943">Dewis i chwilio fy sgrîn. Pwyso Tab ac yna Space ar gyfer llywio'r bysellfwrdd.</translation>
 <translation id="7229029500464092426">Cof <ph name="AVAILABLE_MEMORY" /> | Cyfanswm o <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Y ddau fotwm llygoden</translation>
+<translation id="7240636904654154599">Crëwyd Google Sheet</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% o fatri ar ôl. Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Mae angen i'r Chromebook hwn ailgychwyn i gymhwyso diweddariad. Gall hyn gymryd hyd at 1 funud.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2407,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8921624153894383499">Nid yw Google Assistant yn siarad yr iaith hon.</translation>
 <translation id="8926951137623668982">Silff yn cael ei guddio bob amser</translation>
 <translation id="8929566928381252430">Ceisio defnyddio Caps Lock? Defnyddio</translation>
+<translation id="8929623844713377237">Crëwyd cyswllt</translation>
 <translation id="8934418770423095813">Creu Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ffeil}zero{# ffeil}two{# ffeil}few{# ffeil}many{# ffeil}other{# ffeil}}</translation>
 <translation id="8936501819958976551">wedi dadweithredu</translation>

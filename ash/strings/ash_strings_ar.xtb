@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">عرض إعدادات اللغة</translation>
 <translation id="1459693405370120464">الطقس</translation>
 <translation id="1460620680449458626">تم كتم الصوت.</translation>
+<translation id="1462439140224375968">‏تم إنشاء مستند Google</translation>
 <translation id="14648076227129703">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا من "<ph name="APP1_NAME" />" و"<ph name="APP2_NAME" />" وجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن.</translation>
 <translation id="1467432559032391204">اليسار</translation>
 <translation id="146902737843070955">طلب المشرف إجراء هذا التغيير.</translation>
@@ -592,6 +593,7 @@
 <translation id="301584155502740476">يمكنك عرض تفاصيل نقطة الاتصال. نقطة الاتصال غير مفعَّلة.</translation>
 <translation id="3017079585324758401">الخلفية</translation>
 <translation id="3018135054368884502">تقديم سريع للوسائط</translation>
+<translation id="3026897869154397692">تمت الإضافة إلى التقويم</translation>
 <translation id="3033545621352269033">مُفعَّلة</translation>
 <translation id="3033912566804961911">دمج مع <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">فتح الملفات</translation>
@@ -1010,6 +1012,7 @@
 <translation id="4351244548802238354">إغلاق مربع الحوار</translation>
 <translation id="4356872429719185452">يمكنك عرض تفاصيل نقطة الاتصال. ويجري الآن تفعيل نقطة الاتصال.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  جارٍ التسجيل</translation>
+<translation id="4368227575116094370">‏إنشاء جدول بيانات Google</translation>
 <translation id="4371348193907997655">إعدادات البث</translation>
 <translation id="4371834685492830207">يجب أن يتضمّن رقم التعريف الشخصي أحرف صالحة فقط</translation>
 <translation id="4375482231364171368">البحث في شريط العناوين</translation>
@@ -1892,6 +1895,7 @@
 <translation id="7228968829656641943">‏للبحث في الشاشة، يُرجى اختيار منطقة. ويمكنك الضغط على مفتاح Tab ثم مفتاح المسافة للتنقّل باستخدام لوحة المفاتيح.</translation>
 <translation id="7229029500464092426">الذاكرة المستخدمة: <ph name="AVAILABLE_MEMORY" /> | إجمالي الذاكرة: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">كلا زرَّي الماوس</translation>
+<translation id="7240636904654154599">‏تم إنشاء جدول بيانات Google</translation>
 <translation id="7244725679040769470">‏يتبقّى ‎<ph name="PERCENTAGE" />%.
 يُرجى توصيل الجهاز بمصدر طاقة.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. يجب إعادة تشغيل جهاز Chromebook لتطبيق التحديث. قد يستغرق هذا الإجراء مدة تصل إلى دقيقة واحدة.</translation>
@@ -2403,6 +2407,7 @@
 <translation id="8921624153894383499">‏لا يتحدث مساعد Google هذه اللغة.</translation>
 <translation id="8926951137623668982">إخفاء الرف دائمًا</translation>
 <translation id="8929566928381252430">‏هل تحاول استخدام مفتاح Caps Lock؟ استخدِم</translation>
+<translation id="8929623844713377237">تم إنشاء جهة اتصال</translation>
 <translation id="8934418770423095813">‏إنشاء مستند Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ملف واحد}zero{‫# ملف}two{ملفان}few{‫# ملفات}many{‫# ملفًا}other{‫# ملف}}</translation>
 <translation id="8936501819958976551">غير مفعّلة</translation>

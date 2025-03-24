@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Хэлний тохиргоог харуулах</translation>
 <translation id="1459693405370120464">Цаг агаар</translation>
 <translation id="1460620680449458626">Дууг хаасан.</translation>
+<translation id="1462439140224375968">Google Док үүсгэсэн</translation>
 <translation id="14648076227129703">Энэ нь <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> болон камерын зөвшөөрөлтэй бүх апп болон вебсайтад камерын хандалтыг зөвшөөрнө</translation>
 <translation id="1467432559032391204">Зүүн</translation>
 <translation id="146902737843070955">Таны администратор энэ өөрчлөлтийг хүссэн</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">Сүлжээний цэгийн дэлгэрэнгүйг харуулна уу. Сүлжээний цэг унтраалттай байна.</translation>
 <translation id="3017079585324758401">Арын дэвсгэр</translation>
 <translation id="3018135054368884502">Медиаг хурдан урагшлуулах</translation>
+<translation id="3026897869154397692">Календарьт нэмсэн</translation>
 <translation id="3033545621352269033">Асаалттай</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" />-тай нэгтгэнэ үү</translation>
 <translation id="3036649622769666520">Файл нээх</translation>
@@ -1895,6 +1897,7 @@
 <translation id="7228968829656641943">Миний дэлгэцээс хайхын тулд сонгоно уу. Гарын навигацыг авах бол tab, дараа нь зай авах товчин дээр дарна уу.</translation>
 <translation id="7229029500464092426">Нийт <ph name="TOTAL_MEMORY" />-н санах ойгоос <ph name="AVAILABLE_MEMORY" /></translation>
 <translation id="7239814253344511868">Хулганын хоёр товч</translation>
+<translation id="7240636904654154599">Google Хүснэгт үүсгэсэн</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% батарей үлдсэн. Төхөөрөмжөө тэжээлд залгана уу.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Энэ Chromebook-д шинэчлэлтийг хэрэгжүүлэхийн тулд үүнийг дахин эхлүүлэх шаардлагатай. Үүнд 1 минут хүртэл хугацаа шаардагдаж болно.</translation>
 <translation id="7256057185598509352">Шуурхай түлхүүр 2</translation>
@@ -2406,6 +2409,7 @@
 <translation id="8921624153894383499">Google туслах энэ хэлээр ярьдаггүй.</translation>
 <translation id="8926951137623668982">Shelf-г тогтмол нууна</translation>
 <translation id="8929566928381252430">Caps Lock-г ашиглахаар оролдож байна уу? Ашиглах</translation>
+<translation id="8929623844713377237">Харилцагч үүсгэсэн</translation>
 <translation id="8934418770423095813">Google Док үүсгэх</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">идэвхгүй болгосон</translation>

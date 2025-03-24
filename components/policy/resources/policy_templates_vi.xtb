@@ -8908,6 +8908,18 @@ Không hỗ trợ lịch biểu có khoảng thời gian chồng chéo. Chính s
 Thiết bị <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng múi giờ hệ thống để áp dụng các khoảng thời gian này.
 
 Lưu ý quan trọng: Lịch biểu do chính sách này đặt có thể không diễn ra theo dự kiến nếu xung đột với các chế độ cài đặt quản lý nguồn khác, chẳng hạn như <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Hãy đảm bảo bạn đã định cấu hình các chế độ cài đặt này để khoảng thời gian tạm ngưng đã lên lịch có hiệu lực.</translation>
+<translation id="7196944905905233325">Bật trình cung cấp khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> trong <ph name="PRODUCT_NAME" /> để các công cụ hỗ trợ tiếp cận sử dụng.
+
+<ph name="PRODUCT_NAME" /> hỗ trợ chính sách này trong giai đoạn chuyển đổi kéo dài một năm để giúp quản trị viên doanh nghiệp kiểm soát việc triển khai trình cung cấp khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> của trình duyệt. Chức năng hỗ trợ tiếp cận và các công cụ khác dùng khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> để tương tác với trình duyệt có thể cần cập nhật để hoạt động đúng cách với trình cung cấp <ph name="UIA_NAME" /> của trình duyệt. Trong khi làm việc với nhà cung cấp để cập nhật những công cụ bị ảnh hưởng, quản trị viên có thể sử dụng chính sách này để tạm thời tắt trình cung cấp <ph name="UIA_NAME" /> của trình duyệt và quay về hành vi cũ.
+
+Khi bạn đặt thành false, <ph name="PRODUCT_NAME" /> chỉ bật trình cung cấp <ph name="MSAA_NAME" />. Chức năng hỗ trợ tiếp cận và các công cụ khác dùng khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> mới hơn để tương tác với trình duyệt sẽ giao tiếp với trình duyệt thông qua shim tương thích trong <ph name="MS_WIN_NAME" />.
+
+Khi bạn đặt chính sách này thành true, <ph name="PRODUCT_NAME" /> sẽ bật trình cung cấp <ph name="UIA_NAME" /> cùng với trình cung cấp <ph name="MSAA_NAME" />.
+Chức năng hỗ trợ tiếp cận và các công cụ khác dùng khung hỗ trợ tiếp cận <ph name="UIA_NAME" /> mới hơn để tương tác với trình duyệt sẽ giao tiếp trực tiếp với trình duyệt.
+
+Khi bạn không đặt chính sách này, khung biến thể trong <ph name="PRODUCT_NAME" /> sẽ được dùng để bật hoặc tắt trình cung cấp.
+
+Chúng tôi sẽ ngừng hỗ trợ chế độ cài đặt chính sách này kể từ <ph name="PRODUCT_NAME" /> 146.</translation>
 <translation id="7198134478421755850">Tiện ích</translation>
 <translation id="7199304109870655950">Định cấu hình tùy chọn truy cập từ xa trên máy chủ Chrome Remote Desktop.
 

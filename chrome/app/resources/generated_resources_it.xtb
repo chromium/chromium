@@ -405,6 +405,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1264956950255940376">Strizza l'occhio sinistro</translation>
 <translation id="1265094893042958831">Generazione di suggerimenti per questa pagina in corso…</translation>
 <translation id="1265279736024499987">Le app e le impostazioni verranno sincronizzate su tutti i dispositivi ChromeOS Flex su cui hai eseguito l'accesso con il tuo Account Google. Per le opzioni di sincronizzazione del browser, vai alle <ph name="LINK_BEGIN" />impostazioni di Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Dopo aver acquisito uno screenshot o aver effettuato una ricerca sullo schermo, mostra più azioni, ad esempio aggiungi a Calendar, crea Documenti Google e altro ancora.</translation>
 <translation id="126710816202626562">Lingua della traduzione:</translation>
 <translation id="1267649802567297774">Immagine generata <ph name="INDEX" /> di <ph name="SUBJECT" />, in stile <ph name="STYLE" />, con stato d'animo <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1570,6 +1571,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="208547068587548667">Accedi a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Riprova</translation>
 <translation id="208634871997892083">VPN sempre attiva</translation>
+<translation id="208654914566977272">Azioni suggerite durante la ricerca sullo schermo</translation>
 <translation id="2087822576218954668">Stampa: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">La registrazione è supportata solo dopo l'installazione di <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint integrato</translation>
@@ -2340,7 +2342,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2606568927909309675">Vengono creati automaticamente i sottotitoli per i contenuti audio e video in inglese. Audio e sottotitoli non possono essere trasferiti dal dispositivo.</translation>
 <translation id="2606890864830643943">Esportazione dati diagnostici in corso…</translation>
 <translation id="2607101320794533334">Info sulla chiave pubblica del soggetto</translation>
-<translation id="2608837922830967145">Non mostrare più questo messaggio</translation>
 <translation id="2609896558069604090">Crea scorciatoie...</translation>
 <translation id="2609980095400624569">Impossibile stabilire la connessione</translation>
 <translation id="2610157865375787051">Sospensione</translation>
@@ -6506,6 +6507,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5575528586625653441">Si è verificato un problema con la richiesta di registrazione alla modalità demo.</translation>
 <translation id="557722062034137776">Il reset del dispositivo non influirà sui tuoi Account Google o sui dati sincronizzati con tali account. Tuttavia, tutti i file salvati localmente sul dispositivo verranno eliminati.</translation>
 <translation id="5578059481725149024">Accesso automatico</translation>
+<translation id="5578387000057347457">Inserisci un prompt personalizzato o evidenzia il testo per creare un'immagine</translation>
 <translation id="5581134892342029705">Traduzione verso la lingua <ph name="LANGUAGE" /> completata</translation>
 <translation id="558170650521898289">Verifica driver hardware Microsoft Windows</translation>
 <translation id="5581972110672966454">Impossibile aggiungere il dispositivo al dominio. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
@@ -8649,6 +8651,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="713122686776214250">Aggiungi pa&amp;gina...</translation>
 <translation id="7131431455372521159">Tutti i TrackPoint sono stati disconnessi</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, in attesa</translation>
+<translation id="7132886488919643383">Usa Google AI per ricevere assistenza nella lettura, nella scrittura e nella creazione</translation>
 <translation id="7134098520442464001">Riduci le dimensioni del testo</translation>
 <translation id="7134951043985383439">File scaricato pericoloso</translation>
 <translation id="7135729336746831607">Attivare il Bluetooth?</translation>
@@ -11680,6 +11683,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="953434574221655299">Autorizzati a sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="954705236478705408">Configura un nuovo profilo</translation>
 <translation id="954749761428814584">Lingua e metodo di immissione</translation>
+<translation id="956013912698841780">Fai clic con il tasto destro del mouse per riassumere i contenuti, ottenere definizioni, scrivere con maggiore sicurezza, creare immagini e altro ancora. Al momento la disponibilità è limitata.</translation>
 <translation id="956500788634395331">È attiva la protezione da estensioni potenzialmente dannose</translation>
 <translation id="957179356621191750">a 6 punti</translation>
 <translation id="957960681186851048">Questo sito ha tentato di scaricare automaticamente più file</translation>

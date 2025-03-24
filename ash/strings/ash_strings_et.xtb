@@ -149,6 +149,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1455242230282523554">Kuva keeleseaded</translation>
 <translation id="1459693405370120464">Ilm</translation>
 <translation id="1460620680449458626">Helitugevus on vaigistatud.</translation>
+<translation id="1462439140224375968">Loodi Google’i dokument</translation>
 <translation id="14648076227129703">See lubab rakendustel <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ning kõikidel kaamerale juurdepääsemise loaga rakendustel ja veebisaitidel kaamerale juurde pääseda</translation>
 <translation id="1467432559032391204">Vasakule</translation>
 <translation id="146902737843070955">Seda muudatust taotles teie administraator</translation>
@@ -593,6 +594,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="301584155502740476">Kuumkoha üksikasjade kuvamine. Kuumkoht on välja lülitatud.</translation>
 <translation id="3017079585324758401">Taust</translation>
 <translation id="3018135054368884502">Keri meediasisu edasi</translation>
+<translation id="3026897869154397692">Lisati kalendrisse</translation>
 <translation id="3033545621352269033">Sees</translation>
 <translation id="3033912566804961911">Ühita töölauaga <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Failide avamine</translation>
@@ -1895,6 +1897,7 @@ Uus installimine</translation>
 <translation id="7228968829656641943">Valige minu ekraanilt otsimiseks. Klaviatuuriga navigeerimiseks vajutage tabulaatorit ja seejärel tühikut.</translation>
 <translation id="7229029500464092426">Kasutatud mälu: <ph name="AVAILABLE_MEMORY" /> | kogumälu:<ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Mõlemad hiirenupud</translation>
+<translation id="7240636904654154599">Loodi Google’i arvutustabel</translation>
 <translation id="7244725679040769470">Akut on jäänud <ph name="PERCENTAGE" />%. Ühendage seade toiteallikaga.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. See Chromebook tuleb värskenduse rakendamiseks taaskäivitada. Selleks võib kuluda kuni 1 minut.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2408,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8921624153894383499">Google'i assistent ei räägi selles keeles.</translation>
 <translation id="8926951137623668982">Riiul on alati peidetud</translation>
 <translation id="8929566928381252430">Kas proovite kasutada klahvi Caps Lock? Kasutage</translation>
+<translation id="8929623844713377237">Loodi kontakt</translation>
 <translation id="8934418770423095813">Loo Google'i dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fail}other{# faili}}</translation>
 <translation id="8936501819958976551">inaktiveeritud</translation>

@@ -821,6 +821,7 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TAB_COUNT_ONE" /> ടാബുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TAB_COUNT_MANY" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}}</translation>
 <translation id="4837753911714442426">പേജ് പ്രിന്റ് ചെയ്യുന്നതിനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുക</translation>
 <translation id="4844633725025837809">അധിക സുരക്ഷയ്ക്ക്, Google പാസ്‌വേഡ് മാനേജറിലേക്ക് സംരക്ഷിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌വേഡുകൾ എൻക്രിപ്റ്റ് ചെയ്യുക</translation>
+<translation id="4849731766219625109">നിങ്ങളുടെ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> അക്കൗണ്ട് ഉപയോഗിക്കുക</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="4852014461738377247">സൈൻ ഇൻ ചെയ്യുന്നു\u2026</translation>
 <translation id="4860895144060829044">വിളിക്കുക</translation>
@@ -1562,6 +1563,7 @@
 <translation id="8073388330009372546">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8078096376109663956">ടെക്‌സ്റ്റ് മാത്രം പങ്കിടുക</translation>
+<translation id="8078348702936632821">ഈ കുറുക്കുവഴി പിൻ ചെയ്യുക</translation>
 <translation id="8084114998886531721">സംരക്ഷിച്ച പാസ്‌വേഡ്</translation>
 <translation id="8084285576995584326">നിങ്ങളുടെ Google Account ഡാറ്റ നിയന്ത്രിക്കുക</translation>
 <translation id="8084864785646838999">നിങ്ങളുടെ ചരിത്രത്തിൽ ചിലത് ഇവിടെ ദൃശ്യമായേക്കില്ല. നിങ്ങളുടെ പൂർണ്ണ Chrome ചരിത്രം കാണാൻ, പൂർണ്ണ Chrome ചരിത്രം തുറക്കുക. കൂടാതെ, നിങ്ങളുടെ Google Account-ന് <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രവും ഉണ്ടായിരിക്കാം.</translation>

@@ -40,6 +40,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="2758123043070977469">Todennusvirhe – kirjaudu uudelleen sisään.</translation>
 <translation id="2803375539583399270">Lisää PIN-koodi</translation>
 <translation id="2919669478609886916">Jaat tällä hetkellä tämän tietokoneen toisen käyttäjän kanssa. Haluatko jatkaa jakamista?</translation>
+<translation id="2929683002824598593">Jaa laite</translation>
 <translation id="2939145106548231838">Todenna isännälle</translation>
 <translation id="3027681561976217984">Kosketustila</translation>
 <translation id="3106379468611574572">Etätietokone ei vastaa yhteyspyyntöihin. Vahvista, että se on online-tilassa, ja yritä uudelleen.</translation>
@@ -117,10 +118,12 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="6178645564515549384">Viestiliikenteen alkuperäinen isäntä etäavustukselle</translation>
 <translation id="618120821413932081">Päivitä etäresoluutio vastaamaan ikkunan resoluutiota</translation>
 <translation id="6223301979382383752">Avaa näytön tallennuksen asetukset</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> on pyytänyt lupaa nähdä näyttösi ja ohjata näppäimistöäsi ja hiirtäsi. Haluatko jakaa laitteesi?</translation>
 <translation id="6284412385303060032">Konsolin logiikkaruudussa käynnissä ollut isäntä sulkeutui tukeakseen verhotilaa. Vaihdetaan käyttäjäkohtaisessa istunnossa käynnissä olevaan isäntään.</translation>
 <translation id="6542902059648396432">Ilmoita ongelmasta…</translation>
 <translation id="6583902294974160967">Tuki</translation>
 <translation id="6612717000975622067">Lähetä Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Jos et tee mitään, laite aloittaa jakamisen automaattisesti # sekunnin päästä.}other{Jos et tee mitään, laite aloittaa jakamisen automaattisesti # sekunnin päästä.}}</translation>
 <translation id="6654753848497929428">Jaa</translation>
 <translation id="677755392401385740">Käyttäjän <ph name="HOST_USERNAME" /> isäntä käynnistettiin.</translation>
 <translation id="6902524959760471898">Apusovellus URL-osoitteen avaamiseen asiakassovelluksessa: <ph name="PRODUCT_NAME" /></translation>

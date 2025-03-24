@@ -149,6 +149,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1455242230282523554">Pokaži jezikovne nastavitve</translation>
 <translation id="1459693405370120464">Vreme</translation>
 <translation id="1460620680449458626">Glasnost je utišana.</translation>
+<translation id="1462439140224375968">Ustvarjen je bil Google Dokument</translation>
 <translation id="14648076227129703">To omogoča dostop do fotoaparata za aplikaciji <ph name="APP1_NAME" /> in <ph name="APP2_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za kamero.</translation>
 <translation id="1467432559032391204">V levo</translation>
 <translation id="146902737843070955">To spremembo je zahteval vaš skrbnik.</translation>
@@ -593,6 +594,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="301584155502740476">Prikaz podrobnosti dostopne točke. Dostopna točka je izklopljena.</translation>
 <translation id="3017079585324758401">Ozadje</translation>
 <translation id="3018135054368884502">Previjanje predstavnosti naprej</translation>
+<translation id="3026897869154397692">Dodano je bilo v koledar</translation>
 <translation id="3033545621352269033">Vklopljeno</translation>
 <translation id="3033912566804961911">Združi z namizjem <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Odpri datoteke</translation>
@@ -1894,6 +1896,7 @@ Nova namestitev</translation>
 <translation id="7228968829656641943">Izberite, če želite iskati po zaslonu. Pritisnite tabulatorko in nato preslednico za premikanje s tipkovnico.</translation>
 <translation id="7229029500464092426">Pomnilnik <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (skupno)</translation>
 <translation id="7239814253344511868">Oba gumba miške</translation>
+<translation id="7240636904654154599">Ustvarjena je bila Google Preglednica</translation>
 <translation id="7244725679040769470">Še približno <ph name="PERCENTAGE" /> % baterije. Priklopite napravo v vir napajanja.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ta Chromebook je treba znova zagnati, če želite uveljaviti posodobitev. Traja lahko največ eno minuto.</translation>
 <translation id="7256057185598509352">Hitra tipka 2</translation>
@@ -2404,6 +2407,7 @@ Nova namestitev</translation>
 <translation id="8921624153894383499">Pomočnik Google ne podpira tega jezika.</translation>
 <translation id="8926951137623668982">Polica vedno skrita</translation>
 <translation id="8929566928381252430">Ali poskušate uporabiti tipko Caps Lock? Uporabite</translation>
+<translation id="8929623844713377237">Ustvarjen je bil stik</translation>
 <translation id="8934418770423095813">Ustvari Google Dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>

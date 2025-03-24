@@ -40,6 +40,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="2758123043070977469">Terjadi error saat mengautentikasi. Silakan login kembali.</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
 <translation id="2919669478609886916">Saat ini Anda sedang berbagi mesin ini dengan pengguna lain. Apakah Anda ingin terus berbagi?</translation>
+<translation id="2929683002824598593">Bagikan perangkat</translation>
 <translation id="2939145106548231838">Autentikasi untuk menghosting</translation>
 <translation id="3027681561976217984">Mode sentuh</translation>
 <translation id="3106379468611574572">Komputer jarak jauh tidak menanggapi permintaan sambungan. Verifikasi bahwa komputer jarak jauh sedang online dan coba lagi.</translation>
@@ -117,10 +118,12 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="6178645564515549384">Hosting perpesanan asli untuk bantuan jarak jauh</translation>
 <translation id="618120821413932081">Mengupdate resolusi desktop jarak jauh untuk menyesuaikan ukuran jendela</translation>
 <translation id="6223301979382383752">Buka Preferensi Screen Recording</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> telah meminta akses untuk melihat layar Anda serta mengontrol keyboard dan mouse Anda. Apakah Anda ingin berbagi perangkat?</translation>
 <translation id="6284412385303060032">Host yang berjalan di layar logika konsol telah dinonaktifkan untuk mendukung mode tirai dengan beralih ke host yang berjalan di sesi khusus pengguna.</translation>
 <translation id="6542902059648396432">Melaporkan masalah...</translation>
 <translation id="6583902294974160967">Dukungan</translation>
 <translation id="6612717000975622067">Kirim Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Jika Anda tidak mengambil tindakan, perangkat akan otomatis mulai berbagi dalam # detik.}other{Jika Anda tidak mengambil tindakan, perangkat akan otomatis mulai berbagi dalam # detik.}}</translation>
 <translation id="6654753848497929428">Bagikan</translation>
 <translation id="677755392401385740">Host dimulai untuk pengguna: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplikasi bantuan untuk membuka URL di klien <ph name="PRODUCT_NAME" /></translation>

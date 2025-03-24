@@ -821,6 +821,7 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခုပါသော <ph name="COLOR_NAME" /> ရောင် တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခုပါသော <ph name="COLOR_NAME" /> ရောင် တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။}}</translation>
 <translation id="4837753911714442426">စာမျက်နှာကို ပုံနှိပ်ဖို့ နည်းလမ်း အားဖွင့်ရန်</translation>
 <translation id="4844633725025837809">လုံခြုံရေးပိုမိုကောင်းမွန်စေရန် စကားဝှက်များကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ မသိမ်းမီ သင်၏စက်၌ အသွင်ဝှက်ပါ</translation>
+<translation id="4849731766219625109">သင်၏ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> အကောင့် သုံးရန်</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="4852014461738377247">လက်မှတ်ထိုးဝင်နေသည်\u2026</translation>
 <translation id="4860895144060829044">ဖုန်းခေါ်ရန်</translation>
@@ -1561,6 +1562,7 @@
 <translation id="8073388330009372546">ပုံကို တဘ် အသစ်ထဲမှာ ဖွင့်ရန်</translation>
 <translation id="8076492880354921740">တဘ်များ</translation>
 <translation id="8078096376109663956">စာသားသီးသန့် မျှဝေပါ</translation>
+<translation id="8078348702936632821">ဤဖြတ်လမ်းလင့်ခ်ကို ပင်ထိုးရန်</translation>
 <translation id="8084114998886531721">သိမ်းဆည်းထားသော စကားဝှက်</translation>
 <translation id="8084285576995584326">သင့် Google Account ဒေတာကို ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="8084864785646838999">သင်၏ မှတ်တမ်းအချို့ကို ဤနေရာတွင် ပြမည်မဟုတ်ပါ။ သင့် Chrome မှတ်တမ်းအားလုံးကြည့်ရန် Chrome မှတ်တမ်းအပြည့်အစုံကို ဖွင့်ပါ။ ထို့ပြင် သင့် Google Account သည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံဖြင့် ကြည့်ရှုမှုမှတ်တမ်းများ ရှိနေနိုင်သည်။</translation>

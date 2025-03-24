@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">نمایش تنظیمات زبان</translation>
 <translation id="1459693405370120464">آب‌وهوا</translation>
 <translation id="1460620680449458626">دکمه میزان صدا صامت است.</translation>
+<translation id="1462439140224375968">‏«سندنگار Google» ایجاد شد</translation>
 <translation id="14648076227129703">با این کار، دسترسی به دوربین برای <ph name="APP1_NAME" />، <ph name="APP2_NAME" />، و همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین مجاز می‌شود</translation>
 <translation id="1467432559032391204">چپ</translation>
 <translation id="146902737843070955">سرپرستتان این تغییر را درخواست کرده است</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">نمایش جزئیات نقطه اتصال. نقطه اتصال خاموش است.</translation>
 <translation id="3017079585324758401">پس‌زمینه</translation>
 <translation id="3018135054368884502">جلو بردن سریع رسانه</translation>
+<translation id="3026897869154397692">به «تقویم» اضافه شد</translation>
 <translation id="3033545621352269033">روشن</translation>
 <translation id="3033912566804961911">ترکیب با <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">باز کردن فایل‌ها</translation>
@@ -1894,6 +1896,7 @@
 <translation id="7228968829656641943">‏برای جستجو در صفحه‌نمایش، بخشی را انتخاب کنید. برای پیمایش با صفحه‌کلید، کلید Tab و سپس فاصله را فشار دهید.</translation>
 <translation id="7229029500464092426">حافظه <ph name="AVAILABLE_MEMORY" /> | مجموع <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">هر دو دکمه موشواره</translation>
+<translation id="7240636904654154599">‏«کاربرگ‌نگار Google» ایجاد شد</translation>
 <translation id="7244725679040769470">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است. دستگاه را به برق وصل کنید.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. این Chromebook برای اعمال به‌روزرسانی باید بازراه‌اندازی شود. این کار ممکن است تا ۱ دقیقه طول بکشد.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2403,6 +2406,7 @@
 <translation id="8921624153894383499">‏«دستیار Google» به این زبان صحبت نمی‌کند.</translation>
 <translation id="8926951137623668982">قفسه همیشه پنهان می‌شود</translation>
 <translation id="8929566928381252430">‏می‌خواهید از کلید Caps Lock استفاده کنید؟ از این استفاده کنید:</translation>
+<translation id="8929623844713377237">مخاطب ایجاد شد</translation>
 <translation id="8934418770423095813">‏ایجاد «سندنگار Google»</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{یک فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="8936501819958976551">غیرفعال</translation>

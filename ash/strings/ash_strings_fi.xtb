@@ -149,6 +149,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1455242230282523554">Näytä kieliasetukset</translation>
 <translation id="1459693405370120464">Sää</translation>
 <translation id="1460620680449458626">Äänet on mykistetty.</translation>
+<translation id="1462439140224375968">Google-dokumentti luotu</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on kameralupa, saavat käyttää kameraa</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
 <translation id="146902737843070955">Järjestelmänvalvoja on pyytänyt tätä muutosta</translation>
@@ -593,6 +594,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="301584155502740476">Näytä hotspotin tiedot. Hotspot on pois päältä.</translation>
 <translation id="3017079585324758401">Tausta</translation>
 <translation id="3018135054368884502">Kelaa mediaa eteenpäin</translation>
+<translation id="3026897869154397692">Lisätty Kalenteriin</translation>
 <translation id="3033545621352269033">Päällä</translation>
 <translation id="3033912566804961911">Yhdistä <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Avaa tiedostot</translation>
@@ -1894,6 +1896,7 @@ Uusi asennus</translation>
 <translation id="7228968829656641943">Hae näytöltä valitsemalla kohta. Jos haluat siirtyä näppäimistön avulla, paina sarkainta ja sitten välilyöntiä.</translation>
 <translation id="7229029500464092426">Muisti <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> yhteensä</translation>
 <translation id="7239814253344511868">Molemmat hiiren painikkeet</translation>
+<translation id="7240636904654154599">Google Sheets -taulukko luotu</translation>
 <translation id="7244725679040769470">Akkua jäljellä <ph name="PERCENTAGE" /> %. Yhdistä laite virtalähteeseen.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tämä Chromebook on käynnistettävä uudelleen, jotta päivitys voidaan ottaa käyttöön. Tämä voi kestää enintään minuutin.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2403,6 +2406,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8921624153894383499">Google Assistant ei ole käytettävissä tällä kielellä.</translation>
 <translation id="8926951137623668982">Hylly piilotetaan aina</translation>
 <translation id="8929566928381252430">Yritätkö käyttää Caps Lockia? Käytä yhdistelmää</translation>
+<translation id="8929623844713377237">Yhteystieto luotu</translation>
 <translation id="8934418770423095813">Luo Google-dokumentti</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tiedosto}other{# tiedostoa}}</translation>
 <translation id="8936501819958976551">poistettu käytöstä</translation>

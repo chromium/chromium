@@ -501,6 +501,7 @@
 <translation id="1846432862466000825">ప్లాస్టిక్ (ఆర్కైవల్)</translation>
 <translation id="1848640291751752317">డౌన్‌లోడ్‌లు</translation>
 <translation id="1848982255014129637">ఫోటో (హై-గ్లాస్)</translation>
+<translation id="1849438148665368129">కొనుగోలు విలువ తప్పనిసరిగా <ph name="CHECKOUT_AMOUNT_MAXIMUM" /> లోపు ఉండాలి</translation>
 <translation id="1853392626017747777">వర్చువల్ కార్డ్ ఎన్‌రోల్‌మెంట్ మూసివేయబడింది</translation>
 <translation id="1854180393107901205">ప్రసారాన్ని ఆపివేయి</translation>
 <translation id="1855370856221982654">బాక్సింగ్</translation>
@@ -2166,6 +2167,7 @@
 <translation id="4796594887379589189">జాబ్ ఖాతా ID</translation>
 <translation id="4798269756263412078">ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి. మీ ఈమెయిల్‌కు హెచ్చరికలు పంపబడతాయి.</translation>
 <translation id="4800132727771399293">మీ గడువు ముగింపు తేదీ మరియు CVCని చెక్ చేసి, మళ్లీ ట్రై చేయండి</translation>
+<translation id="4800546479758254481">ARకు అనుమతి ఉంది</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">మీ పరికర అడ్మినిస్ట్రేట‌ర్ నుండి సూచనలు:</translation>
 <translation id="4811450222531576619">సోర్స్, టాపిక్ గురించి తెలుసుకోండి</translation>
@@ -3028,6 +3030,7 @@
 <translation id="6327065120806001832">లోకల్ నెట్‌వర్క్ యాక్సెస్</translation>
 <translation id="6328639280570009161">నెట్‌వర్క్ సూచనను నిలిపివేసి ప్రయత్నించండి</translation>
 <translation id="6335029926534404762">క్రీడాకారుల షూస్</translation>
+<translation id="6336948221660696475">VRకు అనుమతి లేదు</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> కంటే తక్కువ స్థలాన్ని ఖాళీ చేస్తుంది. మీ తదుపరి సందర్శనలో కొన్ని సైట్‌లు మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>
 <translation id="6337534724793800597">పేరు ద్వారా విధానాలను ఫిల్టర్ చేయి</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> విలువ చెల్లదు, ఉపయోగించబడదు.</translation>
@@ -3071,6 +3074,7 @@
 <translation id="6391700400718590966">సురక్షితమైన పేమెంట్ ఆధారానికి సంబంధించిన మ్యాచ్ అయ్యే ఆధారాల షీట్ ఏదీ మూసివేయబడలేదు</translation>
 <translation id="6392799395081100092">పేపర్ (వెల్లమ్)</translation>
 <translation id="6393156038355142111">శక్తివంతమైన పాస్‌వర్డ్‌ని సూచించు</translation>
+<translation id="6393310910507376797">వ్యాపారి ఈ ఆప్షన్‌ను సపోర్ట్ చేయడం లేదు</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> నుండి ఈ లొకేషన్‌లో పేస్ట్ చేయడం అడ్మినిస్ట్రేటర్ పాలసీ ద్వారా బ్లాక్ చేయబడింది</translation>
 <translation id="6394852772105848029">ఈ సైట్ <ph name="APP_NAME" /> యాప్‌ను తెరవాలనుకుంటోంది</translation>
 <translation id="639673288733510393">స్కూటర్‌లు &amp; మోపెడ్‌లు</translation>
@@ -3223,6 +3227,7 @@
 <translation id="6668389483194953109">కనుగొన్న పేపర్ సైజ్ పేరు "అనుకూలం", కానీ "custom_size" ప్రాపర్టీ ఖాళీగా ఉంది లేదా చెల్లదు.</translation>
 <translation id="6671169470640320959">ఆటో ఫైనాన్సింగ్</translation>
 <translation id="6671697161687535275">Chromium నుండి ఫారమ్ సూచనను తీసివేయాలా?</translation>
+<translation id="6675846980676550611">ARకు అనుమతి లేదు</translation>
 <translation id="6677351035258626477">ఫాస్ట్ ఫుడ్</translation>
 <translation id="6679354743514146922">Chrome బ్రౌజర్ <ph name="APP_NAME" />‌లో మీ పాస్‌వర్డ్‌ను పూరించడానికి ట్రై చేస్తోంది.</translation>
 <translation id="6681790815630918386">CVC సేవ్ అయింది</translation>
@@ -3711,6 +3716,7 @@
 <translation id="7512685745044087310">ఈ పాలసీని "ఒప్పు", 'తప్పనిసరి'కి సెట్ చేయడం సాధ్యం కాదు, కాబట్టి దీన్ని 'సిఫార్సు చేయబడింది'కి మార్చాము.</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">ఈ సమయంలో VRకు అనుమతి ఉంది</translation>
 <translation id="7517201160922869406">కఠినమైన దారుల్లో వెళ్లగల వాహనాలు</translation>
 <translation id="7517414872996418597">ఎన్వలప్ C10</translation>
 <translation id="7518003948725431193">వెబ్ అడ్రస్‌కు వెబ్‌పేజీ కనుగొనబడలేదు: <ph name="URL" /></translation>
@@ -4611,6 +4617,7 @@
 <translation id="9139318394846604261">షాపింగ్</translation>
 <translation id="9140198744651252040">పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయడానికి Chrome బ్రౌజర్ వేలిముద్రను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="9141013498910525015">అడ్రస్‌లను నిర్వహించండి</translation>
+<translation id="9141672681283222114">ఈ సమయంలో ARకు అనుమతి ఉంది</translation>
 <translation id="9143898823728499852">మీ <ph name="CARD_ISSUER_NAME" /> ఖాతా Google Payకి లింక్ చేసినందున మీరు ఈ కార్డ్‌ను ఆటోఫిల్ చేయవచ్చు</translation>
 <translation id="9144951720726881238">గడువు తేదీ:</translation>
 <translation id="9145910032514306808">మళ్లీ <ph name="BEGIN_LINK" />సైన్ ఇన్ చేసి<ph name="END_LINK" />,
@@ -4668,6 +4675,7 @@
 <translation id="922152298093051471">Chromeను అనుకూలంగా మార్చండి</translation>
 <translation id="9222403027701923763">ప్రాథమిక &amp; మాధ్యమిక స్కూల్ (K-12)</translation>
 <translation id="93020190163435405">ఇంటర్న్‌షిప్‌లు</translation>
+<translation id="931598121743515856">కొనుగోలు విలువ తప్పనిసరిగా <ph name="CHECKOUT_AMOUNT_MINIMUM" /> కంటే ఎక్కువగా ఉండాలి</translation>
 <translation id="933712198907837967">డైనర్స్ క్లబ్</translation>
 <translation id="934634059306213385">Wi-Fi నెట్‌వర్క్‌లను సెటప్ చేయడానికి <ph name="APP_NAME" /> యాప్‌ను అనుమతించాలా?</translation>
 <translation id="936602727769022409">మీరు మీ Google ఖాతాకు యాక్సెస్‌ని కోల్పోవచ్చు. మీరు ఇప్పుడే మీ పాస్‌వర్డ్‌ని మార్చాల్సిందిగా Chromium సిఫార్సు చేస్తోంది. మీరు సైన్ ఇన్ చేయాల్సి ఉంటుంది.</translation>
@@ -4684,6 +4692,7 @@
 <translation id="949314938206378263">మీరు ఈ సైట్‌ను సందర్శించడానికి అనుమతి కోరారు. మీ తల్లి/తండ్రి Family Linkలో రిప్లయి ఇవ్వవచ్చు.</translation>
 <translation id="950736567201356821">ఎగువ భాగంలో మూడు రంధ్రాలు</translation>
 <translation id="950926967802086924">పాస్-కీ • Google Password Manager</translation>
+<translation id="955429569736351433">VRకు అనుమతి ఉంది</translation>
 <translation id="95721182352849470">పసుపు రంగు 2</translation>
 <translation id="961663415146723894">దిగువ భాగంలో బైండ్</translation>
 <translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>

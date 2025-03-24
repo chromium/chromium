@@ -10,6 +10,7 @@
 <translation id="102432830749687801">Օգտագործեք Google-ի «Բովանդակության տեղափոխում» հավելվածը՝ ձեր ուսումնական հաշվի տվյալները անձնական հաշիվ տեղափոխելու համար, քանի դեռ չեք կորցրել հասանելիությունը։</translation>
 <translation id="1026212596705997935">Դյուրանցումն օգտագործվում է «<ph name="CONFLICT_ACCEL_NAME" />» գործողության համար։ Սեղմեք նոր դյուրանցում։ Առկա դյուրանցումը փոխարինելու համար նորից սեղմեք այս դյուրանցումը։</translation>
 <translation id="1030856839388844477">Զրոյացնել տվյալների օգտագործումը</translation>
+<translation id="1047095725494118091">Չհաջողվեց ներբեռնել։ Նորից փորձեք կամ վերագործարկեք ձեր <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> հոսք, <ph name="CPU_MAX_CLOCK_SPEED" /> ԳՀց)</translation>
 <translation id="1047773237499189053">Հասանելի է նոր գործառույթ։ Ավելին իմանալու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="1049663189809099096">պաստելային դեղին</translation>
@@ -25,6 +26,7 @@
 <translation id="1082009148392559545">Էկրանապահի ներբեռնում</translation>
 <translation id="1094693127011229778">IP հասցեն անհասանելի է</translation>
 <translation id="1100902271996134409">Պատկերների ստեղծում…</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> աուդիո</translation>
 <translation id="1116694919640316211">Տեղեկություններ</translation>
 <translation id="1118572504348554005">Մենք կարող ենք փոխանցել այս ձևի միջոցով ուղարկված կարծիքը մեր գործընկերներին, որպեսզի նրանք շտկեն վրիպակները և այլ խնդիրներ, որոնց մասին դուք հաղորդել եք մեզ։ Մի՛ ներառեք զգայուն տեղեկություններ, օրինակ՝ գաղտնաբառեր։</translation>
 <translation id="1119403468619527527">Բառերը չափից քիչ են պարզեցնելու համար</translation>
@@ -290,6 +292,7 @@
 <translation id="2163937499206714165">Միացնել մուգ ռեժիմը</translation>
 <translation id="2164131940279488868">Համոզվեք, որ խոսափողը միացված է ձայնագրությունն սկսելու համար</translation>
 <translation id="2173302385160625112">Ստուգեք կապը</translation>
+<translation id="2176909213844392588">Հնարավոր չէ ներբեռնել <ph name="LANGUAGE_NAME" /> լեզվով գրադարձման մոդելը։ Նորից փորձեք կամ վերագործարկեք ձեր <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="2180197493692062006">Սխալ առաջացավ։ Փորձեք նորից բացել հավելվածը։</translation>
 <translation id="2189104374785738357">APN-ի տվյալների փոփոխում</translation>
 <translation id="2195732836444333448">Սերվերում չկան բավականաչափ ռեսուրսներ։ Վերադարձեք քիչ անց։</translation>
@@ -476,6 +479,7 @@
 <translation id="3199982728237701504">Փաստաթղթերի մատակարար (երկկողմանի)</translation>
 <translation id="3201315366910775591">Ընդհանուր ալբոմները կարող են թարմացվել այլ մարդկանց կողմից</translation>
 <translation id="3211671540163313381">Ստեղների նշանակման D-pad</translation>
+<translation id="3217462202230355157">Համոզվեք, որ ձեր խոսափողը միացված է կամ վերագործարկեք ձեր <ph name="DEVICE_TYPE" /> սարքը</translation>
 <translation id="3226405216343213872">Սկաներների որոնում</translation>
 <translation id="3226657629376379887">Դասավորության գործողությունների ընտրացանկ</translation>
 <translation id="3227186760713762082">Բաժանեք «<ph name="CATEGORY_TEXT" />» արժեքը <ph name="CONVERSION_RATE" />-ի</translation>
@@ -510,6 +514,7 @@
 <translation id="3383623117265110236">Բացառիկ</translation>
 <translation id="3404249063913988450">Միացնել էկրանապահը</translation>
 <translation id="3413935475507503304">Թարմացումը շարունակելու համար սեղմեք «Առաջ»։</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> սարքի ամբողջ աուդիոն ձայնագրվում է</translation>
 <translation id="3428551088151258685">բացօթյա</translation>
 <translation id="3428971106895559033">պաստել</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -670,6 +675,7 @@
 <translation id="4155551848414053977">Համոզվեք, որ սկաներն աշխատում է և հասանելի է ցանցի կամ ուղիղ կապի միջոցով</translation>
 <translation id="4159238217853743776">Մասնակի</translation>
 <translation id="4159784952369912983">Մանուշակագույն</translation>
+<translation id="416219735020840807">Հնարավոր չէ ներբեռնել գրադարձման մոդելը։ Նորից փորձեք կամ վերագործարկեք ձեր <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="4170180284036919717">Լուսանկարել</translation>
 <translation id="4170700058716978431">ՁԱԽՈՂՎԵՑ</translation>
 <translation id="4171077696775491955">պակասեցնել պայծառությունը</translation>
@@ -933,6 +939,7 @@
 <translation id="5344619683981067131">Ընտրված տեքստը փոխարինվում է առաջարկվածով</translation>
 <translation id="5346687412805619883">Լոկալ ցանց</translation>
 <translation id="5358174242040570474">Սխալ առաջացավ։ Նորից ընտրեք պաստառ կամ հավելվածը փակեք ու նորից բացեք։</translation>
+<translation id="5368228070728130240">Չհաջողվեց ամփոփման և վերնագրի ստեղծման համար ներբեռնել մոդելը։ Նորից փորձեք կամ վերագործարկեք ձեր <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="5372659122375744710">Wi-Fi ցանցն անվտանգ չէ</translation>
 <translation id="5376354385557966694">Ավտոմատ բաց ռեժիմ</translation>
 <translation id="5378184552853359930">IP-ի տեսակը</translation>
@@ -1234,6 +1241,7 @@
 <translation id="6766275201586212568">DNS-ի անհաջող լուծումներ</translation>
 <translation id="6768237774506518020">DNS-ի լուծման խափանումների բարձր մակարդակ</translation>
 <translation id="6786747875388722282">Ընդլայնումներ</translation>
+<translation id="6789891265243243337">Երբ <ph name="DEVICE_TYPE" /> սարքի աուդիոն միացված է, ձայնագրիչը գրանցում է այս սարքում նվագարկվող բոլոր ձայները</translation>
 <translation id="6791471867139427246">ստեղնաշարի լուսավորության գույնը</translation>
 <translation id="6796229976413584781">Դյուրանցումը հեռացվեց</translation>
 <translation id="6798678288485555829">Նավիգացիա տեքստում</translation>
@@ -1699,6 +1707,7 @@
 <translation id="8930622219860340959">Անլար</translation>
 <translation id="8933650076320258356">Ընտրված է <ph name="KEYS" /> ստեղնը «<ph name="DIRECTION" />» ուղղության համար։ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Սպասառուի IP հասցե</translation>
+<translation id="8938606491880817721">Չհաջողվեց ներբեռնել։ Նորից փորձեք կամ վերագործարկեք ձեր <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="8944651180182756621">Գործարկիչի գույն</translation>
 <translation id="8945308580158685341">մեղուներ</translation>
 <translation id="894617464444543719">Սարքը հեռախոս է։</translation>

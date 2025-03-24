@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">言語設定を表示</translation>
 <translation id="1459693405370120464">天気</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
+<translation id="1462439140224375968">Google ドキュメントを作成しました</translation>
 <translation id="14648076227129703">カメラへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="1467432559032391204">左</translation>
 <translation id="146902737843070955">管理者がこの変更をリクエストしました</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">アクセス ポイントの詳細を表示します。アクセス ポイントはオフです。</translation>
 <translation id="3017079585324758401">背景</translation>
 <translation id="3018135054368884502">メディアを早送りする</translation>
+<translation id="3026897869154397692">カレンダーに追加しました</translation>
 <translation id="3033545621352269033">オン</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> に移動</translation>
 <translation id="3036649622769666520">ファイルを開く</translation>
@@ -1894,6 +1896,7 @@
 <translation id="7228968829656641943">画面上の範囲を選択して検索します。キーボード ナビゲーションを使用するには、Tab キーを押し、スペースキーを押してください。</translation>
 <translation id="7229029500464092426">メモリ <ph name="AVAILABLE_MEMORY" /> | 合計 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">マウスの両方のボタン</translation>
+<translation id="7240636904654154599">Google スプレッドシートを作成しました</translation>
 <translation id="7244725679040769470">バッテリー残量が <ph name="PERCENTAGE" />% です。デバイスを電源に接続してください。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。アップデートを適用するには、Chromebook を再起動する必要があります。再起動には最長で 1 分ほどかかります。</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2407,7 @@
 <translation id="8921624153894383499">Google アシスタントはこの言語に対応していません。</translation>
 <translation id="8926951137623668982">シェルフは常に非表示です</translation>
 <translation id="8929566928381252430">CapsLock キーの代わりに次のキーを使用してください</translation>
+<translation id="8929623844713377237">連絡先を作成しました</translation>
 <translation id="8934418770423095813">Google ドキュメントを作成</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 件のファイル}other{# 件のファイル}}</translation>
 <translation id="8936501819958976551">無効</translation>

@@ -40,6 +40,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="2758123043070977469">Autentimisel ilmnes probleem. Logige uuesti sisse.</translation>
 <translation id="2803375539583399270">Sisestage PIN-kood</translation>
 <translation id="2919669478609886916">Jagate seda seadet praegu teise kasutajaga. Kas soovite jagamist jätkata?</translation>
+<translation id="2929683002824598593">Jaga seadet</translation>
 <translation id="2939145106548231838">Hostiga autentimine</translation>
 <translation id="3027681561976217984">Puuterežiim</translation>
 <translation id="3106379468611574572">Kaugarvuti ei reageeri ühenduse taotlusele. Veenduge, et võrguühendus on olemas, ja proovige uuesti.</translation>
@@ -117,10 +118,12 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="6178645564515549384">Omasõnumside hostimine kaugabi jaoks</translation>
 <translation id="618120821413932081">Akna vastendamiseks värskendatakse kaugseadme eraldusvõimet</translation>
 <translation id="6223301979382383752">Ava ekraanikuva salvestamise eelistused</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> taotles juurdepääsu teie ekraanikuva vaatamiseks ning klaviatuuri ja hiire juhtimiseks. Kas soovite oma seadet jagada?</translation>
 <translation id="6284412385303060032">Konsooli loogikakuval käitatav host on varjatud režiimi toetamiseks välja lülitatud, lülitades hostile, mida käitatakse kasutajapõhises seansis.</translation>
 <translation id="6542902059648396432">Probleemist teavitamine ...</translation>
 <translation id="6583902294974160967">Tugi</translation>
 <translation id="6612717000975622067">Saada klahvikombinatsioon Ctrl + Alt + Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Kui te midagi ette ei võta, hakkab teie seade # sekundi pärast automaatselt jagama.}other{Kui te midagi ette ei võta, hakkab teie seade # sekundi pärast automaatselt jagama.}}</translation>
 <translation id="6654753848497929428">Jaga</translation>
 <translation id="677755392401385740">Kasutajale käivitati host: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Abirakendus URL-i avamiseks teenuse <ph name="PRODUCT_NAME" /> kliendis</translation>

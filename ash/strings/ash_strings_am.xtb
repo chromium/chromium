@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">የቋንቋ ቅንብሮችን አሳይ</translation>
 <translation id="1459693405370120464">የአየር ሁኔታ</translation>
 <translation id="1460620680449458626">የድምፅ መጠን ድምፀ ከል ተደርጓል።</translation>
+<translation id="1462439140224375968">Google ሰነድ ተፈጥሯል</translation>
 <translation id="14648076227129703">ይህ ለ<ph name="APP1_NAME" />፣ <ph name="APP2_NAME" /> እና የካሜራ ፈቃድ ላላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የካሜራ መዳረሻ ይፈቅዳል</translation>
 <translation id="1467432559032391204">ግራ</translation>
 <translation id="146902737843070955">የእርስዎ አስተዳዳሪ ይህን ለውጥ ጠይቀዋል</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">የመገናኛ ነጥብ ዝርዝሮችን አሳይ። መገናኛ ነጥብ ጠፍቷል።</translation>
 <translation id="3017079585324758401">ጀርባ</translation>
 <translation id="3018135054368884502">ሚዲያን ወደፊት አሳልፍ</translation>
+<translation id="3026897869154397692">ወደ ቀን መቁጠሪያ ታክሏል</translation>
 <translation id="3033545621352269033">አብራ</translation>
 <translation id="3033912566804961911">ከ<ph name="DESK_NAME" /> ጋር ማጣመር</translation>
 <translation id="3036649622769666520">ፋይሎች ክፈት</translation>
@@ -1894,6 +1896,7 @@
 <translation id="7228968829656641943">የእኔን ማያ ገፅ ለመፈልግ ይምረጡ። ለቁልፍ ሰሌዳ አሰሳ ትር ከዚያ ክፍተት ይጫኑ።</translation>
 <translation id="7229029500464092426">ማህደረ ትውስታ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ጠቅላላ</translation>
 <translation id="7239814253344511868">ሁለቱም የመዳፊት አዘራሮች</translation>
+<translation id="7240636904654154599">Google ሉህ ተፈጥሯል</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ባትሪ ይቀራል።
 መሣሪያዎን ከኃይል ጋር ያገናኙ።</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />። ይህ Chromebook አንድ ዝማኔን ለመተግበር ዳግም መነሳት አለበት። ይህ እስከ 1 ደቂቃ ድረስ ሊወስድ ይችላል</translation>
@@ -2406,6 +2409,7 @@
 <translation id="8921624153894383499">የGoogle ረዳቱ ይህን ቋንቋ አይናገርም።</translation>
 <translation id="8926951137623668982">መደርደሪያ ሁልጊዜ ይደበቃል</translation>
 <translation id="8929566928381252430">Caps Lock ለመጠቀም እየሞከሩ ነው? ይጠቀሙ</translation>
+<translation id="8929623844713377237">ዕውቂያ ታክሏል</translation>
 <translation id="8934418770423095813">Google ሰነድን ይጫኑ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ፋይል}one{# ፋይል}other{# ፋይሎች}}</translation>
 <translation id="8936501819958976551">ቦዝኗል</translation>

@@ -40,6 +40,7 @@
 <translation id="2758123043070977469">進行驗證時發生問題，請重新登入。</translation>
 <translation id="2803375539583399270">輸入 PIN</translation>
 <translation id="2919669478609886916">你目前正與另一位使用者共用這台電腦，你要繼續共用嗎？</translation>
+<translation id="2929683002824598593">共用裝置</translation>
 <translation id="2939145106548231838">主機驗證</translation>
 <translation id="3027681561976217984">觸控模式</translation>
 <translation id="3106379468611574572">遠端電腦未回應你的連線要求。請確認遠端電腦已在線上，然後再試一次。</translation>
@@ -117,10 +118,12 @@
 <translation id="6178645564515549384">用於遠端協助的內建訊息傳遞主機</translation>
 <translation id="618120821413932081">更新遠端桌面解析度以符合視窗大小</translation>
 <translation id="6223301979382383752">開啟螢幕畫面錄製偏好設定</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> 要求你授予螢幕檢視權限和鍵盤與滑鼠的控制權限。要共用裝置嗎？</translation>
 <translation id="6284412385303060032">在控制台登入畫面執行的主機已關閉。這樣才能切換成在個別使用者工作階段中執行的主機，以支援帷幕模式。</translation>
 <translation id="6542902059648396432">回報問題…</translation>
 <translation id="6583902294974160967">支援</translation>
 <translation id="6612717000975622067">傳送 Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{如果未採取行動，裝置將在 # 秒後自動開始共用。}other{如果未採取行動，裝置將在 # 秒後自動開始共用。}}</translation>
 <translation id="6654753848497929428">共用</translation>
 <translation id="677755392401385740">已為下列使用者啟動主機：<ph name="HOST_USERNAME" />。</translation>
 <translation id="6902524959760471898">協助在 <ph name="PRODUCT_NAME" />用戶端上開啟網址的輔助應用程式</translation>

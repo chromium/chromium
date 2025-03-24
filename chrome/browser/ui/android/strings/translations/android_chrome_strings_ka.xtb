@@ -821,6 +821,7 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის <ph name="TAB_COUNT_ONE" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}other{ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის <ph name="TAB_COUNT_MANY" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}}</translation>
 <translation id="4837753911714442426">გვერდის ბეჭდვის ვარიანტების გახსნა</translation>
 <translation id="4844633725025837809">დამატებითი უსაფრთხოებისთვის, Google-ის პაროლების მმართველში შენახვამდე, დაშიფრეთ პაროლები თქვენს მოწყობილობაზე</translation>
+<translation id="4849731766219625109">თქვენი <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ანგარიშის გამოყენება</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="4852014461738377247">მიმდინარეობს შესვლა…</translation>
 <translation id="4860895144060829044">დარეკვა</translation>
@@ -1562,6 +1563,7 @@
 <translation id="8073388330009372546">გამოსახულების გახსნა ახალ ჩანართზე</translation>
 <translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8078096376109663956">მხოლოდ ტექსტის გაზიარება</translation>
+<translation id="8078348702936632821">ამ მალსახმობის ჩამაგრება</translation>
 <translation id="8084114998886531721">შენახული პაროლი</translation>
 <translation id="8084285576995584326">მართეთ თქვენი Google ანგარიშის მონაცემები</translation>
 <translation id="8084864785646838999">თქვენი ისტორიის ნაწილი, შესაძლოა, აქ არ გამოჩნდეს. Chrome-ის მთლიანი ისტორიის სანახავად გახსენით Chrome-ის სრული ისტორია. ასევე, თქვენს Google ანგარიშში შეიძლება ინახებოდეს ვების დათვალიერების სხვა ტიპის ისტორიაც, რომელიც ხელმისაწვდომია მისამართზე <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

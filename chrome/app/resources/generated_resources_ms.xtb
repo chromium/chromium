@@ -405,6 +405,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1264956950255940376">Julingkan mata kiri</translation>
 <translation id="1265094893042958831">Menjana cadangan untuk halaman ini…</translation>
 <translation id="1265279736024499987">Apl dan tetapan anda akan disegerakkan pada semua peranti Chrome OS Flex yang anda gunakan untuk log masuk dengan Google Account anda. Untuk mendapatkan pilihan penyegerakan penyemak imbas, pergi ke <ph name="LINK_BEGIN" />tetapan Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">Selepas mengambil tangkapan skrin atau mencari skrin anda, paparkan lebih banyak tindakan seperti tambahkan pada Calendar, buat Google Docs dan pelbagai lagi.</translation>
 <translation id="126710816202626562">Bahasa terjemahan:</translation>
 <translation id="1267649802567297774">Imej <ph name="INDEX" /> daripada <ph name="SUBJECT" /> yang dijana dalam gaya <ph name="STYLE" /> dengan perasaan <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1580,6 +1581,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="208547068587548667">Log masuk ke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Sila cuba lagi</translation>
 <translation id="208634871997892083">VPN sentiasa dihidupkan</translation>
+<translation id="208654914566977272">Tindakan yang dicadangkan apabila mencari pada skrin anda</translation>
 <translation id="2087822576218954668">Cetak: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Pendaftaran hanya disokong selepas anda memasang <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">TrackPoint terbina dalam</translation>
@@ -2354,7 +2356,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2606568927909309675">Membuat sari kata untuk audio dan video bahasa Inggeris secara automatik. Audio dan sari kata tidak sekali-kali dihantar keluar daripada peranti anda.</translation>
 <translation id="2606890864830643943">Mengeksport data diagnostik</translation>
 <translation id="2607101320794533334">Maklumat Penting Subjek Awam</translation>
-<translation id="2608837922830967145">Jangan tunjukkan mesej ini lagi</translation>
 <translation id="2609896558069604090">Buat Pintasan...</translation>
 <translation id="2609980095400624569">Tidak dapat mewujudkan sambungan</translation>
 <translation id="2610157865375787051">Tidur</translation>
@@ -6521,6 +6522,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5575528586625653441">Masalah berkaitan permintaan pendaftaran tunjuk cara telah berlaku.</translation>
 <translation id="557722062034137776">Penetapan semula peranti anda tidak akan menjejaskan Google Account anda atau sebarang data yang disegerakkan ke akaun ini. Walau bagaimanapun, semua fail yang disimpan secara setempat pada peranti anda akan dipadamkan.</translation>
 <translation id="5578059481725149024">Auto log masuk</translation>
+<translation id="5578387000057347457">Masukkan gesaan tersuai atau serlahkan teks untuk membuat imej</translation>
 <translation id="5581134892342029705">Penterjemahan kepada <ph name="LANGUAGE" /> selesai</translation>
 <translation id="558170650521898289">Pengesahan Pemacu Perkakasan Microsoft Windows</translation>
 <translation id="5581972110672966454">Tidak dapat menghubungkan peranti ke domain. Sila cuba lagi atau hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
@@ -8667,6 +8669,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="713122686776214250">Tambah ha&amp;laman...</translation>
 <translation id="7131431455372521159">Semua TrackPoints telah diputuskan sambungan</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, menunggu</translation>
+<translation id="7132886488919643383">Gunakan Google AI untuk mendapatkan bantuan membaca, menulis dan membuat</translation>
 <translation id="7134098520442464001">Jadikan Teks Lebih Kecil</translation>
 <translation id="7134951043985383439">Fail berbahaya dimuat turun</translation>
 <translation id="7135729336746831607">Hidupkan Bluetooth?</translation>
@@ -11700,6 +11703,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="953434574221655299">Dibenarkan mengetahui waktu anda aktif menggunakan peranti</translation>
 <translation id="954705236478705408">Sediakan profil baharu</translation>
 <translation id="954749761428814584">Bahasa dan kaedah input</translation>
+<translation id="956013912698841780">Klik kanan untuk meringkaskan kandungan, mendapatkan definisi, menulis dengan lebih yakin, membuat imej dan pelbagai lagi. Ketersediaan ciri ini terhad pada masa ini.</translation>
 <translation id="956500788634395331">Anda dilindungi daripada sambungan yang mungkin berbahaya</translation>
 <translation id="957179356621191750">6 titik</translation>
 <translation id="957960681186851048">Tapak ini cuba memuat turun berbilang fail secara automatik</translation>
