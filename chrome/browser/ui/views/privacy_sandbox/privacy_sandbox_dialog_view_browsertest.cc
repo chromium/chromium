@@ -34,6 +34,83 @@ namespace {
 constexpr int kAverageBrowserWidth = 800;
 constexpr int kAverageBrowserHeight = 700;
 constexpr base::TimeDelta kMaxWaitTime = base::Seconds(30);
+
+std::string ScrollToBottomScript() {
+  return R"```(
+    (async () => {
+      return new Promise(async (resolve) => {
+        requestIdleCallback(async () => {
+          let dialogElement = document.querySelector("body > "+$1);
+          if ($2 !== "") dialogElement = dialogElement.shadowRoot.querySelector($2);
+          const scrollable = dialogElement.shadowRoot.querySelector('[scrollable]');
+          scrollFunction = () => new Promise(scrollResolve => {
+            let timeout = setTimeout(() => {
+              scrollable.removeEventListener('scrollend', scrollEndCallback);
+              scrollResolve();
+            }, 2000);
+            const scrollEndCallback = () => {
+              clearTimeout(timeout);
+              scrollable.removeEventListener('scrollend', scrollEndCallback);
+              scrollResolve();
+            };
+            scrollable.addEventListener('scrollend', scrollEndCallback);
+            scrollable.scrollTop = scrollable.scrollHeight;
+          });
+          waitUntilHidden = (el) => {
+            return new Promise(overlayResolve => {
+              const observer = new MutationObserver(mutations =>
+                mutations.some(mutation => mutation.type === 'attributes' &&
+                 mutation.attributeName === 'hidden' && el.hasAttribute('hidden')) &&
+                requestAnimationFrame(() => (observer.disconnect(), overlayResolve()))
+              );
+              el.hasAttribute('hidden')
+                ? requestAnimationFrame(overlayResolve)
+                : observer.observe(el, { attributes: true, attributeFilter: ['hidden'] });
+            });
+          };
+          await scrollFunction();
+          await waitUntilHidden(dialogElement.shadowRoot.querySelector('#showMoreOverlay'));
+          requestAnimationFrame(resolve);
+        });
+      });
+    })();
+  )```";
+}
+
+std::string ClickLearnMoreButton3TimesScript() {
+  return R"(
+    (async () => {
+     return new Promise(async (resolve) => {
+      requestAnimationFrame(async () => {
+        dialogElement = document.querySelector("body > "+$1);
+        if($2 !== "") dialogElement = dialogElement.shadowRoot.querySelector($2);
+        const learnMoreElement = dialogElement.shadowRoot.querySelector($3);
+        const expandButtonElement = learnMoreElement.shadowRoot.querySelector('div > cr-expand-button');
+        const scrollable = dialogElement.shadowRoot.querySelector('[scrollable]');
+        waitForEndScroll = (el) => new Promise(scrollResolve => {
+          let timeout = setTimeout(() => {
+            el.removeEventListener('scrollend', scrollEndCallback);
+            scrollResolve();
+          }, 2000);
+          const scrollEndCallback = () => {
+            clearTimeout(timeout);
+            el.removeEventListener('scrollend', scrollEndCallback);
+            scrollResolve();
+          };
+          el.addEventListener('scrollend', scrollEndCallback);
+          expandButtonElement.click();
+        });
+        await waitForEndScroll(scrollable);
+        expandButtonElement.click();
+        await waitForEndScroll(scrollable);
+        expandButtonElement.blur();
+        setTimeout(resolve,0);
+      });
+     });
+    })();
+  )";
+}
+
 }  // namespace
 
 class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
@@ -292,5 +369,126 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest
 IN_PROC_BROWSER_TEST_F(
     PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest,
     InvokeUi_PrivacyPolicy) {
+  ShowAndVerifyUi();
+}
+
+// TODO(crbug.com/378886088): Refactor file to reduce code duplication between
+// different test classes.
+class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest
+    : public PrivacySandboxDialogViewBrowserTest {
+ public:
+  PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        // Enabled Features
+        {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
+        // Disabled Features
+        {privacy_sandbox::kPrivacySandboxAdTopicsContentParity,
+         privacy_sandbox::kPrivacySandboxEqualizedPromptButtons});
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    // Resize the browser window to guarantee enough space for the dialog.
+    BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
+        {0, 0, kAverageBrowserWidth, kAverageBrowserHeight});
+
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        PrivacySandboxDialogView::kViewClassName);
+    ShowPrivacySandboxDialog(browser(), GetPromptType(name));
+    views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
+    views::test::WidgetVisibleWaiter(dialog_widget).Wait();
+    ASSERT_TRUE(dialog_widget->IsVisible());
+
+    auto* privacy_sandbox_dialog_view = static_cast<PrivacySandboxDialogView*>(
+        dialog_widget->widget_delegate()->GetContentsView());
+
+    auto [primary_selector, secondary_selector] =
+        GetDialogElementSelector(name);
+
+    // Open, close, and reopen the learn more section. This ensures that there
+    // is no behind the scenes rendering that could cause a layout issue. This
+    // adds test coverage for a past regression where only the second expand
+    // caused a layout issue (crbug.com/388420268).
+    EXPECT_TRUE(
+        content::ExecJs(privacy_sandbox_dialog_view->GetWebContentsForTesting(),
+                        content::JsReplace(ClickLearnMoreButton3TimesScript(),
+                                           primary_selector, secondary_selector,
+                                           GetLearnMoreElementSelector(name))));
+
+    // Scroll the view to the bottom before taking a screenshot.
+    EXPECT_TRUE(content::ExecJs(
+        privacy_sandbox_dialog_view->GetWebContentsForTesting(),
+        content::JsReplace(ScrollToBottomScript(), primary_selector,
+                           secondary_selector)));
+  }
+
+ private:
+  PrivacySandboxService::PromptType GetPromptType(std::string_view name) {
+    if (name == "ConsentEEA") {
+      return PrivacySandboxService::PromptType::kM1Consent;
+    }
+    if (name == "NoticeEEAsiteSuggestedAds" ||
+        name == "NoticeEEAadsMeasurementLearnMore") {
+      return PrivacySandboxService::PromptType::kM1NoticeEEA;
+    }
+    if (name == "NoticeROW") {
+      return PrivacySandboxService::PromptType::kM1NoticeROW;
+    }
+    NOTREACHED();
+  }
+
+  std::pair<std::string, std::string> GetDialogElementSelector(
+      const std::string& name) {
+    if (name == "ConsentEEA") {
+      return std::make_pair("privacy-sandbox-combined-dialog-app", "#consent");
+    }
+    if (name == "NoticeEEAsiteSuggestedAds" ||
+        name == "NoticeEEAadsMeasurementLearnMore") {
+      return std::make_pair("privacy-sandbox-combined-dialog-app", "#notice");
+    }
+    if (name == "NoticeROW") {
+      return std::make_pair("privacy-sandbox-notice-dialog-app", "");
+    }
+    NOTREACHED();
+  }
+
+  std::string GetLearnMoreElementSelector(const std::string& name) {
+    if (name == "NoticeEEAsiteSuggestedAds") {
+      return "#siteSuggestedAdsLearnMore";
+    }
+    if (name == "NoticeEEAadsMeasurementLearnMore") {
+      return "#adsMeasurementLearnMore";
+    }
+    if (name == "ConsentEEA" || name == "NoticeROW") {
+      return "privacy-sandbox-dialog-learn-more";
+    }
+    NOTREACHED();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest,
+    InvokeUi_ConsentEEA) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest,
+    InvokeUi_NoticeEEAsiteSuggestedAds) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest,
+    InvokeUi_NoticeEEAadsMeasurementLearnMore) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest,
+    InvokeUi_NoticeROW) {
   ShowAndVerifyUi();
 }
