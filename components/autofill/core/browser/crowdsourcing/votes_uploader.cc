@@ -277,7 +277,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
                     *form,
                     DeterminePossibleFormatStringsForUpload(form->fields()),
                     non_empty_types,
-                    /*login_form_signature=*/{}, observed_submission);
+                    /*login_form_signature=*/std::nullopt, observed_submission);
             return std::pair(std::move(form), std::move(upload_contents));
           },
           std::move(copied_profiles), std::move(copied_credit_cards),

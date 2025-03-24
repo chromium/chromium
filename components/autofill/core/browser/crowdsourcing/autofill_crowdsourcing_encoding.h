@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_ENCODING_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_ENCODING_H_
 
+#include <optional>
 #include <string>
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
 
@@ -50,7 +52,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
     const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
         format_strings,
     const FieldTypeSet& available_field_types,
-    std::string_view login_form_signature,
+    std::optional<FormSignature> login_form_signature,
     bool observed_submission);
 
 // Encodes the list of `forms` and their fields that are valid into an

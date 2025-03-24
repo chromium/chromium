@@ -365,11 +365,11 @@ void VotesUploader::SendVotesOnSave(
   if (pending_credentials->times_used_in_html_form == 0) {
     MaybeSendSingleUsernameVotes();
     UploadPasswordVote(*pending_credentials, submitted_form, autofill::PASSWORD,
-                       std::string());
+                       /*login_form_signature=*/std::nullopt);
     if (username_correction_vote_) {
-      UploadPasswordVote(
-          *username_correction_vote_, submitted_form, autofill::USERNAME,
-          base::NumberToString(*autofill::CalculateFormSignature(observed)));
+      UploadPasswordVote(*username_correction_vote_, submitted_form,
+                         autofill::USERNAME,
+                         autofill::CalculateFormSignature(observed));
       username_correction_vote_.reset();
     }
   } else {
@@ -403,7 +403,7 @@ void VotesUploader::SendVoteOnCredentialsReuse(
     if (pending->times_used_in_html_form == 1) {
       if (UploadPasswordVote(*pending, submitted_form,
                              autofill::ACCOUNT_CREATION_PASSWORD,
-                             observed_structure.FormSignatureAsStr())) {
+                             observed_structure.form_signature())) {
         pending->generation_upload_status =
             PasswordForm::GenerationUploadStatus::kPositiveSignalSent;
       }
@@ -415,7 +415,7 @@ void VotesUploader::SendVoteOnCredentialsReuse(
     // the previous vote.
     if (UploadPasswordVote(*pending, submitted_form,
                            autofill::NOT_ACCOUNT_CREATION_PASSWORD,
-                           std::string())) {
+                           /*login_form_signature=*/std::nullopt)) {
       pending->generation_upload_status =
           PasswordForm::GenerationUploadStatus::kNegativeSignalSent;
     }
@@ -423,7 +423,7 @@ void VotesUploader::SendVoteOnCredentialsReuse(
     // Even if there is no autofill vote to be sent, send the vote about the
     // usage of the generation popup.
     UploadPasswordVote(*pending, submitted_form, autofill::UNKNOWN_TYPE,
-                       std::string());
+                       /*login_form_signature=*/std::nullopt);
   }
 }
 
@@ -431,7 +431,7 @@ bool VotesUploader::UploadPasswordVote(
     const PasswordForm& form_to_upload,
     const PasswordForm& submitted_form,
     const FieldType autofill_type,
-    const std::string& login_form_signature) {
+    std::optional<FormSignature> login_form_signature) {
   // Check if there is any vote to be sent.
   bool has_autofill_vote = autofill_type != autofill::UNKNOWN_TYPE;
   bool has_password_generation_vote = generation_popup_was_shown_;
@@ -594,7 +594,7 @@ void VotesUploader::UploadFirstLoginVotes(
   }
 
   SendUploadRequest(form_structure, available_field_types,
-                    /*login_form_signature=*/std::string(),
+                    /*login_form_signature=*/std::nullopt,
                     /*password_attributes=*/std::nullopt,
                     /*should_set_passwords_were_revealed=*/false);
 }
@@ -890,7 +890,7 @@ std::vector<autofill::AutofillUploadContents>
 VotesUploader::EncodeUploadRequest(
     autofill::FormStructure& form,
     const autofill::FieldTypeSet& available_field_types,
-    std::string_view login_form_signature,
+    std::optional<FormSignature> login_form_signature,
     std::optional<PasswordAttributesMetadata> password_attributes,
     bool should_set_passwords_were_revealed) {
   // Annotate the form with the source language of the page.
@@ -917,7 +917,7 @@ VotesUploader::EncodeUploadRequest(
 bool VotesUploader::SendUploadRequest(
     autofill::FormStructure& form_to_upload,
     const FieldTypeSet& available_field_types,
-    const std::string& login_form_signature,
+    std::optional<FormSignature> login_form_signature,
     std::optional<PasswordAttributesMetadata> password_attributes,
     bool should_set_passwords_were_revealed) {
   AutofillCrowdsourcingManager* crowdsourcing_manager =
@@ -1099,7 +1099,7 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
     }
 
     if (SendUploadRequest(*form_to_upload, available_field_types,
-                          /*login_form_signature=*/std::string(),
+                          /*login_form_signature=*/std::nullopt,
                           /*password_attributes=*/std::nullopt,
                           /*should_set_passwords_were_revealed=*/false)) {
       return true;

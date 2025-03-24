@@ -29,14 +29,10 @@ HasPasswordLength() {
 }
 
 inline ::testing::Matcher<autofill::AutofillUploadContents>
-LoginFormSignatureIs(const std::string& signature) {
-  uint64_t signature_int;
-  if (!base::StringToUint64(signature, &signature_int)) {
-    signature_int = 0;
-  }
+LoginFormSignatureIs(autofill::FormSignature signature) {
   return ::testing::Property(
       "login_form_signature",
-      &autofill::AutofillUploadContents::login_form_signature, signature_int);
+      &autofill::AutofillUploadContents::login_form_signature, *signature);
 }
 
 inline ::testing::Matcher<autofill::AutofillUploadContents> PasswordsRevealedIs(
