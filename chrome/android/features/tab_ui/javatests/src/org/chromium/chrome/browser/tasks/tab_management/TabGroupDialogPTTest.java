@@ -8,7 +8,6 @@ import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinati
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +18,8 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
@@ -39,18 +38,14 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.
 @Features.DisableFeatures(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
 public class TabGroupDialogPTTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Test
     @MediumTest
     public void testNewTabCreation() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
                         firstPage, 3, 0, "about:blank", WebPageStation::newBuilder);
@@ -68,7 +63,7 @@ public class TabGroupDialogPTTest {
     @Test
     @MediumTest
     public void testIncognitoNewTabCreation() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
                         firstPage, 1, 3, "about:blank", WebPageStation::newBuilder);
@@ -86,7 +81,7 @@ public class TabGroupDialogPTTest {
     @Test
     @MediumTest
     public void testTabGroupNameChange() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
                         firstPage, 3, 0, "about:blank", WebPageStation::newBuilder);

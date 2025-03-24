@@ -27,8 +27,6 @@ import android.widget.ImageView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,9 +47,9 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
@@ -67,7 +65,6 @@ import org.chromium.chrome.test.transit.tabmodel.TabThumbnailsCapturedCarryOn;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -87,13 +84,9 @@ public class TabSwitcherLayoutPTTest {
 
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -102,25 +95,15 @@ public class TabSwitcherLayoutPTTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
                     .build();
 
-    private static EmbeddedTestServer sTestServer;
-
     private WebPageStation mStartPage;
     private WeakReference<Bitmap> mBitmap;
 
     @Before
     public void setUp() throws ExecutionException {
         // After setUp, Chrome is launched and has one NTP.
-        mStartPage = mInitialStateRule.startOnBlankPage();
+        mStartPage = mCtaTestRule.startOnBlankPage();
 
-        sActivityTestRule
-                .getActivity()
-                .getTabContentManager()
-                .setCaptureMinRequestTimeForTesting(0);
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws ExecutionException {
-        sTestServer = sActivityTestRule.getTestServer();
+        mCtaTestRule.getActivity().getTabContentManager().setCaptureMinRequestTimeForTesting(0);
     }
 
     /** Enters the regular Tab Switcher, making sure all tabs have a thumbnail. */
@@ -148,7 +131,7 @@ public class TabSwitcherLayoutPTTest {
             "Flaky in arm64 (crbug.com/378137969 and crbug.com/378502216), affects flake rate of"
                     + " other tests")
     public void testRenderGrid_10WebTabs() throws IOException {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
                         mStartPage, 10, 0, "about:blank", WebPageStation::newBuilder);
@@ -172,7 +155,7 @@ public class TabSwitcherLayoutPTTest {
             "Flaky in arm64 (crbug.com/378137969 and crbug.com/378502216), affects flake rate of"
                     + " other tests")
     public void testRenderGrid_10WebTabs_InitialScroll() throws IOException {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
                         mStartPage, 10, 0, "about:blank", WebPageStation::newBuilder);
@@ -193,10 +176,14 @@ public class TabSwitcherLayoutPTTest {
     @DisabledTest(message = "Test is flaky due to thumbnails not being reliably captured")
     @RequiresRestart("Disable batching while re-enabling other tests")
     public void testRenderGrid_3WebTabs() throws IOException {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         WebPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
-                        mStartPage, 3, 0, sTestServer.getURL(TEST_URL), WebPageStation::newBuilder);
+                        mStartPage,
+                        3,
+                        0,
+                        mCtaTestRule.getTestServer().getURL(TEST_URL),
+                        WebPageStation::newBuilder);
         // Make sure all thumbnails are there before switching tabs.
         RegularTabSwitcherStation tabSwitcherStation =
                 enterRegularHTSWithThumbnailChecking(pageStation);
@@ -215,7 +202,7 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderGrid_3NativeTabs() throws IOException {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         RegularNewTabPageStation pageStation =
                 Journeys.prepareTabsWithThumbnails(
                         mStartPage,
@@ -242,7 +229,7 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderGrid_Incognito() throws IOException {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         // Prepare some incognito tabs and enter tab switcher.
         WebPageStation pageStation =
                 Journeys.createTabsWithThumbnails(
@@ -269,9 +256,9 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
 
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.getLoadedTab().getId();
         RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
         int secondTabId = secondPage.getLoadedTab().getId();
@@ -300,7 +287,7 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @EnableAnimations
     public void testTabToGridAndBack_NoReset() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation page =
                 roundtripToHTSWithThumbnailChecks(
                         firstPage,
@@ -314,8 +301,8 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @EnableAnimations
     public void testTabToGridAndBack_SoftCleanup() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         Runnable resetHTSStateOnUiThread =
                 () -> {
                     var tabSwitcherPane =
@@ -341,9 +328,9 @@ public class TabSwitcherLayoutPTTest {
     @EnableAnimations
     @RequiresRestart("Flaky on desktop (crbug.com/381679686), affects flake rate of other tests")
     public void testTabToGridAndBack_SoftCleanup_Ntp() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularNewTabPageStation ntp = firstPage.openNewTabFast();
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         Runnable resetHTSStateOnUiThread =
                 () -> {
                     var tabSwitcherPane =
@@ -368,8 +355,8 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @EnableAnimations
     public void testTabToGridAndBack_HardCleanup() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         Runnable resetHTSStateOnUiThread =
                 () -> {
                     var tabSwitcherPane =
@@ -395,8 +382,8 @@ public class TabSwitcherLayoutPTTest {
     @MediumTest
     @EnableAnimations
     public void testTabToGridAndBack_NoCoordinator() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         Runnable resetHTSStateOnUiThread =
                 () -> {
                     var tabSwitcherPane =
@@ -422,7 +409,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     public void testTabGroupColorInTabSwitcher() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Expect that the the dialog is dismissed via backpress.
         HistogramWatcher watcher =
@@ -455,7 +442,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     public void testTabGroupCreation_acceptInputValues() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Expect that the the dialog is accepted.
         var histograms =
@@ -494,7 +481,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     public void testTabGroupCreation_acceptNullTitle() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -523,7 +510,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     public void testTabGroupCreation_dismissEmptyTitle() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -554,7 +541,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     public void testTabGroupCreation_rejectInvalidTitle() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -589,7 +576,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     public void testTabGroupCreation_dismissSavesState() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -618,7 +605,7 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     public void testTabGroupOverflowMenuInTabSwitcher_closeGroup() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         // Open 2 tabs
         int firstTabId = firstPage.getLoadedTab().getId();
@@ -665,10 +652,7 @@ public class TabSwitcherLayoutPTTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ImageView view =
-                            (ImageView)
-                                    sActivityTestRule
-                                            .getActivity()
-                                            .findViewById(R.id.tab_thumbnail);
+                            (ImageView) mCtaTestRule.getActivity().findViewById(R.id.tab_thumbnail);
                     mBitmap =
                             new WeakReference<>(((BitmapDrawable) view.getDrawable()).getBitmap());
                     assertNotNull(mBitmap.get());
@@ -705,7 +689,7 @@ public class TabSwitcherLayoutPTTest {
                             assertEquals(
                                     ColorStateList.valueOf(
                                             ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                                    sActivityTestRule.getActivity(), color, false)),
+                                                    mCtaTestRule.getActivity(), color, false)),
                                     drawable.getColor());
                         });
     }

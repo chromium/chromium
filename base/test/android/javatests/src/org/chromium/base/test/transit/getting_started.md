@@ -254,30 +254,27 @@ public class MyPTTest {
 }
 ```
 
-### Option 2: Reset State with BlankCTATabInitialStatePublicTransitRule
+### Option 2: Reset State with AutoResetCtaTransitTestRule
 
 Manually resetting in each test doesn't scale very well in many cases. There are
 some shortcuts for undoing state set during a test, and for tabs specifically,
-we are going to use `BlankCTATabInitialStatePublicTransitRule`, which resets
+we are going to use `AutoResetCtaTransitTestRule`, which resets
 Chrome to a single blank page at the start of each test:
 
 ```java
 public class MyPTTest {
 -   @Rule
--   public BatchedPublicTransitRule<PageStation> mBatchedRule =
--           new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ true);
--
--   ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
--           new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
+-   public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =
+-           ChromeTransitTestRules.blankPageStartReusedActivityRule();
 
 +   @Rule
-+   public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-+       new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
++   public AutoResetCtaTransitTestRule mCtaTestRule =
++       new ChromeTransitTestRules.autoResetCtaActivityRule();
 
     public void testTwoTabs_II() {
 -       PageStation page = mCtaTestRule.start();
 
-+       PageStation page = mInitialStateRule.startOnBlankPage();
++       PageStation page = mCtaTestRule.startOnBlankPage();
         [...]
     }
 }
@@ -291,7 +288,7 @@ of tabs, but `Journeys` is a handy, faster shortcut.
 ```java
 public class MyPTTest {
     public void testFiveTabs_V() {
-        PageStation page = mInitialStateRule.startOnBlankPage();
+        PageStation page = mCtaTestRule.startOnBlankPage();
         page = Journeys.prepareTabs(page, 5, 0, "about:blank");
 
         ImageButton tabSwitcherButton = page.getTabSwitcherButton();
@@ -373,7 +370,7 @@ Facility is returned to the test, ready to be used:
 ```java
 public class MyPTTest {
     public void testOneTab_I() {
-        PageStation page = mInitialStateRule.startOnBlankPage();
+        PageStation page = mCtaTestRule.startOnBlankPage();
 
         TabSwitcherButtonFacility tabSwitcherButton = page.focusOnTabSwitcherButton();
         assertEquals("I", tabSwitcherButton.getTextRendered());
@@ -441,7 +438,7 @@ assert:
 ```java
 public class MyPTTest {
     public void testOneTab_I() {
-        PageStation page = mInitialStateRule.startOnBlankPage();
+        PageStation page = mCtaTestRule.startOnBlankPage();
         TabSwitcherButtonFacility tabSwitcherButton = page.focusOnTabSwitcherButton("I");
 +       TransitAsserts.assertFinalDestination(page);
     }

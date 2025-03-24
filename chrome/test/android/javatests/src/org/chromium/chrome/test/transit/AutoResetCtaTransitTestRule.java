@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.Station;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.base.test.transit.TrafficControl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
@@ -20,29 +21,26 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
- * Wraps BlankCTATabInitialStateRule to be used in Public Transit batched tests.
+ * Rule for integration tests that reuse a ChromeTabbedActivity but reset tab state between cases.
  *
- * <p>TODO(crbug.com/404294940): Remove this after migrating all usages.
- *
- * @deprecated Use {@link ChromeTransitTestRules#autoResetCtaActivityRule()} instead.
+ * <p>Tests using this should be batched.
  */
-@Deprecated
-public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
-
-    private final ChromeTabbedActivityTestRule mActivityTestRule;
-
-    public final BatchedPublicTransitRule<PageStation> mBatchedRule;
-
-    public final BlankCTATabInitialStateRule mInitialStateRule;
+@NullMarked
+public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implements TestRule {
+    private final BlankCTATabInitialStateRule mInitialStateRule;
+    private final BatchedPublicTransitRule<PageStation> mBatchedRule;
     private final RuleChain mChain;
 
-    @Deprecated
-    public BlankCTATabInitialStatePublicTransitRule(ChromeTabbedActivityTestRule activityTestRule) {
-        mActivityTestRule = activityTestRule;
+    /** Create with {@link ChromeTransitTestRules#autoResetCtaActivityRule()}. */
+    AutoResetCtaTransitTestRule() {
+        super();
         mBatchedRule =
                 new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ false);
         mInitialStateRule = new BlankCTATabInitialStateRule(mActivityTestRule, true);
-        mChain = RuleChain.outerRule(mBatchedRule).around(mInitialStateRule);
+        mChain =
+                RuleChain.outerRule(mActivityTestRule)
+                        .around(mInitialStateRule)
+                        .around(mBatchedRule);
     }
 
     @Override
@@ -57,7 +55,7 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
      */
     public WebPageStation startOnBlankPage() {
         // Null in the first test, non-null from the second test onwards.
-        Station<?> homeStation = mBatchedRule.getHomeStation();
+        Station<?> homeStation = TrafficControl.getActiveStation();
         if (homeStation == null) {
             EntryPointSentinelStation entryPoint = new EntryPointSentinelStation();
             entryPoint.setAsEntryPoint();
