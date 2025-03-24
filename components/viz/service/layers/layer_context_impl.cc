@@ -201,8 +201,10 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.blend_mode = static_cast<SkBlendMode>(wire.blend_mode);
   node.target_id = wire.target_id;
-  node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
   node.backdrop_filters = wire.backdrop_filters;
+  node.backdrop_filter_bounds = wire.backdrop_filter_bounds;
+  node.backdrop_filter_quality = wire.backdrop_filter_quality;
+  node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
 
   return base::ok();
 }
