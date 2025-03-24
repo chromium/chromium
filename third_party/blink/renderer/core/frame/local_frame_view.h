@@ -520,7 +520,8 @@ class CORE_EXPORT LocalFrameView final
   void ServiceScrollAnimations(base::TimeTicks);
 
   void ScheduleAnimation(base::TimeDelta = base::TimeDelta(),
-                         base::Location location = base::Location::Current());
+                         base::Location location = base::Location::Current(),
+                         bool urgent = false);
 
   void OnCommitRequested();
 

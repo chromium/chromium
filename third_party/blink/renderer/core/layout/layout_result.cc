@@ -251,6 +251,9 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
   if (builder->is_block_end_trimmable_line_) {
     EnsureRareData()->set_is_block_end_trimmable_line();
   }
+  if (builder->would_be_last_line_if_not_for_ellipsis_) {
+    EnsureRareData()->set_would_be_last_line_if_not_for_ellipsis();
+  }
 
   if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
     EnsureRareData()->tallest_unbreakable_block_size =

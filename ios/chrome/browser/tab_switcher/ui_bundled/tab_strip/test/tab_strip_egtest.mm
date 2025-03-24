@@ -19,12 +19,6 @@
 
 @implementation TabStripTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kModernTabStrip);
-  return config;
-}
-
 // Tests opening new tabs using the new tab button.
 - (void)testTabStripNewTabButton {
   if ([ChromeEarlGrey isCompactWidth]) {

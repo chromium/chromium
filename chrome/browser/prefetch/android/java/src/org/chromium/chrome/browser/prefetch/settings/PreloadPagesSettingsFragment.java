@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.prefetch.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.os.Bundle;
 
@@ -51,12 +49,12 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     protected void onCreatePreferencesInternal(@Nullable Bundle bundle, @Nullable String s) {
         ManagedPreferenceDelegate managedPreferenceDelegate = createManagedPreferenceDelegate();
 
-        mPreloadPagesPreference = assumeNonNull(findPreference(PREF_PRELOAD_PAGES));
+        mPreloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
         mPreloadPagesPreference.init(
                 PreloadPagesSettingsBridge.getState(getProfile()), this, managedPreferenceDelegate);
         mPreloadPagesPreference.setOnPreferenceChangeListener(this);
 
-        Preference disclaimerPref = assumeNonNull(findPreference(PREF_MANAGED_DISCLAIMER_TEXT));
+        Preference disclaimerPref = findPreference(PREF_MANAGED_DISCLAIMER_TEXT);
         disclaimerPref.setVisible(
                 managedPreferenceDelegate.isPreferenceClickDisabled(mPreloadPagesPreference));
     }

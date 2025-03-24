@@ -27,7 +27,7 @@ void PixelTestConfigurationMixin::SetUpCommandLine(
     const std::string language = "ar-XB";
     command_line->AppendSwitchASCII(switches::kLang, language);
 
-    // On Linux & Lacros the command line switch has no effect, we need to use
+    // On Linux the command line switch has no effect, we need to use
     // environment variables to change the language.
     scoped_env_override_ =
         std::make_unique<base::ScopedEnvironmentVariableOverride>("LANGUAGE",

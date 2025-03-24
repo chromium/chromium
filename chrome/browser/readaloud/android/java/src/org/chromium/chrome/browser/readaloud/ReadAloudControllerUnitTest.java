@@ -2050,17 +2050,6 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.READALOUD_PLAYBACK)
-    public void testReadAloudPlaybackFlagCheckedAfterReadability() {
-        mController.maybeCheckReadability(mTab);
-        verify(mHooksImpl, times(1))
-                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
-        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), ImmutableMap.of(PlaybackMode.CLASSIC, new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
-
-        assertFalse(mController.isReadable(mTab));
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK)
     public void testBackgroundPlaybackContinuesWhenActivityPaused() {
         // Play tab.

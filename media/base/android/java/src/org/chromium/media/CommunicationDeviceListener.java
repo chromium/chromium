@@ -31,7 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 @NullMarked
-class AudioDeviceListener {
+class CommunicationDeviceListener {
     private static final boolean DEBUG = false;
 
     private static final String TAG = "media";
@@ -77,9 +77,9 @@ class AudioDeviceListener {
     // Utilized to detect if a USB device is attached or detached.
     private @Nullable BroadcastReceiver mUsbAudioReceiver;
 
-    private final AudioDeviceSelector.Devices mDeviceStates;
+    private final CommunicationDeviceSelector.Devices mDeviceStates;
 
-    public AudioDeviceListener(AudioDeviceSelector.Devices devices) {
+    public CommunicationDeviceListener(CommunicationDeviceSelector.Devices devices) {
         mUsbManager =
                 (UsbManager)
                         ContextUtils.getApplicationContext().getSystemService(Context.USB_SERVICE);
@@ -88,9 +88,11 @@ class AudioDeviceListener {
 
     public void init(boolean hasBluetoothPermission) {
         // Initialize audio device list with things we know is always available.
-        mDeviceStates.setDeviceExistence(AudioDeviceSelector.Devices.ID_EARPIECE, hasEarpiece());
-        mDeviceStates.setDeviceExistence(AudioDeviceSelector.Devices.ID_USB_AUDIO, hasUsbAudio());
-        mDeviceStates.setDeviceExistence(AudioDeviceSelector.Devices.ID_SPEAKERPHONE, true);
+        mDeviceStates.setDeviceExistence(
+                CommunicationDeviceSelector.Devices.ID_EARPIECE, hasEarpiece());
+        mDeviceStates.setDeviceExistence(
+                CommunicationDeviceSelector.Devices.ID_USB_AUDIO, hasUsbAudio());
+        mDeviceStates.setDeviceExistence(CommunicationDeviceSelector.Devices.ID_SPEAKERPHONE, true);
 
         mHasBluetoothPermission = hasBluetoothPermission;
         BluetoothAdapter adapter = getBluetoothAdapter();
@@ -131,7 +133,8 @@ class AudioDeviceListener {
             return;
         }
         mDeviceStates.setDeviceExistence(
-                AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, hasBluetoothHeadset(adapter));
+                CommunicationDeviceSelector.Devices.ID_BLUETOOTH_HEADSET,
+                hasBluetoothHeadset(adapter));
 
         // Register receivers for broadcast intents related to changes in
         // Bluetooth headset availability.
@@ -241,9 +244,9 @@ class AudioDeviceListener {
     }
 
     /**
-     * Registers receiver for the broadcasted intent when a wired headset is
-     * plugged in or unplugged. The received intent will have an extra
-     * 'state' value where 0 means unplugged, and 1 means plugged.
+     * Registers receiver for the broadcasted intent when a wired headset is plugged in or
+     * unplugged. The received intent will have an extra 'state' value where 0 means unplugged, and
+     * 1 means plugged.
      */
     private void registerForWiredHeadsetIntentBroadcast() {
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
@@ -277,12 +280,13 @@ class AudioDeviceListener {
                         switch (state) {
                             case STATE_UNPLUGGED:
                                 mDeviceStates.setDeviceExistence(
-                                        AudioDeviceSelector.Devices.ID_WIRED_HEADSET, false);
+                                        CommunicationDeviceSelector.Devices.ID_WIRED_HEADSET,
+                                        false);
                                 histogramValue = ConnectionStatus.DISCONNECTED;
                                 break;
                             case STATE_PLUGGED:
                                 mDeviceStates.setDeviceExistence(
-                                        AudioDeviceSelector.Devices.ID_WIRED_HEADSET, true);
+                                        CommunicationDeviceSelector.Devices.ID_WIRED_HEADSET, true);
                                 histogramValue = ConnectionStatus.CONNECTED;
                                 break;
                             default:
@@ -349,14 +353,16 @@ class AudioDeviceListener {
                                 // always re-query for existing communication devices, so this
                                 // should not be an issue.
                                 mDeviceStates.setDeviceExistence(
-                                        AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, false);
+                                        CommunicationDeviceSelector.Devices.ID_BLUETOOTH_HEADSET,
+                                        false);
                                 mDeviceStates.onPotentialDeviceStatusChange();
 
                                 histogramValue = ConnectionStatus.DISCONNECTED;
                                 break;
                             case android.bluetooth.BluetoothProfile.STATE_CONNECTED:
                                 mDeviceStates.setDeviceExistence(
-                                        AudioDeviceSelector.Devices.ID_BLUETOOTH_HEADSET, true);
+                                        CommunicationDeviceSelector.Devices.ID_BLUETOOTH_HEADSET,
+                                        true);
                                 mDeviceStates.onPotentialDeviceStatusChange();
                                 histogramValue = ConnectionStatus.CONNECTED;
                                 break;
@@ -441,12 +447,12 @@ class AudioDeviceListener {
                         @ConnectionStatus int histogramValue = ConnectionStatus.DISCONNECTED;
                         if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
                             mDeviceStates.setDeviceExistence(
-                                    AudioDeviceSelector.Devices.ID_USB_AUDIO, true);
+                                    CommunicationDeviceSelector.Devices.ID_USB_AUDIO, true);
                             histogramValue = ConnectionStatus.CONNECTED;
                         } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(intent.getAction())
                                 && !hasUsbAudio()) {
                             mDeviceStates.setDeviceExistence(
-                                    AudioDeviceSelector.Devices.ID_USB_AUDIO, false);
+                                    CommunicationDeviceSelector.Devices.ID_USB_AUDIO, false);
                             histogramValue = ConnectionStatus.DISCONNECTED;
                         }
 
@@ -488,18 +494,15 @@ class AudioDeviceListener {
         Log.d(TAG, msg);
     }
 
-    @Nullable
-    BroadcastReceiver getWiredHeadsetReceiverForTesting() {
+    @Nullable BroadcastReceiver getWiredHeadsetReceiverForTesting() {
         return mWiredHeadsetReceiver;
     }
 
-    @Nullable
-    BroadcastReceiver getBluetoothHeadsetReceiverForTesting() {
+    @Nullable BroadcastReceiver getBluetoothHeadsetReceiverForTesting() {
         return mBluetoothHeadsetReceiver;
     }
 
-    @Nullable
-    BroadcastReceiver getUsbReceiverForTesting() {
+    @Nullable BroadcastReceiver getUsbReceiverForTesting() {
         return mUsbAudioReceiver;
     }
 }

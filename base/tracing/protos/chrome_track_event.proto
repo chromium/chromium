@@ -868,6 +868,15 @@ message EventLatency {
   // aggregation) in which the input was first presented. See also
   // ChromeGraphicsPipeline.display_trace_id.
   optional int64 display_trace_id = 8;
+  // This is set only for scroll updates and is based on the
+  // Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 metric.
+  // NOTE: This field is a new experimental version of is_janky_scrolled_frame.
+  // This field aims to address the old field's shortcomings and eventually
+  // replace it. For now, we recommend you still use the old field
+  // (is_janky_scrolled_frame). See the
+  // Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 histogram's
+  // documentation for more details.
+  optional bool is_janky_scrolled_frame_v3 = 9;
 }
 
 message ProcessSingleton {

@@ -54,7 +54,7 @@ std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
 class TabGroupCoordinatorTest : public PlatformTest {
  protected:
   TabGroupCoordinatorTest() {
-    feature_list_.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+    feature_list_.InitWithFeatures({kTabGroupsIPad}, {});
   }
 
   void SetUp() override {
@@ -153,7 +153,7 @@ class TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest
   TabGroupCoordinatorWithSharedTabGroupsJoinOnlyTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {kTabGroupsIPad, kModernTabStrip, kTabGroupSync,
+        {kTabGroupsIPad, kTabGroupSync,
          data_sharing::features::kDataSharingJoinOnly},
         {});
   }
@@ -167,7 +167,7 @@ class TabGroupCoordinatorWithSharedTabGroupsTest
   TabGroupCoordinatorWithSharedTabGroupsTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {kTabGroupsIPad, kModernTabStrip, kTabGroupSync,
+        {kTabGroupsIPad, kTabGroupSync,
          data_sharing::features::kDataSharingFeature},
         {});
   }

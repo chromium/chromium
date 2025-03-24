@@ -400,14 +400,15 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
   }
   DCHECK_LT(fixed_window_.num_presented_frames, kHistogramEmitFrequency);
 
-  ReportLatestPresentationDataV3(first_input_generation_v3_ts, presentation_ts,
-                                 vsync_interval);
+  ReportLatestPresentationDataV3(earliest_event, first_input_generation_v3_ts,
+                                 presentation_ts, vsync_interval);
 
   prev_presentation_ts_ = presentation_ts;
   prev_last_input_generation_ts_ = last_input_generation_ts;
 }
 
 void ScrollJankDroppedFrameTracker::ReportLatestPresentationDataV3(
+    ScrollUpdateEventMetrics& earliest_event,
     base::TimeTicks first_input_generation_v3_ts,
     base::TimeTicks presentation_ts,
     base::TimeDelta vsync_interval) {
@@ -433,7 +434,9 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationDataV3(
       vsync_interval;
   int curr_frame_missed_vsyncs = curr_frame_total_vsyncs - 1;
 
-  if (missed_frame && input_available) {
+  bool is_janky = missed_frame && input_available;
+  earliest_event.set_is_janky_scrolled_frame_v3(is_janky);
+  if (is_janky) {
     ++per_scroll_v3_->missed_frames;
     ++fixed_window_v3_.missed_frames;
     fixed_window_v3_.missed_vsyncs += curr_frame_missed_vsyncs;

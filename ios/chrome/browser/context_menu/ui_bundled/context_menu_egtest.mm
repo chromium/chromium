@@ -300,7 +300,6 @@ void RelaunchApp() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabGroupsIPad);
-  config.features_enabled.push_back(kModernTabStrip);
   config.features_enabled.push_back(kShareInWebContextMenuIOS);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
   return config;

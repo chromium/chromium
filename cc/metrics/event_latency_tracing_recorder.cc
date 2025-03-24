@@ -262,10 +262,15 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
 
         const ScrollUpdateEventMetrics* scroll_update =
             event_metrics->AsScrollUpdate();
-        if (scroll_update &&
-            scroll_update->is_janky_scrolled_frame().has_value()) {
-          event_latency->set_is_janky_scrolled_frame(
-              scroll_update->is_janky_scrolled_frame().value());
+        if (scroll_update) {
+          if (scroll_update->is_janky_scrolled_frame().has_value()) {
+            event_latency->set_is_janky_scrolled_frame(
+                scroll_update->is_janky_scrolled_frame().value());
+          }
+          if (scroll_update->is_janky_scrolled_frame_v3().has_value()) {
+            event_latency->set_is_janky_scrolled_frame_v3(
+                scroll_update->is_janky_scrolled_frame_v3().value());
+          }
         }
         if (args) {
           event_latency->set_vsync_interval_ms(

@@ -58,21 +58,30 @@ AuthProofToken AuthSessionStorageImpl::Store(
 bool AuthSessionStorageImpl::IsValid(const AuthProofToken& token) {
   auto data_it = tokens_.find(token);
   if (data_it == std::end(tokens_)) {
+    LOG(ERROR) << "Token is not in the storage";
     return false;
   }
   switch (data_it->second->state) {
     case TokenState::kBorrowed:
+      if (data_it->second->invalidate_on_return) {
+        LOG(WARNING) << "Token is borrowed but will be invalidate on return";
+      }
       return !data_it->second->invalidate_on_return;
     case TokenState::kOwned: {
       base::Time lifetime = data_it->second->context->GetSessionLifetime();
       // Edge case: non-authenticated session. Consider it invalid.
       if (lifetime.is_null()) {
+        LOG(WARNING) << "Token lifetime is null";
         return false;
       }
       base::TimeDelta remaining_lifetime = lifetime - clock_->Now();
+      if (!remaining_lifetime.is_positive()) {
+        LOG(WARNING) << "Token lifetime is not positive";
+      }
       return remaining_lifetime.is_positive();
     }
     case TokenState::kInvalidating:
+      LOG(WARNING) << "Token is invalidating";
       return false;
   }
 }

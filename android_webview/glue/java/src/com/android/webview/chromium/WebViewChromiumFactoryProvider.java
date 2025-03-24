@@ -591,6 +591,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 }
             }
 
+            // TODO(crbug.com/397372092): Set up Finch FeatureFlag and
+            // DisableStartupTasksExperimentSafeModeAction
+            boolean enableStartupTasksExperiment =
+                    CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC);
+            mAwInit.setStartupTaskExperimentEnabled(enableStartupTasksExperiment);
+
             if (!FastVariationsSeedSafeModeAction.hasRun()) {
                 mAwInit.startVariationsInit();
             }

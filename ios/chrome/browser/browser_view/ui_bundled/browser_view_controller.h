@@ -40,7 +40,6 @@ class PagePlaceholderBrowserAgent;
 @class SafeAreaProvider;
 @class SideSwipeCoordinator;
 @class TabStripCoordinator;
-@class TabStripLegacyCoordinator;
 class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
@@ -57,7 +56,6 @@ typedef struct {
   NewTabPageCoordinator* ntpCoordinator;
   ToolbarCoordinator* toolbarCoordinator;
   TabStripCoordinator* tabStripCoordinator;
-  TabStripLegacyCoordinator* legacyTabStripCoordinator;
   SideSwipeCoordinator* sideSwipeCoordinator;
   BookmarksCoordinator* bookmarksCoordinator;
   raw_ptr<FullscreenController> fullscreenController;

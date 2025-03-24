@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.components.page_info;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -60,11 +58,9 @@ public class PageInfoAdPersonalizationSettings extends BaseSiteSettingsFragment
             summaryId = R.string.page_info_ad_privacy_topics_description;
         }
         Preference summaryPref = findPreference(PERSONALIZATION_SUMMARY);
-        assumeNonNull(summaryPref);
         summaryPref.setSummary(summaryId);
 
         Preference topicList = findPreference(TOPIC_INFO_PREFERENCE);
-        assumeNonNull(topicList);
         topicList.setVisible(!mParams.topicInfo.isEmpty());
         topicList.setTitle(TextUtils.join("\n\n", mParams.topicInfo));
     }
@@ -80,7 +76,6 @@ public class PageInfoAdPersonalizationSettings extends BaseSiteSettingsFragment
                 this, R.xml.page_info_ad_personalization_preference);
 
         var manageButtonPreference = findPreference(MANAGE_INTEREST_PREFERENCE);
-        assumeNonNull(manageButtonPreference);
         manageButtonPreference.setOnPreferenceClickListener(this);
         manageButtonPreference.setTitle(R.string.page_info_ad_privacy_subpage_manage_button);
         updateTopics();

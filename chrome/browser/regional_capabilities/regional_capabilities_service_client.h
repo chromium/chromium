@@ -14,6 +14,21 @@ class VariationsService;
 }
 
 namespace regional_capabilities {
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr const char kCrOSMissingVariationData[] =
+    "ChromeOS.CountryCode.MissingVariationData";
+// LINT.IfChange(ChromeOSFallbackCountry)
+enum class ChromeOSFallbackCountry {
+  kNoStatisticsProvider = 0,
+  kStatisticsLoadingNotFinished = 1,
+  kGroupedRegion = 2,
+  kRegionTooShort = 3,
+  kRegionTooLong = 4,
+  kValidCountryCode = 5,
+  kMaxValue = kValidCountryCode,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/chromeos/enums.xml:ChromeOSFallbackCountry)
+#endif
 
 // Helper that is responsible for providing the `RegionalCapabilitiesService`
 // with country data that could be coming from platform-specific or //chrome

@@ -455,8 +455,8 @@ void WidgetInputHandlerManager::InputEventsDispatched(bool raf_aligned) {
   }
 }
 
-void WidgetInputHandlerManager::SetNeedsMainFrame() {
-  widget_->RequestAnimationAfterDelay(base::TimeDelta());
+void WidgetInputHandlerManager::SetNeedsMainFrame(bool urgent) {
+  widget_->RequestAnimationAfterDelay(base::TimeDelta(), urgent);
 }
 
 bool WidgetInputHandlerManager::RequestedMainFramePending() {

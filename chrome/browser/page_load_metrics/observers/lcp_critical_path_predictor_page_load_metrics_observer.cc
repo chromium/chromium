@@ -219,8 +219,9 @@ void MaybeReportConfidenceUMAs(
       lcpp_data_inputs.lcp_element_locator;
   if (!actual_lcp_element_locator.empty()) {
     const auto record_frequency_of_actual_positives = [](double frequency) {
-      // The maximum count is defined by `lcpp_histogram_sliding_window_size`.
-      // The default value is 1000.
+      // The maximum count is defined by
+      // `kLCPCriticalPathPredictorHistogramSlidingWindowSize`. The default
+      // value is 1000.
       base::UmaHistogramCounts1000(
           internal::kHistogramLCPPImageLoadingPriorityFrequencyOfActualPositive,
           frequency);
@@ -351,8 +352,9 @@ void MaybeReportConfidenceUMAs(
   {
     const auto record_frequency_of_actual_positives = [](double frequency,
                                                          bool is_same_site) {
-      // The maximum count is defined by `lcpp_histogram_sliding_window_size`.
-      // The default value is 1000.
+      // The maximum count is defined by
+      // `kLCPCriticalPathPredictorHistogramSlidingWindowSize`. The default
+      // value is 1000.
       base::UmaHistogramCounts1000(
           internal::kHistogramLCPPSubresourceFrequencyOfActualPositive,
           frequency);

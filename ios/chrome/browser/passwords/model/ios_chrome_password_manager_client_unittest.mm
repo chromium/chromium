@@ -8,6 +8,9 @@
 
 #import <memory>
 
+#import "base/test/scoped_feature_list.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager.h"
@@ -15,6 +18,9 @@
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -145,4 +151,47 @@ TEST_F(IOSChromePasswordManagerClientTest,
   [credential_provider_promo_commands_handler_mock verify];
 
   passwordController_.dispatcher = nil;
+}
+
+// Tests that the AutofillCrowdsourcingManager can be retrieved for PWM when the
+// feature is enabled.
+TEST_F(IOSChromePasswordManagerClientTest,
+       GetAutofillCrowdsourcingManager_Enabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kPasswordManagerEnableCrowdsourcingUploads};
+
+  InfoBarManagerImpl::CreateForWebState(web_state_.get());
+  auto autofill_client = std::make_unique<
+      autofill::WithFakedFromWebState<autofill::ChromeAutofillClientIOS>>(
+      profile_.get(), web_state_.get(),
+      InfoBarManagerImpl::FromWebState(web_state_.get()), nil);
+
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  ASSERT_TRUE(client->GetAutofillCrowdsourcingManager());
+
+  // Destroy the webstate now so WebStateDestroyed() is called before destroying
+  // the autofill client, so the expected teardown order is respected.
+  web_state_.reset();
+}
+
+// Tests that the AutofillCrowdsourcingManager is not retrieved for PWM when the
+// feature is disabled.
+TEST_F(IOSChromePasswordManagerClientTest,
+       GetAutofillCrowdsourcingManager_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kPasswordManagerEnableCrowdsourcingUploads);
+
+  InfoBarManagerImpl::CreateForWebState(web_state_.get());
+  auto autofill_client = std::make_unique<
+      autofill::WithFakedFromWebState<autofill::ChromeAutofillClientIOS>>(
+      profile_.get(), web_state_.get(),
+      InfoBarManagerImpl::FromWebState(web_state_.get()), nil);
+
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  ASSERT_FALSE(client->GetAutofillCrowdsourcingManager());
+
+  // Destroy the webstate now so WebStateDestroyed() is called before destroying
+  // the autofill client, so the expected teardown order is respected.
+  web_state_.reset();
 }

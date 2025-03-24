@@ -1621,6 +1621,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillAiIgnoreGeoIp",
+                        "AutofillAiVoteForFormatStringsFromMultipleFields",
+                        "AutofillAiVoteForFormatStringsFromSingleFields",
                         "AutofillAiWithDataSchema"
                     ]
                 }
@@ -19975,6 +19977,26 @@
             ]
         }
     ],
+    "RendererSideContentDecoding": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RendererSideContentDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReportCertificateErrors": [
         {
             "platforms": [
@@ -24370,6 +24392,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UploadOfficeToCloud"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UrgentMainFrameForInput": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UrgentMainFrameForInput"
                     ]
                 }
             ]

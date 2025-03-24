@@ -301,6 +301,22 @@ TEST_F(SunfishDisabledScannerDisabledTest,
       ScannerFeatureUserState::kSunfishSessionStartedFromDebugShortcut, 0);
 }
 
+// Tests that the debug accelerator entry point does not emit metrics when
+// neither Sunfish nor Scanner is enabled.
+TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointDoesNotEmitMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionStartedFromKeyboardShortcut, 0);
+
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionStartedFromKeyboardShortcut, 0);
+}
+
 TEST_F(SunfishDisabledScannerDisabledTest,
        SmartActionsButtonNotShownDueToFeatureChecksRecorded) {
   base::HistogramTester histogram_tester;
@@ -544,6 +560,20 @@ TEST_F(SunfishTest, AccelEntryPoint) {
       controller->capture_mode_session()->active_behavior();
   ASSERT_TRUE(active_behavior);
   EXPECT_EQ(active_behavior->behavior_type(), BehaviorType::kSunfish);
+}
+
+// Tests that the accelerator entry point emits the correct metrics.
+TEST_F(SunfishTest, AccelEntryPointMetrics) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionStartedFromKeyboardShortcut, 0);
+
+  PressAndReleaseKey(ui::VKEY_SPACE, ui::EF_COMMAND_DOWN);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishSessionStartedFromKeyboardShortcut, 1);
 }
 
 TEST_F(SunfishEnabledScannerDisabledTest,

@@ -114,17 +114,17 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         SettingsUtils.addPreferencesFromResource(
                 this, R.xml.page_info_tracking_protection_launch_preference);
 
-        mTpSwitch = assumeNonNull(findPreference(TP_SWITCH_PREFERENCE));
+        mTpSwitch = findPreference(TP_SWITCH_PREFERENCE);
         mTpSwitch.setUseSummaryAsTitle(false);
 
         mTpStatus = assertNonNull(findPreference(TP_STATUS_PREFERENCE));
         mManagedStatus = assertNonNull(findPreference(MANAGED_STATUS));
         mStorageInUse = assertNonNull(findPreference(STORAGE_IN_USE_PREFERENCE));
-        mRwsInUse = assumeNonNull(findPreference(RWS_IN_USE_PREFERENCE));
+        mRwsInUse = findPreference(RWS_IN_USE_PREFERENCE);
         mRwsInUse.setVisible(false);
         mManagedTitle = findPreference(MANAGED_TITLE);
         // This part is above the toggle and changes with it, so it has to be an a11y live region.
-        mTpTitle = assumeNonNull(findPreference(TP_TITLE));
+        mTpTitle = findPreference(TP_TITLE);
         mTpTitle.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     }
 
@@ -146,7 +146,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         mIsIncognito = params.isIncognito;
         mFixedExpiration = params.fixedExpirationForTesting;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
-        Preference cookieSummary = assumeNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
+        Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         ChromeClickableSpan linkSpan =
                 new ChromeClickableSpan(
                         getContext(),
@@ -242,7 +242,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
             mTpSwitch.setVisible(false);
             mTpTitle.setVisible(false);
             mTpStatus.setVisible(false);
-            Preference cookieSummary = assumeNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
+            Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
             cookieSummary.setVisible(false);
             return;
         }

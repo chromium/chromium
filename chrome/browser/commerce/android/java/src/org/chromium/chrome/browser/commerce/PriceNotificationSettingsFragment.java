@@ -66,7 +66,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         updateMobileNotificationsText();
 
         mEmailNotificationsSwitch =
-                (ChromeSwitchPreference) assumeNonNull(findPreference(PREF_EMAIL_NOTIFICATIONS));
+                (ChromeSwitchPreference) findPreference(PREF_EMAIL_NOTIFICATIONS);
         mEmailNotificationsSwitch.setOnPreferenceChangeListener(this::onPreferenceChange);
         CoreAccountInfo info =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()))

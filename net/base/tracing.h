@@ -8,9 +8,9 @@
 #include "build/build_config.h"
 #include "net/base/cronet_buildflags.h"
 
-#if BUILDFLAG(CRONET_BUILD)
+#if !BUILDFLAG(ENABLE_BASE_TRACING)
 #include "net/base/trace_event_stub.h"  // IWYU pragma: export
-#endif                                  // BUILDFLAG(CRONET_BUILD)
+#endif                                  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 #include "base/trace_event/base_tracing.h"  // IWYU pragma: export
 

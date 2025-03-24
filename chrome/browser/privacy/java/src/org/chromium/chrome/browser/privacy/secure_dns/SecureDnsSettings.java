@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.privacy.secure_dns;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.os.Bundle;
 
@@ -70,7 +68,7 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
 
         // Set up preferences inside the activity.
         mSecureDnsSwitch =
-                (ChromeSwitchPreference) assumeNonNull(findPreference(PREF_SECURE_DNS_SWITCH));
+                (ChromeSwitchPreference) findPreference(PREF_SECURE_DNS_SWITCH);
         mSecureDnsSwitch.setManagedPreferenceDelegate(
                 new ChromeManagedPreferenceDelegate(getProfile()) {
                     @Override
@@ -105,7 +103,7 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
 
         mSecureDnsProviderPreference =
                 (SecureDnsProviderPreference)
-                        assumeNonNull(findPreference(PREF_SECURE_DNS_PROVIDER));
+                        findPreference(PREF_SECURE_DNS_PROVIDER);
         mSecureDnsProviderPreference.setOnPreferenceChangeListener(
                 (preference, value) -> {
                     State controlState = (State) value;

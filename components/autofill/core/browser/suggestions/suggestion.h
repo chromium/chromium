@@ -269,6 +269,7 @@ struct Suggestion {
     kGoogleMonochrome,
     kGooglePasswordManager,
     kGooglePay,
+    kHome,
     kHttpWarning,
     kHttpsInvalid,
     kIdCard,
@@ -284,6 +285,7 @@ struct Suggestion {
     kSettingsAndroid,
     kUndo,
     kVehicle,
+    kWork,
     // Payment method icons
     kCardGeneric,
     kCardAmericanExpress,

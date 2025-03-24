@@ -73,7 +73,9 @@ class SVGResourceDocumentContent::ChromeClient final
  private:
   void ChromeDestroyed() override { content_.Clear(); }
   void InvalidateContainer() override { content_->ContentChanged(); }
-  void ScheduleAnimation(const LocalFrameView*, base::TimeDelta) override {
+  void ScheduleAnimation(const LocalFrameView*,
+                         base::TimeDelta,
+                         bool) override {
     content_->ContentChanged();
   }
 

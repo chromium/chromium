@@ -59,7 +59,6 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
         {
             kTabGroupSync,
             kTabGroupsIPad,
-            kModernTabStrip,
             kTabGroupIndicator,
             data_sharing::features::kDataSharingFeature,
         },

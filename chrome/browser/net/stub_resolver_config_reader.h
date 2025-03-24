@@ -102,6 +102,8 @@ class StubResolverConfigReader {
   // implementation.
   const DnsOverHttpsConfigSource* GetDnsOverHttpsConfigSource() const;
 
+  bool GetHappyEyeballsV3Enabled() const;
+
   const raw_ptr<PrefService> local_state_;
 
   // Timer for deferred running of parental controls checks. Underling API calls

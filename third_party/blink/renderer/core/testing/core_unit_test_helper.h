@@ -96,7 +96,9 @@ class RenderingTestChromeClient : public EmptyChromeClient {
       CompositorElementId scrollable_area_element_id,
       WebInputEvent::Type injected_type) override;
 
-  void ScheduleAnimation(const LocalFrameView*, base::TimeDelta) override {
+  void ScheduleAnimation(const LocalFrameView*,
+                         base::TimeDelta,
+                         bool) override {
     animation_scheduled_ = true;
   }
   bool AnimationScheduled() const { return animation_scheduled_; }

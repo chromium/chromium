@@ -4,8 +4,6 @@
 
 package org.chromium.components.privacy_sandbox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.os.Bundle;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -72,7 +70,6 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
         ChromeSwitchPreference fpProtectionSwitch = findPreference(PREF_FP_PROTECTION_SWITCH);
         TextMessagePreference fpProtectionLearnMore = findPreference(PREF_FP_PROTECTION_LEARN_MORE);
 
-        assumeNonNull(fpProtectionSwitch);
         fpProtectionSwitch.setChecked(mDelegate.isFingerprintingProtectionEnabled());
         fpProtectionSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -82,7 +79,6 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
                     return true;
                 });
 
-        assumeNonNull(fpProtectionLearnMore);
         fpProtectionLearnMore.setSummary(
                 SpanApplier.applySpans(
                         getResources()

@@ -273,9 +273,11 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
             }
 
             std::vector<AutofillUploadContents> upload_contents =
-                EncodeUploadRequest(*form, non_empty_types,
-                                    /*login_form_signature=*/{},
-                                    observed_submission);
+                EncodeUploadRequest(
+                    *form, non_empty_types,
+                    /*login_form_signature=*/{}, observed_submission,
+                    /*format_strings=*/
+                    DeterminePossibleFormatStringsForUpload(form->fields()));
             return std::pair(std::move(form), std::move(upload_contents));
           },
           std::move(copied_profiles), std::move(copied_credit_cards),

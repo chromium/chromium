@@ -251,6 +251,7 @@ struct OmniboxUrlSuggestionsOnFocus : Config<OmniboxUrlSuggestionsOnFocus> {
   DECLARE_FEATURE(kOmniboxUrlSuggestionsOnFocus);
   OmniboxUrlSuggestionsOnFocus();
   bool enabled;
+  bool show_recently_closed_tabs;
   // Max number of zps suggestions to show.
   size_t max_suggestions;
   // Max number of search zps suggestions to show.

@@ -78,8 +78,8 @@ class LoyaltyCardSyncBridgeTest : public testing::Test {
     ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
     syncer::EntityChangeList entity_data;
     for (const LoyaltyCard& card : loyalty_cards) {
-      entity_data.push_back(syncer::EntityChange::CreateAdd(
-          card.loyalty_card_id, CardToEntity(card)));
+      entity_data.push_back(
+          syncer::EntityChange::CreateAdd(card.id(), CardToEntity(card)));
     }
     // `MergeFullSyncData()` returns an error if it fails.
     return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),

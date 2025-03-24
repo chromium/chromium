@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.PowerManager;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -20,11 +18,14 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Observes and keeps a record of whether the system power saving mode is on. */
+@NullMarked
 public class PowerSavingModeMonitor {
-    private static PowerSavingModeMonitor sInstance;
+    private static @Nullable PowerSavingModeMonitor sInstance;
 
     /** Returns the instance of this singleton. */
     public static PowerSavingModeMonitor getInstance() {
@@ -35,9 +36,9 @@ public class PowerSavingModeMonitor {
     }
 
     private final ObserverList<Runnable> mObservers = new ObserverList<>();
-    @Nullable private final PowerManager mPowerManager;
+    private final @Nullable PowerManager mPowerManager;
 
-    @Nullable private volatile BroadcastReceiver mPowerModeReceiver;
+    private @Nullable volatile BroadcastReceiver mPowerModeReceiver;
     private boolean mPowerSavingIsOn;
 
     private boolean mBroadcastReceiverRegistered;
@@ -46,8 +47,8 @@ public class PowerSavingModeMonitor {
     private static final TaskRunner sSequencedTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
 
-    private BackgroundOnlyAsyncTask<Void> mRegisterReceiverTask;
-    private BackgroundOnlyAsyncTask<Void> mUnregisterReceiverTask;
+    private @Nullable BackgroundOnlyAsyncTask<Void> mRegisterReceiverTask;
+    private @Nullable BackgroundOnlyAsyncTask<Void> mUnregisterReceiverTask;
 
     /** Returns whether power saving mode is currently on. */
     public boolean powerSavingIsOn() {
