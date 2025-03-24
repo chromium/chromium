@@ -8746,12 +8746,20 @@ double WebContentsImpl::GetPendingZoomLevel(RenderWidgetHostImpl* rwh) {
     // and All/FencedFrameAutomaticBeaconBrowserTest.MessageExceedsLengthLimit/
     // fencedframe.
     url = rfh->GetLastCommittedURL();
-  } else {
+  } else if (!rfh->GetParent()) {
+    // Only use the pending entry if `rfh` is a main frame, otherwise the
+    // resulting url is from outside the independently zoomed subtree, and
+    // may result in the wrong zoom level.
     NavigationEntry* pending_entry = rfh->GetController().GetPendingEntry();
     if (!pending_entry) {
       return HostZoomMap::GetZoomLevel(this, rfh->GetGlobalId());
     }
     url = pending_entry->GetURL();
+  } else {
+    // In this case `rfh` is for an independently-zoomed subframe. Call
+    // GetZoomLevel(WebContents*, RenderFrameHost*) in case `rfh` uses temporary
+    // zoom.
+    return HostZoomMap::GetZoomLevel(this, rfh->GetGlobalId());
   }
 #if BUILDFLAG(IS_ANDROID)
   return HostZoomMapForRenderFrameHost(rfh)
