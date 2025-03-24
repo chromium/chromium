@@ -12698,21 +12698,22 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_proxy_a_ip_protection_phase_04_19_2024",
+                    "name": "enabled_baseline_2025-03-19_Stable_Perf_External",
                     "params": {
+                        "IpPrivacyAuthTokenCacheBatchSize": "64",
+                        "IpPrivacyAuthTokenCacheLowWaterMark": "16",
                         "IpPrivacyBsaEnablePrivacyPass": "true",
+                        "IpPrivacyCacheTokensByGeo": "true",
+                        "IpPrivacyDebugExperimentArm": "6",
                         "IpPrivacyDirectOnly": "false",
-                        "IpPrivacyIncludeOAuthTokenInGetProxyConfig": "true",
-                        "IpPrivacyTokenServer": "https://phosphor-pa.googleapis.com",
-                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/getInitialData",
-                        "IpPrivacyTokenServerGetProxyConfigPath": "/v1/ipblinding/getProxyConfig",
-                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/auth",
                         "IpPrivacyUseProxyChains": "true",
-                        "MaskedDomainListExperimentalVersion": "rc0"
+                        "IpPrivacyUseQuicProxies": "false",
+                        "MaskedDomainListExperimentalVersion": ""
                     },
                     "enable_features": [
                         "EnableIpPrivacyProxy",
-                        "MaskedDomainList"
+                        "MaskedDomainList",
+                        "PartitionProxyChains"
                     ]
                 }
             ]
