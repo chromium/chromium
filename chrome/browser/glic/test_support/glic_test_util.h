@@ -17,6 +17,9 @@ void SigninWithPrimaryAccount(Profile* profile);
 void SetModelExecutionCapability(Profile* profile, bool enabled);
 void SetFRECompletion(Profile* profile, bool completed);
 
+void InvalidateAccount(Profile* profile);
+void ReauthAccount(Profile* profile);
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_UTIL_H_

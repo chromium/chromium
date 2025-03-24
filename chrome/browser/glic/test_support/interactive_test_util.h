@@ -62,6 +62,17 @@ class GlicAppStateObserver : public ui::test::ObservationStateObserver<
 
 DECLARE_STATE_IDENTIFIER_VALUE(GlicAppStateObserver, kGlicAppState);
 
+// Observes the Log In state of the controller.
+class LogInAndOpenStateObserver
+    : public ui::test::PollingStateObserver<
+          GlicWindowController::LogInAndOpen::State> {
+ public:
+  explicit LogInAndOpenStateObserver(const GlicWindowController& controller);
+  ~LogInAndOpenStateObserver() override;
+};
+
+DECLARE_STATE_IDENTIFIER_VALUE(LogInAndOpenStateObserver, kLogInAndOpenState);
+
 }  // namespace internal
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);

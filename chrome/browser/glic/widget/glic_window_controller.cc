@@ -248,6 +248,7 @@ GlicWindowController::GlicWindowController(
     GlicKeyedService* glic_service,
     GlicEnabling* enabling)
     : profile_(profile),
+      log_in_and_open_(std::make_unique<LogInAndOpen>()),
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
       window_finder_(std::make_unique<WindowFinder>()),
@@ -591,6 +592,8 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   switch (result) {
     case AuthController::BeforeShowResult::kShowingReauthSigninPage:
       state_ = State::kClosed;
+      log_in_and_open_->set_state(LogInAndOpen::State::kLogIn);
+      log_in_and_open_->set_attached_browser(browser_for_attachment.get());
       return;
     case AuthController::BeforeShowResult::kReady:
     case AuthController::BeforeShowResult::kSyncFailed:
@@ -1059,6 +1062,7 @@ void GlicWindowController::CloseFinish(
   if (state_ == State::kClosed) {
     return;
   }
+  log_in_and_open_.reset();
   glic_window_animator_.reset();
   glic_service_->metrics()->OnGlicWindowClose();
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState2",
@@ -1446,11 +1450,23 @@ void GlicWindowController::EnableChanged() {
   // Later this may be relaxed to just check for IsEnabled(), if we add new UX
   // to handle the various reasons glic is not ready.
   // See crbug.com/398909522.
-  if (!enabling_->IsReadyForProfile(profile_)) {
+  if (!enabling_->IsReadyForProfile(profile_) && GetGlicWidget()) {
     CloseFinish(/*reopen_detached=*/false, std::nullopt);
     // We shouldn't destroy contents_ if the glic view is still alive.
     CHECK(!GetGlicView());
     contents_.reset();
+  }
+
+  // If the widget was invoked and the profile was previously paused and is no
+  // longer in error, reopen the widget.
+  // TODO(crbug.com/405230722): This results in a minor bug where the user can
+  // decide not to reauth from the glic page, and instead reauths somewhere
+  // else. In the case where that happens, the widget still opens. Figure out a
+  // better way to approach this flow.
+  if (enabling_->IsReadyForProfile(profile_) &&
+      log_in_and_open_->state() == LogInAndOpen::State::kLogIn) {
+    log_in_and_open_->set_state(LogInAndOpen::State::kPostLogIn);
+    Show(log_in_and_open_->attached_browser(), opening_source_.value());
   }
 }
 
