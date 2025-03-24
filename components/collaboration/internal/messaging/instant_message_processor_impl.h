@@ -38,6 +38,8 @@ class InstantMessageProcessorImpl : public InstantMessageProcessor {
       const std::vector<InstantMessage>& messages);
   void OnMessageDisplayed(const std::vector<base::Uuid>& message_ids,
                           bool success);
+  InstantMessage CreateAggregatedMessage(
+      const std::vector<InstantMessage>& messages);
 
   // The messaging backend service. Used for clearing the message from DB when
   // the message successfully shows in the UI.

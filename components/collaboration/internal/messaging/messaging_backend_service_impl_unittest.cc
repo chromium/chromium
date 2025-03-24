@@ -1961,6 +1961,7 @@ TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {
 
   EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
             message.collaboration_event);
+  EXPECT_TRUE(message.attribution.has_value());
   EXPECT_EQ(member2.gaia_id, message.attribution->affected_user->gaia_id);
   ASSERT_TRUE(message.attribution->tab_group_metadata);
   EXPECT_EQ(tab_group.saved_guid(),
@@ -2328,7 +2329,8 @@ TEST_F(MessagingBackendServiceImplTest,
   // Create a dirty db instant message.
   base::Time now = base::Time::Now();
   collaboration_pb::Message message1 = CreateStoredMessage(
-      collaboration_group_id, collaboration_pb::EventType::COLLABORATION_ADDED,
+      collaboration_group_id,
+      collaboration_pb::EventType::COLLABORATION_MEMBER_ADDED,
       DirtyType::kMessageOnly, now - base::Minutes(5));
   message1.set_triggering_user_gaia_id("gaia_1");
   AddMessage(message1);

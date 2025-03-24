@@ -5,16 +5,84 @@
 #include "components/collaboration/internal/messaging/instant_message_processor_impl.h"
 
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
+#include "components/data_sharing/public/group_data.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+
+namespace collaboration::messaging {
+
+struct MessageAggregationKey {
+  InstantNotificationLevel level;
+  CollaborationEvent event;
+  std::optional<data_sharing::GroupId> collaboration_id;
+
+  bool operator==(const MessageAggregationKey& other) const {
+    return level == other.level && event == other.event &&
+           collaboration_id == other.collaboration_id;
+  }
+};
+
+struct MessageAggregationKeyHash {
+  MessageAggregationKeyHash() = default;
+  ~MessageAggregationKeyHash() = default;
+  size_t operator()(const MessageAggregationKey& k) const {
+    size_t hash = 0;
+    return base::HashCombine(hash, k.level, k.event, k.collaboration_id);
+  }
+};
+
+}  // namespace collaboration::messaging
 
 namespace collaboration::messaging {
 namespace {
 constexpr base::TimeDelta kQueueInterval = base::Seconds(1);
+
+bool ShouldAggregate(const InstantMessage& message) {
+  switch (message.collaboration_event) {
+    case CollaborationEvent::TAB_UPDATED:
+    case CollaborationEvent::TAB_REMOVED:
+      return false;
+    case CollaborationEvent::TAB_GROUP_REMOVED:
+    case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
+      return true;
+    case CollaborationEvent::UNDEFINED:
+    case CollaborationEvent::TAB_ADDED:
+    case CollaborationEvent::TAB_GROUP_ADDED:
+    case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
+    case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
+    case CollaborationEvent::COLLABORATION_ADDED:
+    case CollaborationEvent::COLLABORATION_REMOVED:
+    case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
+      CHECK(false) << "Unexpected event in instant message "
+                   << static_cast<int>(message.collaboration_event);
+  }
+}
+
+// All key constructions should happen via this method.
+MessageAggregationKey CreateMessageAggregationKey(
+    const InstantMessage& message) {
+  CHECK(ShouldAggregate(message));
+
+  MessageAggregationKey key;
+  key.level = message.level;
+  key.event = message.collaboration_event;
+  if (message.collaboration_event ==
+      CollaborationEvent::COLLABORATION_MEMBER_ADDED) {
+    key.collaboration_id = message.attribution->collaboration_id;
+  }
+
+  return key;
+}
+
 }  // namespace
 
 InstantMessageProcessorImpl::InstantMessageProcessorImpl() = default;
@@ -66,25 +134,104 @@ void InstantMessageProcessorImpl::ProcessQueue() {
   processing_scheduled_ = false;
   std::vector<InstantMessage> aggregated_messages =
       AggregateMessages(message_queue_);
+  message_queue_.clear();
 
   for (const auto& message : aggregated_messages) {
-    // TODO(crbug.com/400794347): Aggregate message ids for callback.
-    CHECK(message.attribution.has_value() &&
-          message.attribution->id.has_value());
-    std::vector<base::Uuid> message_ids{message.attribution->id.value()};
+    std::vector<base::Uuid> message_ids;
+    if (message.aggregated_data.has_value()) {
+      for (const auto& attribution : message.aggregated_data->attributions) {
+        CHECK(attribution.id.has_value());
+        message_ids.emplace_back(attribution.id.value());
+      }
+    } else {
+      CHECK(message.attribution->id.has_value());
+      message_ids.emplace_back(message.attribution->id.value());
+    }
     instant_message_delegate_->DisplayInstantaneousMessage(
         message,
         base::BindOnce(&InstantMessageProcessorImpl::OnMessageDisplayed,
                        weak_ptr_factory_.GetWeakPtr(), message_ids));
   }
-
-  message_queue_.clear();
 }
 
 std::vector<InstantMessage> InstantMessageProcessorImpl::AggregateMessages(
     const std::vector<InstantMessage>& messages) {
-  // TODO(crbug.com/400794347): Aggregate messages.
-  return messages;
+  std::unordered_map<MessageAggregationKey, std::vector<const InstantMessage*>,
+                     MessageAggregationKeyHash>
+      aggregation_map;
+  std::vector<InstantMessage> aggregated_messages;
+  std::vector<InstantMessage> non_aggregated_messages;
+
+  // Populate the aggregation map.
+  for (const auto& message : messages) {
+    if (!ShouldAggregate(message)) {
+      non_aggregated_messages.emplace_back(message);
+      continue;
+    }
+
+    MessageAggregationKey key = CreateMessageAggregationKey(message);
+    aggregation_map[key].emplace_back(&message);
+  }
+
+  // Process the aggregation map.
+  for (const auto& [key, message_ptrs] : aggregation_map) {
+    if (message_ptrs.size() == 1) {
+      non_aggregated_messages.push_back(*message_ptrs[0]);
+    } else {
+      // Aggregated message case.
+      std::vector<InstantMessage> aggregated_msgs_temp;
+      for (const auto* message_ptr : message_ptrs) {
+        aggregated_msgs_temp.push_back(*message_ptr);
+      }
+      aggregated_messages.push_back(
+          CreateAggregatedMessage(aggregated_msgs_temp));
+    }
+  }
+
+  // Combine with non-aggregated messages as a single list and return.
+  aggregated_messages.insert(aggregated_messages.end(),
+                             non_aggregated_messages.begin(),
+                             non_aggregated_messages.end());
+  return aggregated_messages;
+}
+
+InstantMessage InstantMessageProcessorImpl::CreateAggregatedMessage(
+    const std::vector<InstantMessage>& messages) {
+  CHECK(messages.size() > 1u);
+  InstantMessage aggregated_message;
+  aggregated_message.collaboration_event = messages[0].collaboration_event;
+  aggregated_message.level = messages[0].level;
+  aggregated_message.type = messages[0].type;
+
+  // Populate message attributions for the aggregated message.
+  aggregated_message.aggregated_data = AggregatedMessageData();
+  for (const auto& message : messages) {
+    aggregated_message.aggregated_data->attributions.push_back(
+        message.attribution.value());
+  }
+
+  // Create message string for aggregation based on message type.
+  switch (messages[0].collaboration_event) {
+    case CollaborationEvent::COLLABORATION_MEMBER_ADDED: {
+      std::string group_name =
+          messages[0].attribution->tab_group_metadata->last_known_title.value();
+      aggregated_message.localized_message = l10n_util::GetStringFUTF16(
+          IDS_DATA_SHARING_TOAST_NEW_MEMBER_MULTIPLE_MEMBERS,
+          base::UTF8ToUTF16(base::ToString(messages.size())),
+          base::UTF8ToUTF16(group_name));
+      break;
+    }
+    case CollaborationEvent::TAB_GROUP_REMOVED: {
+      aggregated_message.localized_message = l10n_util::GetStringFUTF16(
+          IDS_DATA_SHARING_TOAST_BLOCK_LEAVE_MULTIPLE_GROUPS,
+          base::UTF8ToUTF16(base::ToString(messages.size())));
+      break;
+    }
+    default:
+      CHECK(false);
+  }
+
+  return aggregated_message;
 }
 
 void InstantMessageProcessorImpl::OnMessageDisplayed(

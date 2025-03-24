@@ -155,23 +155,29 @@
   <!-- Recent Activity -->
 
   <!-- Instant Messages -->
-  <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED" desc="A description of the member removing a tab for the toast.">
+  <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED" desc="Toast text describing that someone has removed a tab.">
     <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> removed tab “<ph name="WEBSITE_TITLE">$2<ex>chromium.org</ex></ph>”
   </message>
-  <message name="IDS_DATA_SHARING_TOAST_TAB_UPDATED" desc="A description of the member updating a tab for the toast.">
+  <message name="IDS_DATA_SHARING_TOAST_TAB_UPDATED" desc="Toast text describing that someone has updated a tab.">
     <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> updated tab “<ph name="WEBSITE_TITLE">$2<ex>chromium.org</ex></ph>”
   </message>
-  <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED_ACTION" desc="The action that can be taken from the toast when a member removes a tab.">
+  <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED_ACTION" desc="The action button text on the tab removed toast clicking on which will reopen the tab that was removed.">
     Reopen
   </message>
-  <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER" desc="A description of a new member being added to a shared group for the toast.">
+  <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER" desc="Toast text describing that a new member has joined the group.">
     <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> joined "<ph name="GROUP_NAME">$2<ex>Vacation</ex></ph>" tab group
   </message>
-  <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER_ACTION" desc="The action that can be taken from the toast when a member is added to a shared group.">
+  <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER_MULTIPLE_MEMBERS" desc="Toast text describing that multiple new members have joined the group.">
+    <ph name="MEMBER_COUNT">$1<ex>7</ex></ph> members joined "<ph name="GROUP_NAME">$2<ex>Vacation</ex></ph>" tab group
+  </message>
+  <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER_ACTION" desc="The action button text on the new member joined toast clicking on which will open the group members management screen.">
     Manage
   </message>
-  <message name="IDS_DATA_SHARING_TOAST_BLOCK_LEAVE" desc="A description of a member being blocked/leaving from a shared group for the toast.">
+  <message name="IDS_DATA_SHARING_TOAST_BLOCK_LEAVE" desc="Toast text describing that the user has lost access to a shared group.">
     The "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group is no longer available
+  </message>
+  <message name="IDS_DATA_SHARING_TOAST_BLOCK_LEAVE_MULTIPLE_GROUPS" desc="Toast text describing that the user has lost access to multiple shared groups.">
+    <ph name="GROUP_COUNT">$1<ex>7</ex></ph> tab groups no longer available
   </message>
   <!-- Instant Messages -->
 
