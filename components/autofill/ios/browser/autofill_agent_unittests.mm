@@ -500,7 +500,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
       {autofill::test::NextMonth(), "/", autofill::test::NextYear().substr(2)});
 
   // Initialize suggestion.
-  std::vector<std::string_view> minor_texts = {"Quicksilver ••1111"};
+  std::vector<std::string> minor_texts = {"Quicksilver ••1111"};
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("Virtual card", minor_texts, expiration_date_label,
                            autofill::Suggestion::Icon::kCardVisa,
