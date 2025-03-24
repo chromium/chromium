@@ -83,16 +83,9 @@
           </div>
           <div class="paragraph">
             <h2>$i18n{m1NoticeRowLearnMoreHeading3}</h2>
-            <template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
-              <div class="cr-secondary-text">
-                $i18nRaw{m1NoticeRowLearnMoreDescription5V2}
-              </div>
-            </template>
-            <template is="dom-if" if="[[!isPrivacyPolicyLinkEnabled_]]">
-              <div class="cr-secondary-text">
-                $i18nRaw{m1NoticeRowLearnMoreDescription5V2NoLink}
-              </div>
-            </template>
+            <div class="cr-secondary-text">
+              $i18nRaw{m1NoticeRowLearnMoreDescription5V2}
+            </div>
           </div>
         </privacy-sandbox-dialog-learn-more>
         <div class="section cr-secondary-text" id="lastTextElementV2">
@@ -118,10 +111,8 @@
     </cr-button>
   </div>
 </div>
-<template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
-  <privacy-sandbox-privacy-policy-dialog
-      id="privacyPolicyDialog"
-      should-show="[[hideNoticePage_]]"
-      on-back-button-clicked="onBackButtonClicked_">
-  </privacy-sandbox-privacy-policy-dialog>
-</template>
+<privacy-sandbox-privacy-policy-dialog
+    id="privacyPolicyDialog"
+    should-show="[[hideNoticePage_]]"
+    on-back-button-clicked="onBackButtonClicked_">
+</privacy-sandbox-privacy-policy-dialog>

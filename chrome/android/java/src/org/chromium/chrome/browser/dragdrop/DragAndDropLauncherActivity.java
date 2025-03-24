@@ -51,6 +51,10 @@ public class DragAndDropLauncherActivity extends Activity {
         intent.setClass(this, ChromeTabbedActivity.class);
         IntentUtils.addTrustedIntentExtras(intent);
 
+        // Do not propagate FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS that is set for this trampoline
+        // DragAndDropLauncherActivity.
+        intent.removeFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+
         recordLaunchMetrics(intent);
 
         // Launch the intent in an existing Chrome window, referenced by the EXTRA_WINDOW_ID intent

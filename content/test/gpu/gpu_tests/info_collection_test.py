@@ -4,7 +4,7 @@
 
 import os
 import sys
-from typing import Any, List, Optional, Union
+from typing import Any
 import unittest
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
@@ -21,9 +21,9 @@ from telemetry.internal.platform import gpu_info as gi
 @dataclasses.dataclass
 class InfoCollectionTestArgs():
   """Struct-like class for passing args to an InfoCollection test."""
-  expected_vendor_id_str: Optional[str] = None
-  expected_device_id_strs: Optional[List[str]] = None
-  gpu: Optional[gi.GPUInfo] = None
+  expected_vendor_id_str: str | None = None
+  expected_device_id_strs: list[str] | None = None
+  gpu: gi.GPUInfo | None = None
 
 
 class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
@@ -214,7 +214,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
 
 
   @staticmethod
-  def _ValueToStr(value: Union[str, bool]) -> str:
+  def _ValueToStr(value: str | bool) -> str:
     if isinstance(value, str):
       return value
     if isinstance(value, bool):
@@ -223,7 +223,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     return False
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'info_collection_expectations.txt')

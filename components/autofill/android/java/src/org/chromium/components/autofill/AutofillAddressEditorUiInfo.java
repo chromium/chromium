@@ -8,9 +8,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 @JNINamespace("autofill")
+@NullMarked
 public class AutofillAddressEditorUiInfo {
 
     private String mBestLanguageTag;

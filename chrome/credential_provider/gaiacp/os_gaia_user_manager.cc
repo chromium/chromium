@@ -11,6 +11,7 @@
 #include <ntstatus.h>
 #include <sddl.h>
 
+#include "base/compiler_specific.h"
 #include "base/win/ntsecapi_shim.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
@@ -52,7 +53,7 @@ HRESULT GetCurrentGaiaSid(const int& size, wchar_t* current_sid) {
     return hr;
   }
 
-  errno_t err = wcscpy_s(current_sid, size, sid.c_str());
+  errno_t err = UNSAFE_TODO(wcscpy_s(current_sid, size, sid.c_str()));
   return err == 0 ? S_OK : E_FAIL;
 }
 
@@ -106,7 +107,7 @@ HRESULT IsGaiaUserSidDifferent(bool* is_sid_different) {
     return hr;
   }
 
-  if (wcscmp(stored_sid, current_sid) != 0) {
+  if (UNSAFE_TODO(wcscmp(stored_sid, current_sid)) != 0) {
     *is_sid_different = true;
   }
   return hr;

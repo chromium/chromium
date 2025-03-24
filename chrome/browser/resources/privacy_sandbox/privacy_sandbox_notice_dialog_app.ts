@@ -13,7 +13,7 @@ import './privacy_sandbox_privacy_policy_dialog.js';
 
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
 import {PrivacySandboxDialogMixin} from './privacy_sandbox_dialog_mixin.js';
 import {PrivacySandboxDialogResizeMixin} from './privacy_sandbox_dialog_resize_mixin.js';
 import {getTemplate} from './privacy_sandbox_notice_dialog_app.html.js';
@@ -37,13 +37,6 @@ export class PrivacySandboxNoticeDialogAppElement extends
         type: Boolean,
         observer: 'onNoticeLearnMoreExpanded_',
       },
-      /**
-       * If true, the privacy policy text is hyperlinked.
-       */
-      isPrivacyPolicyLinkEnabled_: {
-        type: Boolean,
-        value: false,
-      },
 
       /**
        * If true, the notice page is hidden.
@@ -56,7 +49,6 @@ export class PrivacySandboxNoticeDialogAppElement extends
     };
   }
 
-  private isPrivacyPolicyLinkEnabled_: boolean;
   private hideNoticePage_: boolean;
 
   override connectedCallback() {
@@ -73,22 +65,7 @@ export class PrivacySandboxNoticeDialogAppElement extends
     });
   }
 
-  private loadPrivacyPolicyOnExpand_(newValue: boolean, oldValue: boolean) {
-    // When the expand is triggered, if the iframe hasn't been loaded yet,
-    // load it the first time the learn more expand section is clicked.
-    if (newValue && !oldValue) {
-      if (!this.shadowRoot!.querySelector('#privacyPolicyDialog')) {
-        PrivacySandboxDialogBrowserProxy.getInstance()
-            .shouldShowPrivacySandboxPrivacyPolicy()
-            .then(isPrivacyPolicyLinkEnabled => {
-              this.isPrivacyPolicyLinkEnabled_ = isPrivacyPolicyLinkEnabled;
-            });
-      }
-    }
-  }
-
   private onNoticeLearnMoreExpanded_(newValue: boolean, oldValue: boolean) {
-    this.loadPrivacyPolicyOnExpand_(newValue, oldValue);
     this.onNoticeLearnMoreExpandedChanged(newValue, oldValue);
   }
 

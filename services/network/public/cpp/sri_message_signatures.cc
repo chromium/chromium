@@ -746,7 +746,7 @@ MaybeBlockResponseForSRIMessageSignature(
 
 void MaybeSetAcceptSignatureHeader(
     net::URLRequest* request,
-    const std::vector<std::string>& expected_signatures) {
+    const std::vector<std::string>& expected_public_keys) {
   // In order to support request-specific experimentation, we send the
   // `Accept-Signature` header whenever signatures are expected by a request's
   // initiator, regardless of the `features::kSRIMessageSignatureEnforcement`
@@ -757,7 +757,7 @@ void MaybeSetAcceptSignatureHeader(
 
   std::stringstream header;
   int counter = 0;
-  for (const std::string& public_key : expected_signatures) {
+  for (const std::string& public_key : expected_public_keys) {
     // We expect these to be validly base64-encoded Ed25519 public keys:
     std::optional<std::vector<uint8_t>> decoded =
         base::Base64Decode(public_key);

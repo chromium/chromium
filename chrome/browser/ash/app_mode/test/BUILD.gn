@@ -69,8 +69,6 @@ static_library("test_support") {
     "fake_cws_chrome_apps.h",
     "kiosk_mixin.cc",
     "kiosk_mixin.h",
-    "kiosk_session_initialized_waiter.cc",
-    "kiosk_session_initialized_waiter.h",
     "kiosk_test_utils.cc",
     "kiosk_test_utils.h",
     "network_state_mixin.cc",

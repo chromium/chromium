@@ -234,9 +234,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // methods settings page.
   jboolean ShouldShowAddIbanButtonOnSettingsPage(JNIEnv* env);
 
-  // Returns whether the Autofill feature is managed.
-  jboolean IsAutofillManaged(JNIEnv* env);
-
   // Returns whether the Autofill feature for profiles is managed.
   jboolean IsAutofillProfileManaged(JNIEnv* env);
 

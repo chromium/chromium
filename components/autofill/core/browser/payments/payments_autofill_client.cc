@@ -171,6 +171,8 @@ void PaymentsAutofillClient::ShowBnplTos(BnplTosModel bnpl_tos_model,
                                          base::OnceClosure accept_callback,
                                          base::OnceClosure cancel_callback) {}
 
+void PaymentsAutofillClient::CloseBnplTos() {}
+
 VirtualCardEnrollmentManager*
 PaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   return nullptr;

@@ -38,6 +38,7 @@ namespace extensions {
 
 class CrxInstallError;
 class CrxInstaller;
+class DelayedInstallManager;
 class ExtensionCache;
 class ExtensionPrefs;
 class ExtensionRegistrar;
@@ -340,6 +341,8 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
 
   raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_ = nullptr;
   raw_ptr<ExtensionRegistrar, DanglingUntriaged> registrar_ = nullptr;
+  raw_ptr<DelayedInstallManager, DanglingUntriaged> delayed_install_manager_ =
+      nullptr;
 
   std::map<int, InProgressCheck> requests_in_progress_;
   int next_request_id_ = 0;

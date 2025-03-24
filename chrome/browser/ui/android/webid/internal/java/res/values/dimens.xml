@@ -15,7 +15,10 @@ found in the LICENSE file.
   <dimen name="account_selection_sheet_item_padding">10dp</dimen>
   <dimen name="account_selection_account_avatar_size">40dp</dimen>
   <dimen name="account_selection_account_avatar_monogram_text_size">16dp</dimen>
+  <dimen name="account_selection_login_brand_icon_size">20dp</dimen>
   <dimen name="account_selection_sheet_icon_size">20dp</dimen>
+  <dimen name="account_selection_separator_margin_start">78dp</dimen>
+  <dimen name="account_selection_separator_margin_end">24dp</dimen>
 
   <!-- FedCM active mode bottom sheet dimensions. -->
   <dimen name="account_selection_active_mode_sheet_avatar_size">40dp</dimen>

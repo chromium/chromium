@@ -3,6 +3,9 @@
     "isolated_scripts": [
       {
         "args": [
+          "--test-type",
+          "reftest",
+          "crashtest",
           "--xcode-build-version",
           "16c5032a"
         ],

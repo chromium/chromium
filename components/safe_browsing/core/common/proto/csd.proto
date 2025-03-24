@@ -963,6 +963,10 @@ message ClientDownloadRequest {
 
   repeated ArchivedBinary archived_binary = 22;
 
+  // The Safety Net shared ID. Populated only for Android download protection.
+  // TODO(crbug.com/397407934): Add this field for real.
+  // optional string safety_net_id = 23;
+
   // Population that the reporting user is part of.
   optional ChromeUserPopulation population = 24;
 
@@ -1080,9 +1084,14 @@ message ClientDownloadRequest {
   // The token from previous requests related to this download, if any exists.
   optional bytes previous_token = 91;
 
-  // Fields 92-94 are reserved for server-side use and are never sent by the
+  // Fields 92-96 are reserved for server-side use and are never sent by the
   // client.
-  reserved 92 to 94;
+  reserved 92 to 96;
+
+  // Records the app that launched Chrome. Populated on Android only.
+  // This information may be spoofed so do not rely solely on its correctness
+  // for anti-abuse purposes.
+  optional ReferringAppInfo referring_app_info = 97;
 }
 
 message ReferrerChainOptions {

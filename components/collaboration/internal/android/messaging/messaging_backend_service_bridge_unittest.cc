@@ -106,7 +106,7 @@ class MessagingBackendServiceBridgeTest : public testing::Test {
   void DisplayInstantaneousMessage(InstantMessage message,
                                    bool expected_success_value) {
     bridge()->DisplayInstantaneousMessage(
-        {message},
+        message,
         base::BindOnce(
             &MessagingBackendServiceBridgeTest::OnInstantMessageCallbackResult,
             base::Unretained(this), expected_success_value));
@@ -168,42 +168,80 @@ TEST_F(MessagingBackendServiceBridgeTest, TestPersistentMessageObservation) {
       base::android::AttachCurrentThread(), j_companion(), 1);
 }
 
+MessageAttribution CreateAttribution1() {
+  MessageAttribution attribution;
+  attribution.id =
+      base::Uuid::ParseLowercase("cf07d904-88d4-4bc9-989d-57a9ab9e17a7");
+  attribution.collaboration_id = data_sharing::GroupId("my group");
+  // GroupMember has its own conversion utils, so only check a single field.
+  attribution.affected_user = data_sharing::GroupMember();
+  attribution.affected_user->gaia_id = GaiaId("affected");
+  attribution.triggering_user = data_sharing::GroupMember();
+  attribution.triggering_user->gaia_id = GaiaId("triggering");
+
+  // TabGroupMessageMetadata.
+  attribution.tab_group_metadata = TabGroupMessageMetadata();
+  attribution.tab_group_metadata->local_tab_group_id =
+      tab_groups::LocalTabGroupID(
+          base::Token(2748937106984275893, 588177993057108452));
+  attribution.tab_group_metadata->sync_tab_group_id =
+      base::Uuid::ParseLowercase("a1b2c3d4-e5f6-7890-1234-567890abcdef");
+  attribution.tab_group_metadata->last_known_title = "last known group title";
+  attribution.tab_group_metadata->last_known_color =
+      tab_groups::TabGroupColorId::kOrange;
+
+  // TabMessageMetadata.
+  attribution.tab_metadata = TabMessageMetadata();
+  attribution.tab_metadata->local_tab_id = std::make_optional(499897179);
+  attribution.tab_metadata->sync_tab_id =
+      base::Uuid::ParseLowercase("fedcba09-8765-4321-0987-6f5e4d3c2b1a");
+  attribution.tab_metadata->last_known_url = "https://example.com/";
+  attribution.tab_metadata->last_known_title = "last known tab title";
+
+  return attribution;
+}
+
+MessageAttribution CreateAttribution2() {
+  MessageAttribution attribution;
+  attribution.id =
+      base::Uuid::ParseLowercase("24ed7c34-41a3-47c2-aad4-5ea42a1765d5");
+  attribution.collaboration_id = data_sharing::GroupId("my group");
+  // GroupMember has its own conversion utils, so only check a single field.
+  attribution.affected_user = data_sharing::GroupMember();
+  attribution.affected_user->gaia_id = GaiaId("affected 2");
+  attribution.triggering_user = data_sharing::GroupMember();
+  attribution.triggering_user->gaia_id = GaiaId("triggering 2");
+
+  // TabGroupMessageMetadata.
+  attribution.tab_group_metadata = TabGroupMessageMetadata();
+  attribution.tab_group_metadata->local_tab_group_id =
+      tab_groups::LocalTabGroupID(
+          base::Token(2748937106984275893, 588177993057108452));
+  attribution.tab_group_metadata->sync_tab_group_id =
+      base::Uuid::ParseLowercase("a1b2c3d4-e5f6-7890-1234-567890abcdef");
+  attribution.tab_group_metadata->last_known_title = "last known group title";
+  attribution.tab_group_metadata->last_known_color =
+      tab_groups::TabGroupColorId::kOrange;
+
+  // TabMessageMetadata.
+  attribution.tab_metadata = TabMessageMetadata();
+  attribution.tab_metadata->local_tab_id = std::make_optional(499897179);
+  attribution.tab_metadata->sync_tab_id =
+      base::Uuid::ParseLowercase("fedcba09-8765-4321-0987-6f5e4d3c2b1a");
+  attribution.tab_metadata->last_known_url = "https://example.com/2";
+  attribution.tab_metadata->last_known_title = "last known tab title 2";
+
+  return attribution;
+}
+
 InstantMessage CreateInstantMessage() {
   InstantMessage message;
   message.level = InstantNotificationLevel::SYSTEM;
   message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
   message.collaboration_event = CollaborationEvent::TAB_REMOVED;
+  message.localized_message = u"Message content - single message";
 
-  // Attribution.
-  message.attribution.id =
-      base::Uuid::ParseLowercase("cf07d904-88d4-4bc9-989d-57a9ab9e17a7");
-  message.attribution.collaboration_id = data_sharing::GroupId("my group");
-  // GroupMember has its own conversion utils, so only check a single field.
-  message.attribution.affected_user = data_sharing::GroupMember();
-  message.attribution.affected_user->gaia_id = GaiaId("affected");
-  message.attribution.triggering_user = data_sharing::GroupMember();
-  message.attribution.triggering_user->gaia_id = GaiaId("triggering");
-
-  // TabGroupMessageMetadata.
-  message.attribution.tab_group_metadata = TabGroupMessageMetadata();
-  message.attribution.tab_group_metadata->local_tab_group_id =
-      tab_groups::LocalTabGroupID(
-          base::Token(2748937106984275893, 588177993057108452));
-  message.attribution.tab_group_metadata->sync_tab_group_id =
-      base::Uuid::ParseLowercase("a1b2c3d4-e5f6-7890-1234-567890abcdef");
-  message.attribution.tab_group_metadata->last_known_title =
-      "last known group title";
-  message.attribution.tab_group_metadata->last_known_color =
-      tab_groups::TabGroupColorId::kOrange;
-
-  // TabMessageMetadata.
-  message.attribution.tab_metadata = TabMessageMetadata();
-  message.attribution.tab_metadata->local_tab_id =
-      std::make_optional(499897179);
-  message.attribution.tab_metadata->sync_tab_id =
-      base::Uuid::ParseLowercase("fedcba09-8765-4321-0987-6f5e4d3c2b1a");
-  message.attribution.tab_metadata->last_known_url = "https://example.com/";
-  message.attribution.tab_metadata->last_known_title = "last known tab title";
+  message.attribution = CreateAttribution1();
 
   return message;
 }
@@ -219,6 +257,35 @@ TEST_F(MessagingBackendServiceBridgeTest, TestDisplayingInstantMessageSuccess) {
 
   // Ensure that the message was received on the Java side with correct data.
   Java_MessagingBackendServiceBridgeUnitTestCompanion_verifyInstantMessage(
+      base::android::AttachCurrentThread(), j_companion());
+
+  // Verify that the callback has been invoked with the correct success value.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeInstantMessageSuccessCallback(
+      base::android::AttachCurrentThread(), j_companion(), /*success=*/true);
+  EXPECT_EQ(1U, success_callback_invocation_count());
+}
+
+TEST_F(MessagingBackendServiceBridgeTest,
+       TestDisplayingAggregatedInstantMessageSuccess) {
+  // Set up the delegate for instant messages in Java.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_setInstantMessageDelegate(
+      base::android::AttachCurrentThread(), j_companion());
+
+  // Create and display an instant message.
+  InstantMessage message;
+  message.level = InstantNotificationLevel::SYSTEM;
+  message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
+  message.collaboration_event = CollaborationEvent::TAB_REMOVED;
+  message.localized_message = u"Message content - aggregated message";
+  AggregatedMessageData aggregated_data;
+  aggregated_data.attributions.emplace_back(CreateAttribution1());
+  aggregated_data.attributions.emplace_back(CreateAttribution2());
+  message.aggregated_data = aggregated_data;
+
+  DisplayInstantaneousMessage(message, /*success=*/true);
+
+  // Ensure that the message was received on the Java side with correct data.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_verifyAggregatedInstantMessage(
       base::android::AttachCurrentThread(), j_companion());
 
   // Verify that the callback has been invoked with the correct success value.

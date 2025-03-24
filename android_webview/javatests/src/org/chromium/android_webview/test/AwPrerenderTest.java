@@ -27,11 +27,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.AwNoVarySearchData;
 import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwPrefetchParameters;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.settings.SpeculativeLoadingAllowedFlags;
@@ -804,7 +804,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // shouldInterceptRequest should see the additional headers on prerendering navigation.
         shouldInterceptRequestHelper.waitForCallback(currentShouldInterceptRequestCallCount);
-        AwContentsClient.AwWebResourceRequest mainRequest =
+        AwWebResourceRequest mainRequest =
                 shouldInterceptRequestHelper.getRequestsForUrl(mPrerenderingUrl);
         Assert.assertNotNull(mainRequest);
         HashMap<String, String> mainHeaders = mainRequest.requestHeaders;
@@ -814,7 +814,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // But shouldInterceptRequest should not see the headers on subresource requests.
         shouldInterceptRequestHelper.waitForNext();
         String scriptUrl = getUrl(PRERENDER_SETUP_SCRIPT_URL);
-        AwContentsClient.AwWebResourceRequest scriptRequest =
+        AwWebResourceRequest scriptRequest =
                 shouldInterceptRequestHelper.getRequestsForUrl(scriptUrl);
         Assert.assertNotNull(scriptRequest);
         HashMap<String, String> scriptHeaders = scriptRequest.requestHeaders;
@@ -1158,7 +1158,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         shouldInterceptRequestHelper.waitForCallback(currentShouldInterceptRequestCallCount);
-        AwContentsClient.AwWebResourceRequest request =
+        AwWebResourceRequest request =
                 shouldInterceptRequestHelper.getRequestsForUrl(mPrerenderingUrl);
         Assert.assertNotNull(request);
         HashMap<String, String> requestHeaders = request.requestHeaders;
@@ -1209,7 +1209,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 Arrays.asList(prerenderingUrl, setupScriptUrl, beaconUrl));
 
         // Check if the main resource request was intercepted during prerendering.
-        AwContentsClient.AwWebResourceRequest request =
+        AwWebResourceRequest request =
                 shouldInterceptRequestHelper.getRequestsForUrl(prerenderingUrl);
         Assert.assertNotNull(request);
         HashMap<String, String> requestHeaders = request.requestHeaders;
@@ -1217,7 +1217,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals("prefetch;prerender", requestHeaders.get("Sec-Purpose"));
 
         // Check if the first subresource request (sendBeacon) was intercepted during prerendering.
-        AwContentsClient.AwWebResourceRequest beaconRequest =
+        AwWebResourceRequest beaconRequest =
                 shouldInterceptRequestHelper.getRequestsForUrl(beaconUrl);
         Assert.assertNotNull(beaconRequest);
         HashMap<String, String> beaconRequestHeaders = beaconRequest.requestHeaders;
@@ -1234,7 +1234,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 Arrays.asList(prerenderingUrl, setupScriptUrl, beaconUrl, beaconUrl2));
 
         // Check if the second subresource request (sendBeacon) was intercepted after activation.
-        AwContentsClient.AwWebResourceRequest beaconRequest2 =
+        AwWebResourceRequest beaconRequest2 =
                 shouldInterceptRequestHelper.getRequestsForUrl(beaconUrl2);
         Assert.assertNotNull(beaconRequest2);
         HashMap<String, String> beaconRequestHeaders2 = beaconRequest2.requestHeaders;
@@ -1282,12 +1282,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         // Ensure that ShouldInterceptRequest is called for the main resource and the setup script.
         shouldInterceptRequestHelper.waitForCallback(currentShouldInterceptRequestCallCount);
-        AwContentsClient.AwWebResourceRequest request =
+        AwWebResourceRequest request =
                 shouldInterceptRequestHelper.getRequestsForUrl(nonExistentUrl);
         Assert.assertNotNull(request);
 
         shouldInterceptRequestHelper.waitForNext();
-        AwContentsClient.AwWebResourceRequest scriptRequest =
+        AwWebResourceRequest scriptRequest =
                 shouldInterceptRequestHelper.getRequestsForUrl(scriptUrl);
         Assert.assertNotNull(scriptRequest);
 
@@ -1422,7 +1422,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
             injectSpeculationRules(prerenderUrl);
             helper.waitForCallback(callCount);
             Assert.assertEquals(helper.getUrls(), Arrays.asList(prerenderUrl));
-            AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(prerenderUrl);
+            AwWebResourceRequest request = helper.getRequestsForUrl(prerenderUrl);
             Assert.assertEquals("prefetch;prerender", request.requestHeaders.get("Sec-Purpose"));
         }
 
@@ -1431,7 +1431,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
             int callCount = helper.getCallCount();
             helper.waitForCallback(callCount);
             Assert.assertEquals(helper.getUrls(), Arrays.asList(scriptUrl));
-            AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(scriptUrl);
+            AwWebResourceRequest request = helper.getRequestsForUrl(scriptUrl);
             // Subframe navigation of prerendered page also has a Sec-Purpose header.
             Assert.assertEquals("prefetch;prerender", request.requestHeaders.get("Sec-Purpose"));
         }
@@ -1441,7 +1441,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
             int callCount = helper.getCallCount();
             helper.waitForCallback(callCount);
             Assert.assertEquals(helper.getUrls(), Arrays.asList(subframeUrl1));
-            AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(subframeUrl1);
+            AwWebResourceRequest request = helper.getRequestsForUrl(subframeUrl1);
             // Subframe navigation of prerendered page also has a Sec-Purpose header.
             Assert.assertEquals("prefetch;prerender", request.requestHeaders.get("Sec-Purpose"));
         }
@@ -1463,7 +1463,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                     mAwContents, mContentsClient, script);
             helper.waitForCallback(callCount);
             Assert.assertEquals(helper.getUrls(), Arrays.asList(subframeUrl2));
-            AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(subframeUrl2);
+            AwWebResourceRequest request = helper.getRequestsForUrl(subframeUrl2);
             // Subframe navigation of the activated page doesn't have a Sec-Purpose header.
             Assert.assertNotNull(request.requestHeaders);
             Assert.assertNull(request.requestHeaders.get("Sec-Purpose"));

@@ -24,10 +24,12 @@ using kiosk::test::AppWithSecondaryAppV1;
 using kiosk::test::CachedChromeAppVersion;
 using kiosk::test::CurrentProfile;
 using kiosk::test::InstalledChromeAppVersion;
+using kiosk::test::LaunchAppManually;
 using kiosk::test::MinimumChromeVersionAppV1;
 using kiosk::test::MinimumChromeVersionAppV2WithMinimumVersion100;
 using kiosk::test::MinimumChromeVersionAppV3WithMinimumVersion999;
 using kiosk::test::TheKioskChromeApp;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -60,8 +62,8 @@ class MinimumChromeVersionTest : public MixinBasedInProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MinimumChromeVersionTest,
                        PRE_UpdatesWhenChromeVersionIsNew) {
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskChromeApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskChromeApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 
   auto version1 = MinimumChromeVersionAppV1().crx_version;
   EXPECT_EQ(version1, CachedChromeAppVersion(TheKioskChromeApp()));
@@ -74,8 +76,8 @@ IN_PROC_BROWSER_TEST_F(MinimumChromeVersionTest,
   auto app_v2 = MinimumChromeVersionAppV2WithMinimumVersion100();
   ServeAppOnFakeCws(kiosk_.fake_cws(), app_v2);
 
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskChromeApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskChromeApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 
   EXPECT_EQ(app_v2.crx_version, CachedChromeAppVersion(TheKioskChromeApp()));
   EXPECT_EQ(app_v2.crx_version,
@@ -84,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(MinimumChromeVersionTest,
 
 IN_PROC_BROWSER_TEST_F(MinimumChromeVersionTest,
                        PRE_DoesNotUpdateWhenChromeVersionIsOld) {
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskChromeApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskChromeApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 
   auto version1 = MinimumChromeVersionAppV1().crx_version;
   EXPECT_EQ(version1, CachedChromeAppVersion(TheKioskChromeApp()));
@@ -98,8 +100,8 @@ IN_PROC_BROWSER_TEST_F(MinimumChromeVersionTest,
   ServeAppOnFakeCws(kiosk_.fake_cws(),
                     MinimumChromeVersionAppV3WithMinimumVersion999());
 
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskChromeApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskChromeApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 
   // The app is removed from the cache once the update fails.
   EXPECT_FALSE(IsChromeAppCached(TheKioskChromeApp()));
@@ -132,8 +134,8 @@ IN_PROC_BROWSER_TEST_F(SecondaryAppMinimumChromeVersionTest,
   auto secondary_app_v1 = MinimumChromeVersionAppV1();
   ServeAppOnFakeCws(kiosk_.fake_cws(), secondary_app_v1);
 
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskChromeApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskChromeApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 
   EXPECT_EQ(primary_app_version, CachedChromeAppVersion(TheKioskChromeApp()));
   EXPECT_EQ(primary_app_version,
@@ -149,8 +151,8 @@ IN_PROC_BROWSER_TEST_F(SecondaryAppMinimumChromeVersionTest,
   auto secondary_app_v2 = MinimumChromeVersionAppV2WithMinimumVersion100();
   ServeAppOnFakeCws(kiosk_.fake_cws(), secondary_app_v2);
 
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskChromeApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskChromeApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 
   EXPECT_EQ(
       secondary_app_v2.crx_version,
@@ -163,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(SecondaryAppMinimumChromeVersionTest,
   auto secondary_app_v1 = MinimumChromeVersionAppV1();
   ServeAppOnFakeCws(kiosk_.fake_cws(), secondary_app_v1);
 
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskChromeApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskChromeApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 
   EXPECT_EQ(primary_app_version, CachedChromeAppVersion(TheKioskChromeApp()));
   EXPECT_EQ(primary_app_version,
@@ -180,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(SecondaryAppMinimumChromeVersionTest,
   ServeAppOnFakeCws(kiosk_.fake_cws(),
                     MinimumChromeVersionAppV3WithMinimumVersion999());
 
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskChromeApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskChromeApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 
   auto secondary_app_v1 = MinimumChromeVersionAppV1();
   EXPECT_EQ(

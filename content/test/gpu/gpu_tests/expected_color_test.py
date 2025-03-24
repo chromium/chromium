@@ -5,7 +5,7 @@
 import logging
 import os
 import sys
-from typing import Any, Dict, List
+from typing import Any
 import unittest
 
 import gpu_path_util
@@ -44,7 +44,7 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     super().SetUpProcess()
 
   @classmethod
-  def _GetStaticServerDirs(cls) -> List[str]:
+  def _GetStaticServerDirs(cls) -> list[str]:
     static_dirs = super()._GetStaticServerDirs()
     static_dirs.append(_MAPS_PERF_TEST_PATH)
     return static_dirs
@@ -57,7 +57,7 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
       yield (tc.name, tc.url, [tc])
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'expected_color_expectations.txt')
@@ -96,7 +96,7 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     self._ValidateScreenshotSamplesWithSkiaGold(self.tab, test_case, screenshot,
                                                 dpr)
 
-  def GetGoldOptionalKeys(self) -> Dict[str, str]:
+  def GetGoldOptionalKeys(self) -> dict[str, str]:
     keys = super().GetGoldOptionalKeys()
     keys['expected_color_comment'] = (
         'This is an expected color test. Triaging in Gold will not affect test '

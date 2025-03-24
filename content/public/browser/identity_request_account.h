@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -61,6 +62,9 @@ class CONTENT_EXPORT IdentityRequestAccount
       std::optional<LoginState> login_state = std::nullopt,
       LoginState browser_trusted_login_state = LoginState::kSignUp,
       std::optional<base::Time> last_used_timestamp = std::nullopt);
+
+  explicit IdentityRequestAccount(
+      const blink::common::webid::LoginStatusAccount& account);
 
   // The identity provider to which the account belongs to. This is not set in
   // the constructor but instead set later.

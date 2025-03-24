@@ -98,7 +98,7 @@ ReadAdapterUnicastAddresses() {
   for (unsigned tries = 0; (tries < 3) && (rv == ERROR_BUFFER_OVERFLOW);
        tries++) {
     out.reset(static_cast<PIP_ADAPTER_ADDRESSES>(malloc(len)));
-    memset(out.get(), 0, len);
+    UNSAFE_TODO(memset(out.get(), 0, len));
     rv = GetAdaptersAddresses(AF_UNSPEC,
                               GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_DNS_SERVER |
                               GAA_FLAG_SKIP_MULTICAST |

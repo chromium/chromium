@@ -83,6 +83,20 @@ void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(bool is_main_frame) {
                             is_main_frame);
 }
 
+void RecordDisableUntrustedNetworkOutcome(
+    const DisableUntrustedNetworkOutcome outcome) {
+  base::UmaHistogramEnumeration(kDisableUntrustedNetworkOutcome, outcome);
+}
+
+void RecordSharedStorageGetInFencedFrameOutcome(
+    const SharedStorageGetInFencedFrameOutcome outcome) {
+  base::UmaHistogramEnumeration(kSharedStorageGetInFencedFrameOutcome, outcome);
+}
+
+void RecordNotifyEventOutcome(const NotifyEventOutcome outcome) {
+  base::UmaHistogramEnumeration(kNotifyEventOutcome, outcome);
+}
+
 // If more event types besides click are supported for fenced events, this
 // function should operate on a global map of unfenced event_type_name ->
 // fenced event_type_name. Also, these functions use raw string literals to

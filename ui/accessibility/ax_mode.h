@@ -185,7 +185,10 @@ class AX_BASE_EXPORT AXMode {
   // kFormsAndLabelsOnly filters out everything except for forms and labels
   // necessary for password managers to operate.
   static constexpr uint32_t kFormsAndLabelsOnly = 1 << 0;
-  static constexpr uint32_t kFilterLastFlag = 1 << 0;
+  // This flag filters all nodes that are not on-screen. This is guarded behind
+  // a feature flag. Please see kAccessibilityOnScreenMode.
+  static constexpr uint32_t kOnScreenOnly = 1 << 1;
+  static constexpr uint32_t kFilterLastFlag = 1 << 1;
 
  private:
   friend struct mojo::StructTraits<ax::mojom::AXModeDataView, AXMode>;
@@ -238,6 +241,12 @@ inline constexpr AXMode kAXModeFormControls(AXMode::kNativeAPIs |
                                             AXMode::kFormsAndLabelsOnly);
 
 // If adding a new named set of mode flags, please update BundleHistogramValue.
+inline constexpr AXMode kAXModeOnScreen(AXMode::kNativeAPIs |
+                                            AXMode::kWebContents |
+                                            AXMode::kInlineTextBoxes |
+                                            AXMode::kExtendedProperties |
+                                            AXMode::kHTML,
+                                        AXMode::kOnScreenOnly);
 
 // For debugging, test assertions, etc.
 AX_BASE_EXPORT std::ostream& operator<<(std::ostream& stream,

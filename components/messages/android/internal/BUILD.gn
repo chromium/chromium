@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/messages/MessageAnimationCoordinator.java",
-    "java/src/org/chromium/components/messages/MessageAutoDismissTimer.java",
     "java/src/org/chromium/components/messages/MessageBannerCoordinator.java",
     "java/src/org/chromium/components/messages/MessageBannerMediator.java",
     "java/src/org/chromium/components/messages/MessageBannerView.java",
@@ -50,7 +49,6 @@ robolectric_library("junit") {
   resources_package = "org.chromium.components.messages"
   sources = [
     "java/src/org/chromium/components/messages/MessageAnimationCoordinatorUnitTest.java",
-    "java/src/org/chromium/components/messages/MessageAutoDismissTimerTest.java",
     "java/src/org/chromium/components/messages/MessageBannerCoordinatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageBannerMediatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageDispatcherUnitTest.java",

@@ -29,20 +29,18 @@ source_set("lib") {
 
   public_deps = [ "//chrome/services/media_gallery_util/public/mojom" ]
 
-  if (is_android) {
-    sources += [
-      "media_parser_android.cc",
-      "media_parser_android.h",
-      "video_thumbnail_parser.cc",
-      "video_thumbnail_parser.h",
-    ]
-  }
-
+  # FFmpeg is required to demux and extract metadata.
   if (media_use_ffmpeg) {
-    deps += [
-      "//third_party/ffmpeg",
-      "//third_party/ffmpeg:ffmpeg_features",
-    ]
+    if (is_android) {
+      sources += [
+        "media_parser_android.cc",
+        "media_parser_android.h",
+        "video_thumbnail_parser.cc",
+        "video_thumbnail_parser.h",
+      ]
+    }
+
+    deps += [ "//third_party/ffmpeg" ]
   }
 }
 

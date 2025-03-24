@@ -15,6 +15,7 @@
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_session.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -30,6 +31,7 @@ namespace ash {
 
 class ScannerCommandDelegateImpl;
 class ScannerDelegate;
+class ScreenPinningController;
 class SessionControllerImpl;
 
 // This is the top level controller used for Scanner. It acts as a mediator
@@ -38,8 +40,12 @@ class ASH_EXPORT ScannerController : public SessionObserver {
  public:
   using OnActionFinishedCallback = base::OnceCallback<void(bool success)>;
 
-  explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate,
-                             SessionControllerImpl& session_controller);
+  // `screen_pinning_controller` must outlive this class.
+  // It must only be null in tests.
+  explicit ScannerController(
+      std::unique_ptr<ScannerDelegate> delegate,
+      SessionControllerImpl& session_controller,
+      const ScreenPinningController* screen_pinning_controller);
   ScannerController(const ScannerController&) = delete;
   ScannerController& operator=(const ScannerController&) = delete;
   ~ScannerController() override;
@@ -131,6 +137,9 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   // External dependencies not owned by this class:
   // Session controller, stored in `Shell`. Always outlives this class.
   raw_ref<SessionControllerImpl> session_controller_;
+  // Screen pinning controller, stored in `Shell`. Always outlives this class.
+  // If this pointer is null, then we are in a test.
+  const raw_ptr<const ScreenPinningController> screen_pinning_controller_;
 
   // Holds mock ScannerOutput data for testing.
   std::vector<std::string> mock_scanner_responses_for_testing_;

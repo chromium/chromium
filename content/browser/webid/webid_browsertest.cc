@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,6 +42,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/federated_auth_autofill_source.h"
+#include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -2376,12 +2378,12 @@ IN_PROC_BROWSER_TEST_F(WebIdLightweightFedcmBrowserTest,
   ASSERT_TRUE(value.has_value());
   EXPECT_TRUE(*value);
 
-  std::vector<blink::common::webid::LoginStatusAccount> accounts =
-      sharing_context()->GetAccountProfiles(url::Origin::Create(configURL));
+  std::vector<scoped_refptr<content::IdentityRequestAccount>> accounts =
+      sharing_context()->GetAccounts(url::Origin::Create(configURL));
   ASSERT_EQ(1U, accounts.size());
-  EXPECT_EQ("12345", accounts[0].id);
-  EXPECT_EQ("User", accounts[0].name);
-  EXPECT_EQ("user@idp.example", accounts[0].email);
+  EXPECT_EQ("12345", accounts[0]->id);
+  EXPECT_EQ("User", accounts[0]->name);
+  EXPECT_EQ("user@idp.example", accounts[0]->email);
 }
 
 }  // namespace content

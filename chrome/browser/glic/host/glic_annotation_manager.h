@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_GLIC_HOST_GLIC_ANNOTATION_MANAGER_H_
 
 #include "base/callback_list.h"
-#include "chrome/browser/glic/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"

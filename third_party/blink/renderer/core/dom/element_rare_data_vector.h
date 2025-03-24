@@ -87,8 +87,10 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kOutOfFlowData = 30,
     kInterestInvokerData = 31,
     kInterestInvokerTargetData = 32,
+    kScrollMarkerGroupData = 33,
+    kScrollMarkerGroupContainerData = 34,
 
-    kNumFields = 33,
+    kNumFields = 35,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -296,6 +298,13 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void ClearTabIndexExplicitly() {
     ClearElementFlag(ElementFlags::kTabIndexWasSetExplicitly);
   }
+
+  ScrollMarkerGroupData* GetScrollMarkerGroupData() const;
+  void RemoveScrollMarkerGroupData();
+  ScrollMarkerGroupData& EnsureScrollMarkerGroupData(Element*);
+
+  void SetScrollMarkerGroupContainerData(ScrollMarkerGroupData*);
+  ScrollMarkerGroupData* GetScrollMarkerGroupContainerData() const;
 
   AnchorPositionScrollData* GetAnchorPositionScrollData() const;
   void RemoveAnchorPositionScrollData();

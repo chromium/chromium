@@ -40,7 +40,8 @@ class MEDIA_EXPORT VariantStream {
                 std::optional<types::DecimalResolution> resolution,
                 std::optional<types::DecimalFloatingPoint> frame_rate,
                 scoped_refptr<RenditionGroup> audio_renditions,
-                std::optional<std::string> video_rendition_group_name);
+                scoped_refptr<RenditionGroup> video_rendition_group,
+                RenditionGroup::RenditionTrack implicit_rendition);
   VariantStream(const VariantStream&) = delete;
   VariantStream(VariantStream&&);
   ~VariantStream();
@@ -123,10 +124,12 @@ class MEDIA_EXPORT VariantStream {
     return audio_rendition_group_;
   }
 
-  // Returns the name of the video rendition group, if it exists.
-  const std::optional<std::string> GetVideoRenditionGroupName() const {
-    return video_rendition_group_name_;
+  // Returns the implicit rendition created for this VariantStream's URI.
+  const RenditionGroup::RenditionTrack& GetImplicitRendition() const {
+    return implicit_rendition_;
   }
+
+  void UpdateImplicitRenditionMediaTrackName(std::string name);
 
   const std::string Format(const std::vector<FormatComponent>& components,
                            uint32_t stream_index) const;
@@ -140,7 +143,8 @@ class MEDIA_EXPORT VariantStream {
   std::optional<types::DecimalResolution> resolution_;
   std::optional<types::DecimalFloatingPoint> frame_rate_;
   scoped_refptr<RenditionGroup> audio_rendition_group_;
-  std::optional<std::string> video_rendition_group_name_;
+  scoped_refptr<RenditionGroup> video_rendition_group_;
+  RenditionGroup::RenditionTrack implicit_rendition_;
 };
 
 }  // namespace media::hls

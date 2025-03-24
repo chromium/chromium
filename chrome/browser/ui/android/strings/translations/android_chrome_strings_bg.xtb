@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">Вие и Google</translation>
 <translation id="3737319253362202215">Настройки за превод</translation>
 <translation id="3738139272394829648">Търсене чрез докосване</translation>
+<translation id="3739455665973395693">В профила ви в Google няма компрометирани пароли</translation>
 <translation id="3739899004075612870">Отметката бе запазена в/ъв <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">На това устройство не може да се търси с глас</translation>
 <translation id="376561056759077985">Някои данни още не са запазени</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">Искате ли отново да изтеглите „<ph name="FILE_NAME" />“?</translation>
 <translation id="3987993985790029246">Връзка: Коп.</translation>
 <translation id="4000212216660919741">Начална страница в офлайн режим</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 компрометирана парола в профила ви в Google}other{# компрометирани пароли в профила ви в Google}}</translation>
 <translation id="4016425174436051808">Следенето не е възможно. Нещо се обърка.</translation>
 <translation id="4024768890073681126">Браузърът се управлява от родител</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч}other{# ч}}</translation>
@@ -692,6 +694,7 @@
 <translation id="4270730597186910506">Проследяване или прекратяване на проследяването на продукт.</translation>
 <translation id="4277529130885813215">Използване на друго устройство</translation>
 <translation id="4282440837784183472">Организацията ви <ph name="MANAGED_DOMAIN" /> управлява профила, в който влизате, и начина на използване на Chrome. Администраторът ви може да настройва или ограничава определени функции.</translation>
+<translation id="4285498937028063278">Освобождаване</translation>
 <translation id="4285846616383034558">„Бисквитки“, кеш и други данни за сайтовете</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Включете заключването на екрана от настройките на Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Нов раздел „инкогнито“</translation>
@@ -831,6 +834,7 @@
 <translation id="4881695831933465202">Отваряне</translation>
 <translation id="488187801263602086">Преименуване на файла</translation>
 <translation id="4885273946141277891">Неподдържан брой екземпляри на Chrome.</translation>
+<translation id="4890973535105146893">В профила ви в Google няма запазени пароли</translation>
 <translation id="4905823827770127520">Включване на връзка към страницата</translation>
 <translation id="4908869848243824489">Discover от Google</translation>
 <translation id="4910889077668685004">Приложения за плащане</translation>
@@ -920,6 +924,7 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5319359161174645648">Google препоръчва Chrome</translation>
 <translation id="5326246328175179736">Не можете да влезете с този профил</translation>
+<translation id="5327248766486351172">Име</translation>
 <translation id="5328542107300944283">Използване чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Искания за разрешение</translation>
 <translation id="534580735623577507">Няма сайтове от <ph name="TIME_PERIOD" /></translation>
@@ -1075,6 +1080,7 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
 <translation id="6071995715087444295">За да проверите за компрометирани пароли, влезте в профила си в Google</translation>
+<translation id="6078323886959318429">Добавяне на пряк път</translation>
 <translation id="6085886413119427067">Определя начин за свързване с уебсайтовете през сигурна връзка</translation>
 <translation id="6087286598828478206">Искате ли да блокирате потребителя и да напуснете групата?</translation>
 <translation id="60923314841986378">Остават <ph name="HOURS" /> часа</translation>
@@ -1703,6 +1709,7 @@
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
 <translation id="8712637175834984815">Разбрах</translation>
+<translation id="8715286883001906001">Подобрете паролите в профила си в Google</translation>
 <translation id="8723453889042591629">Бърз превод на страницата. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8731268612289859741">Код за сигурност</translation>
@@ -1830,6 +1837,7 @@
 <translation id="970715775301869095">Остават <ph name="MINUTES" /> мин</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Затваряне на всички раздели</translation>
+<translation id="984756705737569814">Паролите в профила ви в Google не могат да бъдат проверени</translation>
 <translation id="987264212798334818">Общи</translation>
 <translation id="988091779042748639">За да изтриете историята на сърфиране в режим „инкогнито“ на устройството си, затворете всички раздели в този режим.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> раздела</translation>

@@ -335,7 +335,10 @@ void WCOCallbackLogger::OnClientAdded(
     GlobalRenderFrameHostId render_frame_host_id) {
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromID(render_frame_host_id);
-  GURL scope = GetFirstPartyURL(render_frame_host).value_or(GURL());
+  GURL scope;
+  if (render_frame_host) {
+    scope = GetFirstPartyURL(*render_frame_host);
+  }
 
   log_.push_back(base::StringPrintf("OnSharedWorkerClientAdded(%s)",
                                     FormatURL(scope).c_str()));
@@ -350,7 +353,10 @@ void WCOCallbackLogger::OnWorkerCreated(
       std::get<GlobalRenderFrameHostId>(creator);
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromID(render_frame_host_id);
-  GURL scope = GetFirstPartyURL(render_frame_host).value_or(GURL());
+  GURL scope;
+  if (render_frame_host) {
+    scope = GetFirstPartyURL(*render_frame_host);
+  }
 
   log_.push_back(base::StringPrintf("OnDedicatedWorkerCreated(%s)",
                                     FormatURL(scope).c_str()));
@@ -358,7 +364,7 @@ void WCOCallbackLogger::OnWorkerCreated(
 
 void WCOCallbackLogger::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
-  if (!IsInPrimaryPage(navigation_handle)) {
+  if (!IsInPrimaryPage(*navigation_handle)) {
     return;
   }
 
@@ -4181,8 +4187,8 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, IsOrWasInPrimaryPage) {
   ASSERT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/empty.html")));
   RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-  EXPECT_TRUE(IsInPrimaryPage(rfh));
-  EXPECT_TRUE(btm::IsOrWasInPrimaryPage(rfh));
+  EXPECT_TRUE(IsInPrimaryPage(*rfh));
+  EXPECT_TRUE(btm::IsOrWasInPrimaryPage(*rfh));
   const GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   ASSERT_TRUE(NavigateToURL(
@@ -4195,8 +4201,8 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, IsOrWasInPrimaryPage) {
     EXPECT_TRUE(rfh->IsInLifecycleState(
         RenderFrameHost::LifecycleState::kInBackForwardCache));
     // The page is no longer primary, but it used to be:
-    EXPECT_FALSE(IsInPrimaryPage(rfh));
-    EXPECT_TRUE(btm::IsOrWasInPrimaryPage(rfh));
+    EXPECT_FALSE(IsInPrimaryPage(*rfh));
+    EXPECT_TRUE(btm::IsOrWasInPrimaryPage(*rfh));
   } else {
     // If the bfcache is disabled, the RFH may or may not be in memory. If it
     // still is, it's only because it's pending deletion.
@@ -4204,8 +4210,8 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest, IsOrWasInPrimaryPage) {
       EXPECT_TRUE(rfh->IsInLifecycleState(
           RenderFrameHost::LifecycleState::kPendingDeletion));
       // The page is no longer primary, but it used to be:
-      EXPECT_FALSE(IsInPrimaryPage(rfh));
-      EXPECT_TRUE(btm::IsOrWasInPrimaryPage(rfh));
+      EXPECT_FALSE(IsInPrimaryPage(*rfh));
+      EXPECT_TRUE(btm::IsOrWasInPrimaryPage(*rfh));
     }
   }
 }
@@ -4263,7 +4269,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
 
   RenderFrameHost* rfh = RenderFrameHost::FromID(observer.rfh_id());
   ASSERT_TRUE(rfh);
-  EXPECT_FALSE(btm::IsOrWasInPrimaryPage(rfh));
+  EXPECT_FALSE(btm::IsOrWasInPrimaryPage(*rfh));
 
   // Navigating to another site may trigger destruction of the frame.
   ASSERT_TRUE(NavigateToURL(
@@ -4272,7 +4278,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
   rfh = RenderFrameHost::FromID(observer.rfh_id());
   if (rfh) {
     // Even if it's still in memory, it was never primary.
-    EXPECT_FALSE(btm::IsOrWasInPrimaryPage(rfh));
+    EXPECT_FALSE(btm::IsOrWasInPrimaryPage(*rfh));
   }
 }
 
@@ -4301,7 +4307,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
 
   RenderFrameHost* rfh = RenderFrameHost::FromID(observer.rfh_id());
   ASSERT_TRUE(rfh);
-  EXPECT_FALSE(btm::IsOrWasInPrimaryPage(rfh));
+  EXPECT_FALSE(btm::IsOrWasInPrimaryPage(*rfh));
 
   // Navigate to the prerendered page.
   ASSERT_TRUE(NavigateToURLFromRenderer(
@@ -4313,8 +4319,8 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
 
   rfh = RenderFrameHost::FromID(observer.rfh_id());
   if (rfh) {
-    EXPECT_FALSE(IsInPrimaryPage(rfh));
-    EXPECT_TRUE(btm::IsOrWasInPrimaryPage(rfh));
+    EXPECT_FALSE(IsInPrimaryPage(*rfh));
+    EXPECT_TRUE(btm::IsOrWasInPrimaryPage(*rfh));
   }
 }
 

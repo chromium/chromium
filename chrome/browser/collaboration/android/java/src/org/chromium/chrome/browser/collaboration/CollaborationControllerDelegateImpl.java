@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.collaboration;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -17,16 +14,12 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.data_sharing.BulkFaviconUtil;
 import org.chromium.chrome.browser.data_sharing.DataSharingMetrics;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
@@ -41,25 +34,13 @@ import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.SigninStatus;
-import org.chromium.components.data_sharing.DataSharingUIDelegate;
-import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupToken;
-import org.chromium.components.data_sharing.SharedDataPreview;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
-import org.chromium.components.data_sharing.TabPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
-import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
-import org.chromium.components.data_sharing.configs.DataSharingPreviewDetailsConfig;
-import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig;
-import org.chromium.components.data_sharing.configs.DataSharingStringConfig;
-import org.chromium.components.data_sharing.configs.DataSharingUiConfig;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.SavedTabGroupTab;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -69,23 +50,10 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** An interface to manage collaboration flow UI screens. */
 @JNINamespace("collaboration")
 public class CollaborationControllerDelegateImpl implements CollaborationControllerDelegate {
-    // TODO(b/405198763): Reuse kLearnAboutBlockedAccountsDefaultUrl.
-    private static final String LEARN_MORE_SHARED_TAB_GROUP_PAGE_URL =
-            "https://support.google.com/chrome/?p=chrome_collaboration";
-    private static final String LEARN_ABOUT_BLOCKED_ACCOUNTS_URL =
-            "https://support.google.com/accounts/answer/6388749";
-    private static final String ACTIVITY_LOGS_URL =
-            "https://myactivity.google.com/product/chrome_shared_tab_group_activity?utm_source=chrome_collab";
-    private static final int BITMAP_SIZE = 72;
-
     private final @FlowType int mFlowType;
-    private final BulkFaviconUtil mBulkFaviconUtil = new BulkFaviconUtil();
     private Activity mActivity;
     private DataSharingTabManager mDataSharingTabManager;
     private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
@@ -469,70 +437,14 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                     }
                 };
 
-        String sessionId = showJoinScreenWithPreview(token, previewData, joinCallback);
+        String sessionId =
+                mDataSharingTabManager.showJoinScreenWithPreview(
+                        mActivity, token, previewData, joinCallback);
 
         mCloseScreenRunnable =
                 () -> {
                     mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
                 };
-    }
-
-    private String showJoinScreenWithPreview(
-            GroupToken token,
-            SharedTabGroupPreview previewTabGroupData,
-            DataSharingJoinUiConfig.JoinCallback joinCallback) {
-        DataSharingStringConfig stringConfig =
-                new DataSharingStringConfig.Builder()
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.JOIN_TITLE,
-                                R.plurals.collaboration_preview_dialog_title_multiple)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.JOIN_TITLE_SINGLE,
-                                R.string.collaboration_preview_dialog_title_single)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.JOIN_DESCRIPTION,
-                                R.string.collaboration_preview_dialog_body)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.JOIN_DETAILS_TITLE,
-                                R.string.collaboration_preview_dialog_details_title)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.JOIN_DETAILS_HEADER,
-                                R.string.collaboration_preview_dialog_details_tabs_in_group)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.TABS_COUNT_TITLE,
-                                R.plurals.collaboration_preview_dialog_tabs)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
-                                R.string.collaboration_learn_about_shared_groups)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.JOIN_GROUP_IS_FULL_ERROR_TITLE,
-                                R.string.collaboration_group_is_full_error_dialog_header)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.JOIN_GROUP_IS_FULL_ERROR_BODY,
-                                R.string.collaboration_group_is_full_error_dialog_body)
-                        .build();
-
-        String tabGroupName = previewTabGroupData.title;
-        if (TextUtils.isEmpty(tabGroupName)) {
-            tabGroupName =
-                    TabGroupTitleUtils.getDefaultTitle(mActivity, previewTabGroupData.tabs.size());
-        }
-
-        String sessionId =
-                mDataSharingTabManager
-                        .getUiDelegate()
-                        .showJoinFlow(
-                                new DataSharingJoinUiConfig.Builder()
-                                        .setCommonConfig(
-                                                getCommonConfig(tabGroupName, stringConfig))
-                                        .setJoinCallback(joinCallback)
-                                        .setGroupToken(token)
-                                        .setSharedDataPreview(
-                                                new SharedDataPreview(previewTabGroupData))
-                                        .build());
-
-        fetchFavicons(sessionId, previewTabGroupData.tabs, previewTabGroupData.tabs.size());
-        return sessionId;
     }
 
     /**
@@ -594,171 +506,13 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 mDataSharingTabManager.getSavedTabGroupForEitherId(syncId, localId);
 
         String sessionId =
-                showShareDialogInternal(existingGroup.title, existingGroup, createCallback);
+                mDataSharingTabManager.showShareDialog(
+                        mActivity, existingGroup.title, existingGroup, createCallback);
 
         mCloseScreenRunnable =
                 () -> {
                     mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
                 };
-    }
-
-    private String showShareDialogInternal(
-            String tabGroupDisplayName,
-            SavedTabGroup existingGroup,
-            DataSharingCreateUiConfig.CreateCallback createCallback) {
-        DataSharingUIDelegate uiDelegate = mDataSharingTabManager.getUiDelegate();
-
-        if (TextUtils.isEmpty(tabGroupDisplayName)) {
-            tabGroupDisplayName =
-                    TabGroupTitleUtils.getDefaultTitle(mActivity, existingGroup.savedTabs.size());
-        }
-
-        DataSharingStringConfig stringConfig =
-                new DataSharingStringConfig.Builder()
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.CREATE_TITLE,
-                                R.string.collaboration_share_group_title)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.CREATE_DESCRIPTION,
-                                R.string.collaboration_share_group_body)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
-                                R.string.collaboration_learn_about_shared_groups)
-                        .build();
-
-        String sessionId =
-                uiDelegate.showCreateFlow(
-                        new DataSharingCreateUiConfig.Builder()
-                                .setCommonConfig(getCommonConfig(tabGroupDisplayName, stringConfig))
-                                .setCreateCallback(createCallback)
-                                .build());
-        fetchFavicons(
-                sessionId,
-                convertToTabsPreviewList(existingGroup.savedTabs),
-                /* maxFaviconsToFetch= */ 4);
-
-        return sessionId;
-    }
-
-    private DataSharingUiConfig getCommonConfig(
-            String tabGroupName, DataSharingStringConfig stringConfig) {
-        DataSharingUiConfig.DataSharingCallback dataSharingCallback =
-                new DataSharingUiConfig.DataSharingCallback() {
-                    @Override
-                    public void onClickOpenChromeCustomTab(Context context, GURL url) {
-                        mDataSharingTabManager
-                                .getTabGroupsDelegate()
-                                .openUrlInChromeCustomTab(context, url);
-                    }
-                };
-        DataSharingUiConfig.Builder commonConfig =
-                new DataSharingUiConfig.Builder()
-                        .setActivity(mActivity)
-                        .setIsTablet(
-                                DeviceFormFactor.isWindowOnTablet(
-                                        mDataSharingTabManager.getWindowAndroid()))
-                        .setLearnMoreHyperLink(getTabGroupHelpUrl())
-                        .setDataSharingStringConfig(stringConfig)
-                        .setDataSharingCallback(dataSharingCallback);
-        if (!TextUtils.isEmpty(tabGroupName)) {
-            commonConfig.setTabGroupName(tabGroupName);
-        }
-        return commonConfig.build();
-    }
-
-    private GURL getTabGroupHelpUrl() {
-        return new GURL(LEARN_MORE_SHARED_TAB_GROUP_PAGE_URL);
-    }
-
-    private GURL getLearnAboutBlockedAccountsUrl() {
-        return new GURL(LEARN_ABOUT_BLOCKED_ACCOUNTS_URL);
-    }
-
-    private GURL getActivityLogsUrl() {
-        return new GURL(ACTIVITY_LOGS_URL);
-    }
-
-    private List<TabPreview> convertToTabsPreviewList(List<SavedTabGroupTab> savedTabs) {
-        int tabsCount = savedTabs.size();
-        List<TabPreview> preview = new ArrayList<>();
-        for (int i = 0; i < tabsCount; ++i) {
-            // displayUrl field is not used in the create or manage UI where local tab group is
-            // available.
-            preview.add(new TabPreview(savedTabs.get(i).url, /* displayUrl= */ ""));
-        }
-        return preview;
-    }
-
-    private void fetchFavicons(String sessionId, List<TabPreview> tabs, int maxFaviconsToFetch) {
-        // First fetch favicons for up to 4 tabs, then fetch favicons for the remaining tabs.
-        int previewImageSize = 4;
-        Runnable fetchAll =
-                () -> {
-                    fetchFaviconsInternal(
-                            sessionId,
-                            tabs,
-                            /* maxTabs= */ maxFaviconsToFetch,
-                            () -> {
-                                DataSharingMetrics.recordJoinActionFlowState(
-                                        DataSharingMetrics.JoinActionStateAndroid
-                                                .ALL_FAVICONS_FETCHED);
-                            });
-                };
-
-        if (tabs.size() <= previewImageSize) {
-            fetchAll.run();
-            return;
-        }
-        Runnable onFetched =
-                () -> {
-                    DataSharingMetrics.recordJoinActionFlowState(
-                            DataSharingMetrics.JoinActionStateAndroid.PREVIEW_FAVICONS_FETCHED);
-                    fetchAll.run();
-                };
-        fetchFaviconsInternal(sessionId, tabs, /* maxTabs= */ previewImageSize, onFetched);
-    }
-
-    private void fetchFaviconsInternal(
-            String sessionId, List<TabPreview> tabs, int maxTabs, Runnable doneCallback) {
-        List<GURL> urls = new ArrayList<>();
-        List<String> displayUrls = new ArrayList<>();
-
-        // Fetch URLs for favicons (up to maxTabs).
-        for (int i = 0; i < Math.min(maxTabs, tabs.size()); i++) {
-            urls.add(tabs.get(i).url);
-        }
-
-        // Always collect all display URLs.
-        for (TabPreview tab : tabs) {
-            displayUrls.add(tab.displayUrl);
-        }
-        mBulkFaviconUtil.fetchAsBitmap(
-                mActivity,
-                mDataSharingTabManager.getProfile(),
-                urls,
-                BITMAP_SIZE,
-                (favicons) -> {
-                    updateFavicons(sessionId, displayUrls, favicons);
-                    doneCallback.run();
-                });
-    }
-
-    private void updateFavicons(String sessionId, List<String> displayUrls, List<Bitmap> favicons) {
-        List<DataSharingPreviewDetailsConfig.TabPreview> tabsPreviewList = new ArrayList<>();
-        for (int i = 0; i < displayUrls.size(); i++) {
-            tabsPreviewList.add(
-                    new DataSharingPreviewDetailsConfig.TabPreview(
-                            displayUrls.get(i), i < favicons.size() ? favicons.get(i) : null));
-        }
-        DataSharingRuntimeDataConfig runtimeConfig =
-                new DataSharingRuntimeDataConfig.Builder()
-                        .setSessionId(sessionId)
-                        .setDataSharingPreviewDetailsConfig(
-                                new DataSharingPreviewDetailsConfig.Builder()
-                                        .setTabPreviews(tabsPreviewList)
-                                        .build())
-                        .build();
-        mDataSharingTabManager.getUiDelegate().updateRuntimeData(sessionId, runtimeConfig);
     }
 
     /**
@@ -796,7 +550,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 mDataSharingTabManager.getSavedTabGroupForEitherId(syncId, localId);
 
         String sessionId =
-                showManageSharing(
+                mDataSharingTabManager.showManageSharing(
+                        mActivity,
                         existingGroup.collaborationId,
                         () -> {
                             CollaborationControllerDelegateImplJni.get()
@@ -807,116 +562,6 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                 () -> {
                     mDataSharingTabManager.getUiDelegate().destroyFlow(sessionId);
                 };
-    }
-
-    private String showManageSharing(String collaborationId, @Nullable Runnable finishRunnable) {
-        Profile profile = mDataSharingTabManager.getProfile();
-        assert profile != null;
-
-        DataSharingUIDelegate uiDelegate = mDataSharingTabManager.getUiDelegate();
-        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
-        String tabGroupName =
-                DataSharingTabGroupUtils.getTabGroupTitle(
-                        mActivity, collaborationId, tabGroupSyncService);
-
-        DataSharingStringConfig stringConfig =
-                new DataSharingStringConfig.Builder()
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.MANAGE_DESCRIPTION,
-                                R.string.collaboration_manage_group_description)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.LET_ANYONE_JOIN_DESCRIPTION,
-                                R.string.collaboration_manage_share_wisely)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
-                                R.string.collaboration_learn_about_shared_groups)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.BLOCK_MESSAGE,
-                                R.string.collaboration_owner_block_dialog_body)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.BLOCK_AND_LEAVE_GROUP_MESSAGE,
-                                R.string.collaboration_block_leave_dialog_body)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.LEARN_ABOUT_BLOCKED_ACCOUNTS,
-                                R.string.collaboration_block_leave_learn_more)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.REMOVE_MESSAGE,
-                                R.string.collaboration_owner_remove_member_dialog_body)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.LEAVE_GROUP_MESSAGE,
-                                R.string.collaboration_leave_dialog_body)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey.STOP_SHARING_MESSAGE,
-                                R.string.collaboration_owner_stop_sharing_dialog_body)
-                        .setResourceId(
-                                DataSharingStringConfig.StringKey
-                                        .LET_ANYONE_JOIN_GROUP_WHEN_FULL_DESCRIPTION,
-                                R.string.collaboration_group_is_full_description)
-                        .build();
-
-        DataSharingManageUiConfig.ManageCallback manageCallback =
-                new DataSharingManageUiConfig.ManageCallback() {
-                    @Override
-                    public void onShareInviteLinkClicked(GroupToken groupToken) {
-                        onShareInviteLinkClickedWithWait(groupToken, null);
-                    }
-
-                    @Override
-                    public void onShareInviteLinkClickedWithWait(
-                            GroupToken groupToken, Callback<Boolean> onFinished) {
-                        GURL url =
-                                mDataSharingTabManager
-                                        .getDataSharingService()
-                                        .getDataSharingUrl(
-                                                new GroupData(
-                                                        groupToken.collaborationId,
-                                                        tabGroupName,
-                                                        /* members= */ null,
-                                                        groupToken.accessToken));
-                        if (url == null) {
-                            Callback.runNullSafe(onFinished, false);
-                            DataSharingMetrics.recordShareActionFlowState(
-                                    DataSharingMetrics.ShareActionStateAndroid.URL_CREATION_FAILED);
-                            return;
-                        }
-                        mDataSharingTabManager.showShareSheet(
-                                mActivity, groupToken.collaborationId, url, onFinished);
-                    }
-
-                    @Override
-                    public void onStopSharingInitiated(Callback<Boolean> readyToStopSharing) {
-                        SavedTabGroup existingGroup =
-                                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
-                                        collaborationId, tabGroupSyncService);
-                        tabGroupSyncService.aboutToUnShareTabGroup(
-                                existingGroup.localId, readyToStopSharing);
-                    }
-
-                    @Override
-                    public void onStopSharingCompleted(boolean success) {
-                        SavedTabGroup existingGroup =
-                                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
-                                        collaborationId, tabGroupSyncService);
-                        tabGroupSyncService.onTabGroupUnShareComplete(
-                                existingGroup.localId, success);
-                    }
-
-                    @Override
-                    public void onSessionFinished() {
-                        if (finishRunnable != null) {
-                            finishRunnable.run();
-                        }
-                    }
-                };
-        DataSharingManageUiConfig manageConfig =
-                new DataSharingManageUiConfig.Builder()
-                        .setGroupToken(new GroupToken(collaborationId, null))
-                        .setManageCallback(manageCallback)
-                        .setLearnAboutBlockedAccounts(getLearnAboutBlockedAccountsUrl())
-                        .setActivityLogsUrl(getActivityLogsUrl())
-                        .setCommonConfig(getCommonConfig(tabGroupName, stringConfig))
-                        .build();
-        return uiDelegate.showManageFlow(manageConfig);
     }
 
     /**
@@ -961,7 +606,6 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     /** Cleans up any outstanding resources. */
     @Override
     public void destroy() {
-        mBulkFaviconUtil.destroy();
         long tempCallback = mExitCallback;
         mExitCallback = 0;
         CollaborationControllerDelegateImplJni.get().runExitCallback(tempCallback);
@@ -985,10 +629,6 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         if (mLoadingFullscreenCoordinator != null) {
             mLoadingFullscreenCoordinator.closeLoadingScreen();
         }
-    }
-
-    BulkFaviconUtil getBulkFaviconUtilForTesting() {
-        return mBulkFaviconUtil;
     }
 
     @NativeMethods

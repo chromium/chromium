@@ -6,6 +6,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/test/test_renderer_host.h"
@@ -106,6 +107,7 @@ class NoVarySearchHelperTester final {
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager),
             blink::mojom::Referrer(),
+            std::make_optional(SpeculationRulesTags()),
             /*no_vary_search_hint=*/std::nullopt,
             /*prefetch_document_manager=*/nullptr,
             PreloadPipelineInfo::Create(/*planned_max_preloading_type=*/

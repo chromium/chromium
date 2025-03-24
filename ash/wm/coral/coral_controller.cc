@@ -45,7 +45,7 @@ namespace ash {
 namespace {
 
 constexpr int kMinItemsInGroup = 4;
-constexpr int kMaxItemsInGroup = 10;
+constexpr int kMaxItemsInGroup = 25;
 constexpr int kMaxGroupsToGenerate = 2;
 // Too many items in 1 request could result in poor performance.
 constexpr size_t kMaxItemsInRequest = 100;
@@ -91,6 +91,17 @@ std::string GroupResponseToString(
   return group_info;
 }
 
+std::string CoralSourceToString(CoralSource source) {
+  switch (source) {
+    case CoralSource::kUnknown:
+      return "Unknown";
+    case CoralSource::kPostLogin:
+      return "Post-login";
+    case CoralSource::kInSession:
+      return "In-session";
+  }
+}
+
 }  // namespace
 
 CoralRequest::CoralRequest() = default;
@@ -98,8 +109,15 @@ CoralRequest::CoralRequest() = default;
 CoralRequest::~CoralRequest() = default;
 
 std::string CoralRequest::ToString() const {
-  auto root = base::Value::Dict().Set(
-      "Coral request", coral_util::EntitiesToListValue(content_));
+  auto request_value = base::Value::Dict();
+  request_value.Set("source", CoralSourceToString(source_));
+  request_value.Set("requested entities",
+                    coral_util::EntitiesToListValue(content_));
+  request_value.Set("suppression context",
+                    coral_util::EntitiesToListValue(suppression_context_));
+  request_value.Set("language", language_);
+  auto root =
+      base::Value::Dict().Set("Coral request", std::move(request_value));
   return root.DebugString();
 }
 
@@ -145,6 +163,7 @@ void CoralController::GenerateContentGroups(
   group_request->clustering_options->max_clusters = kMaxGroupsToGenerate;
   group_request->title_generation_options =
       coral::mojom::TitleGenerationOptions::New();
+  group_request->title_generation_options->language_code = request.language();
   const size_t items_in_request =
       std::min(request.content().size(), kMaxItemsInRequest);
   for (size_t i = 0; i < items_in_request; i++) {
@@ -379,6 +398,12 @@ void CoralController::OnTemplateCreated(
         std::make_unique<app_restore::RestoreData>());
   }
 
+  // To limit the memory usage, only save the first
+  // `kMaxItemsForCoralSuppressionContext` items to build the suppression
+  // context.
+  const int entities_size = tab_app_entities.size();
+  tab_app_entities.resize(
+      std::min(entities_size, kMaxItemsForCoralSuppressionContext));
   new_template->set_coral_tab_app_entities(std::move(tab_app_entities));
 
   auto* shell = Shell::Get();

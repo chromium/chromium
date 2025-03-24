@@ -316,12 +316,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.UnmaskPrompt.TimeBeforeAbandonUnmasking"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BackgroundDownload" separator=".">
-  <suffix name="BackgroundDownload"
-      label="Download that started in background."/>
-  <affected-histogram name="Download.HttpResponseCode"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BlueZPerProfileResult" separator="."
     ordering="prefix,2">
   <suffix name="A2DPSink"
@@ -604,40 +598,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DataUse_AppTabState_Dimensions" separator=".">
-  <suffix name="Downstream.AppBackground" label=""/>
-  <suffix name="Downstream.AppForeground.TabBackground" label=""/>
-  <suffix name="Downstream.AppForeground.TabForeground" label=""/>
-  <suffix name="Upstream.AppBackground" label=""/>
-  <suffix name="Upstream.AppForeground.TabBackground" label=""/>
-  <suffix name="Upstream.AppForeground.TabForeground" label=""/>
-  <affected-histogram name="DataUse.AppTabState"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DataUse_Dimensions" separator=".">
-  <suffix name="Downstream.Background.Cellular" label=""/>
-  <suffix name="Downstream.Background.NotCellular" label=""/>
-  <suffix name="Downstream.Foreground.Cellular" label=""/>
-  <suffix name="Downstream.Foreground.NotCellular" label=""/>
-  <suffix name="Downstream.Unknown.Cellular" label=""/>
-  <suffix name="Downstream.Unknown.NotCellular" label=""/>
-  <suffix name="Upstream.Background.Cellular" label=""/>
-  <suffix name="Upstream.Background.NotCellular" label=""/>
-  <suffix name="Upstream.Foreground.Cellular" label=""/>
-  <suffix name="Upstream.Foreground.NotCellular" label=""/>
-  <suffix name="Upstream.Unknown.Cellular" label=""/>
-  <suffix name="Upstream.Unknown.NotCellular" label=""/>
-  <affected-histogram name="DataUse.TrafficSize.User"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DevToolsLaunchPanels" separator=".">
-  <suffix name="Console" label="DevTools launched to the Console panel"/>
-  <suffix name="Elements" label="DevTools launched to the Elements panel"/>
-  <suffix name="Network" label="DevTools launched to the Network panel"/>
-  <suffix name="Sources" label="DevTools launched to the Sources panel"/>
-  <affected-histogram name="DevTools.Launch"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="DnsImpact2" separator="_">
   <suffix name="disabled_prefetch"
       label="DNS pre-resolving is disabled in these clients"/>
@@ -695,60 +655,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.DNS.ResolveContext.DohAutoupgrade.Status"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Download_Parallelizable" separator=".">
-  <suffix name="Parallelizable" label="Parallelizable download."/>
-  <affected-histogram name="Download.DownloadSize"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Download_Service_CleanUpReason" separator=".">
-  <suffix name="HardRecovery" label="File is deleted in hard recovery."/>
-  <suffix name="Orphaned" label="No client associated with the file."/>
-  <suffix name="Timeout" label="File is deleted after timeout."/>
-  <suffix name="Unknown" label="No database entry associated with the file."/>
-  <affected-histogram name="Download.Service.Files.CleanUp.External"/>
-  <affected-histogram name="Download.Service.Files.CleanUp.Failure"/>
-  <affected-histogram name="Download.Service.Files.CleanUp.Success"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Download_Service_Client" separator=".">
-  <suffix name="BackgroundFetch" label="Background fetch."/>
-  <suffix name="Debugging" label="Debugging client."/>
-  <suffix name="MountainInternal" label="Mountain internal client."/>
-  <suffix name="OfflinePage" label="Offline page prefetch."/>
-  <suffix name="OptimizationGuidePredictionModels"
-      label="Optimization Guide prediction models."/>
-  <suffix name="PluginVmImage" label="PluginVm image."/>
-  <affected-histogram name="Download.Service.Request.ClientAction"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Download_Service_EntryState" separator=".">
-  <suffix name="Active" label="The active state."/>
-  <suffix name="Available" label="The available state."/>
-  <suffix name="Complete" label="The complte state."/>
-  <suffix name="New" label="The initial state."/>
-  <suffix name="Paused" label="The paused state."/>
-  <affected-histogram name="Download.Service.Db.Records"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Download_Service_StartUpStep" separator=".">
-  <suffix name="Initialization" label="The initialization start up step."/>
-  <suffix name="Recovery" label="The recovery start up step."/>
-  <affected-histogram name="Download.Service.StartUpStatus"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Download_Service_TaskType" separator=".">
-  <suffix name="CleanUpTask" label="Clean up task."/>
-  <suffix name="DownloadTask" label="Download task."/>
-  <affected-histogram name="Download.Service.TaskScheduler.Status"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DownloadDialogSource" separator=".">
-  <suffix name="DownloadHome" label="Download home."/>
-  <suffix name="Infobar" label="Download infobar."/>
-  <suffix name="Main" label="Main download later dialog."/>
-  <affected-histogram name="Download.Later.UI.DialogChoice"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="DownloadSource" separator=".">
   <suffix name="ContextMenu" label="ContextMenu."/>
   <suffix name="DragAndDrop" label="DragAndDrop."/>
@@ -766,13 +672,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Download.Counts"/>
   <affected-histogram name="Download.InterruptedReason"/>
   <affected-histogram name="Download.NetworkConnectionType.StartNew"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="DownloadType" separator=".">
-  <suffix name="Transient" label="Transient download."/>
-  <suffix name="UserDownload" label="User download."/>
-  <affected-histogram name="Download.PathGenerationEvent"/>
-  <affected-histogram name="Download.PathValidationResult"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DriveCommonTimings" separator=".">

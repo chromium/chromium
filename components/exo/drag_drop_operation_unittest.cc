@@ -168,10 +168,8 @@ class DragDropOperationTestWithWebUITabStripTest
   void SetUp() override {
     auto mock_shell_delegate = std::make_unique<NiceMock<MockShellDelegate>>();
     mock_shell_delegate_ = mock_shell_delegate.get();
-
-    ExoTestBase::SetUp(std::move(mock_shell_delegate));
-    aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow())
-        ->AddObserver(this);
+    set_shell_delegate(std::move(mock_shell_delegate));
+    DragDropOperationTest::SetUp();
   }
 
   MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }

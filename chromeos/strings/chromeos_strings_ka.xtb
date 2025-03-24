@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">გადაჭარბებულია მცდელობათა მაქსიმალური რაოდენობა.</translation>
 <translation id="1908234395526491708">წარუმატებელი UDP მოთხოვნები</translation>
 <translation id="1908394185991500139">ისარი მარცხნივ</translation>
+<translation id="1911678930322867245">ზედა მარჯვენა კუთხეში გადატანა</translation>
 <translation id="1914144885717544695">პარასკევს</translation>
 <translation id="1915960750806557358">გამოგვეხმაურეთ ან აღწერეთ პრობლემა. დარწმუნდით, რომ არ დაურთავთ პერსონალურ, სენსიტიურ ან კონფიდენციალურ ინფორმაციას.</translation>
 <translation id="1923388006036088459">აქცენტირებული ფერები</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">პლაჟი</translation>
 <translation id="819278132617411009">გამოიყენეთ Google-ის ხელოვნური ინტელექტი პროდუქტიულობის გაზრდაში</translation>
-<translation id="82003371436638355">როცა აირჩევთ ვარიანტს „საკუთარი მოთხოვნის შექმნა“, დაწერეთ მორგებული მოთხოვნა. ან აირჩიეთ „თემის არჩევა“ და შემდეგ მონიშნეთ ხაზგასმული სიტყვები, რომ მოახდინოთ თქვენი AI ფონის პერსონალიზება.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ხელოვნური ინტელექტით შექმნილი სურათების უფრო უნიკალური და განსხვავებული ვარიანტების მისაღებად აირჩიეთ „შთაგონების მიღება“.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          თქვენი ფონის შექმნისას შესაბამისი მოთხოვნა ეგზავნება Google-ის სერვერებს, რომლებიც შემდეგ ქმნის სურათებს და აუმჯობესებს პროდუქტს <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ის კონფიდენციალურობის დებულების<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> შესაბამისად. ნუ მიუთითებთ პერსონალურ, სენსიტიურ და კონფიდენციალურ ინფორმაციას.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          გენერაციული ხელოვნური ინტელექტი შეიძლება შეცდეს, მათ შორის, ხალხის შესახებ, ამიტომ გადაამოწმეთ მისი ინფორმაცია <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />შეიტყვეთ მეტი<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">სანიშნეები</translation>
 <translation id="8833620912470026819">კაქტუსების ტყე</translation>
 <translation id="8834539327799336565">ამჟამად დაკავშირებული</translation>
+<translation id="8842526499753992487">ზედა მარცხენა კუთხეში გადატანა</translation>
 <translation id="8845001906332463065">დახმარების მიღება</translation>
 <translation id="8849799913685544685">შუქურა</translation>
 <translation id="8851859208664803097">შეწყვეტილია — პრინტერი მიუწვდომელია</translation>

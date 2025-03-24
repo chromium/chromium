@@ -5,7 +5,6 @@
 
 import logging
 import threading
-from typing import Optional
 
 import websockets  # pylint: disable=import-error
 import websockets.sync.server as sync_server  # pylint: disable=import-error
@@ -65,7 +64,7 @@ class WebsocketServer():
     self.websocket = None
     self.connection_received_event.clear()
 
-  def WaitForConnection(self, timeout: Optional[float] = None) -> None:
+  def WaitForConnection(self, timeout: float | None = None) -> None:
     if self.websocket:
       return
     timeout = timeout or WEBSOCKET_SETUP_TIMEOUT_SECONDS

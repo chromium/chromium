@@ -459,7 +459,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     return GetContentRestrictions();
   }
 
-  AccessibilityDocInfo GetAccessibilityDocInfoForTesting() const {
+  std::unique_ptr<AccessibilityDocInfo> GetAccessibilityDocInfoForTesting()
+      const {
     return GetAccessibilityDocInfo();
   }
 
@@ -698,7 +699,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
 
   // Gets the accessibility doc info based on the information from `engine_`.
-  AccessibilityDocInfo GetAccessibilityDocInfo() const;
+  // The return value is never nullptr.
+  std::unique_ptr<AccessibilityDocInfo> GetAccessibilityDocInfo() const;
 
   // Sets the accessibility information about the given `page_index` in the
   // renderer.

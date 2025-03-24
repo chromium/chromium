@@ -227,7 +227,7 @@ public class TabGroupUiMediatorUnitTest {
         if (currentTab == null) {
             doReturn(TabModel.INVALID_TAB_INDEX).when(mTabModel).index();
             doReturn(0).when(mTabModel).getCount();
-            doReturn(0).when(mTabGroupModelFilter).getCount();
+            doReturn(0).when(mTabGroupModelFilter).getIndividualTabAndGroupCount();
             doReturn(null).when(mTabModelSelector).getCurrentTab();
         } else {
             doReturn(mTabModel.indexOf(currentTab)).when(mTabModel).index();
@@ -333,8 +333,8 @@ public class TabGroupUiMediatorUnitTest {
         doNothing().when(mTab3).addObserver(mTabObserverCaptor.capture());
 
         // Setup TabGroupModelFilter.
-        doReturn(false).when(mTabGroupModelFilter).isIncognito();
-        doReturn(2).when(mTabGroupModelFilter).getCount();
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        doReturn(2).when(mTabGroupModelFilter).getIndividualTabAndGroupCount();
         doReturn(mTabGroup1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
         doReturn(mTabGroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
         doReturn(mTabGroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);

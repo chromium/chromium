@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Numero massimo di tentativi consentiti superato.</translation>
 <translation id="1908234395526491708">Errori delle richieste UDP</translation>
 <translation id="1908394185991500139">Freccia sinistra</translation>
+<translation id="1911678930322867245">Sposta in alto a destra</translation>
 <translation id="1914144885717544695">venerdì</translation>
 <translation id="1915960750806557358">Condividi il tuo feedback o descrivi il problema. Assicurati di non includere informazioni personali, sensibili o riservate.</translation>
 <translation id="1923388006036088459">Colori intensi</translation>
@@ -1543,16 +1544,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8183975772394450380">una spiaggia</translation>
 <translation id="819278132617411009">Usa Google AI per aumentare la produttività</translation>
-<translation id="82003371436638355">Quando selezioni "Crea il tuo", scrivi un prompt personalizzato. In alternativa, puoi selezionare "Scegli un tema" e poi selezionare le parole sottolineate per personalizzare il tuo sfondo AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Seleziona "Dammi l'ispirazione" per avere più opzioni di immagini AI univoche e diversificate.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Quando crei il tuo sfondo, ai server di Google AI viene inviato un prompt di generazione di immagini e miglioramento del prodotto, ai sensi dei <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Termini di servizio e delle Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Non includere informazioni personali, sensibili o riservate.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          L'AI generativa può fare errori, anche riguardo a persone, quindi verifica le sue risposte. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Scopri di più<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8206859287963243715">Cellulare</translation>
 <translation id="8208861521865154048">Vantaggi</translation>
@@ -1679,6 +1670,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8833620912470026819">foresta di cactus</translation>
 <translation id="8834539327799336565">Attualmente connesso</translation>
+<translation id="8842526499753992487">Sposta in alto a sinistra</translation>
 <translation id="8845001906332463065">Richiedi assistenza</translation>
 <translation id="8849799913685544685">faro</translation>
 <translation id="8851859208664803097">Operazione interrotta: stampante non raggiungibile</translation>

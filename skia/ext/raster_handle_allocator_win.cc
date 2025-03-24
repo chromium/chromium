@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -59,8 +60,9 @@ static bool Create(int width,
   // The HBITMAP is 32-bit RGB data. A size_t causes a type change from int when
   // multiplying against the dimensions.
   const size_t bpp = 4;
-  if (do_clear)
-    memset(pixels, 0, width * bpp * height);
+  if (do_clear) {
+    UNSAFE_TODO(memset(pixels, 0, width * bpp * height));
+  }
 
   HDC hdc = CreateCompatibleDC(nullptr);
   if (!hdc)

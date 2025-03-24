@@ -106,6 +106,10 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
 
   ManagementSetEnabledFunction();
 
+  // UMA metrics.
+  static constexpr char kSetEnabledHasUserGestureHistogramName[] =
+      "Extensions.Management.SetEnabled.HasUserGesture";
+
  protected:
   ~ManagementSetEnabledFunction() override;
 

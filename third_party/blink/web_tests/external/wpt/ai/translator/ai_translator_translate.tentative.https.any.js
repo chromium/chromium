@@ -60,7 +60,7 @@ promise_test(async t => {
       await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
   assert_equals(translator.sourceLanguage, 'en');
   assert_equals(translator.targetLanguage, 'ja');
-}, 'AITranslator: sourceLanguage and targetLanguage are equal to their respective option passed in to AITranslatorFactory.create.')
+}, 'AITranslator: sourceLanguage and targetLanguage are equal to their respective option passed in to AITranslatorFactory.create.');
 
 promise_test(async (t) => {
   const translator =
@@ -172,3 +172,41 @@ promise_test(async t => {
     assert_not_equals(translatedTranslatableString[i], translatableStrings[i]);
   }
 }, 'AITranslator.translate() echos non-translatable content');
+
+promise_test(async t => {
+  const translator =
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
+
+  const text = 'hello';
+  const inputUsage = await translator.measureInputUsage(text);
+
+  assert_greater_than_equal(translator.inputQuota, 0);
+  assert_greater_than_equal(inputUsage, 0);
+
+  if (inputUsage < translator.inputQuota) {
+    assert_equals(await translator.translate(text), 'こんにちは');
+  } else {
+    await promise_rejects_dom(
+        t, 'QuotaExceededError', translator.translate(text));
+  }
+}, 'AITranslator.measureInputUsage() and inputQuota basic usage.');
+
+promise_test(async t => {
+  const controller = new AbortController();
+  controller.abort();
+
+  const translator =
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
+  const measureInputUsagePromise =
+      translator.measureInputUsage('hello', {signal: controller.signal});
+
+  await promise_rejects_dom(t, 'AbortError', measureInputUsagePromise);
+}, 'AITranslator.measureInputUsage() call with an aborted signal.');
+
+promise_test(async t => {
+  const translator =
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
+  await testAbortPromise(t, signal => {
+    return translator.measureInputUsage('hello', {signal});
+  });
+}, 'Aborting AITranslator.measureInputUsage().');

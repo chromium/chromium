@@ -5957,6 +5957,7 @@ def ChecksAndroidSpecificOnUpload(input_api, output_api):
     results.extend(_CheckNewImagesWarning(input_api, output_api))
     results.extend(_CheckAndroidNoBannedImports(input_api, output_api))
     results.extend(_CheckAndroidInfoBarDeprecation(input_api, output_api))
+    results.extend(_CheckAndroidNullAwayAnnotatedClasses(input_api, output_api))
     return results
 
 
@@ -7574,6 +7575,48 @@ Robolectric tests do not need a @Batch or @DoNotBatch annotations.
 Robolectric tests should use either @RunWith(BaseRobolectricTestRunner.class) (or
 a subclass of it), or use "@Rule BaseRobolectricTestRule".
 """, wrong_robolectric_test_runner_errors))
+
+    return results
+
+
+def _CheckAndroidNullAwayAnnotatedClasses(input_api, output_api):
+    """Checks that Java classes/interfaces/annotations are null-annotated."""
+
+    nullmarked_annotation = input_api.re.compile(r'^\s*@(NullMarked|NullUnmarked)')
+
+    missing_annotation_errors = []
+
+    def _FilterFile(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+        files_to_skip=(_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS + input_api.
+                       DEFAULT_FILES_TO_SKIP + (
+                           r'.*Test.*\.java',
+                           r'^android_webview/.*', # Temporary, crbug.com/389129271
+                           r'^build/.*',
+                           r'^chrome/.*', # Temporary, crbug.com/389129271
+                           r'^chromecast/.*',
+                           r'^components/cronet/.*',
+                           r'^tools/.*',
+                       )),
+        files_to_check=[r'.*\.java$'])
+
+    for f in input_api.AffectedSourceFiles(_FilterFile):
+        for line in f.NewContents():
+            if nullmarked_annotation.search(line):
+                break
+        else:
+            missing_annotation_errors.append(str(f.LocalPath()))
+
+    results = []
+
+    if missing_annotation_errors:
+        results.append(
+            output_api.PresubmitPromptWarning(
+                """
+Please add @NullMarked and fix the NullAway warnings in the following files
+(see https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/nullaway.md):
+""", missing_annotation_errors))
 
     return results
 

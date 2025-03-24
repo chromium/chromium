@@ -44,22 +44,35 @@ base::TimeDelta kTimeElapsedSincePageLoadForDataCollection = base::Seconds(30);
 base::TimeDelta kTimeElapsedSinceTreeChangedForDataCollection =
     base::Seconds(30);
 
-bool GetIsGoogleDocs(const GURL& url) {
-  // A Google Docs URL is in the form of "https://docs.google.com/document*" or
-  // "https://docs.sandbox.google.com/document*".
-  constexpr const char* kDocsURLDomain[] = {"docs.google.com",
-                                            "docs.sandbox.google.com"};
-  if (url.SchemeIsHTTPOrHTTPS()) {
-    for (const std::string& google_docs_url : kDocsURLDomain) {
-      if (url.DomainIs(google_docs_url) && url.has_path() &&
-          url.path().starts_with("/document") &&
-          !url.ExtractFileName().empty()) {
-        return true;
-      }
-    }
+void SetTreeInfoUrlInformation(ReadAnythingAppModel::AXTreeInfo& tree_info) {
+  // If the url information has already been set for this tree, do nothing.
+  if (tree_info.is_url_information_set) {
+    return;
   }
 
-  return false;
+  // If the tree manager is not the root manager, do nothing.
+  CHECK(tree_info.manager);
+  if (!tree_info.manager->IsRoot()) {
+    return;
+  }
+
+  // If the tree doesn't have a root, or the root doesn't have a url set, do
+  // nothing.
+  const ui::AXNode* const root = tree_info.manager->GetRoot();
+  if (!root || !root->HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
+    return;
+  }
+
+  // A Google Docs URL is in the form of "https://docs.google.com/document*" or
+  // "https://docs.sandbox.google.com/document*".
+  const GURL url(root->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
+  tree_info.is_docs = url.SchemeIsHTTPOrHTTPS() &&
+                      (url.DomainIs("docs.google.com") ||
+                       url.DomainIs("docs.sandbox.google.com")) &&
+                      url.path().starts_with("/document") &&
+                      !url.ExtractFileName().empty();
+
+  tree_info.is_url_information_set = true;
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -443,38 +456,6 @@ bool ReadAnythingAppModel::ContainsTree(const ui::AXTreeID& tree_id) const {
   return base::Contains(tree_infos_, tree_id);
 }
 
-void ReadAnythingAppModel::AddUrlInformationForTreeId(
-    const ui::AXTreeID& tree_id) {
-  // If the tree isn't yet created, do nothing.
-  if (!ContainsTree(tree_id)) {
-    return;
-  }
-  ReadAnythingAppModel::AXTreeInfo* tree_info = tree_infos_.at(tree_id).get();
-  DCHECK(tree_info);
-
-  // If the url information has already been set for this tree, do nothing.
-  if (tree_info->is_url_information_set) {
-    return;
-  }
-
-  DCHECK(tree_info->manager);
-  // If the tree manager is not the root manager, do nothing.
-  if (!tree_info->manager->IsRoot()) {
-    return;
-  }
-
-  // If the tree doesn't have a root, or the root doesn't have a url set, do
-  // nothing.
-  ui::AXNode* root = tree_info->manager->GetRoot();
-  if (!root || !root->HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
-    return;
-  }
-
-  GURL url = GURL(root->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
-  tree_info->is_url_information_set = true;
-  tree_info->is_docs = GetIsGoogleDocs(url);
-}
-
 bool ReadAnythingAppModel::IsDocs() const {
   // Sometimes during an initial page load, this may be called before the
   // tree has been initialized. If this happens, IsDocs should return false
@@ -516,11 +497,14 @@ void ReadAnythingAppModel::UnserializeUpdates(Updates& updates,
   if (updates.empty()) {
     return;
   }
+
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
-  DCHECK(base::Contains(tree_infos_, tree_id));
-  ui::AXSerializableTree* tree = GetTreeFromId(tree_id);
-  size_t prev_tree_size = tree->size();
+  const auto it = tree_infos_.find(tree_id);
+  DCHECK(it != tree_infos_.end());
+  auto* const tree =
+      static_cast<ui::AXSerializableTree*>(it->second->manager->ax_tree());
   CHECK(tree);
+
   // Try to merge updates. If the updates are mergeable, MergeAXTreeUpdates will
   // return true and merge_updates_out will contain the updates. Otherwise, if
   // the updates are not mergeable, merge_updates_out will be empty.
@@ -534,11 +518,14 @@ void ReadAnythingAppModel::UnserializeUpdates(Updates& updates,
   ui::AXEventGenerator event_generator(tree);
 
   // Unserialize the updates.
+  const size_t prev_tree_size = tree->size();
   for (const ui::AXTreeUpdate& update : *merged_updates) {
     tree->Unserialize(update);
   }
 
-  AddUrlInformationForTreeId(tree_id);
+  // Set URL info if it hasn't already been set.
+  SetTreeInfoUrlInformation(*it->second);
+
   ProcessGeneratedEvents(event_generator, prev_tree_size, tree->size());
 }
 
@@ -860,9 +847,7 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kTooltipClosed:
       case ax::mojom::Event::kTooltipOpened:
       case ax::mojom::Event::kTreeChanged:
-        break;
       case ax::mojom::Event::kValueChanged:
-        reset_draw_timer_ = true;
         break;
       case ax::mojom::Event::kAriaAttributeChangedDeprecated:
       case ax::mojom::Event::kMenuListValueChangedDeprecated:
@@ -923,6 +908,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
           requires_distillation_ = true;
         }
         break;
+      // After the user finishes typing something we wait for a timer and redraw
+      // to capture the input.
+      case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
+        reset_draw_timer_ = true;
+        break;
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::NONE:
       case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
@@ -943,7 +933,6 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::DETAILS_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
-      case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
       case ui::AXEventGenerator::Event::ENABLED_CHANGED:
       case ui::AXEventGenerator::Event::EXPANDED:
       case ui::AXEventGenerator::Event::FOCUS_CHANGED:

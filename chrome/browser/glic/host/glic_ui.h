@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_UI_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_UI_H_
 
-#include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"

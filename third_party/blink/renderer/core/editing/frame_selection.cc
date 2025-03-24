@@ -591,18 +591,12 @@ bool FrameSelection::SelectionHasFocus() const {
       focused_element->IsScrollMarkerGroupPseudoElement()) {
     return false;
   }
-  if (RuntimeEnabledFeatures::SelectionOnShadowDOMWithDelegatesFocusEnabled()) {
-    // If focus is on the delegated target of a shadow host with delegatesFocus,
-    // selection could be on focus even if focused element does not contain
-    // current selection start.
-    if (focused_element->IsTextControl() &&
-        focused_element->ContainsIncludingHostElements(*current)) {
-      return true;
-    }
-  } else {
-    if (focused_element->IsTextControl()) {
-      return focused_element->ContainsIncludingHostElements(*current);
-    }
+  // If focus is on the delegated target of a shadow host with delegatesFocus,
+  // selection could be on focus even if focused element does not contain
+  // current selection start.
+  if (focused_element->IsTextControl() &&
+      focused_element->ContainsIncludingHostElements(*current)) {
+    return true;
   }
 
   // Selection has focus if it contains the focused element.
@@ -623,8 +617,7 @@ bool FrameSelection::SelectionHasFocus() const {
       // ComputedStyleBuilder::ComputedStyleBuilder and
       // StyleResolver::InitStyle. We should check editability only if we are in
       // the same tree scope.
-      if (!RuntimeEnabledFeatures::MouseFocusFlatTreeParentEnabled() ||
-          tree_scope == &current->GetTreeScope()) {
+      if (tree_scope == &current->GetTreeScope()) {
         return false;
       }
     }
@@ -632,28 +625,21 @@ bool FrameSelection::SelectionHasFocus() const {
     // Selection has focus if its sub tree has focus.
     if (current == focused_element)
       return true;
-    if (RuntimeEnabledFeatures::
-            SelectionOnShadowDOMWithDelegatesFocusEnabled()) {
-      // If current is a shadow host with delegatesFocus, then it cannot be the
-      // focused element and we should compare with its focusable area instead.
-      if (const Element* el = DynamicTo<Element>(current);
-          el && el->IsShadowHostWithDelegatesFocus() &&
-          el->GetFocusableArea() == focused_element) {
-        return true;
-      }
+    // If current is a shadow host with delegatesFocus, then it cannot be the
+    // focused element and we should compare with its focusable area instead.
+    if (const Element* el = DynamicTo<Element>(current);
+        el && el->IsShadowHostWithDelegatesFocus() &&
+        el->GetFocusableArea() == focused_element) {
+      return true;
     }
-    if (RuntimeEnabledFeatures::MouseFocusFlatTreeParentEnabled()) {
-      // If we are stepping out of a shadow tree, the tree scope should be
-      // updated to the tree we step into.
-      bool stepping_out_of_shadow_tree =
-          tree_scope == &current->GetTreeScope() &&
-          DynamicTo<ShadowRoot>(current->parentNode());
-      current = FlatTreeTraversal::Parent(*current);
-      if (stepping_out_of_shadow_tree && current) {
-        tree_scope = &current->GetTreeScope();
-      }
-    } else {
-      current = current->ParentOrShadowHostNode();
+    // If we are stepping out of a shadow tree, the tree scope should be
+    // updated to the tree we step into.
+    bool stepping_out_of_shadow_tree =
+        tree_scope == &current->GetTreeScope() &&
+        DynamicTo<ShadowRoot>(current->parentNode());
+    current = FlatTreeTraversal::Parent(*current);
+    if (stepping_out_of_shadow_tree && current) {
+      tree_scope = &current->GetTreeScope();
     }
   } while (current);
 
@@ -1134,11 +1120,7 @@ void FrameSelection::SetFocusedNodeIfNeeded() {
                                                                   frame_);
         return;
       }
-      if (RuntimeEnabledFeatures::MouseFocusFlatTreeParentEnabled()) {
-        target = FlatTreeTraversal::ParentElement(*target);
-      } else {
-        target = target->ParentOrShadowHostElement();
-      }
+      target = FlatTreeTraversal::ParentElement(*target);
     }
     GetDocument().ClearFocusedElement();
   }

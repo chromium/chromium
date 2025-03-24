@@ -458,7 +458,7 @@ TEST_F(VideoCaptureImplTest, BufferReceived_GpuMemoryBufferHandle) {
   //   3. invoke OnFrameReady callback on |testing_io_thread|
   auto create_and_queue_buffer = [&]() {
     gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::NATIVE_PIXMAP;
+    gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
     gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
 
     StartCapture(0, params_small_);
@@ -563,7 +563,7 @@ TEST_F(VideoCaptureImplTest, BufferReceivedAfterStop_GpuMemoryBufferHandle) {
   const int kArbitraryBufferId = 12;
 
   gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::NATIVE_PIXMAP;
+  gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
   gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
 
   SetSharedImageCapabilities(/* shared_image_d3d = */ true);
@@ -752,7 +752,7 @@ TEST_F(VideoCaptureImplTest,
   const int kArbitraryBufferId = 16;
 
   gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::NATIVE_PIXMAP;
+  gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
   gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
 
   InSequence s;
@@ -870,7 +870,7 @@ TEST_F(VideoCaptureImplTest, FallbacksToPremappedGmbsWhenNotSupported) {
   //   3. invoke OnFrameReady callback on |testing_io_thread|
   auto create_and_queue_buffer = [&]() {
     gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::NATIVE_PIXMAP;
+    gmb_handle.type = gfx::SHARED_MEMORY_BUFFER;
     gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
 
     StartCapture(0, params_small_);

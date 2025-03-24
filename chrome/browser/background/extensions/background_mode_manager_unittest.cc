@@ -707,13 +707,15 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
   // until idle so that BackgroundApplicationListModel::OnExtensionSystemReady
   // called.
   base::RunLoop().RunUntilIdle();
+  extensions::ExtensionRegistrar* registrar =
+      extensions::ExtensionRegistrar::Get(profile_);
   TestStartupLaunchManager* const launch_manager = startup_launch_manager();
 
   EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true)).Times(Exactly(1));
   service->AddComponentExtension(component_extension.get());
   service->AddComponentExtension(component_extension_with_options.get());
-  service->AddExtension(regular_extension.get());
-  service->AddExtension(regular_extension_with_options.get());
+  registrar->AddExtension(regular_extension.get());
+  registrar->AddExtension(regular_extension_with_options.get());
   Mock::VerifyAndClearExpectations(launch_manager);
 
   auto menu = std::make_unique<StatusIconMenuModel>(nullptr);
@@ -770,14 +772,16 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
       extensions::ExtensionSystem::Get(profile_)->extension_service();
   service1->Init();
   base::RunLoop().RunUntilIdle();
+  extensions::ExtensionRegistrar* registrar1 =
+      extensions::ExtensionRegistrar::Get(profile_);
   TestStartupLaunchManager* const launch_manager = startup_launch_manager();
 
   EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true)).Times(Exactly(1));
   service1->AddComponentExtension(build_component_extension().get());
   service1->AddComponentExtension(
       build_component_extension_with_options().get());
-  service1->AddExtension(build_regular_extension().get());
-  service1->AddExtension(build_regular_extension_with_options().get());
+  registrar1->AddExtension(build_regular_extension().get());
+  registrar1->AddExtension(build_regular_extension_with_options().get());
   Mock::VerifyAndClearExpectations(launch_manager);
 
   TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
@@ -791,10 +795,12 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
       extensions::ExtensionSystem::Get(profile2)->extension_service();
   service2->Init();
   base::RunLoop().RunUntilIdle();
+  extensions::ExtensionRegistrar* registrar2 =
+      extensions::ExtensionRegistrar::Get(profile2);
 
   service2->AddComponentExtension(build_component_extension().get());
-  service2->AddExtension(build_regular_extension().get());
-  service2->AddExtension(build_regular_extension_with_options().get());
+  registrar2->AddExtension(build_regular_extension().get());
+  registrar2->AddExtension(build_regular_extension_with_options().get());
 
   std::unique_ptr<StatusIcon> test_status_icon =
       std::make_unique<TestStatusIcon>();
@@ -913,6 +919,8 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
   base::RunLoop run_loop;
   system->ready().Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
+  extensions::ExtensionRegistrar* registrar =
+      extensions::ExtensionRegistrar::Get(profile_);
 
   ASSERT_TRUE(system->is_ready());
   std::unique_ptr<StatusIcon> test_status_icon =
@@ -924,13 +932,13 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
   EXPECT_FALSE(manager_->HasShownBalloon());
   TestStartupLaunchManager* const launch_manager = startup_launch_manager();
   EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true)).Times(Exactly(1));
-  service->AddExtension(bg_ext.get());
+  registrar->AddExtension(bg_ext.get());
   Mock::VerifyAndClearExpectations(launch_manager);
   EXPECT_TRUE(manager_->HasShownBalloon());
 
   // Adding an extension without background should not show the balloon.
   manager_->SetHasShownBalloon(false);
-  service->AddExtension(no_bg_ext.get());
+  registrar->AddExtension(no_bg_ext.get());
   EXPECT_FALSE(manager_->HasShownBalloon());
 
   // Upgrading an extension that has background should not reshow the balloon.
@@ -941,13 +949,13 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
         .Times(Exactly(1));
     EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true)).Times(Exactly(1));
   }
-  service->AddExtension(upgraded_bg_ext.get());
+  registrar->AddExtension(upgraded_bg_ext.get());
   Mock::VerifyAndClearExpectations(launch_manager);
   EXPECT_FALSE(manager_->HasShownBalloon());
 
   // Upgrading an extension that didn't have background to one that does should
   // show the balloon.
-  service->AddExtension(upgraded_no_bg_ext_has_bg.get());
+  registrar->AddExtension(upgraded_no_bg_ext_has_bg.get());
   EXPECT_TRUE(manager_->HasShownBalloon());
 
   manager_->context_menu_ = nullptr;

@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ProductSpecificationsButtonOrder) {
   auto* tab_strip_region_view = browser_view()->tab_strip_region_view();
 
-  if (features::IsTabstripComboButtonEnabled()) {
+  if (features::IsTabSearchMoving()) {
     TabStripActionContainer* action_container =
         browser_view()->tab_strip_region_view()->GetTabStripActionContainer();
     ASSERT_TRUE(action_container->GetIndexOf(product_specifications_button())
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
     ASSERT_EQ(tab_search_container(), tab_strip_region_view->children()[0]);
     ASSERT_EQ(product_specifications_button(),
               tab_strip_region_view->children()[1]);
-  } else if (!features::IsTabstripComboButtonEnabled()) {
+  } else {
     auto tab_search_index =
         tab_strip_region_view->GetIndexOf(tab_search_container());
     auto product_specifications_index =

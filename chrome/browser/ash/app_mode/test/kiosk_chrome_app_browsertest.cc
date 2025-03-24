@@ -34,6 +34,9 @@
 
 namespace ash {
 
+using kiosk::test::LaunchAppManually;
+using kiosk::test::WaitKioskLaunched;
+
 namespace {
 
 using extensions::mojom::ManifestLocation;
@@ -66,7 +69,7 @@ class KioskChromeAppTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
   KioskMixin kiosk_{&mixin_host_,
@@ -123,9 +126,9 @@ class KioskAutoLaunchWithZeroDelayTest
 
 IN_PROC_BROWSER_TEST_P(KioskAutoLaunchWithZeroDelayTest, SetsFlagCorrectly) {
   if (!HasAutoLaunchApp()) {
-    ASSERT_TRUE(kiosk_.LaunchManually(TheKioskChromeApp()));
+    ASSERT_TRUE(LaunchAppManually(TheKioskChromeApp()));
   }
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 
   auto app = GetAppFromManager(TheKioskChromeApp());
   EXPECT_EQ(app.was_auto_launched_with_zero_delay, HasAutoLaunchApp());

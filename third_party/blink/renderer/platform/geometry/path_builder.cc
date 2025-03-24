@@ -21,16 +21,14 @@ namespace blink {
 
 namespace {
 
-constexpr float superellipse_mid_point(float curvature) {
-  return std::pow(0.5, 1 / curvature);
-}
+using Corner = ContouredRect::Corner;
 
 // Given a superellipse with the supplied curvature in the coordinate space
 // -1,-1,1,1, returns 3 vectors (2 control points and the end point)
 // of a bezier curve, going from t=0 (0, 1) clockwise to t=0.5 (45 degrees),
 // and following the path of the superellipse with a small margin of error.
 // TODO(fserb) document how this works.
-std::array<gfx::Vector2dF, 3> ApproximateSuperellipseOctantAsBezierCurve(
+std::array<gfx::Vector2dF, 3> ApproximateSuperellipseHalfCornerAsBezierCurve(
     float curvature) {
   static constexpr std::array<double, 7> p = {
       1.2430920942724248, 2.010479023614843,  0.32922901179443753,
@@ -52,89 +50,52 @@ std::array<gfx::Vector2dF, 3> ApproximateSuperellipseOctantAsBezierCurve(
 
   // This is the superellipse formula at t=0.5 (45 degrees),
   // the middle of the corner.
-  const float mid_point = superellipse_mid_point(curvature);
+  const float half_corner = Corner::HalfCornerForCurvature(curvature);
 
   const gfx::Vector2dF P1(a, 1);
-  const gfx::Vector2dF P2(mid_point - b, mid_point + b);
-  const gfx::Vector2dF P3(mid_point, mid_point);
+  const gfx::Vector2dF P2(half_corner - b, half_corner + b);
+  const gfx::Vector2dF P3(half_corner, half_corner);
   return {P1, P2, P3};
 }
 
-// 4 vertices in clockwise order, representing a rect with directionality.
-using RectVertices = std::array<gfx::PointF, 4>;
-enum VertexPoint : size_t { kStart, kOuter, kEnd, kCenter };
-
-constexpr RectVertices FlipCenter(const RectVertices& vertex) {
-  return RectVertices{
-      vertex.at(VertexPoint::kStart), vertex.at(VertexPoint::kCenter),
-      vertex.at(VertexPoint::kEnd), vertex.at(VertexPoint::kOuter)};
-}
-
-// Returns the vertices of a corner rect, rotated so they start at the
-// innermost corner, and continue clockwise.
-RectVertices RotatedRect(const gfx::RectF& rect, size_t rotate) {
-  RectVertices points{rect.origin(), rect.top_right(), rect.bottom_right(),
-                      rect.bottom_left()};
-  std::rotate(points.begin(), points.begin() + rotate, points.end());
-  return points;
-}
-
-void AddConvexCurvedCorner(SkPath& path,
-                           const RectVertices& vertex,
-                           float curvature) {
-  CHECK_GE(curvature, 1);
+void AddConvexCurvedCorner(SkPath& path, const Corner& corner) {
+  CHECK_GE(corner.Curvature(), 1);
   // Start the path from the beginning of the curve.
-  path.lineTo(gfx::PointFToSkPoint(vertex.at(VertexPoint::kStart)));
+  path.lineTo(gfx::PointFToSkPoint(corner.Start()));
 
-  if (curvature >= 1000) {
+  if (corner.IsStraight()) {
     // Straight or very close to it, draw two lines.
-    path.lineTo(gfx::PointFToSkPoint(vertex.at(VertexPoint::kOuter)));
-    path.lineTo(gfx::PointFToSkPoint(vertex.at(VertexPoint::kEnd)));
-  } else if (curvature <= ContouredRect::CornerCurvature::kBevel) {
-    path.lineTo(gfx::PointFToSkPoint(vertex.at(VertexPoint::kEnd)));
-  } else if (curvature == ContouredRect::CornerCurvature::kRound) {
-    path.conicTo(gfx::PointFToSkPoint(vertex.at(VertexPoint::kOuter)),
-                 gfx::PointFToSkPoint(vertex.at(VertexPoint::kEnd)),
-                 SK_ScalarRoot2Over2);
+    path.lineTo(gfx::PointFToSkPoint(corner.Outer()));
+    path.lineTo(gfx::PointFToSkPoint(corner.End()));
+  } else if (corner.IsBevel()) {
+    path.lineTo(gfx::PointFToSkPoint(corner.End()));
+  } else if (corner.IsRound()) {
+    path.conicTo(gfx::PointFToSkPoint(corner.Outer()),
+                 gfx::PointFToSkPoint(corner.End()), SK_ScalarRoot2Over2);
   } else {
-    // Approximate one octant (1/8th) of the superellipse as a
+    // Approximate 1/2 corner (45 degrees) of the superellipse as a
     // cubic bezier curve, and draw it twice, transposed, meeting at the t=0.5
     // (45 degrees) point.
     std::array<gfx::Vector2dF, 3> control_points =
-        ApproximateSuperellipseOctantAsBezierCurve(curvature);
+        ApproximateSuperellipseHalfCornerAsBezierCurve(corner.Curvature());
 
-    auto map_point = [&](gfx::Vector2dF v) {
-      return gfx::PointFToSkPoint(
-          vertex.at(VertexPoint::kCenter) +
-          gfx::ScaleVector2d(
-              vertex.at(VertexPoint::kOuter) - vertex.at(VertexPoint::kStart),
-              v.x()) +
-          gfx::ScaleVector2d(
-              vertex.at(VertexPoint::kOuter) - vertex.at(VertexPoint::kEnd),
-              v.y()));
-    };
+    path.cubicTo(gfx::PointFToSkPoint(corner.MapPoint(control_points.at(0))),
+                 gfx::PointFToSkPoint(corner.MapPoint(control_points.at(1))),
+                 gfx::PointFToSkPoint(corner.MapPoint(control_points.at(2))));
 
-    path.cubicTo(map_point(control_points.at(0)),
-                 map_point(control_points.at(1)),
-                 map_point(control_points.at(2)));
-
-    path.cubicTo(map_point(TransposeVector2d(control_points.at(1))),
-                 map_point(TransposeVector2d(control_points.at(0))),
-                 gfx::PointFToSkPoint(vertex.at(VertexPoint::kEnd)));
+    path.cubicTo(gfx::PointFToSkPoint(
+                     corner.MapPoint(TransposeVector2d(control_points.at(1)))),
+                 gfx::PointFToSkPoint(
+                     corner.MapPoint(TransposeVector2d(control_points.at(0)))),
+                 gfx::PointFToSkPoint(corner.End()));
   }
 }
 
 // Adds a curved corner to a path. The vertex argument is the 4 points
 // of the corner rectangle, starting from the beginning of the corner
 // and continuing clockwise.
-void AddCurvedCorner(SkPath& path,
-                     const RectVertices& vertex,
-                     float curvature) {
-  const bool convex = curvature >= 1;
-  AddConvexCurvedCorner(
-      path, convex ? vertex : FlipCenter(vertex),
-      convex ? curvature
-             : 1 / std::max(curvature, ContouredRect::CornerCurvature::kNotch));
+void AddCurvedCorner(SkPath& path, const Corner& corner) {
+  AddConvexCurvedCorner(path, corner.ToConvex());
 }
 
 // Add a superellipse curve to the path, considering its origin rect.
@@ -143,58 +104,44 @@ void AddCurvedCorner(SkPath& path,
 // This is done by keeping the same center for the superellipse,
 // changing the radius and potentially adjusting the curvature.
 void AddCurvedCornerFromOrigin(SkPath& path,
-                               const RectVertices& target_vertex,
-                               RectVertices origin_vertex,
-                               float curvature) {
-  if (target_vertex.at(VertexPoint::kEnd) ==
-      target_vertex.at(VertexPoint::kStart)) {
-    path.lineTo(gfx::PointFToSkPoint(target_vertex.at(VertexPoint::kEnd)));
+                               const Corner& target,
+                               Corner origin) {
+  if (target.IsZero()) {
+    path.lineTo(gfx::PointFToSkPoint(target.End()));
     return;
   }
 
-  if (target_vertex == origin_vertex) {
-    AddCurvedCorner(path, target_vertex, curvature);
+  if (target == origin) {
+    AddCurvedCorner(path, target);
     return;
   }
 
-  gfx::Vector2dF offset(((target_vertex.at(VertexPoint::kStart) -
-                          origin_vertex.at(VertexPoint::kCenter))
-                             .Length() -
-                         (origin_vertex.at(VertexPoint::kStart) -
-                          origin_vertex.at(VertexPoint::kCenter))
-                             .Length()),
-                        ((target_vertex.at(VertexPoint::kEnd) -
-                          origin_vertex.at(VertexPoint::kCenter))
-                             .Length() -
-                         (origin_vertex.at(VertexPoint::kEnd) -
-                          origin_vertex.at(VertexPoint::kCenter))
-                             .Length()));
+  gfx::Vector2dF offset(target.v2().Length() - origin.v2().Length(),
+                        target.v1().Length() - origin.v1().Length());
 
   // For concave curves, flip the vertex and use the corresponding convex curve.
-  if (curvature < 1) {
-    curvature = 1 / curvature;
-    offset = -offset;
-    origin_vertex = FlipCenter(origin_vertex);
+  if (origin.IsConcave()) {
+    origin = origin.ToConvex();
+    offset.Scale(-1);
   }
 
-  CHECK_GE(curvature, 1);
+  float curvature = origin.Curvature();
+
+  CHECK(!origin.IsConcave());
 
   if (curvature > 2) {
     // For high curvatures, we change the target curvature to match a
     // superellipse whose distance from the original corner's mid-point is the
     // desired offset.
-    const float target_length = (target_vertex.at(VertexPoint::kEnd) -
-                                 target_vertex.at(VertexPoint::kStart))
-                                    .Length();
-    const float origin_length = (origin_vertex.at(VertexPoint::kEnd) -
-                                 origin_vertex.at(VertexPoint::kStart))
-                                    .Length();
-    const auto adjusted_length =
+    const float target_length = target.DiagonalLength();
+    const float origin_length = origin.DiagonalLength();
+    const float adjusted_length =
         (target_length - origin_length) / std::numbers::sqrt2;
-    const float mid_point = superellipse_mid_point(curvature);
-    curvature =
-        std::log(0.5) /
-        std::log((mid_point * origin_length + adjusted_length) / target_length);
+
+    curvature = Corner::CurvatureForHalfCorner(
+        (Corner::HalfCornerForCurvature(curvature) * origin_length +
+         adjusted_length) /
+        target_length);
   } else if (curvature < 2) {
     // When 1<=curvature<2, the distance at the edge is greater than the border
     // thickness, and needs to be scaled by a number between 1 and sqrt(2).
@@ -206,23 +153,17 @@ void AddCurvedCornerFromOrigin(SkPath& path,
 
   // For curvature === 2 (round) there is no adjustment to be made.
 
-  const gfx::Vector2dF adjusted_offset_start = gfx::ScaleVector2d(
-      gfx::NormalizeVector2d(origin_vertex.at(VertexPoint::kStart) -
-                             origin_vertex.at(VertexPoint::kCenter)),
-      offset.x());
-  const gfx::Vector2dF adjusted_offset_end = gfx::ScaleVector2d(
-      gfx::NormalizeVector2d(origin_vertex.at(VertexPoint::kOuter) -
-                             origin_vertex.at(VertexPoint::kStart)),
-      offset.y());
+  const gfx::Vector2dF adjusted_offset_start =
+      gfx::ScaleVector2d(gfx::NormalizeVector2d(origin.v4()), offset.x());
+  const gfx::Vector2dF adjusted_offset_end =
+      gfx::ScaleVector2d(gfx::NormalizeVector2d(origin.v1()), offset.y());
 
-  const RectVertices adjusted_vertex{
-      origin_vertex.at(VertexPoint::kStart) + adjusted_offset_start,
-      origin_vertex.at(VertexPoint::kOuter) + adjusted_offset_start +
-          adjusted_offset_end,
-      origin_vertex.at(VertexPoint::kEnd) + adjusted_offset_end,
-      origin_vertex.at(VertexPoint::kCenter)};
-
-  AddConvexCurvedCorner(path, adjusted_vertex, curvature);
+  AddConvexCurvedCorner(
+      path,
+      Corner({origin.Start() + adjusted_offset_start,
+              origin.Outer() + adjusted_offset_start + adjusted_offset_end,
+              origin.End() + adjusted_offset_end, origin.Center()},
+             curvature));
 }
 
 }  // anonymous namespace
@@ -359,33 +300,17 @@ PathBuilder& PathBuilder::AddContouredRect(
     AddRoundedRect(target_rect);
     return *this;
   }
-
-  const ContouredRect::CornerCurvature& curvature =
-      contoured_rect.GetCornerCurvature();
-  enum CornerRotation : size_t { TopRight, BottomRight, BottomLeft, TopLeft };
-  const FloatRoundedRect origin_rect = contoured_rect.GetOriginRect();
+  const FloatRoundedRect& origin_rect = contoured_rect.GetOriginRect();
 
   if (origin_rect == target_rect) {
     // A rect with no insets/outsets, we can draw all the corners and not worry
     // about intersections.
     MoveTo(target_rect.TopLeftCorner().top_right());
 
-    AddCurvedCorner(
-        builder_,
-        RotatedRect(target_rect.TopRightCorner(), CornerRotation::TopRight),
-        curvature.TopRight());
-    AddCurvedCorner(builder_,
-                    RotatedRect(target_rect.BottomRightCorner(),
-                                CornerRotation::BottomRight),
-                    curvature.BottomRight());
-    AddCurvedCorner(
-        builder_,
-        RotatedRect(target_rect.BottomLeftCorner(), CornerRotation::BottomLeft),
-        curvature.BottomLeft());
-    AddCurvedCorner(
-        builder_,
-        RotatedRect(target_rect.TopLeftCorner(), CornerRotation::TopLeft),
-        curvature.TopLeft());
+    AddCurvedCorner(builder_, contoured_rect.TopRightCorner());
+    AddCurvedCorner(builder_, contoured_rect.BottomRightCorner());
+    AddCurvedCorner(builder_, contoured_rect.BottomLeftCorner());
+    AddCurvedCorner(builder_, contoured_rect.TopLeftCorner());
     current_path_.reset();
     return *this;
   }
@@ -411,18 +336,16 @@ PathBuilder& PathBuilder::AddContouredRect(
   // Intersect with a path that includes the top-right + bottom-left corners,
   // stretching the other corners to infinity.
   SkPath diagonal_corner_path_1;
+  ContouredRect origin_contoured_rect(origin_rect,
+                                      contoured_rect.GetCornerCurvature());
   diagonal_corner_path_1.moveTo(infinite_rect.left(), infinite_rect.top());
-  AddCurvedCornerFromOrigin(
-      diagonal_corner_path_1,
-      RotatedRect(target_rect.TopRightCorner(), CornerRotation::TopRight),
-      RotatedRect(origin_rect.TopRightCorner(), CornerRotation::TopRight),
-      curvature.TopRight());
+  AddCurvedCornerFromOrigin(diagonal_corner_path_1,
+                            contoured_rect.TopRightCorner(),
+                            origin_contoured_rect.TopRightCorner());
   diagonal_corner_path_1.lineTo(infinite_rect.right(), infinite_rect.bottom());
-  AddCurvedCornerFromOrigin(
-      diagonal_corner_path_1,
-      RotatedRect(target_rect.BottomLeftCorner(), CornerRotation::BottomLeft),
-      RotatedRect(origin_rect.BottomLeftCorner(), CornerRotation::BottomLeft),
-      curvature.BottomLeft());
+  AddCurvedCornerFromOrigin(diagonal_corner_path_1,
+                            contoured_rect.BottomLeftCorner(),
+                            origin_contoured_rect.BottomLeftCorner());
   diagonal_corner_path_1.close();
   op_builder.add(diagonal_corner_path_1, kIntersect_SkPathOp);
 
@@ -430,17 +353,13 @@ PathBuilder& PathBuilder::AddContouredRect(
   // stretching the other corners to infinity.
   SkPath diagonal_corner_path_2;
   diagonal_corner_path_2.moveTo(infinite_rect.right(), infinite_rect.top());
-  AddCurvedCornerFromOrigin(
-      diagonal_corner_path_2,
-      RotatedRect(target_rect.BottomRightCorner(), CornerRotation::BottomRight),
-      RotatedRect(origin_rect.BottomRightCorner(), CornerRotation::BottomRight),
-      curvature.BottomRight());
+  AddCurvedCornerFromOrigin(diagonal_corner_path_2,
+                            contoured_rect.BottomRightCorner(),
+                            origin_contoured_rect.BottomRightCorner());
   diagonal_corner_path_2.lineTo(infinite_rect.left(), infinite_rect.bottom());
-  AddCurvedCornerFromOrigin(
-      diagonal_corner_path_2,
-      RotatedRect(target_rect.TopLeftCorner(), CornerRotation::TopLeft),
-      RotatedRect(origin_rect.TopLeftCorner(), CornerRotation::TopLeft),
-      curvature.TopLeft());
+  AddCurvedCornerFromOrigin(diagonal_corner_path_2,
+                            contoured_rect.TopLeftCorner(),
+                            origin_contoured_rect.TopLeftCorner());
   diagonal_corner_path_2.close();
   op_builder.add(diagonal_corner_path_2, kIntersect_SkPathOp);
   // Resolve the path-ops and append to this path.

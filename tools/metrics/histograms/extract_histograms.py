@@ -355,18 +355,20 @@ def ExtractTokens(histogram, variants_dict):
     A tuple where the first element is a list of extracted Tokens, and the
         second indicates if any errors were detected while extracting them.
   """
+  tokens_seen = set()
   tokens = []
   have_error = False
   histogram_name = histogram.getAttribute('name')
 
   for token_node in xml_utils.IterElementsWithTag(histogram, 'token', 1):
     token_key = token_node.getAttribute('key')
-    if token_key in tokens:
+    if token_key in tokens_seen:
       logging.error(
           "Histogram %s contains duplicate token key %s, please ensure token "
           "keys are unique." % (histogram_name, token_key))
       have_error = True
       continue
+    tokens_seen.add(token_key)
 
     token_key_format = '{' + token_key + '}'
     if token_key_format not in histogram_name:
@@ -398,6 +400,26 @@ def ExtractTokens(histogram, variants_dict):
     # Inline and out-of-line variants can be combined.
     token['variants'].extend(_ExtractVariantNodes(token_node))
 
+    tokens.append(token)
+
+  # A histogram name may also reference external tokens implicitly, when the
+  # name includes patterns (e.g. Foo.{Bar}) without a corresponding token tag.
+  # These are treated as implicit reference to variants with the same name.
+  tokens_in_name = re.findall(r'\{(.+?)\}', histogram.getAttribute('name'))
+  for token_key in tokens_in_name:
+    # If the key has been seen already, it means we've already added the
+    # variants for the token to |tokens|, for example if it had an explicit
+    # <token> tag.
+    if token_key in tokens_seen:
+      continue
+    tokens_seen.add(token_key)
+    variant_list = variants_dict.get(token_key)
+    if not variant_list:
+      logging.error("Could not find variant '%s' specified by histogram '%s'." %
+                    (token_key, histogram_name))
+      variant_list = []
+      have_error = True
+    token = dict(key=token_key, variants=variant_list)
     tokens.append(token)
 
   return tokens, have_error
@@ -732,7 +754,7 @@ class TokenAssignment(object):
 
 
 def _GetTokenAssignments(tokens):
-  """Get all possible TokenAssignments for the listed tokens.
+  """Gets all possible TokenAssignments for the listed tokens.
 
   Args:
     tokens: The list of Tokens to create assignments for.
@@ -749,28 +771,37 @@ def _GetTokenAssignments(tokens):
   ]
 
 
-def _GenerateNewHistogramsFromTokens(histogram_name, histograms_dict,
-                                     new_histograms_dict):
-  """For a histogram with tokens, generates new histograms and adds to dict.
+def _AddHistogramOrExpandedVariants(histogram_name, histograms_dict,
+                                    new_histograms_dict) -> bool:
+  """Adds histogram or all variant expanded histograms to |new_histograms_dict|.
+
+  If the histogram does not reference any variants, it's added directly to the
+  new histograms dict. Else, the tokens are expanded to produce all the variants
+  of that histogram and these are added to the new histogram dict.
 
   Args:
     histogram_name: The name of the histogram.
     histograms_dict: The dictionary of all histograms extracted from the tree.
-    new_histograms_dict: The dictionary of histograms to add newly generated
-        histograms to.
+    new_histograms_dict: The dictionary of histograms to add to.
 
   Returns:
-    A boolean that is True if a generated histogram name already exists in the
-        |new_histograms_dict|.
+    True if any error was encountered.
   """
   have_error = False
   histogram_node = histograms_dict[histogram_name]
-  summary_text = histogram_node['summary']
+
+  if 'tokens' not in histogram_node:
+    # If the histogram references no variants, simply copy it over.
+    new_histograms_dict[histogram_name] = histogram_node
+    return False
 
   # |token_assignments| contains all the cross-product combinations of token
   # variants, representing all the possible histogram names that could be
   # generated.
   token_assignments = _GetTokenAssignments(histogram_node['tokens'])
+  summary_text = histogram_node['summary']
+
+  summary_errors = set()
 
   # Each |token_assignment| contains one of the cross-product combinations and
   # corresponds to one new generated histogram.
@@ -792,15 +823,25 @@ def _GenerateNewHistogramsFromTokens(histogram_name, histograms_dict,
 
     # Replace token in histogram name with variant name.
     new_histogram_name = histogram_name.format(**token_name_pairings)
-    # Replace token in summary with variant summary.
-    new_summary_text = summary_text.format(**token_summary_pairings)
-
     if new_histogram_name in new_histograms_dict:
       logging.error(
           "Duplicate histogram name %s generated. Please remove identical "
           "variants in different tokens in %s." %
           (new_histogram_name, histogram_name))
       have_error = True
+      continue
+
+    # Replace token in summary with variant summary.
+    try:
+      new_summary_text = summary_text.format(**token_summary_pairings)
+    except:
+      if histogram_name not in summary_errors:
+        summary_errors.add(histogram_name)
+        logging.error(
+            "Could not format summary text when expanding histogram %s. Please "
+            "check that it's not using {Token} syntax for unknown tokens." %
+            (histogram_name))
+        have_error = True
       continue
 
     new_histogram_node = dict(histogram_node, summary=new_summary_text)
@@ -832,12 +873,8 @@ def _UpdateHistogramsWithTokens(histograms_dict):
   # histograms will be added when iterating through |histograms_dict|.
   new_histograms_dict = {}
   for histogram_name, histogram_node in histograms_dict.items():
-    if 'tokens' in histogram_node:
-      have_error = have_error or _GenerateNewHistogramsFromTokens(
-          histogram_name, histograms_dict, new_histograms_dict)
-    # For histograms without tokens, copy to new histograms dict.
-    else:
-      new_histograms_dict[histogram_name] = histogram_node
+    have_error = have_error or _AddHistogramOrExpandedVariants(
+        histogram_name, histograms_dict, new_histograms_dict)
 
   return new_histograms_dict, have_error
 
@@ -864,8 +901,9 @@ def ExtractHistogramsFromDom(tree):
   histograms, histogram_errors = _ExtractHistogramsFromXmlTree(
       histograms_tree, enums)
   histograms, update_token_errors = _UpdateHistogramsWithTokens(histograms)
-  update_suffix_errors = _UpdateHistogramsWithSuffixes(histogram_suffixes_tree,
-                                                       histograms)
+  # Only expand expand suffixes if there were no token errors.
+  update_suffix_errors = (update_token_errors or _UpdateHistogramsWithSuffixes(
+      histogram_suffixes_tree, histograms))
 
   return histograms, (enum_errors or histogram_errors or update_suffix_errors
                       or update_token_errors)

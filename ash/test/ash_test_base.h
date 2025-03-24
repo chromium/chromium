@@ -74,7 +74,6 @@ class AshTestHelper;
 class NotificationCenterTray;
 class Shelf;
 class TestAppListClient;
-class TestShellDelegate;
 class TestSystemTrayClient;
 class UnifiedSystemTray;
 class WorkAreaInsets;
@@ -105,7 +104,6 @@ class AshTestBase : public testing::Test {
 
   // testing::Test:
   void SetUp() override;
-  void SetUp(std::unique_ptr<TestShellDelegate> delegate);
   void TearDown() override;
 
   // Returns the notification center tray on the primary display.
@@ -274,21 +272,34 @@ class AshTestBase : public testing::Test {
       const;
 
   void set_start_session(bool start_session) {
-    init_params_.start_session = start_session;
+    CHECK(init_params_) << "start_session must set before calling SetUp()";
+    init_params_->start_session = start_session;
   }
 
   void set_create_signin_pref_service(bool create_signin_pref_service) {
-    init_params_.create_signin_pref_service = create_signin_pref_service;
+    CHECK(init_params_)
+        << "create_create_signin_pref_service must set before calling SetUp()";
+    init_params_->create_signin_pref_service = create_signin_pref_service;
   }
 
   void set_create_global_cras_audio_handler(
       bool create_global_cras_audio_handler) {
-    init_params_.create_global_cras_audio_handler =
+    CHECK(init_params_)
+        << "create_global_cras_audio_handler must set before calling SetUp()";
+    init_params_->create_global_cras_audio_handler =
         create_global_cras_audio_handler;
   }
 
   void set_create_quick_pair_mediator(bool create_quick_pair_mediator) {
-    init_params_.create_quick_pair_mediator = create_quick_pair_mediator;
+    CHECK(init_params_)
+        << "create_quick_pair_mediator must set before calling SetUp()";
+    init_params_->create_quick_pair_mediator = create_quick_pair_mediator;
+  }
+
+  void set_shell_delegate(std::unique_ptr<ShellDelegate> shell_delegate) {
+    CHECK(init_params_) << "shell_delegate mustset before calling SetUp()";
+    CHECK(!init_params_->delegate);
+    init_params_->delegate = std::move(shell_delegate);
   }
 
   base::test::TaskEnvironment* task_environment() {
@@ -388,7 +399,8 @@ class AshTestBase : public testing::Test {
   bool teardown_called_ = false;
 
   // AshTestHelper's init params.
-  AshTestHelper::InitParams init_params_;
+  std::unique_ptr<AshTestHelper::InitParams> init_params_ =
+      std::make_unique<AshTestHelper::InitParams>();
 
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.

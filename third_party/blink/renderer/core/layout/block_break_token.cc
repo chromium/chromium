@@ -70,9 +70,10 @@ BlockBreakToken::BlockBreakToken(PassKey key, BoxFragmentBuilder* builder)
   DCHECK(builder->HasBreakTokenData());
   data_ = builder->break_token_data_;
   builder->break_token_data_ = nullptr;
-  for (wtf_size_t i = 0; i < builder->child_break_tokens_.size(); ++i) {
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    UNSAFE_TODO(child_break_tokens_[i]) = builder->child_break_tokens_[i];
+  for (wtf_size_t i = 0; i < const_num_children_; ++i) {
+    // SAFETY: `const_num_children_` ensures buffer access never goes out of
+    // range.
+    UNSAFE_BUFFERS(child_break_tokens_[i]) = builder->child_break_tokens_[i];
   }
 }
 
@@ -167,8 +168,9 @@ void BlockBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   // Looking up |ChildBreakTokensInternal()| in Trace() here is safe because
   // |const_num_children_| is const.
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    visitor->Trace(UNSAFE_TODO(child_break_tokens_[i]));
+    // SAFETY: `const_num_children_` ensures buffer access never goes out of
+    // range.
+    visitor->Trace(UNSAFE_BUFFERS(child_break_tokens_[i]));
   }
   BreakToken::TraceAfterDispatch(visitor);
 }

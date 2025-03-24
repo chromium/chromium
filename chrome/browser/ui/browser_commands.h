@@ -131,10 +131,8 @@ bool CanMoveTabsToNewWindow(Browser* browser,
 // specified, adds all the moved tabs to a new group. This group will have the
 // appearance as |group| but a different ID, since IDs can't be shared across
 // windows.
-void MoveTabsToNewWindow(
-    Browser* browser,
-    const std::vector<int>& tab_indices,
-    std::optional<tab_groups::TabGroupId> group = std::nullopt);
+void MoveTabsToNewWindow(Browser* browser, const std::vector<int>& tab_indices);
+void MoveGroupToNewWindow(Browser* browser, tab_groups::TabGroupId group);
 bool CanCloseTabsToRight(const Browser* browser);
 bool CanCloseOtherTabs(const Browser* browser);
 content::WebContents* DuplicateTabAt(Browser* browser, int index);

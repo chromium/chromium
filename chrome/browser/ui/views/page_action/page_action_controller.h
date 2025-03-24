@@ -12,8 +12,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "ui/actions/action_id.h"
 
 namespace actions {
@@ -102,6 +102,11 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   // managed by something other than the controller (eg. a view).
   base::CallbackListSubscription CreateActionItemSubscription(
       actions::ActionItem* action_item);
+
+  // Forces all page actions managed by this controller to be hidden, regardless
+  // of whether they would otherwise be visible. Setting it to `false` reverts
+  // back to each page action's normal visibility logic.
+  void SetShouldHidePageActions(bool should_hide_page_actions);
 
   // PinnedToolbarActionsModel::Observer
   void OnActionsChanged() override;

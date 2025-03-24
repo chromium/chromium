@@ -579,6 +579,11 @@ namespace autofillPrivate {
     static void getAllAttributeTypesForEntityTypeName(
         long entityTypeName,
         GetAllAttributeTypesForEntityTypeNameCallback callback);
+
+    // Sets the AutofillAI opt-in status for the current user.
+    static void setAutofillAiOptInStatus(
+      boolean optedIn,
+      optional VoidCallback callback);
   };
 
   interface Events {

@@ -276,7 +276,7 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     if (preload_request_) {
       IntegrityMetadataSet test_set =
           preload_request_->IntegrityMetadataForTestingOnly();
-      actual = test_set.hashes.size() + test_set.signatures.size();
+      actual = test_set.hashes.size() + test_set.public_keys.size();
       EXPECT_EQ(expected, actual);
     }
   }

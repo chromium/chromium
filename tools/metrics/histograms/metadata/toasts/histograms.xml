@@ -19,6 +19,18 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="Toast.FrequencyPrefChanged" enum="ToastAlertLevel"
+    expires_after="2025-04-13">
+  <owner>agale@chromium.org</owner>
+  <owner>stluong@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the message frequency pref every time the user changes it on the
+    settings page. This is used to understand how often users change this
+    setting.
+  </summary>
+</histogram>
+
 <histogram name="Toast.TriggeredToShow" enum="ToastId"
     expires_after="2025-08-24">
   <owner>agale@chromium.org</owner>

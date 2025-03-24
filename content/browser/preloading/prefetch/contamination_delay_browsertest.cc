@@ -244,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
   auto handle = shell()->web_contents()->StartPrefetch(
       prefetch_url, /*use_prefetch_proxy=*/false, blink::mojom::Referrer(),
       referring_origin, /*no_vary_search_hint=*/std::nullopt,
-      content::PreloadPipelineInfo::Create(
-          /*planned_max_preloading_type=*/content::PreloadingType::kPrefetch),
+      PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
       /*attempt=*/nullptr, /*holdback_status_override=*/std::nullopt);
   test_prefetch_watcher->WaitUntilPrefetchResponseCompleted(std::nullopt,
                                                             prefetch_url);

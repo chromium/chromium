@@ -791,6 +791,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaMultiselectableWithAriaLabelledBy() {
+        performAriaTest("aria-multiselectable-aria-labelledby.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaNavigation() {
         performAriaTest("aria-navigation.html");
     }

@@ -50,8 +50,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
-      bool show_back_button,
-      bool is_choose_an_account) override;
+      bool show_back_button) override;
 
   void ShowVerifyingSheet(const IdentityRequestAccountPtr& account,
                           const std::u16string& title) override;
@@ -71,10 +70,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   void ShowRequestPermissionDialog(
       const IdentityRequestAccountPtr& account) override;
-
-  void ShowSingleReturningAccountDialog(
-      const std::vector<IdentityRequestAccountPtr>& accounts,
-      const std::vector<IdentityProviderDataPtr>& idp_list) override;
 
   std::string GetDialogTitle() const override;
 

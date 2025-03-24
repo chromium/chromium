@@ -8,7 +8,7 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
@@ -17,7 +17,7 @@ class CreateTranslatorClient
     : public GarbageCollected<CreateTranslatorClient>,
       public mojom::blink::TranslationManagerCreateTranslatorClient,
       public ExecutionContextClient,
-      public AIMojoClient<AITranslator> {
+      public AIContextObserver<AITranslator> {
  public:
   CreateTranslatorClient(ScriptState* script_state,
                          AITranslatorCreateOptions* options,

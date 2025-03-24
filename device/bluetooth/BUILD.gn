@@ -194,6 +194,8 @@ component("bluetooth") {
 
   if (is_android) {
     sources += [
+      "android/outcome.cc",
+      "android/outcome.h",
       "android/wrappers.cc",
       "android/wrappers.h",
       "bluetooth_adapter_android.cc",
@@ -206,6 +208,8 @@ component("bluetooth") {
       "bluetooth_remote_gatt_descriptor_android.h",
       "bluetooth_remote_gatt_service_android.cc",
       "bluetooth_remote_gatt_service_android.h",
+      "bluetooth_socket_android.cc",
+      "bluetooth_socket_android.h",
     ]
     deps += [ ":jni_headers" ]
   }
@@ -684,6 +688,8 @@ if (is_android) {
     "android/java/src/org/chromium/device/bluetooth/ChromeBluetoothRemoteGattService.java",
     "android/java/src/org/chromium/device/bluetooth/ChromeBluetoothScanFilterBuilder.java",
     "android/java/src/org/chromium/device/bluetooth/ChromeBluetoothScanFilterList.java",
+    "android/java/src/org/chromium/device/bluetooth/ChromeBluetoothSocket.java",
+    "android/java/src/org/chromium/device/bluetooth/Outcome.java",
     "android/java/src/org/chromium/device/bluetooth/wrapper/BluetoothAdapterWrapper.java",
   ]
 
@@ -697,6 +703,7 @@ if (is_android) {
                    "android/java/src/org/chromium/device/bluetooth/wrapper/BluetoothGattServiceWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/BluetoothGattWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/BluetoothLeScannerWrapper.java",
+                   "android/java/src/org/chromium/device/bluetooth/wrapper/BluetoothSocketWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/DeviceBondStateReceiverWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/ScanCallbackWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/ScanResultWrapper.java",

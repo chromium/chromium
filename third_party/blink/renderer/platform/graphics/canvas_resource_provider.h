@@ -209,8 +209,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // rate.
   virtual bool IsSingleBuffered() const = 0;
 
-  // Only works in single buffering mode.
-  bool ImportResource(scoped_refptr<ExternalCanvasResource>&&);
+  // Subclasses implementing import of external canvas resources must override
+  // this method.
+  virtual void ImportResource(scoped_refptr<ExternalCanvasResource>&&) {
+    NOTREACHED();
+  }
 
   void RecycleResource(scoped_refptr<CanvasResource>&&);
   void SetResourceRecyclingEnabled(bool);
@@ -408,6 +411,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // the cache.
   virtual bool IsResourceUsable(CanvasResource* resource) { return true; }
 
+  // IsResourceUsable() must be true for `resource`.
+  void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
+
  private:
   friend class FlushForImageListener;
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
@@ -432,8 +438,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Called after the recording was cleared from any draw ops it might have had.
   void RecordingCleared() override;
 
-  // IsResourceUsable() must be true for `resource`.
-  void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
   void ClearOldUnusedResources();
 

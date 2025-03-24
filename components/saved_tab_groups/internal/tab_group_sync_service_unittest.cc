@@ -220,6 +220,10 @@ class TabGroupSyncServiceTest : public testing::Test {
             shared_processor_.CreateForwardingProcessor(),
             syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 shared_store_.get())),
+        std::make_unique<SyncDataTypeConfiguration>(
+            shared_account_processor_.CreateForwardingProcessor(),
+            syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
+                shared_account_store_.get())),
         &pref_service_, std::move(metrics_logger), decider_.get(),
         identity_test_environment_.identity_manager(),
         std::move(collaboration_finder), /*logger=*/nullptr);
@@ -361,8 +365,11 @@ class TabGroupSyncServiceTest : public testing::Test {
   raw_ptr<SavedTabGroupModel> model_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> saved_processor_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> shared_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>
+      shared_account_processor_;
   std::unique_ptr<syncer::DataTypeStore> saved_store_;
   std::unique_ptr<syncer::DataTypeStore> shared_store_;
+  std::unique_ptr<syncer::DataTypeStore> shared_account_store_;
   std::unique_ptr<testing::NiceMock<MockTabGroupSyncServiceObserver>> observer_;
   raw_ptr<testing::NiceMock<MockCollaborationFinder>> collaboration_finder_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;

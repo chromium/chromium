@@ -55,9 +55,10 @@ BnplIssuerView::BnplIssuerView(
   auto* layout_provider = ChromeLayoutProvider::Get();
   int corner_radius =
       layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh);
-  auto issuers = controller_->GetIssuers();
-  for (auto issuer : issuers) {
-    bool issuer_eligible = controller_->IssuerEligible(issuer.issuer_id());
+  auto issuer_contexts = controller_->GetIssuerContexts();
+  for (const auto& [issuer, eligibility] : issuer_contexts) {
+    bool issuer_eligible =
+        eligibility == BnplIssuerEligibilityForPage::kIsEligible;
     int image_id = IDR_AUTOFILL_AFFIRM_UNLINKED;
     bool issuer_linked = issuer.payment_instrument().has_value();
     if (issuer.issuer_id() == kBnplZipIssuerId) {

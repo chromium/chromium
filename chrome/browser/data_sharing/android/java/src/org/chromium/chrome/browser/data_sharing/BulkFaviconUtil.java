@@ -25,7 +25,7 @@ import java.util.Map;
 
 /** Utility class for fetching favicons in bulk. */
 @NullMarked
-public class BulkFaviconUtil {
+class BulkFaviconUtil {
 
     private static final class FaviconFetchRequest {
         private final int mExpectedIcons;
@@ -56,7 +56,7 @@ public class BulkFaviconUtil {
     private FaviconHelper.@Nullable DefaultFaviconHelper mDefaultFaviconHelper;
     private @Nullable RoundedIconGenerator mRoundedIconGenerator;
 
-    public BulkFaviconUtil() {}
+    BulkFaviconUtil() {}
 
     /**
      * Fetches favicons for the given list of URLs.
@@ -67,7 +67,7 @@ public class BulkFaviconUtil {
      * @param size The display size of the favicons to fetch.
      * @param faviconCallback The callback to be called when all favicons are fetched.
      */
-    public void fetchAsBitmap(
+    void fetchAsBitmap(
             Context context,
             Profile profile,
             List<GURL> webPageUrlList,
@@ -155,7 +155,7 @@ public class BulkFaviconUtil {
     }
 
     /** Destroys the favicon helper. */
-    public void destroy() {
+    void destroy() {
         if (mFaviconHelper != null) {
             mFaviconHelper.destroy();
         }
@@ -165,7 +165,7 @@ public class BulkFaviconUtil {
         mRoundedIconGenerator = generator;
     }
 
-    public void setFaviconHelperForTesting(FaviconHelper helper) {
+    void setFaviconHelperForTesting(FaviconHelper helper) {
         mFaviconHelper = helper;
     }
 

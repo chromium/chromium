@@ -85,6 +85,18 @@
             external>
         </cr-link-row>
 </if>
+<if expr="not is_chromeos">
+        <template is="dom-if" if="[[isToastRefinementsEnabled_]]">
+          <settings-toggle-button class="hr" id="toastToggle"
+              pref="{{prefs.settings.toast.alert_level}}"
+              numeric-unchecked-values="[[numericUncheckedToastAlertValues_]]"
+              numeric-checked-value="[[toastAlertLevelEnum_.ALL]]"
+              on-change="onToastAlertLevelChange_"
+              label="$i18n{toastAlertLevelTitle}"
+              sub-label="$i18n{toastAlertLevelDescription}">
+          </settings-toggle-button>
+        </template>
+</if>
         <cr-link-row class="hr" label="$i18n{moreFeaturesLink}"
             on-click="onMoreFeaturesLinkClick_" sub-label="$i18n{a11yWebStore}"
             button-aria-description="$i18n{opensInNewTab}"

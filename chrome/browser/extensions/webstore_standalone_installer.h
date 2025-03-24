@@ -160,17 +160,8 @@ class WebstoreStandaloneInstaller
   friend class base::RefCountedThreadSafe<WebstoreStandaloneInstaller>;
 
   // Several delegate/client interface implementations follow. The normal flow
-  // (for successful installs) for the item JSON API is:
+  // (for successful installs) with the item snippets API is:
   //
-  // 1. BeginInstall: starts the fetch of data from the webstore.
-  // 2. WebstoreDataFetcher::OnSimpleLoaderComplete: starts the parsing of data
-  //    from the webstore.
-  // 3. OnWebstoreItemJSONAPIResponseParseSuccess: starts the parsing of the
-  //    manifest and fetching of icon data.
-  // 4. OnWebstoreParseSuccess: shows the install UI
-  // 5. InstallUIProceed: initiates the .crx download/install
-  //
-  // For the new item snippets API, the flow is:
   // 1. BeginInstall: starts the fetch of data from the webstore.
   // 2. WebstoreDataFetcher::OnFetchItemSnippetResponseReceived: starts the
   //    parsing of data from the webstore into a FetchItemSnippetResponse
@@ -185,15 +176,9 @@ class WebstoreStandaloneInstaller
 
   // WebstoreDataFetcherDelegate interface implementation.
   void OnWebstoreRequestFailure(const std::string& extension_id) override;
-
-  void OnWebstoreItemJSONAPIResponseParseSuccess(
-      const std::string& extension_id,
-      const base::Value::Dict& webstore_data) override;
-
   void OnFetchItemSnippetParseSuccess(
       const std::string& extension_id,
       FetchItemSnippetResponse item_snippet) override;
-
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;
 

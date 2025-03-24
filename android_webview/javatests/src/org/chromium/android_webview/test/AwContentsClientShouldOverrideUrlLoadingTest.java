@@ -25,9 +25,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -985,7 +984,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     public void testCallDestroyInCallback() throws Throwable {
         class DestroyInCallbackClient extends ShouldOverrideUrlLoadingClient {
             @Override
-            public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
                 mAwContents.destroy();
                 return super.shouldOverrideUrlLoading(request);
             }
@@ -1019,7 +1018,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     public void testReloadingUrlDoesNotBreakBackForwardList() throws Throwable {
         class ReloadInCallbackClient extends ShouldOverrideUrlLoadingClient {
             @Override
-            public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
                 super.shouldOverrideUrlLoading(request);
                 mAwContents.loadUrl(request.url);
                 return true;
@@ -1076,7 +1075,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         final String globalJsVar = "window.testCallStopAndLoadJsInCallback";
         class StopInCallbackClient extends ShouldOverrideUrlLoadingClient {
             @Override
-            public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
                 mAwContents.stopLoading();
                 mAwContents.loadUrl("javascript:" + globalJsVar + "= 1;");
                 return super.shouldOverrideUrlLoading(request);
@@ -1125,7 +1124,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
                         getTestPageCommonHeaders(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         class StopInCallbackClient extends ShouldOverrideUrlLoadingClient {
             @Override
-            public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
                 mAwContents.loadUrl(httpPathOnServer);
                 return super.shouldOverrideUrlLoading(request);
             }

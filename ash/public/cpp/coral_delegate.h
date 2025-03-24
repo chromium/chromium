@@ -53,8 +53,9 @@ class ASH_PUBLIC_EXPORT CoralDelegate {
   // is OK to be persisted for the whole session.
   virtual bool GetGenAILocationAvailability() = 0;
 
-  // Checks whether current language is supported by Coral.
-  virtual bool GetLanguageAvailability() = 0;
+  // Gets current system language code, e.g., "en" for English, from the browser
+  // process.
+  virtual std::string GetSystemLanguage() = 0;
 };
 
 }  // namespace ash

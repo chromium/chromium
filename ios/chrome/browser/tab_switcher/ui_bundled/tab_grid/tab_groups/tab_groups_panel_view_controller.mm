@@ -223,7 +223,7 @@ NSString* TabGroupCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)dismissModals {
-  ios::provider::DismissModalsForCollectionView(_collectionView);
+  [_collectionView.contextMenuInteraction dismissMenu];
 }
 
 #pragma mark UICollectionViewDelegate

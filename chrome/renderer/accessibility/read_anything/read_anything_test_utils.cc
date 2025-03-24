@@ -34,54 +34,55 @@ std::unique_ptr<ui::AXTreeUpdate> CreateInitialUpdate() {
   return snapshot;
 }
 
-ui::AXNodeData TextNode(int id, std::u16string text_content) {
+ui::AXNodeData TextNode(ui::AXNodeID id, const std::u16string& text_content) {
   ui::AXNodeData node = TextNode(id);
   node.SetNameChecked(text_content);
   return node;
 }
 
-ui::AXNodeData TextNode(int id) {
+ui::AXNodeData TextNode(ui::AXNodeID id) {
   ui::AXNodeData node;
   node.id = id;
   node.role = ax::mojom::Role::kStaticText;
   return node;
 }
 
-ui::AXNodeData TextNodeWithTextFromId(int id) {
+ui::AXNodeData TextNodeWithTextFromId(ui::AXNodeID id) {
   return TextNode(id, base::NumberToString16(id));
 }
 
-ui::AXNodeData ExplicitlyEmptyTextNode(int id) {
+ui::AXNodeData ExplicitlyEmptyTextNode(ui::AXNodeID id) {
   ui::AXNodeData node = TextNode(id);
   node.SetNameExplicitlyEmpty();
   return node;
 }
 
-ui::AXNodeData LinkNode(int id, std::string url) {
+ui::AXNodeData LinkNode(ui::AXNodeID id, const std::string& url) {
   ui::AXNodeData node;
   node.id = id;
   node.AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
   return node;
 }
 
-ui::AXNodeData GenericContainerNode(int id) {
+ui::AXNodeData GenericContainerNode(ui::AXNodeID id) {
   ui::AXNodeData node;
   node.id = id;
   node.role = ax::mojom::Role::kGenericContainer;
   return node;
 }
 
-ui::AXNodeData SuperscriptNode(int id, std::u16string text_content) {
+ui::AXNodeData SuperscriptNode(ui::AXNodeID id,
+                               const std::u16string& text_content) {
   ui::AXNodeData node = TextNode(id, text_content);
   node.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
   return node;
 }
 
-std::vector<ui::AXTreeUpdate> CreateSimpleUpdateList(std::vector<int> child_ids,
-                                                     ui::AXTreeID tree_id) {
+std::vector<ui::AXTreeUpdate> CreateSimpleUpdateList(
+    std::vector<ui::AXNodeID> child_ids,
+    ui::AXTreeID tree_id) {
   std::vector<ui::AXTreeUpdate> updates;
-  for (int i = 0; i < 3; i++) {
-    int id = i + 5;
+  for (ui::AXNodeID id = 5; id < 8; ++id) {
     child_ids.push_back(id);
 
     ui::AXTreeUpdate update;

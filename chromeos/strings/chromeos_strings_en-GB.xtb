@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Maximum allowed attempts exceeded.</translation>
 <translation id="1908234395526491708">UDP request failures</translation>
 <translation id="1908394185991500139">arrow left</translation>
+<translation id="1911678930322867245">Move to top right</translation>
 <translation id="1914144885717544695">on Friday</translation>
 <translation id="1915960750806557358">Share your feedback or describe your issue. Make sure that you don't include anything that is personal, sensitive or confidential.</translation>
 <translation id="1923388006036088459">Accent colours</translation>
@@ -1543,16 +1544,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">beach</translation>
 <translation id="819278132617411009">Use Google AI to be more productive</translation>
-<translation id="82003371436638355">When you select 'Create your own', write a custom prompt. Or, you can select 'Choose a theme' and then select the underlined words to personalise your AI wallpaper.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Select 'Inspire me' to get more unique and varied AI images options.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          When you create your own wallpaper, the prompt is sent to Google servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Terms of Service and Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Don't include anything personal, sensitive or confidential.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generative AI can make mistakes, including about people, so double-check it. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Learn more<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
@@ -1679,6 +1670,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8833620912470026819">cactus forest</translation>
 <translation id="8834539327799336565">Currently connected</translation>
+<translation id="8842526499753992487">Move to top left</translation>
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8849799913685544685">lighthouse</translation>
 <translation id="8851859208664803097">Stopped - Printer unreachable</translation>

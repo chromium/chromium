@@ -239,7 +239,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                                     mActivity,
                                     profile,
                                     SigninAndHistorySyncActivityLauncherImpl.get(),
-                                    this::updateHistorySyncPromoVisibility));
+                                    this::updateHistorySyncPromoVisibility,
+                                    /* isCreatedInCct= */ launchedForApp));
         } else {
             mHistorySyncPromoCoordinator = null;
         }

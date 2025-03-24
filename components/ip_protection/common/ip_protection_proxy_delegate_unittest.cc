@@ -116,7 +116,7 @@ class MockIpProtectionCore : public IpProtectionCore {
   std::optional<ProbabilisticRevealToken> GetProbabilisticRevealToken(
       const std::string& top_level,
       const std::string& third_party) override {
-    return ProbabilisticRevealToken{1, "u", "e"};
+    return ProbabilisticRevealToken{1, "u", "e", "epoch_id"};
   }
 
   // Set the auth token that will be returned from the next call to

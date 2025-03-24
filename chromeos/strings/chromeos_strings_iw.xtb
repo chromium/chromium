@@ -1543,16 +1543,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">חוף</translation>
 <translation id="819278132617411009">‏אפשר להשתמש ב-AI מבית Google כדי לשפר את הפרודוקטיביות</translation>
-<translation id="82003371436638355">‏כשבוחרים באפשרות "יצירת עיצוב משלך", צריך לכתוב הנחיה מותאמת אישית. אפשר גם לבחור באפשרות "בחירת עיצוב" ואז לבחור את המילים שמסומנות בקו תחתון כדי להתאים אישית את הטפט מבוסס ה-AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          כדי לקבל אפשרויות ייחודיות ומגוונות יותר לתמונות ה-AI, בוחרים באפשרות "אני רוצה לקבל השראה".
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          כשיוצרים טפט בעיצוב אישי, נשלחת לשרתים של Google הנחיה ליצור תמונות ולשפר את המוצר, בכפוף <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />לתנאים ולהגבלות ולמדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. חשוב לא לכלול מידע אישי, רגיש או סודי.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          בינה מלאכותית גנרטיבית עלולה לטעות, גם לגבי אנשים, אז כדאי לבדוק היטב את התשובות. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />מידע נוסף<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>

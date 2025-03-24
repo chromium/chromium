@@ -319,7 +319,7 @@ bool AreAllMatchingIntegrityChecksPresent(
     const network::mojom::blink::CSPSourceList* directive,
     const IntegrityMetadataSet& integrity_metadata) {
   if (!directive || (integrity_metadata.hashes.empty() &&
-                     integrity_metadata.signatures.empty())) {
+                     integrity_metadata.public_keys.empty())) {
     return false;
   }
 
@@ -337,9 +337,9 @@ bool AreAllMatchingIntegrityChecksPresent(
       return false;
   }
 
-  // Now check that all signatures present in the integrity metadata are
+  // Now check that all public keys present in the integrity metadata are
   // allowed by the relevant policy:
-  for (const IntegrityMetadataPair& key : integrity_metadata.signatures) {
+  for (const IntegrityMetadataPair& key : integrity_metadata.public_keys) {
     // Convert the hash from integrity metadata format to CSP format.
     network::mojom::blink::CSPHashSourcePtr csp_hash =
         network::mojom::blink::CSPHashSource::New();

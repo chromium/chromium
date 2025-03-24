@@ -353,9 +353,9 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
   auto eval_result = EvalJs(app_frame(), kFetchAttributesScript);
   ASSERT_THAT(eval_result, content::EvalJsResult::IsOk());
 
-  const auto& attributes = eval_result.value.GetDict();
-  EXPECT_THAT(attributes, base::test::DictionaryHasValues(
-                              base::test::ParseJsonDict(kExpectedAttributes)));
+  EXPECT_THAT(eval_result.value,
+              base::test::DictionaryHasValues(
+                  base::test::ParseJsonDict(kExpectedAttributes)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, Print) {

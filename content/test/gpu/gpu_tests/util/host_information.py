@@ -17,7 +17,7 @@ import re
 import shlex
 import subprocess
 import sys
-from typing import Any, List
+from typing import Any
 
 from gpu_tests import constants
 
@@ -119,7 +119,7 @@ def _IsGpuVendorPresent(gpu_vendor: constants.GpuVendor) -> bool:
 
 
 @functools.lru_cache(maxsize=1)
-def _GetAvailableGpus() -> List[_Gpu]:
+def _GetAvailableGpus() -> list[_Gpu]:
   if IsWindows():
     return _GetAvailableGpusWindows()
   if IsLinux():
@@ -138,7 +138,7 @@ def _GetWmiWbem() -> Any:
 
 
 @functools.lru_cache(maxsize=1)
-def _GetAvailableGpusWindows() -> List[_Gpu]:
+def _GetAvailableGpusWindows() -> list[_Gpu]:
   # Effectively copied from Swarming's get_gpu() in api/platforms/win.py.
   wbem = _GetWmiWbem()
   gpus = []
@@ -171,7 +171,7 @@ def _GetAvailableGpusWindows() -> List[_Gpu]:
   return gpus
 
 
-def _lspci() -> List[List[str]]:
+def _lspci() -> list[list[str]]:
   """Returns list of PCI devices found.
 
   list(Bus, Type, Vendor [ID], Device [ID], extra...)
@@ -198,7 +198,7 @@ def _lspci() -> List[List[str]]:
 
 
 @functools.lru_cache(maxsize=1)
-def _GetAvailableGpusLinux() -> List[_Gpu]:
+def _GetAvailableGpusLinux() -> list[_Gpu]:
   # Effectively copied from Swarming's get_gpu() in api/platforms/linux.py.
   pci_devices = _lspci()
   gpus = []
@@ -231,7 +231,7 @@ def _get_system_profiler(data_type: str) -> dict:
 
 
 @functools.lru_cache(maxsize=1)
-def _GetAvailableGpusMac() -> List[_Gpu]:
+def _GetAvailableGpusMac() -> list[_Gpu]:
   gpu_list = []
   # Effectively copied from Swarming's get_gpu() in api/platforms/osx.py.
   # This applies to all helper functions called from here as well.

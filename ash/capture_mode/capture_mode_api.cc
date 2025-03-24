@@ -54,6 +54,10 @@ bool CanShowSunfishUi() {
   }
 
   auto* controller = CaptureModeController::Get();
+  if (!controller->ActiveUserDefaultSearchProviderIsGoogle()) {
+    return false;
+  }
+
   return controller && controller->IsSearchAllowedByPolicy();
 }
 

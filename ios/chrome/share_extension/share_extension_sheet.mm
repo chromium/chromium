@@ -85,9 +85,16 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
   CHECK(!_sharedImage && !_sharedText);
   _sharedURL = sharedURL;
   _sharedItemType = kURL;
-  // TODO(crbug.com/398803565): Add strings translation.
-  _primaryString = [NSString stringWithFormat:@"%@ %@", @"Open in", _appName];
-  _secondaryString = @"More options";
+  _primaryString =
+      [NSString stringWithFormat:
+                    @"%@ %@",
+                    NSLocalizedString(
+                        @"IDS_IOS_OPEN_IN_BUTTON_SHARE_EXTENSION",
+                        @"The label of theopen in button in share extension."),
+                    _appName];
+  _secondaryString = NSLocalizedString(
+      @"IDS_IOS_MORE_OPTIONS_BUTTON_SHARE_EXTENSION",
+      @"The label of the more options button in share extension.");
 }
 
 - (void)setSharedTitle:(NSString*)sharedTitle {
@@ -104,18 +111,32 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
   CHECK(!_sharedURL && !_sharedTitle && !_sharedText);
   _sharedImage = sharedImage;
   _sharedItemType = kImage;
-  // TODO(crbug.com/398803565): Add strings translation.
-  _primaryString = [NSString stringWithFormat:@"%@ %@", @"Search in", _appName];
-  _secondaryString = @"Search in Incognito";
+  _primaryString = [NSString
+      stringWithFormat:
+          @"%@ %@",
+          NSLocalizedString(
+              @"IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION",
+              @"The label of the search in button in share extension."),
+          _appName];
+  _secondaryString = NSLocalizedString(
+      @"IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION",
+      @"The label of the search in incognito button in share extension.");
 }
 
 - (void)setSharedText:(NSString*)sharedText {
   CHECK(!_sharedURL && !_sharedTitle && !_sharedImage);
   _sharedText = sharedText;
   _sharedItemType = kText;
-  // TODO(crbug.com/398803565): Add strings translation.
-  _primaryString = [NSString stringWithFormat:@"%@ %@", @"Search in", _appName];
-  _secondaryString = @"Search in Incognito";
+  _primaryString = [NSString
+      stringWithFormat:
+          @"%@ %@",
+          NSLocalizedString(
+              @"IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION",
+              @"The label of the search in button in share extension."),
+          _appName];
+  _secondaryString = NSLocalizedString(
+      @"IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION",
+      @"The label of the search in incognito button in share extension.");
 }
 
 #pragma mark - ConfirmationAlertActionHandler

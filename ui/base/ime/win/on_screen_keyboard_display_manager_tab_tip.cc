@@ -12,6 +12,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -318,7 +319,7 @@ bool OnScreenKeyboardDisplayManagerTabTip::GetOSKPath(std::wstring* osk_path) {
     return false;
   }
 
-  osk_path->resize(wcslen(osk_path->c_str()));
+  osk_path->resize(UNSAFE_TODO(wcslen(osk_path->c_str())));
 
   *osk_path = base::ToLowerASCII(*osk_path);
 

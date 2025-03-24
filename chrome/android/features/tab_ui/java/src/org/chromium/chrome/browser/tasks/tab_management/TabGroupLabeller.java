@@ -34,7 +34,7 @@ public class TabGroupLabeller extends TabObjectLabeller {
     @Override
     protected boolean shouldApply(PersistentMessage message) {
         return mTabGroupModelFilterSupplier.get() != null
-                && !mTabGroupModelFilterSupplier.get().isOffTheRecord()
+                && !mTabGroupModelFilterSupplier.get().getTabModel().isOffTheRecord()
                 && message.type == PersistentNotificationType.DIRTY_TAB_GROUP
                 && getTabId(message) != Tab.INVALID_TAB_ID;
     }

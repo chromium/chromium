@@ -369,11 +369,6 @@ void AutofillField::set_server_predictions(
     // Equivalent to a `NO_SERVER_DATA` prediction from `SOURCE_UNSPECIFIED`.
     server_predictions_.emplace_back();
   }
-
-  LOG_IF(ERROR, server_predictions_.size() > 2)
-      << "Expected up to 2 default predictions from the Autofill server. "
-         "Actual: "
-      << server_predictions_.size();
 }
 
 void AutofillField::SetHtmlType(HtmlFieldType type, HtmlFieldMode mode) {

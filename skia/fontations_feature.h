@@ -12,6 +12,7 @@ namespace skia {
 
 SK_API BASE_DECLARE_FEATURE(kFontationsLinuxSystemFonts);
 
+SK_API BASE_DECLARE_FEATURE(kFontationsAndroidSystemFonts);
 }
 
 #endif  // SKIA_FONTATIONS_FEATURE_H_

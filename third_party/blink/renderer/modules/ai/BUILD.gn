@@ -10,6 +10,7 @@ blink_modules_sources("ai") {
     "ai.h",
     "ai_availability.cc",
     "ai_availability.h",
+    "ai_context_observer.h",
     "ai_create_monitor.cc",
     "ai_create_monitor.h",
     "ai_interface_proxy.cc",
@@ -22,7 +23,6 @@ blink_modules_sources("ai") {
     "ai_language_model_params.h",
     "ai_metrics.cc",
     "ai_metrics.h",
-    "ai_mojo_client.h",
     "ai_rewriter.cc",
     "ai_rewriter.h",
     "ai_rewriter_factory.cc",
@@ -64,7 +64,7 @@ blink_modules_sources("ai") {
     "//components/language_detection/content/common:common_blink",
     "//components/language_detection/content/renderer",
     "//components/language_detection/core",
-    "//third_party/blink/renderer/modules/shapedetection",
+    "//third_party/blink/renderer/modules/canvas",
     "//third_party/blink/renderer/modules/webaudio",
   ]
 }

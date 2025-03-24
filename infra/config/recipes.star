@@ -273,10 +273,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:cronet",
-)
-
-build_recipe(
     name = "recipe:flakiness/reproducer",
 )
 

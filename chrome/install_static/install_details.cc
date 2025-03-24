@@ -9,6 +9,7 @@
 
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/version_info/version_info_values.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_modes.h"
@@ -37,7 +38,8 @@ std::wstring InstallDetails::GetClientStateMediumKeyPath() const {
 bool InstallDetails::VersionMismatch() const {
   // Check the product version and the size of the mode structure.
   return payload_->size != sizeof(Payload) ||
-         strcmp(payload_->product_version, &kProductVersion[0]) != 0 ||
+         UNSAFE_TODO(strcmp(payload_->product_version, &kProductVersion[0])) !=
+             0 ||
          payload_->mode->size != sizeof(InstallConstants);
 }
 

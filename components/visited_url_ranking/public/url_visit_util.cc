@@ -346,9 +346,9 @@ scoped_refptr<InputContext> AsInputContextInternal(
         break;
       case kTabGroupSyncId:
         if (tab_data &&
-            tab_data->last_active_tab.tab_metadata.tab_group_sync_id) {
+            tab_data->last_active_tab.tab_metadata.local_tab_group_id) {
           value = ProcessedValue(tab_data->last_active_tab.tab_metadata
-                                     .tab_group_sync_id->AsLowercaseString());
+                                     .local_tab_group_id->ToString());
         }
         break;
     }

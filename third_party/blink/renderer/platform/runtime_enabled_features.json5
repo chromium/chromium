@@ -320,6 +320,7 @@
       name: "AIPromptAPIForExtension",
       public: true,
       origin_trial_feature_name: "AIPromptAPIForExtension",
+      origin_trial_allows_third_party: true,
       status: "test",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
@@ -344,6 +345,7 @@
       public: true,
       status: "test",
       origin_trial_feature_name: "AISummarizationAPI",
+      origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
@@ -707,7 +709,11 @@
       status: "experimental",
     },
     {
-      // https://crbug.com/377325952
+      // No status because this blink runtime feature doesn't work by itself.
+      // It's controlled by the corresponding Chromium feature,
+      // fingerprinting_protection_interventions::features::kCanvasNoise through
+      // modified_runtime_features and setting its status in the browser
+      // process.
       name: "CanvasInterventions",
       browser_process_read_write_access: true,
     },
@@ -724,6 +730,7 @@
     {
       // crbug.com/389726691.
       name: "CanvasTextNg",
+      origin_trial_feature_name: "CanvasTextNg",
       status: "experimental",
     },
     {
@@ -1026,7 +1033,7 @@
       // Replaces `string` type in CSS attr() function syntax with `raw-string`.
       // https://github.com/w3c/csswg-drafts/issues/11645#issuecomment-2701601350
       name: "CSSAttrRawString",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://chromestatus.com/feature/5125388091260928
@@ -1209,7 +1216,7 @@
     // progress()
     {
       name: "CSSProgressNotation",
-      status: "stable",
+      status: "experimental",
     },
     {
       // For ::column pseudo element for fragment styling.
@@ -1368,7 +1375,7 @@
     },
     {
       name: "CSSSignRelatedFunctions",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "CSSSnapContainerQueries",
@@ -1464,6 +1471,13 @@
     {
       // https://chromestatus.com/feature/5134293578285056
       name: "Database",
+    },
+    {
+      // Fix HandleMouseFocus selection for delegated focus text control.
+      // See https://crbug.com/400317114
+      // This feature was shipped in M136, so this flag can be removed in M138.
+      name: "DelegatesFocusTextControlFix",
+      status: "stable",
     },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
@@ -2592,6 +2606,7 @@
       name: "LanguageDetectionAPI",
       status: "experimental",
       origin_trial_feature_name: "LanguageDetectionAPI",
+      origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
@@ -2864,14 +2879,6 @@
       base_feature: "none",
       is_protected_feature: true,
     },
-    {
-      // Fix HandleMouseFocus and FrameSelection to use FlatTree parent so
-      // correct fallback element receives focus.
-      // See https://crbug.com/41420461
-      // This feature was shipped in M133, so this flag can be removed in M135.
-      name: "MouseFocusFlatTreeParent",
-      status: "stable",
-    },
     // Move the selection to the last position in the list item. See
     // https://crbug.com/331841851
     {
@@ -2881,6 +2888,10 @@
     {
       name: "MoveToParagraphStartOrEndSkipsNonEditable",
       status: "stable",
+    },
+    {
+      name: "MulticolColumnWrapping",
+      status: "experimental",
     },
     {
       name: "MultipleImportMaps",
@@ -3362,7 +3373,7 @@
     },
     {
       name: "PotentialPermissionsPolicyReporting",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PreciseMemoryInfo",
@@ -3976,14 +3987,6 @@
       status: "experimental",
     },
     {
-      // Update HandleMousePressEvent to continue handling event, even after a
-      // focus slided from shadow host with delegatesFocus.
-      // See https://crbug.com/40622041
-      // This feature was shipped in M133, so this flag can be removed in M135.
-      name: "SelectionOnShadowDOMWithDelegatesFocus",
-      status: "stable",
-    },
-    {
       // See https://crbug.com/395544401
       name: "SelectionUpdateToInitialSelectionInListify",
       status: "stable",
@@ -4232,6 +4235,10 @@
     },
     {
       name: "SpeculationRulesPrefetchWithSubresources",
+    },
+    {
+      name: "SpeculationRulesTag",
+      status: "experimental",
     },
     {
       // Enables to run prerendering for new tabs (e.g., target="_blank").
@@ -4567,6 +4574,7 @@
       name: "TranslationAPI",
       status: "test",
       origin_trial_feature_name: "TranslationAPI",
+      origin_trial_allows_third_party: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
       implied_by: ["TranslationAPIV1"],
@@ -4923,10 +4931,6 @@
     // https://w3c.github.io/webauthn/#sctn-parseRequestOptionsFromJSON
     {
       name: "WebAuthenticationJSONSerialization",
-      status: "stable",
-    },
-    {
-      name: "WebAuthenticationLargeBlobExtension",
       status: "stable",
     },
     {

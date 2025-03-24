@@ -414,7 +414,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)dismissModals {
-  ios::provider::DismissModalsForCollectionView(self.collectionView);
+  [self.collectionView.contextMenuInteraction dismissMenu];
 }
 
 #pragma mark - UICollectionViewDataSource

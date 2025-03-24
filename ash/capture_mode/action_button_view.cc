@@ -153,6 +153,8 @@ void ActionButtonView::CollapseToIconButton() {
     return;
   }
   label_->SetVisible(false);
+  const std::u16string label_text(label_->GetText());
+  label_->SetTooltipText(label_text);
   box_layout_->set_inside_border_insets(kCollapsedActionButtonInsets);
 }
 

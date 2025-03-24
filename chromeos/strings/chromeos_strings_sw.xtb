@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Idadi ya juu ya majaribio yanayoruhusiwa.</translation>
 <translation id="1908234395526491708">Maombi ya UDP ambayo hayakufaulu</translation>
 <translation id="1908394185991500139">kishale cha kushoto</translation>
+<translation id="1911678930322867245">Sogeza juu kulia</translation>
 <translation id="1914144885717544695">Ijumaa</translation>
 <translation id="1915960750806557358">Tuma maoni yako au ufafanue tatizo lako. Hakikisha kuwa hujajumuisha chochote ambacho ni binafsi, nyeti au cha siri.</translation>
 <translation id="1923388006036088459">Rangi za msisitizo</translation>
@@ -1543,16 +1544,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ufukwe</translation>
 <translation id="819278132617411009">Tumia Google AI ili uwe na tija zaidi</translation>
-<translation id="82003371436638355">Unapochagua “Unda yako,” andika kidokezo maalum. Au unaweza kuchagua “Chagua mandhari” kisha uchague maneno yaliyopigiwa mstari ili uwekee mapendeleo mandhari yako ya AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Chagua 'Nihamasishe' ili upate chaguo za picha za kipekee zaidi na tofauti za AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Unapobuni mandhari yako, kidokezo hutumwa kwenye seva za Google ili kutayarisha picha na kuboresha bidhaa, kwa mujibu wa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Sheria na Masharti pamoja na Sera ya Faragha ya Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Usijumuishe taarifa zozote binafsi, nyeti au za siri.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI zalishi inaweza kukosea, yakiwemo makosa kuhusu watu, kwa hivyo kagua majibu yake. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Pata maelezo zaidi<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Endelea</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>
 <translation id="8208861521865154048">Manufaa</translation>
@@ -1679,6 +1670,7 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8820817407110198400">Alamisho</translation>
 <translation id="8833620912470026819">msitu wa dungusi kakati</translation>
 <translation id="8834539327799336565">Vilivyounganishwa kwa sasa</translation>
+<translation id="8842526499753992487">Sogeza juu kushoto</translation>
 <translation id="8845001906332463065">Pata usaidizi</translation>
 <translation id="8849799913685544685">mnara wa taa</translation>
 <translation id="8851859208664803097">Imesitishwa - Printa haiwezi kufikiwa</translation>

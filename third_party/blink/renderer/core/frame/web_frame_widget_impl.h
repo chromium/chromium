@@ -923,6 +923,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   void StartAutoscrollForSelectionToPoint(
       const gfx::PointF& point_in_dips) override;
   void StopAutoscroll() override;
+
+  void RectForEditFieldChars(const gfx::Range& range,
+                             RectForEditFieldCharsCallback callback) override;
 #endif  // BUILDFLAG(IS_IOS)
 
   void SelectAroundCaret(mojom::blink::SelectionGranularity granularity,

@@ -60,6 +60,7 @@ static_library("search_engines") {
   ]
 
   public_deps = [
+    ":regional_settings",
     ":search_engine_type",
     ":search_engine_utils",
     ":search_engines_switches",
@@ -315,4 +316,13 @@ if (!is_android) {
           root_build_dir),
     ]
   }
+}
+
+json_to_struct("regional_settings") {
+  visibility = [ "//components/search_engines:*" ]
+
+  source = "regional_settings.json"
+  schema_file = "regional_settings_schema.json"
+  namespace = "TemplateURLPrepopulateData"
+  deps = [ "//base" ]
 }

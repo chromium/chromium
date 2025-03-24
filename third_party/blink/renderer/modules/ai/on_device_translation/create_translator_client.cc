@@ -82,7 +82,10 @@ CreateTranslatorClient::CreateTranslatorClient(
     AITranslatorCreateOptions* options,
     ScriptPromiseResolver<AITranslator>* resolver)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
-      AIMojoClient(script_state, this, resolver, options->getSignalOr(nullptr)),
+      AIContextObserver(script_state,
+                        this,
+                        resolver,
+                        options->getSignalOr(nullptr)),
       source_language_(options->sourceLanguage()),
       target_language_(options->targetLanguage()),
       receiver_(this, GetExecutionContext()),
@@ -97,7 +100,7 @@ CreateTranslatorClient::CreateTranslatorClient(
 CreateTranslatorClient::~CreateTranslatorClient() = default;
 
 void CreateTranslatorClient::Trace(Visitor* visitor) const {
-  AIMojoClient::Trace(visitor);
+  AIContextObserver::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(receiver_);
   visitor->Trace(monitor_);

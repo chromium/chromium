@@ -476,6 +476,7 @@ suite('CrActionMenu', function() {
     });
 
     // Still anchored at the right place after content size changes.
+    items[0]!.style.whiteSpace = 'nowrap';  // prevent text wrapping
     items[0]!.textContent = 'this is a long string to make menu wide';
   }
 

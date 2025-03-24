@@ -20,9 +20,9 @@ import android.app.Activity;
 import android.text.SpannableString;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bottom_sheet.SimpleNoticeSheetCoordinator;
 import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
@@ -38,6 +38,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Entry-point to the access loss warning UI surface. */
+@NullMarked
 public class PasswordAccessLossWarningHelper {
     final Activity mActivity;
     final BottomSheetController mBottomSheetController;
@@ -72,8 +73,7 @@ public class PasswordAccessLossWarningHelper {
     }
 
     /** Creates the model that has the text and functionality appropriate for the warning type. */
-    @Nullable
-    PropertyModel getModelForWarningType(@PasswordAccessLossWarningType int warningType) {
+    @Nullable PropertyModel getModelForWarningType(@PasswordAccessLossWarningType int warningType) {
         switch (warningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
                 return buildAccessLossWarningNoGms();

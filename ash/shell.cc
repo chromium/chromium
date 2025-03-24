@@ -1035,6 +1035,9 @@ Shell::~Shell() {
 
   float_controller_.reset();
   pip_controller_.reset();
+  // `scanner_controller_` depends on `session_controller_` (destroyed
+  // implicitly) and `screen_pinning_controller_` (destroyed below).
+  scanner_controller_.reset();
   screen_pinning_controller_.reset();
 
   multidevice_notification_presenter_.reset();
@@ -1837,9 +1840,11 @@ void Shell::Init(
   }
 
   if (features::IsScannerEnabled()) {
-    // Depends on `session_controller_` (instantiated in the constructor).
+    // Depends on `session_controller_` (instantiated in the constructor) and
+    // `screen_pinning_controller_` (initialised above).
     scanner_controller_ = std::make_unique<ScannerController>(
-        shell_delegate_->CreateScannerDelegate(), *session_controller_);
+        shell_delegate_->CreateScannerDelegate(), *session_controller_,
+        screen_pinning_controller_.get());
   }
 
   if (features::IsTilingWindowResizeEnabled()) {

@@ -22,6 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="Download_Service_CleanUpReason">
+  <variant name=".HardRecovery" summary="File is deleted in hard recovery."/>
+  <variant name=".Orphaned" summary="No client associated with the file."/>
+  <variant name=".Timeout" summary="File is deleted after timeout."/>
+  <variant name=".Unknown"
+      summary="No database entry associated with the file."/>
+</variants>
+
 <variants name="DownloadBubbleViewType">
   <variant name="Full"/>
   <variant name="Partial"/>
@@ -62,6 +70,11 @@ chromium-metrics-reviews@google.com.
   <variant name="SensitiveContentWarning"/>
   <variant name="UncommonContent"/>
   <variant name="UserValidated"/>
+</variants>
+
+<variants name="DownloadType">
+  <variant name=".Transient" summary="Transient download."/>
+  <variant name=".UserDownload" summary="User download."/>
 </variants>
 
 <variants name="TransientType">
@@ -341,15 +354,18 @@ chromium-metrics-reviews@google.com.
   <token key="DownloadDangerTypeString" variants="DownloadDangerTypeString"/>
 </histogram>
 
-<histogram base="true" name="Download.DownloadSize" units="KB"
+<histogram name="Download.DownloadSize{Download_Parallelizable}" units="KB"
     expires_after="never">
 <!-- expires-never: Used for long term download system health monitoring. -->
 
-<!-- Name completed by histogram_suffixes name="Download.Parallelizable" -->
-
   <owner>dtrainor@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
-  <summary>The size of successfully completed downloads.</summary>
+  <summary>
+    The size of successfully completed downloads. {Download_Parallelizable}
+  </summary>
+  <token key="Download_Parallelizable">
+    <variant name=".Parallelizable" summary="Parallelizable download."/>
+  </token>
 </histogram>
 
 <histogram name="Download.DuplicatePdfDownloadTriggered"
@@ -363,13 +379,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.HttpResponseCode" enum="HttpResponseCode"
-    expires_after="never">
+<histogram name="Download.HttpResponseCode{BackgroundDownload}"
+    enum="HttpResponseCode" expires_after="never">
 <!-- expires-never: Used to monitor download system health. -->
 
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
-  <summary>The count of HTTP Response codes for download requests.</summary>
+  <summary>
+    The count of HTTP Response codes for download requests. {BackgroundDownload}
+  </summary>
+  <token key="BackgroundDownload">
+    <variant name=""/>
+    <variant name=".BackgroundDownload"
+        summary="Download that started in background."/>
+  </token>
 </histogram>
 
 <histogram name="Download.Incognito.Message" enum="IncognitoMessageEvent"
@@ -417,8 +440,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Download.InterruptedReason" enum="InterruptReason"
     expires_after="never">
-<!-- Name completed by histogram_suffixes name="DownloadSource" -->
-
 <!-- expires-never: Core download metrics, used in go/chrome-download-dashboard. -->
 
   <owner>qinmin@chromium.org</owner>
@@ -620,17 +641,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.Later.UI.DialogChoice"
+<histogram name="Download.Later.UI.DialogChoice{DownloadDialogSource}"
     enum="DownloadLaterDialogChoice" expires_after="2022-10-09">
-<!-- Name completed by histogram_suffixes name="DownloadDialogSource" -->
-
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The user selection in the download later dialog. Recorded when the user
     starts a download, or clicking the change button on download infobar and
-    download home UI.
+    download home UI. {DownloadDialogSource}
   </summary>
+  <token key="DownloadDialogSource">
+    <variant name=".DownloadHome" summary="Download home."/>
+    <variant name=".Infobar" summary="Download infobar."/>
+    <variant name=".Main" summary="Main download later dialog."/>
+  </token>
 </histogram>
 
 <histogram name="Download.Later.UI.Events" enum="DownloadLaterUiEvent"
@@ -729,32 +753,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.PathGenerationEvent"
+<histogram name="Download.PathGenerationEvent{DownloadType}"
     enum="DownloadPathGenerationEvent" expires_after="never">
 <!-- expires-never: Monitors download system health. -->
-
-<!-- Name completed by histogram_suffixes name="DownloadType" -->
 
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The download path generation behavior which happens before download path
-    validation in download target determination process.
+    validation in download target determination process. {DownloadType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.PathValidationResult"
+<histogram name="Download.PathValidationResult{DownloadType}"
     enum="DownloadPathValidationResult" expires_after="never">
 <!-- expires-never: Monitors download system health. -->
-
-<!-- Name completed by histogram_suffixes name="DownloadType" -->
 
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The download path validation result before the final download target is
-    determined.
+    determined. {DownloadType}
   </summary>
 </histogram>
 
@@ -812,19 +832,23 @@ chromium-metrics-reviews@google.com.
   <summary>Records a successful database operation.</summary>
 </histogram>
 
-<histogram base="true" name="Download.Service.Db.Records" units="records"
-    expires_after="never">
+<histogram name="Download.Service.Db.Records{Download_Service_EntryState}"
+    units="records" expires_after="never">
 <!-- expires-never: Monitors download service system health. -->
-
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.EntryState" -->
 
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The total number of database records used by download service, and the
-    number of records in each entry state.
+    number of records in each entry state. {Download_Service_EntryState}
   </summary>
+  <token key="Download_Service_EntryState">
+    <variant name=".Active" summary="The active state."/>
+    <variant name=".Available" summary="The available state."/>
+    <variant name=".Complete" summary="The complte state."/>
+    <variant name=".New" summary="The initial state."/>
+    <variant name=".Paused" summary="The paused state."/>
+  </token>
 </histogram>
 
 <histogram name="Download.Service.Driver.InterruptReason"
@@ -865,48 +889,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.Service.Files.CleanUp.External"
+<histogram
+    name="Download.Service.Files.CleanUp.External{Download_Service_CleanUpReason}"
     units="files" expires_after="never">
 <!-- expires-never: Monitors download service system health. -->
-
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.CleanupReason" -->
 
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The number of files that have been deleted by external application or the
     user, when performing clean up tasks in download service.
+    {Download_Service_CleanUpReason}
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.Service.Files.CleanUp.Failure"
+<histogram
+    name="Download.Service.Files.CleanUp.Failure{Download_Service_CleanUpReason}"
     units="attempts" expires_after="never">
 <!-- expires-never: Monitors download service system health. -->
-
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.CleanupReason" -->
 
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The number of failed file deletion attempts, when performing clean up tasks
-    in download service.
+    in download service. {Download_Service_CleanUpReason}
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.Service.Files.CleanUp.Success"
+<histogram
+    name="Download.Service.Files.CleanUp.Success{Download_Service_CleanUpReason}"
     units="files" expires_after="never">
 <!-- expires-never: Monitors download service system health. -->
-
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.CleanupReason" -->
 
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     The number of files successfully deleted, when performing clean up tasks in
-    download service.
+    download service. {Download_Service_CleanUpReason}
   </summary>
 </histogram>
 
@@ -973,36 +992,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Download.Service.Request.ClientAction"
+<histogram
+    name="Download.Service.Request.ClientAction{Download_Service_Client}"
     enum="Download.Service.ServiceApiAction" expires_after="never">
 <!-- expires-never: Monitors download service system health. -->
 
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.Client" -->
-
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
-  <summary>Records the API calls on download service.</summary>
+  <summary>
+    Records the API calls on download service. {Download_Service_Client}
+  </summary>
+  <token key="Download_Service_Client">
+    <variant name=".BackgroundFetch" summary="Background fetch."/>
+    <variant name=".Debugging" summary="Debugging client."/>
+    <variant name=".MountainInternal" summary="Mountain internal client."/>
+    <variant name=".OfflinePage" summary="Offline page prefetch."/>
+    <variant name=".OptimizationGuidePredictionModels"
+        summary="Optimization Guide prediction models."/>
+    <variant name=".PluginVmImage" summary="PluginVm image."/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Download.Service.StartUpStatus"
+<histogram name="Download.Service.StartUpStatus{Download_Service_StartUpStep}"
     enum="Download.Service.StartUpResult" expires_after="never">
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.StartUpStep" -->
-
 <!-- expires-never: Monitors download service system health. -->
 
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
-  <summary>The start up result of the download service.</summary>
+  <summary>
+    The start up result of the download service. {Download_Service_StartUpStep}
+  </summary>
+  <token key="Download_Service_StartUpStep">
+    <variant name=".Initialization"
+        summary="The initialization start up step."/>
+    <variant name=".Recovery" summary="The recovery start up step."/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Download.Service.TaskScheduler.Status"
+<histogram
+    name="Download.Service.TaskScheduler.Status{Download_Service_TaskType}"
     enum="Download.Service.ScheduledTaskStatus" expires_after="never">
 <!-- expires-never: Monitors download service system health. -->
-
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.TaskType" -->
 
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
@@ -1010,8 +1040,12 @@ chromium-metrics-reviews@google.com.
     The platform background tasks used by download service will invoke native
     functions after being scheduled. The tasks may be aborted or canceled. This
     metric records the status of background tasks when native functions are
-    invoked.
+    invoked. {Download_Service_TaskType}
   </summary>
+  <token key="Download_Service_TaskType">
+    <variant name=".CleanUpTask" summary="Clean up task."/>
+    <variant name=".DownloadTask" summary="Download task."/>
+  </token>
 </histogram>
 
 <histogram name="Download.Shelf.DragInfo" enum="Download.DragInfo"

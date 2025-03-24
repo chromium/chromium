@@ -43,8 +43,14 @@ class PuffOperationTest : public testing::Test {
     return dest;
   }
 
+  base::RepeatingCallback<void(base::Value::Dict)> MakePingCallback() {
+    return base::BindLambdaForTesting(
+        [&](base::Value::Dict ping) { pings_.push_back(std::move(ping)); });
+  }
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::RunLoop loop_;
+  std::vector<base::Value::Dict> pings_;
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -70,7 +76,7 @@ TEST_F(PuffOperationTest, Success) {
             base::MakeRefCounted<PatchChromiumFactory>(
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
-            base::DoNothing(), "appid", "hash1", patch_file,
+            MakePingCallback(), "appid", "hash1", patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -83,6 +89,12 @@ TEST_F(PuffOperationTest, Success) {
       }));
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
+  ASSERT_EQ(pings_.size(), 1u);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), 62);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"), 1);
+  EXPECT_EQ(pings_[0].Find("errorcat"), nullptr);
+  EXPECT_EQ(pings_[0].Find("errorcode"), nullptr);
+  EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
 TEST_F(PuffOperationTest, BadPatch) {
@@ -106,7 +118,7 @@ TEST_F(PuffOperationTest, BadPatch) {
             base::MakeRefCounted<PatchChromiumFactory>(
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
-            base::DoNothing(), "appid", "hash1", patch_file,
+            MakePingCallback(), "appid", "hash1", patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -119,6 +131,12 @@ TEST_F(PuffOperationTest, BadPatch) {
       }));
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
+  ASSERT_EQ(pings_.size(), 1u);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), 62);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"), 0);
+  EXPECT_EQ(pings_[0].FindInt("errorcat"), 2);
+  EXPECT_EQ(pings_[0].FindInt("errorcode"), 14);
+  EXPECT_EQ(pings_[0].FindInt("extracode1"), 7);
 }
 
 TEST_F(PuffOperationTest, NotInCache) {
@@ -133,7 +151,7 @@ TEST_F(PuffOperationTest, NotInCache) {
       base::MakeRefCounted<PatchChromiumFactory>(
           base::BindRepeating(&patch::LaunchInProcessFilePatcher))
           ->Create(),
-      base::DoNothing(), "appid", "prev_fp", patch_file,
+      MakePingCallback(), "appid", "prev_fp", patch_file,
       base::BindLambdaForTesting(
           [&](base::expected<base::FilePath, CategorizedError> result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -144,6 +162,12 @@ TEST_F(PuffOperationTest, NotInCache) {
           }));
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
+  ASSERT_EQ(pings_.size(), 1u);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), 62);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"), 0);
+  EXPECT_EQ(pings_[0].FindInt("errorcat"), 2);
+  EXPECT_EQ(pings_[0].FindInt("errorcode"), 23);
+  EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
 TEST_F(PuffOperationTest, NoCache) {
@@ -156,7 +180,7 @@ TEST_F(PuffOperationTest, NoCache) {
       base::MakeRefCounted<PatchChromiumFactory>(
           base::BindRepeating(&patch::LaunchInProcessFilePatcher))
           ->Create(),
-      base::DoNothing(), "appid", "prev_fp", patch_file,
+      MakePingCallback(), "appid", "prev_fp", patch_file,
       base::BindLambdaForTesting(
           [&](base::expected<base::FilePath, CategorizedError> result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -167,6 +191,12 @@ TEST_F(PuffOperationTest, NoCache) {
           }));
   loop_.Run();
   EXPECT_FALSE(base::PathExists(patch_file));
+  ASSERT_EQ(pings_.size(), 1u);
+  EXPECT_EQ(pings_[0].FindInt("eventtype"), 62);
+  EXPECT_EQ(pings_[0].FindInt("eventresult"), 0);
+  EXPECT_EQ(pings_[0].FindInt("errorcat"), 2);
+  EXPECT_EQ(pings_[0].FindInt("errorcode"), 21);
+  EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
 }  // namespace update_client

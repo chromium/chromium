@@ -5,11 +5,7 @@
 #include "chrome/browser/accessibility/pdf_ocr_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "ui/accessibility/platform/ax_platform.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 
 namespace accessibility {
 
@@ -20,17 +16,14 @@ void RecordPDFOpenedWithA11yFeatureWithPdfOcr() {
   bool is_pdf_ocr_on = true;
 #endif
 
-  if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
     UMA_HISTOGRAM_BOOLEAN("Accessibility.PDF.OpenedWithScreenReader.PdfOcr",
                           is_pdf_ocr_on);
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (ash::AccessibilityManager::Get()->IsSelectToSpeakEnabled()) {
+  if (accessibility_state_utils::IsSelectToSpeakEnabled()) {
     UMA_HISTOGRAM_BOOLEAN("Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr",
                           is_pdf_ocr_on);
   }
-#endif
 }
 
 }  // namespace accessibility

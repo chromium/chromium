@@ -77,11 +77,6 @@ std::string GetWebstoreItemDetailURLPrefix() {
   return GetNewWebstoreLaunchURL().spec() + "detail/";
 }
 
-GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id) {
-  return GURL(GetWebstoreLaunchURL().spec() + "/inlineinstall/detail/" +
-              extension_id);
-}
-
 GURL GetWebstoreItemSnippetURL(const extensions::ExtensionId& extension_id) {
   if (g_item_snippet_url_for_test_) {
     // Return `<base URL><extension_id>`. There is no suffix if the URL is

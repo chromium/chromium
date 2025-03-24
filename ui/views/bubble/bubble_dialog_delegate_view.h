@@ -714,7 +714,8 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   METADATA_HEADER(BubbleDialogDelegateView, View)
 
  public:
-  using PassKey = base::PassKey<BubbleDialogDelegateView>;
+  // Not named `PassKey` as `View::PassKey` already exists in this hierarchy.
+  using BddvPassKey = base::PassKey<BubbleDialogDelegateView>;
 
   template <typename T>
   static bool IsBubbleDialogDelegateView(const BubbleDialogDelegateView* view) {
@@ -742,7 +743,7 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   // For use with std::make_unique<>(). Callers still must be in the friend list
   // below, just as with the private constructor.
   explicit BubbleDialogDelegateView(
-      PassKey,
+      BddvPassKey,
       View* anchor_view = nullptr,
       BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
@@ -914,7 +915,7 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false);
 
-  static PassKey CreatePassKey() { return PassKey(); }
+  static BddvPassKey CreatePassKey() { return BddvPassKey(); }
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, BubbleDialogDelegateView, View)

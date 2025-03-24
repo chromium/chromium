@@ -88,8 +88,8 @@ public class HubTabSwitcherMetricsRecorder {
                         mTabModelSelector
                                 .getTabGroupModelFilterProvider()
                                 .getCurrentTabGroupModelFilter();
-                int previousIndex = filter.indexOf(previousTab);
-                int currentIndex = filter.indexOf(tab);
+                int previousIndex = filter.representativeIndexOf(previousTab);
+                int currentIndex = filter.representativeIndexOf(tab);
                 if (previousIndex != currentIndex) {
                     if (!filter.isTabInTabGroup(tab)) {
                         RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");

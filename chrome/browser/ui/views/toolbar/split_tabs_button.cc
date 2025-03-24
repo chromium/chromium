@@ -39,7 +39,11 @@ void SplitTabsToolbarButton::OnTabStripModelChanged(
   UpdateButtonVisibility();
 }
 
-void SplitTabsToolbarButton::OnSplitViewAdded(std::vector<int> indices) {
+void SplitTabsToolbarButton::OnSplitTabCreated(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    TabStripModelObserver::SplitTabAddReason reason,
+    tabs::SplitTabLayout tab_layout) {
   UpdateButtonVisibility();
 }
 

@@ -190,8 +190,21 @@ if (is_linux || is_chromeos) {
       float_suffix = ""
     }
     if (arm_arch == "armv7-a" || arm_arch == "armv7") {
-      # No way to inform Rust about the -a suffix.
-      rust_abi_target = "armv7-unknown-linux-gnueabi" + float_suffix
+      # We have no way to inform Rust about the -a suffix, so we end up
+      # targeting armv7 in both cases.
+      #
+      # We also try to propagate the availability of NEON without feature
+      # detection; in C++ this is done by -mfpu=neon, but in Rust we need to
+      # use a different ABI target.
+      #
+      # The thumbv7 vs. armv7 distinction is for legacy reasons and both
+      # targets in fact target Thumb, see:
+      # https://github.com/rust-lang/rust/issues/44722
+      if (arm_use_neon) {
+        rust_abi_target = "thumbv7neon-unknown-linux-gnueabi" + float_suffix
+      } else {
+        rust_abi_target = "armv7-unknown-linux-gnueabi" + float_suffix
+      }
       cargo_target_abi = "eabi" + float_suffix
     } else {
       rust_abi_target = "arm-unknown-linux-gnueabi" + float_suffix

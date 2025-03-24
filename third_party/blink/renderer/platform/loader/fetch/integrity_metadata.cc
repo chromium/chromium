@@ -6,6 +6,24 @@
 
 namespace blink {
 
+void IntegrityMetadataSet::Insert(const IntegrityMetadataPair& pair) {
+  switch (pair.second) {
+    case IntegrityAlgorithm::kSha256:
+    case IntegrityAlgorithm::kSha384:
+    case IntegrityAlgorithm::kSha512:
+      if (!hashes.Contains(pair)) {
+        hashes.push_back(std::move(pair));
+      }
+      break;
+
+    case IntegrityAlgorithm::kEd25519:
+      if (!public_keys.Contains(pair)) {
+        public_keys.push_back(std::move(pair));
+      }
+      break;
+  }
+}
+
 IntegrityMetadata::IntegrityMetadata(WTF::String digest,
                                      IntegrityAlgorithm algorithm)
     : digest_(digest), algorithm_(algorithm) {}

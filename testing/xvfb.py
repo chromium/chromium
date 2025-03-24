@@ -636,7 +636,7 @@ def _run_with_mutter(cmd, env, stdoutfile, cwd):
 
       # Use headless wayland backend with a virtual monitor of appropriate size.
       mutter_cmd = [
-          mutter_executable, '--headless', '--virtual-monitor=1280x800', '--'
+          mutter_executable, '--headless', '--virtual-monitor=1920x1200', '--'
       ]
 
       # AppArmor is enabled in Ubuntu 24 where mutter tests run on CI bots. So

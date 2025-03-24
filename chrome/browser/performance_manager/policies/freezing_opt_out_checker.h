@@ -8,18 +8,17 @@
 #include <string_view>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 
 class GURL;
 
 namespace performance_manager::policies {
 
-class PageDiscardingHelper;
-
 class FreezingOptOutChecker final : public freezing::OptOutChecker {
  public:
   explicit FreezingOptOutChecker(
-      base::WeakPtr<PageDiscardingHelper> discarding_helper);
+      base::WeakPtr<DiscardEligibilityPolicy> eligibility_policy);
   ~FreezingOptOutChecker() final;
 
   FreezingOptOutChecker(const FreezingOptOutChecker&) = delete;
@@ -31,7 +30,7 @@ class FreezingOptOutChecker final : public freezing::OptOutChecker {
                                 const GURL& main_frame_url) final;
 
  private:
-  base::WeakPtr<PageDiscardingHelper> discarding_helper_;
+  base::WeakPtr<DiscardEligibilityPolicy> eligibility_policy_;
 };
 
 }  // namespace performance_manager::policies

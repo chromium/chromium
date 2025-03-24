@@ -4,7 +4,6 @@
 """Classes for defining how to crop screenshots in pixel-related tests."""
 
 import abc
-from typing import Optional, Tuple
 
 from gpu_tests import common_typing as ct
 
@@ -43,7 +42,7 @@ class FixedRectCropAction(BaseCropAction):
   # dynamically.
   SCROLLBAR_WIDTH = 12
 
-  def __init__(self, x1: int, y1: int, x2: Optional[int], y2: Optional[int]):
+  def __init__(self, x1: int, y1: int, x2: int | None, y2: int | None):
     """
     Args:
       x1: An int specifying the x coordinate of the top left corner of the crop
@@ -101,7 +100,7 @@ class NonWhiteContentCropAction(BaseCropAction):
       'SM-A236B',
   }
 
-  def __init__(self, initial_crop: Optional[BaseCropAction] = None):
+  def __init__(self, initial_crop: BaseCropAction | None = None):
     """
     Args:
       initial_crop: An initial crop to perform before removing the background.
@@ -140,7 +139,7 @@ class NonWhiteContentCropAction(BaseCropAction):
 
 
 def _GetNonWhiteCropBoundaries(
-    screenshot: ct.Screenshot) -> Tuple[int, int, int, int]:
+    screenshot: ct.Screenshot) -> tuple[int, int, int, int]:
   """Returns the boundaries to crop the screenshot to.
 
   Specifically, we look for the boundaries where the white background

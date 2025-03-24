@@ -33,6 +33,7 @@ using kiosk::test::CurrentProfile;
 using kiosk::test::IsAppInstalled;
 using kiosk::test::OfflineEnabledChromeAppV1;
 using kiosk::test::TheKioskApp;
+using kiosk::test::WaitKioskLaunched;
 using kiosk::test::WaitNetworkScreen;
 using kiosk::test::WaitSplashScreen;
 
@@ -118,7 +119,7 @@ IN_PROC_BROWSER_TEST_P(KioskChromeAppOfflineNetworkPromptEnabledTest,
   WaitNetworkScreen();
 
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -143,7 +144,7 @@ IN_PROC_BROWSER_TEST_P(KioskChromeAppOfflineNetworkPromptDisabledTest,
   test::OobeJS().ExpectHiddenPath(kConfigNetworkLink);
 
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

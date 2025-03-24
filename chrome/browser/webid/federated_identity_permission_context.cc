@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webid/federated_identity_account_keyed_permission_context.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/webid/federated_identity_identity_provider_signin_status_context.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/identity_request_account.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/webid/login_status_account.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
@@ -158,10 +160,10 @@ std::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
   return idp_signin_context_->GetSigninStatus(idp_origin);
 }
 
-std::vector<blink::common::webid::LoginStatusAccount>
-FederatedIdentityPermissionContext::GetAccountProfiles(
+std::vector<scoped_refptr<content::IdentityRequestAccount>>
+FederatedIdentityPermissionContext::GetAccounts(
     const url::Origin& identity_provider) {
-  return idp_signin_context_->GetAccountProfiles(identity_provider);
+  return idp_signin_context_->GetAccounts(identity_provider);
 }
 
 void FederatedIdentityPermissionContext::SetIdpSigninStatus(

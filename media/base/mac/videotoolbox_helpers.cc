@@ -7,6 +7,7 @@
 #include <array>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -44,7 +45,7 @@ class RawAnnexBBuffer : public AnnexBBuffer {
     return size <= annexb_buffer_size_;
   }
   void Append(const char* s, size_t n) override {
-    memcpy(annexb_buffer_ + annexb_buffer_offset_, s, n);
+    UNSAFE_TODO(memcpy(annexb_buffer_ + annexb_buffer_offset_, s, n));
     annexb_buffer_offset_ += n;
     DCHECK_GE(reserved_size_, annexb_buffer_offset_);
   }

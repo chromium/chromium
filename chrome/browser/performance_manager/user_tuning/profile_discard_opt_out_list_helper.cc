@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/not_fatal_until.h"
 #include "base/values.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -30,14 +30,14 @@ class ProfileDiscardOptOutListHelperDelegateImpl
 
   void ClearPatterns(const std::string& browser_context_id) override {
     Graph* graph = PerformanceManager::GetGraph();
-    policies::PageDiscardingHelper::GetFromGraph(graph)
+    policies::DiscardEligibilityPolicy::GetFromGraph(graph)
         ->ClearNoDiscardPatternsForProfile(browser_context_id);
   }
 
   void SetPatterns(const std::string& browser_context_id,
                    const std::vector<std::string>& patterns) override {
     Graph* graph = PerformanceManager::GetGraph();
-    policies::PageDiscardingHelper::GetFromGraph(graph)
+    policies::DiscardEligibilityPolicy::GetFromGraph(graph)
         ->SetNoDiscardPatternsForProfile(browser_context_id, patterns);
   }
 };
@@ -84,7 +84,7 @@ void ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
   std::vector<std::string> patterns;
   patterns.reserve(user_value_map.size() + managed_value_list.size());
 
-  // Merge the two lists so that the PageDiscardingHelper only sees a single
+  // Merge the two lists so that the DiscardEligibilityPolicy only sees a single
   // list of patterns to exclude from discarding.
   std::ranges::transform(
       user_value_map.begin(), user_value_map.end(),

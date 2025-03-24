@@ -45,6 +45,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kFledgeMinBidderContextsPerThreadInAdvance);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kFledgeBidderContextsDivisor);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kFledgeBidderContextsMultiplier);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kFledgeWaitForPromisesToPrepareContexts);
 
 // Instead of using a hash to assign group-by-origin IGs to threads, use
 // a round robin on joining-origin while ensuring a maximum allowed imbalance

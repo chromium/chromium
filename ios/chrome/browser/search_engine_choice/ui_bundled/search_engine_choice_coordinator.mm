@@ -81,7 +81,7 @@
 - (void)start {
   [super start];
   // Make sure we use the original profile (non-incognito).
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   if (!ShouldDisplaySearchEngineChoiceScreen(
           *profile, _firstRun,
           /*app_started_via_external_intent=*/false)) {

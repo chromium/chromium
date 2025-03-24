@@ -160,7 +160,7 @@ dictionary SetHTMLUnsafeOptions {
 
     // ARIA Notify API
     // https://github.com/WICG/aom/blob/gh-pages/notification-api.md
-    [RuntimeEnabled=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});
+    [RuntimeEnabled=AriaNotify,MeasureAs=AriaNotify] void ariaNotify(DOMString announcement, optional AriaNotificationOptions options = {});
 
     // Event handler attributes
     attribute EventHandler onbeforecopy;
@@ -173,7 +173,7 @@ dictionary SetHTMLUnsafeOptions {
     [RuntimeEnabled=ContainerTiming, CEReactions, Reflect=containertiming] attribute DOMString containerTiming;
 
     // Heading Offset
-    [CEReactions, RuntimeEnabled=HeadingOffset, Reflect=headingoffset] attribute long headingOffset;
+    [CEReactions, RuntimeEnabled=HeadingOffset] attribute unsigned long headingOffset;
     [CEReactions, RuntimeEnabled=HeadingOffset] attribute boolean headingReset;
 };
 

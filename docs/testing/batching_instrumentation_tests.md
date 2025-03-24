@@ -38,6 +38,8 @@ A batched test is **Activity-restarted** if the `ActivityTestRule` is a
 non-static `@Rule`. It is the `ActivityTestRule` which stops activities after
 each test case.
 
+Activity-restarted Public Transit tests use the `FreshCtaTransitRule`.
+
 A batched test is **Activity-reused** if either:
   * The `ActivityTestRule` is a static `@ClassRule`
   * `setFinishActivity(false)` is called on the non-static `ActivityTestRule`.
@@ -48,6 +50,9 @@ while `@Rule`s are applied once per test case. `@BeforeClass` and `@AfterClass`
 are the same. This contrasts with non-batched tests, where both `@ClassRule`s
 and `@Rule`s are applied for each test case, and both `@BeforeClass` and
 `@Before` are run for each test case (same for `@AfterClass` / `@After`).
+
+Activity-reused Public Transit tests use the `ReusedCtaTransitRule` or the
+`BlankCTATabInitialStatePublicTransitRule`.
 
 ### Performance
 

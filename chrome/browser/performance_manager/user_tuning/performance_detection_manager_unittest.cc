@@ -116,6 +116,7 @@ class PerformanceDetectionManagerTest : public ChromeRenderViewHostTestHarness {
     pm_harness_.SetUp();
     SetContents(CreateTestWebContents());
     Graph* graph = PerformanceManager::GetGraph();
+    graph->PassToGraph(std::make_unique<policies::DiscardEligibilityPolicy>());
     auto page_discarding_helper =
         std::make_unique<policies::PageDiscardingHelper>();
     page_discarding_helper->SetMockDiscarderForTesting(

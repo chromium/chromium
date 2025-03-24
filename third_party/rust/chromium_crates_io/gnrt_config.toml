@@ -265,9 +265,6 @@ no_license_file_tracked_in_crbug_369075726 = true
 [crate.rstest]
 group = 'test'
 
-[crate.rstest_reuse]
-group = 'test'
-
 [crate.rust_decimal]
 build_script_outputs = ['README-lib.md']
 

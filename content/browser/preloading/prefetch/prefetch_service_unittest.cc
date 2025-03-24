@@ -38,6 +38,7 @@
 #include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/features.h"
@@ -434,11 +435,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     CHECK(prefetch_type.IsRendererInitiated());
     PrefetchDocumentManager* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
-
     prefetch_document_manager->PrefetchUrl(
         prefetch_url, prefetch_type,
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
-        referrer, no_vary_search_hint,
+        referrer, SpeculationRulesTags(), no_vary_search_hint,
         PreloadPipelineInfo::Create(planned_max_preloading_type));
   }
 
@@ -6919,6 +6919,8 @@ TEST_F(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch."
       "Eager",
       true, 1);
+
+  prefetch_service.SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // Scenario:
@@ -6982,6 +6984,8 @@ TEST_F(PrefetchServiceTest,
   // Note that serving metrics is not recorded for the prefetch because
   // `HasPrefetchStatus()` doesn't hold in
   // `PrefetchContainer::UpdateServingPageMetrics()`.
+
+  prefetch_service.SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 TEST_F(PrefetchServiceTest,
@@ -7068,6 +7072,7 @@ class PrefetchServiceAddPrefetchContainerTest : public PrefetchServiceTestBase {
     return std::make_unique<PrefetchContainer>(
         static_cast<content::RenderFrameHostImpl&>(*main_rfh()), document_token,
         prefetch_url, std::move(prefetch_type), blink::mojom::Referrer(),
+        std::make_optional(SpeculationRulesTags()),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         PreloadPipelineInfo::Create(planned_max_preloading_type),

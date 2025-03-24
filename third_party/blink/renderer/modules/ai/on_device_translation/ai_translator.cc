@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_translator.h"
 
+#include <limits>
+
 #include "base/functional/callback_helpers.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
@@ -15,6 +17,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/create_translator_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -134,6 +137,8 @@ ScriptPromise<IDLString> AITranslator::translate(
     return EmptyPromise();
   }
 
+  // TODO(crbug.com/399693771): This should be a composite signal of the passed
+  // in abort signal and the create abort signal.
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (HandleAbortSignal(signal, script_state, exception_state)) {
     return EmptyPromise();
@@ -173,6 +178,8 @@ ReadableStream* AITranslator::translateStreaming(
     return nullptr;
   }
 
+  // TODO(crbug.com/399693771): This should be a composite signal of the passed
+  // in abort signal and the create abort signal.
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (HandleAbortSignal(signal, script_state, exception_state)) {
@@ -201,6 +208,50 @@ ReadableStream* AITranslator::translateStreaming(
 
 void AITranslator::destroy(ScriptState*) {
   translator_remote_.reset();
+}
+
+ScriptPromise<IDLDouble> AITranslator::measureInputUsage(
+    ScriptState* script_state,
+    const WTF::String& input,
+    AITranslatorTranslateOptions* options,
+    ExceptionState& exception_state) {
+  // https://webmachinelearning.github.io/writing-assistance-apis/#measure-ai-model-input-usage
+  //
+  // If modelObject’s relevant global object is a Window whose associated
+  // Document is not fully active, then return a promise rejected with an
+  // "InvalidStateError" DOMException.
+  auto* context = ExecutionContext::From(script_state);
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    auto* document = window->document();
+    if (document && !document->IsActive()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "The document is not active");
+      return EmptyPromise();
+    }
+  }
+
+  // TODO(crbug.com/399693771): This should be a composite signal of the passed
+  // in abort signal and the create abort signal.
+  CHECK(options);
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return EmptyPromise();
+  }
+
+  AIResolverWithAbortSignal<IDLDouble>* resolver =
+      MakeGarbageCollected<AIResolverWithAbortSignal<IDLDouble>>(script_state,
+                                                                 signal);
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      WTF::BindOnce(&AIResolverWithAbortSignal<IDLDouble>::Resolve<double>,
+                    WrapPersistent(resolver), 0));
+
+  return resolver->Promise();
+}
+
+double AITranslator::inputQuota() const {
+  return std::numeric_limits<double>::infinity();
 }
 
 }  // namespace blink

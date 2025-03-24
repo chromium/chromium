@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -19,6 +20,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/environment_config.h"
+#include "base/task/thread_pool/pooled_sequenced_task_runner.h"
 #include "base/task/thread_pool/pooled_single_thread_task_runner_manager.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
 #include "base/task/thread_pool/service_thread.h"
@@ -154,6 +156,16 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   scoped_refptr<UpdateableSequencedTaskRunner>
   CreateUpdateableSequencedTaskRunner(const TaskTraits& traits);
 
+  // Returns a SequencedTaskRunner whose PostTask invocations result in
+  // scheduling tasks using |traits|. Tasks run one at a time in posting order.
+  // Returns the existing `SequenceTaskRunner` for 'path', or creates it.
+  // Ensures tasks accessing the same `path` are sequenced, even if posted from
+  // `SequencedTaskRunner`s obtained in different contexts. The same `traits`
+  // must be provided to all calls with the same `path`.
+  scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunnerForResource(
+      const TaskTraits& traits,
+      const base::FilePath& path);
+
  private:
   // Invoked after |num_fences_| or |num_best_effort_fences_| is updated. Sets
   // the CanRunPolicy in TaskTracker and wakes up workers as appropriate.
@@ -204,6 +216,10 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // Provides COM initialization verification for supported builds.
   base::win::ComInitCheckHook com_init_check_hook_;
 #endif
+
+  base::Lock sequences_for_resources_lock_;
+  base::flat_map<base::FilePath, scoped_refptr<PooledSequencedTaskRunner>>
+      sequences_for_resources_ GUARDED_BY(sequences_for_resources_lock_);
 
   // Asserts that operations occur in sequence with Start().
   SEQUENCE_CHECKER(sequence_checker_);

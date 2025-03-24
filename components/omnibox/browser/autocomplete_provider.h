@@ -180,6 +180,7 @@ class AutocompleteProvider
     TYPE_ENTERPRISE_SEARCH_AGGREGATOR = 1 << 22,
     TYPE_UNSCOPED_EXTENSION = 1 << 23,
     TYPE_RECENTLY_CLOSED_TABS = 1 << 24,
+    TYPE_CONTEXTUAL_SEARCH = 1 << 25,
     // When adding a value here, also update:
     // - omnibox_event.proto
     // - `AutocompleteProvider::AsOmniboxEventProviderType`

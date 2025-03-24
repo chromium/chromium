@@ -355,6 +355,10 @@ ASH_PUBLIC_EXPORT inline constexpr auto kAcceleratorData = std::to_array<
     // Game Dashboard shortcut.
     {true, ui::VKEY_G, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleGameDashboard},
+
+    // Sunfish-session.
+    {true, ui::VKEY_SPACE, ui::EF_COMMAND_DOWN,
+     AcceleratorAction::kStartSunfishSession},
 });
 
 ASH_PUBLIC_EXPORT inline constexpr AcceleratorData

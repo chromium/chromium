@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +50,6 @@ public class RwsRowPreference extends WebsiteRowPreference {
         if (!mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()) {
             // Previous version of the RWS UI hides the delete button for the row
             ImageView button = (ImageView) holder.findViewById(R.id.image_view_widget);
-            assumeNonNull(button);
             button.setVisibility(View.INVISIBLE);
         }
     }

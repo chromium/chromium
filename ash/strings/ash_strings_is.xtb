@@ -215,6 +215,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1679841710523778799">Auka birtustig</translation>
 <translation id="1680659827022803830">Stýringar myndsímtals</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Þú getur slökkt á þessum eiginleika hvenær sem er í stillingunum. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> teljari · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-vistfang: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Virkur gluggi festur vinstra megin.</translation>
@@ -967,6 +968,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4221957499226645091"><ph name="APP_NAME" />, uppsett forrit, í bið</translation>
 <translation id="4228078597006700451">Stýringar ekki uppsettar</translation>
 <translation id="4230560241506423345">Nýtt</translation>
+<translation id="4236726631849783264">Áminning um tillögur að aðgerðum</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Yfirlitsstilling</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
@@ -983,7 +985,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4275663329226226506">Margmiðlun</translation>
 <translation id="4279490309300973883">Speglun</translation>
 <translation id="4280601795273309128">Öryggisuppfærslum er lokið. Uppfærðu tækið þitt.</translation>
-<translation id="4281739221820540368">Búa til Google-skjöl</translation>
 <translation id="4283888303416325161">Sláðu inn aðgangsorð til að auka öryggið</translation>
 <translation id="4285498937028063278">Losa</translation>
 <translation id="428715201724021596">Tengist prófíl. Þetta gæti tekið nokkrar mínútur.</translation>
@@ -1044,6 +1045,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4471354919263203780">Sækir raddgreiningarskrár... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Uppfærðu tækið núna}=1{Uppfærðu tækið innan 1 sekúndu}one{Uppfærðu tækið innan # sekúndu}other{Uppfærðu tækið innan # sekúndna}}</translation>
 <translation id="4472575034687746823">Hefjast handa</translation>
+<translation id="4473489370276014885">Google-tengiliðir</translation>
 <translation id="4477350412780666475">Næsta lag</translation>
 <translation id="4477751544736611934">Þetta gæti haft í för með sér gagnakostnað.
 Eitt tæki er tengt.</translation>
@@ -1070,6 +1072,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4545950850562423083">Vista núverandi síðu sem bókamerki</translation>
 <translation id="4548482551627849548">Færa virkan glugga á skrifborð til vinstri</translation>
 <translation id="4552748006424994716">Til að komast hjá bergmáli geturðu hlustað aðeins á hljóðnemann í heyrnartólum með snúru.</translation>
+<translation id="4556953949326137018">Þegar þú notar tillögur að aðgerðum eins og „bæta við dagatal“ eða „búa til Google-skjöl“ er efnið á valda svæðinu sent til vefþjóna Google til að leggja til aðgerðir, háð <ph name="LINK_TO_SERVICE_TERMS" />. Ekki slá inn persónulegar upplýsingar, viðkvæmar upplýsingar eða trúnaðarupplýsingar.</translation>
 <translation id="4560576029703263363">Kveikt</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Fela aðgangsorð</translation>
@@ -1153,6 +1156,7 @@ Eitt tæki er tengt.</translation>
 <translation id="481455355267255546">Næst á dagskrá</translation>
 <translation id="481749895090480684">Verkefnalisti: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">myndavél og hljóðnema</translation>
+<translation id="4828935196674083554">Bætir við...</translation>
 <translation id="482908187605862807">Tiltæk forrit frá Play Store</translation>
 <translation id="4831034276697007977">Viltu örugglega slökkva á sjálfvirkum smellum?</translation>
 <translation id="4835677468087803981">Fela PIN-númer</translation>
@@ -1650,6 +1654,7 @@ Engin tæki eru tengd.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Hreinsa allar tilkynningar</translation>
+<translation id="6426905245930183644">Býr til...</translation>
 <translation id="6430225033895752525">Sýna einbeitingarstillingar</translation>
 <translation id="643147933154517414">Allt búið</translation>
 <translation id="6431865393913628856">Skjáupptaka</translation>
@@ -1716,7 +1721,6 @@ Ný uppsetning</translation>
 <translation id="6612889377159412215">undirverkefni</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> af geymslurými í notkun | <ph name="STORAGE_TOTAL_SIZE" /> alls</translation>
 <translation id="6614169507485700968">Kveikt er á persónuverndarskjá</translation>
-<translation id="6618277154885124991">Búa til Google-töflureikna</translation>
 <translation id="6622679827379792051">Setja upp skoðun forrita símans</translation>
 <translation id="662279009180869175">Notaðu vinstri og hægri örvatakkana til að breyta stærðinni á skiptum skjá.</translation>
 <translation id="6624493541160101248">Núverandi skrifborð: <ph name="DESK_NAME" />. Skrifborð <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
@@ -2400,6 +2404,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8921624153894383499">Google-hjálparinn talar ekki þetta tungumál</translation>
 <translation id="8926951137623668982">Hilla alltaf falin</translation>
 <translation id="8929566928381252430">Ertu að reyna að nota hástafalás? Nota</translation>
+<translation id="8934418770423095813">Búa til Google skjal</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="8936501819958976551">óvirkt</translation>
 <translation id="8938800817013097409">USB-C tæki (hægra tengi að aftan)</translation>

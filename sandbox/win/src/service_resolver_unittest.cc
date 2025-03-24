@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/bit_cast.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/resolver.h"
@@ -70,7 +71,7 @@ NTSTATUS PatchNtdllWithResolver(const char* function,
     return STATUS_UNSUCCESSFUL;
 
   BYTE service[50];
-  memcpy(service, target, sizeof(service));
+  UNSAFE_TODO(memcpy(service, target, sizeof(service)));
 
   resolver.set_target(service);
 
@@ -87,7 +88,7 @@ NTSTATUS PatchNtdllWithResolver(const char* function,
   if (NT_SUCCESS(ret)) {
     const BYTE kJump32 = 0xE9;
     EXPECT_EQ(thunk_size, used);
-    EXPECT_NE(0, memcmp(service, target, sizeof(service)));
+    EXPECT_NE(0, UNSAFE_TODO(memcmp(service, target, sizeof(service))));
     EXPECT_NE(kJump32, service[0]);
 
     if (relaxed) {
@@ -186,7 +187,7 @@ TEST(ServiceResolverTest, LocalPatchesAllowed) {
   ASSERT_TRUE(target);
 
   BYTE service[50];
-  memcpy(service, target, sizeof(service));
+  UNSAFE_TODO(memcpy(service, target, sizeof(service)));
   resolver.set_target(service);
 
   // Any pointer will do as an interception_entry_point

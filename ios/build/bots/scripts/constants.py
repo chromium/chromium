@@ -10,7 +10,7 @@ READLINE_TIMEOUT = 180
 MAX_RUNTIME_KEPT_DAYS = '3'
 
 # Maximum number of simulator runtime we should keep in any given time
-MAX_RUNTIME_KETP_COUNT = 3
+MAX_RUNTIME_KEPT_COUNT = 3
 
 # Message printed in EG test logs to determine if the app crashed
 CRASH_MESSAGE = 'App crashed and disconnected.'

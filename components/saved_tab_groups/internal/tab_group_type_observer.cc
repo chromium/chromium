@@ -23,12 +23,12 @@ TabGroupTypeObserver::TabGroupTypeObserver(
 TabGroupTypeObserver::~TabGroupTypeObserver() = default;
 
 void TabGroupTypeObserver::OnInitialized() {
-  const std::vector<SavedTabGroup>& tab_groups =
-      tab_group_sync_service_->GetAllGroups();
+  const std::vector<const SavedTabGroup*> tab_groups =
+      tab_group_sync_service_->ReadAllGroups();
   synthetic_field_trial_helper_->UpdateHadSavedTabGroupIfNeeded(
       !tab_groups.empty());
-  for (const auto& group : tab_groups) {
-    if (group.is_shared_tab_group()) {
+  for (const SavedTabGroup* group : tab_groups) {
+    if (group->is_shared_tab_group()) {
       synthetic_field_trial_helper_->UpdateHadSharedTabGroupIfNeeded(true);
       return;
     }

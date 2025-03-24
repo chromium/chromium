@@ -52,6 +52,9 @@ namespace {
 namespace em = enterprise_management;
 
 using ash::KioskMixin;
+using ash::kiosk::test::LaunchAppManually;
+using ash::kiosk::test::TheKioskApp;
+using ash::kiosk::test::WaitKioskLaunched;
 
 constexpr char kVersion[] = "1.0.0";
 constexpr char kEmail[] = "iwa@example.com";
@@ -221,10 +224,9 @@ class IwaCacheTest : public ash::LoginManagerTest,
     std::visit(
         base::Overloaded([](MgsMixin& mgs_mixin) { mgs_mixin.LaunchMgs(); },
                          [](KioskMixin& kiosk_mixin) {
-                           ASSERT_TRUE(kiosk_mixin.LaunchManually(
-                               ash::kiosk::test::TheKioskApp()));
-                           ASSERT_TRUE(kiosk_mixin.WaitSessionLaunched());
-                         }, ),
+                           ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+                           ASSERT_TRUE(WaitKioskLaunched());
+                         }),
         session_mixin_);
   }
 

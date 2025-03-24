@@ -33,7 +33,9 @@
 namespace ash {
 
 using kiosk::test::BlockKioskLaunch;
+using kiosk::test::LaunchAppManually;
 using kiosk::test::TheKioskApp;
+using kiosk::test::WaitKioskLaunched;
 using kiosk::test::WaitNetworkScreen;
 
 namespace {
@@ -134,8 +136,8 @@ using KioskWebAppOfflineDisabledByPolicyTest =
 IN_PROC_BROWSER_TEST_P(KioskWebAppOfflineDisabledByPolicyTest,
                        PRE_CannotLaunchOffline) {
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskWebAppOfflineDisabledByPolicyTest,
@@ -143,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(KioskWebAppOfflineDisabledByPolicyTest,
   base::AddFeatureIdTagToTestResult(kLaunchKioskOfflineTag);
 
   network_state_.SimulateOffline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   auto scoped_launch_blocker = BlockKioskLaunch();
   WaitNetworkScreen();
@@ -151,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(KioskWebAppOfflineDisabledByPolicyTest,
 
   scoped_launch_blocker.reset();
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -166,16 +168,16 @@ using KioskWebAppOfflineEnabledByPolicyTest =
 IN_PROC_BROWSER_TEST_P(KioskWebAppOfflineEnabledByPolicyTest,
                        PRE_LaunchesOffline) {
   network_state_.SimulateOnline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskWebAppOfflineEnabledByPolicyTest, LaunchesOffline) {
   base::AddFeatureIdTagToTestResult(kLaunchKioskOfflineTag);
 
   network_state_.SimulateOffline();
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

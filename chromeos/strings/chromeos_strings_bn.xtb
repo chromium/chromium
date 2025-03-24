@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
 <translation id="1908394185991500139">বাঁদিকের তীরচিহ্ন</translation>
+<translation id="1911678930322867245">উপরের ডানদিকে সরান</translation>
 <translation id="1914144885717544695">শুক্রবারে</translation>
 <translation id="1915960750806557358">আপনার মতামত শেয়ার করুন বা সমস্যার বিবরণ দিন। ব্যক্তিগত, সংবেদনশীল বা গোপনীয় কোনও তথ্য যেন অন্তর্ভুক্ত না থাকে তা ভালো করে দেখে নেবেন।</translation>
 <translation id="1923388006036088459">অ্যাকসেন্ট কালার</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">বিচ</translation>
 <translation id="819278132617411009">আরও প্রোডাক্টিভ হয়ে উঠতে Google AI ব্যবহার করুন</translation>
-<translation id="82003371436638355">আপনি “নিজের তৈরি করুন” বিকল্প বেছে নেওয়ার সময় কোনও কাস্টম প্রম্পট লিখুন। অথবা আপনি “কোনও থিম বেছে নিন” বেছে নিতে তারপর নিজের এআই (AI) ওয়ালপেপার পছন্দমতো সাজিয়ে নেওয়ার জন্য আন্ডারলাইন করা শব্দ বেছে নিতে পারবেন।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI ছবি সংক্রান্ত আরও অনন্য ও নানারকম বিকল্প পেতে "আমাকে অনুপ্রাণিত করো" বিকল্প বেছে নিন।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          আপনি নিজের ওয়ালপেপার তৈরি করার সময়, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-এর পরিষেবার শর্তাবলী ও গোপনীয়তা নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুযায়ী ছবি জেনারেট ও প্রোডাক্ট উন্নত করতে Google-এ পাঠানো হয়েছে। ব্যক্তিগত, সংবেদনশীল, বা গোপনীয় তথ্য অন্তর্ভুক্ত করবেন না।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          জেনারেটিভ AI ফিচার হল নতুন প্রযুক্তি এবং তা ভুল তথ্য দিতে পারে, এর মধ্যে লোকজন সম্পর্কিত তথ্যও অন্তর্ভুক্ত, তাই উত্তর ডবল-চেক করুন। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />আরও জানুন<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8833620912470026819">ক্যাকটাস ফরেল্ট</translation>
 <translation id="8834539327799336565">এখন কানেক্ট করা রয়েছে</translation>
+<translation id="8842526499753992487">উপরের বাঁদিকে সরান</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
 <translation id="8849799913685544685">লাইটহাউস</translation>
 <translation id="8851859208664803097">বন্ধ হয়ে গেছে - প্রিন্টার অ্যাক্সেস করা যাচ্ছে না</translation>

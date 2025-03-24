@@ -246,7 +246,7 @@ void GlicMetrics::DidRequestContextFromFocusedTab() {
   did_request_context_ = true;
 
   content::WebContents* web_contents =
-      tab_manager_->GetFocusedTabData().focused_tab_contents.get();
+      tab_manager_->GetFocusedTabData().focus();
   if (web_contents) {
     source_id_ = web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   } else {

@@ -31,6 +31,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_launcher.h"
+#include "base/test/launcher/test_result.h"
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -213,6 +214,30 @@ Value::Dict CreateTestResultValue(const TestResult& test_result) {
   value.Set("result_parts", std::move(test_result_parts));
 
   return value;
+}
+
+// Create value for `SubTestResult`.
+Value::Dict CreateSubTestResultValue(const TestResult& primary_test_result,
+                                     const SubTestResult& sub_test_result) {
+  // Partially copy the primary TestResult.
+  TestResult test_result;
+  test_result.elapsed_time = primary_test_result.elapsed_time;
+  test_result.thread_id = primary_test_result.thread_id;
+  test_result.timestamp = primary_test_result.timestamp;
+  if (sub_test_result.failure_message) {
+    test_result.status = TestResult::TEST_FAILURE;
+    // Add a TestPartResult to the new TestResult if the SubTestResult is a
+    // failure. This is how the failure message is passed along.
+    TestResultPart part;
+    part.type = TestResultPart::Type::kNonFatalFailure;
+    part.summary = *sub_test_result.failure_message;
+    // Line number is unknown.
+    part.line_number = 0;
+    test_result.test_result_parts.push_back(std::move(part));
+  } else {
+    test_result.status = TestResult::TEST_SUCCESS;
+  }
+  return CreateTestResultValue(test_result);
 }
 
 }  // namespace
@@ -570,12 +595,23 @@ bool TestResultsTracker::SaveSummaryAsJSON(
 
     for (const auto& j : per_iteration_data_[i].results) {
       Value::List test_results;
+      std::map<std::string, Value::List> name_to_test_results;
 
       for (const TestResult& test_result : j.second.test_results) {
-        test_results.Append(CreateTestResultValue(test_result));
+        name_to_test_results[j.first].Append(
+            CreateTestResultValue(test_result));
+
+        // Add each SubTestResult as an individual test result.
+        for (const SubTestResult& sub_test_result :
+             test_result.sub_test_results) {
+          name_to_test_results[sub_test_result.FullName()].Append(
+              CreateSubTestResultValue(test_result, sub_test_result));
+        }
       }
 
-      current_iteration_data.Set(j.first, std::move(test_results));
+      for (auto& p : name_to_test_results) {
+        current_iteration_data.Set(p.first, std::move(p.second));
+      }
     }
     per_iteration_data.Append(std::move(current_iteration_data));
   }

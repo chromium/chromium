@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
 class QuadF;
@@ -39,7 +40,8 @@ class PLATFORM_EXPORT ContouredRect {
    public:
     static constexpr float kRound = 2;
     static constexpr float kBevel = 1;
-    static constexpr float kNotch = 1 / 1000;
+    static constexpr float kStraight = 1000;
+    static constexpr float kNotch = 1 / kStraight;
 
     constexpr CornerCurvature() = default;
     constexpr CornerCurvature(float top_left,
@@ -79,6 +81,78 @@ class PLATFORM_EXPORT ContouredRect {
     float top_right_ = kRound;
     float bottom_right_ = kRound;
     float bottom_left_ = kRound;
+  };
+
+  // A Corner is a axis-aligned quad, with the points ordered (start, outer,
+  // end, center), and a curvature. It is used as a convenient way to perform
+  // corner-related computations without having to worry about the
+  // transpositions of the different corners.
+  class Corner {
+   public:
+    constexpr Corner(const gfx::RectF& rect, size_t rotation, float curvature)
+        : curvature_(curvature) {
+      vertices_ = {rect.origin(), rect.top_right(), rect.bottom_right(),
+                   rect.bottom_left()};
+      std::rotate(vertices_.begin(), vertices_.begin() + rotation,
+                  vertices_.end());
+    }
+
+    constexpr Corner(const std::array<gfx::PointF, 4>& vertices,
+                     float curvature)
+        : vertices_(vertices), curvature_(ClampCurvature(curvature)) {}
+
+    constexpr const gfx::PointF& Start() const { return vertices_.at(0); }
+    constexpr const gfx::PointF& Outer() const { return vertices_.at(1); }
+    constexpr const gfx::PointF& End() const { return vertices_.at(2); }
+    constexpr const gfx::PointF& Center() const { return vertices_.at(3); }
+    static constexpr float ClampCurvature(float curvature) {
+      return std::clamp(curvature, CornerCurvature::kNotch,
+                        CornerCurvature::kStraight);
+    }
+    constexpr float Curvature() const { return curvature_; }
+    constexpr bool IsStraight() const {
+      return Curvature() == CornerCurvature::kStraight;
+    }
+    constexpr bool IsBevel() const {
+      return curvature_ == CornerCurvature::kBevel;
+    }
+    constexpr bool IsRound() const {
+      return curvature_ == CornerCurvature::kRound;
+    }
+    constexpr bool IsConcave() const { return curvature_ < 1; }
+    constexpr bool IsZero() const { return Start() == End(); }
+    constexpr bool operator==(const Corner&) const = default;
+    constexpr Corner Inverse() const {
+      return Corner({Start(), Center(), End(), Outer()}, 1 / Curvature());
+    }
+    constexpr Corner ToConvex() const {
+      return IsConcave() ? Inverse() : *this;
+    }
+
+    constexpr gfx::Vector2dF v1() const { return Outer() - Start(); }
+    constexpr gfx::Vector2dF v2() const { return End() - Outer(); }
+    constexpr gfx::Vector2dF v3() const { return Center() - End(); }
+    constexpr gfx::Vector2dF v4() const { return Start() - Center(); }
+    constexpr float DiagonalLength() const {
+      return (End() - Start()).Length();
+    }
+    static constexpr float HalfCornerForCurvature(float curvature) {
+      return std::pow(0.5, 1 / ClampCurvature(curvature));
+    }
+
+    static inline float CurvatureForHalfCorner(float half_corner) {
+      return std::log(0.5) / std::log(half_corner);
+    }
+
+    constexpr gfx::PointF MapPoint(
+        const gfx::Vector2dF& normalized_point) const {
+      return Center() + gfx::ScaleVector2d(v1(), normalized_point.x()) +
+             gfx::ScaleVector2d(v4(), normalized_point.y());
+    }
+
+   private:
+    std::array<gfx::PointF, 4> vertices_;
+    float curvature_;
   };
 
   constexpr ContouredRect() = default;
@@ -131,10 +205,24 @@ class PLATFORM_EXPORT ContouredRect {
   bool IsRenderable() const { return rect_.IsRenderable(); }
   String ToString() const;
   Path GetPath() const;
-  FloatRoundedRect GetOriginRect() const {
-    return origin_rect_.value_or(rect_);
+  const FloatRoundedRect& GetOriginRect() const {
+    return origin_rect_ ? *origin_rect_ : rect_;
   }
   void SetOriginRect(const FloatRoundedRect& rect) { origin_rect_ = rect; }
+
+  constexpr Corner TopRightCorner() const {
+    return Corner(rect_.TopRightCorner(), 0, corner_curvature_.TopRight());
+  }
+  constexpr Corner BottomRightCorner() const {
+    return Corner(rect_.BottomRightCorner(), 1,
+                  corner_curvature_.BottomRight());
+  }
+  constexpr Corner BottomLeftCorner() const {
+    return Corner(rect_.BottomLeftCorner(), 2, corner_curvature_.BottomLeft());
+  }
+  constexpr Corner TopLeftCorner() const {
+    return Corner(rect_.TopLeftCorner(), 3, corner_curvature_.TopLeft());
+  }
 
  private:
   FloatRoundedRect rect_;

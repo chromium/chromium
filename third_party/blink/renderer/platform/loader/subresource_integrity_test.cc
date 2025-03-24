@@ -165,7 +165,7 @@ class SubresourceIntegrityTest : public testing::Test {
       base::span<const IntegrityMetadata> expected_metadata) {
     IntegrityMetadataSet expected_metadata_set;
     for (const auto& expected : expected_metadata) {
-      expected_metadata_set.hashes.insert(expected.ToPair());
+      expected_metadata_set.Insert(std::move(expected.ToPair()));
     }
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(
@@ -178,7 +178,7 @@ class SubresourceIntegrityTest : public testing::Test {
     SubresourceIntegrity::ParseIntegrityAttribute(
         integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(metadata_set.hashes.size(), 0u);
-    EXPECT_EQ(metadata_set.signatures.size(), 0u);
+    EXPECT_EQ(metadata_set.public_keys.size(), 0u);
   }
 
   void ExpectEmptyParseResult(const char* integrity_attribute) {
@@ -187,7 +187,7 @@ class SubresourceIntegrityTest : public testing::Test {
     SubresourceIntegrity::ParseIntegrityAttribute(
         integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(0u, metadata_set.hashes.size());
-    EXPECT_EQ(0u, metadata_set.signatures.size());
+    EXPECT_EQ(0u, metadata_set.public_keys.size());
   }
 
   enum ServiceWorkerMode {
@@ -580,7 +580,7 @@ TEST_F(SubresourceIntegrityTest, FindBestAlgorithm) {
       IntegrityAlgorithm::kEd25519,
   };
 
-  WTF::HashSet<IntegrityMetadataPair> alg_set;
+  WTF::Vector<IntegrityMetadataPair> alg_set;
   for (IntegrityAlgorithm alg : algs) {
     SCOPED_TRACE(alg);
 
@@ -589,7 +589,7 @@ TEST_F(SubresourceIntegrityTest, FindBestAlgorithm) {
 
     // Check that each algorithm in the test cases is stronger than the
     // previously-tested algorithms.
-    alg_set.insert(std::make_pair("", alg));
+    alg_set.push_back(std::make_pair("", alg));
     EXPECT_EQ(alg, SubresourceIntegrity::FindBestAlgorithm(alg_set));
   }
 }
@@ -636,21 +636,21 @@ class SubresourceIntegritySignatureTest
         integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(0u, metadata_set.hashes.size());
     if (SignaturesEnabled()) {
-      ASSERT_EQ(1u, metadata_set.signatures.size());
+      ASSERT_EQ(1u, metadata_set.public_keys.size());
 
-      IntegrityMetadata metadata = *metadata_set.signatures.begin();
+      IntegrityMetadata metadata = *metadata_set.public_keys.begin();
       EXPECT_EQ(digest, metadata.Digest());
       EXPECT_EQ(IntegrityAlgorithm::kEd25519, metadata.Algorithm());
     } else {
-      ASSERT_EQ(0u, metadata_set.signatures.size());
+      ASSERT_EQ(0u, metadata_set.public_keys.size());
     }
   }
 
   // Evalutes whether the given string is parsed into a set of IntegrityMetadata
-  // items that contains each of the items in |hashes| and |signatures|.
+  // items that contains each of the items in |hashes| and |public_keys|.
   void ValidateMultipleItems(const String& integrity_attribute,
                              const Vector<IntegrityMetadataPair>& hashes,
-                             const Vector<IntegrityMetadataPair>& signatures) {
+                             const Vector<IntegrityMetadataPair>& public_keys) {
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(
         integrity_attribute, metadata_set, /*feature_context=*/nullptr);
@@ -663,12 +663,12 @@ class SubresourceIntegritySignatureTest
 
     // And then signatures:
     if (SignaturesEnabled()) {
-      ASSERT_EQ(signatures.size(), metadata_set.signatures.size());
-      for (const auto& item : signatures) {
-        EXPECT_TRUE(metadata_set.signatures.Contains(item));
+      ASSERT_EQ(public_keys.size(), metadata_set.public_keys.size());
+      for (const auto& item : public_keys) {
+        EXPECT_TRUE(metadata_set.public_keys.Contains(item));
       }
     } else {
-      ASSERT_EQ(0u, metadata_set.signatures.size());
+      ASSERT_EQ(0u, metadata_set.public_keys.size());
     }
   }
 
@@ -830,8 +830,7 @@ TEST_P(SubresourceIntegritySignatureTest, CheckEmpty) {
 TEST_P(SubresourceIntegritySignatureTest, CheckNotSigned) {
   IntegrityReport integrity_report;
   IntegrityMetadataSet metadata_set;
-  metadata_set.signatures.insert(
-      std::make_pair("", IntegrityAlgorithm::kEd25519));
+  metadata_set.Insert(std::make_pair("", IntegrityAlgorithm::kEd25519));
   String raw_headers = "";
 
   // If the flag is set, the lack of a signature will fail any signature
@@ -876,7 +875,7 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
 
   IntegrityReport integrity_report;
   IntegrityMetadataSet metadata_set;
-  metadata_set.signatures = {
+  metadata_set.public_keys = {
       std::make_pair(kPublicKey, IntegrityAlgorithm::kEd25519)};
 
   // Valid signature matching the integrity requirement should always pass.

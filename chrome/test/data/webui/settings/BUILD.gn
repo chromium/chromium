@@ -183,6 +183,7 @@ build_webui_tests("build") {
     ]
   } else {
     files += [
+      "clear_browsing_data_account_indicator_test.ts",
       "default_browser_test.ts",
       "fake_language_settings_private.ts",
       "import_data_dialog_test.ts",

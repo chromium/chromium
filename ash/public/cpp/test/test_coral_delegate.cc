@@ -33,8 +33,8 @@ bool TestCoralDelegate::GetGenAILocationAvailability() {
   return true;
 }
 
-bool TestCoralDelegate::GetLanguageAvailability() {
-  return true;
+std::string TestCoralDelegate::GetSystemLanguage() {
+  return "en";
 }
 
 }  // namespace ash

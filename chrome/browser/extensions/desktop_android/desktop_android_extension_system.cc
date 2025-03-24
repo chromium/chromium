@@ -167,14 +167,18 @@ void DesktopAndroidExtensionSystem::Shutdown() {}
 bool DesktopAndroidExtensionSystem::AddExtension(
     scoped_refptr<Extension> extension,
     std::string& error) {
-  // This code is normally handled as part of the UnpackedInstaller, which is
-  // not (yet) included in desktop android builds.
-  base::expected<base::Value::Dict, std::string> index_result =
-      declarative_net_request::InstallIndexHelper::
-          IndexAndPersistRulesOnInstall(*extension);
-  if (!index_result.has_value()) {
-    error = std::move(index_result.error());
-    return false;
+  base::expected<base::Value::Dict, std::string> index_result;
+  if (Manifest::IsUnpackedLocation(extension->location())) {
+    // This code is normally handled as part of the UnpackedInstaller, which is
+    // not (yet) included in desktop android builds.
+    // TODO(crbug.com/398299722): Remove this when UnpackedInstaller works on
+    // desktop android.
+    index_result = declarative_net_request::InstallIndexHelper::
+        IndexAndPersistRulesOnInstall(*extension);
+    if (!index_result.has_value()) {
+      error = std::move(index_result.error());
+      return false;
+    }
   }
 
   // This is normally handled by ExtensionService, and should likely be moved

@@ -490,6 +490,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7514258452813684157">Услуга ажурирања Google-а</translation>
 <translation id="7515191208480168435">Можете да закачите Google објектив ради једноставног приступа</translation>
 <translation id="7535429826459677826">Програмерска верзија Google Chrome-а</translation>
+<translation id="7543146567111253230">Да би вам овај обележивач и други садржај били доступни на свим уређајима, пријавите се у Chrome</translation>
 <translation id="756809126120519699">Chrome подаци су обрисани</translation>
 <translation id="7572537927358445944">Искључено • Chrome не може да провери одакле потиче овај додатак</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> програм за инсталацију</translation>
@@ -516,6 +517,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7787950393032327779">Изгледа да се профил користи у неком другом Google Chrome процесу (<ph name="PROCESS_ID" />) на неком другом рачунару (<ph name="HOST_NAME" />). Chrome је закључао профил да не би био оштећен. Ако сте сигурни да ниједан други процес не користи овај профил, можете да откључате профил и поново покренете Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome покушава да копира лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="7808348361785373670">Уклони из Chrome-а...</translation>
+<translation id="782480918904119604">Да бисте користили овај профил са Glic-ом, отворите Chrome и пријавите се</translation>
 <translation id="7825851276765848807">Инсталација није успела услед неутврђене грешке. Преузмите Google Chrome поново.</translation>
 <translation id="7845233973568007926">Хвала вам на инсталацији. Морате да рестартујете рачунар пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Преузима се... Још <ph name="SECONDS" /> сек</translation>

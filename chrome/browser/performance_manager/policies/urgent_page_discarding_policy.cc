@@ -66,8 +66,9 @@ void UrgentPageDiscardingPolicy::OnReclaimTarget(
   }
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(GetOwningGraph())
-          ->DiscardMultiplePages(reclaim_target, discard_protected_pages,
-                                 PageDiscardingHelper::DiscardReason::URGENT);
+          ->DiscardMultiplePages(
+              reclaim_target, discard_protected_pages,
+              DiscardEligibilityPolicy::DiscardReason::URGENT);
 
   DCHECK(handling_memory_pressure_notification_);
   handling_memory_pressure_notification_ = false;
@@ -126,7 +127,7 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
                      base::Unretained(this), on_memory_pressure_at));
 #else
   PageDiscardingHelper::GetFromGraph(GetOwningGraph())
-      ->DiscardAPage(PageDiscardingHelper::DiscardReason::URGENT);
+      ->DiscardAPage(DiscardEligibilityPolicy::DiscardReason::URGENT);
   DCHECK(handling_memory_pressure_notification_);
   handling_memory_pressure_notification_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS)

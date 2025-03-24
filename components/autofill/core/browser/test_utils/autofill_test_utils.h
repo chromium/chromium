@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -478,7 +479,8 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
     uint64_t max_price_in_micros);
 
 // Returns a linked BNPL issuer with fake data.
-BnplIssuer GetTestLinkedBnplIssuer();
+BnplIssuer GetTestLinkedBnplIssuer(
+    std::string_view issuer_id = kBnplAffirmIssuerId);
 
 // Returns an unlinked BNPL issuer with fake data.
 BnplIssuer GetTestUnlinkedBnplIssuer();

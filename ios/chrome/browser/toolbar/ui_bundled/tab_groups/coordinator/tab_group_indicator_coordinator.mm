@@ -193,8 +193,7 @@
   }
 
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   if (!tracker->WouldTriggerHelpUI(
           feature_engagement::kIPHiOSSharedTabGroupForeground)) {
     return;
@@ -266,8 +265,7 @@
 // shared tab group in foreground is dismissed.
 - (void)sharedTabGroupForegroundIPHDismissed {
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   tracker->Dismissed(feature_engagement::kIPHiOSSharedTabGroupForeground);
 }
 

@@ -157,7 +157,11 @@ class BrowserTabStripController : public TabStripController,
                               int index) override;
   void SetTabNeedsAttentionAt(int index, bool attention) override;
   bool IsFrameButtonsRightAligned() const override;
-  void OnSplitViewAdded(std::vector<int> indices) override;
+
+  void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+                         split_tabs::SplitTabId split_id,
+                         SplitTabAddReason reason,
+                         tabs::SplitTabLayout tab_layout) override;
 
   const Browser* browser() const { return browser_view_->browser(); }
 

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] e.style['font-variation-settings'] = "\\"wght\\" sign(1em - 1px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-variation-settings'] = "\\"wght\\" sibling-index()" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] Property font-variation-settings value '"wght" sign(1em - 1px)'
+  assert_true: '"wght" sign(1em - 1px)' is a supported value for font-variation-settings. expected true got false
+[FAIL] Property font-variation-settings value '"wght" sibling-index()'
+  assert_true: '"wght" sibling-index()' is a supported value for font-variation-settings. expected true got false
+Harness: the test ran to completion.
+

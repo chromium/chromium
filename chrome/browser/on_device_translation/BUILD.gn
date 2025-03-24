@@ -24,6 +24,8 @@ source_set("on_device_translation") {
     "service_controller_manager_factory.h",
     "translation_manager_impl.cc",
     "translation_manager_impl.h",
+    "translation_manager_util.cc",
+    "translation_manager_util.h",
     "translator.cc",
     "translator.h",
   ]
@@ -102,7 +104,7 @@ source_set("unit_tests") {
     "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
     "file_operation_proxy_impl_unittest.cc",
     "language_pack_util_unittest.cc",
-    "translation_manager_impl_unittest.cc",
+    "translation_manager_util_unittest.cc",
     "translation_metrics_unittest.cc",
   ]
   deps = [

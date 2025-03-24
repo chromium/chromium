@@ -188,10 +188,12 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
   runs_with_offset_.clear();
 
   if (text_painter) {
-    DCHECK(RuntimeEnabledFeatures::CanvasTextNgEnabled());
     // The CanvasTextNg feature enables obtaining the ShapeResult objects
     // directly, so we don't need to lazily obtain them again later.
     shaping_needed_ = false;
+    // getIndexFromOffset() and CorrectMixedBidi() need to change behavior
+    // for word-split runs.
+    split_by_word_ = true;
     const PlainTextNode& node = text_painter->SegmentAndShape(
         TextRun(text_, direction_, /* directional_override */ false,
                 /* normalize_space */ true),
@@ -219,7 +221,6 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
     }
     return {xpos, glyph_bounds};
   }
-  DCHECK(!RuntimeEnabledFeatures::CanvasTextNgEnabled());
   // If CanvasTextNg is not enabled, Font::Width is called, which causes a
   // shaping via CachingWordShaper. Since we still need the ShapeResult objects,
   // these are lazily created the first time they are required.
@@ -327,7 +328,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
           selection_rects.push_back(DOMRectReadOnly::Create(
               to_x - text_align_dx_, y, from_x - to_x, height));
         }
-        if (RuntimeEnabledFeatures::CanvasTextNgEnabled()) {
+        if (split_by_word_) {
           direction_list.push_back(run_with_offset.direction_);
         }
       }
@@ -362,7 +363,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
       selection_rects.push_back(DOMRectReadOnly::Create(
           to_x - text_align_dx_, y, from_x - to_x, height));
     }
-    if (RuntimeEnabledFeatures::CanvasTextNgEnabled()) {
+    if (split_by_word_) {
       direction_list.push_back(run_with_offset.direction_);
     }
   }
@@ -373,8 +374,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   //
   // Test:
   // external/wpt/html/canvas/element/text/2d.text.measure.selection-rects.tentative.html
-  if (RuntimeEnabledFeatures::CanvasTextNgEnabled() &&
-      selection_rects.size() >= 2) {
+  if (split_by_word_ && selection_rects.size() >= 2) {
     DCHECK_EQ(selection_rects.size(), direction_list.size());
     auto approximately_equal = [](double v1, double v2) {
       return std::abs(v1 - v2) <= 0.1;
@@ -646,8 +646,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // Move it to the start of the next RTL run on its left.
       auto next_run = riter + 1;
       if (next_run != runs_with_offset_.rend()) {
-        if (!RuntimeEnabledFeatures::CanvasTextNgEnabled() ||
-            IsRtl(next_run->direction_)) {
+        if (!split_by_word_ || IsRtl(next_run->direction_)) {
           return next_run->character_offset_;
         }
       }
@@ -656,7 +655,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // it to the last position of the RTL run to the right, which is the first
       // position of the LTR run, unless there is no run to the right.
       if (riter != runs_with_offset_.rbegin()) {
-        if (!RuntimeEnabledFeatures::CanvasTextNgEnabled()) {
+        if (!split_by_word_) {
           return riter->character_offset_;
         }
         auto right_run = riter - 1;
@@ -677,8 +676,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // Move it to the start of the next LTR run on its right.
       if (riter != runs_with_offset_.rbegin()) {
         auto previous_run = riter - 1;
-        if (!RuntimeEnabledFeatures::CanvasTextNgEnabled() ||
-            IsLtr(previous_run->direction_)) {
+        if (!split_by_word_ || IsLtr(previous_run->direction_)) {
           return previous_run->character_offset_;
         }
       }
@@ -688,8 +686,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // no run to the left.
       auto next_run = riter + 1;
       if (next_run != runs_with_offset_.rend()) {
-        if (!RuntimeEnabledFeatures::CanvasTextNgEnabled() ||
-            IsLtr(next_run->direction_)) {
+        if (!split_by_word_ || IsLtr(next_run->direction_)) {
           return next_run->character_offset_ + next_run->num_characters_;
         }
       }

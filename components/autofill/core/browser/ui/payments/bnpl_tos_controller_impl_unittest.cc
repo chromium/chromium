@@ -10,7 +10,9 @@
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
@@ -41,14 +43,24 @@ constexpr std::string_view kWalletUrlString = "https://wallet.google.com/";
 class BnplTosControllerImplTest : public Test {
  public:
   void SetUp() override {
-    controller_ = std::make_unique<BnplTosControllerImpl>();
+    test_autofill_client_ = std::make_unique<TestAutofillClient>();
+    controller_ =
+        std::make_unique<BnplTosControllerImpl>(test_autofill_client_.get());
 
     std::unique_ptr<BnplTosView> view = std::make_unique<BnplTosView>();
     view_ = view.get();
     ON_CALL(create_view_callback_, Run)
         .WillByDefault(Return(ByMove(std::move(view))));
 
-    account_info_.email = "somebody@example.test";
+    account_info_ =
+        test_autofill_client_->identity_test_environment()
+            .MakePrimaryAccountAvailable("somebody@example.test",
+                                         signin::ConsentLevel::kSignin);
+    static_cast<TestPaymentsDataManager&>(
+        test_autofill_client_->GetPaymentsAutofillClient()
+            ->GetPaymentsDataManager())
+        .SetAccountInfoForPayments(account_info_);
+
     issuer_ = BnplIssuer(/*instrument_id=*/std::nullopt,
                          std::string(kBnplAffirmIssuerId),
                          std::vector<BnplIssuer::EligiblePriceRange>{});
@@ -62,7 +74,6 @@ class BnplTosControllerImplTest : public Test {
         &legal_message_lines_, true);
 
     BnplTosModel model;
-    model.account_info = account_info_;
     model.issuer = issuer_;
     model.legal_message_lines = legal_message_lines_;
 
@@ -78,6 +89,7 @@ class BnplTosControllerImplTest : public Test {
 
   u16string IssuerName() { return controller_->model_.issuer.GetDisplayName(); }
 
+  base::test::TaskEnvironment task_environment_;
   MockCallback<OnceCallback<std::unique_ptr<BnplTosView>()>>
       create_view_callback_;
   AccountInfo account_info_;
@@ -86,6 +98,7 @@ class BnplTosControllerImplTest : public Test {
   MockOnceClosure accept_callback_;
   MockOnceClosure cancel_callback_;
 
+  std::unique_ptr<TestAutofillClient> test_autofill_client_;
   std::unique_ptr<BnplTosControllerImpl> controller_;
   raw_ptr<BnplTosView> view_;
 };

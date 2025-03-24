@@ -84,14 +84,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="DataUse.AppTabState" units="bytes" expires_after="2023-05-07">
+<histogram name="DataUse.AppTabState{DataUse_AppTabState_Dimensions}"
+    units="bytes" expires_after="2023-05-07">
   <owner>spelchat@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Records the data use of Chrome user traffic by the foregound vs. background
-    state of the app and tab.
+    state of the app and tab. {DataUse_AppTabState_Dimensions}
   </summary>
+  <token key="DataUse_AppTabState_Dimensions">
+    <variant name=""/>
+    <variant name=".Downstream.AppBackground" summary=""/>
+    <variant name=".Downstream.AppForeground.TabBackground" summary=""/>
+    <variant name=".Downstream.AppForeground.TabForeground" summary=""/>
+    <variant name=".Upstream.AppBackground" summary=""/>
+    <variant name=".Upstream.AppForeground.TabBackground" summary=""/>
+    <variant name=".Upstream.AppForeground.TabForeground" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="DataUse.BytesReceived3.Delegate" units="bytes"
@@ -130,7 +140,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DataUse.TrafficSize.User" units="bytes"
+<histogram name="DataUse.TrafficSize.User{DataUse_Dimensions}" units="bytes"
     expires_after="2025-03-25">
   <owner>spelchat@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -138,8 +148,23 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total amount of data use of Chrome for user traffic. This traffic has
     content::ResourceRequestInfo attached to its request. If the OS is not
-    Android all the requests are considered foreground.
+    Android all the requests are considered foreground. {DataUse_Dimensions}
   </summary>
+  <token key="DataUse_Dimensions">
+    <variant name=""/>
+    <variant name=".Downstream.Background.Cellular" summary=""/>
+    <variant name=".Downstream.Background.NotCellular" summary=""/>
+    <variant name=".Downstream.Foreground.Cellular" summary=""/>
+    <variant name=".Downstream.Foreground.NotCellular" summary=""/>
+    <variant name=".Downstream.Unknown.Cellular" summary=""/>
+    <variant name=".Downstream.Unknown.NotCellular" summary=""/>
+    <variant name=".Upstream.Background.Cellular" summary=""/>
+    <variant name=".Upstream.Background.NotCellular" summary=""/>
+    <variant name=".Upstream.Foreground.Cellular" summary=""/>
+    <variant name=".Upstream.Foreground.NotCellular" summary=""/>
+    <variant name=".Upstream.Unknown.Cellular" summary=""/>
+    <variant name=".Upstream.Unknown.NotCellular" summary=""/>
+  </token>
 </histogram>
 
 </histograms>

@@ -12,7 +12,6 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
-#include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
@@ -37,10 +36,6 @@ namespace {
 
 // Display a notification about approaching session end this long in advance.
 constexpr base::TimeDelta kNotificationLeadTime = base::Minutes(30);
-
-// Maximum allowed delta time for detecting whether the clock has been tampered
-// with. For more details check the comment on `highest_seen_time_`.
-constexpr base::TimeDelta kMaxClockDeltaTampering = base::Days(1);
 
 using ::policy::weekly_time::AddOffsetInLocalTime;
 using ::policy::weekly_time::ExtractIntervalsFromList;
@@ -84,8 +79,6 @@ DeviceRestrictionScheduleController::DeviceRestrictionScheduleController(
 
   login_state_observation_.Observe(ash::LoginState::Get());
 
-  LoadHighestSeenTime();
-
   MaybeShowPostLogoutNotification();
   OnPolicyUpdated();
 }
@@ -100,8 +93,6 @@ void DeviceRestrictionScheduleController::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(
       chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification,
       false);
-  registry->RegisterTimePref(
-      chromeos::prefs::kDeviceRestrictionScheduleHighestSeenTime, base::Time());
 }
 
 bool DeviceRestrictionScheduleController::RestrictionScheduleEnabled() const {
@@ -171,40 +162,6 @@ void DeviceRestrictionScheduleController::LoggedInStateChanged() {
   Run();
 }
 
-void DeviceRestrictionScheduleController::LoadHighestSeenTime() {
-  if (!registrar_.prefs()->HasPrefPath(
-          chromeos::prefs::kDeviceRestrictionScheduleHighestSeenTime)) {
-    // Just bail at this point if we didn't save one yet.
-    return;
-  }
-  highest_seen_time_ = registrar_.prefs()->GetTime(
-      chromeos::prefs::kDeviceRestrictionScheduleHighestSeenTime);
-}
-
-void DeviceRestrictionScheduleController::UpdateAndSaveHighestSeenTime(
-    base::Time current_time) {
-  if (highest_seen_time_.has_value() &&
-      highest_seen_time_.value() > current_time) {
-    return;
-  }
-  highest_seen_time_ = current_time;
-  registrar_.prefs()->SetTime(
-      chromeos::prefs::kDeviceRestrictionScheduleHighestSeenTime,
-      highest_seen_time_.value());
-  registrar_.prefs()->CommitPendingWrite();
-}
-
-bool DeviceRestrictionScheduleController::HasTimeBeenTamperedWith(
-    const base::Time current_time) const {
-  if (highest_seen_time_.has_value() &&
-      current_time + kMaxClockDeltaTampering < highest_seen_time_.value()) {
-    // Somebody tampered with the time. This can happen when eg. somebody
-    // removes the CMOS battery from the device.
-    return true;
-  }
-  return false;
-}
-
 void DeviceRestrictionScheduleController::OnPolicyUpdated() {
   const base::Value::List& policy_value =
       registrar_.prefs()->GetList(chromeos::prefs::kDeviceRestrictionSchedule);
@@ -226,7 +183,6 @@ void DeviceRestrictionScheduleController::Run() {
   const base::Time current_time = clock_->Now();
   next_run_time_ = GetNextRunTime(current_time);
   state_ = GetCurrentState(current_time);
-  UpdateAndSaveHighestSeenTime(current_time);
 
   // Set up timers if there's a schedule (`intervals_` isn't empty).
   if (next_run_time_.has_value()) {

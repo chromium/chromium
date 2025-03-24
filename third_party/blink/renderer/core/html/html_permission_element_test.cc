@@ -323,9 +323,6 @@ class TestPermissionService : public PermissionService {
       mojo::PendingRemote<PermissionObserver> observer) override {
     observers_.emplace_back(permission->name, mojo::Remote<PermissionObserver>(
                                                   std::move(observer)));
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
   }
 
   void NotifyEventListener(PermissionDescriptorPtr permission,
@@ -351,10 +348,6 @@ class TestPermissionService : public PermissionService {
     run_loop.Run();
   }
 
-  void WaitForPermissionObserverAdded() {
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
 
   void WaitForClientDisconnected() {
     client_disconnect_run_loop_ = std::make_unique<base::RunLoop>();
@@ -381,7 +374,6 @@ class TestPermissionService : public PermissionService {
   mojo::ReceiverSet<PermissionService> receivers_;
   Vector<std::pair<PermissionName, mojo::Remote<PermissionObserver>>>
       observers_;
-  std::unique_ptr<base::RunLoop> run_loop_;
   Vector<MojoPermissionStatus> initial_statuses_;
   bool should_defer_registered_callback_ = false;
   base::OnceClosure pepc_registered_callback_;
@@ -407,10 +399,10 @@ class RegistrationWaiter {
         FROM_HERE,
         WTF::BindOnce(&RegistrationWaiter::VerifyRegistration,
                       base::Unretained(this)),
-        base::Milliseconds(500));
+        base::Milliseconds(100));
   }
   void VerifyRegistration() {
-    if (element_ && !element_->IsRegisteredInBrowserProcess()) {
+    if (element_ && !element_->is_registered_in_browser_process()) {
       PostDelayedTask();
     } else {
       run_loop_.Quit();
@@ -599,9 +591,7 @@ TEST_F(HTMLPermissionElementTest, TranslateInnerText) {
       {"ta", kGeolocationStringTa, kGeolocationAllowedStringTa}};
 
   auto* permission_element = CreatePermissionElement("geolocation");
-  // Calling one more time waiting for the cache observer.
-  permission_service()->WaitForPermissionObserverAdded();
-  permission_service()->WaitForPermissionObserverAdded();
+  RegistrationWaiter(permission_element).Wait();
   for (const auto& data : kTestData) {
     permission_element->setAttribute(html_names::kLangAttr,
                                      AtomicString(data.lang_attr_value));
@@ -788,9 +778,7 @@ TEST_F(HTMLPermissionElementTest, StatusChangeSinglePermissionElement) {
   for (const auto& data : kTestData) {
     auto* permission_element =
         CreatePermissionElement(data.type, data.precise_location);
-    // Calling one more time waiting for the cache observer.
-    permission_service()->WaitForPermissionObserverAdded();
-    permission_service()->WaitForPermissionObserverAdded();
+    RegistrationWaiter(permission_element).Wait();
     permission_service()->NotifyPermissionStatusChange(data.name, data.status);
     EXPECT_EQ(
         data.expected_text,
@@ -827,9 +815,7 @@ TEST_F(HTMLPermissionElementTest,
   };
   for (const auto& data : kTestData) {
     auto* permission_element = CreatePermissionElement("camera microphone");
-    // Calling one more time waiting for the cache observer.
-    permission_service()->WaitForPermissionObserverAdded();
-    permission_service()->WaitForPermissionObserverAdded();
+    RegistrationWaiter(permission_element).Wait();
     permission_service()->NotifyPermissionStatusChange(
         PermissionName::VIDEO_CAPTURE, data.camera_status);
     permission_service()->NotifyPermissionStatusChange(
@@ -851,9 +837,7 @@ TEST_F(HTMLPermissionElementTest, InitialAndUpdatedPermissionStatus) {
         PermissionStatusV8Enum(initial_status);
     auto* permission_element = CreatePermissionElement("geolocation");
     permission_service()->set_initial_statuses({initial_status});
-    // Calling one more time waiting for the cache observer.
-    permission_service()->WaitForPermissionObserverAdded();
-    permission_service()->WaitForPermissionObserverAdded();
+    RegistrationWaiter(permission_element).Wait();
     EXPECT_EQ(expected_initial_status,
               permission_element->initialPermissionStatus());
     EXPECT_EQ(expected_initial_status, permission_element->permissionStatus());
@@ -893,14 +877,7 @@ TEST_F(HTMLPermissionElementTest, InitialAndUpdatedPermissionStatusGrouped) {
   EXPECT_EQ(PermissionStatusV8Enum(MojoPermissionStatus::ASK),
             permission_element->permissionStatus());
 
-  // Two permissoin observers should be added since it's a grouped permission
-  // element.
-  permission_service()->WaitForPermissionObserverAdded();
-  permission_service()->WaitForPermissionObserverAdded();
-
-  // Calling one more time waiting for the cache observer.
-  permission_service()->WaitForPermissionObserverAdded();
-  permission_service()->WaitForPermissionObserverAdded();
+  RegistrationWaiter(permission_element).Wait();
 
   // The status is the most restrictive of the two permissions. The initial
   // status never changes. camera: ASK, mic: DENIED
@@ -1535,9 +1512,7 @@ TEST_F(HTMLPermissionElementSimTest, GrantedSelectorDisplayNone) {
 
   auto* permission_element =
       CreatePermissionElement(GetDocument(), "geolocation");
-  // Calling one more time waiting for the cache observer.
-  permission_service()->WaitForPermissionObserverAdded();
-  permission_service()->WaitForPermissionObserverAdded();
+  RegistrationWaiter(permission_element).Wait();
   EXPECT_TRUE(permission_element->GetComputedStyle());
   EXPECT_EQ(
       EDisplay::kInlineBlock,

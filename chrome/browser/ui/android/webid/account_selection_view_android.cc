@@ -78,7 +78,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
     JNIEnv* env,
-    const content::IdentityProviderMetadata& metadata) {
+    const content::IdentityProviderMetadata& metadata,
+    blink::mojom::RpMode rp_mode) {
   ScopedJavaLocalRef<jobject> decoded_picture = nullptr;
   if (!metadata.brand_decoded_icon.IsEmpty()) {
     decoded_picture =
@@ -88,9 +89,11 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
       env, ui::OptionalSkColorToJavaColor(metadata.brand_text_color),
       ui::OptionalSkColorToJavaColor(metadata.brand_background_color),
       decoded_picture, metadata.config_url, metadata.idp_login_url,
-      // The UI code only cares about whether it should show the add account
-      // button so consider both options in the same boolean.
-      metadata.supports_add_account || metadata.has_filtered_out_account);
+      // We only support the add account feature on active mode. In both modes,
+      // we still show this button in the filtered out accounts case.
+      rp_mode == blink::mojom::RpMode::kPassive
+          ? metadata.has_filtered_out_account
+          : metadata.supports_add_account || metadata.has_filtered_out_account);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityCredentialTokenError(
@@ -147,10 +150,12 @@ inline ScopedJavaLocalRef<jintArray> ConvertFieldsToJavaArray(
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
     JNIEnv* env,
-    content::IdentityProviderData* idp_data) {
+    content::IdentityProviderData* idp_data,
+    blink::mojom::RpMode rp_mode) {
   return Java_IdentityProviderData_Constructor(
       env, idp_data->idp_for_display,
-      ConvertToJavaIdentityProviderMetadata(env, idp_data->idp_metadata),
+      ConvertToJavaIdentityProviderMetadata(env, idp_data->idp_metadata,
+                                            rp_mode),
       ConvertToJavaClientIdMetadata(env, idp_data->client_metadata),
       static_cast<jint>(idp_data->rp_context),
       ConvertFieldsToJavaArray(env, idp_data->disclosure_fields),
@@ -160,12 +165,13 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
 base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>
 ConvertToJavaIdentityProviderDataMap(
     JNIEnv* env,
-    const std::vector<IdentityProviderDataPtr>& identity_providers) {
+    const std::vector<IdentityProviderDataPtr>& identity_providers,
+    blink::mojom::RpMode rp_mode) {
   base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>> map;
 
   for (const auto& identity_provider : identity_providers) {
-    map[identity_provider] =
-        ConvertToJavaIdentityProviderData(env, identity_provider.get());
+    map[identity_provider] = ConvertToJavaIdentityProviderData(
+        env, identity_provider.get(), rp_mode);
   }
   return map;
 }
@@ -253,7 +259,7 @@ bool AccountSelectionViewAndroid::Show(
 
   base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>
       identity_providers_map =
-          ConvertToJavaIdentityProviderDataMap(env, idp_list);
+          ConvertToJavaIdentityProviderDataMap(env, idp_list, rp_mode);
 
   ScopedJavaLocalRef<jobjectArray> accounts_obj =
       ConvertToJavaAccounts(env, accounts, identity_providers_map);
@@ -289,7 +295,7 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
   }
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
-      ConvertToJavaIdentityProviderMetadata(env, idp_metadata);
+      ConvertToJavaIdentityProviderMetadata(env, idp_metadata, rp_mode);
   return Java_AccountSelectionBridge_showFailureDialog(
       env, java_object_internal_, rp_for_display, idp_for_display,
       idp_metadata_obj, static_cast<jint>(rp_context));
@@ -311,7 +317,7 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
   }
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
-      ConvertToJavaIdentityProviderMetadata(env, idp_metadata);
+      ConvertToJavaIdentityProviderMetadata(env, idp_metadata, rp_mode);
   return Java_AccountSelectionBridge_showErrorDialog(
       env, java_object_internal_, rp_for_display, idp_for_display,
       idp_metadata_obj, static_cast<jint>(rp_context),
