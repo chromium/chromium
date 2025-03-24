@@ -899,8 +899,8 @@ VotesUploader::EncodeUploadRequest(
   form.set_randomized_encoder(RandomizedEncoder::Create(client_->GetPrefs()));
 
   std::vector<AutofillUploadContents> upload_contents =
-      autofill::EncodeUploadRequest(form, available_field_types,
-                                    login_form_signature,
+      autofill::EncodeUploadRequest(form, /*format_strings=*/{},
+                                    available_field_types, login_form_signature,
                                     /*observed_submission=*/true);
   CHECK(!upload_contents.empty());
 

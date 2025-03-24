@@ -321,21 +321,24 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 1.
   std::vector<AutofillUploadContents> upload_contents_1 = EncodeUploadRequest(
-      *form_structures[0], FieldTypeSet(), std::string(), true);
+      *form_structures[0], /*format_strings=*/{}, /*available_field_types=*/{},
+      /*login_form_signature=*/"", /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents_1), form_structures[0]->submission_source(),
       /*is_password_manager_upload=*/false));
 
   // Request with id 2.
   std::vector<AutofillUploadContents> upload_contents_2 = EncodeUploadRequest(
-      *form_structures[1], FieldTypeSet(), std::string(), true);
+      *form_structures[1], /*format_strings=*/{}, /*available_field_types=*/{},
+      /*login_form_signature=*/"", /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents_2), form_structures[1]->submission_source(),
       /*is_password_manager_upload=*/false));
   // Request with id 3. Upload request with a non-empty additional password form
   // signature.
-  std::vector<AutofillUploadContents> upload_contents_3 =
-      EncodeUploadRequest(*form_structures[2], FieldTypeSet(), "42", true);
+  std::vector<AutofillUploadContents> upload_contents_3 = EncodeUploadRequest(
+      *form_structures[2], /*format_strings=*/{}, /*available_field_types=*/{},
+      /*login_form_signature=*/"42", /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents_3), form_structures[1]->submission_source(),
       /*is_password_manager_upload=*/false));
@@ -624,8 +627,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
       AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(&client(),
                                                                   "dummykey");
 
-  std::vector<AutofillUploadContents> upload_contents =
-      EncodeUploadRequest(form_structure, FieldTypeSet(), std::string(), true);
+  std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
+      form_structure, /*format_strings=*/{}, /*available_field_types=*/{},
+      /*login_form_signature=*/"", /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager->StartUploadRequest(
       std::move(upload_contents), form_structure.submission_source(),
       /*is_password_manager_upload=*/false));
@@ -716,8 +720,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   SetCorrectFieldHostFormSignatures(form_structure);
 
   // Request with id 0.
-  std::vector<AutofillUploadContents> upload_contents =
-      EncodeUploadRequest(form_structure, FieldTypeSet(), std::string(), true);
+  std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
+      form_structure, /*format_strings=*/{}, /*available_field_types=*/{},
+      /*login_form_signature=*/"", /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
       std::move(upload_contents), form_structure.submission_source(),
       /*is_password_manager_upload=*/false));
@@ -741,8 +746,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   // Validate that there is no retry on sending a bad request.
   form_structure.set_submission_source(SubmissionSource::XHR_SUCCEEDED);
   base::HistogramTester histogram;
-  std::vector<AutofillUploadContents> upload_contents_2 =
-      EncodeUploadRequest(form_structure, FieldTypeSet(), std::string(), true);
+  std::vector<AutofillUploadContents> upload_contents_2 = EncodeUploadRequest(
+      form_structure, /*format_strings=*/{}, /*available_field_types=*/{},
+      /*login_form_signature=*/"", /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
       std::move(upload_contents_2), form_structure.submission_source(),
       /*is_password_manager_upload=*/false));
@@ -815,8 +821,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
   SetCorrectFieldHostFormSignatures(form_structure);
 
   // Request with id 0.
-  std::vector<AutofillUploadContents> upload_contents =
-      EncodeUploadRequest(form_structure, FieldTypeSet(), std::string(), true);
+  std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
+      form_structure, /*format_strings=*/{}, /*available_field_types=*/{},
+      /*login_form_signature=*/"", /*observed_submission=*/true);
   EXPECT_TRUE(crowdsourcing_manager().StartUploadRequest(
       std::move(upload_contents), form_structure.submission_source(),
       /*is_password_manager_upload=*/false));
@@ -1182,8 +1189,9 @@ class AutofillServerCommunicationTest
     AutofillCrowdsourcingManager crowdsourcing_manager(
         &client(), version_info::Channel::UNKNOWN);
 
-    std::vector<AutofillUploadContents> upload_contents = EncodeUploadRequest(
-        form, available_field_types, login_form_signature, observed_submission);
+    std::vector<AutofillUploadContents> upload_contents =
+        EncodeUploadRequest(form, /*format_strings=*/{}, available_field_types,
+                            login_form_signature, observed_submission);
     bool succeeded = crowdsourcing_manager.StartUploadRequest(
         std::move(upload_contents), form.submission_source(),
         is_password_manager_upload);
