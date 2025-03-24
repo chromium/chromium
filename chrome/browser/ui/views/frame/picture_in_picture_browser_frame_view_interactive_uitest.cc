@@ -39,6 +39,10 @@
 #include "ui/linux/linux_ui_getter.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 
 using ::testing::WithParamInterface;
@@ -115,6 +119,16 @@ class ModalWidgetDelegate : public views::WidgetDelegate {
 
   ui::mojom::ModalType modal_type_;
 };
+
+bool PlatformSupportsScreenCoordinates() {
+#if BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .supports_global_screen_coordinates;
+#else
+  return true;
+#endif  // BUILDFLAG(IS_OZONE)
+}
 
 class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
                                              public AnimationTimingTest {
@@ -483,6 +497,9 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
                        RespectsUserLocationChangesAfterChildDialogCloses) {
+  if (!PlatformSupportsScreenCoordinates()) {
+    GTEST_SKIP() << "Global screen coordinates unavailable";
+  }
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
   gfx::Rect initial_pip_bounds =
@@ -544,8 +561,11 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   gfx::Rect moved_bounds = new_pip_bounds;
   moved_bounds.set_width(moved_bounds.width() + 10);
   moved_bounds.set_height(moved_bounds.height() + 10);
-  moved_bounds.set_x(moved_bounds.x() - 10);
-  moved_bounds.set_y(moved_bounds.y() - 10);
+
+  if (PlatformSupportsScreenCoordinates()) {
+    moved_bounds.set_x(moved_bounds.x() - 10);
+    moved_bounds.set_y(moved_bounds.y() - 10);
+  }
   pip_frame_view()->GetWidget()->SetBounds(moved_bounds);
 
   // Close the dialog.
@@ -763,9 +783,13 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureBrowserFrameViewTest,
   // Move mouse to the top-left corner of the main browser window (out side of
   // the pip window) should deactivate the title.
   gfx::Point outside = gfx::Point();
-  views::View::ConvertPointToScreen(
-      static_cast<BrowserView*>(browser()->window()), &outside);
-  ASSERT_FALSE(IsPointInPIPFrameView(outside));
+  if (PlatformSupportsScreenCoordinates()) {
+    views::View::ConvertPointToScreen(
+        static_cast<BrowserView*>(browser()->window()), &outside);
+    // This check only makes sense in platforms that support global screen
+    // coordinates.
+    ASSERT_FALSE(IsPointInPIPFrameView(outside));
+  }
   UpdateTopBarView(outside);
 
   AnimationWaiter hide_animation_waiter(

@@ -36,6 +36,10 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 // The initial aspect ratio for Document Picture-in-Picture windows. This does
 // not apply to video Picture-in-Picture windows.
@@ -345,6 +349,16 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
         excluded_margin, window_bounds);
   }
 
+#if BUILDFLAG(IS_OZONE)
+  // Some platforms like ozone/wayland don't allow clients to control windows
+  // in global screen coordinates. So it is not possible to position windows in
+  // that case.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    return window_bounds;
+  }
+#endif
   // Position the window.
   int window_diff_width = work_area.right() - window_bounds.width();
   int window_diff_height = work_area.bottom() - window_bounds.height();
