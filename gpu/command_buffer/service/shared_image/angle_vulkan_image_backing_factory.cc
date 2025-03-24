@@ -120,6 +120,7 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
   switch (gmb_type) {
     case gfx::EMPTY_BUFFER:
       return true;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
     case gfx::NATIVE_PIXMAP: {
       auto* vulkan_implementation =
           context_state_->vk_context_provider()->GetVulkanImplementation();
@@ -128,6 +129,7 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
       return vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
                                                              gmb_type);
     }
+#endif
     default:
       return false;
   }

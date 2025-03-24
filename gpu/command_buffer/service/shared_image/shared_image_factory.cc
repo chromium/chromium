@@ -98,11 +98,22 @@ const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
       return "empty";
     case gfx::SHARED_MEMORY_BUFFER:
       return "shared_memory";
+#if BUILDFLAG(IS_APPLE)
     case gfx::IO_SURFACE_BUFFER:
+      return "platform";
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
     case gfx::NATIVE_PIXMAP:
+      return "platform";
+#endif
+#if BUILDFLAG(IS_WIN)
     case gfx::DXGI_SHARED_HANDLE:
+      return "platform";
+#endif
+#if BUILDFLAG(IS_ANDROID)
     case gfx::ANDROID_HARDWARE_BUFFER:
       return "platform";
+#endif
   }
   NOTREACHED();
 }
