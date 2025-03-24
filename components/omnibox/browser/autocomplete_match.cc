@@ -56,6 +56,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
+#include "url/url_util.h"
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/suggestion_answer.h"
@@ -1125,6 +1126,15 @@ void AutocompleteMatch::LogSearchEngineUsed(
       match.destination_url.is_valid()
           ? search_engine_utils::GetEngineType(match.destination_url)
           : SEARCH_ENGINE_OTHER;
+  // Check for search engines types not present in prepopulated_engines.json.
+  // TODO(https://issues.chromium.org/405167888): Remove this check once it is
+  // no longer necessary to track these additional search engine types.
+  if (search_engine_type == SEARCH_ENGINE_OTHER) {
+    if (match.destination_url.is_valid() &&
+        url::DomainIs(match.destination_url.host_piece(), "siteadvisor.com")) {
+      search_engine_type = SEARCH_ENGINE_MCAFEE;
+    }
+  }
   UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType", search_engine_type,
                             SEARCH_ENGINE_MAX);
 
