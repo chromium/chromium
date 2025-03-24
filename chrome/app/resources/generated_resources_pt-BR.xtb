@@ -2811,6 +2811,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2921081876747860777">Crie uma senha para proteger seus dados locais.</translation>
 <translation id="2923006468155067296">Seu <ph name="DEVICE_TYPE" /> será bloqueado agora.
 <ph name="DOMAIN" /> requer que você mantenha o cartão inteligente inserido.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Mais <ph name="OTHER_TASK_NUM" /> tarefa no mesmo grupo: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Mais <ph name="OTHER_TASK_NUM" /> tarefas no mesmo grupo: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Remover esta conta</translation>
 <translation id="2923644930701689793">Acessar o rolo da câmera do smartphone</translation>
 <translation id="292371311537977079">Configurações do Chrome</translation>

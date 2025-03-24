@@ -2800,6 +2800,7 @@
 <translation id="2921081876747860777">Ձեր տեղային տվյալները պաշտպանելու համար ստեղծեք գաղտնաբառ:</translation>
 <translation id="2923006468155067296">Ձեր <ph name="DEVICE_TYPE" /> սարքն այժմ կկողպվի։
 Համաձայն <ph name="DOMAIN" /> տիրույթի կանոնների՝ խելացի քարտը պետք է տեղադրված լինի։</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />։ <ph name="OTHER_TASK_NUM" /> այլ առաջադրանքներ նույն աշխատանքային խմբում՝ <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />։ <ph name="OTHER_TASK_NUM" /> այլ առաջադրանքներ նույն աշխատանքային խմբում՝ <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Հեռացնել հաշիվը</translation>
 <translation id="2923644930701689793">Բացեք ձեր հեռախոսի ֆոտոժապավենը</translation>
 <translation id="292371311537977079">Chrome-ի կարգավորումներ</translation>
