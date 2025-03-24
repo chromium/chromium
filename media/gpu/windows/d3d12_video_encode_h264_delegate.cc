@@ -389,8 +389,11 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
   }
 
   dpb_.emplace(max_num_ref_frames_);
-  dpb_->InitializeTextureArray(device_.Get(), config.input_visible_size,
-                               input_format_);
+  if (!dpb_->InitializeTextureArray(device_.Get(), config.input_visible_size,
+                                    input_format_)) {
+    return {EncoderStatus::Codes::kEncoderInitializationError,
+            "Failed to initialize DPB"};
+  }
   reference_frame_manager_.emplace(max_num_ref_frames_);
 
   video_encoder_wrapper_ = video_encoder_wrapper_factory_.Run(
