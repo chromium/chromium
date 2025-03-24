@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
+import static androidx.browser.customtabs.CustomTabsIntent.NO_TITLE;
 
 import static org.chromium.base.MathUtils.interpolate;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
@@ -34,7 +35,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -50,6 +50,7 @@ import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
@@ -234,6 +235,24 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public int totalEndAlignedButtonWidth;
     }
 
+    public static final class OmniboxParams {
+        /** The {@link SearchActivityClient} instance used to request Omnibox. */
+        public SearchActivityClient searchClient;
+        /** The package name of the Custom Tabs embedder. */
+        public String clientPackageName;
+        /** A handler for taps on the omnibox, or null if the default handler should be used. */
+        @Nullable public Consumer<Tab> tapHandler;
+
+        public OmniboxParams(
+                SearchActivityClient searchClient,
+                String clientPackageName,
+                @Nullable Consumer<Tab> tapHandler) {
+            this.searchClient = searchClient;
+            this.clientPackageName = clientPackageName;
+            this.tapHandler = tapHandler;
+        }
+    }
+
     // endregion
 
     /** Whether to use the toolbar as handle to resize the Window height. */
@@ -319,17 +338,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @param featureOverridesManager {@link CustomTabFeatureOverridesManager} for accessing CCT
      *     feature overrides.
      * @param minimizeDelegate {@link CustomTabMinimizeDelegate} for minimizing the tab.
+     * @param omniboxParams {@link OmniboxParams}, null if omnibox isn't enabled.
      */
     public void initializeToolbar(
             Activity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabFeatureOverridesManager featureOverridesManager,
-            CustomTabMinimizeDelegate minimizeDelegate) {
+            CustomTabMinimizeDelegate minimizeDelegate,
+            OmniboxParams omniboxParams) {
         assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
 
         mIntentDataProvider = intentDataProvider;
         mFeatureOverridesManager = featureOverridesManager;
         mMinimizeDelegate = minimizeDelegate;
+        if (omniboxParams != null) {
+            setOmniboxParams(omniboxParams);
+        }
         calculateToolbarWidthBeforeMeasure(activity);
         inflateAndPositionToolbarElements(mToolbarWidth);
     }
@@ -343,10 +367,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private void inflateAndPositionToolbarElements(final int availableWidth) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         int buttonWidth = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        // TODO(crbug.com/402213312): Location bar min width should change based on whether the
-        // security icon is nested.
-        int locationBarMinWidth =
-                getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
+        int locationBarMinWidth = getLocationBarMinWidth();
         var posParams = new ButtonPositioningParams();
         posParams.availableWidth = availableWidth;
 
@@ -393,9 +414,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         mCustomActionButtons = findViewById(R.id.action_buttons);
         mIncognitoImageView = findViewById(R.id.incognito_cct_logo_image_view);
-        var lp = ((MarginLayoutParams) mLocationBar.getLayout().getLayoutParams());
-        lp.setMarginStart(posParams.totalStartAlignedButtonWidth);
-        mLocationBar.getLayout().setLayoutParams(lp);
+        positionLocationBar(posParams);
     }
 
     /**
@@ -460,6 +479,37 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 view.getPaddingTop(),
                 getResources().getDimensionPixelSize(endPaddingRes),
                 view.getPaddingBottom());
+    }
+
+    @Px
+    private int getLocationBarMinWidth() {
+        int locationBarMinWidth =
+                getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
+        if (mLocationBar.mOmniboxEnabled) {
+            locationBarMinWidth +=
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        } else if (mIntentDataProvider.getTitleVisibilityState() == NO_TITLE) {
+            locationBarMinWidth +=
+                    getResources().getDimensionPixelSize(R.dimen.custom_tabs_security_icon_width);
+        }
+        return locationBarMinWidth;
+    }
+
+    private void positionLocationBar(ButtonPositioningParams posParams) {
+        var locationBarLp = ((MarginLayoutParams) mLocationBar.getLayout().getLayoutParams());
+        locationBarLp.setMarginStart(posParams.totalStartAlignedButtonWidth);
+        locationBarLp.setMarginEnd(posParams.totalEndAlignedButtonWidth);
+        mLocationBar.getLayout().setLayoutParams(locationBarLp);
+
+        if (mLocationBar.mOmniboxEnabled) {
+            var titleUrlLp =
+                    ((MarginLayoutParams) mLocationBar.mTitleUrlContainer.getLayoutParams());
+            // TODO(crbug.com/402213312): Revisit this when cleaning up CCTNestedSecurityIcon.
+            // The security button is static when omnibox is enabled, so offset the url bar for it.
+            titleUrlLp.leftMargin =
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            mLocationBar.mTitleUrlContainer.setLayoutParams(titleUrlLp);
+        }
     }
 
     @Override
@@ -579,18 +629,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /**
-     * Enables the interactive Omnibox in CCT.
+     * Sets params for the interactive Omnibox in CCT.
      *
-     * @param searchClient the SearchActivityClient instance used to request Omnibox.
-     * @param clientPackageName the package name of the custom tabs embedder.
-     * @param tapHandler a handler for taps on the omnibox, or null if the default handler should be
-     *     used.
+     * @param omniboxParams The {@link OmniboxParams} to be used.
      */
-    public void setOmniboxEnabled(
-            SearchActivityClient searchClient,
-            String clientPackageName,
-            @Nullable Consumer<Tab> tapHandler) {
-        mLocationBar.setOmniboxEnabled(searchClient, clientPackageName, tapHandler);
+    public void setOmniboxParams(@NonNull OmniboxParams omniboxParams) {
+        mLocationBar.setOmniboxParams(omniboxParams);
     }
 
     private void setButtonsVisibility() {
@@ -2301,10 +2345,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mPageInfoIphController = pageInfoIphController;
         }
 
-        void setOmniboxEnabled(
-                SearchActivityClient searchClient,
-                String clientPackageName,
-                @Nullable Consumer<Tab> tapHandler) {
+        void setOmniboxParams(@NonNull OmniboxParams omniboxParams) {
+            assert omniboxParams != null;
             mOmniboxEnabled = true;
             mOmniboxBackground =
                     AppCompatResources.getDrawable(
@@ -2340,18 +2382,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     v -> {
                         RecordUserAction.record("CustomTabs.OmniboxClicked");
                         var tab = getCurrentTab();
-                        if (tapHandler != null) {
-                            tapHandler.accept(tab);
+                        if (omniboxParams.tapHandler != null) {
+                            omniboxParams.tapHandler.accept(tab);
                         } else {
                             var intent =
-                                    searchClient
+                                    omniboxParams
+                                            .searchClient
                                             .newIntentBuilder()
                                             .setPageUrl(tab.getUrl())
-                                            .setReferrer(clientPackageName)
+                                            .setReferrer(omniboxParams.clientPackageName)
                                             .setIncognito(tab.isIncognitoBranded())
                                             .setResolutionType(ResolutionType.SEND_TO_CALLER)
                                             .build();
-                            searchClient.requestOmniboxForResult(intent);
+                            omniboxParams.searchClient.requestOmniboxForResult(intent);
                         }
                     });
 
