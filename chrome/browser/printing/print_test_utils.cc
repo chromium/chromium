@@ -39,8 +39,6 @@ const PrinterBasicInfoOptions kPrintInfoOptions{{"opt1", "123"},
                                                 {"opt2", "456"}};
 
 base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
-  DCHECK_NE(type, mojom::PrinterType::kPrivetDeprecated);
-
   base::Value::Dict ticket;
 
   // Letter

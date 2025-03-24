@@ -189,7 +189,7 @@ void ReportUserActionHistogram(UserActionBuckets event) {
 
 void RecordGetPrintersTimeHistogram(mojom::PrinterType printer_type,
                                     const base::TimeTicks& start_time) {
-  std::string printer_type_metric;
+  std::string_view printer_type_metric;
   switch (printer_type) {
     case mojom::PrinterType::kExtension:
       printer_type_metric = "Extension";
@@ -200,10 +200,8 @@ void RecordGetPrintersTimeHistogram(mojom::PrinterType printer_type,
     case mojom::PrinterType::kLocal:
       printer_type_metric = "Local";
       break;
-    case mojom::PrinterType::kPrivetDeprecated:
-    case mojom::PrinterType::kCloudDeprecated:
-      NOTREACHED();
   }
+  CHECK(!printer_type_metric.empty());
   base::UmaHistogramCustomTimes(
       base::StrCat({"PrintPreview.GetPrintersTime.", printer_type_metric}),
       /*sample=*/base::TimeTicks::Now() - start_time,
