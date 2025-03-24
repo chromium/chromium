@@ -140,11 +140,6 @@ FormStructure::FormStructure(const FormData& form)
     if (!IsCheckable(field.check_status())) {
       ++active_field_count_;
     }
-
-    if (field.form_control_type() == FormControlType::kInputPassword) {
-      has_password_field_ = true;
-    }
-
     fields_.push_back(std::make_unique<AutofillField>(field));
   }
 
@@ -412,8 +407,8 @@ bool FormStructure::ShouldRunHeuristicsForSingleFields() const {
 }
 
 bool FormStructure::ShouldBeQueried() const {
-  return (has_password_field_ ||
-          active_field_count() >= kMinRequiredFieldsForQuery) &&
+  return (active_field_count() >= kMinRequiredFieldsForQuery ||
+          std::ranges::any_of(fields_, is_password_field)) &&
          ShouldBeParsed();
 }
 

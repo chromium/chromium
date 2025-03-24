@@ -281,8 +281,6 @@ class FormStructure {
 
   const ButtonTitleList& button_titles() const { return button_titles_; }
 
-  bool has_password_field() const { return has_password_field_; }
-
   // Returns whether the form comes from an HTML form with a <form> tag.
   bool is_form_element() const;
 
