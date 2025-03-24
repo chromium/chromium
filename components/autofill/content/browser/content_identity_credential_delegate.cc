@@ -62,7 +62,7 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
         IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL))});
     suggestion.payload = Suggestion::IdentityCredentialPayload(
         account->identity_provider->idp_metadata.config_url, account->id);
-    suggestions.push_back(suggestion);
+    suggestions.push_back(std::move(suggestion));
   }
 
   return suggestions;
