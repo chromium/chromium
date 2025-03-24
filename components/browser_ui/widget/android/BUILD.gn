@@ -220,6 +220,7 @@ android_resources("java_resources") {
     "java/res/drawable/bg_white_dialog.xml",
     "java/res/drawable/bottom_sheet_background.xml",
     "java/res/drawable/card_with_corners_background.xml",
+    "java/res/drawable/custom_tile_background.xml",
     "java/res/drawable/home_surface_ui_background.xml",
     "java/res/drawable/ic_arrow_back_24dp.xml",
     "java/res/drawable/ic_check_googblue_24dp_animated.xml",
