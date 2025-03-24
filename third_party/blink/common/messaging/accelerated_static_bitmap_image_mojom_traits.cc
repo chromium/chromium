@@ -59,11 +59,17 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
                   blink::AcceleratedImageInfo>::
     Read(blink::mojom::AcceleratedStaticBitmapImage::DataView data,
          blink::AcceleratedImageInfo* out) {
+  SkImageInfo image_info;
   if (!data.ReadSharedImage(&out->shared_image) ||
       !data.ReadSyncToken(&out->sync_token) ||
-      !data.ReadImageInfo(&out->image_info)) {
+      !data.ReadImageInfo(&image_info)) {
     return false;
   }
+
+  out->size = SkISize(image_info.width(), image_info.height());
+  out->sk_color_type = image_info.colorType();
+  out->alpha_type = image_info.alphaType();
+  out->sk_color_space = image_info.refColorSpace();
 
   auto callback = data.TakeReleaseCallback<
       mojo::PendingRemote<blink::mojom::ImageReleaseCallback>>();

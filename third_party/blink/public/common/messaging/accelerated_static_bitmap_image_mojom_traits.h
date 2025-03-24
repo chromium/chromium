@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/accelerated_image_info.h"
 #include "third_party/blink/public/mojom/messaging/static_bitmap_image.mojom.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace mojo {
 
@@ -37,7 +38,8 @@ struct BLINK_COMMON_EXPORT
   }
 
   static SkImageInfo image_info(const blink::AcceleratedImageInfo& input) {
-    return input.image_info;
+    return SkImageInfo::Make(input.size, input.sk_color_type, input.alpha_type,
+                             input.sk_color_space);
   }
 
   static mojo::PendingRemote<blink::mojom::ImageReleaseCallback>
