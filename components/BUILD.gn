@@ -894,6 +894,14 @@ test("components_unittests") {
     assert_no_deps += ios_assert_no_deps
     assert_no_deps += [ "//ios/chrome/*" ]
   }
+
+  fuzztests = [
+    "FilterDataTest.Matches",
+    "OsRegistrationTest.Parses",
+    "RegistrationInfoTest.Parses",
+    "SourceRegistrationTest.Parses",
+    "TriggerRegistrationTest.Parses",
+  ]
 }
 
 repack("components_tests_pak") {

@@ -11,6 +11,7 @@
 #include "components/attribution_reporting/registrar.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace attribution_reporting {
 namespace {
@@ -132,6 +133,13 @@ TEST(RegistrationInfoTest, ParseInfo) {
     }
   }
 }
+
+void Parses(std::string_view input) {
+  std::ignore = RegistrationInfo::ParseInfo(input);
+}
+
+FUZZ_TEST(RegistrationInfoTest, Parses)
+    .WithDomains(fuzztest::Arbitrary<std::string>());
 
 }  // namespace
 }  // namespace attribution_reporting
