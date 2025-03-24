@@ -230,5 +230,4 @@ found in the LICENSE file.
     <!-- Loading Fullscreen dimens -->
     <dimen name="left_right_padding">16dp</dimen>
     <dimen name="top_bottom_padding">18dp</dimen>
-    <dimen name="text_bottom_padding">30dp</dimen>
 </resources>
