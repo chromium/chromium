@@ -406,8 +406,8 @@ void BrowserAccessibilityManagerAuraLinux::FireAriaNotificationEvent(
     BrowserAccessibility* node,
     const std::string& announcement,
     ax::mojom::AriaNotificationPriority priority_property,
-    const std::string& notification_id,
-    ax::mojom::AriaNotificationInterrupt interrupt_property) {
+    ax::mojom::AriaNotificationInterrupt interrupt_property,
+    const std::string& type) {
   DCHECK(node);
 
   // Only newer Atk versions support the notification signal type.

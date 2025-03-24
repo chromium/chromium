@@ -22,15 +22,15 @@ class AriaNotification {
                    const AriaNotificationOptions* options);
 
   const String& Announcement() const { return announcement_; }
-  const String& NotificationId() const { return notification_id_; }
-  AriaNotificationInterrupt Interrupt() const { return interrupt_; }
   AriaNotificationPriority Priority() const { return priority_; }
+  AriaNotificationInterrupt Interrupt() const { return interrupt_; }
+  const String& Type() const { return type_; }
 
  private:
   String announcement_;
-  String notification_id_;
-  AriaNotificationInterrupt interrupt_;
   AriaNotificationPriority priority_;
+  AriaNotificationInterrupt interrupt_;
+  String type_;
 };
 
 class AriaNotifications {

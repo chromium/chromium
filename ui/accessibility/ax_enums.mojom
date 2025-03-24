@@ -1020,7 +1020,7 @@ enum IntListAttribute {
 enum StringListAttribute {
   [Default]kNone = 0,
   [MinVersion=1] kAriaNotificationAnnouncements = 2,
-  [MinVersion=1] kAriaNotificationIds = 3,
+  [MinVersion=1] kAriaNotificationTypes = 3,
   // Descriptions for custom actions. This must be aligned with
   // custom_action_ids.
   kCustomActionDescriptions = 1,
