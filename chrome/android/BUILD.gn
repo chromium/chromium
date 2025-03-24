@@ -1085,7 +1085,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/readaloud/android:junit",
       "//chrome/browser/recent_tabs:junit",
       "//chrome/browser/recent_tabs/internal:junit",
-      "//chrome/browser/safe_browsing/android:junit",
       "//chrome/browser/safety_check/android:junit",
       "//chrome/browser/safety_hub/android:junit",
       "//chrome/browser/search_engines/android:junit",
