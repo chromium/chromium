@@ -33,8 +33,6 @@
 
 namespace views {
 
-namespace {
-
 class TestDialog : public DialogDelegateView {
  public:
   TestDialog() {
@@ -91,6 +89,8 @@ class TestDialog : public DialogDelegateView {
   bool show_close_button_ = true;
   bool should_handle_escape_ = false;
 };
+
+namespace {
 
 class DialogTest : public ViewsTestBase {
  public:
@@ -165,6 +165,8 @@ class DialogTest : public ViewsTestBase {
   std::unique_ptr<TestDialog> dialog_;
   raw_ptr<TestDialog> dialog_raw_ = nullptr;
 };
+
+}  // namespace
 
 TEST_F(DialogTest, InputIsInitiallyFocused) {
   EXPECT_EQ(dialog()->input(), dialog()->GetFocusManager()->GetFocusedView());
@@ -710,7 +712,5 @@ TEST_F(MakeCloseSynchronousTest, Accept) {
   }
   EXPECT_FALSE(synchronous_close_widget_);
 }
-
-}  // namespace
 
 }  // namespace views

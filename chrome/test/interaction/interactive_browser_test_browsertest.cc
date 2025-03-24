@@ -1137,8 +1137,6 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestCodeCoverageBrowsertest,
       NavigateWebContents(kWebContentsId, GURL("chrome://history")));
 }
 
-namespace {
-
 class InteractiveBrowserTestDialog : public views::DialogDelegateView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementId);
@@ -1182,6 +1180,8 @@ class InteractiveBrowserTestDialog : public views::DialogDelegateView {
 };
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InteractiveBrowserTestDialog, kElementId);
+
+namespace {
 
 // Scoped object that closes a widget it does not own.
 class SafeWidgetRef {

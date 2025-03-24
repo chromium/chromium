@@ -890,6 +890,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   std::vector<std::string> ocr_response_words_;
 };
 
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        PermissionBubbleAccept_ScreenshotAndCSBPrefDisabled) {
   WaitForPaint();
@@ -1165,8 +1167,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_results_opened_);
 }
 
-namespace {
-
 class TestWebModalDialog : public views::DialogDelegateView {
  public:
   TestWebModalDialog() {
@@ -1186,6 +1186,8 @@ class TestWebModalDialog : public views::DialogDelegateView {
 
   views::View* GetInitiallyFocusedView() override { return this; }
 };
+
+namespace {
 
 // Show a web modal dialog hosted by `host_contents`.
 views::Widget* ShowTestWebModalDialog(content::WebContents* host_contents) {
@@ -8309,5 +8311,3 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserSimplifiedSelectionTest,
   EXPECT_TRUE(kTestOverlayObject->Equals(*object));
   EXPECT_EQ(kTestText->content_language, text->content_language);
 }
-
-}  // namespace

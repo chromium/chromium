@@ -33,6 +33,8 @@ namespace {
 
 constexpr int kArcAppIconSize = 48;
 
+}  // namespace
+
 // This dialog is shown when ARC++ comes into the state when normal
 // functionality could not be possible without resetting whole container by data
 // removal. It provides an option for the user to remove data and restart the
@@ -157,8 +159,6 @@ void DataRemovalConfirmationDialog::OnArcPlayStoreEnabledChanged(bool enabled) {
 
 BEGIN_METADATA(DataRemovalConfirmationDialog)
 END_METADATA
-
-}  // namespace
 
 void ShowDataRemovalConfirmationDialog(
     Profile* profile,
