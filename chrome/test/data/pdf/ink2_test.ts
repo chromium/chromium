@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -23,20 +23,20 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Test that annotation mode can be toggled.
-  async function testToggleAnnotationMode() {
+  // Test that annotation mode can be set.
+  async function testSetAnnotationMode() {
     mockMetricsPrivate.reset();
 
-    chrome.test.assertFalse(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
 
-    viewer.$.toolbar.toggleAnnotation();
+    viewer.$.toolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
-    chrome.test.assertTrue(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_ANNOTATION_MODE, 1);
 
-    viewer.$.toolbar.toggleAnnotation();
+    viewer.$.toolbar.setAnnotationMode(AnnotationMode.NONE);
     await microtasksFinished();
-    chrome.test.assertFalse(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_ANNOTATION_MODE, 1);
     chrome.test.succeed();
   },
@@ -46,24 +46,24 @@ chrome.test.runTests([
   async function testSidePanelVisible() {
     mockMetricsPrivate.reset();
 
-    chrome.test.assertFalse(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
 
-    viewerToolbar.toggleAnnotation();
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
     mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_ANNOTATION_MODE, 1);
     const sidePanel = viewer.shadowRoot.querySelector('viewer-side-panel');
     assert(sidePanel);
 
     // The side panel should be visible when annotation mode is enabled.
-    chrome.test.assertTrue(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     chrome.test.assertTrue(isVisible(sidePanel));
 
-    viewerToolbar.toggleAnnotation();
+    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
     await microtasksFinished();
     mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_ANNOTATION_MODE, 1);
 
     // The side panel should be hidden when annotation mode is disabled.
-    chrome.test.assertFalse(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
     chrome.test.assertFalse(isVisible(sidePanel));
 
     chrome.test.succeed();

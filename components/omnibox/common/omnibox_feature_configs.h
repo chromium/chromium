@@ -250,6 +250,9 @@ struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
 struct OmniboxUrlSuggestionsOnFocus : Config<OmniboxUrlSuggestionsOnFocus> {
   DECLARE_FEATURE(kOmniboxUrlSuggestionsOnFocus);
   OmniboxUrlSuggestionsOnFocus();
+  OmniboxUrlSuggestionsOnFocus(const OmniboxUrlSuggestionsOnFocus&);
+  OmniboxUrlSuggestionsOnFocus& operator=(const OmniboxUrlSuggestionsOnFocus&);
+  ~OmniboxUrlSuggestionsOnFocus();
   bool enabled;
   bool show_recently_closed_tabs;
   // Max number of zps suggestions to show.
@@ -258,6 +261,15 @@ struct OmniboxUrlSuggestionsOnFocus : Config<OmniboxUrlSuggestionsOnFocus> {
   size_t max_search_suggestions;
   // Max number of url zps suggestions to show.
   size_t max_url_suggestions;
+  // Number of days to consider for most visited sites (0-indexed).
+  size_t most_visited_recency_window;
+  // Recency factor heuristic used to calculate most visited sites.  Must be
+  // one of `kMvtScoringParamRecencyFactor` feature param values listed in
+  // //components/history/core/browser/features.h.
+  std::string most_visited_recency_factor;
+  // Whether MostVisitedProvider should directly query HistoryService for its
+  // most visited sites list. False if the provider should query TopSites.
+  bool directly_query_history_service;
 };
 
 // Do not add new configs here at the bottom by default. They should be ordered

@@ -3568,11 +3568,14 @@ bool URLLoader::ShouldSetLoadWithStorageAccess() const {
       return net::cookie_util::ActivateStorageAccessLoadOutcome::
           kFailureHeaderDisabled;
     }
-    if (!url_request_->storage_access_status()) {
+    if (!url_request_->storage_access_status()
+             .GetStatusForThirdPartyContext()) {
       return net::cookie_util::ActivateStorageAccessLoadOutcome::
           kFailureInvalidStatus;
     }
-    switch (url_request_->storage_access_status().value()) {
+    switch (url_request_->storage_access_status()
+                .GetStatusForThirdPartyContext()
+                .value()) {
       case net::cookie_util::StorageAccessStatus::kNone:
         return net::cookie_util::ActivateStorageAccessLoadOutcome::
             kFailureInvalidStatus;

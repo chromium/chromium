@@ -508,6 +508,7 @@
 <translation id="7787950393032327779">其他计算机 (<ph name="HOST_NAME" />) 的另一个 Google Chrome 进程 (<ph name="PROCESS_ID" />) 好像正在使用此个人资料。Chrome 已锁定此个人资料以防止其受损。如果您确定其他进程目前未使用此个人资料，请为其解锁并重新启动 Chrome。</translation>
 <translation id="7801699035218095297">Google Chrome 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="7808348361785373670">从Chrome中移除…</translation>
+<translation id="782480918904119604">如需在 Glic 中使用此个人资料，请打开 Chrome 并登录</translation>
 <translation id="7825851276765848807">由于未指定的错误导致安装失败。请重新下载 Google Chrome 浏览器。</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>

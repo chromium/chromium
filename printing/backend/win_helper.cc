@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/alias.h"
 #include "base/file_version_info.h"
@@ -586,8 +587,9 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevModeWithColor(
   const DRIVER_INFO_6* p = info_6.get();
 
   // Only HP known to have issues.
-  if (!p->pszMfgName || wcscmp(p->pszMfgName, L"HP") != 0)
+  if (!p->pszMfgName || UNSAFE_TODO(wcscmp(p->pszMfgName, L"HP")) != 0) {
     return default_ticket;
+  }
 
   // Need XPS for this workaround.
   ScopedXPSInitializer xps_initializer;

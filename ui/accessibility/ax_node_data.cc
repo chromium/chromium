@@ -1965,8 +1965,8 @@ std::string AXNodeData::ToString(bool verbose) const {
         result +=
             " aria_notification_announcements=" + base::JoinString(values, ",");
         break;
-      case ax::mojom::StringListAttribute::kAriaNotificationIds:
-        result += " aria_notification_ids=" + base::JoinString(values, ",");
+      case ax::mojom::StringListAttribute::kAriaNotificationTypes:
+        result += " aria_notification_types=" + base::JoinString(values, ",");
         break;
       case ax::mojom::StringListAttribute::kCustomActionDescriptions:
         result +=

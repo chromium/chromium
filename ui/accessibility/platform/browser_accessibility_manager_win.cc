@@ -136,8 +136,8 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
     BrowserAccessibility* node,
     const std::string& announcement,
     ax::mojom::AriaNotificationPriority priority_property,
-    const std::string& notification_id,
-    ax::mojom::AriaNotificationInterrupt interrupt_property) {
+    ax::mojom::AriaNotificationInterrupt interrupt_property,
+    const std::string& type) {
   DCHECK(node);
   if (!AXPlatform::GetInstance().IsUiaProviderEnabled()) {
     return;
@@ -193,13 +193,11 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
   };
 
   const base::win::ScopedBstr announcement_bstr(base::UTF8ToWide(announcement));
-  const base::win::ScopedBstr notification_id_bstr(
-      base::UTF8ToWide(notification_id));
+  const base::win::ScopedBstr type_bstr(base::UTF8ToWide(type));
 
   uia_raise_notification_event_func(provider, NotificationKind_ActionCompleted,
                                     MapPropertiesToUiaNotificationProcessing(),
-                                    announcement_bstr.Get(),
-                                    notification_id_bstr.Get());
+                                    announcement_bstr.Get(), type_bstr.Get());
 }
 
 void BrowserAccessibilityManagerWin::FireFocusEvent(AXNode* node) {

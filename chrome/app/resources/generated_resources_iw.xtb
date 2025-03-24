@@ -267,6 +267,7 @@
 <translation id="1175572348579024023">גלילה</translation>
 <translation id="1175914831232945926">ספרות</translation>
 <translation id="1176471985365269981">לא מורשים לערוך קבצים או תיקיות במכשיר</translation>
+<translation id="1176864681932214421">‏יצירת תמונות באמצעות AI</translation>
 <translation id="1177073277575830464">‏ההגדרה המהירה של Android הושלמה. צריך להמשיך את ההגדרה במכשיר <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">אפשר להתחבר לכל רשת סלולרית מתאימה בהגדרות</translation>
 <translation id="1177548198167638471">לא צריך לשאול שוב</translation>
@@ -2351,7 +2352,6 @@
 <translation id="2606568927909309675">יצירה אוטומטית של כתוביות לאודיו ולווידאו באנגלית. קטעי האודיו והכתוביות אף פעם לא מועברים מהמכשיר.</translation>
 <translation id="2606890864830643943">מתבצע ייצוא של נתוני אבחון</translation>
 <translation id="2607101320794533334">פרטי מפתח ציבורי של נושא</translation>
-<translation id="2608837922830967145">אין צורך להציג את ההודעה הזו שוב</translation>
 <translation id="2609896558069604090">יצירת קיצורי דרך...</translation>
 <translation id="2609980095400624569">לא ניתן היה ליצור חיבור</translation>
 <translation id="2610157865375787051">שינה</translation>
@@ -3595,6 +3595,7 @@
 <translation id="3503995387997205657">יש לך אפשרות לשחזר את האפליקציות הקודמות שבהן השתמשת</translation>
 <translation id="3505100368357440862">הצעות לקניות</translation>
 <translation id="3507132249039706973">מופעלת הגנה רגילה</translation>
+<translation id="3507650052590605702">לפרטי הסיסמה</translation>
 <translation id="3507888235492474624">‏סריקה חוזרת לאיתור מכשירי Bluetooth</translation>
 <translation id="3508492320654304609">לא ניתן למחוק את פרטי הכניסה שלך</translation>
 <translation id="3508920295779105875">יש לבחור תיקייה אחרת...</translation>
@@ -3697,6 +3698,7 @@
 <translation id="3582057310199111521">הוזנה באתר מטעה ונמצאה בפרצה באבטחת מידע</translation>
 <translation id="3582299299336701326">‏שינוי של מסכים בהירים לכהים ומסכים כהים לבהירים. כדי להפעיל או להשבית את היפוך הצבעים, מקישים על מקש החיפוש + Ctrl‏ + H.</translation>
 <translation id="3584169441612580296">לקרוא ולשנות קובצי תמונות, מוזיקה ומדיה מסוגים נוספים מהמחשב שלך</translation>
+<translation id="3586741240886978899">החשבון שהשתמשת בו באתר הזה</translation>
 <translation id="3586806079541226322">לא ניתן לפתוח את הקובץ הזה</translation>
 <translation id="3586931643579894722">הסתרת הפרטים</translation>
 <translation id="3587279952965197737">השם חייב להיות באורך של <ph name="MAX_CHARACTER_COUNT" /> תווים או פחות</translation>
@@ -9370,6 +9372,7 @@
 <translation id="7650582458329409456">{COUNT,plural, =1{הוגדרה טביעת אצבע אחת}one{הוגדרו {COUNT} טביעות אצבע}two{הוגדרו {COUNT} טביעות אצבע}other{הוגדרו {COUNT} טביעות אצבע}}</translation>
 <translation id="7650677314924139716">‏ההגדרה הנוכחית של שימוש בחבילת הגלישה היא 'Wi-Fi בלבד'</translation>
 <translation id="7650920359639954963">לא מופעלת: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">כדי לקבל את הסימניה הזו בכל המכשירים, צריך לאמת את הזהות שלך</translation>
 <translation id="7651400349472467012">‏הנקודה לשיתוף אינטרנט (Hotspot) מיידי זמינה</translation>
 <translation id="7651784568388208829">‏המשך משימה ב-Phone Hub</translation>
 <translation id="765293928828334535">לא ניתן להוסיף אפליקציות, תוספים וסקריפטים של משתמש מהאתר הזה</translation>
@@ -9408,6 +9411,7 @@
 <translation id="7670434942695515800">‏לקבלת הביצועים המיטביים כדאי לשדרג לגרסה האחרונה. מומלץ לגבות את הקבצים למקרה שלא תהיה אפשרות להשלים את השדרוג. אחרי שהשדרוג יתחיל, יתבצע כיבוי של Linux. חשוב לשמור את הקבצים הפתוחים לפני שממשיכים. <ph name="LINK_START" />למידע נוסף<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">כתוביות</translation>
 <translation id="7671130400130574146">שימוש בגבולות ובשורת הכותרת של המערכת</translation>
+<translation id="7671139479636735732">אפשר ללחוץ לחיצה ימנית כדי להמחיש את הרעיונות שלך בקלות</translation>
 <translation id="767127784612208024">נגיעה לצורך אישור האתחול</translation>
 <translation id="7671472752213333268">'<ph name="EXTENSION_NAME" />' רוצה לסרוק מ-'<ph name="SCANNER_NAME" />'.</translation>
 <translation id="7672504401554182757">יש לבחור את המכשיר שמכיל את מפתח הגישה עבור <ph name="APP_NAME" /></translation>
@@ -9427,6 +9431,9 @@
 <translation id="7680416688940118410">כיול מסך מגע</translation>
 <translation id="7681095912841365527">‏האתר רשאי להשתמש ב-Bluetooth</translation>
 <translation id="7681597159868843240">בדרך כלל, אתרים משתמשים בחיישני התנועה של המכשיר כדי לתמוך בתכונות כמו מציאות מדומה או מעקב אחר כושר</translation>
+<translation id="7681757571815416227">‏כדי להשתמש במכשיר עם פרופיל <ph name="DOMAIN" />, הארגון שלך צריך מידע על המכשיר.
+
+המידע יכול לכלול פרטים על תוכנות שהותקנו, קבצים, הדפדפן, מערכת ההפעלה של המכשיר וכתובות IP.</translation>
 <translation id="7683373461016844951">כדי להמשיך יש ללחוץ על 'אישור' ולאחר מכן ללחוץ על 'הוספת משתמש' כדי ליצור פרופיל חדש בשביל כתובת האימייל שלך ב-<ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">כלי תצוגה ללקויי ראייה</translation>
 <translation id="7684212569183643648">הותקן על ידי מנהל המערכת שלך</translation>
@@ -10209,6 +10216,7 @@
 <translation id="8217399928341212914">להמשיך לחסום הורדות אוטומטיות של קבצים מרובים</translation>
 <translation id="8219785583603399823">הצגת הדירוגים של החנות הזו</translation>
 <translation id="822050276545350872">מעכשיו, לא יהיה צורך להמתין יותר</translation>
+<translation id="8221942262855134126">לפרטי הסיסמה</translation>
 <translation id="8222112516148944758">קבוצות הכרטיסיות נשמרות אוטומטית ומתעדכנות בכל המכשירים</translation>
 <translation id="8222674561049363989">הקובץ הוא לא מסמך תקין</translation>
 <translation id="822347941086490485">‏מתבצע חיפוש של מכשירי HID...</translation>
@@ -10999,6 +11007,9 @@
 <translation id="8767069439158587614">הצגת כל החיפושים של <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">‏עדכון אוטומטי של Chrome אצל כל המשתמשים</translation>
 <translation id="8768049274922835860">כולם</translation>
+<translation id="8769047324653576116">‏כדי להשתמש במכשיר עם פרופיל הארגון, הארגון שלך צריך מידע על המכשיר.
+
+המידע יכול לכלול פרטים על תוכנות שהותקנו, קבצים, הדפדפן, מערכת ההפעלה של המכשיר וכתובות IP.</translation>
 <translation id="876956356450740926">‏הפעלת כלים, סביבות פיתוח משולבות (IDE) ועורכים. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">ספריית הבסיס של תוסף</translation>
 <translation id="8773535891252326047">הקישור הועתק לטקסט המודגש</translation>

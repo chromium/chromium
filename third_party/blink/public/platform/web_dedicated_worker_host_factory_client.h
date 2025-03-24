@@ -16,7 +16,6 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -43,14 +42,6 @@ class WebDedicatedWorkerHostFactoryClient {
   virtual ~WebDedicatedWorkerHostFactoryClient() = default;
 
   // Requests the creation of DedicatedWorkerHost in the browser process.
-  // For non-PlzDedicatedWorker. This will be removed once PlzDedicatedWorker is
-  // enabled by default.
-  virtual void CreateWorkerHostDeprecated(
-      const DedicatedWorkerToken& dedicated_worker_token,
-      const blink::WebURL& script_url,
-      const WebSecurityOrigin& origin,
-      CreateWorkerHostCallback callback) = 0;
-  // For PlzDedicatedWorker.
   virtual void CreateWorkerHost(
       const DedicatedWorkerToken& dedicated_worker_token,
       const blink::WebURL& script_url,

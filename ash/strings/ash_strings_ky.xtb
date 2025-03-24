@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Тил параметрлерин көрсөтүү</translation>
 <translation id="1459693405370120464">Аба ырайы</translation>
 <translation id="1460620680449458626">Үнү өчүрүлгөн.</translation>
+<translation id="1462439140224375968">Google документи түзүлдү</translation>
 <translation id="14648076227129703">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына жана <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> колдонмолоруна камераны айдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="1467432559032391204">Сол</translation>
 <translation id="146902737843070955">Бул өзгөртүүнү киргизүүнү администратор суранды</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">Байланыш түйүнүнүн чоо-жайын көрсөтүү. Байланыш түйүнү өчүк.</translation>
 <translation id="3017079585324758401">Фон</translation>
 <translation id="3018135054368884502">Медианы алдыга тез түрдүрүү</translation>
+<translation id="3026897869154397692">Жылнаамага кошулду</translation>
 <translation id="3033545621352269033">Күйүк</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> менен бириктирүү</translation>
 <translation id="3036649622769666520">Файлдарды ачуу</translation>
@@ -1894,6 +1896,7 @@
 <translation id="7228968829656641943">Экранда издөө үчүн тандаңыз. Баскычтоп аркылуу өтүү үчүн Tab баскычын, андан соң боштукту басыңыз.</translation>
 <translation id="7229029500464092426"><ph name="TOTAL_MEMORY" /> ичинен <ph name="AVAILABLE_MEMORY" /> эстутум колдонулду</translation>
 <translation id="7239814253344511868">Чычкандын эки баскычы тең</translation>
+<translation id="7240636904654154599">Google таблицасы түзүлдү</translation>
 <translation id="7244725679040769470">Батареянын кубаты <ph name="PERCENTAGE" />% калды. Түзмөгүңүздү электр кубатына туташтырыңыз.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңыртууну колдонуу үчүн Chromebook'ту өчүрүп күйгүзүү керек. Бул 1 мүнөткө созулушу мүмкүн.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2407,7 @@
 <translation id="8921624153894383499">Google Жардамчы бул тилде иштебейт.</translation>
 <translation id="8926951137623668982">Текче ар дайым жашырылат</translation>
 <translation id="8929566928381252430">Caps Lock баскычы керек болуп жатабы? Муну колдонуңуз:</translation>
+<translation id="8929623844713377237">Байланыш түзүлдү</translation>
 <translation id="8934418770423095813">Google документин түзүү</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өчүрүлдү</translation>

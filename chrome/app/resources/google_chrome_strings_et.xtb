@@ -513,6 +513,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7787950393032327779">Tundub, et mõni muu Google Chrome'i protsess (<ph name="PROCESS_ID" />) mõnes teises arvutis (<ph name="HOST_NAME" />) kasutab profiili.  Chrome on profiili lukustanud, et seda ei saaks rikkuda.  Kui olete kindel, et ükski teine protsess seda profiili ei kasuta, võite selle avada ja Chrome'i taaskäivitada.</translation>
 <translation id="7801699035218095297">Google Chrome püüab kopeerida paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="7808348361785373670">Chrome'ist eemaldamine ...</translation>
+<translation id="782480918904119604">Selle profiili kasutamiseks koos Gliciga avage Chrome ja logige sisse</translation>
 <translation id="7825851276765848807">Installimine nurjus määramata vea tõttu. Laadige Google Chrome uuesti alla.</translation>
 <translation id="7845233973568007926">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate oma arvuti taaskäivitama.</translation>
 <translation id="7872446069773932638">Allalaadimine … <ph name="SECONDS" /> sekund(it) on jäänud</translation>

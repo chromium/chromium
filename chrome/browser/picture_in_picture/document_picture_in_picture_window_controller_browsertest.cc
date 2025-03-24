@@ -80,6 +80,10 @@
 #include "ui/events/test/event_generator.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using content::EvalJs;
 using content::ExecJs;
 using ::testing::_;
@@ -683,6 +687,14 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        WindowBoundsAreCached) {
+#if BUILDFLAG(IS_OZONE)
+  // Ozone/wayland doesn't support getting/setting window position in global
+  // screen coordinates. So this test is not applicable there as it essentially
+  // validates that.
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP();
+  }
+#endif
   // Create a Document PiP window with any size.  We want to be sure that this
   // fits in the display comfortably.
   const gfx::Size size(400, 410);

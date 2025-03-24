@@ -156,18 +156,6 @@ std::optional<TipsNotificationType> ParseTipsNotificationType(
   return static_cast<TipsNotificationType>(type.integerValue);
 }
 
-UNNotificationRequest* TipsNotificationRequest(
-    TipsNotificationType type,
-    bool for_reactivation,
-    TipsNotificationUserType user_type) {
-  return [UNNotificationRequest
-      requestWithIdentifier:kTipsNotificationId
-                    content:ContentForTipsNotificationType(type,
-                                                           for_reactivation)
-                    trigger:TipsNotificationTrigger(for_reactivation,
-                                                    user_type)];
-}
-
 UNNotificationContent* ContentForTipsNotificationType(TipsNotificationType type,
                                                       bool for_reactivation) {
   UNMutableNotificationContent* content =
@@ -204,16 +192,6 @@ base::TimeDelta TipsNotificationTriggerDelta(
           kIOSTipsNotifications,
           kIOSTipsNotificationsActiveSeekerTriggerTimeParam, default_trigger);
   }
-}
-
-UNNotificationTrigger* TipsNotificationTrigger(
-    bool for_reactivation,
-    TipsNotificationUserType user_type) {
-  return [UNTimeIntervalNotificationTrigger
-      triggerWithTimeInterval:TipsNotificationTriggerDelta(for_reactivation,
-                                                           user_type)
-                                  .InSecondsF()
-                      repeats:NO];
 }
 
 int TipsNotificationsEnabledBitfield() {

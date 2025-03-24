@@ -107,9 +107,15 @@ UILabel* TextLabel(NSString* text,
 NSAttributedString* AsAttributedString(NSString* text,
                                        UIColor* text_color,
                                        BOOL bold,
-                                       BOOL is_title) {
+                                       BOOL is_title,
+                                       BOOL has_icon) {
   NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
   [style setLineSpacing:kVerticalSpacing];
+
+  if (has_icon) {
+    [style setFirstLineHeadIndent:kSpacing];
+    [style setHeadIndent:kSpacing];
+  }
 
   // If it's not a title, then prepend a new line to the text, so that it shows
   // up on the next line.
@@ -127,14 +133,16 @@ NSAttributedString* AsAttributedString(NSString* text,
 // information.
 UILabel* AttributedTextLabel(NSString* suggestion_text,
                              NSString* minor_value,
-                             NSString* display_description) {
+                             NSString* display_description,
+                             BOOL has_icon) {
   NSMutableAttributedString* full_text =
       [[NSMutableAttributedString alloc] init];
 
-  [full_text appendAttributedString:AsAttributedString(
-                                        suggestion_text,
-                                        [UIColor colorNamed:kTextPrimaryColor],
-                                        /*bold=*/YES, /*is_title=*/YES)];
+  [full_text
+      appendAttributedString:AsAttributedString(
+                                 suggestion_text,
+                                 [UIColor colorNamed:kTextPrimaryColor],
+                                 /*bold=*/YES, /*is_title=*/YES, has_icon)];
   NSInteger numberOfLines = 1;
 
   if ([minor_value length] > 0) {
@@ -142,7 +150,7 @@ UILabel* AttributedTextLabel(NSString* suggestion_text,
         appendAttributedString:AsAttributedString(
                                    minor_value,
                                    [UIColor colorNamed:kTextPrimaryColor],
-                                   /*bold=*/YES, /*is_title=*/NO)];
+                                   /*bold=*/YES, /*is_title=*/NO, has_icon)];
     numberOfLines++;
   }
 
@@ -151,7 +159,7 @@ UILabel* AttributedTextLabel(NSString* suggestion_text,
         appendAttributedString:AsAttributedString(
                                    display_description,
                                    [UIColor colorNamed:kTextSecondaryColor],
-                                   /*bold=*/NO, /*is_title=*/NO)];
+                                   /*bold=*/NO, /*is_title=*/NO, has_icon)];
     numberOfLines++;
   }
 
@@ -314,7 +322,8 @@ NSArray<UIView*>* TextViews(NSString* suggestion_text,
       // on the plus side, might actually be more light weight in the end.
       [stackView addArrangedSubview:AttributedTextLabel(
                                         suggestionText, suggestion.minorValue,
-                                        suggestion.displayDescription)];
+                                        suggestion.displayDescription,
+                                        suggestion.icon)];
     } else {
       // Format the suggestion information using a stack view so that each piece
       // of information can be truncated individually when truncation is needed.

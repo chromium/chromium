@@ -29,8 +29,6 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
-namespace {
-
 class ConstrainedWindowTestDialog : public views::DialogDelegateView {
  public:
   ConstrainedWindowTestDialog() {
@@ -51,6 +49,8 @@ class ConstrainedWindowTestDialog : public views::DialogDelegateView {
 
   views::View* GetInitiallyFocusedView() override { return this; }
 };
+
+namespace {
 
 // A helper function to create and show a web contents modal dialog.
 ConstrainedWindowTestDialog* ShowModalDialog(

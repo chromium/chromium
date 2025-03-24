@@ -493,7 +493,8 @@ void LensOverlayController::IssueContextualSearchRequest(
     // not overlay UI, this flow does a lot of unnecessary work. There should be
     // a new flow that can contextualize without the overlay UI being
     // initialized.
-    ShowUI(lens::LensOverlayInvocationSource::kOmnibox);
+    StartContextualizationWithoutOverlay(
+        lens::LensOverlayInvocationSource::kOmnibox);
   }
 
   // Hold the request until the overlay has finished initializing.
@@ -509,6 +510,12 @@ void LensOverlayController::IssueContextualSearchRequest(
   // OnSuggestionAccepted flow or if there should be a more direct contextual
   // search flow.
   OnSuggestionAccepted(destination_url, match_type, is_zero_prefix_suggestion);
+}
+
+void LensOverlayController::StartContextualizationWithoutOverlay(
+    lens::LensOverlayInvocationSource invocation_source) {
+  should_show_overlay_ = false;
+  ShowUI(invocation_source);
 }
 
 void LensOverlayController::ShowUIWithPendingRegion(
@@ -536,8 +543,7 @@ void LensOverlayController::ShowUIWithPendingRegion(
 }
 
 void LensOverlayController::ShowUI(
-    lens::LensOverlayInvocationSource invocation_source,
-    bool should_start_focused) {
+    lens::LensOverlayInvocationSource invocation_source) {
   // If UI is already showing or in the process of showing, do nothing.
   if (state_ != State::kOff) {
     return;
@@ -555,7 +561,6 @@ void LensOverlayController::ShowUI(
   }
 
   invocation_source_ = invocation_source;
-  should_start_focused_ = should_start_focused;
 
   // Request user permission before grabbing a screenshot.
   CHECK(pref_service_);
@@ -573,8 +578,7 @@ void LensOverlayController::ShowUI(
     permission_bubble_controller_->RequestPermission(
         tab_->GetContents(),
         base::BindRepeating(&LensOverlayController::ShowUI,
-                            weak_factory_.GetWeakPtr(), invocation_source,
-                            should_start_focused));
+                            weak_factory_.GetWeakPtr(), invocation_source));
     return;
   }
 
@@ -2244,10 +2248,16 @@ void LensOverlayController::ShowOverlay() {
   // Grab the tab contents web view and disable mouse and keyboard inputs to it.
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
   CHECK(contents_web_view);
-  contents_web_view->SetEnabled(false);
+  if (should_show_overlay_) {
+    contents_web_view->SetEnabled(false);
+  }
 
   // If the view already exists, we just need to reshow it.
   if (overlay_view_) {
+    // Exit early to avoid reshowing the overlay if it should not be shown.
+    if (!should_show_overlay_) {
+      return;
+    }
     // Restore the state to show the overlay.
     overlay_view_->SetVisible(true);
     preselection_widget_anchor_->SetVisible(true);
@@ -2262,9 +2272,11 @@ void LensOverlayController::ShowOverlay() {
     return;
   }
 
-  // Create the views that will house our UI.
+  // Create the views that will house our UI. The overlay view might not
+  // actually be shown, as dictated by `should_show_overlay_`. It still needs to
+  // be created so the initialization process completes.
   overlay_view_ = CreateViewForOverlay();
-  overlay_view_->SetVisible(true);
+  overlay_view_->SetVisible(should_show_overlay_);
 
   // Sanity check that the overlay view is above the contents web view.
   auto* parent_view = contents_web_view->parent();
@@ -2276,7 +2288,7 @@ void LensOverlayController::ShowOverlay() {
 
   // The overlay needs to be focused on show to immediately begin
   // receiving key events.
-  if (should_start_focused_) {
+  if (should_show_overlay_) {
     CHECK(overlay_web_view_);
     overlay_web_view_->RequestFocus();
   }
@@ -2413,6 +2425,7 @@ void LensOverlayController::CloseUIPart2(
   }
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+  should_show_overlay_ = true;
 
   state_ = State::kOff;
 
@@ -2484,8 +2497,7 @@ void LensOverlayController::InitializeOverlay(
 
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
-  if (!pending_region_ &&
-      !search::IsOmniboxInputInProgress(tab_->GetContents())) {
+  if (!pending_region_ && should_show_overlay_) {
     ShowPreselectionBubble();
   }
 
@@ -3265,6 +3277,11 @@ void LensOverlayController::ClosePreselectionBubble() {
 }
 
 void LensOverlayController::ShowPreselectionBubble() {
+  // Don't show the preselection bubble if the overlay is not being shown.
+  if (!should_show_overlay_) {
+    return;
+  }
+
 #if BUILDFLAG(IS_MAC)
   // On Mac, the kShowFullscreenToolbar pref is used to determine whether the
   // toolbar is always shown. This causes the toolbar to never unreveal, meaning

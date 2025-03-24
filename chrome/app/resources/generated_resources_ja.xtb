@@ -2217,6 +2217,7 @@
         カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="2514326558286966059">指紋を使ってロックをすばやく解除できます</translation>
 <translation id="2514465118223423406">マウスの接続時</translation>
+<translation id="2514938842036917377"><ph name="SITE_NAME" />、関連サイト、インストールされたアプリにより保存された <ph name="TOTAL_USAGE" /> のデータを削除します</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ユーザー名の確認</translation>
 <translation id="2517472476991765520">スキャン</translation>
@@ -2334,7 +2335,6 @@
 <translation id="2606568927909309675">英語の音声と動画の字幕を自動生成します。音声と字幕はデバイス上でローカルに処理されます。</translation>
 <translation id="2606890864830643943">診断データをエクスポートしています</translation>
 <translation id="2607101320794533334">サブジェクトの公開鍵情報</translation>
-<translation id="2608837922830967145">今後このメッセージを表示しない</translation>
 <translation id="2609896558069604090">ショートカットの作成...</translation>
 <translation id="2609980095400624569">接続を確立できませんでした</translation>
 <translation id="2610157865375787051">スリープモードにする</translation>
@@ -9064,6 +9064,7 @@
 <translation id="7443806024147773267">Google アカウントにログインすれば、いつでもパスワードにアクセスできます。</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{今日、Cookie を再びブロックします}=1{明日、Cookie を再びブロックします}other{Cookie を再びブロックするまであと # 日です}}</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> を無効にする</translation>
+<translation id="7446716846072322308"><ph name="SITE_NAME" /> と関連サイトにより保存された <ph name="TOTAL_USAGE" /> のデータを削除します</translation>
 <translation id="7448430327655618736">アプリの自動インストール</translation>
 <translation id="7448664748118305024">すべてのウィンドウを閉じるときに、サイトによりデバイスに保存されたデータを削除する</translation>
 <translation id="7450761244949417357">まもなく <ph name="ALTERNATIVE_BROWSER_NAME" /> で開きます</translation>

@@ -233,6 +233,75 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
       SigninInterceptionDismissReason::kEscKey, 1);
 }
 
+// Tests that the callback is called once when the bubble is dismissed.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       BubbleDismissedByEscapeKeyTwice) {
+  base::HistogramTester histogram_tester;
+  // Creating the bubble through the static function.
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+      DiceWebSigninInterceptionBubbleView::CreateBubble(
+          browser(), GetAvatarButton(), GetTestBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      static_cast<DiceWebSigninInterceptionBubbleView::ScopedHandle*>(
+          handle.get())
+          ->GetBubbleViewForTesting();
+
+  views::Widget* widget = bubble->GetWidget();
+  views::test::WidgetVisibleWaiter visible_waiter(widget);
+  visible_waiter.Wait();
+  EXPECT_FALSE(callback_result_.has_value());
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+
+  // Create an ESC key event.
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  event.dom_key = ui::DomKey::ESCAPE;
+  event.dom_code = static_cast<int>(ui::DomCode::ESCAPE);
+  content::WebContents* bubble_contents =
+      bubble->GetBubbleWebContentsForTesting();
+
+  // Pressing the escape key twice should dismiss the bubble, and not crash.
+  // Note: calling SimulateEscapeKeyPress() does not trigger the bug
+  // https://crbug.com/401528621, so this test is using HandleKeyboardEvent()
+  // instead.
+  bubble->HandleKeyboardEvent(bubble_contents, event);
+  bubble->HandleKeyboardEvent(bubble_contents, event);
+  // This should be ignored as well, as the bubble is already closing.
+  bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kAccept);
+  destroyed_waiter.Wait();
+  EXPECT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kDismissed);
+
+  // Check that histograms are recorded.
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser",
+                                      SigninInterceptionResult::kDismissed, 1);
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
+                                      SigninInterceptionResult::kDismissed, 1);
+  // Make sure no other histograms are recorded.
+  base::HistogramTester::CountsMap expected_histogram_total_count = {
+      {"Signin.InterceptResult.MultiUser", 1},
+      {"Signin.InterceptResult.MultiUser.NoSync", 1},
+  };
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
+      testing::ContainerEq(expected_histogram_total_count));
+
+  // Dismiss reason histograms.
+  histogram_tester.ExpectUniqueSample("Signin.Intercept.BubbleDismissReason",
+                                      SigninInterceptionDismissReason::kEscKey,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.BubbleDismissReason.MultiUser",
+      SigninInterceptionDismissReason::kEscKey, 1);
+}
+
 // Same as the above test, but dismissing by pressing the avatar button.
 // Only difference in expectations is the histograms records.
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,

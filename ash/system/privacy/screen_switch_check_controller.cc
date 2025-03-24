@@ -16,8 +16,6 @@
 
 namespace ash {
 
-namespace {
-
 // Dialog that confirms the user wants to stop screen share/cast. Calls a
 // callback with the result.
 class CancelCastingDialog : public views::DialogDelegateView {
@@ -58,8 +56,6 @@ class CancelCastingDialog : public views::DialogDelegateView {
  private:
   base::OnceCallback<void(bool)> callback_;
 };
-
-}  // namespace
 
 ScreenSwitchCheckController::ScreenSwitchCheckController() {
   Shell::Get()->system_tray_notifier()->AddScreenSecurityObserver(this);

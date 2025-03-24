@@ -2235,6 +2235,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
         Bạn có thể quản lý chế độ cài đặt qua trình đơn thẻ hoặc xem tuỳ chọn khác trong phần Tuỳ chỉnh Chrome.</translation>
 <translation id="2514326558286966059">Mở khóa nhanh hơn bằng vân tay</translation>
 <translation id="2514465118223423406">Khi kết nối chuột</translation>
+<translation id="2514938842036917377">Thao tác này sẽ xoá <ph name="TOTAL_USAGE" /> dữ liệu do <ph name="SITE_NAME" />, các trang web có liên quan và ứng dụng đã cài đặt lưu trữ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Xác nhận tên người dùng</translation>
 <translation id="2517472476991765520">Quét</translation>
@@ -2353,7 +2354,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2606568927909309675">Tự động tạo phụ đề cho âm thanh và video bằng tiếng Anh. Âm thanh và phụ đề chỉ lưu trên thiết bị của bạn.</translation>
 <translation id="2606890864830643943">Đang xuất dữ liệu chẩn đoán</translation>
 <translation id="2607101320794533334">Thông tin Khoá Công cộng Đối tượng</translation>
-<translation id="2608837922830967145">Không hiện lại thông báo này</translation>
 <translation id="2609896558069604090">Tạo lối tắt...</translation>
 <translation id="2609980095400624569">Không thể thiết lập đường kết nối</translation>
 <translation id="2610157865375787051">Ngủ</translation>
@@ -9097,6 +9097,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7443806024147773267">Sử dụng mật khẩu mỗi khi bạn đăng nhập vào Tài khoản Google của mình</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Hôm nay, cookie sẽ bị chặn trở lại}=1{Ngày mai, cookie sẽ bị chặn trở lại}other{Cookie sẽ bị chặn trở lại sau # ngày nữa}}</translation>
 <translation id="7444983668544353857">Vô hiệu hóa <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">Thao tác này sẽ xoá <ph name="TOTAL_USAGE" /> dữ liệu do <ph name="SITE_NAME" /> và các trang web có liên quan lưu trữ</translation>
 <translation id="7448430327655618736">Tự động cài đặt ứng dụng</translation>
 <translation id="7448664748118305024">Xoá dữ liệu mà các trang web đã lưu vào thiết bị của bạn khi bạn đóng tất cả cửa sổ</translation>
 <translation id="7450761244949417357">Hiện đang mở trong <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>

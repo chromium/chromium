@@ -59,16 +59,16 @@ export class SpComponentsDemoElement extends CrLitElement {
     };
   }
 
-  protected hideBackButton_: boolean = true;
-  protected itemSize_: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
-  protected itemSizeOptions_: CrUrlListItemSize[] = [
+  protected accessor hideBackButton_: boolean = true;
+  protected accessor itemSize_: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
+  protected accessor itemSizeOptions_: CrUrlListItemSize[] = [
     CrUrlListItemSize.COMPACT,
     CrUrlListItemSize.MEDIUM,
     CrUrlListItemSize.LARGE,
   ];
-  protected showBadges_: boolean = false;
-  protected urlCount_: number = 15;
-  protected urls_: UrlItem[] = [];
+  protected accessor showBadges_: boolean = false;
+  protected accessor urlCount_: number = 15;
+  protected accessor urls_: UrlItem[] = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

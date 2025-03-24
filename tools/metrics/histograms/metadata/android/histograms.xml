@@ -7449,6 +7449,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.WebView.Startup.ChromiumInitTime.LongestUiBlockingTaskTime"
+    units="ms" expires_after="2025-12-31">
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    For synchronous WebView initialization, this value measures the entire
+    duration of running StartupTasksRunner's tasks together without yielding the
+    UI thread, and will equal the
+    &quot;Android.WebView.Startup.CreationTime.StartChromiumLocked&quot;
+    histogram. For asynchronous initialization, it measures the longest task run
+    by StartupTasksRunner.
+
+    This histogram is recorded in the last step of chromium init and so, is not
+    recorded when init does not complete for any reason or if init had been
+    completed in previous runs.
+  </summary>
+</histogram>
+
+<histogram
     name="Android.WebView.Startup.CreationTime.FirstInstanceAfterGlobalStartup"
     units="ms" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
@@ -7589,7 +7608,23 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
-  <summary>How long it takes to run startChromiumLocked.</summary>
+  <summary>
+    For synchronous WebView initialization, this value measures the entire
+    duration of running StartupTasksRunner's tasks together without yielding the
+    UI thread, and will equal the
+    &quot;Android.WebView.Startup.ChromiumInitTime.LongestUiBlockingTaskTime&quot;
+    histogram.
+
+    For asynchronous initialization, it measures the cumulative duration of each
+    task run by the StartupTasksRunner on the UI thread. This reflects the total
+    time StartupTasksRunner's tasks block the UI thread. It does not measure the
+    wall clock time from the start of the first task to the end of the last
+    task.
+
+    This histogram is recorded in the last step of chromium init and so, is not
+    recorded when init does not complete for any reason or if init had been
+    completed in previous runs.
+  </summary>
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.TotalFactoryInitTime"

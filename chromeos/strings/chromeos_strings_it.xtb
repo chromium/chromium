@@ -10,6 +10,7 @@
 <translation id="102432830749687801">Assicurati di utilizzare l'app Trasferimento dei contenuti di Google per spostare i dati dell'account della scuola nel tuo account personale prima di perdere l'accesso.</translation>
 <translation id="1026212596705997935">Scorciatoia utilizzata per "<ph name="CONFLICT_ACCEL_NAME" />". Premi una nuova scorciatoia. Per sostituire la scorciatoia esistente, premi di nuovo questa scorciatoia.</translation>
 <translation id="1030856839388844477">Reimposta utilizzo dei dati</translation>
+<translation id="1047095725494118091">Impossibile scaricare. Riprova o riavvia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Sono disponibili nuove funzionalità: utilizza il tasto Freccia su per saperne di più.</translation>
 <translation id="1049663189809099096">giallo pastello</translation>
@@ -25,6 +26,7 @@
 <translation id="1082009148392559545">Download del salvaschermo in corso…</translation>
 <translation id="1094693127011229778">Indirizzo IP non disponibile</translation>
 <translation id="1100902271996134409">Creazione di immagini in corso…</translation>
+<translation id="1107856713690040084">Audio <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Informazioni</translation>
 <translation id="1118572504348554005">Potremmo condividere il feedback inviato tramite questo modulo con i nostri partner per risolvere bug e altri problemi che ci segnali. Non includere informazioni sensibili come password.</translation>
 <translation id="1119403468619527527">Numero insufficiente di parole per semplificare</translation>
@@ -290,6 +292,7 @@
 <translation id="2163937499206714165">Attiva la modalità Buio</translation>
 <translation id="2164131940279488868">Assicurati che sia collegato un microfono per iniziare a registrare l'audio</translation>
 <translation id="2173302385160625112">Controlla la connessione a internet</translation>
+<translation id="2176909213844392588">Impossibile scaricare il modello di trascrizione <ph name="LANGUAGE_NAME" />. Riprova o riavvia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Si è verificato un errore. Prova a riaprire l'app.</translation>
 <translation id="2189104374785738357">Modifica dettagli APN</translation>
 <translation id="2195732836444333448">Al momento il server è occupato. Torna a breve.</translation>
@@ -476,6 +479,7 @@
 <translation id="3199982728237701504">Alimentatore di documenti (fronte e retro)</translation>
 <translation id="3201315366910775591">Gli album condivisi possono essere aggiornati da altri utenti</translation>
 <translation id="3211671540163313381">Mappatura tasti per il D-pad</translation>
+<translation id="3217462202230355157">Assicurati che il microfono sia collegato o prova a riavviare <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">Ricerca di scanner in corso…</translation>
 <translation id="3226657629376379887">Menu azioni del layout</translation>
 <translation id="3227186760713762082">Dividi il valore <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
@@ -510,6 +514,7 @@
 <translation id="3383623117265110236">Esclusiva</translation>
 <translation id="3404249063913988450">Abilita salvaschermo</translation>
 <translation id="3413935475507503304">Per continuare con l'aggiornamento, fai clic su Avanti.</translation>
+<translation id="3416709353545797224">Registrazione di tutto l'audio di <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">all'aperto</translation>
 <translation id="3428971106895559033">pastello</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -670,6 +675,7 @@
 <translation id="4155551848414053977">Assicurati che lo scanner sia acceso e disponibile tramite la tua rete o una connessione diretta</translation>
 <translation id="4159238217853743776">Parziale</translation>
 <translation id="4159784952369912983">Viola</translation>
+<translation id="416219735020840807">Impossibile scaricare il modello di trascrizione. Riprova o riavvia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Scatta una foto</translation>
 <translation id="4170700058716978431">OPERAZIONE NON RIUSCITA</translation>
 <translation id="4171077696775491955">diminuisci luminosità</translation>
@@ -689,6 +695,16 @@
 <translation id="4249717042534905822">domenica</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4251839292699800785">Ufficio elegante</translation>
+<translation id="4252261480746798874">Quando selezioni "Crea il tuo", puoi scrivere un prompt personalizzato. Puoi anche selezionare "Scegli un tema" e poi selezionare le parole sottolineate per personalizzare il tuo sfondo AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Seleziona "Dammi l'ispirazione" per avere più opzioni di immagini AI univoche e diversificate.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Quando crei il tuo sfondo, ai server di Google AI viene inviato un prompt di generazione di immagini e miglioramento del prodotto, ai sensi dei <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Termini di servizio e delle Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Non includere informazioni personali, sensibili o riservate.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          L'AI generativa può fare errori, anche riguardo a persone, quindi verifica le sue risposte. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Scopri di più<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Latenza HTTP</translation>
 <translation id="4266143281602681663">filo</translation>
 <translation id="4269815121975886860">Preferenze di avvio</translation>
@@ -933,6 +949,7 @@
 <translation id="5344619683981067131">Sostituzione del testo selezionato con il suggerimento in corso…</translation>
 <translation id="5346687412805619883">Rete locale</translation>
 <translation id="5358174242040570474">Si è verificato un errore. Prova a scegliere nuovamente uno sfondo o a riaprire l'app.</translation>
+<translation id="5368228070728130240">Impossibile scaricare il modello di riepilogo e creazione del titolo. Riprova o riavvia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">la rete Wi-Fi non è sicura</translation>
 <translation id="5376354385557966694">Modalità Luce automatica</translation>
 <translation id="5378184552853359930">Tipo di IP</translation>
@@ -1234,6 +1251,7 @@
 <translation id="6766275201586212568">Risoluzioni DNS non riuscite</translation>
 <translation id="6768237774506518020">Percentuale errori di risoluzione DNS elevata</translation>
 <translation id="6786747875388722282">Estensioni</translation>
+<translation id="6789891265243243337">Quando l'audio di <ph name="DEVICE_TYPE" /> è attivo, Registratore acquisisce tutto l'audio riprodotto su questo dispositivo</translation>
 <translation id="6791471867139427246">colore della luce della tastiera</translation>
 <translation id="6796229976413584781">Scorciatoia eliminata</translation>
 <translation id="6798678288485555829">Navigazione nel testo</translation>
@@ -1699,6 +1717,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8933650076320258356">Il tasto selezionato per <ph name="DIRECTION" /> è <ph name="KEYS" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">Indirizzo IP client</translation>
+<translation id="8938606491880817721">Impossibile scaricare. Riprova o riavvia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Colore Avvio app</translation>
 <translation id="8945308580158685341">api</translation>
 <translation id="894617464444543719">Il dispositivo è un telefono.</translation>

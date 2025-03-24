@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">ในวันอาทิตย์</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4251839292699800785">สำนักงานที่มีสไตล์</translation>
+<translation id="4252261480746798874">เมื่อเลือก "สร้างของคุณเอง" คุณจะเขียนพรอมต์ที่กำหนดเองได้ คุณยังเลือก "เลือกธีม" แล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนวอลเปเปอร์ AI ในแบบของคุณได้ด้วย
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เลือก "ขอแรงบันดาลใจหน่อย" เพื่อรับตัวเลือกรูปภาพ AI ที่เป็นเอกลักษณ์และหลากหลายยิ่งขึ้น
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เมื่อสร้างวอลเปเปอร์ของคุณเอง ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ของ Google เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ข้อกำหนดในการให้บริการและนโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> อย่าระบุสิ่งที่เป็นเรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI อาจทำผิดพลาดได้ ซึ่งรวมถึงการให้ข้อมูลเกี่ยวกับผู้คน ดังนั้นโปรดตรวจสอบคำตอบอีกครั้ง <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">เวลาในตอบสนองของ HTTP</translation>
 <translation id="4266143281602681663">ไหมพรม</translation>
 <translation id="4269815121975886860">การกำหนดค่าเริ่มต้น</translation>

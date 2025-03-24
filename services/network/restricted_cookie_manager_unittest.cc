@@ -208,6 +208,7 @@ class RestrictedCookieManagerSync {
     cookie_service_->SetCanonicalCookie(
         cookie, url, site_for_cookies, top_frame_origin,
         storage_access_api_status, status,
+        /*is_ad_tagged=*/false,
         /*apply_devtools_overrides=*/apply_devtools_overrides,
         future.GetCallback());
     return future.Get();
@@ -219,13 +220,14 @@ class RestrictedCookieManagerSync {
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
       bool get_version_shared_memory,
+      bool is_ad_tagged,
       bool apply_devtools_overrides,
       const std::string& cookie) {
     base::test::TestFuture<mojom::CookiesResponsePtr> future;
     cookie_service_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, storage_access_api_status,
-        get_version_shared_memory, apply_devtools_overrides, cookie,
-        future.GetCallback());
+        get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
+        cookie, future.GetCallback());
     return future.Take();
   }
 
@@ -594,6 +596,7 @@ TEST_P(RestrictedCookieManagerTest, CookieVersion) {
   auto response = sync_service_->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
       /*apply_devtools_overrides=*/false, "new-name=new-value;path=/");
   if (GetCookiesOnSetEnabled()) {
     ASSERT_TRUE(response);
@@ -856,6 +859,26 @@ TEST_P(RestrictedCookieManagerTest, GetAllAdTagged) {
                               kDefaultOrigin,
                               net::StorageAccessApiStatus::kNone,
                               std::move(options), /*is_ad_tagged=*/false);
+  WaitForCallback();
+
+  EXPECT_THAT(recorded_activity().back().is_ad_tagged, false);
+}
+
+TEST_P(RestrictedCookieManagerTest, SetCookieAdTagged) {
+  service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
+  sync_service_->SetCookieFromString(
+      kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone,
+      /*get_version_shared_memory=*/false, /*is_ad_tagged=*/true,
+      /*apply_devtools_overrides=*/false, "cookie-name=cookie-value;path=/");
+  WaitForCallback();
+  EXPECT_THAT(recorded_activity().back().is_ad_tagged, true);
+
+  sync_service_->SetCookieFromString(
+      kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone,
+      /*get_version_shared_memory=*/false, /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false, "cookie-name=cookie-value;path=/");
   WaitForCallback();
 
   EXPECT_THAT(recorded_activity().back().is_ad_tagged, false);
@@ -1187,6 +1210,7 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
   auto response = sync_service_->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/true,
+      /*is_ad_tagged=*/false,
       /*apply_devtools_overrides=*/false, "new-name=new-value;path=/");
   std::optional<mojo::SharedMemoryVersionClient> client;
   if (GetCookiesOnSetEnabled()) {
@@ -1214,6 +1238,7 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
   response = sync_service_->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
       /*apply_devtools_overrides=*/false, "new-name=updated-value;path=/");
   if (GetCookiesOnSetEnabled()) {
     EXPECT_EQ(response->cookies, "new-name=updated-value");
@@ -1235,6 +1260,7 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromStringCrossOrigin) {
   auto response = sync_service_->SetCookieFromString(
       kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
       net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
       /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools(),
       "new-name=new-value;path=/; SameSite=none; Secure");
   if (GetCookiesOnSetEnabled() && !ThirdPartyCookieDisabledByDevtools()) {
@@ -1308,6 +1334,7 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWrongOrigin) {
   auto response = sync_service_->SetCookieFromString(
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
       /*apply_devtools_overrides=*/false, "new-name=new-value;path=/");
   EXPECT_FALSE(response);
   ASSERT_TRUE(received_bad_message());
@@ -1811,6 +1838,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
       kCookieURL, kSiteForCookies, kTopFrameOrigin,
       net::StorageAccessApiStatus::kNone,
       /*get_version_shared_memory=*/false,
+      /*is_ad_tagged=*/false,
       /*apply_devtools_overrides=*/false,
       "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned");
 

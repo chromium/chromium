@@ -143,6 +143,7 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
     const url::Origin& top_frame_origin,
     net::StorageAccessApiStatus storage_access_api_status,
     net::CookieInclusionStatus status,
+    bool is_ad_tagged,
     bool apply_devtools_overrides,
     SetCanonicalCookieCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -157,8 +158,8 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
   if (cookie.IsPartitioned() || cookieState == PrivacySetting::kStateAllowed) {
     underlying_restricted_cookie_manager_->SetCanonicalCookie(
         cookie, url, site_for_cookies, top_frame_origin,
-        storage_access_api_status, status, apply_devtools_overrides,
-        std::move(callback));
+        storage_access_api_status, status, is_ad_tagged,
+        apply_devtools_overrides, std::move(callback));
   } else {
     std::move(callback).Run(false);
   }
@@ -195,6 +196,7 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
     const url::Origin& top_frame_origin,
     net::StorageAccessApiStatus storage_access_api_status,
     bool get_version_shared_memory,
+    bool is_ad_tagged,
     bool apply_devtools_overrides,
     const std::string& cookie,
     SetCookieFromStringCallback callback) {
@@ -218,8 +220,8 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
        parsed_cookie.IsSecure())) {
     underlying_restricted_cookie_manager_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, storage_access_api_status,
-        get_version_shared_memory, apply_devtools_overrides, cookie,
-        std::move(callback));
+        get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
+        cookie, std::move(callback));
   } else {
     std::move(callback).Run(/*response=*/nullptr);
   }

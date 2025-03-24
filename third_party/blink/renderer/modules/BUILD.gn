@@ -432,6 +432,7 @@ source_set("unit_tests") {
     "canvas/canvas2d/canvas_style_test_utils.cc",
     "canvas/canvas2d/canvas_style_test_utils.h",
     "canvas/canvas2d/identifiability_study_helper_test.cc",
+    "canvas/canvas_noise_test.cc",
     "canvas/htmlcanvas/html_canvas_element_module_test.cc",
     "canvas/offscreencanvas/offscreen_canvas_rendering_api_ukm_metrics_test.cc",
     "canvas/offscreencanvas/offscreen_canvas_test.cc",

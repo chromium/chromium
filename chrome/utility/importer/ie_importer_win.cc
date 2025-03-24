@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -76,7 +77,7 @@ template <typename T>
 bool BinaryRead(T* data, size_t offset, const std::vector<uint8_t>& blob) {
   if (offset + sizeof(T) > blob.size())
     return false;
-  memcpy(data, &blob[offset], sizeof(T));
+  UNSAFE_TODO(memcpy(data, &blob[offset], sizeof(T)));
   return true;
 }
 

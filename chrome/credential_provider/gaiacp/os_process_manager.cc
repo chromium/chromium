@@ -24,6 +24,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
 #include "base/scoped_native_library.h"
@@ -448,8 +449,9 @@ HRESULT OSProcessManager::CreateProcessWithToken(
     base::win::ScopedProcessInformation* procinfo) {
   // CreateProcessWithTokenW() expects the command line to be non-const, so make
   // a copy here.
-  std::unique_ptr<wchar_t, void (*)(void*)>
-      cmdline(wcsdup(command_line.GetCommandLineString().c_str()), std::free);
+  std::unique_ptr<wchar_t, void (*)(void*)> cmdline(
+      UNSAFE_TODO(wcsdup(command_line.GetCommandLineString().c_str())),
+      std::free);
   PROCESS_INFORMATION temp_procinfo = {};
   if (!::CreateProcessWithTokenW(logon_token.Get(),
                                  LOGON_WITH_PROFILE,

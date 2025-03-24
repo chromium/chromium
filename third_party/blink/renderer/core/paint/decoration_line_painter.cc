@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
@@ -97,15 +98,15 @@ Path DecorationLinePainter::GetPathForTextLine(const gfx::PointF& pt,
                                                StrokeStyle stroke_style) {
   DCHECK_NE(stroke_style, kWavyStroke);
   const gfx::RectF line_rect = DecorationRect(pt, width, stroke_thickness);
-  Path path;
+  PathBuilder builder;
   if (ShouldUseStrokeForTextLine(stroke_style)) {
     auto [start, end] = GetSnappedPointsForTextLine(line_rect);
-    path.MoveTo(gfx::PointF(start));
-    path.AddLineTo(gfx::PointF(end));
+    builder.MoveTo(gfx::PointF(start));
+    builder.LineTo(gfx::PointF(end));
   } else {
-    path.AddRect(SnapYAxis(line_rect));
+    builder.AddRect(SnapYAxis(line_rect));
   }
-  return path;
+  return builder.Finalize();
 }
 
 void DecorationLinePainter::Paint(const Color& color,

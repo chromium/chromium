@@ -48,26 +48,27 @@ export class NavMenuElement extends CrLitElement {
     };
   }
 
-  protected menuItems_: Array<{icon: string, name: string, path: string}> = [
-    {
-      icon: 'cr:person',
-      name: 'Menu item 1',
-      path: '/path-1',
-    },
-    {
-      icon: 'cr:sync',
-      name: 'Menu item 2',
-      path: '/path-2',
-    },
-    {
-      icon: 'cr:star',
-      name: 'Menu item 3',
-      path: '/path-3',
-    },
-  ];
-  selectedIndex?: number;
-  showIcons: boolean = false;
-  showRipples: boolean = false;
+  protected accessor menuItems_:
+      Array<{icon: string, name: string, path: string}> = [
+        {
+          icon: 'cr:person',
+          name: 'Menu item 1',
+          path: '/path-1',
+        },
+        {
+          icon: 'cr:sync',
+          name: 'Menu item 2',
+          path: '/path-2',
+        },
+        {
+          icon: 'cr:star',
+          name: 'Menu item 3',
+          path: '/path-3',
+        },
+      ];
+  accessor selectedIndex: number|undefined;
+  accessor showIcons: boolean = false;
+  accessor showRipples: boolean = false;
 
   protected onSelectorClick_(e: MouseEvent) {
     e.preventDefault();

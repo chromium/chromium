@@ -7,6 +7,7 @@
 #import <memory>
 #import <utility>
 
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,6 +15,7 @@
 #import "base/types/optional_util.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -27,6 +29,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -325,4 +328,19 @@ bool IOSChromePasswordManagerClient::IsNewTabPage() const {
 safe_browsing::PasswordProtectionService*
 IOSChromePasswordManagerClient::GetPasswordProtectionService() const {
   return ChromePasswordProtectionServiceFactory::GetForProfile(bridge_.profile);
+}
+
+autofill::AutofillCrowdsourcingManager*
+IOSChromePasswordManagerClient::GetAutofillCrowdsourcingManager() {
+  if (!base::FeatureList::IsEnabled(
+          kPasswordManagerEnableCrowdsourcingUploads)) {
+    return nullptr;
+  }
+  web::WebState* web_state = bridge_.webState;
+  CHECK(web_state);
+
+  auto* autofill_client = autofill::AutofillClientIOS::FromWebState(web_state);
+  CHECK(autofill_client);
+
+  return &autofill_client->GetCrowdsourcingManager();
 }

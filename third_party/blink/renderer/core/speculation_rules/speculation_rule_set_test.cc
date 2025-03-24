@@ -163,8 +163,10 @@ MATCHER_P(HasTags, tag, std::string(tag) + " is in the tag list") {
   return false;
 }
 
-MATCHER_P(HasTag, tag, "has tag " + std::string(tag)) {
-  return arg->tag().value() == tag;
+MATCHER_P(HasRulesetLevelTag,
+          tag,
+          "has ruleset level tag " + std::string(tag)) {
+  return arg->ruleset_tag().value() == tag;
 }
 
 class SpeculationRuleSetTest : public ::testing::Test {
@@ -4442,7 +4444,8 @@ TEST_F(SpeculationRuleSetTest, ParseValidTag) {
       })",
       KURL("https://example.com/"), execution_context());
   EXPECT_THAT(rule_set->prefetch_rules(),
-              ElementsAre(HasTag("example/foo"), HasTag("example/foo")));
+              ElementsAre(HasRulesetLevelTag("example/foo"),
+                          HasRulesetLevelTag("example/foo")));
 
   // \"null\" string is valid.
   auto* rule_set2 = CreateRuleSet(
@@ -4453,7 +4456,8 @@ TEST_F(SpeculationRuleSetTest, ParseValidTag) {
         }]
       })",
       KURL("https://example.com/"), execution_context());
-  EXPECT_THAT(rule_set2->prefetch_rules(), ElementsAre(HasTag("null")));
+  EXPECT_THAT(rule_set2->prefetch_rules(),
+              ElementsAre(HasRulesetLevelTag("null")));
 }
 
 TEST_F(SpeculationRuleSetTest, InvalidTag) {

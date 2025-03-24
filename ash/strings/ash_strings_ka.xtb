@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">ენის პარამეტრების ჩვენება</translation>
 <translation id="1459693405370120464">ამინდი</translation>
 <translation id="1460620680449458626">ხმა დადუმებულია.</translation>
+<translation id="1462439140224375968">Google Doc შეიქმნა</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" />-ს, <ph name="APP2_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა</translation>
 <translation id="1467432559032391204">მარცხენა</translation>
 <translation id="146902737843070955">თქვენმა ადმინისტრატორმა მოითხოვა ეს ცვლილება</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">უსადენო ქსელის დეტალების ნახვა. უსადენო ქსელი გამორთულია.</translation>
 <translation id="3017079585324758401">ფონი</translation>
 <translation id="3018135054368884502">მედიის წინ გადახვევა</translation>
+<translation id="3026897869154397692">დაემატა Calendar-ში</translation>
 <translation id="3033545621352269033">ჩართვა</translation>
 <translation id="3033912566804961911">„<ph name="DESK_NAME" />“-ით გაგრძელება</translation>
 <translation id="3036649622769666520">გახსენით ფაილები</translation>
@@ -1012,6 +1014,7 @@
 <translation id="4351244548802238354">დიალოგის დახურვა</translation>
 <translation id="4356872429719185452">უსადენო ქსელის დეტალების ჩვენება. მიმდინარეობს უსადენო ქსელის ჩართვა.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ჩანაწერი</translation>
+<translation id="4368227575116094370">Google Sheet-ის შექმნა</translation>
 <translation id="4371348193907997655">ტრანსლირების პარამეტრები</translation>
 <translation id="4371834685492830207">PIN-კოდი უნდა შეიცავდეს მხოლოდ დაშვებულ სიმბოლოებს</translation>
 <translation id="4375482231364171368">მისამართთა ზოლში ძიება</translation>
@@ -1512,6 +1515,7 @@
 <translation id="595202126637698455">ეფექტურობის ტრასირება ჩართულია</translation>
 <translation id="5955304353782037793">პროგრამა</translation>
 <translation id="5958529069007801266">კონტროლის ქვეშ მყოფი მომხმარებელი</translation>
+<translation id="596035801491797438">სახით მართვის გამორთვა</translation>
 <translation id="5960410286721553511">ნახეთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები და მედიაფაილები</translation>
 <translation id="5965524703725988602">მუქი თემის გადართვა. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">წინ გადაადგილება ფანჯრებს შორის</translation>
@@ -1894,6 +1898,7 @@
 <translation id="7228968829656641943">მონიშნეთ ეკრანზე საძებნელად. კლავიატურით ნავიგაციისთვის დააჭირეთ Tab კლავიშს და შემდეგ — ინტერვალს.</translation>
 <translation id="7229029500464092426">მეხსიერებაა <ph name="AVAILABLE_MEMORY" /> | ჯამში <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">მაუსის ორივე კლავიში</translation>
+<translation id="7240636904654154599">Google Sheet შეიქმნა</translation>
 <translation id="7244725679040769470">დარჩენილია ბატარეის <ph name="PERCENTAGE" />%. მიაერთეთ თქვენი მოწყობილობა ელკვების წყაროს.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. გასაახლებლად ეს Chromebook საჭიროებს გადატვირთვას. ამას შეიძლება 1 წუთამდე დრო დასჭირდეს.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2409,7 @@
 <translation id="8921624153894383499">Google ასისტენტი არ საუბრობს ამ ენაზე.</translation>
 <translation id="8926951137623668982">თარო ყოველთვის დამალულია</translation>
 <translation id="8929566928381252430">Caps Lock კლავიშის გამოყენებას ცდილობთ? გამოყენება</translation>
+<translation id="8929623844713377237">კონტაქტი შეიქმნა</translation>
 <translation id="8934418770423095813">Google Doc-ის შექმნა</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ფაილი}other{# ფაილი}}</translation>
 <translation id="8936501819958976551">დეაქტივირებულია</translation>

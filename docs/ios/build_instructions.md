@@ -299,16 +299,12 @@ entitlements").
 
 The iOS build supports compiling the blink web platform. To compile blink
 set a gn arg in your `.setup-gn` file. Note the blink web platform is
-experimental code and should only be used for analysis. We currently
-disable V8 pointer compression and the caged heap because of virtual
-memory allocation issues experienced on physical iOS devices.
+experimental code and should only be used for analysis.
 
 ```
 [gn_args]
 use_blink = true
 ios_content_shell_bundle_identifier="REPLACE_YOUR_BUNDLE_IDENTIFIER_HERE"
-cppgc_enable_caged_heap = false
-v8_enable_pointer_compression = false
 ```
 Note that only certain targets support blink. `content_shell` being the
 most useful.

@@ -2235,6 +2235,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
         Anda dapat mengelola setelan dari menu kartu atau melihat opsi lainnya di Sesuaikan Chrome.</translation>
 <translation id="2514326558286966059">Buka kunci lebih cepat dengan sidik jari</translation>
 <translation id="2514465118223423406">Saat mouse terhubung</translation>
+<translation id="2514938842036917377">Tindakan ini akan menghapus <ph name="TOTAL_USAGE" /> data yang disimpan oleh <ph name="SITE_NAME" />, situs terkait, dan aplikasi yang terinstal di dalamnya</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Konfirmasi nama pengguna Anda</translation>
 <translation id="2517472476991765520">Pindai</translation>
@@ -2353,7 +2354,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2606568927909309675">Otomatis membuat teks untuk audio dan video berbahasa Inggris. Audio dan teks hanya ada di perangkat Anda.</translation>
 <translation id="2606890864830643943">Mengekspor data diagnostik</translation>
 <translation id="2607101320794533334">Info Kunci Publik Subjek</translation>
-<translation id="2608837922830967145">Jangan tampilkan pesan ini lagi</translation>
 <translation id="2609896558069604090">Buat Pintasan...</translation>
 <translation id="2609980095400624569">Tidak dapat terhubung</translation>
 <translation id="2610157865375787051">Tidur</translation>
@@ -9094,6 +9094,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7443806024147773267">Akses sandi kapan pun Anda login ke Akun Google Anda</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie akan diblokir lagi hari ini}=1{Cookie akan diblokir lagi besok}other{# hari sebelum cookie diblokir lagi}}</translation>
 <translation id="7444983668544353857">Nonaktifkan <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">Tindakan ini akan menghapus <ph name="TOTAL_USAGE" /> data yang disimpan oleh <ph name="SITE_NAME" /> dan situs terkait</translation>
 <translation id="7448430327655618736">Otomatis menginstal aplikasi</translation>
 <translation id="7448664748118305024">Hapus data yang telah disimpan oleh situs ke perangkat saat Anda menutup semua jendela</translation>
 <translation id="7450761244949417357">Membuka di <ph name="ALTERNATIVE_BROWSER_NAME" /> sekarang</translation>

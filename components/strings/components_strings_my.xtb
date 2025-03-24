@@ -507,6 +507,7 @@
 <translation id="1846432862466000825">ပလတ်စတစ် (မှတ်တမ်းဆိုင်ရာ)</translation>
 <translation id="1848640291751752317">ဒေါင်းလုဒ်များ</translation>
 <translation id="1848982255014129637">ဓာတ်ပုံ (အလွန်တောက်ပြောင်)</translation>
+<translation id="1849438148665368129">ဝယ်ယူမှုသည် <ph name="CHECKOUT_AMOUNT_MAXIMUM" /> အောက်ဖြစ်ရမည်</translation>
 <translation id="1853392626017747777">ပကတိအသွင်ကတ် စာရင်းသွင်းခြင်းကို ပိတ်လိုက်သည်</translation>
 <translation id="1854180393107901205">ကက်စ်လုပ်နေခြင်း ရပ်မည်</translation>
 <translation id="1855370856221982654">လက်ဝှေ့</translation>
@@ -2172,6 +2173,7 @@
 <translation id="4796594887379589189">အလုပ်အကောင့် ID</translation>
 <translation id="4798269756263412078">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျပါက သတိပေးချက် ရယူနိုင်သည်။ သတိပေးချက်ကို သင့်အီးမေးလ်သို့ ပို့ပါမည်။</translation>
 <translation id="4800132727771399293">သင်၏ သက်တမ်းကုန်ဆုံးရက်နှင့် CVC အား စစ်ဆေးပြီး ထပ်မံကြိုးစားပါ</translation>
+<translation id="4800546479758254481">AR ကို ခွင့်ပြုထားသည်</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">သင့်စက် စီမံခန့်ခွဲသူထံမှ လမ်းညွှန်ချက်များ-</translation>
 <translation id="4811450222531576619">၎င်း၏အကြောင်းအရာနှင့် ရင်းမြစ်အကြောင်းကို ပိုမိုလေ့လာနိုင်ပါသည်</translation>
@@ -3033,6 +3035,7 @@
 <translation id="6327065120806001832">အိမ်တွင်းကွန်ရက် သုံးခွင့်</translation>
 <translation id="6328639280570009161">ကွန်ရက် ခန့်မှန်းမှုကို ပိတ်ထားရန် ကြိုးစားပါ</translation>
 <translation id="6335029926534404762">အားကစား ဖိနပ်</translation>
+<translation id="6336948221660696475">VR ကို ခွင့်ပြုမထားပါ</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> အောက် နေရာလွတ်ပြုလုပ်ပါ။ အချို့ဝဘ်ဆိုက်များကို နောက်တစ်ကြိမ်ဖွင့်သည့်အခါ ပိုမိုနှေးကွေးစွာ ဖွင့်ပါလိမ့်မည်။</translation>
 <translation id="6337534724793800597">မူဝါဒများကို အမည်များဖြင့် စစ်ထုတ်ရန်</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> တန်ဖိုးသည် မမှန်ကန်သဖြင့် သုံးမည်မဟုတ်ပါ။</translation>
@@ -3076,6 +3079,7 @@
 <translation id="6391700400718590966">ကိုက်ညီမှုရှိသည့် လုံခြုံသောပေးချေမှုအထောက်အထားဆိုင်ရာ စာရွက်မပိတ်ထားပါ</translation>
 <translation id="6392799395081100092">စာရွက် (သားရေတု)</translation>
 <translation id="6393156038355142111">လုံခြုံမှုမြင့်သည့် စကားဝှက် အကြံပြုရန်</translation>
+<translation id="6393310910507376797">ရောင်းသူက ပံ့ပိုးမထားပါ</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> မှ ဤနေရာသို့ ကူးထည့်ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="6394852772105848029">ဤဝဘ်ဆိုက်က <ph name="APP_NAME" /> အက်ပ်ကို ဖွင့်လိုသည်</translation>
 <translation id="639673288733510393">စကူတာ၊ စက်တပ်စက်ဘီးများ</translation>
@@ -3228,6 +3232,7 @@
 <translation id="6668389483194953109">စာရွက်အရွယ်အစား အမည်ကို “စိတ်ကြိုက်” ဟု တွေ့သော်လည်း “custom_size” သတ်မှတ်ချက် အလွတ်ဖြစ်နေသည် (သို့) ပုံစံမမှန်ပါ။</translation>
 <translation id="6671169470640320959">ကားဝယ် ကားငှားရန် ငွေချေးခြင်း</translation>
 <translation id="6671697161687535275">Chromium ထဲမှ ပုံစံအကြံပြုချက်ကို ဖယ်ရှားရမလား။</translation>
+<translation id="6675846980676550611">AR ကို ခွင့်ပြုမထားပါ</translation>
 <translation id="6677351035258626477">အမြန်ပြင် အစားအသောက်</translation>
 <translation id="6679354743514146922">Chrome ဘရောင်ဇာသည် <ph name="APP_NAME" /> တွင် သင့်စကားဝှက်ကိုဖြည့်ရန် ကြိုးပမ်းနေသည်။</translation>
 <translation id="6681790815630918386">CVC သိမ်းလိုက်သည်</translation>
@@ -3716,6 +3721,7 @@
 <translation id="7512685745044087310">ဤမူဝါဒကို "အမှန်" နှင့် မဖြစ်မနေလုပ်ရန်အဖြစ် သတ်မှတ်၍မရပါ၊ ထို့ကြောင့် အကြံပြုထားသည့်အရာအဖြစ် ၎င်းကို ပြောင်းထားသည်။</translation>
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">ဤတစ်ကြိမ်တွင် VR ကို ခွင့်ပြုထားသည်</translation>
 <translation id="7517201160922869406">လမ်းကြမ်းသုံးယာဉ်</translation>
 <translation id="7517414872996418597">C10 စာအိတ်</translation>
 <translation id="7518003948725431193">ဝဘ် လိပ်စာ အတွက် ဝဘ် စာမျက်နှာများကို ရှာမတွေ့ခဲ့ပါ: <ph name="URL" /></translation>
@@ -4617,6 +4623,7 @@
 <translation id="9139318394846604261">စျေးဝယ်ခြင်း</translation>
 <translation id="9140198744651252040">Chrome ဘရောင်ဇာသည် စကားဝှက်များ အော်တိုဖြည့်ရန် လက်ဗွေကို အသုံးပြုလိုသည်</translation>
 <translation id="9141013498910525015">လိပ်စာများ စီမံရန်</translation>
+<translation id="9141672681283222114">ဤတစ်ကြိမ်တွင် AR ကို ခွင့်ပြုထားသည်</translation>
 <translation id="9143898823728499852">သင်၏ <ph name="CARD_ISSUER_NAME" /> အကောင့်ကို Google Pay နှင့် လင့်ခ်ချိတ်ထားသဖြင့် ဤကတ်ကို အော်တိုဖြည့်နိုင်သည်</translation>
 <translation id="9144951720726881238">သက်တမ်းကုန်ဆုံးရက်-</translation>
 <translation id="9145910032514306808">ထပ်မံ၍ <ph name="BEGIN_LINK" />လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" />၊ 
@@ -4674,6 +4681,7 @@
 <translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="9222403027701923763">မူလတန်းနှင့် အလယ်တန်းကျောင်းထားခြင်း (K-12)</translation>
 <translation id="93020190163435405">အလုပ်သင်</translation>
+<translation id="931598121743515856">ဝယ်ယူမှုသည် <ph name="CHECKOUT_AMOUNT_MINIMUM" /> အထက်ဖြစ်ရမည်</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385"><ph name="APP_NAME" /> အက်ပ်ကို Wi-Fi ကွန်ရက်များ စနစ်ထည့်သွင်းခွင့်ပြုမလား။</translation>
 <translation id="936602727769022409">သင်၏ Google အကောင့်ကို အသုံးပြုခွင့် ဆုံးရှုံးနိုင်သည်။ သင့်စကားဝှက်ကို ယခုပင်ပြောင်းရန် Chromium က အကြံပြုပါသည်။ သင့်အား လက်မှတ်ထိုးဝင်ခိုင်းပါမည်။</translation>
@@ -4690,6 +4698,7 @@
 <translation id="949314938206378263">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် သင်တောင်းဆိုထားသည်။ Family Link တွင် သင့်မိဘက စာပြန်နိုင်သည်။</translation>
 <translation id="950736567201356821">ထိပ်တွင် သုံးချက်ဖောက်ရန်</translation>
 <translation id="950926967802086924">လျှို့ဝှက်ကီး • Google Password Manager</translation>
+<translation id="955429569736351433">VR ကို ခွင့်ပြုထားသည်</translation>
 <translation id="95721182352849470">အဝါ ၂</translation>
 <translation id="961663415146723894">အောက်ခြေတွင် တွဲချုပ်ရန်</translation>
 <translation id="961856697154696964">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖျက်ရန်</translation>

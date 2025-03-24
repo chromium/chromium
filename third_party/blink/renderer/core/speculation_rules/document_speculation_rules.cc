@@ -663,7 +663,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
               action == mojom::blink::SpeculationAction::kPrefetch);
 
         Vector<std::optional<AtomicString>> tags;
-        tags.push_back(rule->tag());
+        tags.push_back(rule->ruleset_tag());
 
         candidates.push_back(MakeGarbageCollected<SpeculationCandidate>(
             url, action, referrer.value(),
@@ -825,8 +825,8 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
             }
 
             Vector<std::optional<AtomicString>> tags;
-            if (rule->tag() && rule->tag().has_value()) {
-              tags.push_back(rule->tag().value());
+            if (rule->ruleset_tag() && rule->ruleset_tag().has_value()) {
+              tags.push_back(rule->ruleset_tag().value());
             } else {
               tags.push_back(std::nullopt);
             }

@@ -388,10 +388,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->GetContextFromFocusedTab(*options, std::move(callback));
   }
 
-  void ActInFocusedTab(
-      const std::vector<uint8_t>& action_proto,
-      glic::mojom::GetTabContextOptionsPtr options,
-      ActInFocusedTabCallback callback) override {
+  void ActInFocusedTab(const std::vector<uint8_t>& action_proto,
+                       glic::mojom::GetTabContextOptionsPtr options,
+                       ActInFocusedTabCallback callback) override {
     glic_service_->ActInFocusedTab(action_proto, *options, std::move(callback));
   }
 
@@ -432,6 +431,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       bool enabled,
       SetMicrophonePermissionStateCallback callback) override {
     pref_service_->SetBoolean(prefs::kGlicMicrophoneEnabled, enabled);
+    if (enabled) {
+      base::RecordAction(
+          base::UserMetricsAction("GlicMicrophonePermissionEnabled"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("GlicMicrophonePermissionDisabled"));
+    }
     std::move(callback).Run();
   }
 
@@ -439,6 +445,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       bool enabled,
       SetLocationPermissionStateCallback callback) override {
     pref_service_->SetBoolean(prefs::kGlicGeolocationEnabled, enabled);
+    if (enabled) {
+      base::RecordAction(
+          base::UserMetricsAction("GlicLocationPermissionEnabled"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("GlicLocationPermissionDisabled"));
+    }
     std::move(callback).Run();
   }
 

@@ -48,8 +48,8 @@ class PLATFORM_EXPORT CompositorFilterOperations {
   size_t size() const { return filter_operations_.size(); }
 
   // Returns a rect covering the destination pixels that can be affected by
-  // source pixels in |inputRect|.
-  gfx::RectF MapRect(const gfx::RectF& input_rect) const;
+  // source pixels in `input_rect`.
+  gfx::Rect MapRect(const gfx::Rect& input_rect) const;
 
   bool HasFilterThatMovesPixels() const;
   bool HasReferenceFilter() const;

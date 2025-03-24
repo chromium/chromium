@@ -749,7 +749,8 @@ TEST_F(PaintPropertyNodeTest, ClipLocalTransformSpaceChange) {
 TEST_F(PaintPropertyNodeTest, EffectLocalTransformSpaceChange) {
   // Let effect.child1 have pixel-moving filter.
   EffectPaintPropertyNode::State state{transform.child1, clip.child1};
-  state.filter.AppendBlurFilter(20);
+  state.filter_info = std::make_unique<EffectPaintPropertyNode::FilterInfo>();
+  state.filter_info->operations.AppendBlurFilter(20);
   effect.child1->Update(*effect.ancestor, std::move(state));
 
   ResetAllChanged();

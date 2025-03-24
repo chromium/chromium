@@ -555,7 +555,7 @@ void PasswordFormManager::OnNopeUpdateClicked() {
   if (votes_uploader_.has_value()) {
     votes_uploader_->UploadPasswordVote(
         *parsed_submitted_form_, *parsed_submitted_form_,
-        autofill::NOT_NEW_PASSWORD, std::string());
+        autofill::NOT_NEW_PASSWORD, /*login_form_signature=*/std::nullopt);
   }
 }
 
@@ -563,9 +563,9 @@ void PasswordFormManager::OnNeverClicked() {
   if (votes_uploader_.has_value()) {
     // |UNKNOWN_TYPE| is sent in order to record that a generation popup was
     // shown and ignored.
-    votes_uploader_->UploadPasswordVote(*parsed_submitted_form_,
-                                        *parsed_submitted_form_,
-                                        autofill::UNKNOWN_TYPE, std::string());
+    votes_uploader_->UploadPasswordVote(
+        *parsed_submitted_form_, *parsed_submitted_form_,
+        autofill::UNKNOWN_TYPE, /*login_form_signature=*/std::nullopt);
   }
   Blocklist();
 }
@@ -577,7 +577,7 @@ void PasswordFormManager::OnNoInteraction(bool is_update) {
     votes_uploader_->UploadPasswordVote(
         *parsed_submitted_form_, *parsed_submitted_form_,
         is_update ? autofill::PROBABLY_NEW_PASSWORD : autofill::UNKNOWN_TYPE,
-        std::string());
+        /*login_form_signature=*/std::nullopt);
   }
 }
 

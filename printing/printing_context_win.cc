@@ -186,7 +186,7 @@ gfx::Size PrintingContextWin::GetPdfPaperSizeDeviceUnits() {
   wchar_t paper_type_buffer[paper_type_buffer_len] = {};
   GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IPAPERSIZE, paper_type_buffer,
                 paper_type_buffer_len);
-  if (wcslen(paper_type_buffer)) {  // The call succeeded.
+  if (UNSAFE_TODO(wcslen(paper_type_buffer))) {  // The call succeeded.
     int paper_code = _wtoi(paper_type_buffer);
     switch (paper_code) {
       case DMPAPER_LEGAL:

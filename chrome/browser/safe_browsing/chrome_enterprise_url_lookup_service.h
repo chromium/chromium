@@ -30,6 +30,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace policy {
+class ManagementService;
+}
+
 class PrefService;
 class Profile;
 
@@ -54,6 +58,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
       ReferrerChainProvider* referrer_chain_provider,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
+      policy::ManagementService* management_service,
       bool is_off_the_record,
       bool is_guest_session);
 
@@ -123,6 +128,9 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   // Unowned object used for accessing the user's Google identity.
   raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Unowned object for accessing the profile's management state.
+  raw_ptr<policy::ManagementService> management_service_;
 
   // Indicates if the service is bound to an off the record browsing session.
   bool is_off_the_record_;

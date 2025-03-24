@@ -473,30 +473,6 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
-class SplitCacheContentBrowserTestPlzDedicatedWorker
-    : public SplitCacheContentBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SplitCacheContentBrowserTestPlzDedicatedWorker() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-
-    // When the test parameter is true, we test the split cache with
-    // PlzDedicatedWorker enabled.
-    if (GetParam()) {
-      enabled_features.push_back(blink::features::kPlzDedicatedWorker);
-    } else {
-      disabled_features.push_back(blink::features::kPlzDedicatedWorker);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class SplitCacheContentBrowserTestDisabled
     : public SplitCacheContentBrowserTest {
  public:
@@ -989,7 +965,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
   EXPECT_EQ(size1, size2);
 }
 
-IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestPlzDedicatedWorker,
+IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
                        DedicatedWorkers) {
   // Load 3p.com/script from a.com's worker. The first time it's loaded from the
   // network and the second it's cached.
@@ -1035,7 +1011,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestPlzDedicatedWorker,
 
 // https://crbug.com/1218723 started flaking after Field Trial Testing Config
 // was enabled for content_browsertests.
-IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestPlzDedicatedWorker,
+IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
                        DISABLED_DedicatedWorkersScripts) {
   // Load a.com's worker. The first time the worker script is loaded from the
   // network and the second it's cached.
@@ -1104,10 +1080,6 @@ IN_PROC_BROWSER_TEST_F(SplitCacheContentBrowserTestDisabled, DedicatedWorkers) {
       GenURL("f.com", "/title1.html"), GenURL("e.com", "/title1.html"),
       GenURL("e.com", "/worker.js")));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SplitCacheContentBrowserTestPlzDedicatedWorker,
-                         ::testing::Values(true, false));
 
 class SplitCacheByIncludeCredentialsTest : public ContentBrowserTest {
  public:

@@ -873,6 +873,13 @@ void Page::SetVisibilityState(
         was_visible || is_visible) {
       main_frame_->DidChangeVisibilityState();
     }
+
+    // Ensure that autoscrolling ends whenever the page transitions to
+    // non-visible.
+    if (!is_visible) {
+      GetAutoscrollController().StopMiddleClickAutoscroll(
+          DynamicTo<LocalFrame>(GetFocusController().FocusedOrMainFrame()));
+    }
   }
 }
 

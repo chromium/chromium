@@ -2628,6 +2628,8 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/405453040 [ Mac14-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nested-root-capture-with-clip.html [ Failure ]
+crbug.com/405453040 [ Mac14-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-root-capture-with-clip.html [ Failure ]
+crbug.com/405453040 [ Mac14-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nested-root-capture-with-clip.html [ Failure ]
 [ Win11 ] external/wpt/clear-site-data/clear-cache-partitioning.https.html [ Failure Timeout ]
 [ Win10.20h2 ] external/wpt/clear-site-data/clear-cache-partitioning.https.html [ Failure Timeout ]
 [ Linux ] external/wpt/clear-site-data/clear-cache-partitioning.https.html [ Failure Timeout ]
@@ -7448,9 +7450,6 @@ crbug.com/1464614 [ Win11-arm64 ] http/tests/media/video-play-stall-before-meta-
 # Gardener 2023-07-26
 crbug.com/1364187 http/tests/misc/scroll-cross-origin-iframes.html [ Failure Pass ]
 
-# Gardener 2023-07-27
-crbug.com/1468169 external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected-font-size-math.html [ Failure Pass ]
-
 # Gardener 2023-07-31
 crbug.com/1468996 fast/events/touch/gesture/gesture-tap-active-state.html [ Failure Pass ] # flaky
 crbug.com/1468996 fast/events/touch/gesture/gesture-tap-active-state-hidden-iframe.html [ Failure Pass ] # flaky
@@ -7490,7 +7489,7 @@ crbug.com/1486131 [ Debug Linux ] external/wpt/html/browsers/history/the-history
 
 # The following tests should fail with third-party cookie not blocked.
 external/wpt/cookies/third-party-cookies/third-party-cookies.tentative.https.html [ Failure ]
-crbug.com/326123298 external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure Timeout ]
+external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure ]
 http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js [ Failure ]
 http/tests/inspector-protocol/network/response-received-extra-info-exempted-cookie.js [ Failure ]
 
@@ -7680,7 +7679,6 @@ crbug.com/326067001 [ Win11-arm64 ] external/wpt/fedcm/fedcm-authz/fedcm-userinf
 crbug.com/326067598 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/set-automatic-beacon.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326066872 [ Win11-arm64 ] virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?prefetch=true [ Failure Pass Timeout ] # Flaky
 crbug.com/40943541 [ Win11-arm64 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Failure Pass Timeout ] # Flaky
-crbug.com/326123298 virtual/third-party-cookie-phaseout-enabled/external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure Pass Timeout ]
 
 # Flaky tests: 2024-02-21
 crbug.com/40948868 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/non-standard-pseudo-elements.html [ Failure Pass Timeout ] # Flaky
@@ -8168,7 +8166,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac15 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 [ Mac15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 [ Mac15-arm64 ] compositing/webgl/webgl-with-accelerated-background-color.html [ Timeout ]
-[ Mac15-arm64 ] editing/selection/mouse/mouse-selection-horizontal.html [ Timeout ]
 [ Mac15-arm64 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-default-src-none.html [ Timeout ]
 [ Mac15-arm64 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-explicit.html [ Timeout ]
 [ Mac15-arm64 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-nopolicy.html [ Timeout ]
@@ -9013,7 +9010,7 @@ crbug.com/392640451 [ Win11 ] editing/pasteboard/4947130.html [ Failure Pass ]
 crbug.com/392640451 [ Win11-arm64 ] editing/pasteboard/4947130.html [ Failure Pass ]
 
 #Gardener 2025-02-14
-crbug.com/396564890 [ Mac12 ] external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary-viewport-covering.tentative.html [ Failure Pass ]
+crbug.com/396564890 [ Mac ] external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary-viewport-covering.tentative.html [ Failure Pass ]
 
 #Gardener 2025-12-14
 crbug.com/41378979 [ Mac ] external/wpt/client-hints/viewport-size/viewport-size-subresource.https.html [ Failure Pass ]
@@ -9081,8 +9078,6 @@ crbug.com/402796552 [ Win11-arm64 ] webaudio/Analyser/realtimeanalyser-fftsize-r
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sawtooth.html [ Failure ]
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sine.html [ Failure ]
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-square.html [ Failure ]
-crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-sideways-lr.html [ Failure ]
-crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Failure ]
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]
 

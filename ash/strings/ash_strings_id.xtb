@@ -149,6 +149,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1455242230282523554">Tampilkan setelan bahasa</translation>
 <translation id="1459693405370120464">Cuaca</translation>
 <translation id="1460620680449458626">Volume dibisukan.</translation>
+<translation id="1462439140224375968">Dokumen Google dibuat</translation>
 <translation id="14648076227129703">Tindakan ini akan mengizinkan akses kamera untuk <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, dan semua aplikasi serta situs yang memiliki izin kamera</translation>
 <translation id="1467432559032391204">Kiri</translation>
 <translation id="146902737843070955">Administrator Anda telah meminta perubahan ini</translation>
@@ -593,6 +594,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="301584155502740476">Tampilkan detail hotspot. Hotspot dinonaktifkan.</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
 <translation id="3018135054368884502">Putar maju cepat media</translation>
+<translation id="3026897869154397692">Ditambahkan ke Kalender</translation>
 <translation id="3033545621352269033">Aktif</translation>
 <translation id="3033912566804961911">Gabungkan dengan <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Buka File</translation>
@@ -1894,6 +1896,7 @@ Baru diinstal</translation>
 <translation id="7228968829656641943">Pilih untuk menelusuri layar saya. Tekan tab, lalu spasi untuk menggunakan navigasi keyboard.</translation>
 <translation id="7229029500464092426">Memori <ph name="AVAILABLE_MEMORY" /> | Total <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Kedua tombol mouse</translation>
+<translation id="7240636904654154599">Spreadsheet Google dibuat</translation>
 <translation id="7244725679040769470">Daya baterai tersisa <ph name="PERCENTAGE" />%. Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ini perlu dimulai ulang untuk menerapkan update. Proses ini dapat memerlukan waktu hingga 1 menit.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2407,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8921624153894383499">Asisten Google tidak berbicara dalam bahasa ini.</translation>
 <translation id="8926951137623668982">Rak selalu disembunyikan</translation>
 <translation id="8929566928381252430">Mencoba menggunakan Caps Lock? Gunakan</translation>
+<translation id="8929623844713377237">Kontak dibuat</translation>
 <translation id="8934418770423095813">Buat Dokumen Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">dinonaktifkan</translation>

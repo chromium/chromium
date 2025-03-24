@@ -17,6 +17,7 @@
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

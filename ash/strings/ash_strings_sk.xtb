@@ -149,6 +149,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1455242230282523554">Zobraziť nastavenia jazyka</translation>
 <translation id="1459693405370120464">Počasie</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
+<translation id="1462439140224375968">Bol vytvorený dokument Google</translation>
 <translation id="14648076227129703">Týmto povolíte prístup ku kamere aplikáciám <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="1467432559032391204">Doľava</translation>
 <translation id="146902737843070955">O túto zmenu požiadal váš správca</translation>
@@ -593,6 +594,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="301584155502740476">Zobraziť podrobnosti o hotspote Hotspot je vypnutý.</translation>
 <translation id="3017079585324758401">Pozadie</translation>
 <translation id="3018135054368884502">Pretočenie médií dopredu</translation>
+<translation id="3026897869154397692">Pridané do kalendára</translation>
 <translation id="3033545621352269033">Zapnuté</translation>
 <translation id="3033912566804961911">Zlúčiť s plochou <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Otvoriť súbory</translation>
@@ -1894,6 +1896,7 @@ Nová inštalácia</translation>
 <translation id="7228968829656641943">Výberom aktivujete vyhľadávanie na obrazovke. Ak chcete používať navigáciu klávesnicou, stlačte Tab a potom medzerník.</translation>
 <translation id="7229029500464092426">Pamäť: <ph name="AVAILABLE_MEMORY" /> | celková: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Obe tlačidlá myši</translation>
+<translation id="7240636904654154599">Bola vytvorená tabuľka Google</translation>
 <translation id="7244725679040769470">Zostávajúca batéria: <ph name="PERCENTAGE" /> %. Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tento Chromebook je potrebné reštartovať, aby bola použitá aktualizácia. Môže to trvať až jednu minútu.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2403,6 +2406,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8921624153894383499">Asistent Google nehovorí týmto jazykom.</translation>
 <translation id="8926951137623668982">Polička je vždy skrytá</translation>
 <translation id="8929566928381252430">Pokúšate sa použiť kláves Caps Lock? Použite</translation>
+<translation id="8929623844713377237">Bol vytvorený kontakt</translation>
 <translation id="8934418770423095813">Vytvoriť dokument Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 súbor}few{# súbory}many{# files}other{# súborov}}</translation>
 <translation id="8936501819958976551">deaktivované</translation>

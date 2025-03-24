@@ -237,11 +237,6 @@ Path& Path::Transform(const AffineTransform& xform) {
   return *this;
 }
 
-Path& Path::Transform(const gfx::Transform& transform) {
-  path_.transform(gfx::TransformToFlattenedSkMatrix(transform));
-  return *this;
-}
-
 float Path::length() const {
   SkScalar length = 0;
   SkPathMeasure measure(path_, false);
@@ -384,20 +379,6 @@ void Path::AddArcTo(const gfx::PointF& p1,
               WebCoreFloatToSkScalar(radius));
 }
 
-void Path::AddArcTo(const gfx::PointF& p,
-                    float radius_x,
-                    float radius_y,
-                    float x_rotate,
-                    bool large_arc,
-                    bool sweep) {
-  path_.arcTo(WebCoreFloatToSkScalar(radius_x),
-              WebCoreFloatToSkScalar(radius_y),
-              WebCoreFloatToSkScalar(x_rotate),
-              large_arc ? SkPath::kLarge_ArcSize : SkPath::kSmall_ArcSize,
-              sweep ? SkPathDirection::kCW : SkPathDirection::kCCW,
-              WebCoreFloatToSkScalar(p.x()), WebCoreFloatToSkScalar(p.y()));
-}
-
 void Path::CloseSubpath() {
   path_.close();
 }
@@ -460,11 +441,6 @@ void Path::AddArc(const gfx::PointF& p,
   AddEllipse(p, radius, radius, start_angle, end_angle);
 }
 
-void Path::AddRect(const gfx::RectF& rect) {
-  // Start at upper-left, add clock-wise.
-  path_.addRect(gfx::RectFToSkRect(rect), SkPathDirection::kCW, 0);
-}
-
 void Path::AddEllipse(const gfx::PointF& p,
                       float radius_x,
                       float radius_y,
@@ -520,14 +496,6 @@ void Path::AddPath(const Path& src, const AffineTransform& transform) {
 void Path::Translate(const gfx::Vector2dF& offset) {
   path_.offset(WebCoreFloatToSkScalar(offset.x()),
                WebCoreFloatToSkScalar(offset.y()));
-}
-
-bool Path::SubtractPath(const Path& other) {
-  return Op(path_, other.path_, kDifference_SkPathOp, &path_);
-}
-
-bool Path::UnionPath(const Path& other) {
-  return Op(path_, other.path_, kUnion_SkPathOp, &path_);
 }
 
 bool EllipseIsRenderable(float start_angle, float end_angle) {

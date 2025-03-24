@@ -271,18 +271,26 @@ IN_PROC_BROWSER_TEST_F(BrowserNotClosingPreconditionUiTest,
 }
 
 class UserNotActivePreconditionUiTest
-    : public BrowserFeaturePromoPreconditionsUiTest {
+    : public BrowserFeaturePromoPreconditionsUiTest,
+      public testing::WithParamInterface<base::TimeDelta> {
  public:
   UserNotActivePreconditionUiTest() = default;
   ~UserNotActivePreconditionUiTest() override = default;
 
+  void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        user_education::features::kUserEducationExperienceVersion2Point5,
+        {{"idle_before_heavyweight",
+          base::StringPrintf("%dms", GetParam().InMilliseconds())}});
+    less_than_activity_time_ = GetParam() / 2;
+    more_than_activity_time_ = GetParam() + base::Seconds(1);
+
+    BrowserFeaturePromoPreconditionsUiTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     BrowserFeaturePromoPreconditionsUiTest::SetUpOnMainThread();
-    less_than_activity_time_ =
-        user_education::features::GetIdleTimeBeforeHeavyweightPromo() / 2;
-    more_than_activity_time_ =
-        user_education::features::GetIdleTimeBeforeHeavyweightPromo() +
-        base::Seconds(1);
+
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     time_provider_.set_clock_for_testing(&test_clock_);
     precondition_ = std::make_unique<UserNotActivePrecondition>(*browser_view,
@@ -317,59 +325,33 @@ class UserNotActivePreconditionUiTest
   base::TimeDelta less_than_activity_time_;
   base::TimeDelta more_than_activity_time_;
 
+  base::test::ScopedFeatureList feature_list_;
   base::SimpleTestClock test_clock_;
   user_education::UserEducationTimeProvider time_provider_;
   std::unique_ptr<UserNotActivePrecondition> precondition_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest, ReturnsSuccess) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    UserNotActivePreconditionUiTest,
+    testing::Values(base::Seconds(0), base::Seconds(5)),
+    [](const testing::TestParamInfo<base::TimeDelta>& param_info) {
+      return base::StringPrintf("%dms", param_info.param.InMilliseconds());
+    });
+
+IN_PROC_BROWSER_TEST_P(UserNotActivePreconditionUiTest, ReturnsSuccess) {
   RunTestSequence(
       WaitForShow(kBrowserViewElementId),
       CheckPrecondResult(user_education::FeaturePromoResult::Success()));
 }
 
-IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
-                       ReturnsBlockedAfterMouseClick) {
-  RunTestSequence(
-      WaitForShow(kBrowserViewElementId),
-      MoveMouseTo(ContentsWebView::kContentsWebViewElementId), ClickMouse(),
-      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
-      Advance(less_than_activity_time_),
-      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
-      Advance(more_than_activity_time_),
-      CheckPrecondResult(user_education::FeaturePromoResult::Success()));
-}
-
-IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
-                       ReturnsSuccessWhenHoveringOutsideTopContainer) {
-  gfx::Point start;
-  gfx::Point finish;
-  RunTestSequence(
-      WaitForShow(kBrowserViewElementId),
-      WithView(ContentsWebView::kContentsWebViewElementId,
-               [&](views::View* contents) {
-                 // Pick a start and end point at opposite corners of the
-                 // contents pane, inset into the pane slightly.
-                 auto bounds = contents->GetBoundsInScreen();
-                 bounds.Inset(3);
-                 start = bounds.origin();
-                 finish = bounds.bottom_right();
-               }),
-      // Move to the starting point.
-      MoveMouseTo(std::ref(start)),
-      // Since the move might pass through the top container, wait long enough
-      // that it doesn't matter.
-      Advance(more_than_activity_time_),
-      CheckPrecondResult(user_education::FeaturePromoResult::Success()),
-      // Move to the ending point. Since the move does not pass through the top
-      // container, this should not affect the precondition.
-      MoveMouseTo(std::ref(finish)),
-      CheckPrecondResult(user_education::FeaturePromoResult::Success()));
-}
-
-IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
+IN_PROC_BROWSER_TEST_P(UserNotActivePreconditionUiTest,
                        ReturnsBlockedAfterKeyPress) {
+  const auto expected_result =
+      GetParam().is_zero() ? user_education::FeaturePromoResult::Success()
+                           : user_education::FeaturePromoResult::kBlockedByUi;
+
   RunTestSequence(
       WaitForShow(kBrowserViewElementId), Check([this]() {
         // Use a keypress that is is not an accelerator but won't open the
@@ -378,9 +360,7 @@ IN_PROC_BROWSER_TEST_F(UserNotActivePreconditionUiTest,
                                                ui::KeyboardCode::VKEY_SPACE,
                                                false, false, false, false);
       }),
-      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
-      Advance(less_than_activity_time_),
-      CheckPrecondResult(user_education::FeaturePromoResult::kBlockedByUi),
-      Advance(more_than_activity_time_),
+      CheckPrecondResult(expected_result), Advance(less_than_activity_time_),
+      CheckPrecondResult(expected_result), Advance(more_than_activity_time_),
       CheckPrecondResult(user_education::FeaturePromoResult::Success()));
 }

@@ -131,19 +131,25 @@ source_set("push_notification_client") {
   sources = [
     "push_notification_client.h",
     "push_notification_client.mm",
+    "push_notification_prefs.h",
+    "push_notification_prefs.mm",
   ]
   public_deps = [
     "//base",
     "//url:url",
   ]
   deps = [
+    ":constants",
     ":push_notification_client_id",
+    "//ios/chrome/browser/safety_check_notifications/utils:constants",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tips_notifications/model:utils",
     "//ios/chrome/browser/url_loading/model",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
   ]
@@ -166,6 +172,7 @@ source_set("unit_tests") {
     "push_notification_account_context_manager+testing.h",
     "push_notification_account_context_manager_unittest.mm",
     "push_notification_client_manager_unittest.mm",
+    "push_notification_client_unittest.mm",
     "push_notification_settings_util_unittest.mm",
     "push_notification_util+testing.h",
     "push_notification_util_unittest.mm",
@@ -186,15 +193,20 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//google_apis",
     "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/safety_check_notifications/utils",
+    "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features:features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/tips_notifications/model:utils",
     "//ios/chrome/test:test_support",
+    "//ios/testing:block_swizzler",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

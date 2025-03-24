@@ -2545,6 +2545,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_HISTORY_SYNC_FOOTER_WITH_EMAIL" desc="Small text above the main button on a page that asks users to start syncing their tabs and browsing history. The first sentence reminds the user that they're signed in with a certain account. The second sentence is meant to reassure users that they can always change their mind and opt out again. The third sentence explains how history data may be used to personalise the user's experience in other services. The tone should be friendly and reassuring.">
         You are signed in as <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
       </message>
+      <message name="IDS_IOS_HISTORY_SYNC_GROUP_COLLABORATION_SUBTITLE" desc="Title displayed to the user when they attempt to access or interact with a shared group.">
+        To share, join, and collaborate in tab groups, sync your history and tabs
+      </message>
+      <message name="IDS_IOS_HISTORY_SYNC_GROUP_COLLABORATION_TITLE" desc="Subtitle displayed to the user when they attempt to access or interact with a shared group.">
+        Sync tabs and history to continue
+      </message>
       <message name="IDS_IOS_HISTORY_SYNC_PRIMARY_ACTION" desc="Title of the button to validate the user consent to sync their history and tabs data.">
         Yes, I'm in
       </message>
@@ -2820,9 +2826,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL" desc="Voiceover label on the button that starts biometric authentication on a screen that blocks Incognito tabs until biometric authetication. [iOS only]">
        Unlock Incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph>
-      </message>
-      <message name="IDS_IOS_INFOBAR_BADGES_PARCEL_TRACKING_HINT" desc="Accessibility hint for the iOS infobar badge item on the omnibox for tracking packages [Length:Unlimited]">
-        Options to track packages
       </message>
       <message name="IDS_IOS_INFOBAR_BADGES_PASSWORD_HINT" desc="The iOS infobar badge item for saving password credentials [Length:Unlimited]">
         Options to save password
@@ -3915,11 +3918,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu of the parcel tracking module.">
           This card helps you keep track of your packages and give you important delivery updates.
-      </message>
-      <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_NEW_PACKAGE_TRACKED_TITLE" desc="Text for the title string of the infobar that is displayed after a new package is tracked.">
-        {COUNT, plural,
-        =1 {New package tracked}
-        other {New packages tracked}}
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_PACKAGE_ALREADY_TRACKED_TITLE" desc="Text for the title string of the infobar that is displayed when a package is already being tracked.">
         Package already tracked

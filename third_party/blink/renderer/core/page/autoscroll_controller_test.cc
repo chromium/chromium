@@ -431,4 +431,68 @@ TEST_F(AutoscrollControllerTest, TextSelectionAutoScroll) {
   EXPECT_GT(range->GetText().length(), 0u);
 }
 
+TEST_F(AutoscrollControllerTest, PageVisibilityChangeCancelsAutoscroll) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  static const char* kAutoscrollHTML = R"HTML(
+      <!DOCTYPE html>
+      <meta name='viewport' content='width=device-width'/>
+      <style>
+      html, body { margin: 0; }
+      .spacer { height: 10000px; }
+      </style>
+      <div class=spacer></div>
+    )HTML";
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(kAutoscrollHTML);
+  AutoscrollController& controller = GetAutoscrollController();
+
+  EXPECT_FALSE(controller.IsAutoscrolling());
+
+  LocalFrame* frame = GetDocument().GetFrame();
+  controller.StartMiddleClickAutoscroll(frame, GetDocument().GetLayoutView(),
+                                        gfx::PointF(), gfx::PointF());
+
+  EXPECT_TRUE(controller.IsAutoscrolling());
+
+  frame->GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
+
+  EXPECT_FALSE(controller.IsAutoscrolling());
+}
+
+TEST_F(AutoscrollControllerTest, PageLoadCancelsAutoscroll) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  static const char* kAutoscrollHTML = R"HTML(
+      <!DOCTYPE html>
+      <meta name='viewport' content='width=device-width'/>
+      <style>
+      html, body { margin: 0; }
+      .spacer { height: 10000px; }
+      </style>
+      <div class=spacer></div>
+    )HTML";
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(kAutoscrollHTML);
+  AutoscrollController& controller = GetAutoscrollController();
+
+  EXPECT_FALSE(controller.IsAutoscrolling());
+
+  LocalFrame* frame = GetDocument().GetFrame();
+  controller.StartMiddleClickAutoscroll(frame, GetDocument().GetLayoutView(),
+                                        gfx::PointF(), gfx::PointF());
+
+  EXPECT_TRUE(controller.IsAutoscrolling());
+
+  SimRequest request_2("https://example.com/test_2.html", "text/html");
+  LoadURL("https://example.com/test_2.html");
+  request_2.Complete(kAutoscrollHTML);
+
+  EXPECT_FALSE(controller.IsAutoscrolling());
+}
 }  // namespace blink

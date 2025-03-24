@@ -363,6 +363,7 @@
 <translation id="6174920971222007286">このファイルは危険な可能性があります<ph name="LINE_BREAK" />パスワードを入力すると、Chromium でダウンロードを確認します。ファイルに関する情報は Google セーフ ブラウジングに送信されますが、ファイルのコンテンツとパスワードはデバイスで保持されます。</translation>
 <translation id="6182736845697986886">更新サーバーの内部エラーが発生したため、インストールできませんでした。</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> で Chromium にログインしていることを確認してから、もう一度送信してください。</translation>
+<translation id="6196339736238974634">このプロファイルを Glic で使用するには、Chromium を開いてログインしてください</translation>
 <translation id="6212496753309875659">新しいバージョンの Chromium が既にインストールされています。ソフトウェアが動作しない場合は、Chromium をアンインストールしてからもう一度お試しください。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium は今すぐ再起動されます}=1{Chromium は 1 秒後に再起動されます}other{Chromium は # 秒後に再起動されます}}</translation>
 <translation id="6241367896540709610">ファイルをダウンロードするには、Chromium でストレージへのアクセスを許可する必要があります</translation>

@@ -12286,11 +12286,91 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Settings.Geolocation.Disabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user disables geolocation in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.Geolocation.Enabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user enables geolocation in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.Microphone.Disabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user disables microphone in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.Microphone.Enabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user enables microphone in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.TabContext.Disabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user disables tab context in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.TabContext.Enabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user enables tab context in glic settings.
+  </description>
+</action>
+
 <action name="Glic.Unpinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
     Logged anytime glic is unpinned from the tabstrip, regardless of source.
+  </description>
+</action>
+
+<action name="GlicLocationPermissionDisabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks when glic location permission is disabled from the web client.
+  </description>
+</action>
+
+<action name="GlicLocationPermissionEnabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks when glic location permission is enabled from the web client.
+  </description>
+</action>
+
+<action name="GlicMicrophonePermissionDisabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks when glic microphone permission is disabled from the web client.
+  </description>
+</action>
+
+<action name="GlicMicrophonePermissionEnabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks when glic microphone permission is enabled from the web client.
   </description>
 </action>
 
@@ -12435,14 +12515,16 @@ should be able to be added at any place in this file.
   <owner>erikchen@chromium.org</owner>
   <owner>pauladedeji@google.com</owner>
   <description>
-    Tracks when glic tab context permission is disabled.
+    Tracks when glic tab context permission is disabled from the web client.
   </description>
 </action>
 
 <action name="GlicTabContextPermissionEnabled">
   <owner>erikchen@chromium.org</owner>
   <owner>pauladedeji@google.com</owner>
-  <description>Tracks when glic tab context permission is enabled.</description>
+  <description>
+    Tracks when glic tab context permission is enabled from the web client.
+  </description>
 </action>
 
 <action name="GlicWebClientSessionEnd">
@@ -24162,6 +24244,23 @@ should be able to be added at any place in this file.
 <action name="MobileMenuShow">
   <owner>aurimas@chromium.org</owner>
   <description>User opened the app menu.</description>
+</action>
+
+<action name="MobileMenuShow.OverviewModeMenu">
+  <owner>ckitagawa@chromium.org</owner>
+  <description>
+    User opened the app menu in overview mode (AKA the hub or tab switcher).
+  </description>
+</action>
+
+<action name="MobileMenuShow.PageMenu">
+  <owner>ckitagawa@chromium.org</owner>
+  <description>User opened the app menu on a tab.</description>
+</action>
+
+<action name="MobileMenuShow.TabletEmptyModeMenu">
+  <owner>ckitagawa@chromium.org</owner>
+  <description>User opened the app menu in the empty tablet mode.</description>
 </action>
 
 <action name="MobileMenuSiteInformation">

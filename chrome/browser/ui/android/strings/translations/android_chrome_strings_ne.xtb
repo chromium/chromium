@@ -820,6 +820,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह रिस्टोर गरी नयाँ ब्याकग्राउन्ड ट्याब समूह बनाउनुहोस्।}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह रिस्टोर गरी नयाँ ब्याकग्राउन्ड ट्याब समूह बनाउनुहोस्।}}</translation>
 <translation id="4837753911714442426">पृष्ठ छाप्ने सम्बन्धी विकल्पहरू खोल्नुहोस्</translation>
 <translation id="4844633725025837809">आफ्ना पासवर्डहरू अझ सुरक्षित राख्नका निम्ति ती पासवर्डहरू आफ्नो डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गर्नुहोस्</translation>
+<translation id="4849731766219625109">आफ्नो <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाता प्रयोग गर्नुहोस्</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="4852014461738377247">साइन इन गरिँदै छ\u2026</translation>
 <translation id="4860895144060829044">कल गर्नुहोस्</translation>
@@ -1561,6 +1562,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8073388330009372546">छविलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
 <translation id="8078096376109663956">पाठ मात्र सेयर गर्नुहोस्</translation>
+<translation id="8078348702936632821">यो सर्टकट पिन गर्नुहोस्</translation>
 <translation id="8084114998886531721">सुरक्षित गरिएको पासवर्ड</translation>
 <translation id="8084285576995584326">आफ्ना Google खातामा रहेका डेटा नियन्त्रण गर्नुहोस्</translation>
 <translation id="8084864785646838999">तपाईंको केही ब्राउजिङ हिस्ट्री यहाँ नदेखिन सक्छ। आफ्नो Chrome को सबै ब्राउजिङ हिस्ट्री हेर्न Chrome को पूरै ब्राउजिङ हिस्ट्री खोल्नुहोस्। साथै, तपाईंको Google खाताको अन्य प्रकारको ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा सेभ गरिएको हुन सक्छ।</translation>

@@ -3254,21 +3254,15 @@ bool StyleEngine::HasComplexSafaAreaConstraints() {
 
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
-    if (const ComputedStyle* style = element->GetComputedStyle();
-        style && style->GetCounterDirectives()) {
-      MarkCountersDirty();
-    }
-    if (element->GetComputedStyle() &&
-        element->ComputedStyleRef().ContainsStyle()) {
-      MarkCountersDirty();
-    }
-    if (element->PseudoElementStylesAffectCounters()) {
-      MarkCountersDirty();
-    }
-    if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
-      if (element->GetComputedStyle() &&
-          element->ComputedStyleRef().ContainsStyle()) {
-        tree->RemoveScopeForElement(*element);
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (style->GetCounterDirectives() || style->ContainsStyle() ||
+          element->PseudoElementStylesAffectCounters()) {
+        MarkCountersDirty();
+      }
+      if (style->ContainsStyle()) {
+        if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
+          tree->RemoveScopeForElement(*element);
+        }
       }
     }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
@@ -3855,8 +3849,20 @@ void StyleEngine::RecalcTransitionPseudoStyle() {
   // we can optimize this to only when the pseudo element tree is dirtied.
   SelectorFilterParentScope filter_scope(
       nullptr, SelectorFilterParentScope::ScopeType::kRoot);
-  document_->documentElement()->RecalcTransitionPseudoTreeStyle(
-      view_transition_names_);
+
+  ViewTransitionUtils::ForEachTransition(
+      *document_, [&](ViewTransition& transition) {
+        Element* scope = transition.Scope();
+        if (!scope) {
+          scope = document_->documentElement();
+        }
+        if (!scope || !scope->InActiveDocument()) {
+          return;
+        }
+
+        // TODO(crbug.com/405117185): Use only the v-t-names inside the scope.
+        scope->RecalcTransitionPseudoTreeStyle(view_transition_names_);
+      });
 }
 
 void StyleEngine::RecalcStyle() {

@@ -2338,7 +2338,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2606568927909309675">Krijon automatikisht titra për audion dhe videon në anglisht. Audioja dhe titrat nuk largohen asnjëherë nga pajisja.</translation>
 <translation id="2606890864830643943">Të dhënat diagnostikuese po eksportohen</translation>
 <translation id="2607101320794533334">Informacion i çelësit publik të subjektit</translation>
-<translation id="2608837922830967145">Mos e shfaq më këtë mesazh</translation>
 <translation id="2609896558069604090">Krijo shkurtore...</translation>
 <translation id="2609980095400624569">Nuk mund të krijohej lidhje</translation>
 <translation id="2610157865375787051">Gjumë</translation>
@@ -2797,6 +2796,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2921081876747860777">Krijo një fjalëkalimin për të mbrojtur të dhënat e tua lokale.</translation>
 <translation id="2923006468155067296">Pajisja jote <ph name="DEVICE_TYPE" /> do të kyçet tani.
 <ph name="DOMAIN" /> kërkon që ti ta mbash kartën tënde smart të futur.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> detyra të tjera në të njëjtin grup detyrash: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Hiqe këtë llogari</translation>
 <translation id="2923644930701689793">Qasu te filmi i kamerës i telefonit tënd</translation>
 <translation id="292371311537977079">Cilësimet e Chrome</translation>

@@ -21110,17 +21110,6 @@ Called by update_net_error_codes.py.-->
   <int value="77" label="McAfee"/>
 </enum>
 
-<enum name="OnboardingStartupState">
-  <int value="0" label="kIneligible"/>
-  <int value="1" label="kEligibleWaitingToOnboard"/>
-  <int value="2" label="kOnboardedWaitingToAck"/>
-  <int value="3" label="kAckedGotIt"/>
-  <int value="4" label="kAckedSettings"/>
-  <int value="5" label="kAckedClosed"/>
-  <int value="6" label="kAckedLearnMore"/>
-  <int value="7" label="kAckedOther"/>
-</enum>
-
 <!-- LINT.IfChange(OnboardingUserActionMetric) -->
 
 <enum name="OnboardingUserActionMetric">
@@ -24478,12 +24467,6 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Validity period is loo long"/>
   <int value="10" label="Signature is not yet valid"/>
   <int value="11" label="Signature is expired"/>
-</enum>
-
-<enum name="SilentOnboardingStartupState">
-  <int value="0" label="kIneligible"/>
-  <int value="1" label="kEligibleWaitingToOnboard"/>
-  <int value="2" label="kOnboarded"/>
 </enum>
 
 <enum name="SimpleCache.FileDescriptorLimiterOp">

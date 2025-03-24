@@ -106,7 +106,7 @@ class MockPrintingContextWin : public PrintingContextSystemDialogWin {
     void* dev_mode_ptr = GlobalLock(dev_mode_mem.Get());
     if (!dev_mode_ptr)
       return E_FAIL;
-    memcpy(dev_mode_ptr, dev_mode, dev_mode_size);
+    UNSAFE_TODO(memcpy(dev_mode_ptr, dev_mode, dev_mode_size));
     GlobalUnlock(dev_mode_mem.Get());
     dev_mode_ptr = nullptr;
 

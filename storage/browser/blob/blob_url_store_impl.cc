@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "components/crash/core/common/crash_key.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/features.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -75,6 +76,8 @@ BlobURLStoreImpl::BlobURLStoreImpl(
     base::RepeatingCallback<
         void(const GURL&, std::optional<blink::mojom::PartitioningBlobURLInfo>)>
         partitioning_blob_url_closure,
+    base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>
+        storage_access_check_callback,
     bool partitioning_disabled_by_policy)
     : storage_key_(storage_key),
       renderer_origin_(renderer_origin),
@@ -82,6 +85,7 @@ BlobURLStoreImpl::BlobURLStoreImpl(
       registry_(std::move(registry)),
       validity_check_behavior_(validity_check_behavior),
       partitioning_blob_url_closure_(std::move(partitioning_blob_url_closure)),
+      storage_access_check_callback_(std::move(storage_access_check_callback)),
       partitioning_disabled_by_policy_(partitioning_disabled_by_policy) {}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
@@ -131,7 +135,17 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
+  storage_access_check_callback_.Run(
+      base::BindOnce(&BlobURLStoreImpl::FinishResolveAsURLLoaderFactory,
+                     weak_ptr_factory_.GetWeakPtr(), url, std::move(receiver),
+                     std::move(callback)));
+}
 
+void BlobURLStoreImpl::FinishResolveAsURLLoaderFactory(
+    const GURL& url,
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+    ResolveAsURLLoaderFactoryCallback callback,
+    bool has_storage_access_handle) {
   if (registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
                              storage_key_) ==
       BlobUrlRegistry::MappingStatus::kNotMappedCrossPartitionSameOrigin) {
@@ -139,7 +153,7 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
         base::FeatureList::IsEnabled(
             features::kBlockCrossPartitionBlobUrlFetching) &&
         !partitioning_disabled_by_policy_;
-    if (feature_and_policy_check) {
+    if (feature_and_policy_check && !has_storage_access_handle) {
       partitioning_blob_url_closure_.Run(url,
                                          blink::mojom::PartitioningBlobURLInfo::
                                              kBlockedCrossPartitionFetching);
@@ -171,7 +185,20 @@ void BlobURLStoreImpl::ResolveAsBlobURLToken(
     std::move(callback).Run(std::nullopt);
     return;
   }
+  storage_access_check_callback_.Run(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&BlobURLStoreImpl::FinishResolveAsBlobURLToken,
+                         weak_ptr_factory_.GetWeakPtr(), url, std::move(token),
+                         is_top_level_navigation, std::move(callback)),
+          false));
+}
 
+void BlobURLStoreImpl::FinishResolveAsBlobURLToken(
+    const GURL& url,
+    mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
+    bool is_top_level_navigation,
+    ResolveAsBlobURLTokenCallback callback,
+    bool has_storage_access_handle) {
   if (!is_top_level_navigation &&
       (registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
                               storage_key_) ==
@@ -180,7 +207,7 @@ void BlobURLStoreImpl::ResolveAsBlobURLToken(
         base::FeatureList::IsEnabled(
             features::kBlockCrossPartitionBlobUrlFetching) &&
         !partitioning_disabled_by_policy_;
-    if (feature_and_policy_check) {
+    if (feature_and_policy_check && !has_storage_access_handle) {
       partitioning_blob_url_closure_.Run(url,
                                          blink::mojom::PartitioningBlobURLInfo::
                                              kBlockedCrossPartitionFetching);

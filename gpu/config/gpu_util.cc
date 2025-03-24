@@ -777,8 +777,10 @@ bool EnableSwiftShaderIfNeeded(base::CommandLine* command_line,
   if (disable_software_rasterizer || blocklist_needs_more_info)
     return false;
   // Don't overwrite user preference.
-  if (command_line->HasSwitch(switches::kUseGL))
+  if (gl::GetRequestedGLImplementationFromCommandLine(command_line)
+          .has_value()) {
     return false;
+  }
   if (gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] !=
           kGpuFeatureStatusEnabled ||
       gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] !=

@@ -2222,6 +2222,7 @@
         你可以使用資訊卡選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="2514326558286966059">使用指紋快速解鎖</translation>
 <translation id="2514465118223423406">連接滑鼠時</translation>
+<translation id="2514938842036917377">這樣會刪除 <ph name="SITE_NAME" />、相關網站及已安裝應用程式儲存的資料 (共 <ph name="TOTAL_USAGE" />)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">確認你的使用者名稱</translation>
 <translation id="2517472476991765520">掃描</translation>
@@ -2340,7 +2341,6 @@
 <translation id="2606568927909309675">自動建立英文音訊和視訊的字幕。音訊和字幕絕不會外洩。</translation>
 <translation id="2606890864830643943">正在匯出診斷資料</translation>
 <translation id="2607101320794533334">主體公開金鑰資訊</translation>
-<translation id="2608837922830967145">不要再顯示這則訊息</translation>
 <translation id="2609896558069604090">建立捷徑...</translation>
 <translation id="2609980095400624569">無法建立連線</translation>
 <translation id="2610157865375787051">休眠</translation>
@@ -6501,6 +6501,7 @@
 <translation id="5575528586625653441">示範註冊要求發生問題。</translation>
 <translation id="557722062034137776">重設裝置並不會影響你的 Google 帳戶，以及任何與這些帳戶同步處理的資料。不過，所有儲存在裝置中的資料將會遭到刪除。</translation>
 <translation id="5578059481725149024">自動登入</translation>
+<translation id="5578387000057347457">輸入自訂提示或選取文字，即可生成圖像</translation>
 <translation id="5581134892342029705">翻譯為<ph name="LANGUAGE" />的作業已完成</translation>
 <translation id="558170650521898289">Microsoft Windows 硬體驅動程式驗證</translation>
 <translation id="5581972110672966454">無法將裝置加入網域。請再試一次，或與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -8643,6 +8644,7 @@
 <translation id="713122686776214250">新增網頁(&amp;G)...</translation>
 <translation id="7131431455372521159">所有 TrackPoint 均已中斷連線</translation>
 <translation id="7131896909366247105">「<ph name="APP_NAME" />」等待中</translation>
+<translation id="7132886488919643383">用 Google AI 協助閱讀、寫作及創作</translation>
 <translation id="7134098520442464001">縮小文字</translation>
 <translation id="7134951043985383439">下載的檔案有危險</translation>
 <translation id="7135729336746831607">要開啟藍牙功能嗎？</translation>
@@ -9071,6 +9073,7 @@
 <translation id="7443806024147773267">系統會在你每次登入 Google 帳戶時存取你的密碼</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{今天將再次封鎖 Cookie}=1{明天將再次封鎖 Cookie}other{# 天後將再次封鎖 Cookie}}</translation>
 <translation id="7444983668544353857">停用 <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">這樣會刪除 <ph name="SITE_NAME" /> 和相關網站儲存的資料 (共 <ph name="TOTAL_USAGE" />)</translation>
 <translation id="7448430327655618736">自動安裝應用程式</translation>
 <translation id="7448664748118305024">在所有視窗關閉後刪除網站儲存到裝置的資料</translation>
 <translation id="7450761244949417357">正在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
@@ -11673,6 +11676,7 @@
 <translation id="953434574221655299">可以偵測你使用裝置的時間</translation>
 <translation id="954705236478705408">設定新的設定檔</translation>
 <translation id="954749761428814584">語言和輸入法</translation>
+<translation id="956013912698841780">按一下滑鼠右鍵即可生成內容摘要或圖像、瞭解字義，以及提升寫作自信等等 (目前未全面開放使用)。</translation>
 <translation id="956500788634395331">系統已限制可能有害的擴充功能</translation>
 <translation id="957179356621191750">6 點</translation>
 <translation id="957960681186851048">這個網站試圖自動下載多個檔案</translation>

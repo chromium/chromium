@@ -111,7 +111,6 @@ class IOSChromePasswordManagerClient
       const override;
   password_manager::PasswordChangeServiceInterface* GetPasswordChangeService()
       const override;
-
   void NotifyUserAutoSignin(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin) override;
@@ -145,9 +144,10 @@ class IOSChromePasswordManagerClient
   void UpdateFormManagers() override;
   bool IsIsolationForPasswordSitesEnabled() const override;
   bool IsNewTabPage() const override;
-
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
+  autofill::AutofillCrowdsourcingManager* GetAutofillCrowdsourcingManager()
+      override;
 
  private:
   __weak id<IOSChromePasswordManagerClientBridge> bridge_;

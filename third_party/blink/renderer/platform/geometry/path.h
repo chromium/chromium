@@ -165,20 +165,12 @@ class PLATFORM_EXPORT Path {
                         const gfx::PointF& control_point2,
                         const gfx::PointF& end_point);
   void AddArcTo(const gfx::PointF&, const gfx::PointF&, float radius);
-  void AddArcTo(const gfx::PointF&,
-                float radius_x,
-                float radius_y,
-                float x_rotate,
-                bool large_arc,
-                bool sweep);
   void CloseSubpath();
 
   void AddArc(const gfx::PointF&,
               float radius,
               float start_angle,
               float end_angle);
-
-  void AddRect(const gfx::RectF&);
   void AddEllipse(const gfx::PointF&,
                   float radius_x,
                   float radius_y,
@@ -192,13 +184,6 @@ class PLATFORM_EXPORT Path {
 
   void Apply(void* info, PathApplierFunction) const;
   Path& Transform(const AffineTransform&);
-  Path& Transform(const gfx::Transform&);
-
-  bool SubtractPath(const Path&);
-
-  // Updates the path to the union (inclusive-or) of itself with the given
-  // argument.
-  bool UnionPath(const Path& other);
 
   // Utility factories for simple shapes.
   static Path MakeRect(const gfx::RectF&);

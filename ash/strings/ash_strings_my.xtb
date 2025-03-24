@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">ဘာသာစကားဆက်တင်များကို ပြရန်</translation>
 <translation id="1459693405370120464">မိုးလေဝသ</translation>
 <translation id="1460620680449458626">အသံ တိတ်ထားသည်။</translation>
+<translation id="1462439140224375968">Google Doc ပြုလုပ်ထားသည်</translation>
 <translation id="14648076227129703">၎င်းက <ph name="APP1_NAME" />၊ <ph name="APP2_NAME" />၊ ကင်မရာခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
 <translation id="146902737843070955">သင့်စီမံခန့်ခွဲသူက ဤပြောင်းလဲမှုအတွက် တောင်းဆိုထားသည်</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">ဟော့စပေါ့အသေးစိတ် ပြသည်။ ဟော့စပေါ့ ပိတ်လိုက်သည်။</translation>
 <translation id="3017079585324758401">နောက်ခံ</translation>
 <translation id="3018135054368884502">မီဒီယာကို ရှေ့သို့အမြန်သွားရန်</translation>
+<translation id="3026897869154397692">Calendar တွင် ထည့်ထားသည်</translation>
 <translation id="3033545621352269033">ဖွင့်ရန်</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ဖြင့် ပေါင်းစည်းနိုင်သည်</translation>
 <translation id="3036649622769666520">ဖိုင်များ ဖွင့်ရန်</translation>
@@ -1012,6 +1014,7 @@
 <translation id="4351244548802238354">ဒိုင်ယာလော့ ပိတ်ရန်</translation>
 <translation id="4356872429719185452">ဟော့စပေါ့အသေးစိတ် ပြသည်။ ဟော့စပေါ့ ဖွင့်နေသည်။</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  မှတ်တမ်းတင်နေသည်</translation>
+<translation id="4368227575116094370">Google Sheet ပြုလုပ်ရန်</translation>
 <translation id="4371348193907997655">ကာစ်ဆက်တင်များ</translation>
 <translation id="4371834685492830207">ပင်နံပါတ်တွင် သတ်မှတ်ထားသော အက္ခရာများသာ ပါဝင်ရမည်</translation>
 <translation id="4375482231364171368">လိပ်စာဘားတွင် ရှာရန်</translation>
@@ -1894,6 +1897,7 @@
 <translation id="7228968829656641943">ကျွန်ုပ်၏ဖန်သားပြင်တွင် ရှာရန် ရွေးနိုင်သည်။ ကီးဘုတ်လမ်းညွှန်အတွက် တဘ်နှိပ်ပြီးနောက် နေရာခြားခလုတ်နှိပ်ပါ။</translation>
 <translation id="7229029500464092426">မှတ်ဉာဏ် <ph name="AVAILABLE_MEMORY" /> | စုစုပေါင်း <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">မောက်စ်ခလုတ် နှစ်ခုစလုံး</translation>
+<translation id="7240636904654154599">Google Sheet ပြုလုပ်ထားသည်</translation>
 <translation id="7244725679040769470">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည်။ စက်ကို အားသွင်းပါ။</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />။ အပ်ဒိတ် အသုံးပြုနိုင်ရန်အတွက် ဤ Chromebook ကို ပြန်လည်စတင်ရန် လိုအပ်သည်။ ၎င်းက ၁ မိနစ်အထိ ကြာနိုင်သည်။</translation>
 <translation id="7256057185598509352">ExpressKey ၂</translation>
@@ -2405,6 +2409,7 @@
 <translation id="8921624153894383499">Google Assistant သည် ဤဘာသာစကားကို မသိပါ။</translation>
 <translation id="8926951137623668982">စင်ကို အမြဲ ဖျောက်ထားလိုက်ပါပြီ</translation>
 <translation id="8929566928381252430">‘စာလုံးကြီး’ အတွက် လော့ခ်ချမည့်ကီးကို သုံးရန်ကြိုးပမ်းနေသလား။ အစားသုံးရန်ကီး</translation>
+<translation id="8929623844713377237">အဆက်အသွယ် ထည့်ထားသည်</translation>
 <translation id="8934418770423095813">Google Doc ပြုလုပ်ရန်</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ဖိုင် ၁ ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="8936501819958976551">ရပ်ထားသည်</translation>

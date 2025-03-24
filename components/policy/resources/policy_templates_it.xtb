@@ -1036,6 +1036,11 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 
       Se non viene configurata, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="1675391557079742340">Attiva la codifica dei contenuti <ph name="ZSTANDARD_SHORTNAME" /> per la pubblicità nell'intestazione Accept-Encoding</translation>
+<translation id="167550754083555945">Configura i criteri del reporting su cloud.
+
+Per i dispositivi gestiti, se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, questi criteri verranno ignorati a livello di browser. Su piattaforme diverse da <ph name="PRODUCT_OS_NAME" />, questo criterio è supportato soltanto sui browser registrati con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
+
+Per i profili gestiti, se il criterio <ph name="CLOUD_PROFILE_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, questi criteri vengono ignorati a livello di profilo.</translation>
 <translation id="1678137412645922426">Controlla l'uso di <ph name="AES_KL_NAME" /> per la crittografia dello spazio di archiviazione degli utenti, se è supportata</translation>
 <translation id="1682063842123336408">Spazio libero su disco (in GB) necessario per installare <ph name="PLUGIN_VM_NAME" />.
 
@@ -2875,6 +2880,15 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="305106159605171619">Riduzione dello user agent disattivata e non attivata da Field-Trials o Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Non consentire l'utilizzo di Chrome for Testing</translation>
+<translation id="3060608694980129910">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" /> relativo agli indicatori di sicurezza per uno specifico profilo gestito.
+
+Se questo criterio viene impostato su Enabled, segnala al server di gestione dispositivi indicatori di sicurezza relativi al dispositivo, al browser e al profilo.
+
+Se questo criterio viene impostato su Disabled o se non viene configurato, la raccolta e il caricamento degli indicatori di sicurezza non verranno attivati.
+
+Il report include informazioni sull'utilizzo e sullo stato del profilo, incluse, a titolo esemplificativo, la versione del sistema operativo, la versione del browser, le estensioni installate e i criteri applicati.
+
+Questo criterio può essere impostato soltanto come policy per gli utenti cloud.</translation>
 <translation id="3063302084011279315">Disattiva Registra schermo</translation>
 <translation id="3063307261083019730">Non consentire la memorizzazione nella cache back-forward delle pagine con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" />.</translation>
 <translation id="3064530882228745118">Utilizza ricerca CNAME durante l'autenticazione Kerberos</translation>
@@ -5713,6 +5727,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5152787786897382519">Chromium e Google Chrome hanno alcuni gruppi di policy che dipendono gli uni dagli altri per fornire il controllo di una funzionalità. Questi insiemi sono rappresentati dai seguenti gruppi di policy. Dato che le policy possono avere diverse origini, vengono applicati soltanto i valori provenienti dall'origine con la priorità massima. I valori dello stesso gruppo provenienti da un'origine con priorità inferiore vengono ignorati. L'ordine di priorità è definito in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icona degli esperimenti del browser nella barra degli strumenti</translation>
 <translation id="5159674159887919923">Non inviare dati hardware aggiuntivi su ChromeOS Flex</translation>
+<translation id="5162571264806471078">Attiva il reporting su cloud degli indicatori di sicurezza nei profili gestiti</translation>
 <translation id="5162982931329320509">Elenco dei domini da risolvere tramite DNS over HTTPS. Gli altri domini non inclusi nell'elenco non verranno risolti tramite DNS over HTTPS. Questa policy viene ignorata quando la modalità DNS sicuro è disattivata (usa sempre DNS in testo normale).
 
 Se l'elenco è vuoto o non è configurato, tutti i domini verranno risolti tramite DNS over HTTPS, se possibile. Si tratta dello stesso comportamento con un elenco di domini inclusi con il valore ["*"].
@@ -6415,6 +6430,7 @@ Nota: questa policy non viene applicata alle modalità ospite o di navigazione i
       Tieni presente che è sconsigliato farlo, perché potrebbe essere consentita l'elusione dell'estensione nameConstraints, che limita i nomi host per cui può essere autorizzato un determinato certificato.
 
       Se questa norma non viene impostata, o viene impostata su false, i certificati server privi di estensione subjectAlternativeName e contenenti un nome DNS o un indirizzo IP non verranno considerati attendibili.</translation>
+<translation id="5576376485226897323">Disattiva il reporting su cloud degli indicatori di sicurezza degli utenti</translation>
 <translation id="5576377426850850084">Utilizza l'autenticazione NTLM</translation>
 <translation id="5577475143148445339">Contiene il numero di giorni e la percentuale del parco di dispositivi che dovrebbe essere aggiornata una volta trascorso il periodo indicato.</translation>
 <translation id="5582429816116769246">Consente di controllare se gli utenti possono accedere alle stampanti non aziendali.
@@ -6691,6 +6707,7 @@ Se questa policy viene disattivata o se non viene configurata, i Glanceables non
       Se la policy è impostata su False o non è configurata, le informazioni non vengono segnalate.
       Se è impostata su True, le informazioni sui VPD del dispositivo vengono segnalate.
       I Vital Product Data (VPD) sono una raccolta di dati informativi e di configurazione (come numeri di serie o di componenti) associati al dispositivo.</translation>
+<translation id="5760861224093391268">Disattiva l'autenticazione proprietaria quando invii segnalazioni di indicatori di sicurezza dell'utente</translation>
 <translation id="5762969307102447459">Disattiva la compilazione automatica per gli indirizzi</translation>
 <translation id="5765780083710877561">Descrizione:</translation>
 <translation id="5766438888216077649">Non impostare <ph name="WINDOW_OPENER_PROPERTY" /> per i link indirizzati alla pagina <ph name="BLANK_PAGE_NAME" /></translation>
@@ -6873,6 +6890,15 @@ Se la policy viene disattivata, l'audio verrà disattivato in modalità Niente d
 <translation id="5893303508158298667">Se la policy <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> è impostata su Attivata e la policy <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> viene impostata su Attivata o non viene configurata, viene consentito l'utilizzo di client remoti per usare relay server per collegarsi al computer quando non è disponibile una connessione diretta, ad esempio a causa di limitazioni del firewall.
 
       Se la policy viene impostata su Disattivata, non viene disattivato l'accesso remoto, ma sono consentite soltanto connessioni dalla stessa rete (non da NAT Traversal o relay).</translation>
+<translation id="5895049442553435093">Questo criterio consente di controllare l'utilizzo di <ph name="PRODUCT_NAME" /> dell'autenticazione utente proprietaria quando segnala gli indicatori di sicurezza utente per un determinato profilo gestito.
+
+Questo criterio è impostato su Abilitato. Verrà utilizzata l'autenticazione di terze parti durante il caricamento degli indicatori di sicurezza.
+
+Se questo criterio viene impostato su Disabled o se non viene configurato, l'autenticazione proprietaria non verrà usata quando carichi gli indicatori di sicurezza.
+
+I report sui segnali di sicurezza degli utenti vengono caricati solo quando <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> è attivato.
+
+Questo criterio può essere impostato soltanto come policy per gli utenti cloud.</translation>
 <translation id="5895569286536062756">Attiva Seleziona per ascoltare nella schermata di accesso</translation>
 <translation id="5895861015839311441">Consente di generare report sui dati di telemetria di utilizzo delle app per gli utenti affiliati.
 
@@ -9054,6 +9080,7 @@ Ora gli spazi vuoti verranno mantenuti in tutti gli URL dei dati, indipendenteme
 Se questa policy non viene configurata o se viene impostata su True, viene attivato il nuovo comportamento.
 
 Se questa policy viene impostata su False, viene attivato il comportamento precedente.</translation>
+<translation id="7366637365754181686">Attiva il reporting su cloud degli indicatori di sicurezza utente</translation>
 <translation id="7366948865469126526">Disattiva conversione unità di Risposte rapide</translation>
 <translation id="7367734504783638685">Sincronizzazione delle password tra fornitori di servizi SSO di terze parti e dispositivi Chrome</translation>
 <translation id="7372831798009983116">Attiva la funzione di accessibilità di clic automatico</translation>
@@ -10947,6 +10974,7 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="8807728576820212213">Attiva l'integrazione di Lens</translation>
 <translation id="8809082103104823938">Supporto delle GIF nel selettore di emoji</translation>
 <translation id="8812091410765157924">Consenti ai popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha aperto il popup soltanto se la pagina di apertura attiva esplicitamente questa interazione</translation>
+<translation id="8812631362927615118">Attiva l'autenticazione proprietaria quando segnali di sicurezza dell'utente vengono inviati in report</translation>
 <translation id="8816370949847593408">Potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.</translation>
 <translation id="8818768076343557335">Prevedi sempre le azioni di rete su ogni rete non cellulare.
           (obsoleto nella versione 50, rimosso nella 52. Dopo la versione 52, se viene impostato il valore 1, viene gestito come 0; prevedi le azioni di rete su qualsiasi connessione di rete).</translation>

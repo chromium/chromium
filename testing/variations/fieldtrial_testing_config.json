@@ -1621,6 +1621,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillAiIgnoreGeoIp",
+                        "AutofillAiVoteForFormatStringsFromMultipleFields",
                         "AutofillAiVoteForFormatStringsFromSingleFields",
                         "AutofillAiWithDataSchema"
                     ]
@@ -8090,12 +8091,26 @@
             ]
         }
     ],
-    "DirectCompositorThreadIpcDesktop": [
+    "DirectCompositorThreadIpcMacLinuxChromeOS": [
         {
             "platforms": [
                 "chromeos",
                 "linux",
-                "mac",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DirectCompositorThreadIpc"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DirectCompositorThreadIpcWin": [
+        {
+            "platforms": [
                 "windows"
             ],
             "experiments": [
@@ -11405,6 +11420,24 @@
             ]
         }
     ],
+    "HeapProfilerExcludeChromeOSRenderers": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "renderer-prob-pct": "0"
+                    },
+                    "enable_features": [
+                        "HeapProfilerReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeatmapPalmDetectionStudy": [
         {
             "platforms": [
@@ -12356,6 +12389,15 @@
                     "enable_features": [
                         "IOSReactivationNotifications"
                     ]
+                },
+                {
+                    "name": "ESBFirst",
+                    "params": {
+                        "reactivation_order": "8,7,1"
+                    },
+                    "enable_features": [
+                        "IOSReactivationNotifications"
+                    ]
                 }
             ]
         }
@@ -12697,21 +12739,22 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_proxy_a_ip_protection_phase_04_19_2024",
+                    "name": "enabled_baseline_2025-03-19_Stable_Perf_External",
                     "params": {
+                        "IpPrivacyAuthTokenCacheBatchSize": "64",
+                        "IpPrivacyAuthTokenCacheLowWaterMark": "16",
                         "IpPrivacyBsaEnablePrivacyPass": "true",
+                        "IpPrivacyCacheTokensByGeo": "true",
+                        "IpPrivacyDebugExperimentArm": "6",
                         "IpPrivacyDirectOnly": "false",
-                        "IpPrivacyIncludeOAuthTokenInGetProxyConfig": "true",
-                        "IpPrivacyTokenServer": "https://phosphor-pa.googleapis.com",
-                        "IpPrivacyTokenServerGetInitialDataPath": "/v1/ipblinding/getInitialData",
-                        "IpPrivacyTokenServerGetProxyConfigPath": "/v1/ipblinding/getProxyConfig",
-                        "IpPrivacyTokenServerGetTokensPath": "/v1/ipblinding/auth",
                         "IpPrivacyUseProxyChains": "true",
-                        "MaskedDomainListExperimentalVersion": "rc0"
+                        "IpPrivacyUseQuicProxies": "false",
+                        "MaskedDomainListExperimentalVersion": ""
                     },
                     "enable_features": [
                         "EnableIpPrivacyProxy",
-                        "MaskedDomainList"
+                        "MaskedDomainList",
+                        "PartitionProxyChains"
                     ]
                 }
             ]
@@ -13724,6 +13767,30 @@
             ]
         }
     ],
+    "LegacyTabStateDeprecation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Delete_Migrated_Files_After_Restore_20250319",
+                    "params": {
+                        "delete_migrated_files_after_restore": "true"
+                    },
+                    "enable_features": [
+                        "LegacyTabStateDeprecation"
+                    ]
+                },
+                {
+                    "name": "Enabled_20250319",
+                    "enable_features": [
+                        "LegacyTabStateDeprecation"
+                    ]
+                }
+            ]
+        }
+    ],
     "LightweightUAFDetector": [
         {
             "platforms": [
@@ -13900,22 +13967,6 @@
                         "LobsterDogfood",
                         "LobsterQuickInsertZeroState",
                         "LobsterRightClickMenu"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LocalWebApprovalsIos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LocalWebApprovals",
-                        "SupervisedUserBlockInterstitialV3"
                     ]
                 }
             ]
@@ -24391,6 +24442,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UploadOfficeToCloud"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UrgentMainFrameForInput": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UrgentMainFrameForInput"
                     ]
                 }
             ]

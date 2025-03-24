@@ -1615,14 +1615,30 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     return 0;
   }
 
+  UITableView* tableView = self.tableView;
+
   // If no rows in table, return 0.
-  NSArray* visibleIndexPaths = [self.tableView indexPathsForVisibleRows];
+  NSArray* visibleIndexPaths = [tableView indexPathsForVisibleRows];
   if (!visibleIndexPaths.count) {
     return 0;
   }
 
-  // Return the first visible row.
-  NSIndexPath* topMostIndexPath = [visibleIndexPaths objectAtIndex:0];
+  NSIndexPath* topMostIndexPath;
+  UIView* navigationBar = self.navigationController.navigationBar;
+  CGRect navigationBarFrame = [navigationBar.superview
+      convertRect:self.navigationController.navigationBar.frame
+           toView:nil];
+  // Take the first row that has its center visible below the navigation bar.
+  for (NSIndexPath* indexPath in visibleIndexPaths) {
+    CGRect rowFrame =
+        [tableView convertRect:[tableView rectForRowAtIndexPath:indexPath]
+                        toView:nil];
+    if (CGRectGetMidY(rowFrame) > CGRectGetMaxY(navigationBarFrame)) {
+      topMostIndexPath = indexPath;
+      break;
+    }
+  }
+
   return topMostIndexPath.row;
 }
 

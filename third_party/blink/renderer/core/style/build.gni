@@ -97,7 +97,6 @@ blink_core_sources_style = [
   "style_image_computed_css_value_builder.h",
   "style_image_set.cc",
   "style_image_set.h",
-  "style_inherited_variables.cc",
   "style_inherited_variables.h",
   "style_initial_data.cc",
   "style_initial_data.h",

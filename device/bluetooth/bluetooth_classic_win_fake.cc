@@ -5,6 +5,7 @@
 #include "device/bluetooth/bluetooth_classic_win_fake.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 
@@ -93,7 +94,7 @@ BluetoothRadio* BluetoothClassicWrapperFake::SimulateARadio(
   size_t length =
       ((name.size() > BLUETOOTH_MAX_NAME_SIZE) ? BLUETOOTH_MAX_NAME_SIZE
                                                : name.size());
-  wcsncpy(radio->radio_info.szName, base::as_wcstr(name), length);
+  UNSAFE_TODO(wcsncpy(radio->radio_info.szName, base::as_wcstr(name), length));
   radio->radio_info.address = address;
   simulated_radios_.reset(radio);
   return radio;

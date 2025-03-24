@@ -2224,6 +2224,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
         Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Prispôsobenie Chromu.</translation>
 <translation id="2514326558286966059">Rýchlejšie odomykanie odtlačkom prsta</translation>
 <translation id="2514465118223423406">Keď je pripojená myš</translation>
+<translation id="2514938842036917377">Týmto odstránite <ph name="TOTAL_USAGE" /> dát uložených webom <ph name="SITE_NAME" />, súvisiacimi webmi a nainštalovanými aplikáciami</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Potvrďte svoje používateľské meno</translation>
 <translation id="2517472476991765520">Skenovať</translation>
@@ -2342,7 +2343,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2606568927909309675">Automatické vytváranie titulkov pre zvuk a video v angličtine. Zvuk a titulky nikdy neopustia zariadenie.</translation>
 <translation id="2606890864830643943">Exportujú sa diagnostické údaje</translation>
 <translation id="2607101320794533334">Informácie verejného kľúča subjektu</translation>
-<translation id="2608837922830967145">Túto správu už nezobrazovať</translation>
 <translation id="2609896558069604090">Vytvoriť odkazy...</translation>
 <translation id="2609980095400624569">Nepodarilo sa pripojiť</translation>
 <translation id="2610157865375787051">Spánok</translation>
@@ -9085,6 +9085,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7443806024147773267">Získajte prístup k svojim heslám, keď sa prihlásite do účtu Google</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Súbory cookie budú dnes znova blokované}=1{Súbory cookie budú zajtra znova blokované}few{Do opätovného blokovania súborov cookie zostávajú # dni}many{Do opätovného blokovania súborov cookie zostáva # dňa}other{Do opätovného blokovania súborov cookie zostáva # dní}}</translation>
 <translation id="7444983668544353857">Zakázať zariadenie <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">Týmto odstránite <ph name="TOTAL_USAGE" /> dát uložených webom <ph name="SITE_NAME" /> a súvisiacimi webmi</translation>
 <translation id="7448430327655618736">Inštalujte aplikácie automaticky</translation>
 <translation id="7448664748118305024">Odstrániť dáta webov uložené v zariadení po zavretí všetkých okien</translation>
 <translation id="7450761244949417357">Otvára sa v prehliadači <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>

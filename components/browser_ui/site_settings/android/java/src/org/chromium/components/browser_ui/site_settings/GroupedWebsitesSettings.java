@@ -45,6 +45,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     // Preference keys, see grouped_websites_preferences.xml.
     public static final String PREF_SITE_TITLE = "site_title";
     public static final String PREF_CLEAR_DATA = "clear_data";
+    public static final String PREF_USAGE = "site_usage";
     public static final String PREF_RELATED_SITES = "related_sites";
     public static final String PREF_RELATED_SITES_CLEAR_DATA = "related_sites_delete_data_button";
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
@@ -353,6 +354,17 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                                     getSiteSettingsDelegate(),
                                     entry,
                                     getActivity().getLayoutInflater());
+                    // Remove preference upon single site deletion
+                    preference.setOnDeleteCallback(
+                            () -> {
+                                relatedSitesHeader.removePreference(preference);
+                                // Remove RWS section if only remaining preference is the
+                                // description
+                                if (relatedSitesHeader.getPreferenceCount() == 1) {
+                                    removePreferenceSafely(PREF_RELATED_SITES);
+                                    removePreferenceSafely(PREF_RELATED_SITES_CLEAR_DATA);
+                                }
+                            });
                     relatedSitesHeader.addPreference(preference);
                 }
                 relatedSitesClearDataButton.setOnPreferenceClickListener(
@@ -393,5 +405,14 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                     });
             category.addPreference(preference);
         }
+    }
+
+    /**
+     * Ensures preference exists before removing to avoid NPE in {@link
+     * PreferenceScreen#removePreference}.
+     */
+    private void removePreferenceSafely(CharSequence prefKey) {
+        Preference preference = findPreference(prefKey);
+        if (preference != null) getPreferenceScreen().removePreference(preference);
     }
 }

@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -136,7 +137,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
 
   // Launch the child process, requesting elevation if needed.
   SHELLEXECUTEINFO info;
-  memset(&info, 0, sizeof(info));
+  UNSAFE_TODO(memset(&info, 0, sizeof(info)));
   info.cbSize = sizeof(info);
   info.hwnd = reinterpret_cast<HWND>(parent_window_handle);
   info.lpFile = binary_path.value().c_str();

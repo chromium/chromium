@@ -759,7 +759,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     LEGACY_TAB_STATE_DEPRECATION,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);

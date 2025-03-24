@@ -48,7 +48,9 @@ mojom::blink::SpeculationCandidatePtr SpeculationCandidate::ToMojom() const {
   Vector<WTF::String> tags;
   tags.ReserveInitialCapacity(tags_.size());
   for (const std::optional<AtomicString>& tag : tags_) {
-    tags.push_back(WTF::String(tag.value()));
+    if (tag.has_value()) {
+      tags.push_back(WTF::String(tag.value()));
+    }
   }
 
   return mojom::blink::SpeculationCandidate::New(

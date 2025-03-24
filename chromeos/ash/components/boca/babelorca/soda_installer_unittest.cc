@@ -208,4 +208,51 @@ TEST_F(BabelOrcaSodaInstallerTest, DoesNotCrashIfNoCallbackError) {
       speech::GetLanguageCode(kDefaultLanguage),
       speech::SodaInstaller::ErrorCode::kUnspecifiedError);
 }
+
+TEST_F(BabelOrcaSodaInstallerTest, HandlesMultipleInstallationObservers) {
+  bool speech_recognition_available_one = false;
+  bool speech_recognition_available_two = false;
+
+  EXPECT_CALL(soda_installer_, InstallSoda).Times(1);
+  EXPECT_CALL(soda_installer_, InstallLanguage).Times(2);
+
+  installer_under_test_->GetAvailabilityOrInstall(base::BindLambdaForTesting(
+      [&speech_recognition_available_one](bool available) {
+        speech_recognition_available_one = available;
+      }));
+  installer_under_test_->GetAvailabilityOrInstall(base::BindLambdaForTesting(
+      [&speech_recognition_available_two](bool available) {
+        speech_recognition_available_two = available;
+      }));
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+      speech::GetLanguageCode(kDefaultLanguage));
+
+  ASSERT_TRUE(speech_recognition_available_one);
+  ASSERT_TRUE(speech_recognition_available_two);
+}
+
+TEST_F(BabelOrcaSodaInstallerTest,
+       HandlesMultipleInstallationObserversOnFailure) {
+  bool speech_recognition_available_one = true;
+  bool speech_recognition_available_two = true;
+
+  EXPECT_CALL(soda_installer_, InstallSoda).Times(1);
+  EXPECT_CALL(soda_installer_, InstallLanguage).Times(2);
+
+  installer_under_test_->GetAvailabilityOrInstall(base::BindLambdaForTesting(
+      [&speech_recognition_available_one](bool available) {
+        speech_recognition_available_one = available;
+      }));
+  installer_under_test_->GetAvailabilityOrInstall(base::BindLambdaForTesting(
+      [&speech_recognition_available_two](bool available) {
+        speech_recognition_available_two = available;
+      }));
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+      speech::GetLanguageCode(kDefaultLanguage));
+
+  ASSERT_FALSE(speech_recognition_available_one);
+  ASSERT_FALSE(speech_recognition_available_two);
+}
 }  // namespace ash::babelorca

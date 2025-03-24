@@ -460,12 +460,6 @@ class PasswordManager : public PasswordManagerInterface {
 
   const base::CallbackListSubscription account_store_cb_list_subscription_;
 
-  // Records all visible forms seen during a page load, in all frames of the
-  // page. When the page stops loading, the password manager checks if one of
-  // the recorded forms matches the login form from the previous page
-  // (to see if the login was a failure), and clears the vector.
-  std::vector<autofill::FormData> visible_forms_data_;
-
   // Server predictions for the forms on the page.
   std::map<autofill::FormSignature, FormPredictions> server_predictions_;
 

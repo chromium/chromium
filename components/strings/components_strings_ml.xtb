@@ -506,6 +506,7 @@
 <translation id="1846432862466000825">പ്ലാസ്റ്റിക് (ആർക്കൈവൽ)</translation>
 <translation id="1848640291751752317">ഡൗൺലോഡുകൾ</translation>
 <translation id="1848982255014129637">ഫോട്ടോ (ഹൈ ഗ്ലോസ്)</translation>
+<translation id="1849438148665368129"><ph name="CHECKOUT_AMOUNT_MAXIMUM" /> എന്നതിൽ താഴെയായിരിക്കണം വാങ്ങൽ</translation>
 <translation id="1853392626017747777">വെർച്വൽ കാർഡ് എൻറോൾമെന്റ് അടച്ചു</translation>
 <translation id="1854180393107901205">കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="1855370856221982654">ബോക്സിംഗ്</translation>
@@ -2170,6 +2171,7 @@
 <translation id="4796594887379589189">ജോബ് അക്കൗണ്ട് ഐഡി</translation>
 <translation id="4798269756263412078">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ അറിയിപ്പുകൾ നേടുക. അറിയിപ്പുകൾ നിങ്ങളുടെ ഇമെയിലിലേക്ക് അയയ്‌ക്കും.</translation>
 <translation id="4800132727771399293">നിങ്ങളുടെ കാലഹരണ തീയതിയും CVC യും പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
+<translation id="4800546479758254481">AR അനുവദിച്ചു</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">നിങ്ങളുടെ ഉപകരണ അഡ്‌മിന്റെ നിർദ്ദേശങ്ങൾ:</translation>
 <translation id="4811450222531576619">അതിന്റെ ഉറവിടത്തെയും വിഷയത്തെയും കുറിച്ച് അറിയുക</translation>
@@ -3032,6 +3034,7 @@
 <translation id="6327065120806001832">പ്രാദേശിക നെറ്റ്‌വർക്ക് ആക്‌സസ്</translation>
 <translation id="6328639280570009161">നെറ്റ്‌വർക്ക് പ്രവചനം പ്രവർത്തനരഹിതമാക്കാൻ ശ്രമിക്കുക</translation>
 <translation id="6335029926534404762">അത്‌ലെറ്റിക് ഷൂകൾ</translation>
+<translation id="6336948221660696475">VR അനുവദിച്ചിട്ടില്ല</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />-യിൽ കുറഞ്ഞ ഡാറ്റ ലാഭിക്കുന്നു.അടുത്തതവണ നിങ്ങൾ സന്ദർശിക്കുമ്പോൾ ചില സൈറ്റുകൾ ഇതിനേക്കാൾ പതുക്കെ ലോഡാകാം.</translation>
 <translation id="6337534724793800597">പേരിന്‍റെ ക്രമത്തിൽ നയങ്ങൾ ഫിൽട്ടർ ചെയ്യുക</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> എന്ന മൂല്യം അസാധുവാണ്, അത് ഉപയോഗിക്കില്ല.</translation>
@@ -3075,6 +3078,7 @@
 <translation id="6391700400718590966">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യലുമായി പൊരുത്തമില്ലാത്ത ക്രെഡൻഷ്യൽ ഷീറ്റ് അടച്ചു</translation>
 <translation id="6392799395081100092">പേപ്പർ (വെലം)</translation>
 <translation id="6393156038355142111">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക</translation>
+<translation id="6393310910507376797">വ്യാപാരി പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> -ൽ നിന്ന് ഈ ലൊക്കേഷനിൽ ഒട്ടിക്കുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="6394852772105848029">ഈ സൈറ്റിന് <ph name="APP_NAME" /> ആപ്പ് തുറക്കണമെന്നുണ്ട്</translation>
 <translation id="639673288733510393">സ്‌കൂട്ടറുകളും മോപ്പഡുകളും</translation>
@@ -3227,6 +3231,7 @@
 <translation id="6668389483194953109">പേപ്പർ വലുപ്പത്തിന്റെ പേര് "custom" എന്ന് കണ്ടെത്തി, എന്നാൽ "custom_size" പ്രോപ്പർട്ടി ശൂന്യമോ അസാധുവോ ആണ്.</translation>
 <translation id="6671169470640320959">ഓട്ടോമൊബൈൽ ഫിനാൻസിംഗ്</translation>
 <translation id="6671697161687535275">Chromium-ത്തിൽ നിന്ന് ഫോം നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
+<translation id="6675846980676550611">AR അനുവദിച്ചിട്ടില്ല</translation>
 <translation id="6677351035258626477">ഫാസ്റ്റ് ഫുഡ്</translation>
 <translation id="6679354743514146922"><ph name="APP_NAME" /> എന്നതിലെ നിങ്ങളുടെ പാസ്‌വേഡ് പൂരിപ്പിക്കാൻ Chrome ബ്രൗസർ ശ്രമിക്കുന്നു.</translation>
 <translation id="6681790815630918386">CVC സംരക്ഷിച്ചു</translation>
@@ -3713,6 +3718,7 @@
 <translation id="7512685745044087310">ഈ നയം "ശരി" എന്നും നിർബന്ധമാണ് എന്നും സജ്ജീകരിക്കാനാകില്ല, അതിനാൽ നിർദ്ദേശിക്കുന്നത് എന്നാക്കി മാറ്റി.</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">ഇപ്പോൾ മാത്രം VR അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="7517201160922869406">ഓഫ്-റോഡ് വാഹനങ്ങൾ</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">വെബ് വിലാസത്തിനായി വെബ്‌പേജൊന്നും കണ്ടെത്തിയില്ല: <ph name="URL" /></translation>
@@ -4613,6 +4619,7 @@
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">ഫിംഗർപ്രിന്റ് ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കാൻ Chrome ബ്രൗസർ ആഗ്രഹിക്കുന്നു</translation>
 <translation id="9141013498910525015">വിലാസങ്ങൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="9141672681283222114">ഇപ്പോൾ മാത്രം AR അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="9143898823728499852">നിങ്ങളുടെ <ph name="CARD_ISSUER_NAME" /> അക്കൗണ്ട്, Google Pay-യുമായി ലിങ്ക് ചെയ്‌തിരിക്കുന്നതിനാൽ നിങ്ങൾക്ക് ഈ കാർഡ് സ്വയമേവ പൂരിപ്പിക്കാനാകും</translation>
 <translation id="9144951720726881238">കാലഹരണപ്പെടല്‍‌ തീയതി:</translation>
 <translation id="9145910032514306808">വീണ്ടും <ph name="BEGIN_LINK" />സൈൻ ഇൻ ചെയ്യുക<ph name="END_LINK" />,
@@ -4670,6 +4677,7 @@
 <translation id="922152298093051471">Chrome ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="9222403027701923763">പ്രാഥമിക, സെക്കൻഡറി സ്‌കൂൾ വിദ്യാഭ്യാസം (K-12)</translation>
 <translation id="93020190163435405">ഇന്റേൺഷിപ്പുകൾ</translation>
+<translation id="931598121743515856"><ph name="CHECKOUT_AMOUNT_MINIMUM" /> എന്നതിൽ കൂടുതലായിരിക്കണം വാങ്ങൽ</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">വൈഫൈ നെറ്റ്‌വർക്കുകൾ സജ്ജീകരിക്കാൻ <ph name="APP_NAME" /> ആപ്പിനെ അനുവദിക്കണോ?</translation>
 <translation id="936602727769022409">നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടപ്പെടാനിടയുണ്ട്. ഇപ്പോൾ തന്നെ പാസ്‌വേഡ് മാറ്റാൻ Chromium ശുപാർശ ചെയ്യുന്നു. സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളോട് ആവശ്യപ്പെടും.</translation>
@@ -4686,6 +4694,7 @@
 <translation id="949314938206378263">നിങ്ങൾ ഈ സൈറ്റ് സന്ദർശിക്കാൻ ആവശ്യപ്പെട്ടു. നിങ്ങളുടെ രക്ഷിതാവിന് Family Link-ൽ മറുപടി നൽകാം.</translation>
 <translation id="950736567201356821">മുകളിൽ മൂന്ന് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="950926967802086924">പാസ്‌കീ • Google Password Manager</translation>
+<translation id="955429569736351433">VR അനുവദിച്ചു</translation>
 <translation id="95721182352849470">മഞ്ഞ 2</translation>
 <translation id="961663415146723894">താഴെ ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="961856697154696964">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കൂ</translation>

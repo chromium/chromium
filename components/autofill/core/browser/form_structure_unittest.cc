@@ -968,7 +968,10 @@ TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
                                        FormControlType::kInputPassword)});
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  EXPECT_TRUE(form_structure.has_password_field());
+  EXPECT_TRUE(
+      std::ranges::any_of(form_structure.fields(), [](const auto& field) {
+        return field->form_control_type() == FormControlType::kInputPassword;
+      }));
   EXPECT_TRUE(form_structure.ShouldBeQueried());
   EXPECT_TRUE(form_structure.ShouldBeUploaded());
 }

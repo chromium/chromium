@@ -28,6 +28,8 @@ class TestInlineLoginDialog : public InlineLoginDialog {
   using SystemWebDialogDelegate::dialog_window;
 };
 
+}  // namespace
+
 // A simulated modal dialog. Taking focus seems important to repro the crash,
 // but I'm not sure why.
 class ChildModalDialogDelegate : public views::DialogDelegateView {
@@ -45,8 +47,6 @@ class ChildModalDialogDelegate : public views::DialogDelegateView {
   ChildModalDialogDelegate& operator=(const ChildModalDialogDelegate&) = delete;
   ~ChildModalDialogDelegate() override = default;
 };
-
-}  // namespace
 
 using InlineLoginDialogTest = InProcessBrowserTest;
 

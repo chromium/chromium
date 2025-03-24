@@ -2232,6 +2232,7 @@
         از منوِ کارت می‌توانید تنظیمات را مدیریت کنید یا در «سفارشی‌سازی Chrome» گزینه‌های بیشتری را ببینید.</translation>
 <translation id="2514326558286966059">باز کردن سریع‌تر قفل با اثر انگشت</translation>
 <translation id="2514465118223423406">وقتی موشواره متصل است</translation>
+<translation id="2514938842036917377">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که <ph name="SITE_NAME" />، سایت‌های مرتبط، و برنامه‌های نصب‌شده ذخیره کرده‌اند حذف خواهد شد</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">نام کاربری‌تان را تأیید کنید</translation>
 <translation id="2517472476991765520">اسکن</translation>
@@ -2350,7 +2351,6 @@
 <translation id="2606568927909309675">به‌طور خودکار برای صدا و ویدیو  انگلیسی زیرنویس ناشنوایان ایجاد می‌کند. صداها و زیرنویس ناشنوایان هرگز از دستگاهتان خارج نمی‌شوند.</translation>
 <translation id="2606890864830643943">درحال صادر کردن داده‌های عیب‌یابی</translation>
 <translation id="2607101320794533334">اطلاعات کلید عمومی موضوع</translation>
-<translation id="2608837922830967145">این پیام دوباره نشان داده نشود</translation>
 <translation id="2609896558069604090">ایجاد میان‌برها...</translation>
 <translation id="2609980095400624569">اتصال برقرار نشد</translation>
 <translation id="2610157865375787051">خواب</translation>
@@ -9094,6 +9094,7 @@
 <translation id="7443806024147773267">‏هروقت به سیستم حساب Google وارد می‌شوید، به گذرواژه‌هایتان دسترسی داشته باشید</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{کوکی‌ها امروز دوباره مسدود خواهد شد}=1{کوکی‌ها فردا دوباره مسدود خواهد شد}one{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}other{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}}</translation>
 <translation id="7444983668544353857">غیر فعال کردن <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">با این کار <ph name="TOTAL_USAGE" /> از داده‌هایی که <ph name="SITE_NAME" /> و سایت‌های مرتبط ذخیره کرده‌اند حذف خواهد شد</translation>
 <translation id="7448430327655618736">نصب خودکار برنامه‌ها</translation>
 <translation id="7448664748118305024">داده‌هایی که سایت در دستگاه ذخیره کرده است با بسته شدن همه پنجره‌ها حذف شود</translation>
 <translation id="7450761244949417357">اکنون درحال باز کردن در <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>

@@ -6,6 +6,7 @@
 #define NET_HTTP_HTTP_CONTENT_DISPOSITION_H_
 
 #include <string>
+#include <string_view>
 
 #include "net/base/net_export.h"
 
@@ -69,8 +70,10 @@ class NET_EXPORT HttpContentDisposition {
 
  private:
   void Parse(const std::string& header, const std::string& referrer_charset);
-  std::string::const_iterator ConsumeDispositionType(
-      std::string::const_iterator begin, std::string::const_iterator end);
+
+  // Parses the content disposition type, if present, and sets `type_`. Returns
+  // `header` with the content disposition type removed.
+  std::string_view ConsumeDispositionType(std::string_view header);
 
   Type type_ = INLINE;
   std::string filename_;

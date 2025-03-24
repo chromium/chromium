@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">భాష సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="1459693405370120464">వాతావరణం</translation>
 <translation id="1460620680449458626">వాల్యూమ్ మ్యూట్ చేయబడింది.</translation>
+<translation id="1462439140224375968">Google Doc క్రియేట్ చేయబడింది</translation>
 <translation id="14648076227129703">ఇది కెమెరా అనుమతితో <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> అన్ని యాప్‌లు, వెబ్‌సైట్‌ల కోసం కెమెరా యాక్సెస్‌ను అనుమతిస్తుంది</translation>
 <translation id="1467432559032391204">ఎడమ</translation>
 <translation id="146902737843070955">మీ అడ్మినిస్ట్రేటర్ ఈ మార్పును రిక్వెస్ట్ చేశారు</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">హాట్‌స్పాట్ వివరాలను చూడండి. హాట్‌స్పాట్ ఆఫ్‌లో ఉంది.</translation>
 <translation id="3017079585324758401">నేపథ్యం</translation>
 <translation id="3018135054368884502">ఫాస్ట్ ఫార్వర్డ్ మీడియా</translation>
+<translation id="3026897869154397692">క్యాలెండర్‌కు జోడించబడింది</translation>
 <translation id="3033545621352269033">ఆన్</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" />‌తో కలపండి</translation>
 <translation id="3036649622769666520">ఫైళ్ళను తెరువు</translation>
@@ -1013,6 +1015,7 @@
 <translation id="4351244548802238354">డైలాగ్‌ను మూసివేయండి</translation>
 <translation id="4356872429719185452">హాట్‌స్పాట్ వివరాలను చూడండి. హాట్‌స్పాట్ ఆన్ చేయబడుతోంది.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  రికార్డింగ్</translation>
+<translation id="4368227575116094370">Google షీట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="4371348193907997655">ప్రసార సెట్టింగ్‌లు</translation>
 <translation id="4371834685492830207">PIN తప్పనిసరిగా చెల్లుబాటు అయ్యే క్యారెక్టర్‌లను మాత్రమే కలిగి ఉండాలి</translation>
 <translation id="4375482231364171368">అడ్రస్ బార్‌లో సెర్చ్ చేయండి</translation>
@@ -1895,6 +1898,7 @@
 <translation id="7228968829656641943">నా స్క్రీన్‌ను సెర్చ్ చేయడానికి ఎంచుకోండి. కీబోర్డ్ నావిగేషన్ కోసం tab నొక్కి, ఆపై space నొక్కండి.</translation>
 <translation id="7229029500464092426">మెమరీ <ph name="AVAILABLE_MEMORY" /> | మొత్తం <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">రెండు మౌస్ బటన్లు</translation>
+<translation id="7240636904654154599">Google Sheet క్రియేట్ చేయబడింది</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% బ్యాటరీ మిగిలి ఉంది. మీ పరికరాన్ని పవర్‌కు కనెక్ట్ చేయండి.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. ఒక అప్‌డేట్‌ను వర్తింపజేయడానికి ఈ Chromebookను రీస్టార్ట్ చేయాలి. దీనికి 1 నిమిషం వరకు పట్టవచ్చు.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2409,7 @@
 <translation id="8921624153894383499">Google సహాయకం ఈ భాషను మాట్లాడదు.</translation>
 <translation id="8926951137623668982">అర ఎల్లప్పుడూ దాచబడుతుంది</translation>
 <translation id="8929566928381252430">Caps Lockను ట్రై చేయాలనుకుంటున్నారా? దీన్ని ఉపయోగించండి</translation>
+<translation id="8929623844713377237">కాంటాక్ట్ క్రియేట్ చేయబడింది</translation>
 <translation id="8934418770423095813">Google డాక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="8936501819958976551">డీయాక్టివేట్ చేయబడింది</translation>

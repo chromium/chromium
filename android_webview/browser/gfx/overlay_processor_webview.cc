@@ -597,7 +597,8 @@ class OverlayProcessorWebView::Manager
       transaction.SetBuffer(surface, buffer, resource->TakeBeginReadFence());
 
       if (gfx::SurfaceControl::SupportsSetFrameRate()) {
-        transaction.SetFrameRate(surface, resource->frame_rate());
+        transaction.SetFrameRate(surface,
+                                 {.frame_rate = resource->frame_rate()});
       }
     } else {
       // Android T has a bug where setting empty buffer to ASurfaceControl will

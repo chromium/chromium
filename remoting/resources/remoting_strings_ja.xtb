@@ -40,6 +40,7 @@
 <translation id="2758123043070977469">認証中に問題が発生しました。ログインし直してください。</translation>
 <translation id="2803375539583399270">PIN を入力</translation>
 <translation id="2919669478609886916">現在このパソコンを別のユーザーと共有しています。共有を継続しますか？</translation>
+<translation id="2929683002824598593">デバイスを共有</translation>
 <translation id="2939145106548231838">ホストへの認証</translation>
 <translation id="3027681561976217984">タップモード</translation>
 <translation id="3106379468611574572">リモートのパソコンが接続リクエストに応答しません。リモートのパソコンがネットワークに接続していることを確認して、もう一度お試しください。</translation>
@@ -117,10 +118,12 @@
 <translation id="6178645564515549384">リモート アシスタンス用のネイティブ·メッセージング·ホスト</translation>
 <translation id="618120821413932081">リモート デスクトップの解像度をウィンドウに合わせて更新します</translation>
 <translation id="6223301979382383752">[画面の録画] 設定を開く</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> さんがあなたの画面を表示して、キーボードとマウスを操作する権限をリクエストしています。デバイスを共有しますか？</translation>
 <translation id="6284412385303060032">コンソールのログイン画面で実行されるホストは、カーテンモードをサポートするために終了されました（ユーザー固有のセッションで実行されるホストに切り替えられました）。</translation>
 <translation id="6542902059648396432">問題を報告…</translation>
 <translation id="6583902294974160967">サポート</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del を送信</translation>
+<translation id="6625262630437221505">{0,plural, =1{何も操作しない場合、デバイスは # 秒後に共有を自動的に開始します。}other{何も操作しない場合、デバイスは # 秒後に共有を自動的に開始します。}}</translation>
 <translation id="6654753848497929428">共有</translation>
 <translation id="677755392401385740">次のユーザーのホストを開始しました: <ph name="HOST_USERNAME" />。</translation>
 <translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> クライアントで URL を開くヘルパー アプリケーション</translation>

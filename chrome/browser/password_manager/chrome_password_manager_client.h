@@ -94,6 +94,7 @@ class DeviceAuthenticator;
 
 namespace password_manager {
 class FieldInfoManager;
+class PasswordCredentialFillerImpl;
 class WebAuthnCredentialsDelegate;
 class CredManController;
 class KeyboardReplacingSurfaceVisibilityController;
@@ -164,9 +165,7 @@ class ChromePasswordManagerClient
 
   void ShowKeyboardReplacingSurface(
       password_manager::PasswordManagerDriver* driver,
-      const password_manager::PasswordFillingParams& password_filling_params,
-      bool is_webauthn_form,
-      base::OnceCallback<void(bool)> shown_cb) override;
+      const autofill::PasswordSuggestionRequest& request) override;
 #endif
 
   bool IsReauthBeforeFillingRequired(
@@ -398,8 +397,8 @@ class ChromePasswordManagerClient
 
   void ShowKeyboardReplacingSurfaceOnAccountStorageNoticeDone(
       base::WeakPtr<password_manager::ContentPasswordManagerDriver> weak_driver,
-      const password_manager::PasswordFillingParams& password_filling_params,
-      base::OnceCallback<void(bool)> shown_cb);
+      autofill::TriggeringField triggering_field,
+      std::unique_ptr<password_manager::PasswordCredentialFillerImpl> filler);
 #endif
 
   // content::WebContentsObserver overrides.

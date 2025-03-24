@@ -149,6 +149,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1455242230282523554">Arată setările pentru limbă</translation>
 <translation id="1459693405370120464">Meteo</translation>
 <translation id="1460620680449458626">Sunetul este dezactivat.</translation>
+<translation id="1462439140224375968">S-a creat un Document Google</translation>
 <translation id="14648076227129703">Astfel, accesul la cameră este permis pentru <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> și toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="1467432559032391204">Stânga</translation>
 <translation id="146902737843070955">Administratorul a solicitat această modificare</translation>
@@ -593,6 +594,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="301584155502740476">Afișează detaliile despre hotspot. Hotspotul este dezactivat.</translation>
 <translation id="3017079585324758401">Fundal</translation>
 <translation id="3018135054368884502">Conținut media cu derulare rapidă</translation>
+<translation id="3026897869154397692">S-a adăugat în Calendar</translation>
 <translation id="3033545621352269033">Activat</translation>
 <translation id="3033912566804961911">Combină cu <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Deschide fișierele</translation>
@@ -1894,6 +1896,7 @@ Instalare nouă</translation>
 <translation id="7228968829656641943">Selectează pentru a căuta pe ecran. Apasă pe tasta Tab, apoi pe bara de spațiu pentru a naviga pe tastatură.</translation>
 <translation id="7229029500464092426">Memorie <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="7239814253344511868">Ambele butoane ale mouse-ului</translation>
+<translation id="7240636904654154599">S-a creat o Foaie de calcul Google</translation>
 <translation id="7244725679040769470">Baterie rămasă: <ph name="PERCENTAGE" /> %. Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este necesară repornirea Chromebookului pentru aplicarea unei actualizări. Poate dura cel mult un minut.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2407,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8921624153894383499">Asistentul Google nu vorbește în această limbă.</translation>
 <translation id="8926951137623668982">Raftul este ascuns mereu</translation>
 <translation id="8929566928381252430">Încerci să folosești Caps Lock? Folosește</translation>
+<translation id="8929623844713377237">Persoana de contact a fost creată</translation>
 <translation id="8934418770423095813">Creează un document Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="8936501819958976551">dezactivată</translation>

@@ -407,6 +407,7 @@
 <translation id="1264956950255940376">Կիսափակ արեք ձախ աչքը</translation>
 <translation id="1265094893042958831">Այս էջի համար առաջարկների ստեղծում…</translation>
 <translation id="1265279736024499987">Ձեր հավելվածներն ու կարգավորումները կհամաժամացվեն բոլոր ChromeOS Flex սարքերում, որոնցում մտել եք ձեր Google հաշիվ։ Դիտարկիչներում համաժամացման տարբերակներին ծանոթանալու համար անցեք <ph name="LINK_BEGIN" />Chrome-ի կարգավորումներ<ph name="LINK_END" />։</translation>
+<translation id="1267081565119405990">Սքրինշոթ անելուց կամ էկրանին որոնելուց հետո ցույց տալ այլ գործողություններ, օրինակ՝ «Սվելացնել Օրացույցում», «Ստեղծել Google փաստաթուղթ» և այլն։</translation>
 <translation id="126710816202626562">Թարգմանության լեզուն՝</translation>
 <translation id="1267649802567297774">Գեներացված պատկեր <ph name="INDEX" />՝ <ph name="SUBJECT" /> թեմայով, <ph name="STYLE" /> ոճով, <ph name="MOOD" /> տրամադրությամբ։</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1572,6 +1573,7 @@
 <translation id="208547068587548667">Մուտք գործել <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">Նորից փորձեք</translation>
 <translation id="208634871997892083">Միշտ ակտիվ VPN</translation>
+<translation id="208654914566977272">Էկրանին որոնելու ժամանակ առաջարկվող գործողություններ</translation>
 <translation id="2087822576218954668">Տպում՝ <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Գրանցվել կարելի է միայն <ph name="DEVICE_OS" />-ի տեղադրումից հետո։</translation>
 <translation id="2088564884469682888">Ներկառուցված TrackPoint</translation>
@@ -2340,7 +2342,6 @@
 <translation id="2606568927909309675">Ավտոմատ ստեղծում է ենթագրեր անգլերեն լեզվով մեդիա բովանդակության համար։ Աուդիո բովանդակությունն ու ենթագրերը պահվում են միայն ձեր սարքում։</translation>
 <translation id="2606890864830643943">Դիագնոստիկ տվյալների բեռնում</translation>
 <translation id="2607101320794533334">Տեղեկություններ սուբյեկտի հանրային բանալու մասին</translation>
-<translation id="2608837922830967145">Այլևս ցույց չտալ այս հաղորդագրությունը</translation>
 <translation id="2609896558069604090">Ստեղծել դյուրանցումներ…</translation>
 <translation id="2609980095400624569">Չհաջողվեց կապ հաստատել հեռախոսի հետ</translation>
 <translation id="2610157865375787051">Քուն</translation>
@@ -2799,6 +2800,7 @@
 <translation id="2921081876747860777">Ձեր տեղային տվյալները պաշտպանելու համար ստեղծեք գաղտնաբառ:</translation>
 <translation id="2923006468155067296">Ձեր <ph name="DEVICE_TYPE" /> սարքն այժմ կկողպվի։
 Համաձայն <ph name="DOMAIN" /> տիրույթի կանոնների՝ խելացի քարտը պետք է տեղադրված լինի։</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />։ <ph name="OTHER_TASK_NUM" /> այլ առաջադրանքներ նույն աշխատանքային խմբում՝ <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />։ <ph name="OTHER_TASK_NUM" /> այլ առաջադրանքներ նույն աշխատանքային խմբում՝ <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Հեռացնել հաշիվը</translation>
 <translation id="2923644930701689793">Բացեք ձեր հեռախոսի ֆոտոժապավենը</translation>
 <translation id="292371311537977079">Chrome-ի կարգավորումներ</translation>

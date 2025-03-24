@@ -42,8 +42,6 @@ void ExpectDictValue(const Value& expected_value,
                      const Value::Dict& dict,
                      std::string_view path);
 
-void ExpectStringValue(const std::string& expected_str, const Value& actual);
-
 namespace test {
 
 namespace internal {

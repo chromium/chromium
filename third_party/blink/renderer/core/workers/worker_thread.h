@@ -333,12 +333,17 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // the parent thread.
   void EnsureScriptExecutionTerminates(ExitCode) LOCKS_EXCLUDED(lock_);
 
-  // These are called in this order during worker thread startup.
-  void InitializeSchedulerOnWorkerThread(base::WaitableEvent*);
+  // Called during worker startup.
   void InitializeOnWorkerThread(
       std::unique_ptr<GlobalScopeCreationParams>,
       const std::optional<WorkerBackingThreadStartupData>&,
       std::unique_ptr<WorkerDevToolsParams>) LOCKS_EXCLUDED(lock_);
+
+  // Barrier that ensures that task runners are initialized. After
+  // initialization, immediately returns. The barrier guards a small window
+  // during initialization where task runners are not set up yet and unusable
+  // from other threads.
+  void MakeSureTaskRunnersAreInitialized();
 
   void EvaluateClassicScriptOnWorkerThread(
       const KURL& script_url,
@@ -448,6 +453,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   using TaskRunnerHashMap =
       HashMap<TaskType, scoped_refptr<base::SingleThreadTaskRunner>>;
   TaskRunnerHashMap worker_task_runners_;
+  std::atomic<bool> worker_task_runners_initialized_{false};
 
   // This lock protects shared states between the parent thread and the worker
   // thread. See thread-safety annotations (e.g., GUARDED_BY) in this header

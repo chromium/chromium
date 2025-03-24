@@ -506,6 +506,7 @@
 <translation id="1846432862466000825">بلاستيك (أرشفة)</translation>
 <translation id="1848640291751752317">عمليات التنزيل</translation>
 <translation id="1848982255014129637">تصوير (شديد اللمعان)</translation>
+<translation id="1849438148665368129">‏يجب أن تكون قيمة الشراء أقل من ‎<ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">تم إغلاق تسجيل البطاقة الافتراضية.</translation>
 <translation id="1854180393107901205">إيقاف البث</translation>
 <translation id="1855370856221982654">ملاكمة</translation>
@@ -2173,6 +2174,7 @@
 <translation id="4796594887379589189">رقم تعريف حساب المهمة</translation>
 <translation id="4798269756263412078">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني. سيتم إرسال التنبيهات إلى عنوان بريدك الإلكتروني.</translation>
 <translation id="4800132727771399293">‏تحقق من تاريخ انتهاء الصلاحية ورمز التحقق من البطاقة (CVC) وأعد المحاولة مرة أخرى.</translation>
+<translation id="4800546479758254481">تم السماح باستخدام الواقع المعزّز</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">تعليمات من مشرف الجهاز:</translation>
 <translation id="4811450222531576619">الاطّلاع على مصدر الصفحة وموضوعها</translation>
@@ -3035,6 +3037,7 @@
 <translation id="6327065120806001832">الوصول إلى الشبكة المحلية</translation>
 <translation id="6328639280570009161">تجربة إيقاف التنبؤ بإجراءات الشبكة</translation>
 <translation id="6335029926534404762">أحذية رياضية</translation>
+<translation id="6336948221660696475">غير مسموح باستخدام الواقع الافتراضي</translation>
 <translation id="6337133576188860026">سيتم تفريغ أقل من <ph name="SIZE" />. وقد يكون تحميل بعض المواقع الإلكترونية أبطأ عند زيارتها في المرة القادمة.</translation>
 <translation id="6337534724793800597">فلترة السياسات حسب الاسم</translation>
 <translation id="633770708279464947">قيمة <ph name="SECURE_DNS_SALT" /> غير صالحة ولن يتم استخدامها.</translation>
@@ -3078,6 +3081,7 @@
 <translation id="6391700400718590966">تم إغلاق صفحة عدم تطابق بيانات اعتماد الدفع الآمن.</translation>
 <translation id="6392799395081100092">ورق (رق)</translation>
 <translation id="6393156038355142111">اقتراح كلمة مرور قوية</translation>
+<translation id="6393310910507376797">خيار غير متاح لدى التاجر</translation>
 <translation id="6393956493820063117">تحظر سياسة المشرف إمكانية اللصق من <ph name="ORIGIN_NAME" /> إلى هذا المكان.</translation>
 <translation id="6394852772105848029">يريد هذا الموقع الإلكتروني فتح تطبيق <ph name="APP_NAME" />.</translation>
 <translation id="639673288733510393">دراجات سكوتر ودراجات نارية صغيرة</translation>
@@ -3230,6 +3234,7 @@
 <translation id="6668389483194953109">‏تم العثور على اسم حجم الورقة "custom"، إلا أنّ السمة "custom_size" فارغة أو غير صالحة.</translation>
 <translation id="6671169470640320959">تمويل قروض سيارات</translation>
 <translation id="6671697161687535275">‏هل تريد إزالة اقتراح النموذج من Chromium؟</translation>
+<translation id="6675846980676550611">غير مسموح باستخدام الواقع المعزَّز</translation>
 <translation id="6677351035258626477">وجبات سريعة</translation>
 <translation id="6679354743514146922">‏يحاول متصفِّح Chrome إدخال كلمة مرورك على <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">‏تم حفظ رمز التحقّق من البطاقة (CVC)</translation>
@@ -3718,6 +3723,7 @@
 <translation id="7512685745044087310">يتعذّر إعداد هذه السياسة لتكون مفعّلة وإلزامية، لذا تم تغييرها إلى "موصى بها".</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">تم السماح باستخدام الواقع الافتراضي هذه المرّة</translation>
 <translation id="7517201160922869406">مركبات للطرق الوعرة</translation>
 <translation id="7517414872996418597">‏ظرف C10</translation>
 <translation id="7518003948725431193">لم يتم العثور على أي صفحة ويب لعنوان الويب:<ph name="URL" /></translation>
@@ -4621,6 +4627,7 @@
 <translation id="9139318394846604261">التسوّق</translation>
 <translation id="9140198744651252040">‏يطلب متصفِّح Chrome استخدام بصمة الإصبع لملء كلمات المرور تلقائيًا</translation>
 <translation id="9141013498910525015">إدارة العناوين الجغرافية</translation>
+<translation id="9141672681283222114">تم السماح باستخدام الواقع المعزّز هذه المرّة</translation>
 <translation id="9143898823728499852">‏يمكنك ملء بيانات هذه البطاقة تلقائيًا لأنّ حسابك على <ph name="CARD_ISSUER_NAME" /> مرتبط بحساب Google Pay</translation>
 <translation id="9144951720726881238">تاريخ انتهاء الصلاحية:</translation>
 <translation id="9145910032514306808">يجب <ph name="BEGIN_LINK" />تسجيل الدخول<ph name="END_LINK" />
@@ -4678,6 +4685,7 @@
 <translation id="922152298093051471">‏تخصيص Chrome</translation>
 <translation id="9222403027701923763">الدراسة الابتدائية والثانوية (التعليم المدرسي)</translation>
 <translation id="93020190163435405">تدريب داخلي</translation>
+<translation id="931598121743515856">‏يجب أن تكون قيمة الشراء أكثر من ‎<ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">‏هل تريد منح "<ph name="APP_NAME" />" إذنًا بإعداد شبكات Wi-Fi؟</translation>
 <translation id="936602727769022409">‏قد لا تتمكّن من الوصول إلى حسابك على Google. لذا ينصح Chromium بتغيير كلمة مرورك الآن. وسيُطلَب منك تسجيل الدخول.</translation>
@@ -4694,6 +4702,7 @@
 <translation id="949314938206378263">‏لقد طلبت زيارة هذا الموقع الإلكتروني. يمكن لأحد والدَيك الرد على هذا الطلب في تطبيق Family Link.</translation>
 <translation id="950736567201356821">عمل ثلاثة ثقوب من الأعلى</translation>
 <translation id="950926967802086924">‏مفتاح المرور • مدير كلمات المرور في Google</translation>
+<translation id="955429569736351433">تم السماح باستخدام الواقع الافتراضي</translation>
 <translation id="95721182352849470">أصفر 2</translation>
 <translation id="961663415146723894">التجليد من الأسفل</translation>
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>

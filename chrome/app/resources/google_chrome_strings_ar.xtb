@@ -513,6 +513,7 @@
 <translation id="7787950393032327779">‏يبدو أن الملف الشخصي قيد الاستخدام بواسطة عملية أخرى في Google Chrome (<ph name="PROCESS_ID" />) على جهاز كمبيوتر آخر (<ph name="HOST_NAME" />). وقد تمّ قفل الملف الشخصي من جانب Chrome لضمان عدم تعرضه للتلف. فإذا كنت واثقًا من عدم وجود عمليات أخرى قيد التشغيل على جهاز الكمبيوتر، فيُمكنك فتح قفل الملف الشخصي وإعادة تشغيل Chrome مجددًا.</translation>
 <translation id="7801699035218095297">‏يحاول Google Chrome نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="7808348361785373670">‏جارٍ الإزالة من Chrome...</translation>
+<translation id="782480918904119604">‏لاستخدام هذا الملف الشخصي مع Glic، يجب فتح Chrome وتسجيل الدخول</translation>
 <translation id="7825851276765848807">‏فشل التثبيت نظرًا لحدوث خطأ غير محدد. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
 <translation id="7845233973568007926">شكرًا على التثبيت. عليك إعادة تشغيل الكمبيوتر قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">جارٍ التنزيل… الثواني المتبقّية: <ph name="SECONDS" /></translation>

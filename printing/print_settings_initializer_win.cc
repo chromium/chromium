@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "printing/backend/win_helper.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
@@ -28,10 +30,10 @@ bool IsTechnology(HDC hdc, const char* technology) {
     return false;
 
   char buf[256];
-  memset(buf, 0, sizeof(buf));
+  UNSAFE_TODO(memset(buf, 0, sizeof(buf)));
   if (ExtEscape(hdc, GETTECHNOLOGY, 0, nullptr, sizeof(buf) - 1, buf) <= 0)
     return false;
-  return strcmp(buf, technology) == 0;
+  return UNSAFE_TODO(strcmp(buf, technology)) == 0;
 }
 
 void SetPrinterToGdiMode(HDC hdc) {

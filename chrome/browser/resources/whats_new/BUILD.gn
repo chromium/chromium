@@ -14,6 +14,7 @@ build_webui("build") {
   ]
   css_files = [ "whats_new_app.css" ]
 
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
   ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

@@ -75,6 +75,10 @@
 #include "ui/display/test/display_manager_test_api.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 using content::WebContents;
 
 namespace {
@@ -2822,6 +2826,19 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
     Navigate(&params);
 
     // The PiP window should also be on display 2.
+#if BUILDFLAG(IS_OZONE)
+    if (!ui::OzonePlatform::GetInstance()
+             ->GetPlatformProperties()
+             .supports_global_screen_coordinates) {
+      // Since we cannot get the global coordinates of the window, check
+      // if the window is in the correct display without relying on bounds.
+      const auto pip_window_display =
+          display::Screen::GetScreen()->GetDisplayNearestWindow(
+              params.browser->window()->GetNativeWindow());
+      ASSERT_EQ(display2.id(), pip_window_display.id());
+      return;
+    }
+#endif
     EXPECT_TRUE(
         display2.work_area().Contains(params.browser->window()->GetBounds()));
   }

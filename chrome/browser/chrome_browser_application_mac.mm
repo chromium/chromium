@@ -23,7 +23,9 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/native_event_processor_mac.h"
 #include "content/public/browser/native_event_processor_observer_mac.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/common/content_features.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 
 namespace chrome_browser_application_mac {
@@ -49,16 +51,6 @@ void Terminate() {
 
 void CancelTerminate() {
   [NSApp cancelTerminate:nil];
-}
-
-// A convenience function that activates `mode` if not already active in
-// `state`.
-void AddAccessibilityModeFlagsIfAbsent(
-    content::BrowserAccessibilityState* state,
-    ui::AXMode mode) {
-  if (!state->GetAccessibilityMode().has_mode(mode.flags())) {
-    state->AddAccessibilityModeFlags(mode);
-  }
 }
 
 }  // namespace chrome_browser_application_mac
@@ -145,6 +137,10 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   base::ObserverList<content::NativeEventProcessorObserver>::Unchecked
       _observers;
   BOOL _handlingSendEvent;
+  std::unique_ptr<content::ScopedAccessibilityMode>
+      _scoped_accessibility_mode_voiceover;
+  std::unique_ptr<content::ScopedAccessibilityMode>
+      _scoped_accessibility_mode_general;
 }
 
 + (void)initialize {
@@ -456,13 +452,14 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 // Accessibility Support
 
 - (void)enableScreenReaderCompleteMode:(BOOL)enable {
-  content::BrowserAccessibilityState* accessibility_state =
-      content::BrowserAccessibilityState::GetInstance();
-
   if (enable) {
-    accessibility_state->OnScreenReaderDetected();
+    if (!_scoped_accessibility_mode_voiceover) {
+      _scoped_accessibility_mode_voiceover =
+          content::BrowserAccessibilityState::GetInstance()
+              ->CreateScopedModeForProcess(ui::kAXModeComplete);
+    }
   } else {
-    accessibility_state->OnScreenReaderStopped();
+    _scoped_accessibility_mode_voiceover.reset();
   }
 }
 
@@ -553,19 +550,14 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   // recommends turning on a11y when an AT accesses the 'accessibilityRole'
   // property. This function is accessed frequently, so we only change the
   // accessibility state when accessibility is already disabled.
-  content::BrowserAccessibilityState* accessibility_state =
-      content::BrowserAccessibilityState::GetInstance();
-
-  if (_sonomaAccessibilityRefinementsAreActive) {
-    if (!_voiceOverEnabled) {
-      chrome_browser_application_mac::AddAccessibilityModeFlagsIfAbsent(
-          accessibility_state, ui::AXMode::kNativeAPIs);
-    }
-  } else {
-    if (!accessibility_state->GetAccessibilityMode().has_mode(
-            ui::kAXModeBasic.flags())) {
-      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeBasic);
-    }
+  if (!_scoped_accessibility_mode_general &&
+      !_scoped_accessibility_mode_voiceover) {
+    ui::AXMode target_mode = _sonomaAccessibilityRefinementsAreActive
+                                 ? ui::AXMode::kNativeAPIs
+                                 : ui::kAXModeBasic;
+    _scoped_accessibility_mode_general =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForProcess(target_mode);
   }
 
   return [super accessibilityRole];

@@ -222,7 +222,7 @@ bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
 }
 
 Emf::EnumerationContext::EnumerationContext() {
-  memset(this, 0, sizeof(*this));
+  UNSAFE_TODO(memset(this, 0, sizeof(*this)));
 }
 
 Emf::Record::Record(const ENHMETARECORD* record) : record_(record) {

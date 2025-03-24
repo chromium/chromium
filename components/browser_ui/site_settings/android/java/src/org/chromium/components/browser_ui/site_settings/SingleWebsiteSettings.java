@@ -282,12 +282,21 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 popBackIfNoSettings();
             };
 
+    private final Runnable mRwsDataClearedCallback =
+            () -> {
+                Activity activity = getActivity();
+                if (activity == null || activity.isFinishing()) {
+                    return;
+                }
+                popBackToPreviousPage();
+            };
+
     /**
-     * Creates a Bundle with the correct arguments for opening this fragment for
-     * the website with the given url.
+     * Creates a Bundle with the correct arguments for opening this fragment for the website with
+     * the given url.
      *
      * @param url The URL to open the fragment with. This is a complete url including scheme,
-     *            domain, port,  path, etc.
+     *     domain, port, path, etc.
      * @return The bundle to attach to the preferences intent.
      */
     public static Bundle createFragmentArgsForSite(String url) {
@@ -1004,7 +1013,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         RwsCookieInfo rwsInfo = assumeNonNull(mSite).getRwsCookieInfo();
         assumeNonNull(rwsInfo);
         WebsiteGroup group = new WebsiteGroup(rwsInfo.getOwner(), rwsInfo.getMembers());
-        SiteDataCleaner.clearData(getSiteSettingsDelegate(), group, mDataClearedCallback);
+        SiteDataCleaner.clearData(getSiteSettingsDelegate(), group, mRwsDataClearedCallback);
         RecordHistogram.recordEnumeratedHistogram(
                 "Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.RWS_DELETE_ALL_DATA,
@@ -1094,6 +1103,16 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                     getSiteSettingsDelegate(),
                                     entry,
                                     getActivity().getLayoutInflater());
+                    preference.setOnDeleteCallback(
+                            () -> {
+                                relatedSitesHeader.removePreference(preference);
+                                // Remove RWS section if only remaining preference is the
+                                // description
+                                if (relatedSitesHeader.getPreferenceCount() == 1) {
+                                    removePreferenceSafely(PREF_RELATED_SITES_HEADER);
+                                    removePreferenceSafely(PREF_RELATED_SITES_CLEAR_DATA);
+                                }
+                            });
                     relatedSitesHeader.addPreference(preference);
                 }
                 relatedSitesClearDataButton.setOnPreferenceClickListener(
@@ -1442,17 +1461,21 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     private void popBackIfNoSettings() {
         if (!hasPermissionsPreferences() && !hasUsagePreferences() && getActivity() != null) {
-            // Save the paused fragment before finishing the current fragment as it may cause the
-            // paused fragment to resume.
-            GroupedWebsitesSettings groupFragment = GroupedWebsitesSettings.getPausedInstance();
-            Activity activity = getActivity();
-            if (activity != null) {
-                var settingsNavigation = assumeNonNull(getSettingsNavigation());
-                settingsNavigation.finishCurrentSettings(this);
-                if (mFromGrouped && groupFragment != null) {
-                    settingsNavigation.executePendingNavigations(activity);
-                    settingsNavigation.finishCurrentSettings(groupFragment);
-                }
+            popBackToPreviousPage();
+        }
+    }
+
+    private void popBackToPreviousPage() {
+        // Save the paused fragment before finishing the current fragment as it may cause the
+        // paused fragment to resume.
+        GroupedWebsitesSettings groupFragment = GroupedWebsitesSettings.getPausedInstance();
+        Activity activity = getActivity();
+        if (activity != null) {
+            var settingsNavigation = assumeNonNull(getSettingsNavigation());
+            settingsNavigation.finishCurrentSettings(this);
+            if (mFromGrouped && groupFragment != null) {
+                settingsNavigation.executePendingNavigations(activity);
+                settingsNavigation.finishCurrentSettings(groupFragment);
             }
         }
     }

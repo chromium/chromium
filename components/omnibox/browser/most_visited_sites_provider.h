@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -32,6 +33,8 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
                            AllowMostVisitedSitesSuggestions);
   FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest, NoSRPCoverage);
+  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
+                           DesktopProviderDoesNotAllowChromeSites);
 
   ~MostVisitedSitesProvider() override;
 
@@ -39,12 +42,22 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   // converts those urls to AutocompleteMatches and adds them to |matches_|.
   void OnMostVisitedUrlsAvailable(const history::MostVisitedURLList& urls);
 
+  // When the HistoryService serves the most visited URLs, this function
+  // converts those urls to AutocompleteMatches and adds them to |matches_|.
+  // Unlike `OnMostVisitedUrlsAvailable` which gets called through a request
+  // to TopSites, this callback is invoked when HistoryService is queried
+  // directly in the provider.
+  void OnMostVisitedUrlsFromHistoryAvailable(history::MostVisitedURLList sites);
+
   // Whether zero suggest suggestions are allowed in the given context.
   // Invoked early, confirms all the external conditions for ZeroSuggest are
   // met.
   bool AllowMostVisitedSitesSuggestions(const AutocompleteInput& input) const;
 
   void BlockURL(const GURL& site_url);
+
+  // Task tracker for querying the most visited URLs from HistoryService.
+  base::CancelableTaskTracker cancelable_task_tracker_;
 
   const ui::DeviceFormFactor device_form_factor_;
   const raw_ptr<AutocompleteProviderClient, DanglingUntriaged> client_;

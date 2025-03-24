@@ -59,7 +59,7 @@ bool PageActionView::IsChipVisible() const {
   return ShouldShowLabel();
 }
 
-base::CallbackListSubscription PageActionView::AddChipVisibiltyChangedCallback(
+base::CallbackListSubscription PageActionView::AddChipVisibilityChangedCallback(
     ChipVisibilityChanged callback) {
   return chip_visibility_changed_callbacks_.Add(std::move(callback));
 }
@@ -183,15 +183,18 @@ void PageActionView::UpdateIconImage() {
       observation_.GetSource()->GetImage().IsEmpty()) {
     return;
   }
-
-  // Icon default size may be different from the size used in the location bar.
   const auto& icon_image = observation_.GetSource()->GetImage();
-  const gfx::ImageSkia image =
-      gfx::CreateVectorIcon(*icon_image.GetVectorIcon().vector_icon(),
-                            icon_size_, GetForegroundColor());
+  // If image does not have a vector icon, set it directly.
+  if (icon_image.IsVectorIcon()) {
+    const gfx::ImageSkia image =
+        gfx::CreateVectorIcon(*icon_image.GetVectorIcon().vector_icon(),
+                              icon_size_, GetForegroundColor());
 
-  if (!image.isNull()) {
-    SetImageModel(ui::ImageModel::FromImageSkia(image));
+    if (!image.isNull()) {
+      SetImageModel(ui::ImageModel::FromImageSkia(image));
+    }
+  } else {
+    SetImageModel(icon_image);
   }
 }
 

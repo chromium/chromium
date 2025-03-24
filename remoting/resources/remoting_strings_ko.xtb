@@ -40,6 +40,7 @@
 <translation id="2758123043070977469">인증하는 중에 문제가 발생했습니다. 다시 로그인하세요.</translation>
 <translation id="2803375539583399270">PIN 입력</translation>
 <translation id="2919669478609886916">현재 이 컴퓨터를 다른 사용자와 공유하고 있습니다. 계속 공유하시겠습니까?</translation>
+<translation id="2929683002824598593">기기 공유</translation>
 <translation id="2939145106548231838">호스트에 대한 인증</translation>
 <translation id="3027681561976217984">터치 모드</translation>
 <translation id="3106379468611574572">원격 컴퓨터가 연결 요청에 응답하지 않습니다. 온라인 상태인지 확인한 뒤 다시 시도해 주세요.</translation>
@@ -117,10 +118,12 @@
 <translation id="6178645564515549384">원격 지원을 위한 기본 메시징 호스트</translation>
 <translation id="618120821413932081">원격 데스크톱의 해상도를 창 크기에 맞게 업데이트합니다</translation>
 <translation id="6223301979382383752">화면 녹화 환경설정 열기</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" />님이 화면을 보고 키보드 및 마우스를 제어하기 위한 액세스 권한을 요청했습니다. 기기를 공유하시겠습니까?</translation>
 <translation id="6284412385303060032">콘솔 로직 화면에서 실행 중인 호스트가 사용자별 세션에서 실행 중인 호스트로 전환하여 커튼 모드를 지원하기 위해 종료되었습니다.</translation>
 <translation id="6542902059648396432">문제 신고하기</translation>
 <translation id="6583902294974160967">지원</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del 전송</translation>
+<translation id="6625262630437221505">{0,plural, =1{조치를 취하지 않으면 #초 후에 기기에서 자동으로 공유가 시작됩니다.}other{조치를 취하지 않으면 #초 후에 기기에서 자동으로 공유가 시작됩니다.}}</translation>
 <translation id="6654753848497929428">공유</translation>
 <translation id="677755392401385740">사용자(<ph name="HOST_USERNAME" />)의 호스트가 시작되었습니다.</translation>
 <translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> 클라이언트에서 URL를 열기 위한 도우미 애플리케이션</translation>

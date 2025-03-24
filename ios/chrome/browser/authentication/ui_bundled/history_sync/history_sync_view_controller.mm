@@ -18,7 +18,20 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@implementation HistorySyncViewController
+using signin_metrics::AccessPoint;
+
+@implementation HistorySyncViewController {
+  // Access point associated with the history opt-in screen.
+  AccessPoint _accessPoint;
+}
+
+- (instancetype)initWithAccessPoint:(AccessPoint)accessPoint {
+  self = [super init];
+  if (self) {
+    _accessPoint = accessPoint;
+  }
+  return self;
+}
 
 @dynamic delegate;
 
@@ -35,8 +48,22 @@
     self.headerBackgroundImage =
         [UIImage imageNamed:@"history_sync_opt_in_background"];
   }
-  self.titleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_TITLE);
-  self.subtitleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_SUBTITLE);
+
+  switch (_accessPoint) {
+    case AccessPoint::kCollaborationTabGroup: {
+      self.titleText = l10n_util::GetNSString(
+          IDS_IOS_HISTORY_SYNC_GROUP_COLLABORATION_TITLE);
+      self.subtitleText = l10n_util::GetNSString(
+          IDS_IOS_HISTORY_SYNC_GROUP_COLLABORATION_SUBTITLE);
+      break;
+    }
+    default: {
+      self.titleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_TITLE);
+      self.subtitleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_SUBTITLE);
+      break;
+    }
+  }
+
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_PRIMARY_ACTION);
   self.secondaryActionString =

@@ -46,6 +46,7 @@
 #include "net/storage_access_api/status.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/redirect_util.h"
+#include "net/url_request/storage_access_status_cache.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_error_job.h"
 #include "net/url_request/url_request_job.h"
@@ -1099,8 +1100,9 @@ void URLRequest::RetryWithStorageAccess() {
   // implies that the URL is "potentially trustworthy" and that adding the
   // `kStorageAccessGrantEligibleViaHeader` override is sufficient to make the
   // status "active".
-  CHECK(storage_access_status());
-  CHECK_EQ(static_cast<int>(storage_access_status().value()),
+  CHECK(storage_access_status().GetStatusForThirdPartyContext());
+  CHECK_EQ(static_cast<int>(
+               storage_access_status().GetStatusForThirdPartyContext().value()),
            static_cast<int>(cookie_util::StorageAccessStatus::kActive));
   extra_request_headers_.SetHeader("Sec-Fetch-Storage-Access", "active");
   base::UmaHistogramEnumeration(
@@ -1384,8 +1386,8 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
   DCHECK(url().SchemeIsHTTPOrHTTPS());
   socket_tag_ = socket_tag;
 }
-std::optional<net::cookie_util::StorageAccessStatus>
-URLRequest::CalculateStorageAccessStatus() const {
+
+StorageAccessStatusCache URLRequest::CalculateStorageAccessStatus() const {
   CHECK_EQ(is_redirecting(), deferred_redirect_info_.has_value());
 
   // `Delegate::OnReceivedRedirect` may set `defer_redirect` inside of
@@ -1423,7 +1425,7 @@ URLRequest::CalculateStorageAccessStatus() const {
       "API.StorageAccessHeader.StorageAccessStatusOutcome",
       storage_access_value_outcome.value());
 
-  return storage_access_status;
+  return StorageAccessStatusCache(storage_access_status);
 }
 
 void URLRequest::SetSharedDictionaryGetter(

@@ -934,15 +934,19 @@ void SurfaceControl::Transaction::SetColorSpace(
   }
 }
 
-void SurfaceControl::Transaction::SetFrameRate(const Surface& surface,
-                                               float frame_rate) {
+void SurfaceControl::Transaction::SetFrameRate(
+    const Surface& surface,
+    SurfaceControlFrameRate frame_rate) {
   DCHECK(SupportsSetFrameRate());
+  int8_t compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
+  switch (frame_rate.compatibility) {
+    case gfx::SurfaceControlFrameRateCompatibility::kFixedSource:
+      compatibility = ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE;
+      break;
+  }
 
-  // We always used fixed source here since a non-default value is only used for
-  // videos which have a fixed playback rate.
   SurfaceControlMethods::Get().ASurfaceTransaction_setFrameRateFn(
-      transaction_, surface.surface(), frame_rate,
-      ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE);
+      transaction_, surface.surface(), frame_rate.frame_rate, compatibility);
 }
 
 void SurfaceControl::Transaction::SetParent(const Surface& surface,

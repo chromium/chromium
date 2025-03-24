@@ -1076,6 +1076,7 @@ void BaseRenderingContext2D::DrawTextInternal(
     location.set_x(location.x() / ClampTo<float>(width / font_width));
   }
 
+  SetTriggerForCanvasIntervention();
   Draw<OverdrawOp::kNone>(
       [font, text = std::move(text), direction, bidi_override, location,
        run_start, run_end, canvas, text_painter](

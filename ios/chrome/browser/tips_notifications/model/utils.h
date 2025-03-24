@@ -87,24 +87,12 @@ NSDictionary* UserInfoForTipsNotificationType(TipsNotificationType type,
 std::optional<TipsNotificationType> ParseTipsNotificationType(
     UNNotificationRequest* request);
 
-// Returns a newly generated notification request, with the given type and
-// a trigger appropriate for a Tips notification.
-UNNotificationRequest* TipsNotificationRequest(
-    TipsNotificationType type,
-    bool for_reactivation,
-    TipsNotificationUserType user_type);
-
 // Returns the notification content for a given Tips notification type.
 UNNotificationContent* ContentForTipsNotificationType(TipsNotificationType type,
                                                       bool for_reactivation);
 
 // Returns the time delta used to trigger Tips notifications.
 base::TimeDelta TipsNotificationTriggerDelta(
-    bool for_reactivation,
-    TipsNotificationUserType user_type);
-
-// Returns a trigger to be used when requesting a Tips notification.
-UNNotificationTrigger* TipsNotificationTrigger(
     bool for_reactivation,
     TipsNotificationUserType user_type);
 

@@ -38,7 +38,7 @@ void MemorySaverBubbleController::InvokeAction(Browser* browser,
   CHECK_NE(browser_view, nullptr);
   views::View* anchor_view =
       browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
-  MemorySaverBubbleView::ShowBubble(browser, anchor_view, this);
+  bubble_ = MemorySaverBubbleView::ShowBubble(browser, anchor_view, this);
 }
 
 void MemorySaverBubbleController::OnBubbleShown() {
@@ -51,6 +51,7 @@ void MemorySaverBubbleController::OnBubbleHidden() {
   if (action_item_) {
     action_item_->SetIsShowingBubble(false);
   }
+  bubble_ = nullptr;
 }
 
 }  // namespace memory_saver

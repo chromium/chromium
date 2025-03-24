@@ -132,6 +132,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                           const url::Origin& top_frame_origin,
                           net::StorageAccessApiStatus storage_access_api_status,
                           net::CookieInclusionStatus status,
+                          bool is_ad_tagged,
                           bool apply_devtools_overrides,
                           SetCanonicalCookieCallback callback) override;
 
@@ -149,6 +150,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
       bool get_version_shared_memory,
+      bool is_ad_tagged,
       bool apply_devtools_overrides,
       const std::string& cookie,
       SetCookieFromStringCallback callback) override;
@@ -236,6 +238,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::CookieSettingOverrides& cookie_setting_overrides,
       const net::SiteForCookies& site_for_cookies,
       const net::CanonicalCookie& cookie,
+      bool is_ad_tagged,
       SetCanonicalCookieCallback user_callback,
       net::CookieAccessResult access_result);
 
@@ -292,6 +295,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                           const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
                           net::StorageAccessApiStatus storage_access_api_status,
+                          bool is_ad_tagged,
                           bool apply_devtools_overrides,
                           SetCookieFromStringCallback callback,
                           base::ReadOnlySharedMemoryRegion shared_memory_region,

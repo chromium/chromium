@@ -479,6 +479,7 @@ void CanvasPath::arc(double double_x,
         CanvasOps::kArc, double_x, double_y, double_radius, double_start_angle,
         double_end_angle, anticlockwise);
   }
+  SetTriggerForCanvasIntervention();
 
   if (!radius || start_angle == end_angle) [[unlikely]] {
     // The arc is empty but we still need to draw the connecting line.
@@ -563,6 +564,7 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
+  SetTriggerForCanvasIntervention();
   path_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation, start_angle,
                    adjusted_end_angle);
 }

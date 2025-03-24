@@ -506,6 +506,7 @@
 <translation id="1846432862466000825">塑膠 (封存用)</translation>
 <translation id="1848640291751752317">下載檔案</translation>
 <translation id="1848982255014129637">相紙 (高光面)</translation>
+<translation id="1849438148665368129">購買金額必須低於 <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">閂咗虛擬卡註冊對話框</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1855370856221982654">拳擊</translation>
@@ -2170,6 +2171,7 @@
 <translation id="4796594887379589189">工作帳戶 ID</translation>
 <translation id="4798269756263412078">如果產品在任何網站上降價，系統將通知您。系統將會向您的電郵傳送通知。</translation>
 <translation id="4800132727771399293">請檢查您的到期日和卡片驗證碼 (CVC)，然後再試一次</translation>
+<translation id="4800546479758254481">已允許使用 AR</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="4811450222531576619">瞭解頁面的來源和主題</translation>
@@ -3032,6 +3034,7 @@
 <translation id="6327065120806001832">區域網絡存取權</translation>
 <translation id="6328639280570009161">建議停用網絡預測功能</translation>
 <translation id="6335029926534404762">運動鞋</translation>
+<translation id="6336948221660696475">不允許使用 VR</translation>
 <translation id="6337133576188860026">釋的快取不到 <ph name="SIZE" />。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="6337534724793800597">依名稱篩選政策</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 的值無效，系統將不會使用該值。</translation>
@@ -3075,6 +3078,7 @@
 <translation id="6391700400718590966">閂咗冇相符安全付款憑證工作表</translation>
 <translation id="6392799395081100092">紙 (牛皮紙)</translation>
 <translation id="6393156038355142111">建議安全性強的密碼</translation>
+<translation id="6393310910507376797">商家不支援</translation>
 <translation id="6393956493820063117">管理員政策已禁止將內容由 <ph name="ORIGIN_NAME" /> 貼到此位置</translation>
 <translation id="6394852772105848029">此網站要求開啟 <ph name="APP_NAME" /> 應用程式</translation>
 <translation id="639673288733510393">綿羊仔和電動單車</translation>
@@ -3227,6 +3231,7 @@
 <translation id="6668389483194953109">系統偵測到紙張大小名稱為「自訂」，但「custom_size」屬性空白或無效。</translation>
 <translation id="6671169470640320959">汽車貸款</translation>
 <translation id="6671697161687535275">要從 Chromium 移除表格建議嗎？</translation>
+<translation id="6675846980676550611">不允許使用 AR</translation>
 <translation id="6677351035258626477">快餐</translation>
 <translation id="6679354743514146922">Chrome 瀏覽器正在嘗試在「<ph name="APP_NAME" />」填入密碼。</translation>
 <translation id="6681790815630918386">已儲存 CVC</translation>
@@ -3715,6 +3720,7 @@
 <translation id="7512685745044087310">此政策無法設定為「True」和強制使用，因此已改為建議使用。</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">這次允許使用 VR</translation>
 <translation id="7517201160922869406">越野車</translation>
 <translation id="7517414872996418597">C10 信封</translation>
 <translation id="7518003948725431193">找不到這個網址的網頁：<ph name="URL" /></translation>
@@ -4615,6 +4621,7 @@
 <translation id="9139318394846604261">購物</translation>
 <translation id="9140198744651252040">Chrome 瀏覽器想使用指紋自動填入密碼</translation>
 <translation id="9141013498910525015">管理地址</translation>
+<translation id="9141672681283222114">這次允許使用 AR</translation>
 <translation id="9143898823728499852">你的 <ph name="CARD_ISSUER_NAME" /> 帳戶已連結 Google Pay，因此可以自動填入此卡的資料。</translation>
 <translation id="9144951720726881238">到期日：</translation>
 <translation id="9145910032514306808">請重新<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />並返回此分頁，才能取得撰寫協助</translation>
@@ -4671,6 +4678,7 @@
 <translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="9222403027701923763">小學和中學</translation>
 <translation id="93020190163435405">實習</translation>
+<translation id="931598121743515856">購買金額必須超過 <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">要允許「<ph name="APP_NAME" />」應用程式設定 Wi-Fi 網絡嗎？</translation>
 <translation id="936602727769022409">您可能會失去 Google 帳戶存取權。Chromium 建議您立即變更密碼。系統會要求您登入。</translation>
@@ -4687,6 +4695,7 @@
 <translation id="949314938206378263">您已要求瀏覽此網站。家長可透過 Family Link 回覆要求。</translation>
 <translation id="950736567201356821">三孔 (頂端)</translation>
 <translation id="950926967802086924">密鑰 • Google 密碼管理工具</translation>
+<translation id="955429569736351433">已允許使用 VR</translation>
 <translation id="95721182352849470">黃色 2</translation>
 <translation id="961663415146723894">釘裝 (底部)</translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>

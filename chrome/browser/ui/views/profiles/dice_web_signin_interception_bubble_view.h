@@ -69,6 +69,8 @@ class DiceWebSigninInterceptionBubbleView
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleDismissedByEscapeKey);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           BubbleDismissedByEscapeKeyTwice);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleDismissedByPressingAvatarButton);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleAcceptedGuestMode);

@@ -506,6 +506,7 @@
 <translation id="1846432862466000825">प्लास्टिक (अर्काइभल)</translation>
 <translation id="1848640291751752317">डाउनलोड गरिएका सामग्री</translation>
 <translation id="1848982255014129637">फोटो (हाई-ग्लस)</translation>
+<translation id="1849438148665368129">कारोबारको रकम अनिवार्य रूपमा <ph name="CHECKOUT_AMOUNT_MAXIMUM" /> भन्दा कम हुनु पर्छ</translation>
 <translation id="1853392626017747777">भर्चुअल कार्ड दर्ता गर्ने डायलग बन्द गरिएको छ</translation>
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
 <translation id="1855370856221982654">बक्सिङ</translation>
@@ -2169,6 +2170,7 @@
 <translation id="4796594887379589189">कार्य खाताको ID</translation>
 <translation id="4798269756263412078">कुनै साइटमा तपाईंले ट्र्याक गरेको उत्पादनको मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्। तपाईंलाई इमेलमार्फत अलर्ट पठाइने छ।</translation>
 <translation id="4800132727771399293">तपाईँको म्याद समाप्त हुने मिति र CVC जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
+<translation id="4800546479758254481">AR प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">तपाईंको डिभाइसको एड्मिनबाट प्राप्त भएका निर्देशनहरू:</translation>
 <translation id="4811450222531576619">यो पेजको स्रोत र विषयका बारेमा जान्नुहोस्</translation>
@@ -3031,6 +3033,7 @@
 <translation id="6327065120806001832">स्थानीय नेटवर्कको एक्सेस</translation>
 <translation id="6328639280570009161">सञ्जाल भविष्यवाणि असक्षम गर्नुहोस्</translation>
 <translation id="6335029926534404762">एथलेटिक जुत्ता</translation>
+<translation id="6336948221660696475">VR प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> भन्दा कम ठाउँ खाली गर्दछ। तपाईं अर्कोपटक आउँदा केही साइटहरू अझ ढिलोगरी लोड हुनसक्छन्।</translation>
 <translation id="6337534724793800597">नामद्वारा नीतिहरू फिल्टर गर्छ</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> को मान अवैध छ र सो मान प्रयोग गरिने छैन।</translation>
@@ -3074,6 +3077,7 @@
 <translation id="6391700400718590966">क्रिडेन्सियल सिटसँग नमिल्ने सुरक्षित भुक्तानी क्रिडेन्सियल बन्द गरियो</translation>
 <translation id="6392799395081100092">पेपर (भेलम)</translation>
 <translation id="6393156038355142111">भरपर्दो पासवर्ड सिफारिस गर्नुहोस्</translation>
+<translation id="6393310910507376797">व्यापारीको साइटमा यो भुक्तानी विधि प्रयोग गर्न मिल्दैन</translation>
 <translation id="6393956493820063117">एड्मिनले <ph name="ORIGIN_NAME" /> बाट कपी गरी यो स्थानमा पेस्ट गर्न रोक लगाउनुभएको छ</translation>
 <translation id="6394852772105848029">यो साइटले <ph name="APP_NAME" /> एप खोल्न चाहन्छ</translation>
 <translation id="639673288733510393">स्कुटर तथा मोपेडहरू</translation>
@@ -3226,6 +3230,7 @@
 <translation id="6668389483194953109">कागजको आकारको नाम "कस्टम" राखिएको पाइयो तर "custom_size" प्रोपर्टी भने खाली वा अवैध छ।</translation>
 <translation id="6671169470640320959">अटो फाइनान्सिङ</translation>
 <translation id="6671697161687535275">Chromium बाट फारम सुझाव हटाउने हो?</translation>
+<translation id="6675846980676550611">AR प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="6677351035258626477">फास्ट फुड</translation>
 <translation id="6679354743514146922">Chrome ब्राउजरले <ph name="APP_NAME" /> मा तपाईंको पासवर्ड हाल्न खोज्दै छ।</translation>
 <translation id="6681790815630918386">CVC सेभ गरिएको छ</translation>
@@ -3713,6 +3718,7 @@
 <translation id="7512685745044087310">यो नीतिको मान "ठिक" सेट गरिएका बेला यसलाई अनिवार्य रूपमा लागू गर्न सकिँदैन। त्यसकारण यसलाई परिवर्तन गरी सिफारिस गरिएको नीति बनाइएको छ।</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">यस पटकका लागि VR प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="7517201160922869406">कच्ची सडकमा चलाइने सवारी साधनहरू</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">निम्न वेब ठेगानाको लागि कुनैपनि वेबपृष्ठ फेला परेन: <ph name="URL" /></translation>
@@ -4613,6 +4619,7 @@
 <translation id="9139318394846604261">किनमेल</translation>
 <translation id="9140198744651252040">Chrome ब्राउजर पासवर्डहरू स्वतः हाल्न फिंगरप्रिन्ट प्रयोग गर्न चाहन्छ</translation>
 <translation id="9141013498910525015">ठेगानाहरू व्यवस्थित गर्नुहोस्</translation>
+<translation id="9141672681283222114">यो पटकका लागि AR प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="9143898823728499852">तपाईंको <ph name="CARD_ISSUER_NAME" /> खाता Google Pay मा लिंक गरिएको हुनाले तपाईं यो कार्ड अटोफिल गर्न सक्नुहुन्छ</translation>
 <translation id="9144951720726881238">म्याद सकिने मिति:</translation>
 <translation id="9145910032514306808">फेरि <ph name="BEGIN_LINK" />साइन इन गर्नुहोस्<ph name="END_LINK" />
@@ -4670,6 +4677,7 @@
 <translation id="922152298093051471">Chrome आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="9222403027701923763">प्राथमिक र माध्यमिक विद्यालय (K-१२)</translation>
 <translation id="93020190163435405">प्रशिक्षार्थी कर्मचारी</translation>
+<translation id="931598121743515856">खरिदको रकम अनिवार्य रूपमा <ph name="CHECKOUT_AMOUNT_MINIMUM" /> भन्दा बढी हुनु पर्छ</translation>
 <translation id="933712198907837967">डाइनर्स क्लब</translation>
 <translation id="934634059306213385"><ph name="APP_NAME" /> एपलाई Wi-Fi नेटवर्कहरू सेटअप गर्ने अनुमति दिने हो?</translation>
 <translation id="936602727769022409">तपाईं आफ्नो Google खातामाथिको पहुँच गुमाउन सक्नुहुन्छ। Chromium तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ। तपाईंलाई साइन इन गर्न लगाइने छ।</translation>
@@ -4686,6 +4694,7 @@
 <translation id="949314938206378263">तपाईंले यो साइटमा जाने अनुमति माग्नुभएको छ। तपाईंका अभिभावक Family Link मार्फत अनुमति दिन वा नदिन सक्छन्।</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
 <translation id="950926967802086924">पासकी • Google पासवर्ड म्यानेजर</translation>
+<translation id="955429569736351433">VR प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="95721182352849470">पहेँलो २</translation>
 <translation id="961663415146723894">फेदको बाइन्ड</translation>
 <translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>

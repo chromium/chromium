@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -978,20 +979,21 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
       !outer_.IsRounded() && has_transparency_) {
     DCHECK(visible_edge_set_ != kAllBorderEdges);
     // solid, rectangular border => one drawPath()
-    Path path;
-    path.SetWindRule(RULE_NONZERO);
+    PathBuilder builder;
+    builder.SetWindRule(RULE_NONZERO);
 
     for (auto side :
          {BoxSide::kTop, BoxSide::kRight, BoxSide::kBottom, BoxSide::kLeft}) {
       const BorderEdge& curr_edge = Edge(side);
       if (curr_edge.ShouldRender()) {
-        path.AddRect(gfx::RectF(
+        builder.AddRect(gfx::RectF(
             CalculateSideRect(outer_.AsRoundedRect(), curr_edge, side)));
       }
     }
 
     context_.SetFillColor(FirstEdge().GetColor());
-    context_.FillPath(path, PaintAutoDarkMode(style_, element_role_));
+    context_.FillPath(builder.Finalize(),
+                      PaintAutoDarkMode(style_, element_role_));
     return true;
   }
 

@@ -75,9 +75,9 @@ TEST(AesCbcCryptoTest, OneBlock) {
   AesCbcCrypto crypto;
   EXPECT_TRUE(crypto.Initialize(kKey1, kIv));
 
-  std::vector<uint8_t> output(encrypted_block.size());
-  EXPECT_TRUE(crypto.Decrypt(encrypted_block, output.data()));
-  EXPECT_EQ(base::as_byte_span(output), kOneBlock);
+  std::array<uint8_t, kBlockSize> output;
+  EXPECT_TRUE(crypto.Decrypt(encrypted_block, output));
+  EXPECT_EQ(output, kOneBlock);
 }
 
 TEST(AesCbcCryptoTest, WrongKey) {
@@ -88,9 +88,9 @@ TEST(AesCbcCryptoTest, WrongKey) {
   AesCbcCrypto crypto;
   EXPECT_TRUE(crypto.Initialize(kKey2, kIv));
 
-  std::vector<uint8_t> output(encrypted_block.size());
-  EXPECT_TRUE(crypto.Decrypt(encrypted_block, output.data()));
-  EXPECT_NE(base::as_byte_span(output), kOneBlock);
+  std::array<uint8_t, kBlockSize> output;
+  EXPECT_TRUE(crypto.Decrypt(encrypted_block, output));
+  EXPECT_NE(output, kOneBlock);
 }
 
 TEST(AesCbcCryptoTest, WrongIV) {
@@ -99,12 +99,17 @@ TEST(AesCbcCryptoTest, WrongIV) {
 
   // Use a different IV when trying to decrypt.
   AesCbcCrypto crypto;
-  std::vector<uint8_t> alternate_iv(kIv.size(), 'a');
-  EXPECT_TRUE(crypto.Initialize(kKey1, alternate_iv));
+  // clang-format off
+  constexpr auto kWrongIv = std::to_array<uint8_t>({
+      'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+      'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+  });
+  // clang-format on
+  EXPECT_TRUE(crypto.Initialize(kKey1, kWrongIv));
 
-  std::vector<uint8_t> output(encrypted_block.size());
-  EXPECT_TRUE(crypto.Decrypt(encrypted_block, output.data()));
-  EXPECT_NE(base::as_byte_span(output), kOneBlock);
+  std::array<uint8_t, kBlockSize> output;
+  EXPECT_TRUE(crypto.Decrypt(encrypted_block, output));
+  EXPECT_NE(output, kOneBlock);
 }
 
 TEST(AesCbcCryptoTest, PartialBlock) {
@@ -115,10 +120,9 @@ TEST(AesCbcCryptoTest, PartialBlock) {
   EXPECT_TRUE(crypto.Initialize(kKey2, kIv));
 
   // Try to decrypt less than a full block.
-  std::vector<uint8_t> output(encrypted_block.size());
+  std::array<uint8_t, kBlockSize> output;
   EXPECT_FALSE(crypto.Decrypt(
-      base::span(encrypted_block).first(encrypted_block.size() - 5),
-      output.data()));
+      base::span(encrypted_block).first(encrypted_block.size() - 5), output));
 }
 
 TEST(AesCbcCryptoTest, MultipleBlocks) {
@@ -131,9 +135,9 @@ TEST(AesCbcCryptoTest, MultipleBlocks) {
   AesCbcCrypto crypto;
   EXPECT_TRUE(crypto.Initialize(kKey2, kIv));
 
-  std::vector<uint8_t> output(encrypted_block.size());
-  EXPECT_TRUE(crypto.Decrypt(encrypted_block, output.data()));
-  EXPECT_EQ(output, Repeat(kOneBlock, kNumBlocksInData));
+  std::array<uint8_t, kNumBlocksInData * kBlockSize> output;
+  EXPECT_TRUE(crypto.Decrypt(encrypted_block, output));
+  EXPECT_EQ(output, base::as_byte_span(Repeat(kOneBlock, kNumBlocksInData)));
 }
 
 // As the code in aes_cbc_crypto.cc relies on decrypting the data block by
@@ -141,22 +145,23 @@ TEST(AesCbcCryptoTest, MultipleBlocks) {
 // decrypts one block at a time or all the blocks in one call.
 TEST(AesCbcCryptoTest, BlockDecryptionWorks) {
   constexpr size_t kNumBlocksInData = 5;
-  std::vector<uint8_t> data = {1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2,
-                               3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
-                               5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6,
-                               7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-                               9, 9, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 0, 0, 0};
-  ASSERT_EQ(data.size(), kNumBlocksInData * kBlockSize);
-  auto encrypted_data = Encrypt(data, kKey1, kIv);
+  constexpr auto kData = std::to_array<uint8_t>(
+      {1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3,
+       3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
+       6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+       8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 0, 0, 0});
+  ASSERT_EQ(kData.size(), kNumBlocksInData * kBlockSize);
+  auto encrypted_data = Encrypt(kData, kKey1, kIv);
 
   // Decrypt |encrypted_data| in one pass.
   {
     AesCbcCrypto crypto;
     EXPECT_TRUE(crypto.Initialize(kKey1, kIv));
 
-    std::vector<uint8_t> output(kNumBlocksInData * kBlockSize);
-    EXPECT_TRUE(crypto.Decrypt(encrypted_data, output.data()));
-    EXPECT_EQ(output, data);
+    std::array<uint8_t, kNumBlocksInData * kBlockSize> output;
+    ;
+    EXPECT_TRUE(crypto.Decrypt(encrypted_data, output));
+    EXPECT_EQ(output, kData);
   }
 
   // Repeat but call Decrypt() once for each block.
@@ -164,13 +169,13 @@ TEST(AesCbcCryptoTest, BlockDecryptionWorks) {
     AesCbcCrypto crypto;
     EXPECT_TRUE(crypto.Initialize(kKey1, kIv));
 
-    std::vector<uint8_t> output(kNumBlocksInData * kBlockSize);
-    base::span input(encrypted_data);
+    std::array<uint8_t, kNumBlocksInData * kBlockSize> output;
     for (size_t offset = 0; offset < output.size(); offset += kBlockSize) {
       EXPECT_TRUE(
-          crypto.Decrypt(input.subspan(offset, kBlockSize), &output[offset]));
+          crypto.Decrypt(base::span(encrypted_data).subspan(offset, kBlockSize),
+                         base::span(output).subspan(offset, kBlockSize)));
     }
-    EXPECT_EQ(output, data);
+    EXPECT_EQ(output, kData);
   }
 }
 

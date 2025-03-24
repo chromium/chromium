@@ -396,7 +396,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
     // by the layer (see `SVGContainerPainter::Paint`).
     auto* properties = object.FirstFragment().PaintProperties();
     if (properties && properties->Filter() &&
-        properties->Filter()->Filter().HasReferenceFilter()) {
+        properties->Filter()->HasReferenceFilter()) {
       context.GetPaintController().EnsureChunk();
     }
   }

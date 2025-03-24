@@ -10,7 +10,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
@@ -50,17 +49,11 @@ using signin_metrics::PromoAction;
 @property(nonatomic, strong) GoogleServicesSettingsMediator* mediator;
 // Returns the authentication service.
 @property(nonatomic, assign, readonly) AuthenticationService* authService;
-// Manages the authentication flow for a given identity.
-@property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
-// Manages user's Google identities.
-@property(nonatomic, assign, readonly) signin::IdentityManager* identityManager;
 // View controller presented by this coordinator.
 @property(nonatomic, strong, readonly)
     GoogleServicesSettingsViewController* googleServicesSettingsViewController;
 // Action sheets that provides options for sign out.
 @property(nonatomic, strong) ActionSheetCoordinator* signOutCoordinator;
-@property(nonatomic, strong)
-    SignoutActionSheetCoordinator* signoutActionSheetCoordinator;
 @end
 
 @implementation GoogleServicesSettingsCoordinator
@@ -136,12 +129,6 @@ using signin_metrics::PromoAction;
   self.signOutCoordinator = nil;
 }
 
-- (void)authenticationFlowDidComplete {
-  DCHECK(self.authenticationFlow);
-  self.authenticationFlow = nil;
-  [self.googleServicesSettingsViewController allowUserInteraction];
-}
-
 #pragma mark - Properties
 
 - (AuthenticationService*)authService {
@@ -151,10 +138,6 @@ using signin_metrics::PromoAction;
 - (GoogleServicesSettingsViewController*)googleServicesSettingsViewController {
   return base::apple::ObjCCast<GoogleServicesSettingsViewController>(
       self.viewController);
-}
-
-- (signin::IdentityManager*)identityManager {
-  return IdentityManagerFactory::GetForProfile(self.profile);
 }
 
 #pragma mark - GoogleServicesSettingsCommandHandler

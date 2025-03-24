@@ -30,6 +30,7 @@
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
+#include "components/omnibox/browser/test_omnibox_popup_view.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
@@ -63,19 +64,6 @@ struct AXNodeData;
 }
 
 namespace {
-
-class TestOmniboxPopupView : public OmniboxPopupView {
- public:
-  TestOmniboxPopupView() : OmniboxPopupView(/*controller=*/nullptr) {}
-  ~TestOmniboxPopupView() override = default;
-  bool IsOpen() const override { return false; }
-  void InvalidateLine(size_t line) override {}
-  void UpdatePopupAppearance() override {}
-  void ProvideButtonFocusHint(size_t line) override {}
-  void OnMatchIconUpdated(size_t match_index) override {}
-  void OnDragCanceled() override {}
-  void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override {}
-};
 
 void OpenUrlFromEditBox(OmniboxController* controller,
                         TestOmniboxEditModel* model,

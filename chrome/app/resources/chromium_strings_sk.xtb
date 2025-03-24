@@ -365,6 +365,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="6174920971222007286">Tento súbor môže byť nebezpečný<ph name="LINE_BREAK" />Ak poskytnete heslo, Chromium môže tento stiahnutý súbor skontrolovať za vás. Informácie o danom súbore sa odošlú Bezpečnému prehliadaniu Google, ale jeho obsah aj heslo zostanú vo vašom zariadení.</translation>
 <translation id="6182736845697986886">Nepodarilo sa nainštalovať pre internú chybu servera aktualizácií.</translation>
 <translation id="6183079672144801177">Skontrolujte, či ste sa v zariadení <ph name="TARGET_DEVICE_NAME" /> prihlásili do prehliadača Chromium, a potom to skúste odoslať znova.</translation>
+<translation id="6196339736238974634">Ak chcete používať tento profil s funkciou Glic, otvorte Chromium a prihláste sa</translation>
 <translation id="6212496753309875659">Tento počítač už obsahuje novšiu verziu prehliadača Chromium. Ak softvér nefunguje, odinštalujte prehliadač Chromium a skúste to znova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sa teraz reštartuje}=1{Chromium sa reštartuje o 1 sekundu}few{Chromium sa reštartuje o # sekundy}many{Chromium sa reštartuje o # sekundy}other{Chromium sa reštartuje o # sekúnd}}</translation>
 <translation id="6241367896540709610">Chromium vyžaduje na sťahovanie súborov povolený prístup k úložisku</translation>

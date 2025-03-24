@@ -18,6 +18,7 @@
 namespace {
 
 constexpr CGFloat kCloseButtonPadding = 16;
+constexpr CGFloat kWidgetContentHeight = 410;
 
 // Custom detent identifier for when the bottom sheet is expanded.
 NSString* const kCustomBottomSheetDetentIdentifier = @"customBottomSheetDetent";
@@ -124,11 +125,8 @@ UIImage* CloseButtonImage(BOOL highlighted) {
     CGFloat largeDetentHeight =
         [[UISheetPresentationControllerDetent largeDetent]
             resolvedValueInContext:context];
-    CGFloat mediumDetentHeight =
-        [[UISheetPresentationControllerDetent mediumDetent]
-            resolvedValueInContext:context];
-    // Make sure detent is at least 67.5% of the maximum detent.
-    return MAX(mediumDetentHeight, largeDetentHeight * 0.675);
+    // Limit custom detent height at the maximum height.
+    return MIN(kWidgetContentHeight, largeDetentHeight);
   };
 
   return
@@ -139,36 +137,11 @@ UIImage* CloseButtonImage(BOOL highlighted) {
 - (void)updateBottomSheetDetents {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
-  switch (ui::GetDeviceFormFactor()) {
-    case ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE:
-      if (IsPortrait(self.view.window)) {
-        // In portrait mode, the bottom sheet occupies the bottom half of the
-        // screen.
-        presentationController.detents =
-            @[ [UISheetPresentationControllerDetent mediumDetent] ];
-        presentationController.selectedDetentIdentifier =
-            UISheetPresentationControllerDetentIdentifierMedium;
-      } else {
-        // In landscape mode, the bottom sheet is centered horizontally and
-        // occupies half of the screen width.
-        presentationController.detents =
-            @[ [UISheetPresentationControllerDetent largeDetent] ];
-        presentationController.selectedDetentIdentifier =
-            UISheetPresentationControllerDetentIdentifierLarge;
-      }
-      break;
-    default:
-      // On devices where the screen width difference between portrait and
-      // landscape is less pronounced, display the bottom sheet with a custom
-      // detent.
-      presentationController.detents = @[
-        [self
-            customHeightDetentWithIdentifier:kCustomBottomSheetDetentIdentifier]
-      ];
-      presentationController.selectedDetentIdentifier =
-          kCustomBottomSheetDetentIdentifier;
-      break;
-  }
+
+  presentationController.detents = @[ [self
+      customHeightDetentWithIdentifier:kCustomBottomSheetDetentIdentifier] ];
+  presentationController.selectedDetentIdentifier =
+      kCustomBottomSheetDetentIdentifier;
 }
 
 - (void)closeButtonTapped {

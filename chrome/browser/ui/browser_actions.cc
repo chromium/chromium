@@ -319,6 +319,7 @@ void BrowserActions::InitializeBrowserActions() {
               kPerformanceSpeedometerIcon, ui::kColorIcon,
               ui::SimpleMenuModel::kDefaultIconSize))
           .SetEnabled(true)
+          .SetProperty(views::kElementIdentifierKey, kMemorySaverChipElementId)
           .Build());
 
   root_action_item_->AddChild(

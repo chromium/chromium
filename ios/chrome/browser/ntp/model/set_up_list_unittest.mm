@@ -42,6 +42,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using set_up_list_prefs::SetUpListItemState;
 
@@ -338,6 +339,7 @@ TEST_F(SetUpListTest, BuildListWithFollow) {
 // Tests that SetUpList observes local state changes, updates the item, and
 // calls the delegate.
 TEST_F(SetUpListTest, ObservesPrefs) {
+  SetFalseChromeLikelyDefaultBrowser();
   BuildSetUpList();
   id delegate = [OCMockObject mockForProtocol:@protocol(SetUpListDelegate)];
   set_up_list_.delegate = delegate;
@@ -347,7 +349,7 @@ TEST_F(SetUpListTest, ObservesPrefs) {
   set_up_list_prefs::MarkItemComplete(GetLocalState(),
                                       SetUpListItemType::kDefaultBrowser);
   EXPECT_TRUE(item.complete);
-  [delegate verify];
+  EXPECT_OCMOCK_VERIFY(delegate);
 }
 
 // Tests that `allItemsComplete` correctly returns whether all items are

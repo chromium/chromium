@@ -242,28 +242,26 @@ bool CheckStudyGoogleGroup(const Study::Filter& filter,
   // Fetch the groups this client is a member of.
   base::flat_set<uint64_t> client_groups = client_state.GoogleGroups();
 
-  if (filter.google_group_size() > 0 &&
-      filter.exclude_google_group_size() > 0) {
-    // This is an invalid configuration; reject the study.
-    return false;
-  }
-
   if (filter.google_group_size() > 0) {
-    for (int64_t filter_group : filter.google_group()) {
-      if (base::Contains(client_groups, filter_group)) {
-        return true;
-      }
+    if (std::ranges::none_of(filter.google_group(),
+                             [&client_groups](int64_t group) {
+                               return base::Contains(client_groups, group);
+                             })) {
+      // A google_group filter was specified, and the client is not a member of
+      // any of the groups.
+      return false;
     }
-    return false;
   }
 
   if (filter.exclude_google_group_size() > 0) {
-    for (int64_t filter_exclude_group : filter.exclude_google_group()) {
-      if (base::Contains(client_groups, filter_exclude_group)) {
-        return false;
-      }
+    if (std::ranges::any_of(filter.exclude_google_group(),
+                            [&client_groups](int64_t group) {
+                              return base::Contains(client_groups, group);
+                            })) {
+      // An exclude_google_group filter was specified, and the client is a
+      // member of at least one of the groups.
+      return false;
     }
-    return true;
   }
 
   return true;

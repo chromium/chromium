@@ -1263,8 +1263,7 @@ static cc::RenderSurfaceReason ConditionalRenderSurfaceReasonForEffect(
 
 static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
     const EffectPaintPropertyNode& effect) {
-  if (!effect.Filter().IsEmpty() ||
-      effect.RequiresCompositingForWillChangeFilter()) {
+  if (effect.Filter() || effect.RequiresCompositingForWillChangeFilter()) {
     return cc::RenderSurfaceReason::kFilter;
   }
   if (effect.HasActiveFilterAnimation())
@@ -1313,15 +1312,15 @@ void PropertyTreeManager::PopulateCcEffectNode(
   if (effect.MayHaveBackdropEffect()) {
     effect_node.may_have_backdrop_effect = true;
     // We never have backdrop effect and filter on the same effect node.
-    DCHECK(effect.Filter().IsEmpty());
+    DCHECK(!effect.Filter());
     if (auto* backdrop_filter = effect.BackdropFilter()) {
       effect_node.backdrop_filters = backdrop_filter->AsCcFilterOperations();
       effect_node.backdrop_filter_bounds = effect.BackdropFilterBounds();
       effect_node.backdrop_mask_element_id = effect.BackdropMaskElementId();
     }
     effect_node.blend_mode = effect.BlendMode();
-  } else {
-    effect_node.filters = effect.Filter().AsCcFilterOperations();
+  } else if (auto* filter = effect.Filter()) {
+    effect_node.filters = filter->AsCcFilterOperations();
   }
   effect_node.double_sided = !transform.IsBackfaceHidden();
   effect_node.effect_changed = effect.NodeChangeAffectsRaster();

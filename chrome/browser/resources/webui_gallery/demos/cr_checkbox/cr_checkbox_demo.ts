@@ -29,7 +29,7 @@ export class CrCheckboxDemoElement extends CrLitElement {
     };
   }
 
-  protected myValue_?: boolean;
+  protected accessor myValue_: boolean|undefined;
 
   protected onCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.myValue_ = e.detail.value;

@@ -1661,8 +1661,7 @@ void ViewTransitionStyleTracker::ComputeLiveElementGeometry(
 }
 
 bool ViewTransitionStyleTracker::HasActiveAnimations() const {
-  // TODO(crbug.com/405117566): Handle scoped transitions.
-  auto* originating_element = document_->documentElement();
+  auto* originating_element = OriginatingElement();
   if (!originating_element) {
     return false;
   }
@@ -1974,9 +1973,7 @@ bool ViewTransitionStyleTracker::SnapshotRootDidChangeSize() const {
 
 void ViewTransitionStyleTracker::InvalidateStyle() {
   ua_style_sheet_ = nullptr;
-
-  // TODO(crbug.com/405117566): Handle scoped transitions.
-  auto* originating_element = document_->documentElement();
+  auto* originating_element = OriginatingElement();
   if (!originating_element) {
     return;
   }
@@ -2304,6 +2301,10 @@ void ViewTransitionStyleTracker::SnapBrowserControlsToFullyShown() {
   } else {
     controls.SetShownRatio(1, 1);
   }
+}
+
+Element* ViewTransitionStyleTracker::OriginatingElement() const {
+  return element_ ? element_.Get() : document_->documentElement();
 }
 
 }  // namespace blink

@@ -35,8 +35,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.util.XrUtils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -48,62 +46,6 @@ import java.util.function.Consumer;
 
     // The behavior of observing window configuration changes using ComponentCallbacks is new in S.
     private static final boolean USE_CONFIGURATION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
-
-    private static class AdaptiveRefreshRateInfoReflection {
-        private static final int FRAME_RATE_CATEGORY_NORMAL = 0;
-        private static final int FRAME_RATE_CATEGORY_HIGH = 1;
-        private static @Nullable Method sHasArrSupport;
-        private static @Nullable Method sGetSuggestedFrameRate;
-
-        static {
-            Method hasArrSupport = null;
-            Method getSuggestedFrameRate = null;
-            if (BuildCompat.isAtLeastB()) {
-                try {
-                    hasArrSupport = Display.class.getMethod("hasArrSupport");
-                    getSuggestedFrameRate =
-                            Display.class.getMethod("getSuggestedFrameRate", int.class);
-                } catch (NoSuchMethodException e) {
-                    Log.w(TAG, "Missing ARR methods", e);
-                }
-                sHasArrSupport = hasArrSupport;
-                sGetSuggestedFrameRate = getSuggestedFrameRate;
-            }
-        }
-
-        static @Nullable AdaptiveRefreshRateInfo getInfo(Display display) {
-            if (sHasArrSupport == null || sGetSuggestedFrameRate == null) {
-                return null;
-            }
-            boolean hasArrSupport = false;
-            float suggestedFrameRateNormal = 0.0f;
-            float suggestedFrameRateHigh = 0.0f;
-            float[] supportedFrameRates = null;
-
-            try {
-                hasArrSupport = (Boolean) sHasArrSupport.invoke(display);
-                if (hasArrSupport) {
-                    suggestedFrameRateNormal =
-                            (Float)
-                                    sGetSuggestedFrameRate.invoke(
-                                            display, FRAME_RATE_CATEGORY_NORMAL);
-                    suggestedFrameRateHigh =
-                            (Float)
-                                    sGetSuggestedFrameRate.invoke(
-                                            display, FRAME_RATE_CATEGORY_HIGH);
-                    supportedFrameRates = display.getSupportedRefreshRates();
-                }
-            } catch (InvocationTargetException | IllegalAccessException e) {
-                Log.w(TAG, "Invoke ARR methods error", e);
-                return new AdaptiveRefreshRateInfo(false, 0.0f, 0.0f, null);
-            }
-            return new AdaptiveRefreshRateInfo(
-                    hasArrSupport,
-                    suggestedFrameRateNormal,
-                    suggestedFrameRateHigh,
-                    supportedFrameRates);
-        }
-    }
 
     // When this object exists, a positive value means that the forced DIP scale is set and
     // the zero means it is not. The non existing object (i.e. null reference) means that
@@ -409,9 +351,24 @@ import java.util.function.Consumer;
 
         AdaptiveRefreshRateInfo arrInfo = null;
         if (BuildCompat.isAtLeastB()) {
-            arrInfo = AdaptiveRefreshRateInfoReflection.getInfo(display);
+            boolean hasArrSupport = display.hasArrSupport();
+            float suggestedFrameRateNormal = 0.0f;
+            float suggestedFrameRateHigh = 0.0f;
+            float[] supportedFrameRates = null;
+            if (hasArrSupport) {
+                suggestedFrameRateNormal =
+                        display.getSuggestedFrameRate(Display.FRAME_RATE_CATEGORY_NORMAL);
+                suggestedFrameRateHigh =
+                        display.getSuggestedFrameRate(Display.FRAME_RATE_CATEGORY_HIGH);
+                supportedFrameRates = display.getSupportedRefreshRates();
+            }
+            arrInfo =
+                    new AdaptiveRefreshRateInfo(
+                            hasArrSupport,
+                            suggestedFrameRateNormal,
+                            suggestedFrameRateHigh,
+                            supportedFrameRates);
         }
-
         super.update(
                 display.getName(),
                 bounds,

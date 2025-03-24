@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
@@ -138,6 +139,9 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     identity_test_env_.MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
 
+    management_service_ = std::make_unique<policy::ManagementService>(
+        std::vector<std::unique_ptr<policy::ManagementStatusProvider>>());
+
     enterprise_rt_service_ =
         CreateServiceAndEnablePolicy(test_profile_, /*is_off_the_record=*/false,
                                      /*is_guest_session=*/false,
@@ -179,8 +183,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
             profile),
         referrer_chain_provider_.get(), &test_pref_service_,
-        identity_test_env_.identity_manager(), is_off_the_record,
-        is_guest_session);
+        identity_test_env_.identity_manager(), management_service_.get(),
+        is_off_the_record, is_guest_session);
 
     test_pref_service_.SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
@@ -266,6 +270,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  std::unique_ptr<policy::ManagementService> management_service_;
   signin::IdentityTestEnvironment identity_test_env_;
   // TestingProfileManager owns `test_profile_` so it must be freed after all
   // reference to the test profile are freed.

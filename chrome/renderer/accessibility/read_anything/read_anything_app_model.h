@@ -25,6 +25,7 @@
 
 namespace ui {
 class AXNode;
+class AXSelection;
 class AXSerializableTree;
 }  // namespace ui
 
@@ -170,11 +171,11 @@ class ReadAnythingAppModel {
     color_theme_ = color_theme;
   }
 
-  bool has_selection() const { return has_selection_; }
-  ui::AXNodeID start_node_id() const { return start_node_id_; }
-  ui::AXNodeID end_node_id() const { return end_node_id_; }
-  int start_offset() const { return start_offset_; }
-  int end_offset() const { return end_offset_; }
+  bool has_selection() const { return start_.is_valid(); }
+  ui::AXNodeID start_node_id() const { return start_.id; }
+  ui::AXNodeID end_node_id() const { return end_.id; }
+  int start_offset() const { return start_.offset; }
+  int end_offset() const { return end_.offset; }
 
   bool distillation_in_progress() const { return distillation_in_progress_; }
   void set_distillation_in_progress(bool distillation_in_progress) {
@@ -304,11 +305,25 @@ class ReadAnythingAppModel {
   void RemoveObserver(ModelObserver* observer);
 
  private:
+  struct SelectionEndpoint {
+    enum class Source {
+      kAnchor,
+      kFocus,
+    };
+
+    SelectionEndpoint() = default;
+    SelectionEndpoint(const ui::AXSelection& selection, Source source);
+
+    constexpr bool operator==(const SelectionEndpoint&) const = default;
+
+    constexpr bool is_valid() const { return id != ui::kInvalidAXNodeID; }
+
+    ui::AXNodeID id = ui::kInvalidAXNodeID;
+    int offset = -1;
+  };
+
   void ResetSelection();
-  void UpdateSelection();
-  void ComputeSelectionNodeIds();
-  bool IsCurrentSelectionEmpty();
-  bool SelectionInsideDisplayNodes();
+
   bool ContentNodesOnlyContainHeadings();
 
   void AddPendingUpdates(const ui::AXTreeID& tree_id, Updates& updates);
@@ -400,12 +415,11 @@ class ReadAnythingAppModel {
   read_anything::mojom::Colors color_theme_ =
       read_anything::mojom::Colors::kDefaultValue;
 
-  // Selection information.
-  bool has_selection_ = false;
-  ui::AXNodeID start_node_id_ = ui::kInvalidAXNodeID;
-  ui::AXNodeID end_node_id_ = ui::kInvalidAXNodeID;
-  int start_offset_ = -1;
-  int end_offset_ = -1;
+  // Invariant: Either both endpoints are `!is_valid()`, or they are both valid
+  // and non-equal.
+  SelectionEndpoint start_;
+  SelectionEndpoint end_;
+
   bool requires_distillation_ = false;
   bool reset_draw_timer_ = false;
   bool requires_post_process_selection_ = false;

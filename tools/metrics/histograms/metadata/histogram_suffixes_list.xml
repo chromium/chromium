@@ -674,17 +674,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Download.NetworkConnectionType.StartNew"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DriveCommonTimings" separator=".">
-  <suffix name="FailTime" label=""/>
-  <suffix name="SuccessTime" label=""/>
-  <affected-histogram name="DriveCommon.Lifecycle.MountTime"/>
-  <affected-histogram name="DriveCommon.LocalSearch.OfflineSearchTime"/>
-  <affected-histogram name="DriveCommon.LocalSearch.SharedSearchTime"/>
-  <affected-histogram name="DriveCommon.LocalSearch.TextSearchTime"/>
-  <affected-histogram name="DriveCommon.RemoteSearch.SharedSearchTime"/>
-  <affected-histogram name="DriveCommon.RemoteSearch.TextSearchTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="EncryptionLevel" separator=".">
   <suffix name="0RTT" label="Packets sent at 0-RTT encryption only."/>
   <suffix name="ForwardSecure"
@@ -776,13 +765,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="AC2" label="The auto-correct level is 2"/>
   <affected-histogram name="InputMethod.Commit.Index.FR"/>
   <affected-histogram name="InputMethod.Commit.Index.US"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="IMEMajorNames" separator=".">
-  <suffix name="FR" label="The French keyboard input method"/>
-  <suffix name="Pinyin" label="The Chinse Pinyin input method"/>
-  <suffix name="US" label="The US keyboard input method"/>
-  <affected-histogram name="InputMethod.Commit.Index"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="IOMode" separator=".">
@@ -3277,20 +3259,6 @@ chromium-metrics-reviews@google.com.
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Success"/>
   <affected-histogram name="Net.TrustTokens.OperationOutcome"/>
   <affected-histogram name="Net.TrustTokens.RequestHelperFactoryOutcome"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="UnPackConsumer" separator="_">
-  <suffix name="ChromeArchivePatch"
-      label="compressed patch: chrome_patch.packed.7z holding
-             chrome_patch.diff (small)."/>
-  <suffix name="CompressedChromeArchive"
-      label="compressed archive: chrome.packed.7z holding chrome.7z (big)."/>
-  <suffix name="SetupExePatch"
-      label="compressed patch: setup_patch.packed.7z holding setup_patch.diff
-             (small)."/>
-  <suffix name="UncompressedChromeArchive"
-      label="uncompressed archive: chrome.7z holding install dir (big)."/>
-  <affected-histogram name="Setup.Install.LzmaUnPackStatus"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="VideoFrameRateRange" separator=".">

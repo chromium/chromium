@@ -137,7 +137,7 @@ char const* GetSecFetchStorageAccessHeaderValue(
 net::cookie_util::SecFetchStorageAccessOutcome
 ComputeSecFetchStorageAccessOutcome(const net::URLRequest& request,
                                     mojom::CredentialsMode credentials_mode) {
-  if (!request.storage_access_status()) {
+  if (!request.storage_access_status().GetStatusForThirdPartyContext()) {
     return net::cookie_util::SecFetchStorageAccessOutcome::
         kOmittedStatusMissing;
   }
@@ -145,7 +145,8 @@ ComputeSecFetchStorageAccessOutcome(const net::URLRequest& request,
     return net::cookie_util::SecFetchStorageAccessOutcome::
         kOmittedRequestOmitsCredentials;
   }
-  switch (request.storage_access_status().value()) {
+  switch (
+      request.storage_access_status().GetStatusForThirdPartyContext().value()) {
     case net::cookie_util::StorageAccessStatus::kInactive:
       return net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive;
     case net::cookie_util::StorageAccessStatus::kActive:
@@ -204,7 +205,7 @@ void SetSecFetchStorageAccessHeader(net::URLRequest& request,
       ComputeSecFetchStorageAccessOutcome(request, credentials_mode));
 
   if (credentials_mode != mojom::CredentialsMode::kInclude ||
-      !request.storage_access_status()) {
+      !request.storage_access_status().GetStatusForThirdPartyContext()) {
     // A credentials mode of "same-origin" or "omit" prevents including cookies
     // on the request in the first place, so we don't bother to include the
     // `Sec-Fetch-Storage-Access` header in that case.
@@ -217,8 +218,9 @@ void SetSecFetchStorageAccessHeader(net::URLRequest& request,
   }
   request.SetExtraRequestHeaderByName(
       kSecFetchStorageAccess,
-      GetSecFetchStorageAccessHeaderValue(
-          request.storage_access_status().value()),
+      GetSecFetchStorageAccessHeaderValue(request.storage_access_status()
+                                              .GetStatusForThirdPartyContext()
+                                              .value()),
       /*overwrite=*/true);
 }
 

@@ -11,16 +11,16 @@
 #include "media/base/media_export.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
-namespace crypto {
-class SymmetricKey;
-}
-
 namespace media {
 
 // This class implements AES-CBC-128 decryption as described in the Advanced
 // Encryption Standard specified by AES [FIPS-197, https://www.nist.gov]
 // using 128-bit keys in Cipher Block Chaining mode, as specified in Block
 // Cipher Modes [NIST 800-38A, https://www.nist.gov].
+//
+// This class uses BoringSSL directly rather than using the abstraction in
+// //crypto/aes_cbc because it needs to do streaming decryption with a
+// persistent IV rather than one-shot decryption.
 
 class MEDIA_EXPORT AesCbcCrypto {
  public:
@@ -35,17 +35,12 @@ class MEDIA_EXPORT AesCbcCrypto {
   // the key or the initialization vector cannot be used.
   bool Initialize(base::span<const uint8_t> key, base::span<const uint8_t> iv);
 
-  // Deprecated initializer that takes a crypto::SymmetricKey. Do not add new
-  // uses of this - pass the key as a byte span instead.
-  bool Initialize(const crypto::SymmetricKey& key,
-                  base::span<const uint8_t> iv);
-
   // Decrypts |encrypted_data| into |decrypted_data|. |encrypted_data| must be
   // a multiple of the blocksize (128 bits), and |decrypted_data| must have
   // enough space for |encrypted_data|.size(). Returns false if the decryption
   // fails.
   bool Decrypt(base::span<const uint8_t> encrypted_data,
-               uint8_t* decrypted_data);
+               base::span<uint8_t> decrypted_data);
 
  private:
   bssl::ScopedEVP_CIPHER_CTX ctx_;

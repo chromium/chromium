@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -325,8 +326,10 @@ bool GeometryMapper::SlowLocalToAncestorVisualRectWithPixelMovingFilters(
         rect_to_map = FloatClipRect(gfx::RectF());
         return false;
       }
-      if (!rect_to_map.IsInfinite())
-        rect_to_map.Rect() = filter->MapRect(rect_to_map.Rect());
+      if (!rect_to_map.IsInfinite()) {
+        rect_to_map.Rect() = gfx::RectF(
+            filter->MapRect(gfx::ToEnclosingRect(rect_to_map.Rect())));
+      }
     }
 
     last_state = new_state;

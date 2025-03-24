@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <deque>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -686,11 +687,11 @@ base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
 
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
-    const FieldTypeSet& available_field_types,
-    std::string_view login_form_signature,
-    bool observed_submission,
     const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
-        format_strings) {
+        format_strings,
+    const FieldTypeSet& available_field_types,
+    std::optional<FormSignature> login_form_signature,
+    bool observed_submission) {
   DCHECK_EQ(FirstNonCapturedType(form, available_field_types),
             MAX_VALID_FIELD_TYPE);
 
@@ -732,11 +733,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
       static_cast<AutofillUploadContents_SubmissionIndicatorEvent>(
           triggering_event));
 
-  if (!login_form_signature.empty()) {
-    uint64_t login_sig;
-    if (base::StringToUint64(login_form_signature, &login_sig)) {
-      upload.set_login_form_signature(login_sig);
-    }
+  if (login_form_signature.has_value()) {
+    upload.set_login_form_signature(login_form_signature->value());
   }
 
   if (IsMalformed(form)) {

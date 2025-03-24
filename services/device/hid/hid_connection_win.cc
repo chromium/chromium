@@ -8,6 +8,7 @@
 #include <cstring>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -83,7 +84,7 @@ PendingHidTransfer::PendingHidTransfer(
     : buffer_(buffer),
       callback_(std::move(callback)),
       event_(CreateEvent(NULL, FALSE, FALSE, NULL)) {
-  memset(&overlapped_, 0, sizeof(OVERLAPPED));
+  UNSAFE_TODO(memset(&overlapped_, 0, sizeof(OVERLAPPED)));
   overlapped_.hEvent = event_.Get();
 }
 

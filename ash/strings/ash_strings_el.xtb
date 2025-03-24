@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Εμφάνιση ρυθμίσεων γλώσσας</translation>
 <translation id="1459693405370120464">Καιρός</translation>
 <translation id="1460620680449458626">Η ένταση ήχου είναι σε σίγαση.</translation>
+<translation id="1462439140224375968">Δημιουργήθηκε Έγγραφο Google</translation>
 <translation id="14648076227129703">Αυτό επιτρέπει την πρόσβαση στην κάμερα για τις εφαρμογές <ph name="APP1_NAME" /> και <ph name="APP2_NAME" /> και όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας.</translation>
 <translation id="1467432559032391204">Αριστερά</translation>
 <translation id="146902737843070955">Ο διαχειριστής σας ζήτησε αυτή την αλλαγή</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">Εμφάνιση λεπτομερειών σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi είναι ανενεργό.</translation>
 <translation id="3017079585324758401">Φόντο</translation>
 <translation id="3018135054368884502">Γρήγορη προώθηση μέσου</translation>
+<translation id="3026897869154397692">Προστέθηκε στο Ημερολόγιο</translation>
 <translation id="3033545621352269033">Eνεργό</translation>
 <translation id="3033912566804961911">Συνδυασμός με <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Άνοιγμα Αρχείων</translation>
@@ -1894,6 +1896,7 @@
 <translation id="7228968829656641943">Επιλέξτε να κάνετε αναζήτηση στην οθόνη μου. Πατήστε το πλήκτρο Τab και έπειτα το πλήκτρο διαστήματος για πλοήγηση με το πληκτρολόγιο.</translation>
 <translation id="7229029500464092426">Διαθέσιμη μνήμη <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> συνολική μνήμη</translation>
 <translation id="7239814253344511868">Και τα δύο κουμπιά του ποντικιού</translation>
+<translation id="7240636904654154599">Δημιουργήθηκε Φύλλο Google</translation>
 <translation id="7244725679040769470">Απομένει περίπου <ph name="PERCENTAGE" />% μπαταρία. Συνδέστε τη συσκευή σας στο ρεύμα.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Θα πρέπει να γίνει επανεκκίνηση αυτού του Chromebook για την εφαρμογή μιας ενημέρωσης. Η ενέργεια μπορεί να διαρκέσει έως 1 λεπτό.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2407,7 @@
 <translation id="8921624153894383499">Ο Βοηθός Google δεν είναι διαθέσιμος σε αυτήν τη γλώσσα.</translation>
 <translation id="8926951137623668982">Το ράφι θα αποκρύπτεται πάντα</translation>
 <translation id="8929566928381252430">Προσπαθείτε να χρησιμοποιήσετε το πλήκτρο Caps Lock; Χρήση</translation>
+<translation id="8929623844713377237">Δημιουργήθηκε επαφή</translation>
 <translation id="8934418770423095813">Δημιουργία Εγγράφου Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 αρχείο}other{# αρχεία}}</translation>
 <translation id="8936501819958976551">απενεργοποιημένο</translation>

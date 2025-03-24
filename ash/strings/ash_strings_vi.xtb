@@ -149,6 +149,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1455242230282523554">Hiển thị các tùy chọn cài đặt ngôn ngữ</translation>
 <translation id="1459693405370120464">Thời tiết</translation>
 <translation id="1460620680449458626">Đang tắt tiếng.</translation>
+<translation id="1462439140224375968">Đã tạo một tài liệu trên Google Tài liệu</translation>
 <translation id="14648076227129703">Điều này cho phép sử dụng máy ảnh đối với <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> và tất cả ứng dụng cũng như trang web có quyền sử dụng máy ảnh</translation>
 <translation id="1467432559032391204">Trái</translation>
 <translation id="146902737843070955">Quản trị viên của bạn đã yêu cầu sự thay đổi này</translation>
@@ -593,6 +594,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="301584155502740476">Hiển thị thông tin chi tiết về điểm phát sóng. Điểm phát sóng đang tắt.</translation>
 <translation id="3017079585324758401">Nền</translation>
 <translation id="3018135054368884502">Tua nhanh nội dung nghe nhìn</translation>
+<translation id="3026897869154397692">Đã thêm vào lịch</translation>
 <translation id="3033545621352269033">Đang bật</translation>
 <translation id="3033912566804961911">Kết hợp với <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Mở Tệp</translation>
@@ -1894,6 +1896,7 @@ Mới cài đặt</translation>
 <translation id="7228968829656641943">Chọn để tìm kiếm trên màn hình. Nhấn phím Tab rồi nhấn phím cách để di chuyển bằng bàn phím.</translation>
 <translation id="7229029500464092426">Bộ nhớ còn <ph name="AVAILABLE_MEMORY" /> | Tổng <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Cả hai nút trên chuột</translation>
+<translation id="7240636904654154599">Đã tạo một trang tính trên Google Trang tính</translation>
 <translation id="7244725679040769470">Còn <ph name="PERCENTAGE" />% pin. Hãy sạc thiết bị.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Cần khởi động lại Chromebook này để áp dụng bản cập nhật. Quá trình này có thể mất tối đa 1 phút.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2407,7 @@ Mới cài đặt</translation>
 <translation id="8921624153894383499">Trợ lý Google không hỗ trợ ngôn ngữ này.</translation>
 <translation id="8926951137623668982">Giá luôn ẩn</translation>
 <translation id="8929566928381252430">Bạn đang tìm cách dùng phím Caps Lock? Hãy sử dụng</translation>
+<translation id="8929623844713377237">Đã tạo một mục người liên hệ</translation>
 <translation id="8934418770423095813">Tạo Google Tài liệu</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tệp}other{# tệp}}</translation>
 <translation id="8936501819958976551">đã tắt</translation>

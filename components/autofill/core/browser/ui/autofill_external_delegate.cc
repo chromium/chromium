@@ -697,8 +697,12 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       // TODO(crbug.com/380367784): support previewing.
       break;
     case SuggestionType::kLoyaltyCardEntry:
-      // TODO(crbug.com/404436027): Implement.
-      NOTIMPLEMENTED();
+      // Always shows the masked loyalty card value as the preview of the
+      // suggestion.
+      manager_->FillOrPreviewField(
+          mojom::ActionPersistence::kPreview,
+          mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
+          suggestion.main_text.value, suggestion.type, LOYALTY_MEMBERSHIP_ID);
       break;
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:

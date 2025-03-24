@@ -7,6 +7,7 @@
 #include <sddl.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_other_user.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
@@ -86,7 +87,7 @@ FakeCredentialProviderUser::~FakeCredentialProviderUser() {
 HRESULT FakeCredentialProviderUser::GetSid(wchar_t** sid) {
   DWORD length = sid_.length() + 1;
   *sid = static_cast<wchar_t*>(::CoTaskMemAlloc(length * sizeof(wchar_t)));
-  EXPECT_EQ(0, wcscpy_s(*sid, length, sid_.c_str()));
+  EXPECT_EQ(0, UNSAFE_TODO(wcscpy_s(*sid, length, sid_.c_str())));
   return S_OK;
 }
 
@@ -101,7 +102,7 @@ HRESULT FakeCredentialProviderUser::GetStringValue(REFPROPERTYKEY key,
 
   DWORD length = username_.length() + 1;
   *value = static_cast<wchar_t*>(::CoTaskMemAlloc(length * sizeof(wchar_t)));
-  EXPECT_EQ(0, wcscpy_s(*value, length, username_.c_str()));
+  EXPECT_EQ(0, UNSAFE_TODO(wcscpy_s(*value, length, username_.c_str())));
   return S_OK;
 }
 

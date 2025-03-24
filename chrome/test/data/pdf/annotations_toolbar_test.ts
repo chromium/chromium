@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {CrIconButtonElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 function createToolbar() {
@@ -15,11 +16,11 @@ function createToolbar() {
 const tests = [
   async function testHidingAnnotationsExitsAnnotationsMode() {
     const toolbar = createToolbar();
-    toolbar.toggleAnnotation();
+    toolbar.setAnnotationMode(AnnotationMode.DRAW);
 
     // This is normally done by the parent in response to the event fired by
-    // toggleAnnotation().
-    toolbar.annotationMode = true;
+    // setAnnotationMode().
+    toolbar.annotationMode = AnnotationMode.DRAW;
     await microtasksFinished();
 
     toolbar.addEventListener('display-annotations-changed', e => {
@@ -31,38 +32,38 @@ const tests = [
   },
   function testEnteringAnnotationsModeShowsAnnotations() {
     const toolbar = createToolbar();
-    chrome.test.assertFalse(toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, toolbar.annotationMode);
 
     // Hide annotations.
     toolbar.shadowRoot.querySelector<HTMLElement>(
                           '#show-annotations-button')!.click();
 
-    toolbar.addEventListener('annotation-mode-toggled', e => {
-      chrome.test.assertTrue(e.detail);
+    toolbar.addEventListener('annotation-mode-updated', e => {
+      chrome.test.assertEq(AnnotationMode.DRAW, e.detail);
       chrome.test.succeed();
     });
-    toolbar.toggleAnnotation();
+    toolbar.setAnnotationMode(AnnotationMode.DRAW);
   },
   async function testEnteringAnnotationsModeDisablesPresentationMode() {
     const toolbar = createToolbar();
-    chrome.test.assertFalse(toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, toolbar.annotationMode);
 
-    toolbar.toggleAnnotation();
+    toolbar.setAnnotationMode(AnnotationMode.DRAW);
     // This is normally done by the parent in response to the event fired by
-    // toggleAnnotation().
-    toolbar.annotationMode = true;
+    // setAnnotationMode().
+    toolbar.annotationMode = AnnotationMode.DRAW;
     await microtasksFinished();
     chrome.test.assertTrue(toolbar.$['present-button'].disabled);
     chrome.test.succeed();
   },
   async function testEnteringAnnotationsModeDisablesTwoUp() {
     const toolbar = createToolbar();
-    chrome.test.assertFalse(toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, toolbar.annotationMode);
 
-    toolbar.toggleAnnotation();
+    toolbar.setAnnotationMode(AnnotationMode.DRAW);
     // This is normally done by the parent in response to the event fired by
-    // toggleAnnotation().
-    toolbar.annotationMode = true;
+    // setAnnotationMode().
+    toolbar.annotationMode = AnnotationMode.DRAW;
     await microtasksFinished();
     chrome.test.assertTrue(toolbar.$['two-page-view-button'].disabled);
     chrome.test.succeed();
@@ -75,7 +76,7 @@ const tests = [
     toolbar.twoUpViewEnabled = false;
 
     await microtasksFinished();
-    chrome.test.assertFalse(toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, toolbar.annotationMode);
 
     // If rotation is enabled clicking the button shows the dialog.
     toolbar.rotated = true;

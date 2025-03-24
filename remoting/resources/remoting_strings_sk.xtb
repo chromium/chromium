@@ -40,6 +40,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="2758123043070977469">Pri overovaní totožnosti sa vyskytla chyba. Prihláste sa znova.</translation>
 <translation id="2803375539583399270">Zadajte kód PIN</translation>
 <translation id="2919669478609886916">Momentálne zdieľate tento počítač s iným používateľom. Chcete pokračovať v zdieľaní?</translation>
+<translation id="2929683002824598593">Zdieľať zariadenie</translation>
 <translation id="2939145106548231838">Overenie na účely hostenia</translation>
 <translation id="3027681561976217984">Dotykový režim</translation>
 <translation id="3106379468611574572">Vzdialený počítač nereaguje na žiadosti o pripojenie. Skontrolujte, či je online a skúste to znova.</translation>
@@ -117,10 +118,12 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="6178645564515549384">Natívna hostiteľská aplikácia určená na odosielanie správ v rámci vzdialenej pomoci</translation>
 <translation id="618120821413932081">Prispôsobenie rozlíšenia vzdialenej obrazovky, aby zodpovedalo oknu</translation>
 <translation id="6223301979382383752">Otvoriť predvoľby nahrávania obrazovky</translation>
+<translation id="6252344563748670011">Používateľ <ph name="CLIENT_USERNAME" /> požiadal o prístup k vašej obrazovke a ovládaniu klávesnice a myši. Chcete zdieľať svoje zariadenie?</translation>
 <translation id="6284412385303060032">Hostiteľ spustený na obrazovke logiky konzoly bol ukončený, aby sa tým zaistil režim opony (curtain mode), a to prepnutím na hostiteľa spúšťaného v relácii konkrétneho používateľa</translation>
 <translation id="6542902059648396432">Nahlásiť problém...</translation>
 <translation id="6583902294974160967">Podpora</translation>
 <translation id="6612717000975622067">Odoslať akciu Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Ak nebudete konať, vaše zariadenie začne automaticky zdieľať o # sekundu.}few{Ak nebudete konať, vaše zariadenie začne automaticky zdieľať o # sekundy.}many{Ak nebudete konať, vaše zariadenie začne automaticky zdieľať o # sekundy.}other{Ak nebudete konať, vaše zariadenie začne automaticky zdieľať o # sekúnd.}}</translation>
 <translation id="6654753848497929428">Zdieľať</translation>
 <translation id="677755392401385740">Hostiteľ bol spustený pre používateľa: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Pomocná aplikácia na otvorenie webovej adresy v klientovi <ph name="PRODUCT_NAME" /></translation>

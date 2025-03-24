@@ -823,6 +823,7 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />) كمجموعة علامات تبويب جديدة في الخلفية}zero{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم <ph name="TAB_COUNT_MANY" /> علامة تبويب كمجموعة علامات تبويب جديدة في الخلفية}two{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم علامتَي تبويب (<ph name="TAB_COUNT_MANY" />) كمجموعة علامات تبويب جديدة في الخلفية}few{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم <ph name="TAB_COUNT_MANY" /> علامات تبويب كمجموعة علامات تبويب جديدة في الخلفية}many{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم <ph name="TAB_COUNT_MANY" /> علامة تبويب كمجموعة علامات تبويب جديدة في الخلفية}other{استعادة مجموعة علامات تبويب بلون <ph name="COLOR_NAME" /> تضم <ph name="TAB_COUNT_MANY" /> علامة تبويب كمجموعة علامات تبويب جديدة في الخلفية}}</translation>
 <translation id="4837753911714442426">فتح الخيارات لطباعة الصفحة</translation>
 <translation id="4844633725025837809">‏لتوفير مزيد من الأمان، يمكنك تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
+<translation id="4849731766219625109">استخدام حسابك على <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="4852014461738377247">‏جارٍ تسجيل الدخول\u2026</translation>
 <translation id="4860895144060829044">اتصال</translation>
@@ -1565,6 +1566,7 @@
 <translation id="8073388330009372546">فتح الصورة بعلامة تبويب جديدة</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8078096376109663956">يمكنك مشاركة النص فقط.</translation>
+<translation id="8078348702936632821">تثبيت هذا الاختصار</translation>
 <translation id="8084114998886531721">كلمة مرور محفوظة</translation>
 <translation id="8084285576995584326">‏التحكُّم في بيانات حسابك على Google</translation>
 <translation id="8084864785646838999">‏قد لا تظهر هنا بعض بيانات السجلّ. للاطّلاع على جميع البيانات، افتح سجلّ Chrome الكامل. قد يتضمّن حسابك على Google أيضًا نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

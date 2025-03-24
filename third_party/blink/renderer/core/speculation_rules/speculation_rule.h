@@ -40,7 +40,7 @@ class CORE_EXPORT SpeculationRule final
       mojom::blink::SpeculationEagerness,
       network::mojom::blink::NoVarySearchPtr,
       mojom::blink::SpeculationInjectionType,
-      std::optional<AtomicString> tag);
+      std::optional<AtomicString> ruleset_tag);
   ~SpeculationRule();
 
   const Vector<KURL>& urls() const { return urls_; }
@@ -62,7 +62,7 @@ class CORE_EXPORT SpeculationRule final
   mojom::blink::SpeculationInjectionType injection_type() const {
     return injection_type_;
   }
-  std::optional<AtomicString> tag() const { return tag_; }
+  std::optional<AtomicString> ruleset_tag() const { return ruleset_tag_; }
 
   void Trace(Visitor*) const;
 
@@ -77,7 +77,7 @@ class CORE_EXPORT SpeculationRule final
   network::mojom::blink::NoVarySearchPtr no_vary_search_hint_;
   mojom::blink::SpeculationInjectionType injection_type_ =
       mojom::blink::SpeculationInjectionType::kNone;
-  std::optional<AtomicString> tag_;
+  std::optional<AtomicString> ruleset_tag_;
 };
 
 }  // namespace blink

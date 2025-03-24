@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">顯示語言設定</translation>
 <translation id="1459693405370120464">天氣</translation>
 <translation id="1460620680449458626">音量已設為靜音。</translation>
+<translation id="1462439140224375968">已建立 Google 文件</translation>
 <translation id="14648076227129703">這將允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」和具有攝影機權限的所有應用程式和網站存取攝影機</translation>
 <translation id="1467432559032391204">向左</translation>
 <translation id="146902737843070955">管理員已要求這項變更</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">顯示無線基地台詳細資料。無線基地台已關閉。</translation>
 <translation id="3017079585324758401">背景</translation>
 <translation id="3018135054368884502">快轉播放媒體</translation>
+<translation id="3026897869154397692">已新增至日曆</translation>
 <translation id="3033545621352269033">開啟</translation>
 <translation id="3033912566804961911">與「<ph name="DESK_NAME" />」合併</translation>
 <translation id="3036649622769666520">開啟檔案</translation>
@@ -1009,6 +1011,7 @@
 <translation id="4351244548802238354">關閉對話方塊</translation>
 <translation id="4356872429719185452">顯示無線基地台詳細資料。無線基地台正在啟用。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  錄製中</translation>
+<translation id="4368227575116094370">建立 Google 試算表</translation>
 <translation id="4371348193907997655">投放設定</translation>
 <translation id="4371834685492830207">PIN 碼只能包含有效的字元</translation>
 <translation id="4375482231364171368">在網址列搜尋</translation>
@@ -1890,6 +1893,7 @@
 <translation id="7228968829656641943">選取範圍即可搜尋畫面中的項目。按下 Tab 鍵和空格鍵即可使用鍵盤瀏覽。</translation>
 <translation id="7229029500464092426">記憶體可用量：<ph name="AVAILABLE_MEMORY" /> | 總量：<ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">兩個滑鼠按鈕</translation>
+<translation id="7240636904654154599">已建立 Google 試算表</translation>
 <translation id="7244725679040769470">剩餘電量：<ph name="PERCENTAGE" />%。請將裝置接上電源。</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。這部 Chromebook 需要重新啟動才能套用更新。最多可能需要 1 分鐘才能完成。</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2399,6 +2403,7 @@
 <translation id="8921624153894383499">Google 助理不支援這個語言。</translation>
 <translation id="8926951137623668982">一律隱藏檔案櫃</translation>
 <translation id="8929566928381252430">要使用 Caps Lock 鍵嗎？使用</translation>
+<translation id="8929623844713377237">已建立聯絡人</translation>
 <translation id="8934418770423095813">建立 Google 文件</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="8936501819958976551">已停用</translation>

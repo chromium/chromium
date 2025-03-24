@@ -506,6 +506,7 @@
 <translation id="1846432862466000825">პლასტმასა (საარქივო)</translation>
 <translation id="1848640291751752317">ჩამოტვირთვები</translation>
 <translation id="1848982255014129637">ფოტო (ძალიან პრიალა)</translation>
+<translation id="1849438148665368129">შესყიდვის თანხის ოდენობა <ph name="CHECKOUT_AMOUNT_MAXIMUM" />-ზე ნაკლები უნდა იყოს</translation>
 <translation id="1853392626017747777">ვირტუალური ბარათის რეგისტრაცია დახურულია</translation>
 <translation id="1854180393107901205">ტრანსლირების შეწყვეტა</translation>
 <translation id="1855370856221982654">კრივი</translation>
@@ -902,6 +903,7 @@
 <translation id="2539524384386349900">ამოცნობა</translation>
 <translation id="2541219929084442027">ყველა ინკოგნიტო ჩანართის დახურვის შემდეგ, თქვენ მიერ ინკოგნიტო ჩანართების მეშვეობით მონახულებული გვერდები არ დარჩება თქვენი ბრაუზერის ისტორიაში, ქუქი-ჩანაწერების საცავში და არც ძიების ისტორიაში. ამის მიუხედავად, თქვენ მიერ ჩამოტვირთული ფაილები თუ შექმნილი სანიშნეები მაინც შეინახება.</translation>
 <translation id="2542106216580219892">სერფინგი</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> — სრულეკრანიანი რეჟიმიდან გასასვლელად ხანგრძლივად დააჭირეთ |<ph name="ACCELERATOR" />|-ს</translation>
 <translation id="2544546346215446551">თქვენმა ადმინისტრატორმა გადატვირთა თქვენი მოწყობილობა</translation>
 <translation id="2544644783021658368">ერთი დოკუმენტი</translation>
 <translation id="254524874071906077">Chrome-ის დაყენება ნაგულისხმევ ბრაუზერად</translation>
@@ -2171,6 +2173,7 @@
 <translation id="4796594887379589189">დავალების ანგარიშის ID</translation>
 <translation id="4798269756263412078">თქვენ მიიღებთ გაფრთხილებებს, როცა ფასი დაიკლებს რომელიმე საიტზე. გაფრთხილებები გამოგეგზავნებათ ელფოსტაზე.</translation>
 <translation id="4800132727771399293">შეამოწმეთ ვადის გასვლის თარიღი, ასევე CVC კოდი და ხელახლა ცადეთ</translation>
+<translation id="4800546479758254481">AR ნებადართულია</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">ინსტრუქცია თქვენი მოწყობილობის ადმინისტრატორისგან:</translation>
 <translation id="4811450222531576619">შეიტყვეთ მისი წყაროსა და თემის შესახებ</translation>
@@ -3033,6 +3036,7 @@
 <translation id="6327065120806001832">ლოკალურ ქსელზე წვდომა</translation>
 <translation id="6328639280570009161">სცადეთ ქსელის პროგნოზის გამორთვა</translation>
 <translation id="6335029926534404762">სპორტული ფეხსაცმელი</translation>
+<translation id="6336948221660696475">VR არ არის ნებადართული</translation>
 <translation id="6337133576188860026">გამოთავისუფლდება <ph name="SIZE" /> ან ნაკლები. ზოგიერთი საიტი შემდეგი მონახულებისას შეიძლება უფრო ნელა ჩაიტვირთოს.</translation>
 <translation id="6337534724793800597">ფილტრის წესები სახელის მიხედვით</translation>
 <translation id="633770708279464947">მნიშვნელობა <ph name="SECURE_DNS_SALT" /> არასწორია და არ იქნება გამოყენებული.</translation>
@@ -3076,6 +3080,7 @@
 <translation id="6391700400718590966">უსაფრთხო გადახდისთვის საჭირო ავტორიზაციის მონაცემების არარსებობის ფურცელი დახურულია</translation>
 <translation id="6392799395081100092">ქაღალდი (ველენი)</translation>
 <translation id="6393156038355142111">ძლიერი პაროლის შემოთავაზება</translation>
+<translation id="6393310910507376797">არ არის მხარდაჭერილი მოვაჭრის მიერ</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" />-დან ამ მდებარეობაზე ჩასმა დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="6394852772105848029">ამ საიტს სურს, გახსნას <ph name="APP_NAME" /> აპი</translation>
 <translation id="639673288733510393">სკუტერები და მოპედები</translation>
@@ -3228,6 +3233,7 @@
 <translation id="6668389483194953109">ნაპოვნია ქაღალდის ზომის სახელი „custom“, თუმცა „custom_size“ თვისება ცარიელი ან არასწორია.</translation>
 <translation id="6671169470640320959">ავტოკრედიტი</translation>
 <translation id="6671697161687535275">ამოიშალოს ფორმებისთვის განკუთვნილი შემოთავაზება Chromium-იდან?</translation>
+<translation id="6675846980676550611">AR არ არის ნებადართული</translation>
 <translation id="6677351035258626477">სწრაფი კვება</translation>
 <translation id="6679354743514146922">Chrome ბრაუზერი ცდილობს, შეავსოს თქვენი პაროლი <ph name="APP_NAME" />-ში.</translation>
 <translation id="6681790815630918386">CVC შეინახა</translation>
@@ -3715,6 +3721,7 @@
 <translation id="7512685745044087310">ამ წესების მნიშვნელობა ვერ იქნება „true“ და სავალდებულო, ამიტომ ის რეკომენდებულით შეიცვალა.</translation>
 <translation id="7514365320538308">ჩამოტვირთვა</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">VR ამჯერად ნებადართულია</translation>
 <translation id="7517201160922869406">ოფროუდ ავტომობილები</translation>
 <translation id="7517414872996418597">კონვერტი C10</translation>
 <translation id="7518003948725431193">ვებგვერდი ვერ მოიძებნა ვებ-მისამართისთვის: <ph name="URL" /></translation>
@@ -3934,6 +3941,7 @@
 <translation id="7887885240995164102">რეჟიმში „გამოსახულება გამოსახულებაში“ შესვლა</translation>
 <translation id="7888575728750733395">ბეჭდვის რენდერის სქემა</translation>
 <translation id="7890748547282909375">შედით Microsoft OneDrive-ში, რომ შეინახოთ ეკრანის ანაბეჭდები</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> — კურსორის გამოსაჩენად დააჭირეთ |<ph name="ACCELERATOR" />|-ს</translation>
 <translation id="7892865709991296481">გადახდის პარამეტრები</translation>
 <translation id="7894280532028510793">თუ სწორად არის აკრეფილი, <ph name="BEGIN_LINK" />ცადეთ ქსელის დიაგნოსტიკა<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">კონვერტი 7 x 9 დუიმი</translation>
@@ -4615,6 +4623,7 @@
 <translation id="9139318394846604261">საყიდლები</translation>
 <translation id="9140198744651252040">Chrome ბრაუზერს სურს, გამოიყენოს თითის ანაბეჭდი პაროლების ავტომატური შევსებისთვის</translation>
 <translation id="9141013498910525015">მისამართების მართვა</translation>
+<translation id="9141672681283222114">AR ამჯერად ნებადართულია</translation>
 <translation id="9143898823728499852">თქვენ ამ ბარათის მონაცემების ავტომატური შევსება შეგიძლიათ, რადგან თქვენი <ph name="CARD_ISSUER_NAME" /> ანგარიში მიბმულია Google Pay-სთან</translation>
 <translation id="9144951720726881238">მოქმედების ვადის გასვლის თარიღი:</translation>
 <translation id="9145910032514306808">ხელახლა <ph name="BEGIN_LINK" />შედით სისტემაში<ph name="END_LINK" />,
@@ -4628,6 +4637,7 @@
 <translation id="9155646082713385498">ჟურნალები</translation>
 <translation id="9157595877708044936">დაყენება…</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" />, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}other{<ph name="FILE_COUNT" /> ფაილი, შესაძლოა, შეიცავდეს სენსიტიურ კონტენტს}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> — სრულეკრანიანი რეჟიმიდან გასასვლელად დააჭირეთ |<ph name="ACCELERATOR" />|-ს</translation>
 <translation id="9165305804774426672">მონახულებულ საიტებს ასევე შეუძლიათ განსაზღვრონ, თუ რა მოგწონთ, ამ საიტებზე თქვენი აქტივობების მიხედვით. მაგალითად, თუ ეწვევით საიტს, რომელიც შორ მანძილზე სარბენ სპორტულ ფეხსაცმელს ყიდის, საიტმა შეიძლება გადაწყვიტოს, რომ მარათონებში მონაწილეობა გაინტერესებთ.</translation>
 <translation id="9166851138617700776">ვრცლად საიტების მიერ შემოთავაზებული რეკლამებისა და რეკლამის ეფექტურობის გაზომვის შესახებ</translation>
 <translation id="9167054383925257837">ბრაუზერის და მოწყობილობის ოპერაციული სისტემის ინფორმაცია (როგორიცაა ბრაუზერის და ოპერაციული სისტემის ვერსიები)</translation>
@@ -4672,6 +4682,7 @@
 <translation id="922152298093051471">Chrome-ის მორგება</translation>
 <translation id="9222403027701923763">დაწყებითი და საშუალო განათლება (K-12)</translation>
 <translation id="93020190163435405">სტაჟირება</translation>
+<translation id="931598121743515856">შესყიდვის თანხის ოდენობა <ph name="CHECKOUT_AMOUNT_MINIMUM" />-ზე მეტი უნდა იყოს</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">გსურთ, დართოთ ნება <ph name="APP_NAME" /> აპს, დააყენოს Wi-Fi ქსელები?</translation>
 <translation id="936602727769022409">თქვენ შეიძლება დაკარგოთ წვდომა თქვენს Google ანგარიშზე. Chromium გირჩევთ, ახლავე შეცვალოთ პაროლი. თქვენ მოგიწევთ სისტემაში შესვლა.</translation>
@@ -4688,6 +4699,7 @@
 <translation id="949314938206378263">თქვენ მოითხოვეთ ამ საიტის მონახულება. თქვენს მშობელს გამოხმაურება შეუძლია Family Link-იდან.</translation>
 <translation id="950736567201356821">სამმაგად გახვრეტა ზემოთ</translation>
 <translation id="950926967802086924">წვდომის გასაღები • Google პაროლების მმართველი</translation>
+<translation id="955429569736351433">VR ნებადართულია</translation>
 <translation id="95721182352849470">ყვითელი 2</translation>
 <translation id="961663415146723894">აკინძვა ქვემოთ</translation>
 <translation id="961856697154696964">დათვალ. მონაცემების წაშლა</translation>

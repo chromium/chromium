@@ -120,7 +120,8 @@
     return;
   }
 
-  _viewController = [[HistorySyncViewController alloc] init];
+  _viewController =
+      [[HistorySyncViewController alloc] initWithAccessPoint:_accessPoint];
   _viewController.delegate = self;
 
   ChromeAccountManagerService* chromeAccountManagerService =

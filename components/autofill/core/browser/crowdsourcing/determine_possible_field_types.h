@@ -42,12 +42,11 @@ void DeterminePossibleFieldTypesForUpload(
     FormStructure& form);
 
 // Matches the current field values against regular expressions.
-//
-// For example, a field value "09/03/2025" matches "DD/MM/YYYY" and
-// "MM/DD/YYYY".
-//
-// TODO(crbug.com/396325496): Add matching of dates split across sequences of
-// fields.
+// There are two types of matches:
+// - An individual field with value "09/03/2025" matches "DD/MM/YYYY" and
+//   "MM/DD/YYYY".
+// - Three consecutive fields with values "09", "03", "2025" match "DD" and "D",
+//   "MM" and "M", and "YYYY", respectively.
 std::map<FieldGlobalId, base::flat_set<std::u16string>>
 DeterminePossibleFormatStringsForUpload(
     base::span<const std::unique_ptr<AutofillField>> fields);

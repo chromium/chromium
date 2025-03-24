@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">הגברת הבהירות</translation>
 <translation id="1680659827022803830">לחצנים לשיחות וידאו</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">אפשר להשבית את התכונה הזו בכל שלב בהגדרות. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">טיימר של <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">‏כתובת IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">החלון הפעיל מוצמד לצד ימין.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, אפליקציה מותקנת, מושהית</translation>
 <translation id="4228078597006700451">הפקדים לא הוגדרו</translation>
 <translation id="4230560241506423345">פריט חדש</translation>
+<translation id="4236726631849783264">תזכורת לגבי הצעות לפעולות</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">מצב סקירה כללית</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
@@ -1043,6 +1045,7 @@
 <translation id="4471354919263203780">‏מתבצעת הורדה של קובצי זיהוי דיבור… ‎<ph name="PERCENT" />%‎</translation>
 <translation id="4471432286288241507">{0,plural, =0{עליך לעדכן את המכשיר עכשיו}=1{עליך לעדכן את המכשיר תוך שנייה אחת}one{עליך לעדכן את המכשיר תוך # שניות}two{עליך לעדכן את המכשיר תוך # שניות}other{עליך לעדכן את המכשיר תוך # שניות}}</translation>
 <translation id="4472575034687746823">תחילת העבודה</translation>
+<translation id="4473489370276014885">‏אנשי קשר מחשבון Google</translation>
 <translation id="4477350412780666475">הטראק הבא</translation>
 <translation id="4477751544736611934">עשויים לחול חיובים על שימוש בחבילת הגלישה.
 מכשיר אחד מחובר.</translation>
@@ -1069,6 +1072,7 @@
 <translation id="4545950850562423083">שמירת הדף הנוכחי כסימנייה</translation>
 <translation id="4548482551627849548">העברת החלון הפעיל לשולחן העבודה הווירטואלי שבצד שמאל</translation>
 <translation id="4552748006424994716">כדי למנוע הד, אפשר להאזין למה שאומרים במיקרופון רק באמצעות אוזניות חוטיות.</translation>
+<translation id="4556953949326137018">‏כשמשתמשים בהצעות לפעולות כמו "הוספה ליומן" או "יצירת מסמך ב-Google Docs", התוכן מהאזור שנבחר נשלח לשרתים של Google כדי להציע פעולות, בכפוף לתנאים של <ph name="LINK_TO_SERVICE_TERMS" />. חשוב לא לכלול מידע אישי, רגיש או סודי.</translation>
 <translation id="4560576029703263363">מופעל</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">הסתרת סיסמה</translation>
@@ -1152,6 +1156,7 @@
 <translation id="481455355267255546">האירועים הבאים</translation>
 <translation id="481749895090480684">רשימת משימות: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">מצלמה ומיקרופון</translation>
+<translation id="4828935196674083554">ההוספה מתבצעת...</translation>
 <translation id="482908187605862807">‏אפליקציות שזמינות בחנות Play</translation>
 <translation id="4831034276697007977">הקליקים האוטומטיים יושבתו. האם להמשיך?</translation>
 <translation id="4835677468087803981">הסתרת קוד האימות</translation>
@@ -1649,6 +1654,7 @@
 <translation id="641817663353603351">‏מקש Page Up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ניקוי כל ההודעות</translation>
+<translation id="6426905245930183644">בתהליך יצירה…</translation>
 <translation id="6430225033895752525">הצגת ההגדרות של מצב הריכוז</translation>
 <translation id="643147933154517414">הפעולה הושלמה</translation>
 <translation id="6431865393913628856">הקלטת המסך</translation>

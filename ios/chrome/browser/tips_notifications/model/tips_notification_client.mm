@@ -377,8 +377,33 @@ void TipsNotificationClient::ClearAllRequestedNotifications() {
 void TipsNotificationClient::RequestNotification(TipsNotificationType type,
                                                  base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UNNotificationRequest* request =
-      TipsNotificationRequest(type, CanSendReactivation(), user_type_);
+
+  if (IsNotificationCollisionManagementEnabled()) {
+    ScheduledNotificationRequest request = {
+        kTipsNotificationId,
+        ContentForTipsNotificationType(type, CanSendReactivation()),
+        TipsNotificationTriggerDelta(CanSendReactivation(), user_type_)};
+    CheckRateLimitBeforeSchedulingNotification(
+        request,
+        base::BindPostTask(
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::BindOnce(&TipsNotificationClient::OnNotificationRequested,
+                           weak_ptr_factory_.GetWeakPtr(), type)
+                .Then(std::move(completion))));
+    MarkNotificationTypeSent(type);
+    return;
+  }
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kTipsNotificationId
+                    content:ContentForTipsNotificationType(
+                                type, CanSendReactivation())
+                    trigger:[UNTimeIntervalNotificationTrigger
+                                triggerWithTimeInterval:
+                                    TipsNotificationTriggerDelta(
+                                        CanSendReactivation(), user_type_)
+                                        .InSecondsF()
+                                                repeats:NO]];
 
   auto completion_block = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
