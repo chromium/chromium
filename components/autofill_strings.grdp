@@ -89,6 +89,9 @@
   <message name="IDS_AUTOFILL_CC_GENERIC" desc="Generic credit card name.">
     Card
   </message>
+  <message name="IDS_AUTOFILL_IBAN_GENERIC" desc="Generic IBAN name.">
+    Iban
+  </message>
   <message name="IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR" desc="The separator character used in the summary of an address." formatter_data="android_java">
     , '''
   </message>

@@ -118,6 +118,8 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     // Other networks.
     case Suggestion::Icon::kCardGeneric:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
+    case Suggestion::Icon::kIban:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_IBAN_GENERIC);
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kBnpl:
     case Suggestion::Icon::kClear:
@@ -137,7 +139,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kHome:
     case Suggestion::Icon::kHttpsInvalid:
     case Suggestion::Icon::kHttpWarning:
-    case Suggestion::Icon::kIban:
     case Suggestion::Icon::kIdCard:
     case Suggestion::Icon::kKey:
     case Suggestion::Icon::kLocation:
