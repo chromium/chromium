@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.night_mode;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -21,6 +22,7 @@ import org.chromium.url.GURL;
  * A controller class could enable or disable web content dark mode feature based on the content
  * settings {@link ContentSettingsType.AUTO_DARK_WEB_CONTENT}.
  */
+@NullMarked
 public class WebContentsDarkModeController {
     /**
      * Return whether auto dark mode is enable for a given URL.

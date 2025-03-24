@@ -54,7 +54,6 @@
   _sideSwipeUIController.toolbarInteractionHandler =
       self.toolbarInteractionHandler;
   _sideSwipeUIController.toolbarSnapshotProvider = self.toolbarSnapshotProvider;
-  _sideSwipeUIController.tabStripDelegate = self.tabStripDelegate;
   _sideSwipeUIController.mutator = _sideSwipeMediator;
   _sideSwipeUIController.navigationDelegate = _sideSwipeMediator;
   _sideSwipeUIController.tabsDelegate = _sideSwipeMediator;
@@ -102,11 +101,6 @@
   [_sideSwipeUIController
       setSideSwipeUIControllerDelegate:sideSwipeUIControllerDelegate];
   _sideSwipeUIControllerDelegate = sideSwipeUIControllerDelegate;
-}
-
-- (void)setTabStripDelegate:(id<TabStripHighlighting>)tabStripDelegate {
-  _tabStripDelegate = tabStripDelegate;
-  [_sideSwipeUIController setTabStripDelegate:tabStripDelegate];
 }
 
 - (void)setToolbarSnapshotProvider:

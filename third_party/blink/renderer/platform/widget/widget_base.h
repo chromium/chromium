@@ -249,7 +249,8 @@ class PLATFORM_EXPORT WidgetBase
 
   // Posts a task with the given delay, then calls ScheduleAnimation() on the
   // WidgetBaseClient.
-  void RequestAnimationAfterDelay(const base::TimeDelta& delay);
+  void RequestAnimationAfterDelay(const base::TimeDelta& delay,
+                                  bool urgent = false);
 
   void ShowVirtualKeyboard();
   void UpdateSelectionBounds();

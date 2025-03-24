@@ -355,10 +355,6 @@ class NET_EXPORT HostResolver {
     // An experimental options for features::kUseDnsHttpsSvcb
     // and features::kUseDnsHttpsSvcbAlpn.
     std::optional<HostResolver::HttpsSvcbOptions> https_svcb_options;
-
-    // Optional boolean to enable or disable the Happy Eyeballs V3 explicitly.
-    // Used for respecting policies.
-    std::optional<bool> enable_happy_eyeballs_v3;
   };
 
   // Factory class. Useful for classes that need to inject and override resolver

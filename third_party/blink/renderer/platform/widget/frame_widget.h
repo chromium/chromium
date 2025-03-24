@@ -75,7 +75,8 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Posts a task with the given delay, then requests an animation frame from
   // the compositor (ie LayerTreeHost::SetNeedsAnimate()).
-  virtual void RequestAnimationAfterDelay(const base::TimeDelta&) = 0;
+  virtual void RequestAnimationAfterDelay(const base::TimeDelta&,
+                                          bool urgent) = 0;
 
   // Sets the root layer. The |layer| can be null when detaching the root layer.
   virtual void SetRootLayer(scoped_refptr<cc::Layer> layer) = 0;

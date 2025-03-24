@@ -40,6 +40,7 @@
 #include "ash/quick_insert/quick_insert_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_focus_cycler.h"
@@ -1267,7 +1268,8 @@ void ShowTaskManager() {
 }
 
 void StartSunfishSession() {
-  // TODO: crbug.com/393140991 - Record a metric here.
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kSunfishSessionStartedFromKeyboardShortcut);
   CaptureModeController::Get()->StartSunfishSession();
 }
 

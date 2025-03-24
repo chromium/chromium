@@ -20,7 +20,7 @@ constexpr char kInvalidProgramLogo[] = "logo.png";
 
 LoyaltyCard TestLoyaltyCard(std::string_view id = kId1) {
   return LoyaltyCard(std::string(id), "merchant_name", "program_name",
-                     GURL("http://foobar.com/logo.png"), "unmasked_suffix");
+                     GURL("http://foobar.com/logo.png"), "suffix");
 }
 
 sync_pb::AutofillLoyaltyCardSpecifics TestSpecifics(
@@ -32,7 +32,7 @@ sync_pb::AutofillLoyaltyCardSpecifics TestSpecifics(
   specifics.set_merchant_name("merchant_name");
   specifics.set_program_name("program_name");
   specifics.set_program_logo(std::string(program_logo));
-  specifics.set_loyalty_card_suffix("unmasked_suffix");
+  specifics.set_loyalty_card_suffix("suffix");
   return specifics;
 }
 
@@ -45,11 +45,11 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateSpecificsFromLoyaltyCard) {
   sync_pb::AutofillLoyaltyCardSpecifics specifics =
       CreateSpecificsFromLoyaltyCard(card);
 
-  EXPECT_EQ(card.loyalty_card_id, specifics.id());
-  EXPECT_EQ(card.merchant_name, specifics.merchant_name());
-  EXPECT_EQ(card.program_name, specifics.program_name());
-  EXPECT_EQ(card.program_logo, specifics.program_logo());
-  EXPECT_EQ(card.unmasked_loyalty_card_suffix, specifics.loyalty_card_suffix());
+  EXPECT_EQ(card.id(), specifics.id());
+  EXPECT_EQ(card.merchant_name(), specifics.merchant_name());
+  EXPECT_EQ(card.program_name(), specifics.program_name());
+  EXPECT_EQ(card.program_logo(), specifics.program_logo());
+  EXPECT_EQ(card.loyalty_card_suffix(), specifics.loyalty_card_suffix());
 }
 
 TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
@@ -61,11 +61,11 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
       entity_data->specifics.autofill_loyalty_card();
 
   EXPECT_TRUE(entity_data->specifics.has_autofill_loyalty_card());
-  EXPECT_EQ(card.loyalty_card_id, specifics.id());
-  EXPECT_EQ(card.merchant_name, specifics.merchant_name());
-  EXPECT_EQ(card.program_name, specifics.program_name());
-  EXPECT_EQ(card.program_logo, specifics.program_logo());
-  EXPECT_EQ(card.unmasked_loyalty_card_suffix, specifics.loyalty_card_suffix());
+  EXPECT_EQ(card.id(), specifics.id());
+  EXPECT_EQ(card.merchant_name(), specifics.merchant_name());
+  EXPECT_EQ(card.program_name(), specifics.program_name());
+  EXPECT_EQ(card.program_logo(), specifics.program_logo());
+  EXPECT_EQ(card.loyalty_card_suffix(), specifics.loyalty_card_suffix());
 }
 
 TEST_F(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {

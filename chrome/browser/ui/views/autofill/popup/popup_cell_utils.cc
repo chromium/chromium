@@ -134,6 +134,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kGoogleMonochrome:
     case Suggestion::Icon::kGooglePasswordManager:
     case Suggestion::Icon::kGooglePay:
+    case Suggestion::Icon::kHome:
     case Suggestion::Icon::kHttpsInvalid:
     case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kIban:
@@ -151,6 +152,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
+    case Suggestion::Icon::kWork:
       return std::u16string();
   }
   NOTREACHED();
@@ -255,6 +257,9 @@ std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
 std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
   switch (icon) {
     case Suggestion::Icon::kNoIcon:
+      // TODO(crbug.com/381994105): Implement Home/Work icons.
+    case Suggestion::Icon::kHome:
+    case Suggestion::Icon::kWork:
       return std::nullopt;
     case Suggestion::Icon::kAccount:
       return ImageModelFromVectorIcon(kAccountCircleIcon, kIconSize);

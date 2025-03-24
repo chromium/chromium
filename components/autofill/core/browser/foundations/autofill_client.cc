@@ -4,6 +4,10 @@
 
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
+#include <optional>
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -16,6 +20,7 @@
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/version_info/channel.h"
 
 namespace autofill {
@@ -81,6 +86,10 @@ AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
 
 AutofillPlusAddressDelegate* AutofillClient::GetPlusAddressDelegate() {
   return nullptr;
+}
+
+void AutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
+  std::move(callback).Run(std::nullopt);
 }
 
 AutofillAiDelegate* AutofillClient::GetAutofillAiDelegate() {

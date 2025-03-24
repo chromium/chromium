@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 
-#include <numbers>
-
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
@@ -96,74 +94,6 @@ void AddConvexCurvedCorner(SkPath& path, const Corner& corner) {
 // and continuing clockwise.
 void AddCurvedCorner(SkPath& path, const Corner& corner) {
   AddConvexCurvedCorner(path, corner.ToConvex());
-}
-
-// Add a superellipse curve to the path, considering its origin rect.
-// It would render the curve with consistent or gradual distance from
-// the corresponding curve on the origin rect.
-// This is done by keeping the same center for the superellipse,
-// changing the radius and potentially adjusting the curvature.
-void AddCurvedCornerFromOrigin(SkPath& path,
-                               const Corner& target,
-                               Corner origin) {
-  if (target.IsZero()) {
-    path.lineTo(gfx::PointFToSkPoint(target.End()));
-    return;
-  }
-
-  if (target == origin) {
-    AddCurvedCorner(path, target);
-    return;
-  }
-
-  gfx::Vector2dF offset(target.v2().Length() - origin.v2().Length(),
-                        target.v1().Length() - origin.v1().Length());
-
-  // For concave curves, flip the vertex and use the corresponding convex curve.
-  if (origin.IsConcave()) {
-    origin = origin.ToConvex();
-    offset.Scale(-1);
-  }
-
-  float curvature = origin.Curvature();
-
-  CHECK(!origin.IsConcave());
-
-  if (curvature > 2) {
-    // For high curvatures, we change the target curvature to match a
-    // superellipse whose distance from the original corner's mid-point is the
-    // desired offset.
-    const float target_length = target.DiagonalLength();
-    const float origin_length = origin.DiagonalLength();
-    const float adjusted_length =
-        (target_length - origin_length) / std::numbers::sqrt2;
-
-    curvature = Corner::CurvatureForHalfCorner(
-        (Corner::HalfCornerForCurvature(curvature) * origin_length +
-         adjusted_length) /
-        target_length);
-  } else if (curvature < 2) {
-    // When 1<=curvature<2, the distance at the edge is greater than the border
-    // thickness, and needs to be scaled by a number between 1 and sqrt(2).
-    // This formula computes this number by computing the offset that would
-    // result in a superellipse whose 45deg point has a distance of 1 from
-    // this superellipse.
-    offset.Scale(std::pow(2, 1 / curvature - 0.5));
-  }
-
-  // For curvature === 2 (round) there is no adjustment to be made.
-
-  const gfx::Vector2dF adjusted_offset_start =
-      gfx::ScaleVector2d(gfx::NormalizeVector2d(origin.v4()), offset.x());
-  const gfx::Vector2dF adjusted_offset_end =
-      gfx::ScaleVector2d(gfx::NormalizeVector2d(origin.v1()), offset.y());
-
-  AddConvexCurvedCorner(
-      path,
-      Corner({origin.Start() + adjusted_offset_start,
-              origin.Outer() + adjusted_offset_start + adjusted_offset_end,
-              origin.End() + adjusted_offset_end, origin.Center()},
-             curvature));
 }
 
 }  // anonymous namespace
@@ -339,13 +269,9 @@ PathBuilder& PathBuilder::AddContouredRect(
   ContouredRect origin_contoured_rect(origin_rect,
                                       contoured_rect.GetCornerCurvature());
   diagonal_corner_path_1.moveTo(infinite_rect.left(), infinite_rect.top());
-  AddCurvedCornerFromOrigin(diagonal_corner_path_1,
-                            contoured_rect.TopRightCorner(),
-                            origin_contoured_rect.TopRightCorner());
+  AddCurvedCorner(diagonal_corner_path_1, contoured_rect.TopRightCorner());
   diagonal_corner_path_1.lineTo(infinite_rect.right(), infinite_rect.bottom());
-  AddCurvedCornerFromOrigin(diagonal_corner_path_1,
-                            contoured_rect.BottomLeftCorner(),
-                            origin_contoured_rect.BottomLeftCorner());
+  AddCurvedCorner(diagonal_corner_path_1, contoured_rect.BottomLeftCorner());
   diagonal_corner_path_1.close();
   op_builder.add(diagonal_corner_path_1, kIntersect_SkPathOp);
 
@@ -353,13 +279,9 @@ PathBuilder& PathBuilder::AddContouredRect(
   // stretching the other corners to infinity.
   SkPath diagonal_corner_path_2;
   diagonal_corner_path_2.moveTo(infinite_rect.right(), infinite_rect.top());
-  AddCurvedCornerFromOrigin(diagonal_corner_path_2,
-                            contoured_rect.BottomRightCorner(),
-                            origin_contoured_rect.BottomRightCorner());
+  AddCurvedCorner(diagonal_corner_path_2, contoured_rect.BottomRightCorner());
   diagonal_corner_path_2.lineTo(infinite_rect.left(), infinite_rect.bottom());
-  AddCurvedCornerFromOrigin(diagonal_corner_path_2,
-                            contoured_rect.TopLeftCorner(),
-                            origin_contoured_rect.TopLeftCorner());
+  AddCurvedCorner(diagonal_corner_path_2, contoured_rect.TopLeftCorner());
   diagonal_corner_path_2.close();
   op_builder.add(diagonal_corner_path_2, kIntersect_SkPathOp);
   // Resolve the path-ops and append to this path.

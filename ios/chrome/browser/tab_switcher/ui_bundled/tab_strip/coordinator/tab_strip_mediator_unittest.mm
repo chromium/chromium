@@ -106,7 +106,6 @@ class TabStripMediatorTest : public PlatformTest {
     feature_list_.InitWithFeatures(
         {
             kTabGroupsIPad,
-            kModernTabStrip,
             kTabGroupSync,
             data_sharing::features::kDataSharingFeature,
         },

@@ -396,6 +396,7 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/383769050")
     public void testResizesLayoutMetaTag() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?resizes-content");

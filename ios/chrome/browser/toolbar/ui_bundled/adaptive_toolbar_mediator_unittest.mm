@@ -92,7 +92,6 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
         {
             kTabGroupSync,
             kTabGroupsIPad,
-            kModernTabStrip,
             kTabGroupIndicator,
             data_sharing::features::kDataSharingFeature,
         },

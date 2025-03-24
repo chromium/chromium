@@ -1891,6 +1891,7 @@ raw_ptr<HttpStreamPool::Job> HttpStreamPool::AttemptManager::RemoveJobFromQueue(
       if (attempt->is_slow()) {
         --slow_attempt_count_;
       }
+      pool()->DecrementTotalConnectingStreamCount();
       attempt.reset();
     }
   }

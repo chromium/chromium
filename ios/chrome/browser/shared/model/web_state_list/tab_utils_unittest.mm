@@ -34,7 +34,7 @@ class TabUtilsTest : public PlatformTest {
 // webStates to the desired `insertion_params` with one group.
 TEST_F(TabUtilsTest, MoveWebStateWithIdentifierToInsertionParams_oneGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
 
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [ 0 b c ] d"));
@@ -87,7 +87,7 @@ TEST_F(TabUtilsTest, MoveWebStateWithIdentifierToInsertionParams_oneGroup) {
 TEST_F(TabUtilsTest,
        MoveWebStateWithIdentifierToInsertionParams_multipleGroups) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
 
   WebStateListBuilderFromDescription builder(web_state_list_);
   ASSERT_TRUE(
@@ -137,7 +137,7 @@ TEST_F(TabUtilsTest,
 TEST_F(TabUtilsTest,
        MoveWebStateWithIdentifierToInsertionParams_notSameCollection) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
 
   const int increase_index = 1;
 

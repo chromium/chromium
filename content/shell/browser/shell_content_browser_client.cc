@@ -808,6 +808,7 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
   if (base::FeatureList::IsEnabled(net::features::kAsyncDns)) {
     network_service->ConfigureStubHostResolver(
         /*insecure_dns_client_enabled=*/true,
+        base::FeatureList::IsEnabled(net::features::kHappyEyeballsV3),
         /*secure_dns_mode=*/net::SecureDnsMode::kAutomatic,
         net::DnsOverHttpsConfig(),
         /*additional_dns_types_enabled=*/true);

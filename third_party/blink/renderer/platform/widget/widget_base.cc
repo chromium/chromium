@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1647,9 +1648,13 @@ void WidgetBase::OnImeEventGuardFinish(ImeEventGuard* guard) {
 #endif
 }
 
-void WidgetBase::RequestAnimationAfterDelay(const base::TimeDelta& delay) {
+void WidgetBase::RequestAnimationAfterDelay(const base::TimeDelta& delay,
+                                            bool urgent) {
   if (delay.is_zero()) {
-    client_->ScheduleAnimation();
+    bool urgent_for_input =
+        input_handler_.handling_input_event() &&
+        base::FeatureList::IsEnabled(features::kUrgentMainFrameForInput);
+    client_->ScheduleAnimation(urgent || urgent_for_input);
     return;
   }
 
@@ -1665,7 +1670,10 @@ void WidgetBase::RequestAnimationAfterDelay(const base::TimeDelta& delay) {
 }
 
 void WidgetBase::RequestAnimationAfterDelayTimerFired(TimerBase*) {
-  client_->ScheduleAnimation();
+  bool urgent_for_input =
+      input_handler_.handling_input_event() &&
+      base::FeatureList::IsEnabled(features::kUrgentMainFrameForInput);
+  client_->ScheduleAnimation(/*urgent=*/urgent_for_input);
 }
 
 float WidgetBase::GetOriginalDeviceScaleFactor() const {

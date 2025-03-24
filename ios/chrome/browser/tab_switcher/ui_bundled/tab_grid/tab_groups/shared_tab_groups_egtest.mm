@@ -118,7 +118,6 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
     const base::Feature& shared_tab_group_flavor) {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabGroupsIPad);
-  config.features_enabled.push_back(kModernTabStrip);
   config.features_enabled.push_back(kTabGroupSync);
   config.features_enabled.push_back(kTabGroupIndicator);
   config.features_enabled.push_back(shared_tab_group_flavor);

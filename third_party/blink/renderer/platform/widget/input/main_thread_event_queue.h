@@ -56,7 +56,7 @@ class PLATFORM_EXPORT MainThreadEventQueueClient {
   virtual void InputEventsDispatched(bool raf_aligned) = 0;
 
   // Requests a BeginMainFrame callback from the compositor.
-  virtual void SetNeedsMainFrame() = 0;
+  virtual void SetNeedsMainFrame(bool urgent) = 0;
 
   // Returns true if a main frame has been requested and has not yet run.
   virtual bool RequestedMainFramePending() = 0;
@@ -157,7 +157,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   void PostTaskToMainThread();
   void DispatchEvents();
   void PossiblyScheduleMainFrame();
-  void SetNeedsMainFrame();
+  void SetNeedsMainFrame(bool urgent);
   // Returns false if the event can not be handled and the HandledEventCallback
   // will not be run.
   bool HandleEventOnMainThread(const WebCoalescedInputEvent& event,

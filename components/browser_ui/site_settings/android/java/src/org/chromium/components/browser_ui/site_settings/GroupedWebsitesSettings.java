@@ -90,9 +90,9 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
         // Preferences screen
         SettingsUtils.addPreferencesFromResource(this, R.xml.grouped_websites_preferences);
-        Preference siteTitlePref = assumeNonNull(findPreference(PREF_SITE_TITLE));
+        Preference siteTitlePref = findPreference(PREF_SITE_TITLE);
         siteTitlePref.setTitle(domainAndRegistry);
-        Preference siteInGroupPref = assumeNonNull(findPreference(PREF_SITES_IN_GROUP));
+        Preference siteInGroupPref = findPreference(PREF_SITES_IN_GROUP);
         siteInGroupPref.setTitle(
                 activity.getString(R.string.domain_settings_sites_in_group, domainAndRegistry));
         setUpClearDataPreference();
@@ -223,7 +223,6 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private void setUpClearDataPreference() {
         ClearWebsiteStorage preference = findPreference(PREF_CLEAR_DATA);
-        assumeNonNull(preference);
         long storage = mSiteGroup.getTotalUsage();
         int cookies = mSiteGroup.getNumberOfCookies();
         if (storage > 0 || cookies > 0) {
@@ -246,7 +245,6 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private void setUpResetGroupPreference() {
         Preference preference = findPreference(PREF_RESET_GROUP);
-        assumeNonNull(preference);
         if (mSiteGroup.isCookieDeletionDisabled(
                 getSiteSettingsDelegate().getBrowserContextHandle())) {
             preference.setEnabled(false);
@@ -298,7 +296,6 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private void setUpRelatedSitesPreferences() {
         PreferenceCategory relatedSitesHeader = findPreference(PREF_RELATED_SITES);
-        assumeNonNull(relatedSitesHeader);
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         var rwsInfo = mSiteGroup.getRwsInfo();
         boolean shouldRelatedSitesPrefBeVisible =
@@ -308,7 +305,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
         ButtonPreference relatedSitesClearDataButton =
                 findPreference(PREF_RELATED_SITES_CLEAR_DATA);
-        assumeNonNull(relatedSitesClearDataButton)
+        relatedSitesClearDataButton
                 .setVisible(
                         shouldRelatedSitesPrefBeVisible
                                 && getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi());
@@ -381,7 +378,6 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private void updateSitesInGroup() {
         PreferenceCategory category = findPreference(PREF_SITES_IN_GROUP);
-        assumeNonNull(category);
         category.removeAll();
         for (Website site : mSiteGroup.getWebsites()) {
             WebsiteRowPreference preference =

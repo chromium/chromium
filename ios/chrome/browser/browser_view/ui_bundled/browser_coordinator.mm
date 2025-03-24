@@ -224,7 +224,6 @@
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/features/features_utils.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/page_animation_util.h"
@@ -250,7 +249,6 @@
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
-#import "ios/chrome/browser/tabs/ui_bundled/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
@@ -296,10 +294,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Duration of the toolbar animation.
-constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
-    base::Milliseconds(300);
 
 // URL to share when user selects "Share Chrome"
 const char kChromeAppStoreUrl[] =
@@ -604,7 +598,6 @@ enum class ToolbarKind {
   LensOverlayCoordinator* _lensOverlayCoordinator;
   ToolbarCoordinator* _toolbarCoordinator;
   TabStripCoordinator* _tabStripCoordinator;
-  TabStripLegacyCoordinator* _legacyTabStripCoordinator;
   SideSwipeCoordinator* _sideSwipeCoordinator;
   raw_ptr<FullscreenController> _fullscreenController;
   // The coordinator that shows the Send Tab To Self UI.
@@ -1091,15 +1084,8 @@ enum class ToolbarKind {
       UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    if (IsModernTabStripOrRaccoonEnabled()) {
-      _tabStripCoordinator =
-          [[TabStripCoordinator alloc] initWithBrowser:self.browser];
-    } else {
-      _legacyTabStripCoordinator =
-          [[TabStripLegacyCoordinator alloc] initWithBrowser:self.browser];
-      _legacyTabStripCoordinator.animationWaitDuration =
-          kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
-    }
+    _tabStripCoordinator =
+        [[TabStripCoordinator alloc] initWithBrowser:self.browser];
   }
 
   _bubblePresenterCoordinator =
@@ -1126,11 +1112,6 @@ enum class ToolbarKind {
 
   _sideSwipeCoordinator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeCoordinator.toolbarSnapshotProvider = _toolbarCoordinator;
-
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      !IsModernTabStripOrRaccoonEnabled()) {
-    [_sideSwipeCoordinator setTabStripDelegate:_legacyTabStripCoordinator];
-  }
 
   [_sideSwipeCoordinator start];
 
@@ -1184,8 +1165,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.ntpCoordinator = _NTPCoordinator;
   _viewControllerDependencies.toolbarCoordinator = _toolbarCoordinator;
   _viewControllerDependencies.tabStripCoordinator = _tabStripCoordinator;
-  _viewControllerDependencies.legacyTabStripCoordinator =
-      _legacyTabStripCoordinator;
   _viewControllerDependencies.sideSwipeCoordinator = _sideSwipeCoordinator;
   _viewControllerDependencies.bookmarksCoordinator = _bookmarksCoordinator;
   _viewControllerDependencies.fullscreenController = _fullscreenController;
@@ -1249,7 +1228,6 @@ enum class ToolbarKind {
   _keyCommandsProvider.omniboxHandler = _omniboxCommandsHandler;
   _viewController.omniboxCommandsHandler = _omniboxCommandsHandler;
 
-  _legacyTabStripCoordinator.baseViewController = viewController;
   _tabStripCoordinator.baseViewController = viewController;
   _NTPCoordinator.baseViewController = viewController;
   _bubblePresenterCoordinator.baseViewController = viewController;
@@ -1265,7 +1243,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.ntpCoordinator = nil;
   _viewControllerDependencies.toolbarCoordinator = nil;
   _viewControllerDependencies.tabStripCoordinator = nil;
-  _viewControllerDependencies.legacyTabStripCoordinator = nil;
   _viewControllerDependencies.sideSwipeCoordinator = nil;
   _viewControllerDependencies.bookmarksCoordinator = nil;
   _viewControllerDependencies.fullscreenController = nil;
@@ -1292,7 +1269,6 @@ enum class ToolbarKind {
   [_bubblePresenterCoordinator stop];
   _bubblePresenterCoordinator = nil;
 
-  _legacyTabStripCoordinator = nil;
   _tabStripCoordinator = nil;
 
   [_sideSwipeCoordinator stop];

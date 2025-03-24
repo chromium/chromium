@@ -1425,7 +1425,7 @@
       "alexnj@chromium.org",
       "chikamune@chromium.org"
     ],
-    "expires": "Mar 1, 2025"
+    "expires": "Mar 1, 2026"
   },
   {
     "prefix": "browsing-topics",
@@ -1907,7 +1907,7 @@
     "args": [
       "--enable-features=LCPCriticalPathPredictor:lcpp_adjust_image_load_priority/true,LCPTimingPredictorPrerender2"
     ],
-    "expires": "Jun 5, 2025",
+    "expires": "Jun 5, 2026",
     "owners": [
       "chikamune@chromium.org",
       "kouhei@chromium.org"
@@ -1990,7 +1990,7 @@
       "--enable-features=LCPCriticalPathPredictor:lcpp_recorded_lcp_element_types/all",
       "--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/till_first_lcp_candidate/delay_async_exec_when_lcp_found_in_html/true"
     ],
-    "expires": "Sep 10, 2024",
+    "expires": "Sep 10, 2026",
     "owners": [
       "alexnj@chromium.org",
       "chikamune@chromium.org"

@@ -76,7 +76,6 @@ class ReloadResponseProvider : public web::DataResponseProvider {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kModernTabStrip);
   return config;
 }
 

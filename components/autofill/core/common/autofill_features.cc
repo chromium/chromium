@@ -89,6 +89,13 @@ const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl{
 const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults{
     &kAutofillAiServerModel, "autofill_ai_model_use_cache_results", false};
 
+// If enabled, votes for date format strings from individual fields are
+// uploaded. For example, <input type=text value=31/12/2025> leads to the format
+// string DD/MM/YYYY.
+BASE_FEATURE(kAutofillAiVoteForFormatStringsFromSingleFields,
+             "AutofillAiVoteForFormatStringsFromSingleFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the second iteration AutofillAI.
 // This feature is independent of `autofill_ai::kAutofillAi`.
 BASE_FEATURE(kAutofillAiWithDataSchema,

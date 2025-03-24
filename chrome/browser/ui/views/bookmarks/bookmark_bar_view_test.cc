@@ -1132,9 +1132,6 @@ class BookmarkBarViewTest9 : public BookmarkBarViewEventTestBase {
         ui_test_utils::GetCenterInScreenCoordinates(scroll_down_button);
     const gfx::NativeWindow window =
         scroll_down_button->GetWidget()->GetNativeWindow();
-    // TODO(pkasting): As of November 2023, LaCrOS fails without this first
-    // mouse move, which seems wrong.
-    ASSERT_TRUE(ui_controls::SendMouseMove(loc.x() - 1, loc.y() - 1, window));
     ASSERT_TRUE(ui_controls::SendMouseMove(loc.x(), loc.y(), window));
   }
 

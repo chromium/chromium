@@ -34,6 +34,8 @@ function resolve_corner_style(style, w, h) {
     style[`border-${vSide}-${hSide}-radius`] = radius;
     style[`border-${hSide}-width`] = hWidth;
     style[`border-${vSide}-width`] = vWidth;
+    style[`border-${hSide}-color`] = style[`border-${hSide}-color`] || style[`border-color`];
+    style[`border-${vSide}-color`] = style[`border-${vSide}-color`] || style[`border-color`];
   }));
   return style;
 }

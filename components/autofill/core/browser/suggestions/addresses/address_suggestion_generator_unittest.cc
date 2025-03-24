@@ -773,6 +773,70 @@ TEST_F(
                   EqualsSuggestion(SuggestionType::kManageAddress)));
 }
 
+// Tests that Home/Work icons are correctly assigned.
+TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableSupportForHomeAndWork);
+
+  AutofillProfile profile_default = test::GetFullProfile();
+  AutofillProfile profile_home = test::GetFullProfile();
+  AutofillProfile profile_work = test::GetFullProfile();
+
+  test_api(profile_home)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  test_api(profile_work)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+
+  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
+      {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
+      SuggestionType::kAddressEntry, NAME_FIRST,
+      /*trigger_field_max_length=*/0);
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(Suggestion::Icon::kAccount),
+                          EqualsSuggestion(Suggestion::Icon::kHome),
+                          EqualsSuggestion(Suggestion::Icon::kWork)));
+
+  suggestions = CreateSuggestionsFromProfilesForTest(
+      {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
+      SuggestionType::kAddressEntry, EMAIL_ADDRESS,
+      /*trigger_field_max_length=*/0);
+
+  // If trigger field is email address, don't show home and work icons.
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(Suggestion::Icon::kEmail),
+                          EqualsSuggestion(Suggestion::Icon::kEmail),
+                          EqualsSuggestion(Suggestion::Icon::kEmail)));
+}
+
+// Tests that Home/Work icons are not used if the H&W feature is disabled.
+TEST_F(AddressSuggestionGeneratorTest,
+       TestAddressSuggestion_HomeAndWorkIcons_FeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kAutofillEnableSupportForHomeAndWork);
+
+  AutofillProfile profile_default = test::GetFullProfile();
+  AutofillProfile profile_home = test::GetFullProfile();
+  AutofillProfile profile_work = test::GetFullProfile();
+
+  test_api(profile_home)
+      .set_record_type(AutofillProfile::RecordType::kAccountHome);
+  test_api(profile_work)
+      .set_record_type(AutofillProfile::RecordType::kAccountWork);
+
+  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
+      {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
+      SuggestionType::kAddressEntry, NAME_FIRST,
+      /*trigger_field_max_length=*/0);
+
+  // Default icons are expected.
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(Suggestion::Icon::kAccount),
+                          EqualsSuggestion(Suggestion::Icon::kAccount),
+                          EqualsSuggestion(Suggestion::Icon::kAccount)));
+}
+
 #if !BUILDFLAG(IS_IOS)
 TEST_F(AddressSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   address_data().AddProfile(test::GetFullProfile());

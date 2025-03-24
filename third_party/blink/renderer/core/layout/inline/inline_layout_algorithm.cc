@@ -1174,13 +1174,32 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
 
       line_breaker.NextLine(&line_info);
 
-      // The line-clamp ellipsis is not created as an InlineItemResult by the
-      // line breaker, but is instead appended afterwards in the
-      // LogicalLineBuilder. Therefore, we need to make sure to not add it in
-      // empty lines or in block-in-inlines.
-      if (line_clamp_ellipsis_.has_value() &&
-          (line_info.IsEmptyLine() || line_info.IsBlockInInline())) {
-        line_clamp_ellipsis_.reset();
+      if (line_clamp_ellipsis_.has_value()) {
+        if (line_info.IsEmptyLine() || line_info.IsBlockInInline()) {
+          // The line-clamp ellipsis is not created as an InlineItemResult by
+          // the line breaker, but is instead appended afterwards in the
+          // LogicalLineBuilder. Therefore, we need to make sure to not add it
+          // in empty lines or in block-in-inlines.
+          line_clamp_ellipsis_.reset();
+        } else if (!line_info.IsLastLine()) {
+          // The last line of the line-clamp container must not have an
+          // ellipsis. Since we're first laying out with the ellipsis, and the
+          // ellipsis can push content to the next line, we need to know whether
+          // this would be the last line in the IFC if it didn't ellipsize.
+          std::optional<bool> known_to_fully_fit =
+              DoesRemainderFitInLineWithoutEllipsis(line_info);
+          if (known_to_fully_fit && *known_to_fully_fit) {
+            container_builder_.SetWouldBeLastLineIfNotForEllipsis();
+          } else if (!known_to_fully_fit) {
+            // Redo the line breaking.
+            LineInfo line_info_without_ellipsis;
+            line_breaker.SetLineClampEllipsisWidth(LayoutUnit());
+            line_breaker.NextLine(&line_info_without_ellipsis);
+            if (!line_info_without_ellipsis.GetBreakToken()) {
+              container_builder_.SetWouldBeLastLineIfNotForEllipsis();
+            }
+          }
+        }
       }
     }
 
@@ -1414,6 +1433,124 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       line_container, layout_result->GetPhysicalFragment());
   line_break_strategy.DidCreateLine(is_end_paragraph);
   return layout_result;
+}
+
+std::optional<bool>
+InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
+    const LineInfo& line_info) {
+  DCHECK(!line_info.IsLastLine());
+  DCHECK(!line_info.IsEmptyLine() && !line_info.IsBlockInInline());
+  DCHECK(!line_info.IsRubyBase() && !line_info.IsRubyText());
+
+  if (!line_info.GetBreakToken()) {
+    return true;
+  }
+  if (line_info.HasForcedBreak()) {
+    return false;
+  }
+
+  // We need to know whether this would be the last line in the IFC if
+  // the ellipsis hadn't been there.
+  LayoutUnit remaining_width =
+      line_info.AvailableWidth() - line_info.Width() +
+      line_clamp_ellipsis_->shape_result->SnappedWidth();
+
+  const InlineItems& items =
+      Node().ItemsData(line_info.UseFirstLineStyle()).items;
+  InlineItemTextIndex current;
+  if (!line_info.Results().empty()) {
+    // We use the end index of the last InlineItemResult rather than
+    // the break token because we need to count the width for
+    // collapsed trailing spaces.
+    current = line_info.Results()[line_info.Results().size() - 1].End();
+  } else {
+    current = line_info.GetBreakToken()->Start();
+  }
+
+  LayoutUnit can_hang_or_collapse;
+  while (remaining_width + can_hang_or_collapse >= LayoutUnit() &&
+         current.item_index < items.size()) {
+    const InlineItem& item = *items[current.item_index];
+    DCHECK_LE(item.StartOffset(), current.text_offset);
+    DCHECK_GE(item.EndOffset(), current.text_offset);
+    if (item.IsForcedLineBreak() || item.Type() == InlineItem::kBlockInInline) {
+      return false;
+    } else if (item.Type() == InlineItem::kText ||
+               item.Type() == InlineItem::kControl ||
+               item.Type() == InlineItem::kBidiControl) {
+      if (current.text_offset == item.EndOffset()) {
+        current.item_index++;
+        continue;
+      }
+
+      const ShapeResult* shape_result = item.TextShapeResult();
+      DCHECK(shape_result);
+      const ShapeResultView& shape_result_view = *ShapeResultView::Create(
+          shape_result, current.text_offset, item.EndOffset());
+      LayoutUnit width = shape_result_view.SnappedWidth().ClampNegativeToZero();
+      remaining_width -= width;
+      switch (item.EndCollapseType()) {
+        case InlineItem::kNotCollapsible:
+        case InlineItem::kCollapsed:
+          can_hang_or_collapse = LayoutUnit();
+          break;
+        case InlineItem::kCollapsible:
+          can_hang_or_collapse += width;
+          break;
+        case InlineItem::kOpaqueToCollapsing:
+          break;
+      }
+    } else if (item.Type() == InlineItem::kOpenTag) {
+      DCHECK(item.Style());
+      const ComputedStyle& style = *item.Style();
+      const ConstraintSpace& constraint_space = GetConstraintSpace();
+      LayoutUnit bmp_width =
+          ComputeLineBorders(style).inline_start +
+          ComputeLinePadding(constraint_space, style).inline_start +
+          ComputeLineMarginsForSelf(constraint_space, style).inline_start;
+      remaining_width -= bmp_width;
+      if (bmp_width) {
+        can_hang_or_collapse = LayoutUnit();
+      }
+    } else if (item.Type() == InlineItem::kCloseTag) {
+      DCHECK(item.Style());
+      const ComputedStyle& style = *item.Style();
+      const ConstraintSpace& constraint_space = GetConstraintSpace();
+      LayoutUnit bmp_width =
+          ComputeLineBorders(style).inline_end +
+          ComputeLinePadding(constraint_space, style).inline_end +
+          ComputeLineMarginsForSelf(constraint_space, style).inline_end;
+      remaining_width -= bmp_width;
+      if (bmp_width) {
+        can_hang_or_collapse = LayoutUnit();
+      }
+    } else if (item.Type() == InlineItem::kOutOfFlowPositioned) {
+      // Doesn't affect the line layout.
+    } else {
+      DCHECK(item.Type() == InlineItem::kAtomicInline ||
+             item.Type() == InlineItem::kFloating ||
+             item.Type() == InlineItem::kInitialLetterBox ||
+             item.Type() == InlineItem::kListMarker ||
+             item.Type() == InlineItem::kOpenRubyColumn ||
+             item.Type() == InlineItem::kCloseRubyColumn ||
+             item.Type() == InlineItem::kRubyLinePlaceholder);
+      // Fall back to running the LineBreaker again.
+      return std::nullopt;
+    }
+    current.item_index++;
+    current.text_offset = item.EndOffset();
+  }
+
+  if (remaining_width >= LayoutUnit()) {
+    return true;
+  }
+  if (remaining_width + can_hang_or_collapse <= LayoutUnit()) {
+    return false;
+  }
+  // At this point, knowing if the line would fit would need computing the width
+  // of trailing collapsible spaces and hanging glyphs. We defer to the
+  // LineBreaker.
+  return std::nullopt;
 }
 
 // This positions any "leading" floats within the given exclusion space.
