@@ -68,9 +68,4 @@ class Browser;
 
 @end
 
-// Private methods in AuthenticationFlow to test.
-@interface AuthenticationFlow (TestingAdditions)
-- (void)setPerformerForTesting:(AuthenticationFlowPerformer*)performer;
-@end
-
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_H_
