@@ -13,13 +13,13 @@ class IdentityManager;
 
 class AuthenticationService;
 
+@class NonModalSignInPromoMediator;
+
 // Protocol for mediator to set the delay timer for the promo.
 @protocol NonModalSignInPromoMediatorDelegate <NSObject>
-
 // Handles mediator timer expiration event.
-- (bool)nonModalSignInPromoMediatorTimerExipred:
+- (bool)nonModalSignInPromoMediatorTimerExpired:
     (NonModalSignInPromoMediator*)mediator;
-
 @end
 
 // Mediator that handles the business logic for the non-modal sign-in promo.
