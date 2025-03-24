@@ -15,7 +15,6 @@
 #include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/decoder_buffer.h"
@@ -67,15 +66,16 @@ std::string GenerateSessionId() {
 
 }  // namespace
 
-// Keeps track of the session IDs and DecryptionKeys. The keys are ordered by
-// insertion time (last insertion is first). It takes ownership of the
-// DecryptionKeys.
+// Keeps track of the session IDs and decryption keys. The keys are ordered by
+// insertion time (last insertion is first). It creates its own copies of the
+// inserted keys.
 class AesDecryptor::SessionIdDecryptionKeyMap {
   // Use a std::list to actually hold the data. Insertion is always done
   // at the front, so the "latest" decryption key is always the first one
   // in the list.
-  using KeyList =
-      std::list<std::pair<std::string, std::unique_ptr<DecryptionKey>>>;
+  using KeyList = std::list<
+      std::pair<std::string,
+                std::array<uint8_t, DecryptConfig::kDecryptionKeySize>>>;
 
  public:
   SessionIdDecryptionKeyMap() = default;
@@ -90,7 +90,7 @@ class AesDecryptor::SessionIdDecryptionKeyMap {
   // This |decryption_key| becomes the latest until another insertion or
   // |session_id| is erased.
   void Insert(const std::string& session_id,
-              std::unique_ptr<DecryptionKey> decryption_key);
+              base::span<const uint8_t> decryption_key);
 
   // Deletes the entry for |session_id| if present.
   void Erase(const std::string& session_id);
@@ -98,10 +98,14 @@ class AesDecryptor::SessionIdDecryptionKeyMap {
   // Returns whether the list is empty
   bool Empty() const { return key_list_.empty(); }
 
-  // Returns the last inserted DecryptionKey.
-  DecryptionKey* LatestDecryptionKey() {
-    DCHECK(!key_list_.empty());
-    return key_list_.begin()->second.get();
+  // Returns the last inserted DecryptionKey; returns an empty span if there is
+  // no such key.
+  base::span<const uint8_t> LatestDecryptionKey() {
+    if (!key_list_.empty()) {
+      return key_list_.begin()->second;
+    } else {
+      return {};
+    }
   }
 
   bool Contains(const std::string& session_id) {
@@ -120,11 +124,13 @@ class AesDecryptor::SessionIdDecryptionKeyMap {
 
 void AesDecryptor::SessionIdDecryptionKeyMap::Insert(
     const std::string& session_id,
-    std::unique_ptr<DecryptionKey> decryption_key) {
+    base::span<const uint8_t> key) {
   auto it = Find(session_id);
   if (it != key_list_.end())
     Erase(it);
-  key_list_.push_front(std::make_pair(session_id, std::move(decryption_key)));
+  std::array<uint8_t, DecryptConfig::kDecryptionKeySize> local_key;
+  base::span(local_key).copy_from(key);
+  key_list_.emplace_front(session_id, local_key);
 }
 
 void AesDecryptor::SessionIdDecryptionKeyMap::Erase(
@@ -146,23 +152,22 @@ AesDecryptor::SessionIdDecryptionKeyMap::Find(const std::string& session_id) {
 
 void AesDecryptor::SessionIdDecryptionKeyMap::Erase(
     KeyList::iterator position) {
-  DCHECK(position->second);
+  DCHECK(!position->second.empty());
   key_list_.erase(position);
 }
 
 // Decrypts |input| using |key|.  Returns a DecoderBuffer with the decrypted
 // data if decryption succeeded or NULL if decryption failed.
-static scoped_refptr<DecoderBuffer> DecryptData(
-    const DecoderBuffer& input,
-    const crypto::SymmetricKey& key) {
+static scoped_refptr<DecoderBuffer> DecryptData(const DecoderBuffer& input,
+                                                base::span<const uint8_t> key) {
   CHECK(!input.empty());
   CHECK(input.decrypt_config());
 
   if (input.decrypt_config()->encryption_scheme() == EncryptionScheme::kCenc)
-    return DecryptCencBuffer(input, base::as_byte_span(key.key()));
+    return DecryptCencBuffer(input, key);
 
   if (input.decrypt_config()->encryption_scheme() == EncryptionScheme::kCbcs)
-    return DecryptCbcsBuffer(input, base::as_byte_span(key.key()));
+    return DecryptCbcsBuffer(input, key);
 
   DVLOG(1) << "Only 'cenc' and 'cbcs' modes supported.";
   return nullptr;
@@ -467,15 +472,14 @@ void AesDecryptor::Decrypt(StreamType stream_type,
 
   const std::string& key_id = encrypted->decrypt_config()->key_id();
   base::AutoLock auto_lock(key_map_lock_);
-  DecryptionKey* key = GetKey_Locked(key_id);
-  if (!key) {
+  base::span<const uint8_t> key = GetKey_Locked(key_id);
+  if (key.empty()) {
     DVLOG(1) << "Could not find a matching key for the given key ID.";
     std::move(decrypt_cb).Run(kNoKey, nullptr);
     return;
   }
 
-  scoped_refptr<DecoderBuffer> decrypted =
-      DecryptData(*encrypted.get(), *key->decryption_key());
+  scoped_refptr<DecoderBuffer> decrypted = DecryptData(*encrypted.get(), key);
   if (!decrypted) {
     DVLOG(1) << "Decryption failed.";
     std::move(decrypt_cb).Run(kError, nullptr);
@@ -545,8 +549,9 @@ std::string AesDecryptor::GetSessionStateAsJWK(const std::string& session_id) {
     for (const auto& [key_id, session_id_map] : key_map_) {
       if (session_id_map->Contains(session_id)) {
         // |key| is the value used to create the decryption key.
-        std::string key = session_id_map->LatestDecryptionKey()->secret();
-        keys.push_back(std::make_pair(key_id, key));
+        std::string key(
+            base::as_string_view(session_id_map->LatestDecryptionKey()));
+        keys.emplace_back(key_id, key);
       }
     }
   }
@@ -556,33 +561,28 @@ std::string AesDecryptor::GetSessionStateAsJWK(const std::string& session_id) {
 bool AesDecryptor::AddDecryptionKey(const std::string& session_id,
                                     const std::string& key_id,
                                     const std::string& key_string) {
-  std::unique_ptr<DecryptionKey> decryption_key(new DecryptionKey(key_string));
-  if (!decryption_key->Init()) {
-    DVLOG(1) << "Could not initialize decryption key.";
-    return false;
-  }
-
+  auto key = base::as_byte_span(key_string);
   base::AutoLock auto_lock(key_map_lock_);
   auto key_id_entry = key_map_.find(key_id);
   if (key_id_entry != key_map_.end()) {
-    key_id_entry->second->Insert(session_id, std::move(decryption_key));
+    key_id_entry->second->Insert(session_id, key);
     return true;
   }
 
   // |key_id| not found, so need to create new entry.
   std::unique_ptr<SessionIdDecryptionKeyMap> inner_map(
       new SessionIdDecryptionKeyMap());
-  inner_map->Insert(session_id, std::move(decryption_key));
+  inner_map->Insert(session_id, key);
   key_map_[key_id] = std::move(inner_map);
   return true;
 }
 
-AesDecryptor::DecryptionKey* AesDecryptor::GetKey_Locked(
+base::span<const uint8_t> AesDecryptor::GetKey_Locked(
     const std::string& key_id) const {
   key_map_lock_.AssertAcquired();
   auto key_id_found = key_map_.find(key_id);
   if (key_id_found == key_map_.end())
-    return NULL;
+    return {};
 
   // Return the key from the "latest" session_id entry.
   return key_id_found->second->LatestDecryptionKey();
@@ -634,20 +634,6 @@ CdmKeysInfo AesDecryptor::GenerateKeysInfoList(
     }
   }
   return keys_info;
-}
-
-AesDecryptor::DecryptionKey::DecryptionKey(const std::string& secret)
-    : secret_(secret) {}
-
-AesDecryptor::DecryptionKey::~DecryptionKey() = default;
-
-bool AesDecryptor::DecryptionKey::Init() {
-  CHECK(!secret_.empty());
-  decryption_key_ =
-      crypto::SymmetricKey::Import(crypto::SymmetricKey::AES, secret_);
-  if (!decryption_key_)
-    return false;
-  return true;
 }
 
 }  // namespace media
