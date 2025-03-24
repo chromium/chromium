@@ -5827,6 +5827,14 @@ if (!is_android) {
   }
 }
 
+if (is_linux) {
+  script_test("run_crossbench_tests") {
+    script = "//third_party/crossbench/cb.py"
+
+    data_deps = [ "//testing:run_perf_test" ]
+  }
+}
+
 # Generate performance_test_suite_${board} targets.
 # These set --board to ${board} instead of deriving it from the target.
 # This is useful for Lacros, where the generic build is deployed to
