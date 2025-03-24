@@ -253,6 +253,7 @@ BASE_FEATURE(OmniboxUrlSuggestionsOnFocus::kOmniboxUrlSuggestionsOnFocus,
              "OmniboxUrlSuggestionsOnFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus() {
+  const char kMvtScoringParamRecencyFactor_Default[] = "default";
   enabled = base::FeatureList::IsEnabled(kOmniboxUrlSuggestionsOnFocus);
   show_recently_closed_tabs =
       base::FeatureParam<bool>(&kOmniboxUrlSuggestionsOnFocus,
@@ -269,5 +270,27 @@ OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus() {
       base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
                                  "OnFocusMaxUrlSuggestions", 4)
           .Get();
+  most_visited_recency_window =
+      base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
+                                 "OnFocusMostVisitedRecencyWindow", 13)
+          .Get();
+  most_visited_recency_factor =
+      base::FeatureParam<std::string>(&kOmniboxUrlSuggestionsOnFocus,
+                                      "OnFocusMostVisitedRecencyFactor",
+                                      kMvtScoringParamRecencyFactor_Default)
+          .Get();
+  directly_query_history_service =
+      base::FeatureParam<bool>(&kOmniboxUrlSuggestionsOnFocus,
+                               "OnFocusMostVisitedDirectlyQueryHistoryService",
+                               true)
+          .Get();
 }
+
+OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus(
+    const OmniboxUrlSuggestionsOnFocus&) = default;
+
+OmniboxUrlSuggestionsOnFocus& OmniboxUrlSuggestionsOnFocus::operator=(
+    const OmniboxUrlSuggestionsOnFocus&) = default;
+
+OmniboxUrlSuggestionsOnFocus::~OmniboxUrlSuggestionsOnFocus() = default;
 }  // namespace omnibox_feature_configs

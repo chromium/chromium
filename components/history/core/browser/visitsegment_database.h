@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_VISITSEGMENT_DATABASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -57,7 +58,9 @@ class VisitSegmentDatabase {
   // included.
   std::vector<std::unique_ptr<PageUsageData>> QuerySegmentUsage(
       int max_result_count,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter);
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+      const std::optional<std::string>& recency_factor_name = std::nullopt,
+      std::optional<size_t> recency_window_days = std::nullopt);
 
   // Deletes all segment data older than `older_than`.
   bool DeleteSegmentDataOlderThan(base::Time older_than);

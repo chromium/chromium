@@ -11,7 +11,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/history/core/browser/top_sites_impl.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -30,6 +32,7 @@ struct TestData {
 
 using OEP = metrics::OmniboxEventProto;
 using OFT = metrics::OmniboxFocusType;
+using testing::_;
 
 class FakeTopSites : public history::TopSites {
  public:
@@ -58,6 +61,7 @@ class FakeTopSites : public history::TopSites {
     return history::PrepopulatedPageList();
   }
   void OnNavigationCommitted(const GURL& url) override {}
+  int NumBlockedSites() const override { return blocked_urls_.size(); }
 
   // RefcountedKeyedService:
   void ShutdownOnUIThread() override {}
@@ -105,6 +109,21 @@ const std::vector<TestData> DefaultTestData() {
           {false, {GURL("http://www.d.de/"), u"D de"}},
           {true, {GURL("http://www.google.com/search?q=abc"), u"abc"}}};
 }
+
+class MockHistoryService : public history::HistoryService {
+ public:
+  MockHistoryService() = default;
+  ~MockHistoryService() override = default;
+
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              QueryMostVisitedURLs,
+              (int result_count,
+               history::HistoryService::QueryMostVisitedURLsCallback callback,
+               base::CancelableTaskTracker* tracker,
+               const std::optional<std::string>& recency_factor_name,
+               std::optional<size_t> recency_window_days),
+              (override));
+};
 
 }  // namespace
 
@@ -525,11 +544,12 @@ TEST_F(MostVisitedSitesProviderTest,
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
-TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedSitesDesktopMatches) {
+TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedTopSitesMatches) {
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
   scoped_config.Get().enabled = true;
+  scoped_config.Get().directly_query_history_service = false;
 
   provider_->Start(BuildAutocompleteInputForWebOnFocus(), true);
 
@@ -557,6 +577,52 @@ TEST_F(MostVisitedSitesProviderTest, DesktopProviderDoesNotAllowChromeSites) {
   EXPECT_FALSE(
       provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
           chrome_url, chrome_url, OEP::OTHER, OFT::INTERACTION_FOCUS)));
+}
+
+TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
+  // Set a MockHistoryService.
+  auto history_service = std::make_unique<MockHistoryService>();
+  auto& history_service_ref = *history_service;
+  client_.set_history_service(std::move(history_service));
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  scoped_config.Get().most_visited_recency_window = 4;
+  scoped_config.Get().most_visited_recency_factor =
+      history::kMvtScoringParamRecencyFactor_Default;
+  scoped_config.Get().max_suggestions = 8;
+
+  history::HistoryService::QueryMostVisitedURLsCallback callback;
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
+      .WillOnce([&](int result_count,
+                    history::HistoryService::QueryMostVisitedURLsCallback cb,
+                    base::CancelableTaskTracker* tracker,
+                    std::optional<std::string> recency_factor_name,
+                    std::optional<size_t> recency_window_days)
+                    -> base::CancelableTaskTracker::TaskId {
+        EXPECT_EQ(static_cast<int>(scoped_config.Get().max_suggestions) +
+                      top_sites_->NumBlockedSites(),
+                  result_count);
+        EXPECT_TRUE(recency_factor_name.has_value());
+        EXPECT_EQ(history::kMvtScoringParamRecencyFactor_Default,
+                  recency_factor_name.value());
+        EXPECT_TRUE(recency_window_days.has_value());
+        EXPECT_EQ(4u, recency_window_days.value());
+        callback = std::move(cb);
+        return {};
+      });
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+  provider_->Start(input, false);
+  EXPECT_FALSE(provider_->done());
+  history::MostVisitedURLList result;
+  for (const auto& test_element : DefaultTestData()) {
+    result.push_back(test_element.entry);
+  }
+  std::move(callback).Run(std::move(result));
+  // Shouldn't include the match from the SRP.
+  EXPECT_TRUE(provider_->done());
+  ASSERT_EQ(4u, provider_->matches().size());
 }
 
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))

@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_SEGMENT_SCORER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
@@ -17,7 +18,8 @@ class SegmentScorer {
  private:
   // Formula to add more weight to recent visits, and less to past ones.
   struct RecencyFactor {
-    static std::unique_ptr<RecencyFactor> CreateFromFeatureFlags();
+    static std::unique_ptr<RecencyFactor> Create(
+        const std::string& recency_factor_name);
 
     virtual ~RecencyFactor();
     virtual float Compute(int days_ago) = 0;
@@ -45,6 +47,8 @@ class SegmentScorer {
 
  public:
   static std::unique_ptr<SegmentScorer> CreateFromFeatureFlags();
+  static std::unique_ptr<SegmentScorer> Create(
+      const std::string& recency_factor_name);
 
  private:
   SegmentScorer(std::unique_ptr<RecencyFactor> recency_factor,
@@ -58,7 +62,8 @@ class SegmentScorer {
 
   float Compute(const std::vector<base::Time>& time_slots,
                 const std::vector<int>& visit_counts,
-                base::Time now) const;
+                base::Time now,
+                std::optional<size_t> recency_window_days) const;
 
  private:
   std::unique_ptr<RecencyFactor> recency_factor_;

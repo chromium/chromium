@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -382,7 +383,9 @@ class HistoryService : public KeyedService,
   virtual base::CancelableTaskTracker::TaskId QueryMostVisitedURLs(
       int result_count,
       QueryMostVisitedURLsCallback callback,
-      base::CancelableTaskTracker* tracker);
+      base::CancelableTaskTracker* tracker,
+      const std::optional<std::string>& recency_factor_name = std::nullopt,
+      std::optional<size_t> recency_window_days = std::nullopt);
 
   // Request `result_count` of the most repeated queries for the given keyword.
   // Used by TopSites.

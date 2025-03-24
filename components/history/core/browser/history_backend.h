@@ -323,7 +323,15 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Request the `result_count` most visited URLs and the chain of
   // redirects leading to each of these URLs. Used by TopSites.
-  MostVisitedURLList QueryMostVisitedURLs(int result_count);
+  // `recency_factor_name` is the type of scoring algorithm SegmentScorer
+  // will use when rankings results.
+  // `recency_window_days` is the number of days of history to consider
+  // when scoring segments. A result older than this window will not add to a
+  // segment's score.
+  MostVisitedURLList QueryMostVisitedURLs(
+      int result_count,
+      const std::optional<std::string>& recency_factor_name = std::nullopt,
+      std::optional<size_t> recency_window_days = std::nullopt);
 
   // Request `result_count` of the most repeated queries for the given keyword.
   // Used by TopSites.

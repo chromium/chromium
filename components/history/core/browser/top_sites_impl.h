@@ -76,6 +76,7 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   PrepopulatedPageList GetPrepopulatedPages() override;
   bool loaded() const override;
   void OnNavigationCommitted(const GURL& url) override;
+  int NumBlockedSites() const override;
 
   // RefcountedKeyedService:
   void ShutdownOnUIThread() override;
