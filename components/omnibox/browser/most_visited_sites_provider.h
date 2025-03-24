@@ -40,14 +40,16 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
 
   // When the TopSites service serves the most visited URLs, this function
   // converts those urls to AutocompleteMatches and adds them to |matches_|.
-  void OnMostVisitedUrlsAvailable(const history::MostVisitedURLList& urls);
+  void OnMostVisitedUrlsAvailable(AutocompleteInput input,
+                                  const history::MostVisitedURLList& urls);
 
   // When the HistoryService serves the most visited URLs, this function
   // converts those urls to AutocompleteMatches and adds them to |matches_|.
   // Unlike `OnMostVisitedUrlsAvailable` which gets called through a request
   // to TopSites, this callback is invoked when HistoryService is queried
   // directly in the provider.
-  void OnMostVisitedUrlsFromHistoryAvailable(history::MostVisitedURLList sites);
+  void OnMostVisitedUrlsFromHistoryAvailable(AutocompleteInput input,
+                                             history::MostVisitedURLList sites);
 
   // Whether zero suggest suggestions are allowed in the given context.
   // Invoked early, confirms all the external conditions for ZeroSuggest are

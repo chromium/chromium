@@ -69,7 +69,8 @@ class TabMatcher {
   // opened.
   // Returns true, if the URL can be matched to existing tab, otherwise false.
   virtual bool IsTabOpenWithURL(const GURL& gurl,
-                                const AutocompleteInput* input) const = 0;
+                                const AutocompleteInput* input,
+                                bool exclude_active_tab = true) const = 0;
 
   // For a given input GURLToTabInfoMap, in-place update the map with the
   // TabInfo details.

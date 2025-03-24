@@ -17,7 +17,8 @@ TabMatcherImpl::TabMatcherImpl(ProfileIOS* profile) : profile_{profile} {
 }
 
 bool TabMatcherImpl::IsTabOpenWithURL(const GURL& url,
-                                      const AutocompleteInput* input) const {
+                                      const AutocompleteInput* input,
+                                      bool unused_exclude_active_tab) const {
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   const BrowserList::BrowserType browser_types =
       profile_->IsOffTheRecord()
