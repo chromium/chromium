@@ -77,6 +77,19 @@ float ClampAndInterpolate(gfx::Tween::Type type,
 int64_t TimeTicksToMicroseconds(base::TimeTicks tick) {
   return (tick - base::TimeTicks()).InMicroseconds();
 }
+
+gfx::Insets GetContentsBorderInsets(BrowserView& browser_view) {
+  gfx::Insets insets_for_contents_border;
+  auto* contents_border = browser_view.contents_border_widget();
+  if (contents_border && contents_border->IsVisible()) {
+    auto* contents_border_view = contents_border->GetContentsView();
+    if (contents_border_view && contents_border_view->GetBorder()) {
+      insets_for_contents_border =
+          contents_border_view->GetBorder()->GetInsets();
+    }
+  }
+  return insets_for_contents_border;
+}
 }  // namespace
 
 class GlicBorderView::BorderViewUpdater {
@@ -328,7 +341,18 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
   }
   // We shouldn't have any border.
   CHECK(GetInsets().IsEmpty());
-  const auto& bounds = GetLocalBounds();
+  auto bounds = GetLocalBounds();
+  const auto u_resolution = GetLocalBounds();
+
+  // The BrowserView's contents_border_widget() is in its own Widget tree so we
+  // need the special treatment.
+  gfx::Insets uniform_insets =
+      GetContentsBorderInsets(browser_->GetBrowserView());
+  // Check the contents's border widget insets is uniform.
+  CHECK_EQ(uniform_insets.left(), uniform_insets.top());
+  CHECK_EQ(uniform_insets.left(), uniform_insets.right());
+  CHECK_EQ(uniform_insets.left(), uniform_insets.bottom());
+  bounds.Inset(uniform_insets);
 
   float corner_radius = 0.0f;
 #if BUILDFLAG(IS_MAC)
@@ -338,12 +362,17 @@ void GlicBorderView::OnPaint(gfx::Canvas* canvas) {
 #endif
   std::vector<cc::PaintShader::FloatUniform> float_uniforms = {
       {.name = SkString("u_time"), .value = GetEffectTime()},
-      {.name = SkString("u_emphasis"), .value = SkScalar(emphasis_)},
-      {.name = SkString("u_corner_radius"), .value = SkScalar(corner_radius)}};
+      {.name = SkString("u_emphasis"), .value = emphasis_},
+      {.name = SkString("u_corner_radius"), .value = corner_radius},
+      {.name = SkString("u_insets"),
+       .value = static_cast<float>(uniform_insets.left())}};
   std::vector<cc::PaintShader::Float2Uniform> float2_uniforms = {
+      // TODO(https://crbug.com/406026829): Ideally `u_resolution` should be a
+      // vec4(x, y, w, h) and does not assume the origin is (0, 0). This way we
+      // can eliminate `u_insets` and void the shader-internal origin-padding.
       {.name = SkString("u_resolution"),
-       .value = SkV2{static_cast<float>(bounds.width()),
-                     static_cast<float>(bounds.height())}}};
+       .value = SkV2{static_cast<float>(u_resolution.width()),
+                     static_cast<float>(u_resolution.height())}}};
   std::vector<cc::PaintShader::IntUniform> int_uniforms = {
       {.name = SkString("u_dark"),
        .value = UseDarkMode(theme_service_) ? 1 : 0}};
