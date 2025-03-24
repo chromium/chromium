@@ -1343,8 +1343,8 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorStagingParams[] = {
      "862721868538/locations/global/collections/default_collection/engines/"
      "teamfood-v11/completionConfig:completeQuery"}};
 const FeatureEntry::FeatureParam kOmniboxSearchAggregatorAlternateParams[] = {
-    {"name", "Agentspace (alternate)"},
-    {"shortcut", "agentspace"},
+    {"name", "NeuraVibe"},
+    {"shortcut", "neura"},
     {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
     {"search_url",
      "https://vertexaisearch.cloud.google.com/home/cid/"
