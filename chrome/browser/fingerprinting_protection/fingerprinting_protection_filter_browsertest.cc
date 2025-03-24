@@ -63,25 +63,56 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
   // Use frame_with_no_subresources.html so the only version of
   // "/included_script.js" navigated to is on domain cross-origin.test.
   ASSERT_TRUE(
       NavigateToDestination(GetTestUrl("/frame_with_no_subresources.html")));
   UpdateIncludedScriptSource(url_b);
-
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
-
   EXPECT_FALSE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // Navigate to about:blank first to avoid reusing the previous ruleset for
   // the next check.
   ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+  SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html");
   ASSERT_TRUE(NavigateToDestination(url_a));
 
   // The root frame document should never be filtered.
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
+                       MainFrameActivation_NotActivatedSameSite) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a = GetTestUrl("/frame_with_included_script.html");
+
+  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithSubstring(
+      "suffix-that-does-not-match-anything"));
+  ASSERT_TRUE(NavigateToDestination(url_a));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  // Navigate to about:blank first to avoid reusing the previous ruleset for
+  // the next check.
+  ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithSubstring("included_script.js"));
+  ASSERT_TRUE(NavigateToDestination(url_a));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+
+  // Navigate to about:blank first to avoid reusing the previous ruleset for
+  // the next check.
+  ASSERT_TRUE(NavigateToDestination(GURL(url::kAboutBlankURL)));
   SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html");
+  ASSERT_TRUE(NavigateToDestination(url_a));
+
+  // The root frame document should never be filtered.
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
