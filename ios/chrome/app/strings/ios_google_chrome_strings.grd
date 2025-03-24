@@ -223,7 +223,7 @@
         Keep your browsing private with device authentication when you close Chrome
       </message>
       <message name="IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_THIRD_STEP" desc="The third step to setting up Locked Incognito tabs">
-        Turn on "Lock Icognito tabs when you close Chrome"
+        Turn on "Lock Incognito tabs when you close Chrome"
       </message>
       <message name="IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_CAPTION" desc="Caption for the Never Forget Passwords button on the Chrome iOS Best Features Promo">
         Save and autofill passwords in Chrome
@@ -233,6 +233,9 @@
       </message>
       <message name="IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_SUBTITLE" desc="Subtitle for the Passwords in other apps Chrome iOS Best Features Promo">
         To easily get your saved passwords in your other apps, choose Chrome for Autofill
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_1" desc="The first step to share passwords with others">
+        Open Chrome
       </message>
       <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_SUBTITLE" desc="Subtitle for the Share Passwords Chrome iOS Best Features Promo">
         Easily and securely share a copy of a password with your family group in Google Password Manager
