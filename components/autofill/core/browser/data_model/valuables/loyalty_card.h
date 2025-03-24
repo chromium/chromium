@@ -11,7 +11,7 @@
 
 namespace autofill {
 
-// Represents a loaylty card coming from the Google Wallet.
+// Represents a loyalty card coming from the Google Wallet.
 class LoyaltyCard final {
  public:
   LoyaltyCard(std::string loyalty_card_id,
