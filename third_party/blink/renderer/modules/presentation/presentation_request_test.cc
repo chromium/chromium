@@ -6,8 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_presentation_source.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_presentationsource_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/exception_state_matchers.h"
@@ -18,32 +16,6 @@
 
 namespace blink {
 namespace {
-
-Member<V8UnionPresentationSourceOrUSVString> CreatePresentationSource(
-    const String& url) {
-  PresentationSource* source = PresentationSource::Create();
-  source->setType(V8PresentationSourceType::Enum::kUrl);
-  source->setUrl(url);
-  return MakeGarbageCollected<V8UnionPresentationSourceOrUSVString>(source);
-}
-
-Member<V8UnionPresentationSourceOrUSVString> CreateMirroringSource() {
-  PresentationSource* source = PresentationSource::Create();
-  source->setType(V8PresentationSourceType::Enum::kMirroring);
-  source->setAudioPlayback(V8AudioPlaybackDestination::Enum::kReceiver);
-  source->setLatencyHint(V8CaptureLatency::Enum::kDefault);
-  return MakeGarbageCollected<V8UnionPresentationSourceOrUSVString>(source);
-}
-
-HeapVector<Member<V8UnionPresentationSourceOrUSVString>> CreateUrlSources(
-    const WTF::Vector<String>& urls) {
-  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources;
-  for (const String& url : urls) {
-    sources.push_back(
-        MakeGarbageCollected<V8UnionPresentationSourceOrUSVString>(url));
-  }
-  return sources;
-}
 
 TEST(PresentationRequestTest, TestSingleUrlConstructor) {
   test::TaskEnvironment task_environment;
@@ -61,12 +33,13 @@ TEST(PresentationRequestTest, TestSingleUrlConstructor) {
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructor) {
   test::TaskEnvironment task_environment;
+  WTF::Vector<String> urls;
+  urls.push_back("https://example.com");
+  urls.push_back("cast://deadbeef?param=foo");
   V8TestingScope scope;
-  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
-      CreateUrlSources({"https://example.com", "cast://deadbeef?param=foo"});
 
   PresentationRequest* request = PresentationRequest::Create(
-      scope.GetExecutionContext(), sources, scope.GetExceptionState());
+      scope.GetExecutionContext(), urls, scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
 
   WTF::Vector<KURL> request_urls = request->Urls();
@@ -80,10 +53,11 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructor) {
 TEST(PresentationRequestTest, TestMultipleUrlConstructorInvalidUrl) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
-      CreateUrlSources({"https://example.com", ""});
+  WTF::Vector<String> urls;
+  urls.push_back("https://example.com");
+  urls.push_back("");
 
-  PresentationRequest::Create(scope.GetExecutionContext(), sources,
+  PresentationRequest::Create(scope.GetExecutionContext(), urls,
                               scope.GetExceptionState());
   EXPECT_THAT(scope.GetExceptionState(),
               HadException(DOMExceptionCode::kSyntaxError));
@@ -118,10 +92,11 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://example.test"));
 
-  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
-      CreateUrlSources({"http://example.com", "https://example1.com"});
+  WTF::Vector<String> urls;
+  urls.push_back("http://example.com");
+  urls.push_back("https://example1.com");
 
-  PresentationRequest::Create(scope.GetExecutionContext(), sources,
+  PresentationRequest::Create(scope.GetExecutionContext(), urls,
                               scope.GetExceptionState());
   EXPECT_THAT(scope.GetExceptionState(),
               HadException(DOMExceptionCode::kSecurityError));
@@ -130,9 +105,9 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
 TEST(PresentationRequestTest, TestMultipleUrlConstructorEmptySequence) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources;
+  WTF::Vector<String> urls;
 
-  PresentationRequest::Create(scope.GetExecutionContext(), sources,
+  PresentationRequest::Create(scope.GetExecutionContext(), urls,
                               scope.GetExceptionState());
   EXPECT_THAT(scope.GetExceptionState(),
               HadException(DOMExceptionCode::kNotSupportedError));
@@ -150,12 +125,15 @@ TEST(PresentationRequestTest, TestSingleUrlConstructorUnknownScheme) {
 TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
-      CreateUrlSources({"foobar:unknown", "https://example.com",
-                        "cast://deadbeef?param=foo", "deadbeef:random"});
+
+  WTF::Vector<String> urls;
+  urls.push_back("foobar:unknown");
+  urls.push_back("https://example.com");
+  urls.push_back("cast://deadbeef?param=foo");
+  urls.push_back("deadbeef:random");
 
   PresentationRequest* request = PresentationRequest::Create(
-      scope.GetExecutionContext(), sources, scope.GetExceptionState());
+      scope.GetExecutionContext(), urls, scope.GetExceptionState());
   ASSERT_THAT(scope.GetExceptionState(), HadNoException());
 
   WTF::Vector<KURL> request_urls = request->Urls();
@@ -169,58 +147,12 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
 TEST(PresentationRequestTest, TestMultipleUrlConstructorAllUnknownSchemes) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources =
-      CreateUrlSources({"foobar:unknown", "deadbeef:random"});
 
-  PresentationRequest::Create(scope.GetExecutionContext(), sources,
-                              scope.GetExceptionState());
-  EXPECT_THAT(scope.GetExceptionState(),
-              HadException(DOMExceptionCode::kNotSupportedError));
-}
+  WTF::Vector<String> urls;
+  urls.push_back("foobar:unknown");
+  urls.push_back("deadbeef:random");
 
-// If the site-initiated mirroring feature is disabled, then we do not allow
-// the PresentationSource specialization of V8UnionPresentationSourceOrUSVString
-// to be used to create a PresentationRequest.
-TEST(PresentationRequestTest, TestPresentationSourceNotAllowed) {
-  test::TaskEnvironment task_environment;
-  ScopedSiteInitiatedMirroringForTest site_initiated_mirroring_enabled{false};
-  V8TestingScope scope;
-  PresentationRequest::Create(scope.GetExecutionContext(),
-                              {CreatePresentationSource("https://example.com")},
-                              scope.GetExceptionState());
-  EXPECT_THAT(scope.GetExceptionState(),
-              HadException(DOMExceptionCode::kNotSupportedError));
-}
-
-TEST(PresentationRequestTest, TestPresentationSourcesInConstructor) {
-  test::TaskEnvironment task_environment;
-  ScopedSiteInitiatedMirroringForTest site_initiated_mirroring_enabled{true};
-  V8TestingScope scope;
-  PresentationRequest* request = PresentationRequest::Create(
-      scope.GetExecutionContext(),
-      {CreatePresentationSource("https://example.com"),
-       CreateMirroringSource()},
-      scope.GetExceptionState());
-  CHECK(request);
-  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
-  EXPECT_EQ(static_cast<size_t>(2), request->Urls().size());
-  EXPECT_TRUE(request->Urls()[0].IsValid());
-  EXPECT_EQ("https://example.com/", request->Urls()[0].GetString());
-  EXPECT_TRUE(request->Urls()[1].IsValid());
-  // TODO(crbug.com/1267372): This makes a lot of assumptions about the
-  // hardcoded URL in presentation_request.cc that should be removed.
-  EXPECT_EQ(
-      "cast:0F5096E8?streamingCaptureAudio=1&streamingTargetPlayoutDelayMillis="
-      "400",
-      request->Urls()[1].GetString());
-}
-
-TEST(PresentationRequestTest, TestInvalidPresentationSource) {
-  test::TaskEnvironment task_environment;
-  ScopedSiteInitiatedMirroringForTest site_initiated_mirroring_enabled{true};
-  V8TestingScope scope;
-  PresentationRequest::Create(scope.GetExecutionContext(),
-                              {CreatePresentationSource("invalid_url")},
+  PresentationRequest::Create(scope.GetExecutionContext(), urls,
                               scope.GetExceptionState());
   EXPECT_THAT(scope.GetExceptionState(),
               HadException(DOMExceptionCode::kNotSupportedError));

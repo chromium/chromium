@@ -4146,10 +4146,6 @@
       origin_trial_allows_third_party: true,
     },
     {
-      name: "SiteInitiatedMirroring",
-      status: "experimental",
-    },
-    {
       name: "SkipAd",
       depends_on: ["MediaSession"],
       status: "stable",
