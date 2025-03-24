@@ -201,12 +201,28 @@ export class GaiaDialog extends GaiaDialogBase {
         computed: 'isSamlBackButtonHidden(isDefaultSsoProvider, isClosable)',
       },
 
+      clientPrimaryActionButtonLabel: {
+        type: String,
+        value: null,
+      },
+
+      clientAdditionalPrimaryActionButtonLabel: {
+        type: String,
+        value: null,
+      },
+
       /**
        * Whether Quick start feature is enabled. If it's enabled the quick start
        * button will be shown in the signin screen.
        */
       isQuickStartEnabled: Boolean,
     };
+  }
+
+  static get observers(): string[] {
+    return [
+      'updatePrimaryButton(locale, primaryActionButtonLabel, canGoBack, gaiaDialogButtonsType)'
+    ];
   }
 
   private videoEnabled: boolean;
@@ -227,6 +243,8 @@ export class GaiaDialog extends GaiaDialogBase {
   private canGoBack: boolean;
   private isPopUpOverlayVisible: boolean;
   private samlBackButtonHidden: boolean;
+  private clientPrimaryActionButtonLabel: string;
+  private clientAdditionalPrimaryActionButtonLabel: string;
   isQuickStartEnabled: boolean;
   private clickPrimaryActionButtonForTesting: boolean;
   private authenticator: Authenticator|undefined;
@@ -440,6 +458,30 @@ export class GaiaDialog extends GaiaDialogBase {
    * Handles clicks on "PrimaryAction" button.
    */
   private onPrimaryActionButtonClicked(): void {
+    if (this.gaiaDialogButtonsType ===
+        OobeTypes.GaiaDialogButtonsType.ENTERPRISE_PREFERRED) {
+      this.setLicenseType(OobeTypes.LicenseType.ENTERPRISE);
+    } else if (
+        this.gaiaDialogButtonsType ===
+        OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED) {
+      this.setLicenseType(OobeTypes.LicenseType.KIOSK);
+    }
+    assert(this.authenticator);
+    this.authenticator.sendMessageToWebview('primaryActionHit');
+  }
+
+  /**
+   * Handles clicks on additional "PrimaryAction" button.
+   */
+  private onAdditionalPrimaryActionButtonClicked(): void {
+    if (this.gaiaDialogButtonsType ===
+        OobeTypes.GaiaDialogButtonsType.ENTERPRISE_PREFERRED) {
+      this.setLicenseType(OobeTypes.LicenseType.KIOSK);
+    } else if (
+        this.gaiaDialogButtonsType ===
+        OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED) {
+      this.setLicenseType(OobeTypes.LicenseType.ENTERPRISE);
+    }
     assert(this.authenticator);
     this.authenticator.sendMessageToWebview('primaryActionHit');
   }
@@ -450,22 +492,6 @@ export class GaiaDialog extends GaiaDialogBase {
   private onSecondaryActionButtonClicked(): void {
     assert(this.authenticator);
     this.authenticator.sendMessageToWebview('secondaryActionHit');
-  }
-
-  /**
-   * Handles clicks on Kiosk enrollment button.
-   */
-  private onKioskButtonClicked(): void {
-    this.setLicenseType(OobeTypes.LicenseType.KIOSK);
-    this.onPrimaryActionButtonClicked();
-  }
-
-  /**
-   * Handles clicks on Kiosk enrollment button.
-   */
-  private onEnterpriseButtonClicked(): void {
-    this.setLicenseType(OobeTypes.LicenseType.ENTERPRISE);
-    this.onPrimaryActionButtonClicked();
   }
 
   /**
@@ -519,37 +545,45 @@ export class GaiaDialog extends GaiaDialogBase {
   }
 
   /**
-   * Whether default navigation (original, as gaia has) is shown.
+   * Observes changes in the webview state to update primary action button.
+   * By default primary action button content is propagated from GAIA.
+   * In case of enrollment it is replaced on the client side with two buttons:
+   * kiosk enrollment and enterprise enrollment. Order of these buttons is
+   * controlled by the `gaiaDialogButtonsType`.
+   *
+   * @param locale - i18n locale data.
+   * @param primaryActionButtonLabel - primary action button title provided by
+   *     GAIA.
+   * @param canGoBack - whether the form can go back.
+   * @param gaiaDialogButtonsType - type of buttons to use.
    */
-  private isDefaultNavigationShown(
-      canGoBack: boolean,
-      gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType): boolean {
-    return !canGoBack ||
-        gaiaDialogButtonsType === OobeTypes.GaiaDialogButtonsType.DEFAULT;
-  }
+  private updatePrimaryButton(
+      locale: string, primaryActionButtonLabel: string, canGoBack: boolean,
+      gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType) {
+    this.clientPrimaryActionButtonLabel = primaryActionButtonLabel;
+    this.clientAdditionalPrimaryActionButtonLabel = '';
+    // GAIA navigation should always take place on the first page. Also if
+    // GAIA `primaryActionButtonLabel` is empty or null none of the primary
+    // action buttons should be shown.
+    if (!canGoBack || !primaryActionButtonLabel) {
+      return;
+    }
 
-  /**
-   * Whether Enterprise navigation is shown. Two buttons: primary for
-   * Enterprise enrollment and secondary for Kiosk enrollment.
-   */
-  private isEnterpriseNavigationShown(
-      canGoBack: boolean,
-      gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType): boolean {
-    return canGoBack &&
-        gaiaDialogButtonsType ===
-        OobeTypes.GaiaDialogButtonsType.ENTERPRISE_PREFERRED;
-  }
-
-  /**
-   * Whether Kiosk navigation is shown. Two buttons: primary for
-   * Kiosk enrollment and secondary for Enterprise enrollment.
-   */
-  private isKioskNavigationShown(
-      canGoBack: boolean,
-      gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType): boolean {
-    return canGoBack &&
-        gaiaDialogButtonsType ===
-        OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED;
+    if (gaiaDialogButtonsType ===
+        OobeTypes.GaiaDialogButtonsType.ENTERPRISE_PREFERRED) {
+      this.clientPrimaryActionButtonLabel =
+          this.i18nDynamic(locale, 'enterpriseEnrollmentButton');
+      this.clientAdditionalPrimaryActionButtonLabel =
+          this.i18nDynamic(locale, 'kioskEnrollmentButton');
+      return;
+    }
+    if (gaiaDialogButtonsType ===
+        OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED) {
+      this.clientPrimaryActionButtonLabel =
+          this.i18nDynamic(locale, 'kioskEnrollmentButton');
+      this.clientAdditionalPrimaryActionButtonLabel =
+          this.i18nDynamic(locale, 'enterpriseEnrollmentButton');
+    }
   }
 }
 

@@ -1433,6 +1433,8 @@ void WizardController::OnUserCreationScreenExit(
       break;
     case UserCreationScreen::Result::ENTERPRISE_ENROLL_TRIAGE:
     case UserCreationScreen::Result::ENTERPRISE_ENROLL_SHORTCUT:
+      wizard_context_->enrollment_preference_ =
+          WizardContext::EnrollmentPreference::kEnterprise;
       ShowEnrollmentScreenIfEligible();
       break;
     case UserCreationScreen::Result::KIOSK_ENTERPRISE_ENROLL:
