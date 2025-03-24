@@ -961,10 +961,6 @@ export function getOptionMenuItems(option: OptionType):
           name: 'inputMethodOptionsJapaneseKeymapStyleKotoeri',
         },
         {
-          value: JapaneseKeymapStyle.MOBILE,
-          name: 'inputMethodOptionsJapaneseKeymapStyleMobile',
-        },
-        {
           value: JapaneseKeymapStyle.CHROME_OS,
           name: 'inputMethodOptionsJapaneseKeymapStyleChromeOs',
         },

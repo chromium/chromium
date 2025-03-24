@@ -857,9 +857,6 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_KOTOERI" desc="The label for Japanese settings page to set the keymap style to Kotoeri. In Japanese, this string can be written as 'ことえり'.">
     Kotoeri
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_MOBILE" translateable="false">
-    Mobile
-  </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CHROMEOS" translateable="false">
     ChromeOS
   </message>
