@@ -113,7 +113,7 @@ bool ValuablesTable::AddOrUpdateLoyaltyCard(
   query.BindString(index++, loyalty_card.merchant_name());
   query.BindString(index++, loyalty_card.program_name());
   query.BindString(index++, loyalty_card.program_logo().spec());
-  query.BindString(index++, loyalty_card.unmasked_loyalty_card_suffix());
+  query.BindString(index++, loyalty_card.loyalty_card_suffix());
   return query.Run();
 }
 

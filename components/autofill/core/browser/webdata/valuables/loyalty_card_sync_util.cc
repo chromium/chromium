@@ -20,7 +20,7 @@ AutofillLoyaltyCardSpecifics CreateSpecificsFromLoyaltyCard(
   specifics.set_merchant_name(card.merchant_name());
   specifics.set_program_name(card.program_name());
   specifics.set_program_logo(card.program_logo().possibly_invalid_spec());
-  specifics.set_loyalty_card_suffix(card.unmasked_loyalty_card_suffix());
+  specifics.set_loyalty_card_suffix(card.loyalty_card_suffix());
   return specifics;
 }
 

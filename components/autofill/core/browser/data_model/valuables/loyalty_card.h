@@ -18,7 +18,7 @@ class LoyaltyCard final {
               std::string merchant_name,
               std::string program_name,
               GURL program_logo,
-              std::string unmasked_loyalty_card_suffix);
+              std::string loyalty_card_suffix);
 
   LoyaltyCard(const LoyaltyCard&);
   LoyaltyCard(LoyaltyCard&&);
@@ -45,12 +45,11 @@ class LoyaltyCard final {
     program_logo_ = program_logo;
   }
 
-  const std::string& unmasked_loyalty_card_suffix() const {
-    return unmasked_loyalty_card_suffix_;
+  const std::string& loyalty_card_suffix() const {
+    return loyalty_card_suffix_;
   }
-  void set_unmasked_loyalty_card_suffix(
-      const std::string& unmasked_loyalty_card_suffix) {
-    unmasked_loyalty_card_suffix_ = unmasked_loyalty_card_suffix;
+  void set_loyalty_card_suffix(const std::string& loyalty_card_suffix) {
+    loyalty_card_suffix_ = loyalty_card_suffix;
   }
 
   // Checks if this loyalty card is valid. A valid loyalty card contains a
@@ -76,7 +75,7 @@ class LoyaltyCard final {
 
   // The unmasked part of the  loyalty card issuer text code. The full number
   // is not available on the client.
-  std::string unmasked_loyalty_card_suffix_;
+  std::string loyalty_card_suffix_;
 };
 
 }  // namespace autofill

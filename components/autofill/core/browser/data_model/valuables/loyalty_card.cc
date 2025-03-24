@@ -10,12 +10,12 @@ LoyaltyCard::LoyaltyCard(std::string id,
                          std::string merchant_name,
                          std::string program_name,
                          GURL program_logo,
-                         std::string unmasked_loyalty_card_suffix)
+                         std::string loyalty_card_suffix)
     : id_(std::move(id)),
       merchant_name_(std::move(merchant_name)),
       program_name_(std::move(program_name)),
       program_logo_(std::move(program_logo)),
-      unmasked_loyalty_card_suffix_(std::move(unmasked_loyalty_card_suffix)) {}
+      loyalty_card_suffix_(std::move(loyalty_card_suffix)) {}
 
 LoyaltyCard::LoyaltyCard(const LoyaltyCard&) = default;
 LoyaltyCard::LoyaltyCard(LoyaltyCard&&) = default;
