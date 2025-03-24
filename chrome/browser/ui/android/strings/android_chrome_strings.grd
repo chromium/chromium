@@ -6850,18 +6850,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DATA_SHARING_INVITATION_NOTIFICATION_TITLE" desc="The title of the notification shown to user when a data sharing invitation is received. |NAME| will be the name of the inviter.">
         <ph name="NAME">%1$s<ex>Jane Doe</ex></ph> invited you to access a shared item.
       </message>
-      <message name="IDS_DATA_SHARING_INVITATION_DIALOG_TITLE" desc="The title of the dialog shown when a user has received a tab group invitation.">
-        Open Tab Group?
-      </message>
-      <message name="IDS_DATA_SHARING_INVITATION_DIALOG_BLOCK" desc="The negative button text of the dialog shown when a user has received a tab group invitation.">
-        Block
-      </message>
-      <message name="IDS_DATA_SHARING_INVITATION_DIALOG_NOT_NOW" desc="The snooze button text of the dialog shown when a user has received a tab group invitation.">
-        Not now
-      </message>
-      <message name="IDS_DATA_SHARING_INVITATION_DIALOG_ACCEPT" desc="The positive button text of the dialog shown when a user has received a tab group invitation.">
-        Accept
-      </message>
       <message name="IDS_DATA_SHARING_INVITATION_FAILURE_BUTTON" desc="The positive button text of the dialog shown when a share invitation link fails.">
         Got it
       </message>

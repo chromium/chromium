@@ -323,11 +323,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     protected void tryToTriggerOnShownIphs() {}
 
     @Override
-    public void openInvitationModal(String invitationId) {
-        assert false : "Not reached.";
-    }
-
-    @Override
     public boolean requestOpenTabGroupDialog(int tabId) {
         assert false : "Not reached.";
         return false;

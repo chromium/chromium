@@ -384,7 +384,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/collaboration:utils_java",
       "//chrome/browser/data_sharing:data_sharing_public_java",
       "//chrome/browser/data_sharing:internal_library_java",
-      "//chrome/browser/data_sharing:invitation_dialog_java",
       "//chrome/browser/data_sharing:java",
       "//chrome/browser/data_sharing:shared_image_tiles_java",
       "//chrome/browser/device:java",

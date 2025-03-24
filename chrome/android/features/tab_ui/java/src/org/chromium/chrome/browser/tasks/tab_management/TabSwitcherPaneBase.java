@@ -493,13 +493,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     @Override
-    public void openInvitationModal(String invitationId) {
-        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
-        if (coordinator == null) return;
-        coordinator.openInvitationModal(invitationId);
-    }
-
-    @Override
     public boolean requestOpenTabGroupDialog(int tabId) {
         @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
