@@ -29,6 +29,7 @@ static_library("print_spooler") {
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/crosapi/mojom",
     "//components/keyed_service/core",
+    "//components/pdf/browser",
     "//components/prefs",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
