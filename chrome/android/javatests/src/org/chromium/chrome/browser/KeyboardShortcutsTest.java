@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -40,7 +39,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 import java.util.Set;
 
-/** Unit tests for {@link KeyboardShortcuts}. */
+/** Unit tests for KeyboardShortcuts. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class KeyboardShortcutsTest {
@@ -60,8 +59,6 @@ public class KeyboardShortcutsTest {
     @Before
     public void setUp() {
         when(mTabModelSelector.getCurrentModel()).thenAnswer(invocation -> mTabModel);
-        when(mMenuOrKeyboardActionController.onMenuOrKeyboardAction(anyInt(), anyBoolean()))
-                .thenReturn(true);
     }
 
     // Bookmarks shortcuts
@@ -107,65 +104,6 @@ public class KeyboardShortcutsTest {
     public void testOpenBookmarks_withoutMetaState() {
         testOpenBookmarks(
                 /* expectHandled= */ false, /* isCurrentTabVisible= */ true, /* metaState= */ 0);
-    }
-
-    private void testOpenBookmarks(
-            boolean expectHandled, boolean isCurrentTabVisible, int metaState) {
-        assertEquals(
-                expectHandled,
-                KeyboardShortcuts.onKeyDown(
-                        new KeyEvent(
-                                /* downTime= */ SystemClock.uptimeMillis(),
-                                /* eventTime= */ SystemClock.uptimeMillis(),
-                                KeyEvent.ACTION_DOWN,
-                                KeyEvent.KEYCODE_O,
-                                /* repeat= */ 0,
-                                metaState),
-                        isCurrentTabVisible,
-                        /* tabSwitchingEnabled= */ true,
-                        mTabModelSelector,
-                        mMenuOrKeyboardActionController,
-                        mToolbarManager));
-
-        verify(mMenuOrKeyboardActionController, expectHandled ? times(1) : never())
-                .onMenuOrKeyboardAction(
-                        /* id= */ eq(R.id.all_bookmarks_menu_id),
-                        /* fromMenu= */ expectHandled ? eq(false) : anyBoolean());
-    }
-
-    @Test
-    @SmallTest
-    public void testToggleBookmarkBar() {
-        testToggleBookmarkBar(/* expectHandled= */ true, /* withMetaState= */ true);
-    }
-
-    @Test
-    @SmallTest
-    public void testToggleBookmarkBar_withoutMetaState() {
-        testToggleBookmarkBar(/* expectHandled= */ false, /* withMetaState= */ false);
-    }
-
-    private void testToggleBookmarkBar(boolean expectHandled, boolean withMetaState) {
-        assertEquals(
-                expectHandled,
-                KeyboardShortcuts.onKeyDown(
-                        new KeyEvent(
-                                /* downTime= */ SystemClock.uptimeMillis(),
-                                /* eventTime= */ SystemClock.uptimeMillis(),
-                                KeyEvent.ACTION_DOWN,
-                                KeyEvent.KEYCODE_B,
-                                /* repeat= */ 0,
-                                withMetaState ? KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON : 0),
-                        /* isCurrentTabVisible= */ true,
-                        /* tabSwitchingEnabled= */ true,
-                        mTabModelSelector,
-                        mMenuOrKeyboardActionController,
-                        mToolbarManager));
-
-        verify(mMenuOrKeyboardActionController, expectHandled ? times(1) : never())
-                .onMenuOrKeyboardAction(
-                        eq(R.id.toggle_bookmark_bar),
-                        /* fromMenu= */ expectHandled ? eq(false) : anyBoolean());
     }
 
     // Go To Tab shortcuts
@@ -298,6 +236,30 @@ public class KeyboardShortcutsTest {
                 clearInvocations(mTabModel);
             }
         }
+    }
+
+    private void testOpenBookmarks(
+            boolean expectHandled, boolean isCurrentTabVisible, int metaState) {
+        assertEquals(
+                expectHandled,
+                KeyboardShortcuts.onKeyDown(
+                        new KeyEvent(
+                                /* downTime= */ SystemClock.uptimeMillis(),
+                                /* eventTime= */ SystemClock.uptimeMillis(),
+                                KeyEvent.ACTION_DOWN,
+                                KeyEvent.KEYCODE_O,
+                                /* repeat= */ 0,
+                                metaState),
+                        isCurrentTabVisible,
+                        /* tabSwitchingEnabled= */ true,
+                        mTabModelSelector,
+                        mMenuOrKeyboardActionController,
+                        mToolbarManager));
+
+        verify(mMenuOrKeyboardActionController, expectHandled ? times(1) : never())
+                .onMenuOrKeyboardAction(
+                        /* id= */ eq(R.id.all_bookmarks_menu_id),
+                        /* fromMenu= */ expectHandled ? eq(false) : anyBoolean());
     }
 
     private void assertGoToTab(boolean expectHandled, int keyCode, int metaState) {

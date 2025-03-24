@@ -16,13 +16,11 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
@@ -95,24 +93,6 @@ public class BookmarkBarUtils {
      */
     public static void setSettingEnabled(@NonNull Profile profile, boolean enabled) {
         getPrefService(profile).setBoolean(Pref.SHOW_BOOKMARK_BAR, enabled);
-    }
-
-    /**
-     * Toggles whether the bookmark bar user setting is currently enabled, if and only if the
-     * bookmark bar feature is enabled and a non-null profile is supplied. Otherwise no-ops.
-     *
-     * @param context The context in which feature enablement should be assessed.
-     * @param profileProviderSupplier The supplier of the profile for which to toggle the setting.
-     */
-    public static void toggleSettingEnabled(
-            @NonNull Context context, @Nullable Supplier<ProfileProvider> profileProviderSupplier) {
-        if (profileProviderSupplier == null || !isFeatureEnabled(context)) return;
-
-        final var profileProvider = profileProviderSupplier.get();
-        if (profileProvider == null) return;
-
-        final var profile = profileProvider.getOriginalProfile();
-        if (profile != null) toggleSettingEnabled(profile);
     }
 
     /**

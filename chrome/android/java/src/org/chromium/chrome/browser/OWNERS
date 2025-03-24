@@ -1,3 +1,1 @@
 per-file DefaultBrowser*=file://chrome/browser/ui/android/default_browser_promo/OWNERS
-per-file KeyboardShortcuts.java=aishwaryarj@google.com
-per-file KeyboardShortcuts.java=skavuluru@google.com
