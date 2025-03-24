@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
@@ -443,6 +444,29 @@ ElementRareDataVector::EnsureInterestInvokerTargetData() {
 }
 void ElementRareDataVector::RemoveInterestInvokerTargetData() {
   SetField(FieldId::kInterestInvokerTargetData, nullptr);
+}
+
+ScrollMarkerGroupData* ElementRareDataVector::GetScrollMarkerGroupData() const {
+  return static_cast<ScrollMarkerGroupData*>(
+      GetField(FieldId::kScrollMarkerGroupData));
+}
+void ElementRareDataVector::RemoveScrollMarkerGroupData() {
+  SetField(FieldId::kScrollMarkerGroupData, nullptr);
+}
+ScrollMarkerGroupData& ElementRareDataVector::EnsureScrollMarkerGroupData(
+    Element* element) {
+  return EnsureField<ScrollMarkerGroupData>(FieldId::kScrollMarkerGroupData,
+                                            element->GetDocument().GetFrame());
+}
+
+void ElementRareDataVector::SetScrollMarkerGroupContainerData(
+    ScrollMarkerGroupData* data) {
+  SetField(FieldId::kScrollMarkerGroupContainerData, data);
+}
+ScrollMarkerGroupData*
+ElementRareDataVector::GetScrollMarkerGroupContainerData() const {
+  return static_cast<ScrollMarkerGroupData*>(
+      GetField(FieldId::kScrollMarkerGroupContainerData));
 }
 
 AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()

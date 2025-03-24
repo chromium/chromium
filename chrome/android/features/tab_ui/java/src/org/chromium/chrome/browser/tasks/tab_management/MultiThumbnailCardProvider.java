@@ -407,7 +407,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     }
 
     private void onTabGroupModelFilterChanged(TabGroupModelFilter filter) {
-        boolean isIncognito = filter.isIncognito();
+        boolean isIncognito = filter.getTabModel().isIncognitoBranded();
         mEmptyThumbnailPaint.setColor(
                 TabUiThemeUtils.getMiniThumbnailPlaceholderColor(mContext, isIncognito, false));
         mTextPaint.setColor(

@@ -387,6 +387,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
     return std::make_unique<PrefetchContainer>(
         *main_rfhi(), referring_document_token, prefetch_url,
         std::move(prefetch_type), blink::mojom::Referrer(),
+        std::make_optional(SpeculationRulesTags()),
         /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         PreloadPipelineInfo::Create(

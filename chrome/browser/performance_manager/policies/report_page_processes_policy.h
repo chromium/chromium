@@ -11,7 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 

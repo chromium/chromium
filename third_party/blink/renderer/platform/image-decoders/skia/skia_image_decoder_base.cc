@@ -318,6 +318,7 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
         }
 
         if (IsFailedFrameIndex(previous_frame_index)) {
+          SetFailedFrameIndex(current_frame_index);
           continue;
         }
 

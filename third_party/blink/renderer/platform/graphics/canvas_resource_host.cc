@@ -146,7 +146,7 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
     return nullptr;
   }
   if (!cc_layer_) [[unlikely]] {
-    cc_layer_ = cc::TextureLayer::CreateForMailbox(this);
+    cc_layer_ = cc::TextureLayer::Create(this);
     InitializeLayerWithCSSProperties(cc_layer_.get());
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);

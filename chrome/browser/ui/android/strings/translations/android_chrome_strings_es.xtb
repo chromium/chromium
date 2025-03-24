@@ -584,6 +584,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3721119614952978349">Tú y Google</translation>
 <translation id="3737319253362202215">Configuración de traducción</translation>
 <translation id="3738139272394829648">Tocar para buscar</translation>
+<translation id="3739455665973395693">No hay contraseñas vulneradas en tu cuenta de Google</translation>
 <translation id="3739899004075612870">Marcador añadido a <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">La búsqueda por voz no está disponible en este dispositivo</translation>
 <translation id="376561056759077985">Algunos datos aún no se han guardado</translation>
@@ -637,6 +638,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3985215325736559418">¿Quieres volver a descargar el archivo <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copiar enlace</translation>
 <translation id="4000212216660919741">Página principal del modo sin conexión</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 contraseña vulnerada en tu cuenta de Google}other{# contraseñas vulneradas en tu cuenta de Google}}</translation>
 <translation id="4016425174436051808">No se puede seguir. Se ha producido un error.</translation>
 <translation id="4024768890073681126">Tu padre o madre gestiona tu navegador</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
@@ -692,6 +694,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4270730597186910506">Sigue o deja de seguir un producto.</translation>
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4282440837784183472">Tu organización, <ph name="MANAGED_DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en el que se puede usar Chrome. Tu administrador puede configurar o restringir ciertas funciones.</translation>
+<translation id="4285498937028063278">Desfijar</translation>
 <translation id="4285846616383034558">Cookies, caché y otros datos de sitios</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en los ajustes de Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nueva pestaña Incógnito</translation>
@@ -831,6 +834,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488187801263602086">Cambiar nombre de archivo</translation>
 <translation id="4885273946141277891">Número de instancias de Chrome no admitido.</translation>
+<translation id="4890973535105146893">No hay contraseñas guardadas en tu cuenta de Google</translation>
 <translation id="4905823827770127520">Incluir un enlace a la página</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
 <translation id="4910889077668685004">Aplicaciones para pagar</translation>
@@ -920,6 +924,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">Google recomienda Chrome</translation>
 <translation id="5326246328175179736">No puedes iniciar sesión con esta cuenta</translation>
+<translation id="5327248766486351172">Nombre</translation>
 <translation id="5328542107300944283">Usar con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Solicitudes de permiso</translation>
 <translation id="534580735623577507">No hay sitios en <ph name="TIME_PERIOD" /></translation>
@@ -1075,6 +1080,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
 <translation id="6071995715087444295">Para comprobar si hay contraseñas vulneradas, inicia sesión en tu cuenta de Google</translation>
+<translation id="6078323886959318429">Acceso directo</translation>
 <translation id="6085886413119427067">Determina cómo conectarse a sitios web mediante una conexión segura</translation>
 <translation id="6087286598828478206">¿Bloquear y salir del grupo?</translation>
 <translation id="60923314841986378">Quedan <ph name="HOURS" /> horas</translation>
@@ -1703,6 +1709,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="869891660844655955">Fecha de caducidad</translation>
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
 <translation id="8712637175834984815">Entendido</translation>
+<translation id="8715286883001906001">Refuerza tus contraseñas en tu cuenta de Google</translation>
 <translation id="8723453889042591629">Traduce esta página rápidamente. Para editar este acceso directo, mantenlo pulsado.</translation>
 <translation id="8725066075913043281">Reintentar</translation>
 <translation id="8731268612289859741">Código de seguridad</translation>
@@ -1830,6 +1837,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
+<translation id="984756705737569814">No se pueden comprobar las contraseñas de tu cuenta de Google</translation>
 <translation id="987264212798334818">General</translation>
 <translation id="988091779042748639">Para eliminar el historial de navegación de Incógnito en tu dispositivo, cierra todas las pestañas de Incógnito.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> pestañas</translation>

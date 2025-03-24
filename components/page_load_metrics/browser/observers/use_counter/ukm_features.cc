@@ -460,6 +460,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kCrossOriginOwnerInterestGroupSubframeCheckFailed,
           WebFeature::kV8Navigator_LeaveAdInterestGroup_Method,
           WebFeature::kV8Navigator_ClearOriginJoinedAdInterestGroups_Method,
+          WebFeature::kTranslator_MeasureInputUsage_Method,
+          WebFeature::kTranslator_InputQuota_AttributeGetter,
       }));
   return *opt_in_features;
 }

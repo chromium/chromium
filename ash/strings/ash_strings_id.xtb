@@ -215,6 +215,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1679841710523778799">Meningkatkan kecerahan</translation>
 <translation id="1680659827022803830">Kontrol panggilan video</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Anda dapat menonaktifkan fitur ini kapan saja di Setelan. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Timer <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Alamat IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Jendela yang aktif dikaitkan di kiri.</translation>
@@ -935,7 +936,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4146671046252289537">Pindah ke akhir kata berikutnya</translation>
 <translation id="4146833061457621061">Putar musik</translation>
 <translation id="4150201353443180367">Tampilan</translation>
-<translation id="4151054805501931758">Percantik tampilan diri</translation>
+<translation id="4151054805501931758">Sempurnakan penampilan</translation>
 <translation id="4156293514828496577">Daya baterai tersisa <ph name="PERCENTAGE" />% (sekitar <ph name="TIME_LEFT" />).
 Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4158003972857765638">Atur di desktop virtual baru</translation>
@@ -967,6 +968,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Aplikasi Terinstal, Dijeda</translation>
 <translation id="4228078597006700451">Kontrol belum disiapkan</translation>
 <translation id="4230560241506423345">Baru</translation>
+<translation id="4236726631849783264">Pengingat tentang tindakan yang disarankan</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode ringkasan</translation>
 <translation id="4242533952199664413">Buka setelan</translation>
@@ -983,7 +985,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Mencerminkan</translation>
 <translation id="4280601795273309128">Update keamanan telah berakhir. Upgrade perangkat Anda.</translation>
-<translation id="4281739221820540368">Buat Dokumen Google</translation>
 <translation id="4283888303416325161">Masukkan sandi untuk keamanan tambahan</translation>
 <translation id="4285498937028063278">Lepaskan</translation>
 <translation id="428715201724021596">Menghubungkan ke profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
@@ -1044,6 +1045,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4471354919263203780">Mendownload file pengenalan ucapan ... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Update perangkat sekarang}=1{Update perangkat dalam 1 detik}other{Update perangkat dalam # detik}}</translation>
 <translation id="4472575034687746823">Memulai</translation>
+<translation id="4473489370276014885">Google Kontak</translation>
 <translation id="4477350412780666475">Lagu Berikutnya</translation>
 <translation id="4477751544736611934">Anda mungkin akan dikenai biaya data.
 1 perangkat terhubung.</translation>
@@ -1070,6 +1072,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4545950850562423083">Simpan halaman saat ini sebagai bookmark</translation>
 <translation id="4548482551627849548">Pindahkan jendela aktif ke desktop di sisi kiri</translation>
 <translation id="4552748006424994716">Untuk menghindari gema, Anda hanya dapat mendengarkan suara mikrofon Anda menggunakan headphone berkabel.</translation>
+<translation id="4556953949326137018">Saat Anda menggunakan tindakan yang disarankan seperti “tambahkan ke Kalender” atau “buat Google Dokumen”, konten dari area yang dipilih akan dikirim ke server Google guna menyarankan tindakan yang tunduk pada <ph name="LINK_TO_SERVICE_TERMS" />. Jangan menyertakan informasi apa pun yang bersifat pribadi, sensitif, atau rahasia.</translation>
 <translation id="4560576029703263363">Aktif</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
@@ -1153,6 +1156,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="481455355267255546">Berikutnya</translation>
 <translation id="481749895090480684">Daftar tugas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
+<translation id="4828935196674083554">Menambahkan...</translation>
 <translation id="482908187605862807">Aplikasi yang tersedia dari Play Store</translation>
 <translation id="4831034276697007977">Yakin ingin menonaktifkan klik otomatis?</translation>
 <translation id="4835677468087803981">Sembunyikan PIN</translation>
@@ -1650,6 +1654,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Hapus semua notifikasi</translation>
+<translation id="6426905245930183644">Membuat...</translation>
 <translation id="6430225033895752525">Tampilkan setelan Fokus</translation>
 <translation id="643147933154517414">Selesai</translation>
 <translation id="6431865393913628856">Perekaman layar</translation>
@@ -1716,7 +1721,6 @@ Baru diinstal</translation>
 <translation id="6612889377159412215">subtugas</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> penyimpanan sedang digunakan | Total <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Layar privasi aktif</translation>
-<translation id="6618277154885124991">Buat Spreadsheet Google</translation>
 <translation id="6622679827379792051">Siapkan untuk melihat aplikasi ponsel Anda</translation>
 <translation id="662279009180869175">Gunakan panah kiri dan kanan untuk mengubah ukuran layar terpisah</translation>
 <translation id="6624493541160101248">Desktop virtual saat ini: <ph name="DESK_NAME" />. Desktop virtual <ph name="DESK_INDEX" /> dari <ph name="DESK_COUNT" />.</translation>
@@ -2400,6 +2404,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8921624153894383499">Asisten Google tidak berbicara dalam bahasa ini.</translation>
 <translation id="8926951137623668982">Rak selalu disembunyikan</translation>
 <translation id="8929566928381252430">Mencoba menggunakan Caps Lock? Gunakan</translation>
+<translation id="8934418770423095813">Buat Dokumen Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">dinonaktifkan</translation>
 <translation id="8938800817013097409">Perangkat USB-C (port belakang sebelah kanan)</translation>

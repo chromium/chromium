@@ -111,29 +111,38 @@ TEST_F(OnTaskPodViewTest, ReloadTabButtonClickTriggersTabReload) {
 }
 
 TEST_F(OnTaskPodViewTest,
-       PinTabStripButtonDisabledWhenCannotEnableShowOrHideTabStrip) {
+       HidePinTabStripButtonWhenCannotEnableShowOrHideTabStrip) {
   EXPECT_CALL(mock_on_task_pod_controller_, CanToggleTabStripVisibility())
       .WillOnce(testing::Return(false));
   on_task_pod_view_->OnLockedModeUpdate();
   EXPECT_FALSE(
-      on_task_pod_view_->pin_tab_strip_button_for_testing()->GetEnabled());
+      on_task_pod_view_->pin_tab_strip_button_for_testing()->GetVisible());
 }
 
 TEST_F(OnTaskPodViewTest, PinTabStripButtonClickTriggersShowOrHideTabStrip) {
   Sequence s;
   EXPECT_CALL(mock_on_task_pod_controller_, CanToggleTabStripVisibility())
       .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_on_task_pod_controller_, ToggleTabStripVisibility(false))
+      .Times(1)
+      .InSequence(s);
+  ;
   on_task_pod_view_->OnLockedModeUpdate();
-  ASSERT_TRUE(
-      on_task_pod_view_->pin_tab_strip_button_for_testing()->GetEnabled());
+
+  // Resize the widget to fit the contents view, and apply the new layout within
+  // the widget. Otherwise, we are not able to click on pin_tab_strip_button.
+  widget_->SetSize(on_task_pod_view_->GetPreferredSize());
+  widget_->LayoutRootViewIfNecessary();
+  auto* const pin_tab_strip_button =
+      on_task_pod_view_->pin_tab_strip_button_for_testing();
+  ASSERT_TRUE(pin_tab_strip_button->GetVisible());
+
   EXPECT_CALL(mock_on_task_pod_controller_, ToggleTabStripVisibility(true))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(mock_on_task_pod_controller_, ToggleTabStripVisibility(false))
       .Times(1)
       .InSequence(s);
-  auto* const pin_tab_strip_button =
-      on_task_pod_view_->pin_tab_strip_button_for_testing();
   LeftClickOn(pin_tab_strip_button);
   LeftClickOn(pin_tab_strip_button);
 }

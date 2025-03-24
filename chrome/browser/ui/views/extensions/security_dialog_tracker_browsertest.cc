@@ -15,22 +15,20 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-using SecurityDialogTrackerTest = InProcessBrowserTest;
-
-namespace {
-
-// Create a dialog widget as a child of `parent` widget.
-views::UniqueWidgetPtr CreateTestDialogWidget(views::Widget* parent) {
-  auto dialog_delegate = std::make_unique<views::DialogDelegateView>();
-  return std::unique_ptr<views::Widget>(
-      views::DialogDelegate::CreateDialogWidget(dialog_delegate.release(),
-                                                gfx::NativeWindow(),
-                                                parent->GetNativeView()));
-}
-
-}  // namespace
-
 namespace extensions {
+
+class SecurityDialogTrackerTest : public InProcessBrowserTest {
+ public:
+  // Create a dialog widget as a child of `parent` widget.
+  static views::UniqueWidgetPtr CreateTestDialogWidget(views::Widget* parent) {
+    auto dialog_delegate = std::make_unique<views::DialogDelegateView>(
+        views::DialogDelegateView::CreatePassKey());
+    return std::unique_ptr<views::Widget>(
+        views::DialogDelegate::CreateDialogWidget(dialog_delegate.release(),
+                                                  gfx::NativeWindow(),
+                                                  parent->GetNativeView()));
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(SecurityDialogTrackerTest, Basic) {
   BrowserView& browser_view = browser()->GetBrowserView();

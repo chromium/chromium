@@ -10,12 +10,15 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 using base::android::ScopedJavaLocalRef;
 
 namespace device {
+
+class BluetoothSocketThread;
 
 // BluetoothAdapterAndroid, along with the Java class
 // org.chromium.device.bluetooth.BluetoothAdapter, implement BluetoothAdapter.
@@ -151,6 +154,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
 
  private:
   void PopulatePairedDevices() const;
+
+  scoped_refptr<BluetoothSocketThread> socket_thread_;
 
   FRIEND_TEST_ALL_PREFIXES(BluetoothAdapterAndroidTest, ScanFilterTest);
   // Note: This should remain the last member so it'll be destroyed and

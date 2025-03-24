@@ -191,21 +191,38 @@ void TipsNotificationClient::HandleNotificationInteraction(
   // opt in the user to this type of notification.
   if ((IsProvisionalNotificationAlertEnabled() ||
        IsIOSReactivationNotificationsEnabled()) &&
-      !permitted_ &&
-      [PushNotificationUtil getSavedPermissionSettings] ==
-          UNAuthorizationStatusAuthorized) {
-    // Set `permitted_` here so that the OnPermittedPrefChanged exits early.
-    permitted_ = true;
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-    id<SystemIdentity> identity =
-        authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-    const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
-    PushNotificationService* service =
-        GetApplicationContext()->GetPushNotificationService();
-    service->SetPreference(base::SysUTF8ToNSString(gaiaID),
-                           PushNotificationClientId::kTips, true);
+      !permitted_) {
+    [PushNotificationUtil
+        getPermissionSettings:base::CallbackToBlock(base::BindOnce(
+                                  &TipsNotificationClient::OptInIfAuthorized,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  browser->GetProfile()->AsWeakPtr()))];
   }
+}
+
+void TipsNotificationClient::OptInIfAuthorized(
+    base::WeakPtr<ProfileIOS> weak_profile,
+    UNNotificationSettings* settings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (settings.authorizationStatus != UNAuthorizationStatusAuthorized) {
+    return;
+  }
+  ProfileIOS* profile = weak_profile.get();
+  if (!profile) {
+    return;
+  }
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  id<SystemIdentity> identity =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+  PushNotificationService* service =
+      GetApplicationContext()->GetPushNotificationService();
+  // Set `permitted_` here so that the OnPermittedPrefChanged exits early.
+  permitted_ = true;
+  service->SetPreference(base::SysUTF8ToNSString(gaiaID),
+                         PushNotificationClientId::kTips, true);
 }
 
 std::optional<UIBackgroundFetchResult>

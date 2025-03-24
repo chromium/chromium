@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(!is_android)
 
@@ -41,4 +42,5 @@ build_webui("build") {
   # Used by both trusted and untrusted hosts so all imports in this folder
   # should be scheme-relative.
   webui_context_type = "relative"
+  generate_code_cache = enable_webui_generate_code_cache
 }

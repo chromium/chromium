@@ -190,7 +190,8 @@ void ChromeOSIntegrationArcMixin::SetMode(Mode mode) {
 
 void ChromeOSIntegrationArcMixin::SetUp() {
   setup_called_ = true;
-  CHECK(upstart::StartJob("arc-manager"));
+  // Use `RestartJob` in case `arc-manager` is already running.
+  CHECK(upstart::RestartJob("arc-manager"));
 }
 
 void ChromeOSIntegrationArcMixin::TearDown() {

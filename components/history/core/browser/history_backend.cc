@@ -2911,6 +2911,8 @@ MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count) {
   if (!db_)
     return {};
 
+  const base::ElapsedTimer query_timer;
+
   auto url_filter =
       backend_client_
           ? base::BindRepeating(&HistoryBackendClient::IsWebSafe,
@@ -2926,6 +2928,8 @@ MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count) {
     result.back().last_visit_time = current_data->GetLastVisitTimeslot();
     result.back().score = current_data->GetScore();
   }
+  base::UmaHistogramTimes("History.QueryMostVisitedURLsTime",
+                          query_timer.Elapsed());
   return result;
 }
 

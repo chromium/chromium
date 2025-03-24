@@ -6,8 +6,8 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/web_app_launch_params.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/browser/launch_queue/launch_params.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
@@ -30,14 +30,15 @@ LaunchQueueDelegateImpl::LaunchQueueDelegateImpl(
     : registrar_(registrar) {}
 
 bool LaunchQueueDelegateImpl::IsValidLaunchParams(
-    const WebAppLaunchParams& launch_params) const {
+    const webapps::LaunchParams& launch_params) const {
   return launch_params.dir.empty() ||
          registrar_->IsSystemApp(launch_params.app_id);
 }
 
-bool LaunchQueueDelegateImpl::IsInScope(const WebAppLaunchParams& launch_params,
-                                        const GURL& current_url) const {
-  // WebAppLaunchQueue is used by extensions with file handlers, extensions
+bool LaunchQueueDelegateImpl::IsInScope(
+    const webapps::LaunchParams& launch_params,
+    const GURL& current_url) const {
+  // webapps::LaunchQueue is used by extensions with file handlers, extensions
   // don't have a concept of scope.
   // App scope is a web app concept that is not applicable for extensions.
   // Therefore this check will be skipped when launching an extension URL.

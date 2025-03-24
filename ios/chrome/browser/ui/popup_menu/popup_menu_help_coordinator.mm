@@ -55,10 +55,6 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* overflowMenuBubblePresenter;
 
-// The profile. May return null after the coordinator has been stopped
-// (thus the returned value must be checked for null).
-@property(nonatomic, readonly) ProfileIOS* profile;
-
 // The layout guide installed in the base view controller on which to anchor the
 // potential IPH bubble.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
@@ -101,17 +97,12 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
 #pragma mark - Getters
 
-- (ProfileIOS*)profile {
-  return self.browser ? self.browser->GetProfile() : nullptr;
-}
-
 - (feature_engagement::Tracker*)featureEngagementTracker {
-  ProfileIOS* profile = self.profile;
-  if (!profile) {
+  if (!self.profile) {
     return nullptr;
   }
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(profile);
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   DCHECK(tracker);
   return tracker;
 }
@@ -270,8 +261,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 // Returns whether blue dot should be shown.
 - (BOOL)shouldShowBlueDot {
   // Don't show blue dot if cannot make a decision.
-  ProfileIOS* profile = self.profile;
-  if (!profile) {
+  if (!self.profile) {
     return NO;
   }
 

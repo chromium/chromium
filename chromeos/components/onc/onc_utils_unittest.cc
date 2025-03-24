@@ -28,6 +28,7 @@
 #include "onc_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::Pointee;
 namespace chromeos::onc {
 
 TEST(ONCDecrypterTest, BrokenEncryptionIterations) {
@@ -272,8 +273,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_ApnProvided) {
 
   const auto* cellular_apn =
       network_configs[0].GetDict().FindByDottedPath("Cellular.APN");
-  EXPECT_THAT(cellular_apn->GetDict(),
-              base::test::DictionaryHasValues(std::move(expected)));
+  EXPECT_THAT(cellular_apn,
+              Pointee(base::test::DictionaryHasValues(std::move(expected))));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_NoApnProvided) {
@@ -301,8 +302,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_NoApnProvided) {
 
   base::Value::Dict expected;
   expected.Set(::onc::kRecommended, std::move(recommended));
-  EXPECT_THAT(cellular_apn->GetDict(),
-              base::test::DictionaryHasValues(std::move(expected)));
+  EXPECT_THAT(cellular_apn,
+              Pointee(base::test::DictionaryHasValues(std::move(expected))));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_APNAccessPointName) {
@@ -830,8 +831,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
                ::onc::openvpn_compression_algorithm::kLzo);
   expected.Set(::onc::openvpn::kTLSAuthContents, auth_key);
   expected.Set(::onc::openvpn::kKeyDirection, "1");
-  EXPECT_THAT(open_vpn->GetDict(),
-              base::test::DictionaryHasValues(std::move(expected)));
+  EXPECT_THAT(open_vpn,
+              Pointee(base::test::DictionaryHasValues(std::move(expected))));
 }
 
 struct MaskCredentialsTestCase {

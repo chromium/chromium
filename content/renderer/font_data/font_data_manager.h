@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/containers/lru_cache.h"
+#include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -98,8 +99,8 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   };
   struct MatchFamilyRequestHash {
     size_t operator()(const MatchFamilyRequest& key) const {
-      return std::hash<std::string>{}(key.name) ^ key.weight ^
-             (key.width << 8) ^ (key.slant << 16);
+      return base::HashCombine(0ull, key.name, key.weight, key.width,
+                               key.slant);
     }
   };
   struct MatchFamilyRequestEqual {

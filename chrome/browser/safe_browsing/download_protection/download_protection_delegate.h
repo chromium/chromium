@@ -21,6 +21,8 @@ class DownloadItem;
 
 namespace safe_browsing {
 
+class ClientDownloadRequest;
+
 // Interface providing platform-specific logic for Download Protection, used
 // with DownloadProtectionService, CheckClientDownloadRequest, and
 // DownloadRequestMaker.
@@ -47,6 +49,13 @@ class DownloadProtectionDelegate {
   // based on things other than the file itself (i.e. random sampling).
   virtual bool IsSupportedDownload(download::DownloadItem& item,
                                    const base::FilePath& target_path) const = 0;
+
+  // Called immediately prior to serializing the ClientDownloadRequest into the
+  // string to send in the POST request body, which is followed by sending out
+  // the network request. Allows the delegate to make final modifications to
+  // the request. `item` is the download this pertains to, which may be null.
+  virtual void PreSerializeRequest(const download::DownloadItem* item,
+                                   ClientDownloadRequest& request_proto) {}
 
   // Returns the URL that will be contacted for download protection requests.
   virtual const GURL& GetDownloadRequestUrl() const = 0;

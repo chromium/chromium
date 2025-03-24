@@ -174,6 +174,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(ToggleGeminiApp)                            \
   ACCELERATOR_ACTION_ENTRY(ToggleDoNotDisturb)                         \
   ACCELERATOR_ACTION_ENTRY(ToggleCameraAllowed)                        \
+  ACCELERATOR_ACTION_ENTRY(StartSunfishSession)                        \
   /* Debug actions are kept at an offset.*/                            \
   /* This offset should be kept consistent with the enum*/             \
   /* `AcceleratorAction` in*/                                          \

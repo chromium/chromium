@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">બ્રાઇટનેસ વધારો</translation>
 <translation id="1680659827022803830">વીડિયો કૉલ નિયંત્રણો</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">તમે સેટિંગમાં જઈને કોઈપણ સમયે આ સુવિધા બંધ કરી શકો છો. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ટાઇમર · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 સરનામું: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">સક્રિય વિન્ડોને ડાબે ડૉક કરી.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ઇન્સ્ટૉલ કરેલી ઍપ, થોભાવી</translation>
 <translation id="4228078597006700451">નિયંત્રણોનું સેટઅપ કરેલું નથી</translation>
 <translation id="4230560241506423345">નવું</translation>
+<translation id="4236726631849783264">સૂચવેલી ઍક્શન વિશે એક રિમાઇન્ડર</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ઝલક મોડ</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">મીડિયા</translation>
 <translation id="4279490309300973883">પ્રતિબિંબત થઈ રહ્યું છે</translation>
 <translation id="4280601795273309128">સુરક્ષા અપડેટ સમાપ્ત થયા. તમારું ડિવાઇસ અપગ્રેડ કરો.</translation>
-<translation id="4281739221820540368">Google Docs બનાવો</translation>
 <translation id="4283888303416325161">વધુ સુરક્ષા માટે પાસવર્ડ દાખલ કરો</translation>
 <translation id="4285498937028063278">અનપિન કરો</translation>
 <translation id="428715201724021596">પ્રોફાઇલ સાથે કનેક્ટ કરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">વાણી ઓળખની ફાઇલો ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{હમણાં જ ડિવાઇસ અપડેટ કરો}=1{1 સેકન્ડની અંદર ડિવાઇસ અપડેટ કરો}one{# સેકન્ડની અંદર ડિવાઇસ અપડેટ કરો}other{# સેકન્ડની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="4472575034687746823">શરૂ કરો</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">આગલો ટ્રૅક</translation>
 <translation id="4477751544736611934">આમ કરવાથી ડેટા વપરાશનો ખર્ચ લાગુ થઈ શકે છે.
 1 ડિવાઇસ કનેક્ટ કર્યું.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">વર્તમાન પેજને બુકમાર્ક તરીકે સાચવો</translation>
 <translation id="4548482551627849548">સક્રિય વિન્ડોને ડાબી બાજુએ ડેસ્ક પર ખસેડો</translation>
 <translation id="4552748006424994716">પડઘાને ટાળવા માટે, વાયર્ડ હૅડફોન વડે તમે માત્ર તમારા માઇકને સાંભળી શકો છો.</translation>
+<translation id="4556953949326137018">જ્યારે તમે "Calendarમાં ઉમેરો" અથવા "Google Docs બનાવો" જેવી સૂચવેલી ઍક્શનનો ઉપયોગ કરો છો, ત્યારે <ph name="LINK_TO_SERVICE_TERMS" />ને આધીન ઍક્શન સૂચવવા માટે પસંદ કરેલા ક્ષેત્રમાંથી કન્ટેન્ટ Googleના સર્વરને મોકલવામાં આવે છે. વ્યક્તિગત, સંવેદનશીલ કે ગોપનીય હોય તેવી કોઈપણ માહિતી શામેલ કરશો નહીં.</translation>
 <translation id="4560576029703263363">ચાલુ</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">પાસવર્ડ છુપાવો</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">આગામી ઇવેન્ટ</translation>
 <translation id="481749895090480684">કાર્ય સૂચિ: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">કૅમેરા અને માઇક્રોફોન</translation>
+<translation id="4828935196674083554">ઉમેરી રહ્યું છે...</translation>
 <translation id="482908187605862807">Play Storeમાંથી ઉપલબ્ધ હોય તેવી ઍપ</translation>
 <translation id="4831034276697007977">શું તમારે ખરેખર ઑટોમૅટિક ક્લિક બંધ કરવા છે?</translation>
 <translation id="4835677468087803981">પિન છુપાવો</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">બધા નોટિફિકેશન સાફ કરો</translation>
+<translation id="6426905245930183644">બનાવી રહ્યાં છીએ...</translation>
 <translation id="6430225033895752525">ફોકસના સેટિંગ બતાવો</translation>
 <translation id="643147933154517414">થઈ ગયું</translation>
 <translation id="6431865393913628856">સ્ક્રીન રેકૉર્ડ કરો</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">પેટાકાર્ય</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> સંગ્રહ ઉપયોગમાં છે | કુલ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">પ્રાઇવસી સ્ક્રીન ચાલુ છે</translation>
-<translation id="6618277154885124991">Google Sheets બનાવો</translation>
 <translation id="6622679827379792051">તમારા ફોનની ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
 <translation id="662279009180869175">વિભાજિત સ્ક્રીનનું કદ બદલવા માટે ડાબી અને જમણી ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="6624493541160101248">વર્તમાન ડેસ્ક: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
@@ -2400,6 +2404,7 @@
 <translation id="8921624153894383499">Google Assistant આ ભાષા બોલતું નથી.</translation>
 <translation id="8926951137623668982">શેલ્ફ હંમેશાં છુપાવવામાં આવે છે</translation>
 <translation id="8929566928381252430">Caps Lockનો ઉપયોગ કરવાનો પ્રયાસ કરો છો? ઉપયોગ કરો</translation>
+<translation id="8934418770423095813">Google Doc બનાવો</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="8936501819958976551">નિષ્ક્રિય કરેલું</translation>
 <translation id="8938800817013097409">USB-C ડિવાઇસ (પાછળની બાજુએ જમણું પોર્ટ)</translation>

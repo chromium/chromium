@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,9 +25,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -44,28 +48,34 @@ public class SuggestionEventObserverUnitTest {
     @Mock Profile mProfile;
     @Mock TabModel mTabModel;
     @Mock GroupSuggestionsService mGroupSuggestionsService;
-    @Mock ObservableSupplierImpl<Boolean> mHubVisibilitySupplier;
-    @Mock ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
+    @Mock HubManager mHubManager;
+    @Mock PaneManager mPaneManager;
     @Mock Tab mTab;
     @Mock Pane mPane;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private SuggestionEventObserver mSuggestionEventObserver;
+    private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier;
+    private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
 
     @Before
     public void setup() {
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        when(mTab.getId()).thenReturn(TAB_ID);
         mHubVisibilitySupplier = new ObservableSupplierImpl<>();
+        when(mHubManager.getHubVisibilitySupplier()).thenReturn(mHubVisibilitySupplier);
+        when(mHubManager.getPaneManager()).thenReturn(mPaneManager);
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mFocusedPaneSupplier.set(mPane);
-        doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        doReturn(TAB_ID).when(mTab).getId();
+        when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
+        OneshotSupplierImpl<HubManager> hubManagerSupplier = new OneshotSupplierImpl<>();
+        hubManagerSupplier.set(mHubManager);
         GroupSuggestionsServiceFactory.setGroupSuggestionsServiceForTesting(
                 mGroupSuggestionsService);
 
-        mSuggestionEventObserver =
-                new SuggestionEventObserver(
-                        mProfile, mTabModel, mHubVisibilitySupplier, mFocusedPaneSupplier);
+        mSuggestionEventObserver = new SuggestionEventObserver(mTabModel, hubManagerSupplier);
     }
 
     @Test
@@ -109,6 +119,7 @@ public class SuggestionEventObserverUnitTest {
     @Test
     public void testEnterPane_InvalidFocusedPane() {
         mFocusedPaneSupplier.set(null);
+
         mHubVisibilitySupplier.set(true);
 
         verify(mGroupSuggestionsService, never()).didEnterTabSwitcher();

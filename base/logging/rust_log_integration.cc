@@ -8,17 +8,29 @@
 
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
+#include "base/logging/rust_logger.rs.h"
+#include "third_party/rust/cxx/v1/cxx.h"
 
 namespace logging::internal {
 
-void print_rust_log(const char* msg,
+LogMessageRustWrapper::LogMessageRustWrapper(const char* file,
+                                             int line,
+                                             ::logging::LogSeverity severity)
+    : log_message(file, line, severity) {}
+
+void LogMessageRustWrapper::write_to_stream(rust::Str str) {
+  log_message.stream().write(str.data(),
+                             static_cast<std::streamsize>(str.size()));
+}
+
+void print_rust_log(const RustFmtArguments& msg,
                     const char* file,
                     int32_t line,
                     int32_t severity,
                     bool verbose) {
   // TODO(danakj): If `verbose` make the log equivalent to VLOG instead of LOG.
-  logging::LogMessage log_message(file, line, severity);
-  log_message.stream() << msg;
+  LogMessageRustWrapper wrapper(file, line, severity);
+  msg.format(wrapper);
 }
 
 }  // namespace logging::internal

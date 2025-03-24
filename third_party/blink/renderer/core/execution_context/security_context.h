@@ -161,9 +161,9 @@ class CORE_EXPORT SecurityContext {
     // Whether a report should be sent (to Reporting API, ReportingObservers,
     // and the console).
     bool should_report;
-    // Where a report should be sent, if one should be. nullopt if no reporting
-    // is configured for this feature.
-    std::optional<String> reporting_endpoint;
+    // Where a report should be sent, if one should be. empty if no
+    // reporting is configured for this feature.
+    String reporting_endpoint;
   };
 
   // Permissions Policy

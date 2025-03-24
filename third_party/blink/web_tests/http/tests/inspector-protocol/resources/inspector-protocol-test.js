@@ -396,7 +396,7 @@ TestRunner.Page = class {
     var session = await this.createSession();
     await session.protocol.Runtime.evaluate({
       awaitPromise: true,
-      expression: `
+      expression: `(function() {
       document.write('${html}');
 
       // wait for all scripts to load
@@ -410,7 +410,8 @@ TestRunner.Page = class {
         window._loadHTMLResolve();
 
       document.close();
-      promise;
+      return promise;
+      })()
     `});
     await session.disconnect();
   }

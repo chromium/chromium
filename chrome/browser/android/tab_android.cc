@@ -12,6 +12,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/token_android.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -63,7 +64,7 @@
 #include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using chrome::android::BackgroundTabManager;
@@ -247,6 +248,26 @@ base::Time TabAndroid::GetLastShownTimestamp() const {
   return (timestamp == -1)
              ? base::Time()
              : base::Time::FromMillisecondsSinceUnixEpoch(timestamp);
+}
+
+int TabAndroid::GetTabLaunchTypeAtCreation() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabImpl_getTabLaunchTypeAtCreation(env, weak_java_tab_.get(env));
+}
+
+int TabAndroid::GetParentId() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabImpl_getParentId(env, weak_java_tab_.get(env));
+}
+
+std::optional<base::Token> TabAndroid::GetTabGroupId() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_token =
+      Java_TabImpl_getTabGroupId(env, weak_java_tab_.get(env));
+  if (j_token.is_null()) {
+    return std::nullopt;
+  }
+  return base::android::TokenAndroid::FromJavaToken(env, j_token);
 }
 
 void TabAndroid::DeleteFrozenNavigationEntries(

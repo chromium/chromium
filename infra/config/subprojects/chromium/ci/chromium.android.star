@@ -1904,35 +1904,6 @@ ci.builder(
     notifies = ["cronet"],
 )
 
-# Runs on a specific machine with an attached phone
-ci.builder(
-    name = "android-cronet-marshmallow-arm64-perf-rel",
-    executable = "recipe:cronet",
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder_without_codecs",
-            "cronet_android",
-            "official_optimize",
-            "release_builder",
-            "remoteexec",
-            "minimal_symbols",
-            "arm64",
-            "strip_debug_info",
-        ],
-    ),
-    cores = None,
-    os = os.ANDROID,
-    cpu = None,
-    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
-    console_view_entry = consoles.console_view_entry(
-        category = "cronet|test|perf",
-        short_name = "m",
-    ),
-    contact_team_email = "cronet-team@google.com",
-    notifies = ["cronet"],
-    siso_remote_jobs = siso.remote_jobs.DEFAULT,
-)
-
 ci.builder(
     name = "android-cronet-riscv64-dbg",
     description_html = "Verifies building Cronet against RISC-V64",

@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <sys/mman.h>
+#include <sys/utsname.h>
 #endif
 
 namespace memory_instrumentation {
@@ -130,6 +131,29 @@ void CreateTempFileWithContents(const char* contents, base::ScopedFILE* file) {
   ASSERT_TRUE(*file);
 
   ASSERT_TRUE(base::WriteFileDescriptor(fileno(file->get()), contents));
+}
+
+// SmapsRollup was added in Linux 4.14.
+bool IsSmapsRollupSupported() {
+  struct utsname info;
+  if (uname(&info) < 0) {
+    NOTREACHED();
+  }
+
+  int major, minor, patch;
+  if (sscanf(info.release, "%d.%d.%d", &major, &minor, &patch) < 3) {
+    NOTREACHED();
+  }
+
+  if (major > 4) {
+    return true;
+  }
+
+  if (major < 4 || minor < 14) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -286,6 +310,22 @@ TEST(OSMetricsTest, CountMappings) {
   EXPECT_GT(dump.mappings_count, mappings_count);
 
   munmap(addr, kPageCount * page_size);
+}
+
+TEST(OSMetricsTest, Pss) {
+  // Some older Android devices may not support this, so skip the test in those
+  // cases.
+  if (!IsSmapsRollupSupported()) {
+    GTEST_SKIP() << "smaps_rollup not supported";
+  }
+
+  mojom::RawOSMemDump dump;
+  dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
+  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, &dump));
+  uint32_t pss = dump.pss_kb;
+
+  // We don't know the exact value here, but it should be greater than 0.
+  EXPECT_GT(pss, 0u);
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||

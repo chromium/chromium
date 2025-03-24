@@ -135,6 +135,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ShowStylusTools"/>
   <variant name="ShowTaskManager"/>
   <variant name="StartAssistant"/>
+  <variant name="StartSunfishSession"/>
   <variant name="StopScreenRecording"/>
   <variant name="Suspend"/>
   <variant name="SwapPrimaryDisplay"/>

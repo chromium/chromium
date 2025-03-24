@@ -34,7 +34,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 }
 
 bool GetTabSearchTrailingTabstrip(const Profile* profile) {
-  if (features::IsTabstripComboButtonEnabled()) {
+  if (features::IsTabSearchMoving()) {
     return true;
   }
 

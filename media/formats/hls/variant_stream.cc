@@ -25,7 +25,8 @@ VariantStream::VariantStream(
     std::optional<types::DecimalResolution> resolution,
     std::optional<types::DecimalFloatingPoint> frame_rate,
     scoped_refptr<RenditionGroup> audio_rendition_group,
-    std::optional<std::string> video_rendition_group_name)
+    scoped_refptr<RenditionGroup> video_rendition_group,
+    RenditionGroup::RenditionTrack implicit_rendition)
     : primary_rendition_uri_(std::move(primary_rendition_uri)),
       bandwidth_(bandwidth),
       average_bandwidth_(average_bandwidth),
@@ -34,7 +35,8 @@ VariantStream::VariantStream(
       resolution_(resolution),
       frame_rate_(frame_rate),
       audio_rendition_group_(std::move(audio_rendition_group)),
-      video_rendition_group_name_(video_rendition_group_name) {}
+      video_rendition_group_(std::move(video_rendition_group)),
+      implicit_rendition_(std::move(implicit_rendition)) {}
 
 VariantStream::VariantStream(VariantStream&&) = default;
 
@@ -101,6 +103,19 @@ const std::string VariantStream::Format(
     }
   }
   return format.str();
+}
+
+void VariantStream::UpdateImplicitRenditionMediaTrackName(std::string name) {
+  auto old_track = std::get<0>(implicit_rendition_);
+  auto new_track = MediaTrack::CreateVideoTrack(
+      /*id = */ name,
+      /*kind =*/MediaTrack::VideoKind::kMain,
+      /*label = */ name,
+      /*language = */ "",
+      /*enabled = */ old_track.enabled(),
+      /*stream_id =*/old_track.stream_id());
+  implicit_rendition_ =
+      std::make_tuple(new_track, std::get<1>(implicit_rendition_));
 }
 
 // static

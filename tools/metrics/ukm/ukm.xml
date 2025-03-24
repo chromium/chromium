@@ -7118,7 +7118,7 @@ be describing additional metrics about the same event.
 <event name="ContextMenuAndroid.Selected">
   <owner>benwgold@google.com</owner>
   <owner>twellington@chromium.org</owner>
-  <metric name="Action">
+  <metric name="Action" enum="ContextMenuOptionAndroid">
     <summary>
       Emits an integer id for a selection corresponding to the action enum
       defined in ChromeContextMenuPopulator.java (within the ContextMenuUma

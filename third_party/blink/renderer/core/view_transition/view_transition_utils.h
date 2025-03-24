@@ -24,8 +24,8 @@ class CORE_EXPORT ViewTransitionUtils {
   using PseudoFunctor = base::FunctionRef<void(PseudoElement*)>;
   using PseudoPredicate = base::FunctionRef<bool(PseudoElement*)>;
 
-  static void ForEachTransitionPseudo(Document&, PseudoFunctor);
-  static PseudoElement* FindPseudoIf(const Document&, PseudoPredicate);
+  static void ForEachTransitionPseudo(Element&, PseudoFunctor);
+  static PseudoElement* FindPseudoIf(const Element&, PseudoPredicate);
   static void ForEachDirectTransitionPseudo(const Element*, PseudoFunctor);
 
   // Returns the view transition in-progress in the given document, if one

@@ -75,6 +75,7 @@ public class TabModelUtilsUnitTest {
         when(mArchivedTab.getProfile()).thenReturn(mProfile);
         when(mIncognitoTab.getId()).thenReturn(INCOGNITO_TAB_ID);
         when(mIncognitoTab.isIncognito()).thenReturn(true);
+        when(mIncognitoTab.isOffTheRecord()).thenReturn(true);
         mTabModelSelector = spy(new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null));
         mArchivedTabModelSelector =
                 spy(new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null));

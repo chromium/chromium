@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
 <translation id="3737319253362202215">Թարգմանության կարգավորումներ</translation>
 <translation id="3738139272394829648">Հպեք` որոնելու համար</translation>
+<translation id="3739455665973395693">Ձեր Google հաշվում կոտրված գաղտնաբառեր չկան</translation>
 <translation id="3739899004075612870">Էջանշվեց <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="3740525748616366977">Ձայնային որոնումը հասանելի չէ այս սարքում</translation>
 <translation id="376561056759077985">Որոշ տվյալներ դեռ չեն պահվել</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">Ուզո՞ւմ եք նորից ներբեռնել <ph name="FILE_NAME" /> ֆայլը:</translation>
 <translation id="3987993985790029246">Պատճենել հղումը</translation>
 <translation id="4000212216660919741">Home անցանց ռեժիմում</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ ձեր Google հաշվում}one{# կոտրված գաղտնաբառ ձեր Google հաշվում}other{# կոտրված գաղտնաբառ ձեր Google հաշվում}}</translation>
 <translation id="4016425174436051808">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
 <translation id="4024768890073681126">Ձեր դիտարկիչը կառավարում է ձեր ծնողը</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ժամ}one{# ժամ}other{# ժամ}}</translation>
@@ -692,6 +694,7 @@
 <translation id="4270730597186910506">Հետագծել ապրանքը կամ չեղարկել դրա հետագծումը։</translation>
 <translation id="4277529130885813215">Օգտագործել այլ սարք</translation>
 <translation id="4282440837784183472">Ձեր կազմակերպությունը (<ph name="MANAGED_DOMAIN" />) կառավարում է հաշիվը, որը մուտք եք գործում, և այն, թե ինչպես կարող է Chrome-ն օգտագործվել։ Ձեր ադմինիստրատորը կարող է կարգավորել և սահմանափակել որոշակի գործառույթներ։</translation>
+<translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="4285846616383034558">Քուքիները, քեշը և կայքերի այլ տվյալներ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Միացնել էկրանի կողպումը Android-ի կարգավորումներում<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Նոր ինկոգնիտո ներդիր</translation>
@@ -831,6 +834,7 @@
 <translation id="4881695831933465202">Բացել</translation>
 <translation id="488187801263602086">Ֆայլի վերանվանում</translation>
 <translation id="4885273946141277891">Chrome-ի բացված էջերի թիվը չի աջակցվում:</translation>
+<translation id="4890973535105146893">Ձեր Google հաշվում պահված գաղտնաբառեր չկան</translation>
 <translation id="4905823827770127520">Նշեք էջի հղումը</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">Հավելվածներ վճարումների համար</translation>
@@ -920,6 +924,7 @@
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319359161174645648">Google-ը խորհուրդ է տալիս Chrome դիտարկիչը</translation>
 <translation id="5326246328175179736">Դուք չեք կարող մուտք գործել այս հաշվի միջոցով</translation>
+<translation id="5327248766486351172">Անուն</translation>
 <translation id="5328542107300944283">Օգտագործեք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշիվը</translation>
 <translation id="5342314432463739672">Թույլտվությունների հարցումներ</translation>
 <translation id="534580735623577507">Կայքեր չկան նշված ժամանակահատվածից (<ph name="TIME_PERIOD" />)</translation>
@@ -1075,6 +1080,7 @@
 <translation id="605721222689873409">տարի</translation>
 <translation id="6059830886158432458">Կառավարեք ձեր պատմություններն ու գործողություններն այստեղ</translation>
 <translation id="6071995715087444295">Կոտրված գաղտնաբառերը հայտնաբերելու համար մուտք գործեք ձեր Google հաշիվ</translation>
+<translation id="6078323886959318429">Ավելացնել դյուրանցում</translation>
 <translation id="6085886413119427067">Սահմանում է, թե ինչպես միանալ կայքերին ապահով կապի միջոցով</translation>
 <translation id="6087286598828478206">Արգելափակե՞լ և լքել խումբը</translation>
 <translation id="60923314841986378">Մնացել է <ph name="HOURS" /> ժամ</translation>
@@ -1703,6 +1709,7 @@
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
+<translation id="8715286883001906001">Ավելի հուսալի դարձրեք ձեր գաղտնաբառերը Google հաշվում</translation>
 <translation id="8723453889042591629">Արագ թարգմանեք այս էջը։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8731268612289859741">Անվտանգության կոդ</translation>
@@ -1830,6 +1837,7 @@
 <translation id="970715775301869095">Մնացել է <ph name="MINUTES" /> րոպե</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="983192555821071799">Փակել բոլոր ներդիրները</translation>
+<translation id="984756705737569814">Չհաջողվեց ստուգել գաղտնաբառերը ձեր Google հաշվում</translation>
 <translation id="987264212798334818">Ընդհանուր</translation>
 <translation id="988091779042748639">Փակեք բոլոր ինկոգնիտո ներդիրները՝ ինկոգնիտո ռեժիմում այցելած էջերի պատմությունը սարքից ջնջելու համար։</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ներդիր</translation>

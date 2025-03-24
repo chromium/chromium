@@ -78,16 +78,9 @@
               title="$i18n{m1NoticeEEASiteSuggestedAdsLearnMoreLabel}">
             <ul class="cr-secondary-text">
               <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1}</li>
-              <template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
-                <div class="learn-more-bullet-description">
-                  $i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1Description}
-                </div>
-              </template>
-              <template is="dom-if" if="[[!isPrivacyPolicyLinkEnabled_]]">
-                <div class="learn-more-bullet-description">
-                  $i18n{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1DescriptionNoLink}
-                </div>
-              </template>
+              <div class="learn-more-bullet-description">
+                $i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1Description}
+              </div>
               <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet2}</li>
             </ul>
           </privacy-sandbox-dialog-learn-more>
@@ -131,10 +124,8 @@
     <cr-icon icon="cr:expand-more"></cr-icon>
   </cr-button>
 </div>
-<template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
-  <privacy-sandbox-privacy-policy-dialog
-      id="privacyPolicyDialog"
-      should-show="[[hideNoticePage_]]"
-      on-back-button-clicked="onBackButtonClicked_">
-  </privacy-sandbox-privacy-policy-dialog>
-</template>
+<privacy-sandbox-privacy-policy-dialog
+    id="privacyPolicyDialog"
+    should-show="[[hideNoticePage_]]"
+    on-back-button-clicked="onBackButtonClicked_">
+</privacy-sandbox-privacy-policy-dialog>

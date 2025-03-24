@@ -2824,15 +2824,16 @@ gfx::Point PdfViewWebPlugin::FrameToPdfCoordinates(
          gfx::Vector2d(available_area_.x(), 0);
 }
 
-AccessibilityDocInfo PdfViewWebPlugin::GetAccessibilityDocInfo() const {
-  AccessibilityDocInfo doc_info;
-  doc_info.page_count = engine_->GetNumberOfPages();
+std::unique_ptr<AccessibilityDocInfo>
+PdfViewWebPlugin::GetAccessibilityDocInfo() const {
+  auto doc_info = std::make_unique<AccessibilityDocInfo>();
+  doc_info->page_count = engine_->GetNumberOfPages();
   if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
-    doc_info.is_tagged = engine_->IsPDFDocTagged();
+    doc_info->is_tagged = engine_->IsPDFDocTagged();
   }
-  doc_info.text_accessible =
+  doc_info->text_accessible =
       engine_->HasPermission(DocumentPermission::kCopyAccessible);
-  doc_info.text_copyable = engine_->HasPermission(DocumentPermission::kCopy);
+  doc_info->text_copyable = engine_->HasPermission(DocumentPermission::kCopy);
   return doc_info;
 }
 

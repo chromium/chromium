@@ -79,6 +79,8 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       const base::android::JavaParamRef<jstring>&,
       const base::android::JavaParamRef<jobject>&,
       jboolean is_payment_credential_get_assertion,
+      const base::android::JavaParamRef<jobject>&
+          remote_desktop_client_override_origin,
       const base::android::JavaParamRef<jobject>& callback) const;
 
   void PerformMakeCredentialWebAuthSecurityChecks(
@@ -86,6 +88,8 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       const base::android::JavaParamRef<jstring>&,
       const base::android::JavaParamRef<jobject>&,
       jboolean is_payment_credential_creation,
+      const base::android::JavaParamRef<jobject>&
+          remote_desktop_client_override_origin,
       const base::android::JavaParamRef<jobject>& callback) const;
 
   jint GetLifecycleState(JNIEnv* env) const;

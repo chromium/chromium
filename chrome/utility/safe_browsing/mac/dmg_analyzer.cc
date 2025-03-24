@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -172,8 +173,8 @@ bool DMGAnalyzer::ResumeExtraction() {
         continue;
       }
 
-      if (memcmp(kDERPKCS7SignedData, signature_contents.data(),
-                 std::size(kDERPKCS7SignedData)) != 0) {
+      if (UNSAFE_TODO(memcmp(kDERPKCS7SignedData, signature_contents.data(),
+                             std::size(kDERPKCS7SignedData))) != 0) {
         continue;
       }
 

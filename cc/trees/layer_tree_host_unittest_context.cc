@@ -839,8 +839,7 @@ class LayerTreeHostContextTestDontUseLostResources
     layer->SetIsDrawable(true);
     root->AddChild(layer);
 
-    scoped_refptr<TextureLayer> texture =
-        TextureLayer::CreateForMailbox(nullptr);
+    scoped_refptr<TextureLayer> texture = TextureLayer::Create(nullptr);
     texture->SetBounds(gfx::Size(10, 10));
     texture->SetIsDrawable(true);
     constexpr gfx::Size size(64, 64);

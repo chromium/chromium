@@ -999,6 +999,27 @@ base::Value::Dict SerializeReferrer(const ReferrerChainEntry& referrer) {
   return referrer_dict;
 }
 
+base::Value::Dict SerializeSafeBrowsingWebAppKey(
+    const SafeBrowsingWebAppKey& key) {
+  base::Value::Dict dict;
+  dict.Set("start_url_origin", key.start_url_origin());
+  dict.Set("id_or_start_path", key.id_or_start_path());
+  return dict;
+}
+
+// This serializes the protobuf message ReferringAppInfo.
+base::Value::Dict SerializeReferringAppInfo(const ReferringAppInfo& info) {
+  base::Value::Dict dict;
+  dict.Set("referring_app_source", ReferringAppInfo_ReferringAppSource_Name(
+                                       info.referring_app_source()));
+  dict.Set("referring_app_name", info.referring_app_name());
+  if (info.has_referring_webapk()) {
+    dict.Set("referring_webapk",
+             SerializeSafeBrowsingWebAppKey(info.referring_webapk()));
+  }
+  return dict;
+}
+
 std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
   base::Value::Dict dict;
   if (cdr.has_url()) {
@@ -1081,6 +1102,11 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
 
   if (cdr.has_previous_token()) {
     dict.Set("previous_token", cdr.previous_token());
+  }
+
+  if (cdr.has_referring_app_info()) {
+    dict.Set("referring_app_info",
+             SerializeReferringAppInfo(cdr.referring_app_info()));
   }
 
   std::string request_serialized;
@@ -1783,6 +1809,9 @@ base::Value::Dict SerializeUrlDisplayExperiment(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+// This serializes the internal::ReferringAppInfo struct (not to be confused
+// with the protobuf message ReferringAppInfo), which contains intermediate
+// information obtained from Java.
 base::Value::Dict SerializeReferringAppInfo(
     const internal::ReferringAppInfo& info) {
   base::Value::Dict dict;
@@ -1796,26 +1825,6 @@ base::Value::Dict SerializeReferringAppInfo(
   return dict;
 }
 #endif
-
-base::Value::Dict SerializeSafeBrowsingWebAppKey(
-    const SafeBrowsingWebAppKey& key) {
-  base::Value::Dict dict;
-  dict.Set("start_url_origin", key.start_url_origin());
-  dict.Set("id_or_start_path", key.id_or_start_path());
-  return dict;
-}
-
-base::Value::Dict SerializeReferringAppInfo(const ReferringAppInfo& info) {
-  base::Value::Dict dict;
-  dict.Set("referring_app_source", ReferringAppInfo_ReferringAppSource_Name(
-                                       info.referring_app_source()));
-  dict.Set("referring_app_info", info.referring_app_name());
-  if (info.has_referring_webapk()) {
-    dict.Set("referring_webapk",
-             SerializeSafeBrowsingWebAppKey(info.referring_webapk()));
-  }
-  return dict;
-}
 
 base::Value::Dict SerializeCsdDebuggingMetadata(
     const LoginReputationClientRequest::DebuggingMetadata& debugging_metadata) {

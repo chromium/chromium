@@ -226,6 +226,27 @@ component("network") {
   ]
 }
 
+# This is separate from :network to prevent a dependency cycle due to:
+#  //chromeos/ash/services/network_config:in_process_instance ->
+#  //chromeos/ash/components/network:network
+component("vpn_providers_observer") {
+  configs += [ ":network_config" ]
+
+  sources = [
+    "vpn_providers_observer.cc",
+    "vpn_providers_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_config/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [ "//chromeos/ash/services/network_config:in_process_instance" ]
+}
+
 source_set("test_support") {
   testonly = true
   public_deps = [

@@ -31,7 +31,8 @@ class ChannelIndicatorQuickSettingsViewPixelTest : public AshTestBase {
     // Install a test delegate to allow overriding channel version.
     auto delegate = std::make_unique<TestShellDelegate>();
     delegate->set_channel(version_info::Channel::BETA);
-    AshTestBase::SetUp(std::move(delegate));
+    set_shell_delegate(std::move(delegate));
+    AshTestBase::SetUp();
 
     system_tray_client_ = GetSystemTrayClient();
     system_tray_client_->set_user_feedback_enabled(true);

@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 #if !BUILDFLAG(IS_IOS)
 namespace webauthn {
@@ -487,6 +488,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void ShowBnplTos(BnplTosModel bnpl_tos_model,
                            base::OnceClosure accept_callback,
                            base::OnceClosure cancel_callback);
+
+  // Closes the Buy-Now-Pay-Later Terms of Service dialog that was displayed in
+  // `ShowBnplTos()`.
+  virtual void CloseBnplTos();
 
   // Returns a pointer to a VirtualCardEnrollmentManager that is owned by
   // PaymentsAutofillClient. VirtualCardEnrollmentManager is used for virtual

@@ -23,6 +23,7 @@ source_set("child_process_bridge") {
     ":child_process_bridge_header",
     "//base",
     "//gpu/ipc/common",
+    "//sandbox/policy",
   ]
   frameworks = [ "Foundation.framework" ]
 }

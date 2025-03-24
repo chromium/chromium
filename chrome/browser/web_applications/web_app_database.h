@@ -60,15 +60,6 @@ class WebAppDatabase {
              std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
              CompletionCallback callback);
 
-  // Exposed for testing.
-  static std::unique_ptr<proto::WebApp> CreateWebAppProto(
-      const WebApp& web_app);
-  // Exposed for testing.
-  static std::unique_ptr<WebApp> ParseWebApp(const webapps::AppId& app_id,
-                                             const std::string& value);
-  // Exposed for testing.
-  static std::unique_ptr<WebApp> CreateWebApp(const proto::WebApp& local_data);
-
   bool is_opened() const { return opened_; }
 
   // Returns the version that the database will be migrated to when opened.
@@ -124,10 +115,6 @@ class WebAppDatabase {
 
   base::WeakPtrFactory<WebAppDatabase> weak_ptr_factory_{this};
 };
-
-DisplayMode ToMojomDisplayMode(proto::WebApp::DisplayMode display_mode);
-
-proto::WebApp::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode);
 
 }  // namespace web_app
 

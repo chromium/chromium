@@ -105,6 +105,14 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     // Note: on the server side, this throttle is also controlled with the
     // `features::kOnBeginFrameAcks` in addition to this control variable.
     bool wants_begin_frame_acks = true;
+
+    // If it has value(n), internal begin frame source will be used when n
+    // consecutive "did not produce frame" are observed. It will stop using
+    // internal begin frame source when there's a submitted compositor frame.
+    // This should be mutually exclusive from synthetic_begin_frame_source.
+    // And `auto_needs_begin_frame` will be true if this is set.
+    std::optional<int>
+        num_did_not_produce_frame_before_internal_begin_frame_source;
   };
 
   AsyncLayerTreeFrameSink(
@@ -113,6 +121,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
           worker_context_provider_wrapper,
       scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
       InitParams* params);
+
   AsyncLayerTreeFrameSink(const AsyncLayerTreeFrameSink&) = delete;
   ~AsyncLayerTreeFrameSink() override;
 
@@ -146,6 +155,13 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     return last_hit_test_data_;
   }
 
+  bool use_internal_begin_frame_source_for_testing() const {
+    return use_internal_begin_frame_source_;
+  }
+
+  void SetTimeSourceOfInternalBeginFrameForTesting(
+      std::unique_ptr<viz::DelayBasedTimeSource> source);
+
  private:
   friend class AsyncLayerTreeFrameSinkSimpleTest;
 
@@ -169,6 +185,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
                              const std::string& description);
 
   void UpdateNeedsBeginFramesInternal(bool needs_begin_frames);
+
+  void UpdateInternalBeginFrameSource(bool use_internal_source);
 
   const bool use_direct_client_receiver_;
   bool begin_frames_paused_ = false;
@@ -215,6 +233,14 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
   bool use_begin_frame_presentation_feedback_ = false;
   viz::FrameTimingDetailsMap timing_details_;
+
+  // Use internal delay based begin frame source when there're many undrawn
+  // frames recently.
+  std::optional<int>
+      num_did_not_produce_frame_before_internal_begin_frame_source_;
+  uint64_t num_did_not_produce_frame_since_last_submit_ = 0;
+  bool use_internal_begin_frame_source_ = false;
+  std::unique_ptr<viz::DelayBasedBeginFrameSource> internal_begin_frame_source_;
 
   base::WeakPtrFactory<AsyncLayerTreeFrameSink> weak_factory_{this};
 };

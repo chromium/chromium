@@ -49,8 +49,25 @@ import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_t
 // </if>
 // clang-format on
 
+/**
+ * Must be kept in sync with the C++ enum of the same name in
+ * chrome/browser/ui/toasts/toast_metrics.h.
+ */
+export enum ToastAlertLevel {
+  ALL = 0,
+  ACTIONABLE = 1,
+  // Must be last.
+  COUNT = 1,
+}
+
 const SettingsA11yPageElementBase =
     PrefsMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
+
+export interface SettingsA11yPageElement {
+  $: {
+    toastToggle: SettingsToggleButtonElement,
+  };
+}
 
 export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   static get is() {
@@ -156,6 +173,29 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
           return showOverscroll;
         },
       },
+
+      // <if expr="not is_chromeos">
+
+      /** Whether the toast refinements feature is enabled. */
+      isToastRefinementsEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('enableToastRefinements');
+        },
+      },
+
+      /** Valid toast alert level option. */
+      toastAlertLevelEnum_: {
+        type: Object,
+        value: ToastAlertLevel,
+      },
+
+      numericUncheckedToastAlertValues_: {
+        type: Array,
+        value: () => [ToastAlertLevel.ACTIONABLE],
+      },
+
+      // </if>
     };
   }
 
@@ -167,6 +207,8 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   languageHelper: LanguageHelper;
 
   private enableLiveCaption_: boolean;
+
+  private isToastRefinementsEnabled_: boolean;
   // </if>
 
   private captionSettingsOpensExternally_: boolean;
@@ -260,6 +302,15 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // <if expr="is_macosx">
   private onMacTrackpadGesturesLinkClick_() {
     this.browserProxy_.openTrackpadGesturesSettings();
+  }
+  // </if>
+
+  // <if expr="not is_chromeos">
+  private onToastAlertLevelChange_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Toast.FrequencyPrefChanged',
+        this.getPref<number>('settings.toast.alert_level').value,
+        ToastAlertLevel.COUNT);
   }
   // </if>
 }

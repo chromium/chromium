@@ -25,7 +25,7 @@ class InstantMessagingService
 
   // MessagingBackendService::InstantMessageDelegate implementation.
   void DisplayInstantaneousMessage(
-      const std::vector<InstantMessage>& messages,
+      collaboration::messaging::InstantMessage message,
       MessagingBackendService::InstantMessageDelegate::SuccessCallback
           success_callback) override;
 };

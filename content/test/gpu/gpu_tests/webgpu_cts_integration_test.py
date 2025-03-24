@@ -4,7 +4,7 @@
 
 import os
 import sys
-from typing import Any, List, Optional, Set
+from typing import Any
 import unittest
 
 from gpu_tests import gpu_integration_test
@@ -36,7 +36,7 @@ class WebGpuCtsIntegrationTest(
   def Name(cls) -> str:
     return 'webgpu_cts'
 
-  def _GetSerialGlobs(self) -> Set[str]:
+  def _GetSerialGlobs(self) -> set[str]:
     globs = super()._GetSerialGlobs()
     globs |= {
         # crbug.com/1406799. Large test.
@@ -118,12 +118,12 @@ class WebGpuCtsIntegrationTest(
 
     return globs
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     serial_tests = super()._GetSerialTests()
     return serial_tests
 
   @classmethod
-  def _GetAdditionalBrowserArgsForQuery(cls, query: str) -> Optional[List[str]]:
+  def _GetAdditionalBrowserArgsForQuery(cls, query: str) -> list[str] | None:
     # Tests that are generating OOM errors currently require us to bypass
     # tiered limits to more consistently cause failures.
     if any(query.startswith(prefix) for prefix in OOM_ERROR_TEST_PREFIXES):
@@ -131,7 +131,7 @@ class WebGpuCtsIntegrationTest(
     return None
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [EXPECTATIONS_FILE]
 
 

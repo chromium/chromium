@@ -40,9 +40,17 @@ public class GroupSuggestionsPromotionBinder {
             acceptButtonView.setText(
                     model.get(GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_TEXT));
         } else if (propertyKey == GroupSuggestionsPromotionProperties.REJECT_BUTTON_TEXT) {
-            ButtonCompat groupContentView = view.findViewById(R.id.reject_button);
-            groupContentView.setText(
+            ButtonCompat rejectButtonView = view.findViewById(R.id.reject_button);
+            rejectButtonView.setText(
                     model.get(GroupSuggestionsPromotionProperties.REJECT_BUTTON_TEXT));
+        } else if (propertyKey == GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_LISTENER) {
+            ButtonCompat acceptButtonView = view.findViewById(R.id.accept_button);
+            acceptButtonView.setOnClickListener(
+                    model.get(GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_LISTENER));
+        } else if (propertyKey == GroupSuggestionsPromotionProperties.REJECT_BUTTON_LISTENER) {
+            ButtonCompat rejectButtonView = view.findViewById(R.id.reject_button);
+            rejectButtonView.setOnClickListener(
+                    model.get(GroupSuggestionsPromotionProperties.REJECT_BUTTON_LISTENER));
         }
     }
 }

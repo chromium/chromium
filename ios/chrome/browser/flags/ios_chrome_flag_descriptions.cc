@@ -1247,6 +1247,11 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
+const char kSignInButtonNoAvatarName[] =
+    "Display sign-in button without avatar";
+const char kSignInButtonNoAvatarDescription[] =
+    "When enabled, the sign-in button is shown without an avatar on the NTP.";
+
 const char kSpotlightNeverRetainIndexName[] = "Don't retain spotlight index";
 const char kSpotlightNeverRetainIndexDescription[] =
     "Tentative spotlight memory improvement by not storing a strong pointer to "

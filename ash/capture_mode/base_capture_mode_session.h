@@ -80,10 +80,6 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // it does not have a bar widget.
   virtual views::Widget* GetCaptureModeBarWidget() = 0;
 
-  // Gets the feedback button widget screen bounds. Returns an empty rect if the
-  // button is not available.
-  virtual gfx::Rect GetFeedbackWidgetScreenBounds() const = 0;
-
   // Gets the current window selected for `kWindow` capture source. Returns
   // nullptr if no window is available for selection.
   virtual aura::Window* GetSelectedWindow() const = 0;
@@ -222,6 +218,15 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // Called when the search results panel is created, as it may need to be
   // observed by the session focus cycler.
   virtual void OnSearchResultsPanelCreated(views::Widget* panel_widget) = 0;
+
+  // Called when the renderer for the search results panel web contents asks us
+  // to take focus back (i.e., it has iterated past the last focusable
+  // element on the page). Returns true if the focus cycler successfully handled
+  // it, and false otherwise.
+  virtual bool TakeFocusForSearchResultsPanel(bool reverse) = 0;
+
+  // Clears the focus ring from any currently pseudo focused item if possible.
+  virtual void ClearPseudoFocus() = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;

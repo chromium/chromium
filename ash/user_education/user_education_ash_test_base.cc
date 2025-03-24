@@ -96,7 +96,8 @@ void UserEducationAshTestBase::SetUp() {
 
         return user_education_delegate;
       }));
-  NoSessionAshTestBase::SetUp(std::move(shell_delegate));
+  set_shell_delegate(std::move(shell_delegate));
+  NoSessionAshTestBase::SetUp();
 }
 
 }  // namespace ash

@@ -215,6 +215,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1679841710523778799">Handitu distira</translation>
 <translation id="1680659827022803830">Bideodeiak kontrolatzeko aukerak</translation>
 <translation id="169515659049020177">Maius</translation>
+<translation id="1696984622403682083">Edonoiz desaktiba dezakezu eginbide hori Ezarpenak atalean. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Tenporizadorea: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 helbidea: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Ezkerrean ainguratu da leiho aktiboa.</translation>
@@ -968,6 +969,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalatutako aplikazioa, pausatuta</translation>
 <translation id="4228078597006700451">Kontrolatzeko aukerak ez dira konfiguratu</translation>
 <translation id="4230560241506423345">Berria</translation>
+<translation id="4236726631849783264">Ekintza iradokiei buruzko gomendio bat</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Ikuspegi orokorreko modua</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
@@ -984,7 +986,6 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4275663329226226506">Multimedia-edukia</translation>
 <translation id="4279490309300973883">Islatzen</translation>
 <translation id="4280601795273309128">Amaitu dira segurtasun-eguneratzeak. Bertsio-berritu gailua.</translation>
-<translation id="4281739221820540368">Sortu Google-ko dokumentu bat</translation>
 <translation id="4283888303416325161">Segurtasuna areagotzeko, idatzi pasahitza</translation>
 <translation id="4285498937028063278">Desainguratu</translation>
 <translation id="428715201724021596">Profilera konektatzen. Agian minutu batzuk beharko dira.</translation>
@@ -1045,6 +1046,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4471354919263203780">Hizketa-hautematearen fitxategiak deskargatzen… % <ph name="PERCENT" /></translation>
 <translation id="4471432286288241507">{0,plural, =0{Eguneratu gailua orain}=1{Eguneratu gailua segundo bat barru}other{Eguneratu gailua # segundo barru}}</translation>
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
+<translation id="4473489370276014885">Google Kontaktuak</translation>
 <translation id="4477350412780666475">Hurrengo pista</translation>
 <translation id="4477751544736611934">Baliteke datu-konexioari dagozkion kostuak ordaindu behar izatea.
 Gailu bat dago konektatuta.</translation>
@@ -1071,6 +1073,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4545950850562423083">Gorde oraingo orria laster-marka gisa</translation>
 <translation id="4548482551627849548">Eraman leiho aktiboa ezkerreko lan-eremura</translation>
 <translation id="4552748006424994716">Oihartzuna ekiditeko, entzungailu kabledunekin soilik entzun dezakezu zeure mikrofonoa.</translation>
+<translation id="4556953949326137018">Ekintza iradokiak erabiltzen dituzunean, hala nola "Gehitu Calendar-en" edo "Sortu Google-ko dokumentu bat", hautatutako eremuko edukia Google-ren zerbitzarietara bidaltzen da ekintzak iradokitzeko, <ph name="LINK_TO_SERVICE_TERMS" /> gordeta. Ez sartu pertsonala, kontuzkoa edo isilpekoa den informaziorik.</translation>
 <translation id="4560576029703263363">Aktibatuta</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ezkutatu pasahitza</translation>
@@ -1154,6 +1157,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="481455355267255546">Hurrengoa</translation>
 <translation id="481749895090480684">Zereginen zerrenda: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera eta mikrofonoa</translation>
+<translation id="4828935196674083554">Gehitzen…</translation>
 <translation id="482908187605862807">Play Store-n erabilgarri dauden aplikazioak</translation>
 <translation id="4831034276697007977">Ziur klik automatikoak desaktibatu nahi dituzula?</translation>
 <translation id="4835677468087803981">Ezkutatu PINa</translation>
@@ -1651,6 +1655,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="641817663353603351">orrian gora tekla</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="642644398083277086">Garbitu jakinarazpen guztiak</translation>
+<translation id="6426905245930183644">Sortzen…</translation>
 <translation id="6430225033895752525">Erakutsi kontzentratzeko moduaren ezarpenak</translation>
 <translation id="643147933154517414">Ez dago jakinarazpenik</translation>
 <translation id="6431865393913628856">Pantaila-grabaketa</translation>
@@ -1717,7 +1722,6 @@ Berriki instalatu da</translation>
 <translation id="6612889377159412215">azpizeregin</translation>
 <translation id="6613765291890844037">Biltegiaren <ph name="STORAGE_IN_USE_SIZE" /> erabili dira | <ph name="STORAGE_TOTAL_SIZE" /> guztira</translation>
 <translation id="6614169507485700968">Aktibatuta dago pribatutasun-pantaila</translation>
-<translation id="6618277154885124991">Sortu Google-ko kalkulu-orri bat</translation>
 <translation id="6622679827379792051">Konfiguratu telefonoko aplikazioak ikusteko aukera</translation>
 <translation id="662279009180869175">Erabili ezkerrera eta eskuinera egiteko gezi-teklak pantaila zatituaren tamaina aldatzeko</translation>
 <translation id="6624493541160101248">Oraingo lan-eremua: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> lan-eremua.</translation>
@@ -2401,6 +2405,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8921624153894383499">Google-ren Laguntzailea zerbitzuak ezin du erabili hizkuntza hori.</translation>
 <translation id="8926951137623668982">Apala beti dago ezkutatuta</translation>
 <translation id="8929566928381252430">"Blok maius" erabili nahi duzu? Erabili</translation>
+<translation id="8934418770423095813">Sortu Google-ko dokumentu bat</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxategi}other{# fitxategi}}</translation>
 <translation id="8936501819958976551">desaktibatuta</translation>
 <translation id="8938800817013097409">USB-C gailua (eskuinaldeko atzeko ataka)</translation>

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidate, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {ResponseExtras} from './post_message_transport.js';
-import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
+import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType, newTransferableException} from './request_types.js';
 
 
@@ -132,7 +132,8 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
         convertFocusedTabDataFromPrivate(payload.focusedTabDataPrivate);
     this.host.getFocusedTabStateV2().assignAndSignal(focusedTabData);
     // Keep below for backwards compatibility.
-    this.host.getFocusedTabState().assignAndSignal(focusedTabData.focusedTab);
+    this.host.getFocusedTabState().assignAndSignal(
+        focusedTabData.hasFocus?.tabData);
   }
 
   glicWebClientNotifyPanelActiveChanged(payload: {panelActive: boolean}): void {
@@ -217,7 +218,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.panelState.assignAndSignal(state.panelState);
     const focusedTabData =
         convertFocusedTabDataFromPrivate(state.focusedTabData);
-    this.focusedTabState.assignAndSignal(focusedTabData.focusedTab);
+    this.focusedTabState.assignAndSignal(focusedTabData.hasFocus?.tabData);
     this.focusedTabStateV2.assignAndSignal(focusedTabData);
     this.permissionStateMicrophone.assignAndSignal(
         state.microphonePermissionEnabled);
@@ -548,34 +549,43 @@ async function rgbaImageToBlob(image: RgbaImage): Promise<Blob> {
   });
 }
 
-function convertTabDataFromPrivate(data: TabDataPrivate): TabData {
+function convertTabDataFromPrivate(data: TabDataPrivate): TabData;
+function convertTabDataFromPrivate(data: TabDataPrivate|undefined): TabData|
+    undefined;
+function convertTabDataFromPrivate(data: TabDataPrivate|undefined): TabData|
+    undefined {
+  if (!data) {
+    return undefined;
+  }
   let faviconResult: Promise<Blob>|undefined;
+  const dataFavicon = data.favicon;
   async function getFavicon() {
-    if (data.favicon && !faviconResult) {
-      faviconResult = rgbaImageToBlob(data.favicon);
+    if (dataFavicon && !faviconResult) {
+      faviconResult = rgbaImageToBlob(dataFavicon);
       return faviconResult;
     }
     return faviconResult;
   }
 
-  const favicon = data.favicon && getFavicon;
+  const favicon = dataFavicon && getFavicon;
   return replaceProperties(data, {favicon});
-}
-
-function convertFocusedTabCandidateFromPrivate(
-    data: FocusedTabCandidatePrivate): FocusedTabCandidate {
-  const focusedTabCandidateData = data.focusedTabCandidateData &&
-      convertTabDataFromPrivate(data.focusedTabCandidateData);
-  return replaceProperties(data, {focusedTabCandidateData});
 }
 
 function convertFocusedTabDataFromPrivate(data: FocusedTabDataPrivate):
     FocusedTabData {
-  const focusedTab =
-      data.focusedTab && convertTabDataFromPrivate(data.focusedTab);
-  const focusedTabCandidate = data.focusedTabCandidate &&
-      convertFocusedTabCandidateFromPrivate(data.focusedTabCandidate);
-  return replaceProperties(data, {focusedTab, focusedTabCandidate});
+  const result: FocusedTabData = {};
+  if (data.hasFocus) {
+    result.hasFocus = replaceProperties(data.hasFocus, {
+      tabData: convertTabDataFromPrivate(data.hasFocus.tabData),
+    });
+  }
+  if (data.hasNoFocus) {
+    result.hasNoFocus = replaceProperties(data.hasNoFocus, {
+      tabFocusCandidateData:
+          convertTabDataFromPrivate(data.hasNoFocus.tabFocusCandidateData),
+    });
+  }
+  return result;
 }
 
 function streamFromBuffer(buffer: Uint8Array): ReadableStream<Uint8Array> {

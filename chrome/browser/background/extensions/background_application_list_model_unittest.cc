@@ -167,23 +167,23 @@ TEST_F(BackgroundApplicationListModelTest, DISABLED_ExplicitTest) {
 
   // Add alternating Extensions and Background Apps
   ASSERT_FALSE(IsBackgroundApp(*ext1.get()));
-  service()->AddExtension(ext1.get());
+  registrar()->AddExtension(ext1.get());
   ASSERT_EQ(1U, registry()->enabled_extensions().size());
   ASSERT_EQ(0U, model()->size());
   ASSERT_TRUE(IsBackgroundApp(*bgapp1.get()));
-  service()->AddExtension(bgapp1.get());
+  registrar()->AddExtension(bgapp1.get());
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
   ASSERT_FALSE(IsBackgroundApp(*ext2.get()));
-  service()->AddExtension(ext2.get());
+  registrar()->AddExtension(ext2.get());
   ASSERT_EQ(3U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
   ASSERT_TRUE(IsBackgroundApp(*bgapp2.get()));
-  service()->AddExtension(bgapp2.get());
+  registrar()->AddExtension(bgapp2.get());
   ASSERT_EQ(4U, registry()->enabled_extensions().size());
   ASSERT_EQ(2U, model()->size());
   ASSERT_FALSE(IsBackgroundApp(*ext3.get()));
-  service()->AddExtension(ext3.get());
+  registrar()->AddExtension(ext3.get());
   ASSERT_EQ(5U, registry()->enabled_extensions().size());
   ASSERT_EQ(2U, model()->size());
 
@@ -234,11 +234,11 @@ TEST_F(BackgroundApplicationListModelTest, AddRemovePermissionsTest) {
 
   // Add one (non-background) extension and one background application
   ASSERT_FALSE(IsBackgroundApp(*ext.get()));
-  service()->AddExtension(ext.get());
+  registrar()->AddExtension(ext.get());
   ASSERT_EQ(1U, registry()->enabled_extensions().size());
   ASSERT_EQ(0U, model()->size());
   ASSERT_TRUE(IsBackgroundApp(*bgapp.get()));
-  service()->AddExtension(bgapp.get());
+  registrar()->AddExtension(bgapp.get());
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
 
@@ -277,7 +277,7 @@ TEST_F(BackgroundApplicationListModelTest, ExtensionLoadAndUnload) {
   ASSERT_EQ(0U, model()->size());
 
   extensions::TestExtensionRegistryObserver load_observer(registry());
-  service()->AddExtension(bgapp.get());
+  registrar()->AddExtension(bgapp.get());
   load_observer.WaitForExtensionLoaded();
   ASSERT_EQ(1U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
@@ -307,7 +307,7 @@ TEST_F(BackgroundApplicationListModelTest, LateExtensionSystemReady) {
 
   extensions::TestExtensionRegistryObserver load_observer(registry());
   // extensions can be loaded before ExtensionSystem::ready() is dispatched.
-  service()->AddExtension(bgapp.get());
+  registrar()->AddExtension(bgapp.get());
   load_observer.WaitForExtensionLoaded();
   EXPECT_EQ(1U, registry()->enabled_extensions().size());
   // Model still has 0 items since OnExtensionSystemReady is not called yet.

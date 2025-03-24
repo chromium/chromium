@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
@@ -86,14 +84,10 @@ public class TriStateSiteSettingsPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        var allowed = (RadioButtonWithDescription) holder.findViewById(R.id.allowed);
-        mAllowed = assumeNonNull(allowed);
-        var ask = (RadioButtonWithDescription) holder.findViewById(R.id.ask);
-        mAsk = assumeNonNull(ask);
-        var blocked = (RadioButtonWithDescription) holder.findViewById(R.id.blocked);
-        mBlocked = assumeNonNull(blocked);
-        var radioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
-        mRadioGroup = assumeNonNull(radioGroup);
+        mAllowed = (RadioButtonWithDescription) holder.findViewById(R.id.allowed);
+        mAsk = (RadioButtonWithDescription) holder.findViewById(R.id.ask);
+        mBlocked = (RadioButtonWithDescription) holder.findViewById(R.id.blocked);
+        mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
         mRadioGroup.setOnCheckedChangeListener(this);
 
         if (mDescriptionIds != null) {

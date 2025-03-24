@@ -363,7 +363,8 @@ void NightLightControllerImpl::RegisterProfilePrefs(
                                 kDefaultStartTimeOffsetMinutes);
   registry->RegisterIntegerPref(prefs::kNightLightCustomEndTime,
                                 kDefaultEndTimeOffsetMinutes);
-  registry->RegisterBooleanPref(prefs::kAmbientColorEnabled, true);
+  registry->RegisterBooleanPref(prefs::kAmbientColorEnabled,
+                                !features::IsAmbientEQDefaultOff());
   registry->RegisterBooleanPref(prefs::kAutoNightLightNotificationDismissed,
                                 false);
 }

@@ -46,13 +46,13 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
@@ -658,18 +658,20 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         // Account chooser is shown.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
 
-        assertEquals(3, mSheetAccountItems.size());
+        int expectedCount = mRpMode == RpMode.PASSIVE ? 4 : 3;
+        assertEquals(expectedCount, mSheetAccountItems.size());
         // First account has a click listener.
         assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
         // Second account is filtered out, so does not.
         assertNull(mSheetAccountItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER));
-        // Third is the use other account button.
-        assertNotNull(mSheetAccountItems.get(2).model.get(AddAccountButtonProperties.PROPERTIES));
 
         View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
         RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
-        assertEquals(3, sheetItemListView.getAdapter().getItemCount());
+        assertEquals(expectedCount, sheetItemListView.getAdapter().getItemCount());
 
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
+                sheetItemListView.getAdapter().getItemViewType(0));
         View anaRow = sheetItemListView.getChildAt(0);
         assertEquals(anaRow.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
         TextView textView = anaRow.findViewById(R.id.title);
@@ -677,6 +679,9 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         textView = anaRow.findViewById(R.id.description);
         assertEquals("ana@email.example", textView.getText());
 
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
+                sheetItemListView.getAdapter().getItemViewType(1));
         View nicolasRow = sheetItemListView.getChildAt(1);
         assertEquals(
                 nicolasRow.getAlpha(),
@@ -687,10 +692,26 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         textView = nicolasRow.findViewById(R.id.description);
         assertEquals("You can’t sign in using this account", textView.getText());
 
-        View addAccountButton = sheetItemListView.getChildAt(2);
+        int currentIndex = 2;
+        if (mRpMode == RpMode.PASSIVE) {
+            assertEquals(
+                    AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
+                    sheetItemListView.getAdapter().getItemViewType(currentIndex));
+            View separator = sheetItemListView.getChildAt(currentIndex);
+            assertEquals(1, separator.getHeight());
+            ++currentIndex;
+        }
+
+        assertNotNull(
+                mSheetAccountItems.get(currentIndex).model.get(LoginButtonProperties.PROPERTIES));
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_LOGIN,
+                sheetItemListView.getAdapter().getItemViewType(currentIndex));
+        View addAccountButton = sheetItemListView.getChildAt(currentIndex);
         assertEquals(addAccountButton.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
         textView = addAccountButton.findViewById(R.id.title);
         assertEquals("Use a different account", textView.getText());
+        assertNotNull(addAccountButton.findViewById(R.id.start_icon));
     }
 
     @Test
@@ -704,11 +725,16 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mFilteredOutAccountWithUseDifferentAccount));
         // Account chooser is shown.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
-        assertEquals(2, mSheetAccountItems.size());
+        int expectedCount = mRpMode == RpMode.PASSIVE ? 3 : 2;
+        assertEquals(expectedCount, mSheetAccountItems.size());
         assertNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
 
         View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
         RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
+                sheetItemListView.getAdapter().getItemViewType(0));
         View filteredAccountRow = sheetItemListView.getChildAt(0);
         assertEquals(
                 filteredAccountRow.getAlpha(),
@@ -719,10 +745,25 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         textView = filteredAccountRow.findViewById(R.id.description);
         assertEquals("You can’t sign in using this account", textView.getText());
 
-        View addAccountButton = sheetItemListView.getChildAt(1);
+        int currentIndex = 1;
+        if (mRpMode == RpMode.PASSIVE) {
+            assertEquals(
+                    AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
+                    sheetItemListView.getAdapter().getItemViewType(currentIndex));
+            View separator = sheetItemListView.getChildAt(currentIndex);
+            assertEquals(1, separator.getHeight());
+            ++currentIndex;
+        }
+
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_LOGIN,
+                sheetItemListView.getAdapter().getItemViewType(currentIndex));
+        View addAccountButton = sheetItemListView.getChildAt(currentIndex);
         assertEquals(addAccountButton.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
         textView = addAccountButton.findViewById(R.id.title);
         assertEquals("Use a different account", textView.getText());
+        assertNotNull(addAccountButton.findViewById(R.id.start_icon));
+
         assertFalse(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
     }
 
@@ -748,8 +789,9 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
-        // Because of use a different account, size is 3.
-        assertEquals("Incorrect item sheet count", 3, mSheetAccountItems.size());
+        // Because of use a different account, size is 4: two accounts, separator, add account
+        // button.
+        assertEquals("Incorrect item sheet count", 4, mSheetAccountItems.size());
         testAccount(
                 mSheetAccountItems.get(0).model,
                 mNewUserAccount,
@@ -760,6 +802,27 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mAnaAccountWithUseDifferentAccount,
                 /* expectClickListener= */ true,
                 /* expectShowIdp= */ true);
+
+        View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
+        RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+        assertEquals(4, sheetItemListView.getAdapter().getItemCount());
+
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
+                sheetItemListView.getAdapter().getItemViewType(2));
+        View separator = sheetItemListView.getChildAt(2);
+        assertEquals(1, separator.getHeight());
+
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_LOGIN,
+                sheetItemListView.getAdapter().getItemViewType(3));
+        View addAccountButton = sheetItemListView.getChildAt(3);
+        assertEquals(addAccountButton.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
+        TextView textView = addAccountButton.findViewById(R.id.title);
+        // The string should be specific for mIdpDataWithUseDifferentAccount.
+        assertEquals("Use your " + mTestEtldPlusOne2 + " account", textView.getText());
+        assertNotNull(addAccountButton.findViewById(R.id.start_icon));
+        assertNotNull(addAccountButton.findViewById(R.id.end_icon));
 
         // Do not let test inputs be ignored.
         mMediator.setComponentShowTime(-1000);
@@ -794,7 +857,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNull(headerModel.get(IDP_BRAND_ICON));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
-        assertEquals("Incorrect item sheet count", 3, mSheetAccountItems.size());
+        assertEquals("Incorrect item sheet count", 4, mSheetAccountItems.size());
         testAccount(
                 mSheetAccountItems.get(0).model,
                 mNewUserAccount,

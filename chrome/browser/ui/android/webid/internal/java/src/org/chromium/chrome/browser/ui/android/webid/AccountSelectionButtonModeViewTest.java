@@ -27,10 +27,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AddAccountButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -357,12 +357,11 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
     }
 
     private PropertyModel buildAddAccountButton() {
-        AddAccountButtonProperties.Properties properties =
-                new AddAccountButtonProperties.Properties();
-        properties.mIdpMetadata = mIdpMetadata;
+        LoginButtonProperties.Properties properties = new LoginButtonProperties.Properties();
+        properties.mIdentityProvider = mIdpData;
         properties.mRpMode = RpMode.ACTIVE;
-        return new PropertyModel.Builder(AddAccountButtonProperties.ALL_KEYS)
-                .with(AddAccountButtonProperties.PROPERTIES, properties)
+        return new PropertyModel.Builder(LoginButtonProperties.ALL_KEYS)
+                .with(LoginButtonProperties.PROPERTIES, properties)
                 .build();
     }
 }

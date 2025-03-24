@@ -41,10 +41,10 @@ export class CrTooltipIconElement extends CrLitElement {
     };
   }
 
-  iconAriaLabel: string = '';
-  iconClass: string = '';
-  tooltipText: string = '';
-  tooltipPosition: string = 'top';
+  accessor iconAriaLabel: string = '';
+  accessor iconClass: string = '';
+  accessor tooltipText: string = '';
+  accessor tooltipPosition: string = 'top';
 
   getFocusableElement(): HTMLElement {
     return this.$.indicator;

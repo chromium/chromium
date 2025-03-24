@@ -4,6 +4,7 @@
 
 #include "content/browser/btm/btm_page_visit_observer.h"
 
+#include "base/check.h"
 #include "content/browser/btm/btm_bounce_detector.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/browser/btm/cookie_access_filter.h"
@@ -112,7 +113,7 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationState);
 void BtmPageVisitObserver::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   // Ignore irrelevant navigations.
-  if (!IsInPrimaryPage(navigation_handle) ||
+  if (!IsInPrimaryPage(*navigation_handle) ||
       navigation_handle->IsSameDocument()) {
     return;
   }
@@ -207,7 +208,7 @@ void BtmPageVisitObserver::OnCookiesAccessed(
       details.type == CookieAccessDetails::Type::kRead &&
       details.source == CookieAccessDetails::Source::kNavigation;
   if (details.blocked_by_policy || is_passive_access ||
-      !btm::IsOrWasInPrimaryPage(render_frame_host)) {
+      !btm::IsOrWasInPrimaryPage(*render_frame_host)) {
     return;
   }
 
@@ -252,7 +253,7 @@ void BtmPageVisitObserver::OnCookiesAccessed(
   // Ignore irrelevant cookie accesses.
   if (details.blocked_by_policy ||
       details.type != CookieAccessDetails::Type::kChange ||
-      !IsInPrimaryPage(navigation_handle)) {
+      !IsInPrimaryPage(*navigation_handle)) {
     return;
   }
 

@@ -118,6 +118,7 @@ class ResizeObserver;
 class ResizeObserverSize;
 class ScrollIntoViewOptions;
 class CheckVisibilityOptions;
+class ScrollMarkerGroupData;
 class ScrollMarkerPseudoElement;
 class ScrollToOptions;
 class SetHTMLOptions;
@@ -1385,6 +1386,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // sorted in reading flow order.
   const HeapVector<Member<Node>> ReadingFlowChildren() const;
 
+  void setHeadingOffset(int);
+  int headingOffset() const;
   void setHeadingReset(bool);
   bool headingReset() const;
   int GetComputedHeadingOffset(int max_offset);
@@ -1565,6 +1568,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
 
   void DefaultEventHandler(Event&) override;
+
+  // Set on elements with scroll-marker-contain property to
+  // collect HTMLAnchorElement scroll markers.
+  ScrollMarkerGroupData& EnsureScrollMarkerGroupData();
+  void RemoveScrollMarkerGroupData();
+  ScrollMarkerGroupData* GetScrollMarkerGroupData() const;
+
+  // Used for HTMLAnchorElement scroll markers to point to
+  // its scroll marker group container (element with scroll-marker-contain).
+  void SetScrollMarkerGroupContainerData(ScrollMarkerGroupData*);
+  ScrollMarkerGroupData* GetScrollMarkerGroupContainerData() const;
 
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists.

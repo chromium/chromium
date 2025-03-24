@@ -71,11 +71,11 @@ export class CrProfileAvatarSelectorElement extends CrLitElement {
     };
   }
 
-  avatars: AvatarIcon[] = [];
-  selectedAvatar: AvatarIcon|null = null;
-  ignoreModifiedKeyEvents: boolean = false;
-  columns: number = 6;
-  private tabFocusableAvatar_: number = -1;
+  accessor avatars: AvatarIcon[] = [];
+  accessor selectedAvatar: AvatarIcon|null = null;
+  accessor ignoreModifiedKeyEvents: boolean = false;
+  accessor columns: number = 6;
+  private accessor tabFocusableAvatar_: number = -1;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -4925,6 +4925,8 @@ static_library("ui") {
       "views/webid/fedcm_modal_dialog_view.h",
       "views/webid/webid_utils.cc",
       "views/webid/webid_utils.h",
+      "views/zoom/zoom_view_controller.cc",
+      "views/zoom/zoom_view_controller.h",
       "webauthn/account_hover_list_model.cc",
       "webauthn/account_hover_list_model.h",
       "webauthn/ambient/ambient_signin_controller.cc",
@@ -4993,7 +4995,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:immersive_mode_controller",
       "//chrome/browser/ui/views/intent_picker:intent_picker_page_action",
       "//chrome/browser/ui/views/page_action",
-      "//chrome/browser/ui/views/zoom:zoom_page_action",
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
       "//components/collaboration/public",
       "//components/commerce/core:metrics",
@@ -5702,7 +5703,7 @@ static_library("ui") {
 
   if (enable_webui_generate_code_cache) {
     deps += [
-      "//ui/webui:buildflags",
+      "//chrome/browser/resources:code_cache_resources",
       "//ui/webui/resources:code_cache_resources",
     ]
   }

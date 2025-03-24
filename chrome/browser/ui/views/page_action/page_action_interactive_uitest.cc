@@ -86,12 +86,13 @@ class PageActionUiTestBase {
     return GetPageActionView(kActionShowTranslate);
   }
 
-  void FastForwardAnimation(PageActionView* view) const {
+  void FastForwardAnimation(PageActionView* view) {
     auto animation = std::make_unique<gfx::AnimationTestApi>(
         &view->GetSlideAnimationForTesting());
     auto now = base::TimeTicks::Now();
     animation->SetStartTime(now);
     animation->Step(now + base::Minutes(1));
+    EnsureLayout();
   }
 
   void ShowSuggestionChip(actions::ActionId action_id) const {
@@ -146,8 +147,16 @@ class PageActionUiTestBase {
   // Dynamically adjust the available space in the location bar by setting
   // the omnibox text length. A larger `text_length` will reduce available
   // space, while a smaller text_length (or 0) will increase available space.
-  void AdjustAvailableSpace(size_t text_length) const {
+  void AdjustAvailableSpace(size_t text_length) {
     omnibox_view()->SetUserText(std::u16string(text_length, 'a'));
+
+    // Step 2: Immediately unhide the page actions.
+    page_action_controller()->SetShouldHidePageActions(false);
+
+    EnsureLayout();
+  }
+
+  void EnsureLayout() {
     views::test::RunScheduledLayout(
         BrowserView::GetBrowserViewForBrowser(GetBrowser()));
   }
@@ -174,14 +183,19 @@ class PageActionInteractiveUiTest : public InteractiveBrowserTest,
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipCollapsesToIconWhenSpaceIsReduced) {
   PageActionView* view = GetTestPageActionView();
+
+  AdjustAvailableSpace(kFullSpaceTextLength);
+
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
-  AdjustAvailableSpace(kFullSpaceTextLength);
 
   EXPECT_TRUE(IsLabelVisible(view));
   EXPECT_FALSE(IsAtMinimumSize(view));
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
+
+  ShowTestSuggestionChip();
+  FastForwardAnimation(view);
 
   EXPECT_FALSE(IsLabelVisible(view));
   EXPECT_TRUE(IsAtMinimumSize(view));
@@ -192,13 +206,18 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipRestoresLabelWhenSpaceIsRestored) {
   AdjustAvailableSpace(kReducedSpaceTextLength);
-  ShowTestSuggestionChip();
+
   PageActionView* view = GetTestPageActionView();
+
+  ShowTestSuggestionChip();
   FastForwardAnimation(view);
 
   EXPECT_FALSE(IsLabelVisible(view));
 
   AdjustAvailableSpace(kFullSpaceTextLength);
+
+  ShowTestSuggestionChip();
+  FastForwardAnimation(view);
 
   EXPECT_TRUE(IsLabelVisible(view));
   EXPECT_FALSE(IsAtMinimumSize(view));
@@ -210,19 +229,26 @@ IN_PROC_BROWSER_TEST_F(
     PageActionInteractiveUiTest,
     SuggestionChipTransitionsBetweenLabelAndIconWhenSpaceChanges) {
   PageActionView* view = GetTestPageActionView();
+
+  AdjustAvailableSpace(kFullSpaceTextLength);
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
-  AdjustAvailableSpace(kFullSpaceTextLength);
 
   EXPECT_TRUE(IsLabelVisible(view));
   EXPECT_FALSE(IsAtMinimumSize(view));
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
 
+  ShowTestSuggestionChip();
+  FastForwardAnimation(view);
+
   EXPECT_FALSE(IsLabelVisible(view));
   EXPECT_TRUE(IsAtMinimumSize(view));
 
   AdjustAvailableSpace(kFullSpaceTextLength);
+
+  ShowTestSuggestionChip();
+  FastForwardAnimation(view);
 
   EXPECT_TRUE(IsLabelVisible(view));
   EXPECT_FALSE(IsAtMinimumSize(view));
@@ -234,19 +260,26 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
                        SuggestionChipSwitchesModesOnMultipleSpaceAdjustments) {
   PageActionView* view = GetTestPageActionView();
+  AdjustAvailableSpace(kReducedSpaceTextLength);
+
   ShowTestSuggestionChip();
   FastForwardAnimation(view);
-  AdjustAvailableSpace(kReducedSpaceTextLength);
 
   EXPECT_FALSE(IsLabelVisible(view));
   EXPECT_TRUE(IsAtMinimumSize(view));
 
   AdjustAvailableSpace(kFullSpaceTextLength);
 
+  ShowTestSuggestionChip();
+  FastForwardAnimation(view);
+
   EXPECT_TRUE(IsLabelVisible(view));
   EXPECT_FALSE(IsAtMinimumSize(view));
 
   AdjustAvailableSpace(kReducedSpaceTextLength);
+
+  ShowTestSuggestionChip();
+  FastForwardAnimation(view);
 
   EXPECT_FALSE(IsLabelVisible(view));
   EXPECT_TRUE(IsAtMinimumSize(view));

@@ -7,11 +7,10 @@ package org.chromium.chrome.browser.app.appmenu;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -20,9 +19,10 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.ChromeTabbedActivityEntryPoints;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
@@ -37,23 +37,19 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class OverviewAppMenuTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    @Rule
+    public ReusedCtaTransitTestRule<RegularTabSwitcherStation> mCtaTestRule =
+            ChromeTransitTestRules.customStartReusedActivityRule(
+                    RegularTabSwitcherStation.class,
+                    rule ->
+                            ChromeTabbedActivityEntryPoints.startOnBlankPage(rule)
+                                    .openRegularTabSwitcher());
 
-    public BatchedPublicTransitRule<RegularTabSwitcherStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(
-                    RegularTabSwitcherStation.class, /* expectResetByTest= */ true);
-    public ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
     public RegularTabSwitcherStation mTabSwitcher;
 
     @Before
     public void setUp() {
-        mTabSwitcher =
-                mEntryPoints.startBatched(
-                        mBatchedRule,
-                        () -> mEntryPoints.startOnBlankPageNonBatched().openRegularTabSwitcher());
+        mTabSwitcher = mCtaTestRule.start();
     }
 
     @Test

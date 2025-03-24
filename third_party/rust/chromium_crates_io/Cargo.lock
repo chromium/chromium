@@ -151,7 +151,6 @@ dependencies = [
  "read-fonts",
  "regex",
  "rstest",
- "rstest_reuse",
  "rustc-demangle-capi",
  "rustversion",
  "serde",
@@ -347,7 +346,7 @@ dependencies = [
 
 [[package]]
 name = "foldhash"
-version = "0.1.4"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -1166,18 +1165,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "rstest_reuse"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "quote",
- "rand",
- "syn",
-]
-
-[[package]]
 name = "rust_decimal"
-version = "1.36.0"
+version = "1.37.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "arrayvec",

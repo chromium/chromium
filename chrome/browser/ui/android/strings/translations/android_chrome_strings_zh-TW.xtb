@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">你與 Google</translation>
 <translation id="3737319253362202215">翻譯設定</translation>
 <translation id="3738139272394829648">輕觸搜尋</translation>
+<translation id="3739455665973395693">你的 Google 帳戶沒有遭外洩的密碼</translation>
 <translation id="3739899004075612870">已加入 <ph name="PRODUCT_NAME" /> 書籤</translation>
 <translation id="3740525748616366977">這部裝置不支援語音搜尋功能</translation>
 <translation id="376561056759077985">部分資料尚未儲存</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">你要再次下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="4000212216660919741">離線首頁</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{你的 Google 帳戶有 1 組遭外洩的密碼}other{你的 Google 帳戶有 # 組遭外洩的密碼}}</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
 <translation id="4024768890073681126">瀏覽器由家長管理</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
@@ -692,6 +694,7 @@
 <translation id="4270730597186910506">追蹤或取消追蹤商品。</translation>
 <translation id="4277529130885813215">改用其他裝置</translation>
 <translation id="4282440837784183472">貴機構 (<ph name="MANAGED_DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。管理員可以設定或限制特定功能。</translation>
+<translation id="4285498937028063278">取消固定</translation>
 <translation id="4285846616383034558">Cookie、快取和其他網站資料</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />在 Android 設定中開啟螢幕鎖定功能<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">新增無痕分頁</translation>
@@ -831,6 +834,7 @@
 <translation id="4881695831933465202">開啟</translation>
 <translation id="488187801263602086">重新命名檔案</translation>
 <translation id="4885273946141277891">Chrome 實例的數量已超出上限。</translation>
+<translation id="4890973535105146893">你的 Google 帳戶沒有儲存任何密碼</translation>
 <translation id="4905823827770127520">加入網頁連結</translation>
 <translation id="4908869848243824489">Google 探索</translation>
 <translation id="4910889077668685004">付款應用程式</translation>
@@ -920,6 +924,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 推薦使用 Chrome</translation>
 <translation id="5326246328175179736">無法登入這個帳戶</translation>
+<translation id="5327248766486351172">名稱</translation>
 <translation id="5328542107300944283">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 的帳戶操作</translation>
 <translation id="5342314432463739672">權限要求</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />未造訪任何網站</translation>
@@ -1075,6 +1080,7 @@
 <translation id="605721222689873409">年</translation>
 <translation id="6059830886158432458">請在這裡控管你的報導和活動</translation>
 <translation id="6071995715087444295">如要檢查密碼是否外洩，請登入 Google 帳戶</translation>
+<translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連上網站</translation>
 <translation id="6087286598828478206">要封鎖成員並退出群組嗎？</translation>
 <translation id="60923314841986378">還剩 <ph name="HOURS" /> 小時</translation>
@@ -1703,6 +1709,7 @@
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
+<translation id="8715286883001906001">強化 Google 帳戶中的密碼</translation>
 <translation id="8723453889042591629">快速翻譯這個網頁，按住這裡即可編輯這個捷徑。</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8731268612289859741">安全碼</translation>
@@ -1830,6 +1837,7 @@
 <translation id="970715775301869095">還剩 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
+<translation id="984756705737569814">無法檢查 Google 帳戶中的密碼</translation>
 <translation id="987264212798334818">一般</translation>
 <translation id="988091779042748639">如要刪除裝置上的無痕模式瀏覽記錄，請關閉所有無痕分頁。</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 個分頁</translation>

@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import type {IronIconElement, OsAboutPageElement, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import type {CrButtonElement, IronIconElement, OsAboutPageElement, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
 import {AboutPageBrowserProxyImpl, BrowserChannel, LifetimeBrowserProxyImpl, Router, routes, settingMojom, setUserActionRecorderForTesting, UpdateStatus} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -527,6 +527,20 @@ suite('<os-about-page> AllBuilds', () => {
   });
 
   suite('End of life', () => {
+    function assertCheckForUpdatesButtonVisibility(): void {
+      let checkForUpdatesButton: CrButtonElement = page.$.checkForUpdatesButton;
+      assertTrue(!!checkForUpdatesButton);
+      // When the device is checking for any available updates, the Check for
+      // updates button should be hidden.
+      assertTrue(checkForUpdatesButton.hidden);
+
+      // When the user has checked for updates and there are none available for
+      // their device, the Check for updates button should become visible.
+      fireStatusChanged(UpdateStatus.UPDATED);
+      checkForUpdatesButton = page.$.checkForUpdatesButton;
+      assertTrue(isVisible(checkForUpdatesButton));
+    }
+
     /**
      * Checks the visibility of the end of life message and icon.
      */
@@ -553,9 +567,7 @@ suite('<os-about-page> AllBuilds', () => {
         assertNull(updateRowIcon.src);
         assertEquals('os-settings:end-of-life', updateRowIcon.icon);
 
-        const {checkForUpdatesButton} = page.$;
-        assertTrue(!!checkForUpdatesButton);
-        assertTrue(checkForUpdatesButton.hidden);
+        assertCheckForUpdatesButtonVisibility();
       }
     }
 

@@ -727,6 +727,13 @@ mojom("mojo_bindings") {
     sources += [ "ppapi_metrics.mojom" ]
   }
 
+  enabled_features = []
+
+  if (enable_glic) {
+    sources += [ "actor.mojom" ]
+    enabled_features += [ "enable_glic" ]
+  }
+
   public_deps = [
     "//components/content_settings/common:mojom",
     "//components/content_settings/core/common:mojo_bindings",
@@ -759,8 +766,6 @@ mojom("mojo_bindings") {
   ]
 
   component_deps = [ "//content/public/common" ]
-
-  enabled_features = []
 
   if (enable_offline_pages) {
     sources += [ "mhtml_page_notifier.mojom" ]

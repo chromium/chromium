@@ -35,6 +35,13 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
   cell.trailingDetailTextLabel.textColor =
       self.trailingDetailTextColor ? self.trailingDetailTextColor
                                    : [UIColor colorNamed:kTextSecondaryColor];
+  if (cell.accessoryType == UITableViewCellAccessoryDisclosureIndicator ||
+      cell.editingAccessoryType ==
+          UITableViewCellAccessoryDisclosureIndicator) {
+    [cell updateConstraintsForTrailingIconVisible:YES];
+  } else {
+    [cell updateConstraintsForTrailingIconVisible:NO];
+  }
 }
 
 @end
@@ -45,7 +52,11 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
 @property(nonatomic, strong) UIStackView* mainLabelsContainer;
 @end
 
-@implementation TableViewMultiDetailTextCell
+@implementation TableViewMultiDetailTextCell {
+  // Constraint defining the trailing edge for _trailingDetailTextLabel within
+  // contentView.
+  NSLayoutConstraint* _trailingConstraint;
+}
 
 @synthesize textLabel = _textLabel;
 
@@ -107,6 +118,11 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
 - (void)setViewConstraints {
   UIView* contentView = self.contentView;
 
+  // Set up the constraints for a visible trailing icon.
+  _trailingConstraint = [_trailingDetailTextLabel.trailingAnchor
+      constraintEqualToAnchor:contentView.trailingAnchor
+                     constant:-kTableViewTrailingContentPadding];
+
   [NSLayoutConstraint activateConstraints:@[
     // Set horizontal anchors.
     [_mainLabelsContainer.leadingAnchor
@@ -115,9 +131,8 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
     [_mainLabelsContainer.trailingAnchor
         constraintLessThanOrEqualToAnchor:_trailingDetailTextLabel.leadingAnchor
                                  constant:-kTableViewHorizontalSpacing],
-    [_trailingDetailTextLabel.trailingAnchor
-        constraintEqualToAnchor:contentView.trailingAnchor
-                       constant:-kTableViewTrailingContentPadding],
+
+    _trailingConstraint,
 
     // Make sure that the detail text doesn't take too much space.
     [_trailingDetailTextLabel.widthAnchor
@@ -131,12 +146,15 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
 
-  AddOptionalVerticalPadding(contentView, _mainLabelsContainer
-
-                             ,
+  AddOptionalVerticalPadding(contentView, _mainLabelsContainer,
                              kTableViewTwoLabelsCellVerticalSpacing);
   AddOptionalVerticalPadding(contentView, _trailingDetailTextLabel,
                              kTableViewOneLabelCellVerticalSpacing);
+}
+
+- (void)updateConstraintsForTrailingIconVisible:(BOOL)visible {
+  _trailingConstraint.constant = visible ? -kTableViewTrailingContentPadding
+                                         : -kTableViewHorizontalSpacing;
 }
 
 #pragma mark - UITableViewCell
@@ -146,6 +164,7 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
   self.textLabel.text = nil;
   self.leadingDetailTextLabel.text = nil;
   self.trailingDetailTextLabel.text = nil;
+  [self updateConstraintsForTrailingIconVisible:YES];
 }
 
 #pragma mark - NSObject(Accessibility)

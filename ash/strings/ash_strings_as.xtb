@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">ভাষাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="1459693405370120464">বতৰ</translation>
 <translation id="1460620680449458626">ভলিউম মিউট কৰা আছে।</translation>
+<translation id="1462439140224375968">Google Doc সৃষ্টি কৰা হ’ল</translation>
 <translation id="14648076227129703">এইটোৱে <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> আৰু কেমেৰাৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়ে</translation>
 <translation id="1467432559032391204">বাওঁফালে</translation>
 <translation id="146902737843070955">আপোনাৰ প্ৰশাসকে এই সালসলনিটোৰ অনুৰোধ কৰিছে</translation>
@@ -215,6 +216,7 @@
 <translation id="1679841710523778799">উজ্জ্বলতা বঢ়াওক</translation>
 <translation id="1680659827022803830">ভিডিঅ’ কলৰ নিয়ন্ত্ৰণ</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">আপুনি যিকোনো সময়তে ছেটিঙত এই সুবিধাটো অফ কৰিব পাৰে। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />ৰ টাইমাৰ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ঠিকনা: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">বাওঁফালে ড’ক কৰা ৱিণ্ড’ সক্ৰিয় কৰক।</translation>
@@ -592,6 +594,7 @@
 <translation id="301584155502740476">হ’টস্প’টৰ সবিশেষ দেখুৱাওক। হটস্পট অফ হৈ আছে।</translation>
 <translation id="3017079585324758401">নেপথ্য</translation>
 <translation id="3018135054368884502">মিডিয়া ফাষ্ট ফৰৱাৰ্ড কৰক</translation>
+<translation id="3026897869154397692">Calendarত যোগ দিয়া হ’ল</translation>
 <translation id="3033545621352269033">অন আছে</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" />ৰ সৈতে একত্ৰিত কৰক</translation>
 <translation id="3036649622769666520">ফাইল খোলক</translation>
@@ -967,6 +970,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনষ্টল কৰা এপ্‌, পজ কৰি থোৱা</translation>
 <translation id="4228078597006700451">নিয়ন্ত্ৰণসমূহ ছেট আপ কৰা হোৱা নাই</translation>
 <translation id="4230560241506423345">নতুন</translation>
+<translation id="4236726631849783264">পৰামৰ্শিত কাৰ্যৰ বিষয়ে এটা ৰিমাইণ্ডাৰ</translation>
 <translation id="4239069858505860023">জিপিআৰএছ</translation>
 <translation id="4240486403425279990">অৱলোকন ম’ড</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
@@ -983,7 +987,6 @@
 <translation id="4275663329226226506">মিডিয়া</translation>
 <translation id="4279490309300973883">প্ৰতিবিম্বকৰণ</translation>
 <translation id="4280601795273309128">সুৰক্ষা সম্পৰ্কীয় আপডে’ট সমাপ্ত হৈছে। আপোনাৰ ডিভাইচটো আপগ্ৰে’ড কৰক।</translation>
-<translation id="4281739221820540368">Google Docs সৃষ্টি কৰক</translation>
 <translation id="4283888303416325161">অধিক সুৰক্ষাৰ বাবে পাছৱর্ড দিয়ক</translation>
 <translation id="4285498937028063278">আনপিন কৰক</translation>
 <translation id="428715201724021596">প্ৰ’ফাইলৰ সৈতে সংযোগ কৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
@@ -1044,6 +1047,7 @@
 <translation id="4471354919263203780">কথন চিনাক্তকৰণ সম্পৰ্কীয় ফাইলসমূহ ডাউনল’ড কৰি থকা হৈছে... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{এতিয়াই ডিভাইচটো আপডে’ট কৰক}=1{১ ছেকেণ্ডৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
 <translation id="4472575034687746823">আৰম্ভ কৰক</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">পৰৱৰ্তী ট্ৰেক</translation>
 <translation id="4477751544736611934">এইটোৱে ডেটাৰ মাচুল প্ৰযোজ্য কৰিব পাৰে।
 ১ টা ডিভাইচ সংযুক্ত হৈ আছে।</translation>
@@ -1070,6 +1074,7 @@
 <translation id="4545950850562423083">বৰ্তমান পৃষ্ঠাটো বুকমাৰ্ক হিচাপে ছেভ কৰক</translation>
 <translation id="4548482551627849548">সক্ৰিয় ৱিণ্ড’ বাওঁফালৰ ডেস্কলৈ স্থানান্তৰ কৰক</translation>
 <translation id="4552748006424994716">প্ৰতিধ্বনি হোৱাটো এৰাই চলিবলৈ, আপুনি নিজৰ মাইকটোত কেৱল তাঁৰযুক্ত হেডফ’নেৰে শুনিব পাৰে।</translation>
+<translation id="4556953949326137018">যেতিয়া আপুনি "কেলেণ্ডাৰত যোগ দিয়ক" বা "Google Docs সৃষ্টি কৰক"ৰ দৰে পৰামৰ্শিত কাৰ্যসমূহ ব্যৱহাৰ কৰে, তেতিয়া বাছনি কৰা অঞ্চলৰ পৰা সমল Google ছাৰ্ভাৰলৈ কাৰ্যসমূহৰ পৰামৰ্শ দিবলৈ পঠিওৱা হয়, যিটো<ph name="LINK_TO_SERVICE_TERMS" />ৰ অধীন হয়। যিকোনো ধৰণৰ ব্যক্তিগত, সংবেদনশীল বা গোপন তথ্য অন্তৰ্ভুক্ত নকৰিব।</translation>
 <translation id="4560576029703263363">অন আছে</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">পাছৱৰ্ড লুকুৱাওক</translation>
@@ -1153,6 +1158,7 @@
 <translation id="481455355267255546">পৰৱৰ্তী</translation>
 <translation id="481749895090480684">কাৰ্যৰ সূচী: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">কেমেৰা আৰু মাইক্ৰ’ফ’ন</translation>
+<translation id="4828935196674083554">যোগ কৰি থকা হৈছে...</translation>
 <translation id="482908187605862807">Play Storeৰ পৰা উপলব্ধ এপ্</translation>
 <translation id="4831034276697007977">আপুনি স্বয়ংক্ৰিয়ভাৱে ক্লিক অফ কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="4835677468087803981">পিন লুকুৱাওক</translation>
@@ -1650,6 +1656,7 @@
 <translation id="641817663353603351">পেজ আপ</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">সকলো জাননী মচক</translation>
+<translation id="6426905245930183644">সৃষ্টি কৰি থকা হৈছে...</translation>
 <translation id="6430225033895752525">ফ’কাছৰ ছেটিং দেখুৱাওক</translation>
 <translation id="643147933154517414">সকলো কৰা হৈছে</translation>
 <translation id="6431865393913628856">স্ক্ৰীন ৰেকর্ড</translation>
@@ -1716,7 +1723,6 @@
 <translation id="6612889377159412215">সহায়ক কাৰ্য</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> ষ্ট’ৰেজ ব্যৱহাৰ হৈ আছে | মুঠ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">গোপনীয়তাৰ স্ক্ৰীনখন অন আছে</translation>
-<translation id="6618277154885124991">Google Sheets সৃষ্টি কৰক</translation>
 <translation id="6622679827379792051">আপোনাৰ ফ’নৰ এপ্‌সমূহ চোৱাৰ সুবিধা ছেট আপ কৰক</translation>
 <translation id="662279009180869175">বিভাজিত স্ক্ৰীনৰ আকাৰ সলনি কৰিবলৈ লেফ্ট আৰু ৰাইট এৰ’ কী দুটা ব্যৱহাৰ কৰক</translation>
 <translation id="6624493541160101248">বৰ্তমানৰ ডেস্ক: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" />ৰ ভিতৰত <ph name="DESK_INDEX" /> তম ডেস্ক।</translation>
@@ -1890,6 +1896,7 @@
 <translation id="7228968829656641943">মোৰ স্ক্ৰীনত সন্ধান কৰিবলৈ বাছনি কৰক। কীব’ৰ্ডেৰে নেভিগে’ট কৰিবলৈ টেব আৰু তাৰ পাছত স্পেচ কী টিপক।</translation>
 <translation id="7229029500464092426">ব্যৱহৃত মেম’ৰী <ph name="AVAILABLE_MEMORY" /> | মুঠ মেম’ৰী <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">মাউছৰ দুয়োটা বুটাম</translation>
+<translation id="7240636904654154599">Google Sheet সৃষ্টি কৰা হ’ল</translation>
 <translation id="7244725679040769470">বেটাৰীৰ চাৰ্জ <ph name="PERCENTAGE" />% বাকী আছে। আপোনাৰ ডিভাইচটো পাৱাৰৰ সৈতে সংযোগ কৰক।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ এই Chromebookটো ৰিষ্টাৰ্ট কৰাৰ আৱশ্যক। এইটোৱে ১ মিনিট পৰ্যন্ত সময় লগাব পাৰে।</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2400,6 +2407,8 @@
 <translation id="8921624153894383499">Google Assistantএ এই ভাষাটো ব্যৱহাৰ নকৰে।</translation>
 <translation id="8926951137623668982">শ্বেল্ফ সদায় লুকাই থাকে</translation>
 <translation id="8929566928381252430">Caps Lock কীটো ব্যৱহাৰ কৰিবলৈ চেষ্টা কৰি আছে নেকি? ব্যৱহাৰ কৰক</translation>
+<translation id="8929623844713377237">সম্পৰ্ক সৃষ্টি কৰা হ’ল</translation>
+<translation id="8934418770423095813">Google Doc সৃষ্টি কৰক</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{১ টা ফাইল}one{# টা ফাইল}other{# টা ফাইল}}</translation>
 <translation id="8936501819958976551">অক্ষম কৰা হৈছে</translation>
 <translation id="8938800817013097409">USB-C ডিভাইচ (পিছফালৰ সোঁফালৰ প’র্ট)</translation>

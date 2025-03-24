@@ -1413,6 +1413,12 @@ std::optional<LayoutUnit> ResolveRowGapLength(const ComputedStyle& style,
   return std::nullopt;
 }
 
+LayoutUnit ResolveRowGapForMulticol(const ComputedStyle& style,
+                                    LayoutUnit available_size) {
+  return ResolveRowGapLength(style, available_size)
+      .value_or(LayoutUnit(style.GetFontDescription().ComputedPixelSize()));
+}
+
 LayoutUnit ColumnInlineProgression(const ComputedStyle& style,
                                    LayoutUnit available_size) {
   return ResolveUsedColumnInlineSize(style, available_size) +

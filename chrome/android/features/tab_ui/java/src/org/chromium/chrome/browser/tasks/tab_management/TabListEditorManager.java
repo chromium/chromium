@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
@@ -205,7 +204,7 @@ public class TabListEditorManager {
 
         var controller = mControllerSupplier.get();
         controller.show(
-                TabModelUtils.convertTabListToListOfTabs(mCurrentTabGroupModelFilterSupplier.get()),
+                mCurrentTabGroupModelFilterSupplier.get().getRepresentativeTabList(),
                 mTabListCoordinator.getRecyclerViewPosition());
         controller.configureToolbarWithMenuItems(mTabListEditorActions);
 

@@ -10,9 +10,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
+#include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -22,44 +22,9 @@ namespace blink {
 
 namespace {
 
-mojom::blink::AISummarizerType ToMojoSummarizerType(V8AISummarizerType type) {
-  switch (type.AsEnum()) {
-    case V8AISummarizerType::Enum::kTlDr:
-      return mojom::blink::AISummarizerType::kTLDR;
-    case V8AISummarizerType::Enum::kKeyPoints:
-      return mojom::blink::AISummarizerType::kKeyPoints;
-    case V8AISummarizerType::Enum::kTeaser:
-      return mojom::blink::AISummarizerType::kTeaser;
-    case V8AISummarizerType::Enum::kHeadline:
-      return mojom::blink::AISummarizerType::kHeadline;
-  }
-}
-
-mojom::blink::AISummarizerFormat ToMojoSummarizerFormat(
-    V8AISummarizerFormat format) {
-  switch (format.AsEnum()) {
-    case V8AISummarizerFormat::Enum::kPlainText:
-      return mojom::blink::AISummarizerFormat::kPlainText;
-    case V8AISummarizerFormat::Enum::kMarkdown:
-      return mojom::blink::AISummarizerFormat::kMarkDown;
-  }
-}
-
-mojom::blink::AISummarizerLength ToMojoSummarizerLength(
-    V8AISummarizerLength length) {
-  switch (length.AsEnum()) {
-    case V8AISummarizerLength::Enum::kShort:
-      return mojom::blink::AISummarizerLength::kShort;
-    case V8AISummarizerLength::Enum::kMedium:
-      return mojom::blink::AISummarizerLength::kMedium;
-    case V8AISummarizerLength::Enum::kLong:
-      return mojom::blink::AISummarizerLength::kLong;
-  }
-}
-
 class CreateSummarizerClient
     : public GarbageCollected<CreateSummarizerClient>,
-      public AIMojoClient<AISummarizer>,
+      public AIContextObserver<AISummarizer>,
       public mojom::blink::AIManagerCreateSummarizerClient {
  public:
   explicit CreateSummarizerClient(
@@ -69,7 +34,7 @@ class CreateSummarizerClient
       AbortSignal* signal,
       AISummarizerCreateOptions* options,
       scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : AIMojoClient(script_state, ai, resolver, signal),
+      : AIContextObserver(script_state, ai, resolver, signal),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         options_(options) {
@@ -90,20 +55,11 @@ class CreateSummarizerClient
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai_->GetTaskRunner());
     ai_->GetAIRemote()->CreateSummarizer(
-        std::move(client_remote),
-        mojom::blink::AISummarizerCreateOptions::New(
-            options_->getSharedContextOr(g_empty_string),
-            ToMojoSummarizerType(options_->type()),
-            ToMojoSummarizerFormat(options_->format()),
-            ToMojoSummarizerLength(options_->length()),
-            ToMojoLanguageCodes(options_->getExpectedInputLanguagesOr({})),
-            ToMojoLanguageCodes(options_->getExpectedContextLanguagesOr({})),
-            mojom::blink::AILanguageCode::New(
-                options_->getOutputLanguageOr(g_empty_string))));
+        std::move(client_remote), ToMojoSummarizerCreateOptions(options_));
   }
 
   void Trace(Visitor* visitor) const override {
-    AIMojoClient::Trace(visitor);
+    AIContextObserver::Trace(visitor);
     visitor->Trace(ai_);
     visitor->Trace(receiver_);
     visitor->Trace(options_);
@@ -205,15 +161,7 @@ ScriptPromise<V8AIAvailability> AISummarizerFactory::availability(
   }
 
   ai_->GetAIRemote()->CanCreateSummarizer(
-      mojom::blink::AISummarizerCreateOptions::New(
-          /*shared_context=*/g_empty_string,
-          ToMojoSummarizerType(options->type()),
-          ToMojoSummarizerFormat(options->format()),
-          ToMojoSummarizerLength(options->length()),
-          ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
-          ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
-          mojom::blink::AILanguageCode::New(
-              options->getOutputLanguageOr(g_empty_string))),
+      ToMojoSummarizerCreateOptions(options),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8AIAvailability>* resolver,
              AISummarizerFactory* factory,

@@ -12,6 +12,7 @@
 #include <wrl/client.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -166,8 +167,8 @@ HRESULT EncryptAppBoundString(ProtectionLevel protection_level,
     return hr;
 
   base::win::ScopedBstr plaintext_data;
-  ::memcpy(plaintext_data.AllocateBytes(plaintext.length()), plaintext.data(),
-           plaintext.length());
+  UNSAFE_TODO(::memcpy(plaintext_data.AllocateBytes(plaintext.length()),
+                       plaintext.data(), plaintext.length()));
 
   base::win::ScopedBstr encrypted_data;
   if (flags) {
@@ -211,8 +212,8 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
     return hr;
 
   base::win::ScopedBstr ciphertext_data;
-  ::memcpy(ciphertext_data.AllocateBytes(ciphertext.length()),
-           ciphertext.data(), ciphertext.length());
+  UNSAFE_TODO(::memcpy(ciphertext_data.AllocateBytes(ciphertext.length()),
+                       ciphertext.data(), ciphertext.length()));
 
   base::win::ScopedBstr plaintext_data;
   hr = elevator->DecryptData(ciphertext_data.Get(), plaintext_data.Receive(),

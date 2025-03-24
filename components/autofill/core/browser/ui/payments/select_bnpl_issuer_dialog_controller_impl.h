@@ -20,7 +20,8 @@ class SelectBnplIssuerDialogControllerImpl
     : public SelectBnplIssuerDialogController {
  public:
   SelectBnplIssuerDialogControllerImpl(
-      std::vector<BnplIssuer> issuers,
+      std::vector<BnplIssuerContext> issuer_contexts,
+      std::string app_locale,
       base::OnceCallback<void(const std::string&)> selected_issuer_callback,
       base::OnceClosure cancel_callback);
   SelectBnplIssuerDialogControllerImpl(
@@ -41,8 +42,8 @@ class SelectBnplIssuerDialogControllerImpl
   void OnAccepted(const std::string& issuer_id) override;
   void OnCancel() override;
   void OnDialogClosed() override;
-  const std::vector<BnplIssuer>& GetIssuers() const override;
-  bool IssuerEligible(std::string_view issuer_id) const override;
+  const std::vector<BnplIssuerContext>& GetIssuerContexts() const override;
+  const std::string& GetAppLocale() const override;
   TextWithLink GetLinkText() const override;
   std::u16string GetTitle() const override;
   std::u16string GetSelectionOptionText(
@@ -52,8 +53,11 @@ class SelectBnplIssuerDialogControllerImpl
   // The dialog view, managed by the views infrastructure on desktop.
   std::unique_ptr<SelectBnplIssuerView> dialog_view_;
 
-  // List of issuers to be displayed in the selection view.
-  std::vector<BnplIssuer> issuers_;
+  // List of issuers with their corresponding contexts to be displayed in the
+  // selection view.
+  std::vector<BnplIssuerContext> issuer_contexts_;
+
+  const std::string app_locale_;
 
   // Callback invoked when the user confirmed an issuer to use.
   base::OnceCallback<void(const std::string&)> selected_issuer_callback_;

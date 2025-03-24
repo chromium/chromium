@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Urinishlar soni cheklovdan oshib ketdi.</translation>
 <translation id="1908234395526491708">Bajarilmagan UDP soʻrovlari</translation>
 <translation id="1908394185991500139">chap mil</translation>
+<translation id="1911678930322867245">Yuqori oʻng burchakka olish</translation>
 <translation id="1914144885717544695">Juma kuni</translation>
 <translation id="1915960750806557358">Fikr-mulohazangizni yuboring yoki muammoni tavsiflang. Shaxsiy, qaltis va maxfiy maʼlumotlarni yubormang.</translation>
 <translation id="1923388006036088459">Aksent ranglari</translation>
@@ -1543,16 +1544,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">sohil</translation>
 <translation id="819278132617411009">Google AI yordamida unundorlikni oshiring</translation>
-<translation id="82003371436638355">“Mustaqil yarating” bandini tanlaganda maxsus soʻrov kiriting. Yoki “Mavzu tanlang” bandini bosib, tagiga chizilgan soʻzlar yordamida AI fon rasmlarini oʻzingizga moslang.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Yanada unikal va xilma-xil rasmlar olish uchun "Menga ilhom ber" ustiga bosing.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Mustaqil fon rasmini yaratish vaqtida rasm yaratish va mahsulotni yaxshilash uchun soʻrovlar Google serverlariga yuboriladi. Bu funksiya ishlashida <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google xizmat shartlari va maxfiylik siyosati<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> amal qiladi. Shaxsiy va maxfiy axborotlarni yubormang.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativ AI odamlar haqida ham xato maʼlumotlarni berishi mumkin, shuning uchun javoblarini qayta tekshiring. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Batafsil<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
@@ -1679,6 +1670,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="8833620912470026819">kaktus oʻrmoni</translation>
 <translation id="8834539327799336565">Hozirda ulangan</translation>
+<translation id="8842526499753992487">Yuqori chap burchakka olish</translation>
 <translation id="8845001906332463065">Yordam</translation>
 <translation id="8849799913685544685">mayoq</translation>
 <translation id="8851859208664803097">Toʻxtadi - Printer ulanmagan</translation>

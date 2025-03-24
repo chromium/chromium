@@ -632,11 +632,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 !isIncognitoReauthShowing
                         && isMenuSelectTabsVisible
                         && mTabModelSelector.isTabStateInitialized()
-                        && mTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getCurrentTabGroupModelFilter()
-                                        .getCount()
-                                != 0;
+                        && mTabModelSelector.getModel(isIncognito).getCount() != 0;
 
         boolean hasItemBetweenDividers = false;
 

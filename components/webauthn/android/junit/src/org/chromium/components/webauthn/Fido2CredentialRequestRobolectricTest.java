@@ -103,6 +103,7 @@ public class Fido2CredentialRequestRobolectricTest {
     public void setUp() throws Exception {
         FeatureOverrides.newBuilder()
                 .enable(DeviceFeatureList.WEBAUTHN_ANDROID_USE_PASSKEY_CACHE)
+                .enable(DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
                 .disable(BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS)
                 .apply();
 
@@ -153,7 +154,7 @@ public class Fido2CredentialRequestRobolectricTest {
         Mockito.when(mFrameHost.getLastCommittedOrigin()).thenReturn(mOrigin);
         Mockito.doAnswer(
                         (invocation) -> {
-                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[3])
+                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[4])
                                     .onResult(
                                             new WebAuthSecurityChecksResults(
                                                     AuthenticatorStatus.SUCCESS, false));
@@ -161,10 +162,14 @@ public class Fido2CredentialRequestRobolectricTest {
                         })
                 .when(mFrameHost)
                 .performMakeCredentialWebAuthSecurityChecks(
-                        any(String.class), any(Origin.class), anyBoolean(), any(Callback.class));
+                        any(String.class),
+                        any(Origin.class),
+                        anyBoolean(),
+                        Mockito.nullable(Origin.class),
+                        any(Callback.class));
         Mockito.doAnswer(
                         (invocation) -> {
-                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[3])
+                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[4])
                                     .onResult(
                                             new WebAuthSecurityChecksResults(
                                                     AuthenticatorStatus.SUCCESS, false));
@@ -172,7 +177,11 @@ public class Fido2CredentialRequestRobolectricTest {
                         })
                 .when(mFrameHost)
                 .performGetAssertionWebAuthSecurityChecks(
-                        any(String.class), any(Origin.class), anyBoolean(), any(Callback.class));
+                        any(String.class),
+                        any(Origin.class),
+                        anyBoolean(),
+                        Mockito.nullable(Origin.class),
+                        any(Callback.class));
 
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
@@ -708,12 +717,16 @@ public class Fido2CredentialRequestRobolectricTest {
         var rpIdValidationCallback = new Callback[1];
         Mockito.doAnswer(
                         (invocation) -> {
-                            rpIdValidationCallback[0] = (Callback) invocation.getArguments()[3];
+                            rpIdValidationCallback[0] = (Callback) invocation.getArguments()[4];
                             return null;
                         })
                 .when(mFrameHost)
                 .performGetAssertionWebAuthSecurityChecks(
-                        any(String.class), any(Origin.class), anyBoolean(), any(Callback.class));
+                        any(String.class),
+                        any(Origin.class),
+                        anyBoolean(),
+                        Mockito.nullable(Origin.class),
+                        any(Callback.class));
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,

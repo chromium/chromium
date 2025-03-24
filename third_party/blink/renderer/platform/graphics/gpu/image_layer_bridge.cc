@@ -80,7 +80,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
 
 ImageLayerBridge::ImageLayerBridge(OpacityMode opacity_mode)
     : is_opaque_(opacity_mode == kOpaque) {
-  layer_ = cc::TextureLayer::CreateForMailbox(this);
+  layer_ = cc::TextureLayer::Create(this);
   layer_->SetIsDrawable(true);
   layer_->SetHitTestable(true);
   if (is_opaque_) {

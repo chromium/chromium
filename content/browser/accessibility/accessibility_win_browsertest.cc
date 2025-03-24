@@ -2342,8 +2342,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   EXPECT_TRUE(found);
 
   // Remove all accessibility modes.
-  content::BrowserAccessibilityState::GetInstance()
-      ->DisableProcessAccessibility();
+  content::BrowserAccessibilityState::GetInstance()->ResetAccessibilityMode();
 
   // Ensure accessibility is not enabled before we begin the test.
   EXPECT_TRUE(content::BrowserAccessibilityStateImpl::GetInstance()
@@ -6556,7 +6555,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  BrowserAccessibilityState::GetInstance()->DisableProcessAccessibility();
+  BrowserAccessibilityState::GetInstance()->ResetAccessibilityMode();
   auto accessibility_mode = web_contents->GetAccessibilityMode();
   ASSERT_TRUE(accessibility_mode.is_mode_off());
   EXPECT_EQ(nullptr, GetManager());
@@ -6584,7 +6583,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   int32_t unique_id_2 = button_2->GetAXPlatformNode()->GetUniqueId();
 
   // Turn accessibility off again.
-  BrowserAccessibilityState::GetInstance()->DisableProcessAccessibility();
+  BrowserAccessibilityState::GetInstance()->ResetAccessibilityMode();
   accessibility_mode = web_contents->GetAccessibilityMode();
   ASSERT_TRUE(accessibility_mode.is_mode_off());
   EXPECT_EQ(nullptr, GetManager());

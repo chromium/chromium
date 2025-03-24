@@ -694,6 +694,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4270730597186910506">Počnite ili prestanite pratiti proizvod.</translation>
 <translation id="4277529130885813215">Upotrijebite neki drugi uređaj</translation>
 <translation id="4282440837784183472">Vaša organizacija, <ph name="MANAGED_DOMAIN" />, upravlja računom na koji se prijavljujete i načinom na koji se Chrome može upotrebljavati. Vaš administrator može postaviti ili ograničiti određene značajke.</translation>
+<translation id="4285498937028063278">Otkvači</translation>
 <translation id="4285846616383034558">Kolačići, predmemorija i ostali podaci web-lokacije</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Uključite zaključavanje zaslona u postavkama Androida<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nova anonimna kartica</translation>
@@ -923,6 +924,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
 <translation id="5326246328175179736">Ne možete se prijaviti pomoću ovog računa</translation>
+<translation id="5327248766486351172">Naziv</translation>
 <translation id="5328542107300944283">Upotrebljavajte s davateljem identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Zahtjevi za dopuštenja</translation>
 <translation id="534580735623577507">Nema web-lokacija od <ph name="TIME_PERIOD" /></translation>
@@ -1078,6 +1080,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Svojim pričama i aktivnostima upravljajte ovdje</translation>
 <translation id="6071995715087444295">Da biste provjerili jesu li zaporke ugrožene, prijavite se na Google račun</translation>
+<translation id="6078323886959318429">Dodajte prečac</translation>
 <translation id="6085886413119427067">Određuje kako se povezati na web-lokacije sigurnom vezom</translation>
 <translation id="6087286598828478206">Želite li blokirati i napustiti grupu?</translation>
 <translation id="60923314841986378">Preostalo sati: <ph name="HOURS" /></translation>

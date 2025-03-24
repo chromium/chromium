@@ -170,11 +170,25 @@ struct MessageAttribution {
   bool triggering_user_is_self = false;
 };
 
+// Attribution for aggregated messages.
+struct AggregatedMessageData {
+  AggregatedMessageData();
+  AggregatedMessageData(const AggregatedMessageData& other);
+  ~AggregatedMessageData();
+
+  // Attributions for each related message.
+  std::vector<MessageAttribution> attributions;
+};
+
 // An instant notification that the UI to show something to the user
-// immediately.
+// immediately. Depending on the type of message, it might represent
+// a single event or multiple events of similar type aggregated as a single
+// message.
 struct InstantMessage {
  public:
-  MessageAttribution attribution;
+  InstantMessage();
+  InstantMessage(const InstantMessage& other);
+  ~InstantMessage();
 
   // The collaboration event associated with the message.
   CollaborationEvent collaboration_event;
@@ -184,6 +198,16 @@ struct InstantMessage {
 
   // The type of instant notification to show.
   InstantNotificationType type;
+
+  // The message content to be shown in the UI.
+  std::u16string localized_message;
+
+  // Set only if this message represents a single event.
+  std::optional<MessageAttribution> attribution;
+
+  // Set only if this message represents multiple messages aggregated into a
+  // single message.
+  std::optional<AggregatedMessageData> aggregated_data;
 };
 
 // A persistent notification that requires an ongoing UI affordance until

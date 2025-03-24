@@ -195,7 +195,7 @@ void MemorySaverModePolicy::DiscardPageTimerCallback(
         ->GetRegisteredObjectAs<PageDiscardingHelper>()
         ->ImmediatelyDiscardMultiplePages(
             {tab_handle->page_node()},
-            PageDiscardingHelper::DiscardReason::PROACTIVE);
+            DiscardEligibilityPolicy::DiscardReason::PROACTIVE);
   }
 }
 

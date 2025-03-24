@@ -8,7 +8,8 @@
 #include <optional>
 
 #include "base/time/time.h"
-#include "base/uuid.h"
+#include "base/token.h"
+
 namespace visited_url_ranking {
 
 // Metadata about a single tab that is currently open.
@@ -19,6 +20,8 @@ struct TabMetadata {
 
   TabMetadata(const TabMetadata&);
   TabMetadata& operator=(const TabMetadata&);
+
+  bool is_currently_active = false;
 
   // Origin of the tab, whether it was opened by an user action.
   enum class TabOrigin {
@@ -37,7 +40,7 @@ struct TabMetadata {
 
   // The group ID that the tab belongs to, as tracked by TabGroupSyncService.
   // Nullopt if its not part of a group.
-  std::optional<base::Uuid> tab_group_sync_id;
+  std::optional<base::Token> local_tab_group_id;
 
   // Android only: the int value TabLaunchType of the tab.
   int tab_android_launch_type = -1;

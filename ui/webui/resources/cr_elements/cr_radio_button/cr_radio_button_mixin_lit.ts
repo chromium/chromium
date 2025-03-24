@@ -68,15 +68,15 @@ export const CrRadioButtonMixinLit =
           };
         }
 
-        checked: boolean = false;
-        disabled: boolean = false;
-        focusable: boolean = false;
-        hideLabelText: boolean = false;
-        label: string = '';
-        name?: string;
+        accessor checked: boolean = false;
+        accessor disabled: boolean = false;
+        accessor focusable: boolean = false;
+        accessor hideLabelText: boolean = false;
+        accessor label: string = '';
+        accessor name: string|undefined;
         noRipple: boolean = false;
-        ariaCheckedString: string = 'false';
-        ariaDisabledString: string = 'false';
+        accessor ariaCheckedString: string = 'false';
+        accessor ariaDisabledString: string = 'false';
 
         override connectedCallback() {
           super.connectedCallback();

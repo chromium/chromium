@@ -4,15 +4,15 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
-#include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
-#include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "read_anything_test_utils.h"
 #include "services/strings/grit/services_strings.h"
@@ -71,13 +71,11 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   ReadAnythingAppModel& model() { return model_; }
   const ReadAnythingAppModel& model() const { return model_; }
 
-  bool AreAllPendingUpdatesEmpty() {
-    size_t count = 0;
-    for (auto const& [tree_id, updates] :
-         model().pending_updates_for_testing()) {
-      count += updates.size();
-    }
-    return count == 0;
+  bool AreAllPendingUpdatesEmpty() const {
+    return std::ranges::all_of(
+        model().pending_updates_for_testing(),
+        &ReadAnythingAppModel::Updates::empty,
+        &ReadAnythingAppModel::PendingUpdates::value_type::second);
   }
 
   void AccessibilityEventReceived(const ReadAnythingAppModel::Updates& updates,
@@ -233,34 +231,27 @@ TEST_F(ReadAnythingAppModelTest,
 }
 
 TEST_F(ReadAnythingAppModelTest, AddAndRemoveTrees) {
+  // Start with 1 tree (the tree created in SetUp).
+  ASSERT_EQ(1u, model().tree_infos_for_testing().size());
+  ASSERT_TRUE(model().ContainsTree(tree_id_));
+
   // Create two new trees with new tree IDs.
   std::vector<ui::AXTreeID> tree_ids = {ui::AXTreeID::CreateNewAXTreeID(),
                                         ui::AXTreeID::CreateNewAXTreeID()};
-  ReadAnythingAppModel::Updates updates;
-  for (int i = 0; i < 2; i++) {
+  for (size_t i = 0; i < tree_ids.size(); ++i) {
     ui::AXTreeUpdate update;
     test::SetUpdateTreeID(&update, tree_ids[i]);
     ui::AXNodeData node;
     node.id = 1;
     update.root_id = node.id;
     update.nodes = {std::move(node)};
-    updates.push_back(std::move(update));
+    AccessibilityEventReceived({std::move(update)});
+    ASSERT_EQ(i + 2, model().tree_infos_for_testing().size());
+    ASSERT_TRUE(model().ContainsTree(tree_id_));
+    for (size_t j = 0; j <= i; ++j) {
+      ASSERT_TRUE(model().ContainsTree(tree_ids[j]));
+    }
   }
-
-  // Start with 1 tree (the tree created in SetUp).
-  ASSERT_EQ(1u, model().tree_infos_for_testing().size());
-  ASSERT_TRUE(model().ContainsTree(tree_id_));
-
-  // Add the two trees.
-  AccessibilityEventReceived({std::move(updates[0])});
-  ASSERT_EQ(2u, model().tree_infos_for_testing().size());
-  ASSERT_TRUE(model().ContainsTree(tree_id_));
-  ASSERT_TRUE(model().ContainsTree(tree_ids[0]));
-  AccessibilityEventReceived({std::move(updates[1])});
-  ASSERT_EQ(3u, model().tree_infos_for_testing().size());
-  ASSERT_TRUE(model().ContainsTree(tree_id_));
-  ASSERT_TRUE(model().ContainsTree(tree_ids[0]));
-  ASSERT_TRUE(model().ContainsTree(tree_ids[1]));
 
   // Remove all of the trees.
   model().OnAXTreeDestroyed(tree_id_);
@@ -1511,7 +1502,7 @@ TEST_F(ReadAnythingAppModelTest, ResetTextSize_ReturnsTextSizeToDefault) {
   EXPECT_EQ(model().font_size(), default_font_size);
 }
 
-TEST_F(ReadAnythingAppModelTest, LanguageCode_ReturnsCorrectCode) {
+TEST_F(ReadAnythingAppModelTest, BaseLanguageCode_ReturnsCorrectCode) {
   ASSERT_EQ(model().base_language_code(), "en");
 
   model().SetBaseLanguageCode("es");
@@ -1533,7 +1524,7 @@ TEST_F(ReadAnythingAppModelTest,
 }
 
 TEST_F(ReadAnythingAppModelTest,
-       SupportedFonts_SetLanguageCode_ReturnsExpectedDefaultFonts) {
+       SupportedFonts_SetBaseLanguageCode_ReturnsExpectedDefaultFonts) {
   // Spanish
   model().SetBaseLanguageCode("es");
   EXPECT_THAT(model().supported_fonts(),
@@ -1714,20 +1705,33 @@ TEST_F(ReadAnythingAppModelTest, LastExpandedNodeNamedChanged_TriggersRedraw) {
 }
 
 TEST_F(ReadAnythingAppModelTest, ContentEditableValueChanged_ResetsDrawTimer) {
-  ui::AXTreeUpdate update;
-  test::SetUpdateTreeID(&update, tree_id_);
-  ui::AXNodeData node1;
-  static constexpr int kId = 1;
-  node1.id = kId;
-  update.nodes = {std::move(node1)};
-  ReadAnythingAppModel::Updates updates = {std::move(update)};
+  // Create a tree with a text field.
+  ui::AXNodeData root;
+  root.id = 1;
+  ui::AXNodeData text_field;
+  text_field.id = 2;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddState(ax::mojom::State::kEditable);
+  root.child_ids = {text_field.id};
+  ui::AXNodeData static_text;
+  static_text.id = 3;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.AddState(ax::mojom::State::kEditable);
+  text_field.child_ids = {static_text.id};
+  // Send the initial tree update.
+  ui::AXTreeUpdate initial_update;
+  test::SetUpdateTreeID(&initial_update, tree_id_);
+  initial_update.root_id = root.id;
+  initial_update.nodes = {std::move(root), text_field, static_text};
+  AccessibilityEventReceived({std::move(initial_update)});
 
-  ui::AXEvent event;
-  event.id = kId;
-  event.event_type = ax::mojom::Event::kValueChanged;
-  std::vector<ui::AXEvent> events = {std::move(event)};
   // This update changes the structure of the tree. When the controller receives
   // it in AccessibilityEventReceived, it will re-distill the tree.
-  model().AccessibilityEventReceived(tree_id_, updates, events, false);
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  static_text.SetName("Something has changed within me");
+  update.nodes = {std::move(static_text)};
+  AccessibilityEventReceived({std::move(update)});
+
   EXPECT_TRUE(model().reset_draw_timer());
 }

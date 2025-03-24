@@ -31,6 +31,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// This file runs the respective JS tests from
+// chrome/test/data/webui/glic/api_test.ts.
+
 namespace glic {
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
@@ -275,7 +278,25 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testDisableDragResize) {
   RunTestSequence(InAnyContext(ExpectUserCanResize(false)));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabState) {
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
+  // Note: ideally this test would only open Glic after the main browser is
+  // closed. This however crashes in `OpenGlicWindow()`.
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  // Open a new incognito window first so that Chrome doesn't exit, then close
+  // the first browser window.
+  CreateIncognitoBrowser();
+  CloseBrowserAsynchronously(browser());
+
   ExecuteJsTest();
 }
 

@@ -81,11 +81,8 @@ public class BinaryStatePermissionPreference extends Preference
         super.onBindViewHolder(holder);
 
         mPositive = (RadioButtonWithDescription) holder.findViewById(R.id.positive);
-        assumeNonNull(mPositive);
         mNegative = (RadioButtonWithDescription) holder.findViewById(R.id.negative);
-        assumeNonNull(mNegative);
         mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
-        assumeNonNull(mRadioGroup);
         mRadioGroup.setOnCheckedChangeListener(this);
 
         if (mDescriptionIds != null) {

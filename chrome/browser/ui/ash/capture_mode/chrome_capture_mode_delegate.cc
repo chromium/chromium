@@ -665,7 +665,6 @@ GURL ChromeCaptureModeDelegate::GetBaseSearchURLAndPostContent(
     const gfx::Image& image,
     gfx::Size image_original_size,
     TemplateURLRef::PostContent* post_content) {
-  // What if the default search provider is not Google?
   const user_manager::User* const active_user =
       user_manager::UserManager::Get()->GetActiveUser();
   CHECK(active_user);
@@ -675,6 +674,7 @@ GURL ChromeCaptureModeDelegate::GetBaseSearchURLAndPostContent(
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   DCHECK(template_url_service);
+  CHECK(search::DefaultSearchProviderIsGoogle(template_url_service));
   const TemplateURL* const default_provider =
       template_url_service->GetDefaultSearchProvider();
   DCHECK(default_provider);
@@ -685,11 +685,9 @@ GURL ChromeCaptureModeDelegate::GetBaseSearchURLAndPostContent(
   size_t encoded_size_bytes;
   EncodeImageIntoSearchArgs(image, encoded_size_bytes, search_args);
 
-  if (search::DefaultSearchProviderIsGoogle(template_url_service)) {
-    search_args.processed_image_dimensions =
-        base::NumberToString(image.Size().width()) + "," +
-        base::NumberToString(image.Size().height());
-  }
+  search_args.processed_image_dimensions =
+      base::NumberToString(image.Size().width()) + "," +
+      base::NumberToString(image.Size().height());
   search_args.image_original_size = image_original_size;
 
   return GURL(default_provider->image_url_ref().ReplaceSearchTerms(
@@ -741,6 +739,21 @@ void ChromeCaptureModeDelegate::DeleteRemoteFile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(GetOneDriveMountPointPath().IsParent(path));
   ash::cloud_upload::OdfsFileDeleter::Delete(path, std::move(callback));
+}
+
+bool ChromeCaptureModeDelegate::ActiveUserDefaultSearchProviderIsGoogle()
+    const {
+  const user_manager::User* const active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(active_user);
+
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  DCHECK(template_url_service);
+
+  return search::DefaultSearchProviderIsGoogle(template_url_service);
 }
 
 void ChromeCaptureModeDelegate::HandleStartQueryResponse(

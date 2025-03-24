@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/core/html/fenced_frame/fence.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fence_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fenceevent_string.h"
@@ -25,6 +28,8 @@ class FenceTest : private ScopedFencedFramesForTest, public SimTest {
          {blink::features::kPrivateAggregationApi}},
         /*disabled_features=*/{});
   }
+
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -76,6 +81,53 @@ TEST_F(FenceTest, ReportReservedEvent) {
   EXPECT_EQ(ConsoleMessages().size(), 1u);
   EXPECT_EQ(ConsoleMessages().front(),
             "Reserved events cannot be triggered manually.");
+}
+
+TEST_F(FenceTest, NotifyEventNotFencedFrameRoot) {
+  const KURL base_url("https://www.example.com/");
+  V8TestingScope scope(base_url);
+  Fence* fence =
+      MakeGarbageCollected<Fence>(*(GetDocument().GetFrame()->DomWindow()));
+
+  Event* event = Event::Create(AtomicString("click"));
+  fence->notifyEvent(event, scope.GetExceptionState());
+
+  histogram_tester_.ExpectBucketCount(
+      kNotifyEventOutcome, NotifyEventOutcome::kNotFencedFrameRoot, 1);
+}
+
+TEST_F(FenceTest, NotifyEventInvalidEvent) {
+  InitializeFencedFrameRoot(
+      blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+  const KURL base_url("https://www.example.com/");
+  V8TestingScope scope(base_url);
+  Fence* fence =
+      MakeGarbageCollected<Fence>(*(GetDocument().GetFrame()->DomWindow()));
+
+  Event* event = Event::Create(AtomicString("click"));
+  fence->notifyEvent(event, scope.GetExceptionState());
+
+  // The event being untrusted will result in an invalid event histogram being
+  // logged.
+  histogram_tester_.ExpectBucketCount(kNotifyEventOutcome,
+                                      NotifyEventOutcome::kInvalidEvent, 1);
+}
+
+TEST_F(FenceTest, NotifyEventUnsupportedType) {
+  InitializeFencedFrameRoot(
+      blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+  const KURL base_url("https://www.example.com/");
+  V8TestingScope scope(base_url);
+  Fence* fence =
+      MakeGarbageCollected<Fence>(*(GetDocument().GetFrame()->DomWindow()));
+
+  Event* event = Event::Create(AtomicString("keydown"));
+  event->SetTrusted(true);
+  event->SetEventPhase(Event::PhaseType::kAtTarget);
+  fence->notifyEvent(event, scope.GetExceptionState());
+
+  histogram_tester_.ExpectBucketCount(
+      kNotifyEventOutcome, NotifyEventOutcome::kUnsupportedEventType, 1);
 }
 
 }  // namespace blink

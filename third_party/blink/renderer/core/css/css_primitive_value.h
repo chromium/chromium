@@ -445,10 +445,6 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
   float GetFloatValue() const { return GetValue<float>(); }
   int GetIntValue() const { return GetValue<int>(); }
-  template <typename T>
-  inline T GetValue() const {
-    return ClampTo<T>(GetDoubleValue());
-  }
 
   template <typename T>
     requires std::integral<T> || std::floating_point<T>
@@ -504,6 +500,11 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   bool IsResolvableLength() const;
 
  private:
+  template <typename T>
+  inline T GetValue() const {
+    return ClampTo<T>(GetDoubleValue());
+  }
+
   bool InvolvesLayout() const;
   const CSSMathExpressionNode* ToMathExpressionNode() const;
 };

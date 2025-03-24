@@ -167,8 +167,8 @@ source_set("impl") {
 
 mojom("mojo_bindings") {
   sources = [
-    "glic.mojom",
-    "glic_fre.mojom",
+    "fre/glic_fre.mojom",
+    "host/glic.mojom",
   ]
   webui_module_path = "/"
 

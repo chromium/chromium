@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">ඔබ සහ Google</translation>
 <translation id="3737319253362202215">පරිවර්තන සැකසීම්</translation>
 <translation id="3738139272394829648">සෙවීමට ස්පර්ශ කරන්න</translation>
+<translation id="3739455665973395693">ඔබේ Google ගිණුමේ අවදානමට ලක් වූ මුරපද නොමැත</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> තුළ පිටුසන් කරන ලදි</translation>
 <translation id="3740525748616366977">මෙම උපාංගයෙහි හඬ සෙවීම නොමැත</translation>
 <translation id="376561056759077985">සමහර දත්ත නොසුරැකේ</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">ඔබට නැවත <ph name="FILE_NAME" /> බාගැනීමට අවශ්‍යද?</translation>
 <translation id="3987993985790029246">සබැඳිය පිටපත් කරන්න</translation>
 <translation id="4000212216660919741">නොබැඳි මුල්පිටුව</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{ඔබේ Google ගිණුමේ 1 අවදානමට ලක් වූ මුරපදයක් ඇත}one{ඔබේ Google ගිණුමේ අවදානමට ලක් වූ මුරපද #ක් ඇත}other{ඔබේ Google ගිණුමේ අවදානමට ලක් වූ මුරපද #ක් ඇත}}</translation>
 <translation id="4016425174436051808">අනුගමනය කළ නොහැකිය. යම් දෙයක් වැරදිණි.</translation>
 <translation id="4024768890073681126">ඔබේ බ්‍රවුසරය ඔබේ මාපියවරු විසින් කළමනා කරනු ලැබේ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{පැය #}one{පැය #}other{පැය #}}</translation>
@@ -692,6 +694,7 @@
 <translation id="4270730597186910506">නිෂ්පාදනයක් ලුහුබඳින්න හෝ ලුහුනොබඳින්න.</translation>
 <translation id="4277529130885813215">වෙනත් උපාංගයක් භාවිතා කරන්න</translation>
 <translation id="4282440837784183472">ඔබේ සංවිධානය, <ph name="MANAGED_DOMAIN" />, ඔබ පුරනය වන ගිණුම සහ Chrome භාවිතා කළ හැකි ආකාරය කළමනාකරණය කරයි. ඔබේ පරිපාලකයාට ඇතැම් විශේෂාංග පිහිටුවීමට හෝ සීමා කිරීමට හැක.</translation>
+<translation id="4285498937028063278">ගලවන්න</translation>
 <translation id="4285846616383034558">කුකීස්, කෑෂය, සහ අනෙකුත් අඩවි දත්ත</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android සැකසීම් තුළ තිර අගුල ක්‍රියාත්මක කරන්න<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">නව අප්‍රකට ටැබය</translation>
@@ -831,6 +834,7 @@
 <translation id="4881695831933465202">විවෘත කරන්න</translation>
 <translation id="488187801263602086">ගොනුව නැවත නම් කරන්න</translation>
 <translation id="4885273946141277891">සහාය නොදක්වන Chrome අවස්ථා සංඛ්‍යාව.</translation>
+<translation id="4890973535105146893">ඔබේ Google ගිණුමේ සුරැකි මුරපද නොමැත</translation>
 <translation id="4905823827770127520">පිටුවට සබැඳියක් ඇතුළු කරන්න</translation>
 <translation id="4908869848243824489">Google වෙතින් Discover</translation>
 <translation id="4910889077668685004">ගෙවීම් යෙදුම්</translation>
@@ -920,6 +924,7 @@
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5319359161174645648">Google විසින් Chrome නිර්දේශ කරයි</translation>
 <translation id="5326246328175179736">ඔබට මෙම ගිණුම භාවිතයෙන් පුරනය විය නොහැක</translation>
+<translation id="5327248766486351172">නම</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> සමග භාවිතා කරන්න</translation>
 <translation id="5342314432463739672">අවසර ඉල්ලීම්</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> වෙතින් අඩවි නැත</translation>
@@ -1075,6 +1080,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">මෙහි ඔබේ කතා සහ ක්‍රියාකාරකම් පාලන කරන්න</translation>
 <translation id="6071995715087444295">සමථයට පත් වූ මුරපද පරීක්‍ෂා කිරීමට, ඔබේ Google ගිණුමට පුරන්න</translation>
+<translation id="6078323886959318429">කෙටිමඟක් එක් කරන්න</translation>
 <translation id="6085886413119427067">සුරක්‍ෂිත සම්බන්ධතාවක් හරහා වෙබ් අඩවිවලට සම්බන්ධ කරන ආකාරය තීරණ කරයි</translation>
 <translation id="6087286598828478206">සමූහය අවහිර කර හැර යන්න ද?</translation>
 <translation id="60923314841986378">පැය <ph name="HOURS" />ක් ඉතිරියි</translation>
@@ -1703,6 +1709,7 @@
 <translation id="869891660844655955">කල් ඉකුත් වීමේ දිනය:</translation>
 <translation id="8699120352855309748">මෙම භාෂා පරිවර්තනය කිරීමට පිරිනමන්න එපා</translation>
 <translation id="8712637175834984815">එය ලැබුණා</translation>
+<translation id="8715286883001906001">ඔබේ Google ගිණුමේ මුරපද ශක්තිමත් කරන්න</translation>
 <translation id="8723453889042591629">මෙම පිටුව ඉක්මනින් පරිවර්තන කරන්න. මෙම කෙටිමඟ සංස්කරණ කිරීමට, ස්පර්ශ කර අල්ලා සිටින්න.</translation>
 <translation id="8725066075913043281">නැවත උත්සහ කරන්න</translation>
 <translation id="8731268612289859741">ආරක්ෂක කේතය</translation>
@@ -1830,6 +1837,7 @@
 <translation id="970715775301869095">මිනිත්තු <ph name="MINUTES" />ක් ඉතිරියි</translation>
 <translation id="981121421437150478">ඕෆ්ලයින්</translation>
 <translation id="983192555821071799">සියලු පටිති වසන්න</translation>
+<translation id="984756705737569814">ඔබේ Google ගිණුමේ මුරපද පරීක්ෂා කළ නොහැක</translation>
 <translation id="987264212798334818">සාමාන්‍ය</translation>
 <translation id="988091779042748639">ඔබේ උපාංගයෙන් අප්‍රකට බ්‍රවුස් කිරීමේ ඉතිහාසය මැකීමට, සියලු අප්‍රකට පටිති වසන්න.</translation>
 <translation id="992745192656291733">ටැබ <ph name="TAB_COUNT" /></translation>

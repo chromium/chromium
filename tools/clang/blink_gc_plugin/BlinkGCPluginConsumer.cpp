@@ -458,6 +458,14 @@ void BlinkGCPluginConsumer::CheckDispatch(RecordInfo* info) {
     if (!visitor.dispatched_to_receiver())
       reporter_.MissingFinalizeDispatch(defn, info);
   }
+
+  if (info->HasMultipleTraceDispatchMethods()) {
+    reporter_.RedundantTraceDispatchMethod(info, base);
+  }
+
+  if (info->HasMultipleFinalizeDispatchMethods()) {
+    reporter_.RedundantFinalizeDispatchMethod(info, base);
+  }
 }
 
 // TODO: Should we collect destructors similar to trace methods?

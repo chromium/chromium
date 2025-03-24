@@ -40,6 +40,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="2758123043070977469">Nustatant tapatybę iškilo problema. Prisijunkite dar kartą.</translation>
 <translation id="2803375539583399270">Įveskite PIN kodą</translation>
 <translation id="2919669478609886916">Šiuo metu šį kompiuterį bendrinate su kitu naudotoju. Ar norite toliau bendrinti?</translation>
+<translation id="2929683002824598593">Bendrinti įrenginį</translation>
 <translation id="2939145106548231838">Autentifikuoti pagal prieglobą</translation>
 <translation id="3027681561976217984">Lietimo režimas</translation>
 <translation id="3106379468611574572">Nuotolinis kompiuteris neatsako į ryšio užklausas. Patikrinkite, ar jis prijungtas, ir bandykite dar kartą.</translation>
@@ -117,10 +118,12 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="6178645564515549384">Vietinė nuotolinės pagalbos pranešimų priegloba</translation>
 <translation id="618120821413932081">Atnaujinti nuotolinę skyrą, kad ji atitiktų langą</translation>
 <translation id="6223301979382383752">Atidaryti ekrano įrašymo nuostatas</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> pateikė užklausą matyti jūsų ekraną ir valdyti klaviatūrą bei pelę. Ar norite bendrinti savo įrenginį?</translation>
 <translation id="6284412385303060032">Priegloba, veikianti pulto logikos ekrane, išjungta, kad būtų galima palaikyti nerodomo vaizdo režimą perjungus į prieglobą, veikiančią konkretaus naudotojo sesijoje.</translation>
 <translation id="6542902059648396432">Pranešimas apie problemą...</translation>
 <translation id="6583902294974160967">Palaikymas</translation>
 <translation id="6612717000975622067">Siųsti „Ctrl“ + „Alt“ + „Del“</translation>
+<translation id="6625262630437221505">{0,plural, =1{Jei nesiimsite veiksmų, įrenginys automatiškai pradės bendrinti po # sekundės.}one{Jei nesiimsite veiksmų, įrenginys automatiškai pradės bendrinti po # sekundės.}few{Jei nesiimsite veiksmų, įrenginys automatiškai pradės bendrinti po # sekundžių.}many{Jei neatliksite veiksmų, įrenginys automatiškai pradės bendrinti po # sekundės.}other{Jei nesiimsite veiksmų, įrenginys automatiškai pradės bendrinti po # sekundžių.}}</translation>
 <translation id="6654753848497929428">Bendrinti</translation>
 <translation id="677755392401385740">Pradėta naudotojo priegloba: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Pagalbinė programa, kurią naudojant URL atidaromas „<ph name="PRODUCT_NAME" />“ kliente</translation>

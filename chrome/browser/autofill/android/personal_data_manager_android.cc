@@ -832,10 +832,6 @@ PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
                                                   type.obj());
 }
 
-jboolean PersonalDataManagerAndroid::IsAutofillManaged(JNIEnv* env) {
-  return prefs::IsAutofillManaged(prefs_);
-}
-
 jboolean PersonalDataManagerAndroid::IsAutofillProfileManaged(JNIEnv* env) {
   return prefs::IsAutofillProfileManaged(prefs_);
 }

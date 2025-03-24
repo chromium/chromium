@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -18,6 +19,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+using kiosk::test::LaunchAppManually;
 
 namespace {
 
@@ -58,7 +61,7 @@ class KioskFileSystemVolumesTest : public MixinBasedInProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(KioskFileSystemVolumesTest, GetVolumeList) {
   extensions::ResultCatcher catcher;
-  ASSERT_TRUE(kiosk_.LaunchManually(VolumeListChromeApp().account_id));
+  ASSERT_TRUE(LaunchAppManually(VolumeListChromeApp().account_id));
   // Note this Chrome app has no UI. That means `kiosk_.WaitSessionLaunched()`
   // would fail since Kiosk launch waits for the app window to appear. This test
   // remains in splash screen.

@@ -584,7 +584,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3721119614952978349">Vi i Google</translation>
 <translation id="3737319253362202215">Postavke prevođenja</translation>
 <translation id="3738139272394829648">Pretraživanje dodirom</translation>
-<translation id="3739455665973395693">Nema ugroženih zaporki na vašem Google računu</translation>
+<translation id="3739455665973395693">Nema ugroženih lozinki na Google računu</translation>
 <translation id="3739899004075612870">Označeno u proizvodu <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Glasovno pretraživanje nije dostupno na ovom uređaju</translation>
 <translation id="376561056759077985">Određeni podaci još nisu sačuvani</translation>
@@ -638,7 +638,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3985215325736559418">Želite li ponovo preuzeti fajl <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="4000212216660919741">Početna stranica van mreže</translation>
-<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Jedna ugrožena zaporka na vašem Google računu}one{# ugrožena zaporka na vašem Google računu}few{# ugrožene zaporke na vašem Google računu}other{# ugroženih zaporki na vašem Google računu}}</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 ugrožena lozinka na Google računu}one{# ugrožena lozinka na Google računu}few{# ugrožene lozinke na Google računu}other{# ugroženih lozinki na Google računu}}</translation>
 <translation id="4016425174436051808">Nije moguće pratiti. Nešto nije uredu.</translation>
 <translation id="4024768890073681126">Roditelj upravlja tvojim preglednikom</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}few{# h}other{# h}}</translation>
@@ -694,6 +694,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4270730597186910506">Praćenje ili prestanak praćenja proizvoda.</translation>
 <translation id="4277529130885813215">Koristi drugi uređaj</translation>
 <translation id="4282440837784183472">Vaša organizacija, <ph name="MANAGED_DOMAIN" />, upravlja računom na koji se prijavljujete i načinom na koji se Chrome može koristiti. Administrator može postaviti ili ograničiti određene funkcije.</translation>
+<translation id="4285498937028063278">Otkači</translation>
 <translation id="4285846616383034558">Kolačići, keš memorija i drugi podaci web lokacija</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Uključite zaključavanje ekrana u postavkama Androida<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nova anonimna kartica</translation>
@@ -833,7 +834,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="488187801263602086">Promjena naziva fajla</translation>
 <translation id="4885273946141277891">Nepodržani broj Chrome instanci.</translation>
-<translation id="4890973535105146893">Na vašem Google računu nema spremljenih zaporki</translation>
+<translation id="4890973535105146893">Nema sačuvanih lozinki na Google računu</translation>
 <translation id="4905823827770127520">Uvrstite link do stranice</translation>
 <translation id="4908869848243824489">Googleov Discover</translation>
 <translation id="4910889077668685004">Aplikacije za plaćanje</translation>
@@ -923,6 +924,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
 <translation id="5326246328175179736">Ne možete se prijaviti koristeći ovaj račun</translation>
+<translation id="5327248766486351172">Ime</translation>
 <translation id="5328542107300944283">Koristite putem <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Zahtjevi za odobrenje</translation>
 <translation id="534580735623577507">Nema nijedne web lokacije iz perioda: <ph name="TIME_PERIOD" /></translation>
@@ -1078,6 +1080,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Upravljajte pričama i aktivnostima ovdje</translation>
 <translation id="6071995715087444295">Da provjerite ugrožene lozinke, prijavite se na Google račun</translation>
+<translation id="6078323886959318429">Dodaj prečicu</translation>
 <translation id="6085886413119427067">Određuje način povezivanja s web lokacijama putem sigurne veze</translation>
 <translation id="6087286598828478206">Blokirati i napustiti grupu?</translation>
 <translation id="60923314841986378">Broj preostalih sati: <ph name="HOURS" /></translation>
@@ -1706,7 +1709,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>
 <translation id="8712637175834984815">Razumijem</translation>
-<translation id="8715286883001906001">Ojačajte svoje zaporke na Google računu</translation>
+<translation id="8715286883001906001">Ojačajte lozinke na Google računu</translation>
 <translation id="8723453889042591629">Brzo prevedite ovu stranicu. Dodirnite i zadržite da uredite ovu prečicu.</translation>
 <translation id="8725066075913043281">Pokušaj ponovo</translation>
 <translation id="8731268612289859741">Sigurnosni kôd</translation>
@@ -1834,7 +1837,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="970715775301869095">Ostalo je još <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Van mreže</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>
-<translation id="984756705737569814">Nije moguće provjeriti zaporke na vašem Google računu</translation>
+<translation id="984756705737569814">Nije moguće provjeriti lozinke na Google računu</translation>
 <translation id="987264212798334818">Opće</translation>
 <translation id="988091779042748639">Da s uređaja izbrišete historiju pregledanja u anonimnom načinu rada, zatvorite sve anonimne kartice.</translation>
 <translation id="992745192656291733">Broj kartica: <ph name="TAB_COUNT" /></translation>

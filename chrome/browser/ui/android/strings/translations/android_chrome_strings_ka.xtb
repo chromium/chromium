@@ -694,6 +694,7 @@
 <translation id="4270730597186910506">პროდუქტისთვის თვალის დევნება ან თვალის დევნების გაუქმება.</translation>
 <translation id="4277529130885813215">სხვა მოწყობილობის გამოყენება</translation>
 <translation id="4282440837784183472">თქვენი ორგანიზაცია, <ph name="MANAGED_DOMAIN" />, მართავს როგორც ანგარიშს, რომელშიც შედიხართ, ისე Chrome-ის გამოყენების პროცესს. თქვენს ადმინისტრატორს შეუძლია კონკრეტული ფუნქციების დაყენება ან შეზღუდვა.</translation>
+<translation id="4285498937028063278">ჩამაგრების მოხსნა</translation>
 <translation id="4285846616383034558">ქუქი-ჩანაწერები, ქეში და საიტების სხვა მონაცემები</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />ჩართეთ ეკრანის დაბლოკვა Android-ის პარამეტრებიდან<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">ახალი ინკოგნიტო ჩანართი</translation>
@@ -923,6 +924,7 @@
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5319359161174645648">Google გირჩევთ Chrome-ს</translation>
 <translation id="5326246328175179736">ამ ანგარიშით ვერ შეხვალთ</translation>
+<translation id="5327248766486351172">სახელი</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-თან გამოყენება</translation>
 <translation id="5342314432463739672">ნებართვების მოთხოვნები</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> საიტები არ ფიქსირდება</translation>
@@ -1078,6 +1080,7 @@
 <translation id="605721222689873409">წწ</translation>
 <translation id="6059830886158432458">აქ შეგიძლიათ მართოთ ამბები და აქტივობა</translation>
 <translation id="6071995715087444295">გატეხილი პაროლების შესამოწმებლად შედით თქვენს Google ანგარიშში</translation>
+<translation id="6078323886959318429">მალსახმობის დამატება</translation>
 <translation id="6085886413119427067">განსაზღვრავს დაცული კავშირით ვებსაიტებთან დაკავშირების ხერხს</translation>
 <translation id="6087286598828478206">გსურთ დაბლოკვა და ჯგუფიდან გასვლა?</translation>
 <translation id="60923314841986378">დარჩენილია <ph name="HOURS" /> საათი</translation>

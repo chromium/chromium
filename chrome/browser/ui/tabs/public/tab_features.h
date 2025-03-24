@@ -57,7 +57,7 @@ class MemorySaverChipController;
 }
 
 namespace zoom {
-class ZoomPageActionController;
+class ZoomViewController;
 }
 
 namespace permissions {
@@ -181,6 +181,10 @@ class TabFeatures {
     return collaboration_messaging_tab_data_.get();
   }
 
+  zoom::ZoomViewController* zoom_view_controller() {
+    return zoom_view_controller_.get();
+  }
+
   memory_saver::MemorySaverChipController* memory_saver_chip_controller() {
     return memory_saver_chip_controller_.get();
   }
@@ -276,8 +280,8 @@ class TabFeatures {
   std::unique_ptr<TranslatePageActionController>
       translate_page_action_controller_;
 
-  // Responsible for managing the "Zoom" page action.
-  std::unique_ptr<zoom::ZoomPageActionController> zoom_page_action_controller_;
+  // Responsible for managing the "Zoom" page action and bubble.
+  std::unique_ptr<zoom::ZoomViewController> zoom_view_controller_;
 
   // Contains the recent collaboration message for a shared tab.
   std::unique_ptr<tab_groups::CollaborationMessagingTabData>

@@ -825,6 +825,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.RowRuleWidth() == b.RowRuleWidth();
     case CSSPropertyID::kColumnWidth:
       return a.ColumnWidth() == b.ColumnWidth();
+    case CSSPropertyID::kColumnHeight:
+      return a.ColumnHeight() == b.ColumnHeight();
+    case CSSPropertyID::kColumnWrap:
+      return a.ColumnWrap() == b.ColumnWrap();
     case CSSPropertyID::kFilter:
       return a.Filter() == b.Filter();
     case CSSPropertyID::kBackdropFilter:

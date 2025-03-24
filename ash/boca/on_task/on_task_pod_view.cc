@@ -140,13 +140,14 @@ void OnTaskPodView::AddShortcutButtons() {
       gfx::Insets::VH(kSeparatorVerticalPadding, kSeparatorHorizontalPadding)));
   right_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
   right_separator_->SetPreferredLength(kLabelButtonHeight);
+  right_separator_->SetVisible(pod_controller_->CanToggleTabStripVisibility());
 
   pin_tab_strip_button_ = AddChildView(std::make_unique<PinTabStripButton>(
       base::BindRepeating(&OnTaskPodView::UpdatePinTabStripButton,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME)));
-  pin_tab_strip_button_->SetEnabled(
+  pin_tab_strip_button_->SetVisible(
       pod_controller_->CanToggleTabStripVisibility());
 }
 
@@ -192,8 +193,16 @@ void OnTaskPodView::OnPageNavigationContextUpdate() {
 }
 
 void OnTaskPodView::OnLockedModeUpdate() {
-  pin_tab_strip_button_->SetEnabled(
-      pod_controller_->CanToggleTabStripVisibility());
+  const bool can_toggle = pod_controller_->CanToggleTabStripVisibility();
+  right_separator_->SetVisible(can_toggle);
+  pin_tab_strip_button_->SetVisible(can_toggle);
+  if (can_toggle) {
+    // `should_show_tab_strip_` is set to true to ensure it is toggled in
+    // `UpdatePinTabStripButton()` to by default hide the tab strip when
+    // entering locked mode.
+    should_show_tab_strip_ = true;
+    UpdatePinTabStripButton();
+  }
 }
 
 BEGIN_METADATA(OnTaskPodView)

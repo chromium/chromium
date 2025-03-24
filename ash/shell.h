@@ -1142,8 +1142,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PipController> pip_controller_;
   std::unique_ptr<PrivacyScreenController> privacy_screen_controller_;
   std::unique_ptr<PolicyRecommendationRestorer> policy_recommendation_restorer_;
-  // Must be after `session_controller_`.
-  std::unique_ptr<ScannerController> scanner_controller_;
   std::unique_ptr<ScreenSwitchCheckController> screen_switch_check_controller_;
   std::unique_ptr<ShelfConfig> shelf_config_;
   std::unique_ptr<ShelfController> shelf_controller_;
@@ -1221,6 +1219,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DisplayConfigurationObserver> display_configuration_observer_;
 
   std::unique_ptr<ScreenPinningController> screen_pinning_controller_;
+  // Must be after `session_controller_` and `screen_pinning_controller_`.
+  std::unique_ptr<ScannerController> scanner_controller_;
 
   std::unique_ptr<PeripheralBatteryListener> peripheral_battery_listener_;
   std::unique_ptr<PeripheralBatteryNotifier> peripheral_battery_notifier_;

@@ -5,7 +5,7 @@
 import os
 import posixpath
 import sys
-from typing import Any, List
+from typing import Any
 import unittest
 
 from gpu_tests import common_typing as ct
@@ -67,7 +67,7 @@ class CastStreamingIntegrationTest(
       self._RestartBrowser('Must restart after every test')
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'cast_streaming_expectations.txt')

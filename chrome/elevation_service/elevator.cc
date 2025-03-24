@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -253,7 +254,7 @@ std::string Elevator::PopFromStringFront(std::string& str) {
     return std::string();
   auto it = str.begin();
   // Obtain the size.
-  memcpy(&size, str.c_str(), sizeof(size));
+  UNSAFE_TODO(memcpy(&size, str.c_str(), sizeof(size)));
   // Skip over the size field.
   std::string value;
   if (size) {

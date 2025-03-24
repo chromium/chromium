@@ -27,11 +27,11 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_availability.h"
+#include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_params.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -45,7 +45,7 @@ namespace {
 class CreateLanguageModelClient
     : public GarbageCollected<CreateLanguageModelClient>,
       public mojom::blink::AIManagerCreateLanguageModelClient,
-      public AIMojoClient<AILanguageModel> {
+      public AIContextObserver<AILanguageModel> {
  public:
   CreateLanguageModelClient(
       ScriptState* script_state,
@@ -57,7 +57,7 @@ class CreateLanguageModelClient
       WTF::Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts,
       AICreateMonitor* monitor,
       std::optional<WTF::Vector<WTF::String>> expected_input_languages)
-      : AIMojoClient(script_state, ai, resolver, signal),
+      : AIContextObserver(script_state, ai, resolver, signal),
         ai_(ai),
         monitor_(monitor),
         receiver_(this, ai->GetExecutionContext()) {
@@ -90,7 +90,7 @@ class CreateLanguageModelClient
       delete;
 
   void Trace(Visitor* visitor) const override {
-    AIMojoClient::Trace(visitor);
+    AIContextObserver::Trace(visitor);
     visitor->Trace(ai_);
     visitor->Trace(monitor_);
     visitor->Trace(receiver_);

@@ -121,25 +121,25 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     };
   }
 
-  alwaysShowSuffix: boolean = false;
-  asAnchor: boolean = false;
-  asAnchorTarget: string = '_self';
-  itemAriaLabel?: string;
-  itemAriaDescription?: string;
-  count?: number;
-  description?: string;
-  reverseElideDescription: boolean = false;
-  hasBadges: boolean = false;
-  protected hasDescriptions_: boolean = false;
-  protected hasSlottedContent_: boolean = false;
-  protected isFolder_: boolean = false;
-  size: CrUrlListItemSize = CrUrlListItemSize.MEDIUM;
-  override title: string = '';
-  url?: string;
-  imageUrls: string[] = [];
-  protected firstImageLoaded_: boolean = false;
-  forceHover: boolean = false;
-  descriptionMeta: string = '';
+  accessor alwaysShowSuffix: boolean = false;
+  accessor asAnchor: boolean = false;
+  accessor asAnchorTarget: string = '_self';
+  accessor itemAriaLabel: string|undefined;
+  accessor itemAriaDescription: string|undefined;
+  accessor count: number|undefined;
+  accessor description: string|undefined;
+  accessor reverseElideDescription: boolean = false;
+  accessor hasBadges: boolean = false;
+  protected accessor hasDescriptions_: boolean = false;
+  protected accessor hasSlottedContent_: boolean = false;
+  protected accessor isFolder_: boolean = false;
+  accessor size: CrUrlListItemSize = CrUrlListItemSize.MEDIUM;
+  override accessor title: string = '';
+  accessor url: string|undefined;
+  accessor imageUrls: string[] = [];
+  protected accessor firstImageLoaded_: boolean = false;
+  accessor forceHover: boolean = false;
+  accessor descriptionMeta: string = '';
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);

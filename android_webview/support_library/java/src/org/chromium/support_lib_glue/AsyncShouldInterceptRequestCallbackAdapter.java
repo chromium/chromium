@@ -9,7 +9,7 @@ import android.webkit.WebView;
 import com.android.webview.chromium.WebResourceRequestAdapter;
 
 import org.chromium.android_webview.AsyncShouldInterceptRequestCallback;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.WebResponseCallback;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.AsyncShouldInterceptRequestCallbackBoundaryInterface;

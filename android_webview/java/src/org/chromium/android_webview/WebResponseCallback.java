@@ -6,7 +6,6 @@ package org.chromium.android_webview;
 
 import org.jni_zero.JNINamespace;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;

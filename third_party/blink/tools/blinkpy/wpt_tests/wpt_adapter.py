@@ -492,6 +492,7 @@ class WPTAdapter:
     def _set_up_runner_tests(self, runner_options, tmp_dir):
         runner_options.manifest_download = False
         runner_options.manifest_update = False
+        runner_options.test_types = self.options.test_types
         if not self.options.use_upstream_wpt:
             tests_to_run, tests_to_skip = self._collect_tests()
             include_tests, subsuite_json = self._prepare_tests_for_wptrunner([
@@ -510,7 +511,6 @@ class WPTAdapter:
                 runner_options.subsuites = list(subsuite_json)
 
             runner_options.include.extend(include_tests)
-            runner_options.test_types = self.options.test_types
             runner_options.retry_unexpected = self.options.num_retries
 
             self.processor.failure_threshold = self.port.max_allowed_failures(

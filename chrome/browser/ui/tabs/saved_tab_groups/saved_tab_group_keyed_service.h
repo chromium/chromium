@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
+#include "components/saved_tab_groups/internal/shared_tab_group_account_data_sync_bridge.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -57,6 +58,8 @@ class SavedTabGroupKeyedService : public KeyedService,
   GetSavedTabGroupControllerDelegate();
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetSharedTabGroupAccountControllerDelegate();
   Profile* profile() { return profile_; }
 
   // SavedTabGroupController
@@ -216,6 +219,10 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Stores SavedTabGroup data to the disk and to sync if enabled.
   std::unique_ptr<TabGroupSyncBridgeMediator> sync_bridge_mediator_;
+
+  // Sync bridge for shared tab group account data.
+  std::unique_ptr<SharedTabGroupAccountDataSyncBridge>
+      shared_tab_group_account_data_bridge_;
 
   // Helper class for logging metrics.
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;

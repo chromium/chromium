@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Vous avez atteint le nombre maximal autorisé de tentatives.</translation>
 <translation id="1908234395526491708">Échec de la requête UDP</translation>
 <translation id="1908394185991500139">flèche vers la gauche</translation>
+<translation id="1911678930322867245">Déplacer en haut à droite</translation>
 <translation id="1914144885717544695">vendredi</translation>
 <translation id="1915960750806557358">Partagez vos commentaires ou décrivez votre problème. Veillez à ne fournir aucune information personnelle, sensible ou confidentielle.</translation>
 <translation id="1923388006036088459">Couleurs d'accentuation</translation>
@@ -1543,16 +1544,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8183975772394450380">plage</translation>
 <translation id="819278132617411009">Gagner en productivité avec l'IA de Google</translation>
-<translation id="82003371436638355">Lorsque vous sélectionnez "Créer le vôtre", rédigez une requête personnalisée. Vous pouvez aussi sélectionner "Choisir un thème", puis sélectionner les mots soulignés pour personnaliser votre fond d'écran IA.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Sélectionnez "Trouver l'inspiration" pour obtenir des options d'images IA plus uniques et variées.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Lorsque vous créez votre propre fond d'écran, la requête est envoyée aux serveurs Google pour générer des images et améliorer le produit, conformément aux <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Conditions d'utilisation et aux Règles de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. N'incluez aucun élément personnel, sensible ou confidentiel.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Vérifiez les réponses de l'IA générative, car elle peut faire des erreurs, y compris sur des personnes. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />En savoir plus<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Avantages</translation>
@@ -1679,6 +1670,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8833620912470026819">forêt de cactus</translation>
 <translation id="8834539327799336565">Actuellement connectés</translation>
+<translation id="8842526499753992487">Déplacer en haut à gauche</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8849799913685544685">phare</translation>
 <translation id="8851859208664803097">Arrêtée – Imprimante inaccessible</translation>

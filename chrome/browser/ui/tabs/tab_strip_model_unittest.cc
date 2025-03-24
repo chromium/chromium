@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/tab_collections/public/tab_interface.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -933,6 +934,76 @@ TEST_F(TabStripModelTest, TestDetachGroupForInsertion) {
   EXPECT_EQ(tabstrip.count(), 6);
 }
 
+TEST_F(TabStripModelTest, TestDetachGroupNewSelection) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(3), true);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(4), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(5), false);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(6), true);
+
+  tab_groups::TabGroupId group_id =
+      tabstrip.AddToNewGroup(std::vector<int>{1, 2});
+
+  // Test the first preference is a tab the group opened.
+  tabstrip.ActivateTabAt(2);
+  tabstrip.ForgetAllOpeners();
+  tabstrip.SetOpenerOfWebContentsAt(0, tabstrip.GetWebContentsAt(1));
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      tabstrip.DetachTabGroupForInsertion(group_id);
+
+  EXPECT_EQ(tabstrip.active_index(), 0);
+
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 1);
+  tabstrip.ActivateTabAt(1);
+  tabstrip.ForgetAllOpeners();
+  tabstrip.SetOpenerOfWebContentsAt(4, tabstrip.GetWebContentsAt(1));
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+
+  EXPECT_EQ(tabstrip.active_index(), 2);
+
+  // Test the second preference is a tab the group's opener opened.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 1);
+  tabstrip.ActivateTabAt(1);
+  tabstrip.ForgetAllOpeners();
+  tabstrip.SetOpenerOfWebContentsAt(2, tabstrip.GetWebContentsAt(3));
+  tabstrip.SetOpenerOfWebContentsAt(1, tabstrip.GetWebContentsAt(4));
+  tabstrip.SetOpenerOfWebContentsAt(0, tabstrip.GetWebContentsAt(4));
+
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+  EXPECT_EQ(tabstrip.active_index(), 0);
+
+  // Test the third preference is the group's opener.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 1);
+  tabstrip.ActivateTabAt(1);
+  tabstrip.ForgetAllOpeners();
+  tabstrip.SetOpenerOfWebContentsAt(2, tabstrip.GetWebContentsAt(3));
+
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+  EXPECT_EQ(tabstrip.active_index(), 1);
+
+  // Next preference is the tab after the last tab of the group.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group), 2);
+  tabstrip.ActivateTabAt(2);
+  tabstrip.ForgetAllOpeners();
+
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+  EXPECT_EQ(tabstrip.active_index(), 2);
+
+  // Last preference is the tab before the first tab of the group.
+  tabstrip.InsertDetachedTabGroupAt(std::move(detached_group),
+                                    tabstrip.count());
+  tabstrip.ActivateTabAt(5);
+  tabstrip.ForgetAllOpeners();
+
+  detached_group = tabstrip.DetachTabGroupForInsertion(group_id);
+  EXPECT_EQ(tabstrip.active_index(), 3);
+}
+
 TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
@@ -1720,19 +1791,107 @@ TEST_F(TabStripModelTest, CommandAddToSplit) {
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());
 
-  // Create three tabs with two pinned, select the last.
+  // Create five tabs with two pinned, select the last.
   ASSERT_NO_FATAL_FAILURE(
-      PrepareTabstripForSelectionTest(&tabstrip, 3, 2, "2"));
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
+  // Add tab at index 4 to a group.
+  tabstrip.AddToNewGroup({4});
+  tabstrip.ActivateTabAt(3,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       0, TabStripModel::CommandAddToSplit));
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       1, TabStripModel::CommandAddToSplit));
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       2, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      3, TabStripModel::CommandAddToSplit));
+  EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
+      4, TabStripModel::CommandAddToSplit));
+
   tabstrip.ExecuteContextMenuCommand(0, TabStripModel::CommandAddToSplit);
 
-  // The first tab should become unpinned and adjacent to the last tab.
-  EXPECT_EQ("1p 0s 2s", GetTabStripStateString(tabstrip));
+  // The first tab should become unpinned and adjacent to the active tab.
+  EXPECT_EQ("1p 2 0s 3s 4", GetTabStripStateString(tabstrip));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, AddToSplitInGroup) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create five tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
+
+  // Add tab at index 4 to a group.
+  tab_groups::TabGroupId group_id = tabstrip.AddToNewGroup({4});
+  tabstrip.ActivateTabAt(4,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  tabstrip.AddToNewSplit({2}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0p 1p 3 2s 4s", GetTabStripStateString(tabstrip));
+  EXPECT_EQ(tabstrip.group_model()->GetTabGroup(group_id)->ListTabs().length(),
+            2u);
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, AddToSplitInPinned) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create five tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
+
+  // Add tab at index 4 to a group.
+  tabstrip.AddToNewGroup({4});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, UnsplitOperation) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create five tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
+
+  // Add tab at index 4 to a group.
+  tabstrip.AddToNewGroup({4});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
+
+  tabstrip.RemoveSplit(split_tab_id);
+  EXPECT_EQ("0p 3p 1p 2 4", GetTabStripStateString(tabstrip));
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());

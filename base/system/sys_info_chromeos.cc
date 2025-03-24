@@ -60,10 +60,14 @@ class ChromeOSVersionInfo {
   ChromeOSVersionInfo() {
     std::string lsb_release, lsb_release_time_str;
     std::unique_ptr<Environment> env(Environment::Create());
+    std::optional<std::string> lsb_release_var = env->GetVar(kLsbReleaseKey);
+    std::optional<std::string> lsb_release_time_var =
+        env->GetVar(kLsbReleaseTimeKey);
     bool parsed_from_env =
-        env->GetVar(kLsbReleaseKey, &lsb_release) &&
-        env->GetVar(kLsbReleaseTimeKey, &lsb_release_time_str);
+        lsb_release_var.has_value() && lsb_release_time_var.has_value();
     if (parsed_from_env) {
+      lsb_release = std::move(lsb_release_var.value());
+      lsb_release_time_str = std::move(lsb_release_time_var.value());
       double us = 0;
       if (StringToDouble(lsb_release_time_str, &us)) {
         lsb_release_time_ = Time::FromSecondsSinceUnixEpoch(us);

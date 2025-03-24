@@ -28,6 +28,18 @@ interface AITranslator {
   CallWith=ScriptState
 ]
   undefined destroy();
+
+[
+  MeasureAs=Translator_MeasureInputUsage_Method,
+  CallWith=ScriptState,
+  RaisesException
+]
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional AITranslatorTranslateOptions options = {}
+  );
+  [MeasureAs=Translator_InputQuota_AttributeGetter]
+  readonly attribute unrestricted double inputQuota;
 };
 
 dictionary AITranslatorTranslateOptions {

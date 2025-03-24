@@ -105,6 +105,10 @@ tast_disabled_tests_from_chrome_all = [
   # b/404950758, Flaky, blocking uprev.
   "secagentd.AuthenticationEvents",
 
+  # b/405201316, Culprit found, but fix is tricky so disabling temporarily.
+  "terminal.SSH",
+  "arc.Print.vm_t",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 

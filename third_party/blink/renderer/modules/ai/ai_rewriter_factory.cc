@@ -9,7 +9,7 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_rewriter_create_options.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_rewriter.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -21,53 +21,18 @@
 namespace blink {
 namespace {
 
-mojom::blink::AIRewriterTone ToMojoAIRewriterTone(V8AIRewriterTone tone) {
-  switch (tone.AsEnum()) {
-    case V8AIRewriterTone::Enum::kAsIs:
-      return mojom::blink::AIRewriterTone::kAsIs;
-    case V8AIRewriterTone::Enum::kMoreFormal:
-      return mojom::blink::AIRewriterTone::kMoreFormal;
-    case V8AIRewriterTone::Enum::kMoreCasual:
-      return mojom::blink::AIRewriterTone::kMoreCasual;
-  }
-  NOTREACHED();
-}
-
-mojom::blink::AIRewriterFormat ToMojoAIRewriterFormat(
-    V8AIRewriterFormat format) {
-  switch (format.AsEnum()) {
-    case V8AIRewriterFormat::Enum::kAsIs:
-      return mojom::blink::AIRewriterFormat::kAsIs;
-    case V8AIRewriterFormat::Enum::kPlainText:
-      return mojom::blink::AIRewriterFormat::kPlainText;
-    case V8AIRewriterFormat::Enum::kMarkdown:
-      return mojom::blink::AIRewriterFormat::kMarkdown;
-  }
-  NOTREACHED();
-}
-
-mojom::blink::AIRewriterLength ToMojoAIRewriterLength(
-    V8AIRewriterLength length) {
-  switch (length.AsEnum()) {
-    case V8AIRewriterLength::Enum::kAsIs:
-      return mojom::blink::AIRewriterLength::kAsIs;
-    case V8AIRewriterLength::Enum::kShorter:
-      return mojom::blink::AIRewriterLength::kShorter;
-    case V8AIRewriterLength::Enum::kLonger:
-      return mojom::blink::AIRewriterLength::kLonger;
-  }
-  NOTREACHED();
-}
-
 class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
                              public mojom::blink::AIManagerCreateRewriterClient,
-                             public AIMojoClient<AIRewriter> {
+                             public AIContextObserver<AIRewriter> {
  public:
   CreateRewriterClient(ScriptState* script_state,
                        AI* ai,
                        ScriptPromiseResolver<AIRewriter>* resolver,
                        AIRewriterCreateOptions* options)
-      : AIMojoClient(script_state, ai, resolver, options->getSignalOr(nullptr)),
+      : AIContextObserver(script_state,
+                          ai,
+                          resolver,
+                          options->getSignalOr(nullptr)),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         options_(options) {
@@ -75,17 +40,8 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    ai_->GetAIRemote()->CreateRewriter(
-        std::move(client_remote),
-        mojom::blink::AIRewriterCreateOptions::New(
-            options->getSharedContextOr(g_empty_string),
-            ToMojoAIRewriterTone(options->tone()),
-            ToMojoAIRewriterFormat(options->format()),
-            ToMojoAIRewriterLength(options->length()),
-            ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
-            ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
-            mojom::blink::AILanguageCode::New(
-                options->getOutputLanguageOr(g_empty_string))));
+    ai_->GetAIRemote()->CreateRewriter(std::move(client_remote),
+                                       ToMojoRewriterCreateOptions(options));
   }
   ~CreateRewriterClient() override = default;
 
@@ -93,7 +49,7 @@ class CreateRewriterClient : public GarbageCollected<CreateRewriterClient>,
   CreateRewriterClient& operator=(const CreateRewriterClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
-    AIMojoClient::Trace(visitor);
+    AIContextObserver::Trace(visitor);
     visitor->Trace(ai_);
     visitor->Trace(receiver_);
     visitor->Trace(options_);
@@ -187,15 +143,7 @@ ScriptPromise<V8AIAvailability> AIRewriterFactory::availability(
   }
 
   ai_->GetAIRemote()->CanCreateRewriter(
-      mojom::blink::AIRewriterCreateOptions::New(
-          /*shared_context=*/g_empty_string,
-          ToMojoAIRewriterTone(options->tone()),
-          ToMojoAIRewriterFormat(options->format()),
-          ToMojoAIRewriterLength(options->length()),
-          ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
-          ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
-          mojom::blink::AILanguageCode::New(
-              options->getOutputLanguageOr(g_empty_string))),
+      ToMojoRewriterCreateOptions(options),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8AIAvailability>* resolver,
              AIRewriterFactory* factory,

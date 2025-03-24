@@ -99,10 +99,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AITranslator
 [Worker]     attribute @@toStringTag
+[Worker]     getter inputQuota
 [Worker]     getter sourceLanguage
 [Worker]     getter targetLanguage
 [Worker]     method constructor
 [Worker]     method destroy
+[Worker]     method measureInputUsage
 [Worker]     method translate
 [Worker]     method translateStreaming
 [Worker] interface AITranslatorFactory

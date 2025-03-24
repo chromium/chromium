@@ -90,6 +90,7 @@ mojom("mojom") {
     "mojom/event_dispatcher.mojom",
     "mojom/event_router.mojom",
     "mojom/execution_world.mojom",
+    "mojom/extension_id.mojom",
     "mojom/extra_response_data.mojom",
     "mojom/feature_session_type.mojom",
     "mojom/frame.mojom",
@@ -196,6 +197,23 @@ mojom("mojom") {
           [ "//extensions/common/mojom/stack_frame_mojom_traits.h" ]
       traits_sources =
           [ "//extensions/common/mojom/stack_frame_mojom_traits.cc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "extensions.mojom.ExtensionId"
+          cpp = "::extensions::ExtensionId"
+        },
+      ]
+      traits_headers =
+          [ "//extensions/common/mojom/extension_id_mojom_traits.h" ]
+
+      traits_sources =
+          [ "//extensions/common/mojom/extension_id_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//components/crx_file",
+        "//mojo/public/cpp/bindings",
+      ]
     },
     {
       types = [
@@ -670,6 +688,7 @@ source_set("unit_tests") {
     "manifest_handlers/update_url_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
+    "mojom/extension_id_mojom_traits_unittest.cc",
     "mojom/message_port_mojom_traits_unittest.cc",
     "mojom/permission_set_mojom_traits_unittest.cc",
     "mojom/url_pattern_set_mojom_traits_unittest.cc",

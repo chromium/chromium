@@ -373,10 +373,11 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         assertNotNull(contentView);
 
         RecyclerView accountsList = contentView.findViewById(R.id.sheet_item_list);
-        assertEquals(3, accountsList.getChildCount());
+        int expectedChildCount = mRpMode == RpMode.ACTIVE ? 3 : 4;
+        assertEquals(expectedChildCount, accountsList.getChildCount());
         assertEquals(
-                AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT,
-                accountsList.getAdapter().getItemViewType(2));
+                AccountSelectionProperties.ITEM_TYPE_LOGIN,
+                accountsList.getAdapter().getItemViewType(expectedChildCount - 1));
 
         // Close the use other account CCT when it is opened.
         doAnswer(
@@ -395,7 +396,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         // Click "Use a different account".
         runOnUiThreadBlocking(
                 () -> {
-                    accountsList.getChildAt(2).performClick();
+                    accountsList.getChildAt(expectedChildCount - 1).performClick();
                 });
 
         // Verify that account chooser remains open.

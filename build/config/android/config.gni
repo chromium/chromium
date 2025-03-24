@@ -132,7 +132,7 @@ if (is_android) {
   public_android_sdk_build_tools =
       "${public_android_sdk_root}/build-tools/36.0.0"
   public_android_sdk_platform_version = "36"
-  if (android_sdk_release == "v") {
+  if (android_sdk_release == "b") {
     default_android_sdk_root = public_android_sdk_root
     default_android_sdk_platform_version = public_android_sdk_platform_version
     default_android_sdk_build_tools_version = "36.0.0"

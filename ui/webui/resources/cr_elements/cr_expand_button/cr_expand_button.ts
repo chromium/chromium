@@ -69,13 +69,13 @@ export class CrExpandButtonElement extends CrLitElement {
     };
   }
 
-  expanded: boolean = false;
-  disabled: boolean = false;
-  expandIcon: string = 'cr:expand-more';
-  collapseIcon: string = 'cr:expand-less';
-  expandTitle?: string;
-  collapseTitle?: string;
-  override tabIndex: number = 0;
+  accessor expanded: boolean = false;
+  accessor disabled: boolean = false;
+  accessor expandIcon: string = 'cr:expand-more';
+  accessor collapseIcon: string = 'cr:expand-less';
+  accessor expandTitle: string|undefined;
+  accessor collapseTitle: string|undefined;
+  override accessor tabIndex: number = 0;
 
   override firstUpdated() {
     this.addEventListener('click', this.toggleExpand_);

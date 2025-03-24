@@ -84,6 +84,7 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   void OnCollaborationRemoved(
       const syncer::CollaborationId& collaboration_id) override;
 
+  std::vector<const SavedTabGroup*> ReadAllGroups() const override;
   std::vector<SavedTabGroup> GetAllGroups() const override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;
   std::optional<SavedTabGroup> GetGroup(
@@ -118,6 +119,8 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   GetSavedTabGroupControllerDelegate() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetSharedTabGroupAccountControllerDelegate() override;
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
   void GetURLRestriction(

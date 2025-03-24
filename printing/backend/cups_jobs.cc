@@ -55,6 +55,10 @@ constexpr std::string_view kOauthAuthorizationServerUri =
     "oauth-authorization-server-uri";
 constexpr std::string_view kOauthAuthorizationScope =
     "oauth-authorization-scope";
+constexpr std::string_view kUrfSupported = "urf-supported";
+constexpr std::string_view kPdfVersions = "pdf-versions";
+constexpr std::string_view kMopriaCertified = "mopria-certified";
+constexpr std::string_view kPrinterKind = "printer-kind";
 
 // job attributes
 constexpr char kJobUri[] = "job-uri";
@@ -133,12 +137,14 @@ constexpr int kHttpConnectTimeoutMs = 1000;
 constexpr std::array<const char* const, 3> kPrinterAttributes{
     {kPrinterState, kPrinterStateReasons, kPrinterStateMessage}};
 
-constexpr std::array<const char* const, 11> kPrinterInfoAndStatus{
+constexpr std::array<const char* const, 15> kPrinterInfoAndStatus{
     {kPrinterMakeAndModel.data(), kIppVersionsSupported.data(),
      kIppFeaturesSupported.data(), kDocumentFormatSupported.data(),
      kPrinterState, kPrinterStateReasons, kPrinterStateMessage,
      kOauthAuthorizationServerUri.data(), kOauthAuthorizationScope.data(),
-     kDocumentFormatPreferred.data(), kDocumentFormatDefault.data()}};
+     kDocumentFormatPreferred.data(), kDocumentFormatDefault.data(),
+     kUrfSupported.data(), kPdfVersions.data(), kMopriaCertified.data(),
+     kPrinterKind.data()}};
 
 // Converts an IPP attribute `attr` to the appropriate JobState enum.
 CupsJob::JobState ToJobState(ipp_attribute_t* attr) {
@@ -358,6 +364,7 @@ bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
     } else if (name == kIppFeaturesSupported) {
       std::vector<std::string> features;
       ParseCollection(attr, &features);
+      printer_info->ipp_features = features;
       printer_info->ipp_everywhere = base::Contains(features, kIppEverywhere);
     } else if (name == kDocumentFormatSupported) {
       ParseCollection(attr, &printer_info->document_formats);
@@ -407,6 +414,21 @@ bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
       if (document_format_default_string) {
         printer_info->document_format_default = document_format_default_string;
       }
+    } else if (name == kUrfSupported) {
+      ParseCollection(attr, &printer_info->urf_supported);
+    } else if (name == kPdfVersions) {
+      ParseCollection(attr, &printer_info->pdf_versions);
+    } else if (name == kMopriaCertified) {
+      int tag = ippGetValueTag(attr);
+      if (tag != IPP_TAG_TEXT && tag != IPP_TAG_TEXTLANG) {
+        LOG(WARNING) << "mopria-certified value tag is " << tag << ".";
+      }
+      const char* mopria_certified_string = ippGetString(attr, 0, nullptr);
+      if (mopria_certified_string) {
+        printer_info->mopria_certified = mopria_certified_string;
+      }
+    } else if (name == kPrinterKind) {
+      ParseCollection(attr, &printer_info->printer_kind);
     }
   }
 

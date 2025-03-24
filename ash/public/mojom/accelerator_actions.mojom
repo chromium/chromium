@@ -148,6 +148,7 @@ enum AcceleratorAction {
   kToggleGeminiApp,
   kToggleDoNotDisturb,
   kToggleCameraAllowed,
+  kStartSunfishSession,
   // The following are DEBUG actions with an offset. This is to keep the enum
   // in sync with `AcceleratorActions` in ash/public/cpp/accelerator_actions.h.
   kDebugClearUseKMeansPref = 9000,

@@ -53,12 +53,13 @@ class OnTaskExtensionsManagerImplTest : public ::testing::Test {
       ManifestLocation location = ManifestLocation::kUnpacked) {
     scoped_refptr<const Extension> extension =
         extensions::ExtensionBuilder("Extension").SetLocation(location).Build();
-    extension_environment_.GetExtensionService()->AddExtension(extension.get());
+    extension_environment_.GetExtensionRegistrar()->AddExtension(
+        extension.get());
     return extension.get();
   }
 
   void UninstallExtension(const std::string& extension_id) {
-    extension_environment_.GetExtensionService()->UnloadExtension(
+    extension_environment_.GetExtensionRegistrar()->RemoveExtension(
         extension_id, UnloadedExtensionReason::UNINSTALL);
   }
 

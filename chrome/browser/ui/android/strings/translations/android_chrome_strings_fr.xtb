@@ -584,6 +584,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3721119614952978349">Google et vous</translation>
 <translation id="3737319253362202215">Paramètres de traduction</translation>
 <translation id="3738139272394829648">Appuyer pour rechercher</translation>
+<translation id="3739455665973395693">Aucun mot de passe compromis dans votre compte Google</translation>
 <translation id="3739899004075612870">Favori ajouté dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">La recherche vocale n'est pas disponible sur cet appareil</translation>
 <translation id="376561056759077985">Certaines données ne sont pas encore enregistrées</translation>
@@ -637,6 +638,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3985215325736559418">Voulez-vous télécharger <ph name="FILE_NAME" /> de nouveau ?</translation>
 <translation id="3987993985790029246">Copier lien</translation>
 <translation id="4000212216660919741">Mode hors connexion</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis dans votre compte Google}one{# mot de passe compromis dans votre compte Google}other{# mots de passe compromis dans votre compte Google}}</translation>
 <translation id="4016425174436051808">Impossible de vous abonner en raison d'une erreur.</translation>
 <translation id="4024768890073681126">Ton navigateur est géré par ton parent</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
@@ -692,6 +694,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4270730597186910506">Suivre ou arrêter de suivre un produit.</translation>
 <translation id="4277529130885813215">Utiliser un autre appareil</translation>
 <translation id="4282440837784183472">Votre organisation (<ph name="MANAGED_DOMAIN" />) gère le compte auquel vous vous connectez et la manière dont Chrome peut être utilisé. Votre administrateur peut configurer ou limiter certaines fonctionnalités.</translation>
+<translation id="4285498937028063278">Retirer</translation>
 <translation id="4285846616383034558">Cookies, cache et autres données des sites</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage de l'écran dans les paramètres Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nouvel onglet nav. privée</translation>
@@ -801,7 +804,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4769095993849849966">Nouveau nom de fichier</translation>
 <translation id="4769632191812288342">Vous bénéficiez de la protection standard</translation>
 <translation id="4773122030389014189">Partager le groupe d'onglets "<ph name="GROUP_NAME" />"</translation>
-<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> ont bien été supprimées</translation>
+<translation id="4775646243557794597">Suppression réussie sur la période suivante : <ph name="TIME_PERIOD" /></translation>
 <translation id="4777866634702576038">Supprimer le groupe d'onglets ?</translation>
 <translation id="4778653490315793244">Rien à afficher pour le moment</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> est votre moteur de recherche par défaut</translation>
@@ -831,6 +834,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="488187801263602086">Renommer le fichier</translation>
 <translation id="4885273946141277891">Le nombre d'instances de Chrome n'est pas compatible.</translation>
+<translation id="4890973535105146893">Aucun mot de passe enregistré dans votre compte Google</translation>
 <translation id="4905823827770127520">Inclure un lien à la page</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
 <translation id="4910889077668685004">Applications de paiement</translation>
@@ -920,9 +924,10 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
 <translation id="5326246328175179736">Vous ne pouvez pas vous connecter avec ce compte</translation>
+<translation id="5327248766486351172">Nom</translation>
 <translation id="5328542107300944283">Utiliser avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Demandes d'autorisation</translation>
-<translation id="534580735623577507">Aucun site à partir des <ph name="TIME_PERIOD" /></translation>
+<translation id="534580735623577507">Aucun site sur la période suivante : <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
 <translation id="5375374982898812658">Vous perdrez immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", qui sera supprimé de tous vos appareils</translation>
 <translation id="5375577065097716013">Rechercher image avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
@@ -1075,6 +1080,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
 <translation id="6071995715087444295">Pour vérifier si vos mots de passe ont été compromis, connectez-vous à votre compte Google</translation>
+<translation id="6078323886959318429">Ajouter un raccourci</translation>
 <translation id="6085886413119427067">Détermine comment se connecter aux sites Web via une connexion sécurisée</translation>
 <translation id="6087286598828478206">Bloquer et quitter le groupe ?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> heures restantes</translation>
@@ -1311,7 +1317,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6971862865055170158">Ne pas approuver</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nouvel onglet ou onglet mis à jour</translation>
 <translation id="6978717888677691380">Sites que vous avez bloqués</translation>
-<translation id="6979737339423435258">Toutes les données</translation>
+<translation id="6979737339423435258">Depuis le début</translation>
 <translation id="6983306615164277634">Vous pouvez aussi appuyer de manière prolongée sur la barre d'adresse pour changer la position.</translation>
 <translation id="6987047470128880212">La navigation privée n'est pas disponible sur cet appareil</translation>
 <translation id="6991701761229081516">Vos mots de passe seront téléchargés au format CSV. Toute personne ou entité (y compris les applis) ayant accès au fichier pourra les voir. Les mots de passe exportés seront supprimés de Chrome.</translation>
@@ -1561,7 +1567,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8084864785646838999">Il est possible qu'une partie de votre historique ne soit pas affichée ici. Pour le voir en intégralité, sélectionnez "Ouvrir tout l'historique Chrome". En outre, votre compte Google conserve peut-être d'autres historiques de navigation sur <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8088176524274673045">Pour partager avec des personnes à proximité, laissez-les scanner ce QR code</translation>
 <translation id="8090732854597034573">Si tu as besoin d'aide, demande à ton parent</translation>
-<translation id="8101414242770404289">Aucun onglet à partir des <ph name="TIME_PERIOD" /></translation>
+<translation id="8101414242770404289">Aucun onglet sur la période suivante : <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>
 <translation id="8105613260829665809">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" />.\nPour améliorer l'appli, Chrome envoie les données d'utilisation et de plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1703,6 +1709,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8715286883001906001">Renforcez les mots de passe de votre compte Google</translation>
 <translation id="8723453889042591629">Traduire rapidement cette page. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
@@ -1830,6 +1837,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>
+<translation id="984756705737569814">Impossible de vérifier les mots de passe dans votre compte Google</translation>
 <translation id="987264212798334818">Général</translation>
 <translation id="988091779042748639">Pour supprimer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> onglets</translation>

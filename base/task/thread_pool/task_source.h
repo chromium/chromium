@@ -221,6 +221,8 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
 
   void ClearForTesting();
 
+  const TaskTraits& traits() const { return traits_; }
+
  protected:
   virtual ~TaskSource();
 

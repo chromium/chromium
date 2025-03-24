@@ -235,6 +235,7 @@
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "ui/android/event_forwarder.h"
 #include "ui/android/view_android.h"
 #include "ui/base/device_form_factor.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -8788,12 +8789,20 @@ double WebContentsImpl::GetPendingZoomLevel(RenderWidgetHostImpl* rwh) {
     // and All/FencedFrameAutomaticBeaconBrowserTest.MessageExceedsLengthLimit/
     // fencedframe.
     url = rfh->GetLastCommittedURL();
-  } else {
+  } else if (!rfh->GetParent()) {
+    // Only use the pending entry if `rfh` is a main frame, otherwise the
+    // resulting url is from outside the independently zoomed subtree, and
+    // may result in the wrong zoom level.
     NavigationEntry* pending_entry = rfh->GetController().GetPendingEntry();
     if (!pending_entry) {
       return HostZoomMap::GetZoomLevel(this, rfh->GetGlobalId());
     }
     url = pending_entry->GetURL();
+  } else {
+    // In this case `rfh` is for an independently-zoomed subframe. Call
+    // GetZoomLevel(WebContents*, RenderFrameHost*) in case `rfh` uses temporary
+    // zoom.
+    return HostZoomMap::GetZoomLevel(this, rfh->GetGlobalId());
   }
 #if BUILDFLAG(IS_ANDROID)
   return HostZoomMapForRenderFrameHost(rfh)
@@ -11714,6 +11723,13 @@ WebContentsImpl::GetRenderInputRouterDelegateRemote() {
   }
   return rir_delegate_remote_.get();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+float WebContentsImpl::GetCurrentTouchSequenceYOffset() {
+  ui::ViewAndroid* view_android = GetNativeView();
+  return view_android->event_forwarder()->GetCurrentTouchSequenceYOffset();
+}
+#endif
 
 std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
     const GURL& prefetch_url,

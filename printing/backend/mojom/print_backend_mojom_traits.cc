@@ -133,7 +133,7 @@ bool StructTraits<printing::mojom::PaperDataView,
   std::string display_name;
   std::string vendor_id;
   gfx::Size size_um;
-  std::optional<gfx::Rect> maybe_printable_area_um;
+  gfx::Rect printable_area_um;
   if (!data.ReadDisplayName(&display_name)) {
     base::debug::Alias(&data);
     base::debug::DumpWithoutCrashing();
@@ -149,18 +149,13 @@ bool StructTraits<printing::mojom::PaperDataView,
     base::debug::DumpWithoutCrashing();
     return false;
   }
-  if (!data.ReadPrintableAreaUm(&maybe_printable_area_um)) {
+  if (!data.ReadPrintableAreaUm(&printable_area_um)) {
     base::debug::Alias(&data);
     base::debug::DumpWithoutCrashing();
     return false;
   }
   int max_height_um = data.max_height_um();
   bool has_borderless_variant = data.has_borderless_variant();
-
-  // For backwards compatibility, allow printable area to be missing. Set the
-  // default printable area to be the page size.
-  gfx::Rect printable_area_um =
-      maybe_printable_area_um.value_or(gfx::Rect(size_um));
 
   // Allow empty Papers, since PrinterSemanticCapsAndDefaults can have empty
   // default Papers.

@@ -157,8 +157,7 @@ TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
   feature_list.InitAndDisableFeature(
       feature_engagement::kIPHAutofillAiOptInFeature);
 
-  client().GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled,
-                                  false);
+  SetAutofillAiOptInStatus(client(), false);
   const bool is_allowed = GetParam() == AutofillAiAction::kOptIn;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
@@ -211,23 +210,21 @@ TEST_P(AutofillAiMayPerformActionTest,
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
-// Verifies that IPH for opt-in is permitted if the user has not enabled the
-// feature pref yet.
-TEST_P(AutofillAiMayPerformActionTest, ActionsWhenAutofillAiPrefDisabled) {
-  client().GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled,
-                                  false);
+// Verifies that IPH for opt-in is permitted if the user has not opted into
+// AutofillAI.
+TEST_P(AutofillAiMayPerformActionTest, ActionsWhenNotOptedIntoAutofillAi) {
+  SetAutofillAiOptInStatus(client(), false);
   const bool is_allowed = (GetParam() == AutofillAiAction::kOptIn) ||
                           (GetParam() == AutofillAiAction::kIphForOptIn);
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
-// Tests that listing, editing and removing entities is permitted if the
-// AutofillAI pref is disabled, but there is data saved.
+// Tests that listing, editing and removing entities is permitted if user is no
+// longer opted into AutofillAI, but there is data saved.
 TEST_P(AutofillAiMayPerformActionTest,
-       ActionsWhenAutofillAiPrefDisabledWithDataSaved) {
+       ActionsWhenAutofillNotOptedIntoAutofillAiButDataSaved) {
   AddEntity();
-  client().GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled,
-                                  false);
+  SetAutofillAiOptInStatus(client(), false);
   const bool is_allowed =
       (GetParam() == AutofillAiAction::kOptIn) ||
       (GetParam() == AutofillAiAction::kIphForOptIn) ||
@@ -322,9 +319,6 @@ TEST_F(AutofillAiPermissionUtilsTest, Muh) {
   ASSERT_NE(initial_email, other_email);
 
   // The initially signed in account is opted in.
-  // TODO(crbug.com/404485362): Remove the next line once the test fixture
-  // transitions to this sign-in method.
-  EXPECT_TRUE(SetAutofillAiOptInStatus(client(), true));
   EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
 
   // Signed out clients are never opted in.

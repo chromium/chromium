@@ -128,15 +128,19 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-bool HomeButtonController::IsAssistantAvailable() {
-  AssistantStateBase* state = AssistantState::Get();
-  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
-         state->settings_enabled().value_or(false);
+bool HomeButtonController::IsLongPressActionAvailable() {
+  return IsAssistantAvailable() || IsSunfishOrScannerAvailable();
 }
 
 bool HomeButtonController::IsAssistantVisible() {
   return AssistantUiController::Get()->GetModel()->visibility() ==
          AssistantVisibility::kVisible;
+}
+
+bool HomeButtonController::IsAssistantAvailable() {
+  AssistantStateBase* state = AssistantState::Get();
+  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
+         state->settings_enabled().value_or(false);
 }
 
 bool HomeButtonController::IsSunfishOrScannerAvailable() const {
@@ -163,11 +167,11 @@ void HomeButtonController::OnDisplayTabletStateChanged(
 
 void HomeButtonController::OnAssistantFeatureAllowedChanged(
     assistant::AssistantAllowedState state) {
-  button_->OnAssistantAvailabilityChanged();
+  button_->OnIconUpdated();
 }
 
 void HomeButtonController::OnAssistantSettingsEnabled(bool enabled) {
-  button_->OnAssistantAvailabilityChanged();
+  button_->OnIconUpdated();
 }
 
 void HomeButtonController::OnUiVisibilityChanged(
@@ -175,12 +179,12 @@ void HomeButtonController::OnUiVisibilityChanged(
     AssistantVisibility old_visibility,
     std::optional<AssistantEntryPoint> entry_point,
     std::optional<AssistantExitPoint> exit_point) {
-  button_->OnAssistantAvailabilityChanged();
+  button_->OnIconUpdated();
 }
 
 void HomeButtonController::OnSunfishScannerFeatureStatesChanged(
     SunfishScannerFeatureWatcher& source) {
-  // TODO: crbug.com/391909810 - Update the button's visibility here.
+  button_->OnIconUpdated();
 }
 
 void HomeButtonController::StartAssistantAnimation() {

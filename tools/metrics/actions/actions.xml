@@ -12215,7 +12215,8 @@ should be able to be added at any place in this file.
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
-    Logged anytime glic is disabled, regardless of source.
+    Logged anytime glic is disabled, regardless of source. Note: Glic can only
+    be disabled by account and policy changes that are not user initiated.
   </description>
 </action>
 
@@ -12223,7 +12224,11 @@ should be able to be added at any place in this file.
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
-    Logged anytime glic is enabled, regardless of source.
+    This metric is currently broken. It is logged once per profile
+    initialization if Glic is enabled for that profile. The only action a user
+    can take to enable Glic is to accept the FRE. Use Glic.Fre.Accept instead of
+    this metric. All other actions that might enable Glic are not user
+    initiated. And not likely to occur once the FRE has been accepted.
   </description>
 </action>
 

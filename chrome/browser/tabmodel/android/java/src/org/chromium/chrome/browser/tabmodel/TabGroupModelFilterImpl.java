@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
+
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -1304,38 +1306,38 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         return true;
     }
 
-    // TabList implementation.
-    @Override
-    public boolean isIncognito() {
+    private boolean isIncognito() {
         return getTabModel().isIncognito();
     }
 
     @Override
-    public boolean isOffTheRecord() {
-        return getTabModel().isOffTheRecord();
+    public List<Tab> getRepresentativeTabList() {
+        int size = getIndividualTabAndGroupCount();
+        List<Tab> tabs = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            tabs.add(getRepresentativeTabAt(i));
+        }
+        return tabs;
     }
 
     @Override
-    public boolean isIncognitoBranded() {
-        return getTabModel().isIncognitoBranded();
-    }
-
-    @Override
-    public int index() {
+    public int getCurrentRepresentativeTabIndex() {
         return mCurrentGroupIndex;
     }
 
-    /**
-     * @return count of @{@link TabGroup}s in model.
-     */
     @Override
-    public int getCount() {
+    public @Nullable Tab getCurrentRepresentativeTab() {
+        return getRepresentativeTabAt(mCurrentGroupIndex);
+    }
+
+    @Override
+    public int getIndividualTabAndGroupCount() {
         return mRootIdToGroupMap.size();
     }
 
     @Override
-    public Tab getTabAt(int index) {
-        if (index < 0 || index >= getCount()) return null;
+    public Tab getRepresentativeTabAt(int index) {
+        if (index < 0 || index >= getIndividualTabAndGroupCount()) return null;
         int rootId = Tab.INVALID_TAB_ID;
         Set<Integer> rootIdSet = mRootIdToGroupIndexMap.keySet();
         for (Integer rootIdKey : rootIdSet) {
@@ -1350,7 +1352,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public int indexOf(Tab tab) {
+    public int representativeIndexOf(Tab tab) {
         if (tab == null
                 || tab.isIncognito() != isIncognito()
                 || getTabModel().indexOf(tab) == TabList.INVALID_TAB_INDEX) {
@@ -1763,7 +1765,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     public void restoreCompleted() {
         mTabRestoreCompleted = true;
 
-        if (getCount() != 0) reorder();
+        if (getIndividualTabAndGroupCount() != 0) reorder();
 
         for (TabModelObserver observer : mFilteredObservers) {
             observer.restoreCompleted();

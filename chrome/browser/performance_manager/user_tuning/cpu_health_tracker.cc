@@ -17,7 +17,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -191,9 +191,9 @@ bool CpuHealthTracker::CanDiscardPage(
     return false;
   }
 
-  policies::PageDiscardingHelper* const discard_helper =
-      policies::PageDiscardingHelper::GetFromGraph(GetOwningGraph());
-  CHECK(discard_helper);
+  policies::DiscardEligibilityPolicy* const eligibility_policy =
+      policies::DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
+  CHECK(eligibility_policy);
 
   // While in demo mode, we don't need to use the measurement_window when
   // determining tab actionability so we can immediately trigger the
@@ -208,7 +208,7 @@ bool CpuHealthTracker::CanDiscardPage(
           base::TimeDelta::Max()) < measurement_window;
 
   return !did_audio_status_change &&
-         discard_helper->CanDiscard(
+         eligibility_policy->CanDiscard(
              page_node, ::mojom::LifecycleUnitDiscardReason::SUGGESTED,
              measurement_window) == policies::CanDiscardResult::kEligible;
 }

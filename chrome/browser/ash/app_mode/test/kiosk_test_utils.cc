@@ -18,14 +18,19 @@
 #include "base/check_op.h"
 #include "base/functional/function_ref.h"
 #include "base/notimplemented.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -38,6 +43,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
@@ -57,6 +63,32 @@ const extensions::Extension* FindInExtensionRegistry(Profile& profile,
   return extensions::ExtensionRegistry::Get(&profile)->GetInstalledExtension(
       std::string(app_id));
 }
+
+// Helper to wait for `KioskSystemSession` to be initialized. This happens late
+// during Kiosk launch.
+class SessionInitializedWaiter : public KioskAppManagerObserver {
+ public:
+  SessionInitializedWaiter() {
+    observation_.AddObservation(KioskChromeAppManager::Get());
+    observation_.AddObservation(WebKioskAppManager::Get());
+    observation_.AddObservation(KioskIwaManager::Get());
+  }
+  SessionInitializedWaiter(const SessionInitializedWaiter&) = delete;
+  SessionInitializedWaiter& operator=(const SessionInitializedWaiter&) = delete;
+  ~SessionInitializedWaiter() override = default;
+
+  bool Wait() { return future_.Wait(); }
+
+ private:
+  // KioskAppManagerObserver:
+  void OnKioskSessionInitialized() override { future_.SetValue(); }
+
+  base::test::TestFuture<void> future_;
+
+  base::ScopedMultiSourceObservation<KioskAppManagerBase,
+                                     KioskAppManagerObserver>
+      observation_{this};
+};
 
 }  // namespace
 
@@ -82,6 +114,59 @@ KioskApp TheKioskWebApp() {
   auto app = TheKioskApp();
   CHECK_EQ(app.id().type, KioskAppType::kWebApp);
   return app;
+}
+
+std::optional<KioskApp> GetAppByAccountId(std::string_view account_id) {
+  // We don't know which app type `account_id` refers to at this point. Create a
+  // device local account ID for each app type and see which one exists.
+  auto chrome_app_account_id = CreateDeviceLocalAccountId(
+      account_id, policy::DeviceLocalAccountType::kKioskApp);
+  auto web_app_account_id = CreateDeviceLocalAccountId(
+      account_id, policy::DeviceLocalAccountType::kWebKioskApp);
+  auto iwa_account_id = CreateDeviceLocalAccountId(
+      account_id, policy::DeviceLocalAccountType::kKioskIsolatedWebApp);
+  for (const auto& app : KioskController::Get().GetApps()) {
+    switch (app.id().type) {
+      case KioskAppType::kChromeApp:
+        if (app.id().account_id == chrome_app_account_id) {
+          return app;
+        }
+        break;
+      case KioskAppType::kWebApp:
+        if (app.id().account_id == web_app_account_id) {
+          return app;
+        }
+        break;
+      case KioskAppType::kIsolatedWebApp:
+        if (app.id().account_id == iwa_account_id) {
+          return app;
+        }
+        break;
+    }
+  }
+  return std::nullopt;
+}
+
+bool WaitKioskLaunched() {
+  if (KioskController::Get().GetKioskSystemSession() != nullptr) {
+    // Kiosk session already initialized, nothing to wait for.
+    return true;
+  }
+  return SessionInitializedWaiter().Wait();
+}
+bool LaunchAppManually(const KioskApp& app) {
+  switch (app.id().type) {
+    case KioskAppType::kChromeApp:
+      return LoginScreenTestApi::LaunchApp(app.id().app_id.value());
+    case KioskAppType::kWebApp:
+    case KioskAppType::kIsolatedWebApp:
+      return LoginScreenTestApi::LaunchApp(app.id().account_id);
+  }
+}
+
+bool LaunchAppManually(std::string_view account_id) {
+  auto app_maybe = GetAppByAccountId(account_id);
+  return app_maybe.has_value() ? LaunchAppManually(app_maybe.value()) : false;
 }
 
 std::optional<base::AutoReset<bool>> BlockKioskLaunch() {
@@ -224,6 +309,12 @@ void CachePolicy(const std::string& account_id,
   auto& manager = CHECK_DEREF(FakeSessionManagerClient::Get());
   manager.set_device_local_account_policy(account_id, policy_blob);
   manager.device_local_account_policy(account_id);
+}
+
+AccountId CreateDeviceLocalAccountId(std::string_view account_id,
+                                     policy::DeviceLocalAccountType type) {
+  return AccountId(AccountId::FromUserEmail(
+      policy::GenerateDeviceLocalAccountUserId(account_id, type)));
 }
 
 }  // namespace ash::kiosk::test

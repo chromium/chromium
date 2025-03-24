@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -38,7 +39,7 @@ class AuthenticationFlowInProfileTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     FakeSystemIdentityManager* fake_system_identity_manager =
@@ -75,7 +76,7 @@ class AuthenticationFlowInProfileTest : public PlatformTest {
     id<AuthenticationFlowPerformerDelegate> performer_delegate =
         GetAuthenticationFlowPerformerDelegate();
     OCMExpect([performer_mock_ initWithDelegate:performer_delegate
-                           changeProfileHandler:nil])
+                           changeProfileHandler:[OCMArg any]])
         .andReturn(performer_mock_);
   }
 
@@ -87,9 +88,10 @@ class AuthenticationFlowInProfileTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  AuthenticationFlowInProfile* authentication_flow_in_profile_ = nil;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  AuthenticationFlowInProfile* authentication_flow_in_profile_ = nil;
   id<SystemIdentity> identity1_ = nil;
   id<SystemIdentity> identity2_ = nil;
   id<SystemIdentity> managed_identity_ = nil;

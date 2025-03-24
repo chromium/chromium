@@ -28,6 +28,23 @@ constexpr char kDocumentFormatDefault[] = "Default";
 constexpr char kDocumentFormatPreferred[] = "Preferred";
 constexpr char kFirstDocumentFormatSupported[] = "First";
 constexpr char kSecondDocumentFormatSupported[] = "Second";
+constexpr char kFirstUrfSupported[] = "IS4-20";
+constexpr char kSecondUrfSupported[] = "W8";
+constexpr char kFirstIppFeatureString[] = "adf";
+constexpr char kSecondIppFeatureString[] = "platen";
+constexpr metrics::PrinterEventProto::IppFeature kFirstIppFeatureSupported =
+    metrics::PrinterEventProto::ADF;
+constexpr metrics::PrinterEventProto::IppFeature kSecondIppFeatureSupported =
+    metrics::PrinterEventProto::PLATEN;
+constexpr char kFirstPdfVersionString[] = "iso-32000-1_2008";
+constexpr char kSecondPdfVersionString[] = "adobe-1.4";
+constexpr metrics::PrinterEventProto::PdfVersion kFirstPdfVersionSupported =
+    metrics::PrinterEventProto::ISO_32000_1_2008;
+constexpr metrics::PrinterEventProto::PdfVersion kSecondPdfVersionSupported =
+    metrics::PrinterEventProto::ADOBE_1_4;
+constexpr char kMopriaCertified[] = "1.3";
+constexpr char kFirstPrinterKind[] = "document";
+constexpr char kSecondPrinterKind[] = "photo";
 
 class PrinterEventTrackerTest : public testing::Test {
  public:
@@ -110,6 +127,15 @@ TEST_F(PrinterEventTrackerTest, InstalledIppPrinter) {
   ipp_printer_info.document_formats.push_back(kSecondDocumentFormatSupported);
   ipp_printer_info.document_formats.push_back(kDocumentFormatDefault);
   ipp_printer_info.document_formats.push_back(kDocumentFormatPreferred);
+  ipp_printer_info.urf_supported.push_back(kFirstUrfSupported);
+  ipp_printer_info.urf_supported.push_back(kSecondUrfSupported);
+  ipp_printer_info.pdf_versions.push_back(kFirstPdfVersionString);
+  ipp_printer_info.pdf_versions.push_back(kSecondPdfVersionString);
+  ipp_printer_info.ipp_features.push_back(kFirstIppFeatureString);
+  ipp_printer_info.ipp_features.push_back(kSecondIppFeatureString);
+  ipp_printer_info.mopria_certified = kMopriaCertified;
+  ipp_printer_info.printer_kind.push_back(kFirstPrinterKind);
+  ipp_printer_info.printer_kind.push_back(kSecondPrinterKind);
 
   tracker_.RecordIppPrinterInstalled(test_printer, PrinterEventTracker::kUser,
                                      ipp_printer_info);
@@ -130,6 +156,19 @@ TEST_F(PrinterEventTrackerTest, InstalledIppPrinter) {
       testing::UnorderedElementsAreArray(
           {kFirstDocumentFormatSupported, kSecondDocumentFormatSupported,
            kDocumentFormatDefault, kDocumentFormatPreferred}));
+  EXPECT_THAT(recorded_event.urf_supported(),
+              testing::UnorderedElementsAreArray(
+                  {kFirstUrfSupported, kSecondUrfSupported}));
+  EXPECT_THAT(recorded_event.pdf_versions_supported(),
+              testing::UnorderedElementsAreArray(
+                  {kFirstPdfVersionSupported, kSecondPdfVersionSupported}));
+  EXPECT_THAT(recorded_event.ipp_features_supported(),
+              testing::UnorderedElementsAreArray(
+                  {kFirstIppFeatureSupported, kSecondIppFeatureSupported}));
+  EXPECT_EQ(recorded_event.mopria_certified(), kMopriaCertified);
+  EXPECT_THAT(recorded_event.printer_kind(),
+              testing::UnorderedElementsAreArray(
+                  {kFirstPrinterKind, kSecondPrinterKind}));
 
   EXPECT_FALSE(recorded_event.has_usb_printer_manufacturer());
   EXPECT_FALSE(recorded_event.has_usb_printer_model());
@@ -152,6 +191,15 @@ TEST_F(PrinterEventTrackerTest, InstalledPrinterAuto) {
   ipp_printer_info.document_formats.push_back(kSecondDocumentFormatSupported);
   ipp_printer_info.document_formats.push_back(kDocumentFormatDefault);
   ipp_printer_info.document_formats.push_back(kDocumentFormatPreferred);
+  ipp_printer_info.urf_supported.push_back(kFirstUrfSupported);
+  ipp_printer_info.urf_supported.push_back(kSecondUrfSupported);
+  ipp_printer_info.pdf_versions.push_back(kFirstPdfVersionString);
+  ipp_printer_info.pdf_versions.push_back(kSecondPdfVersionString);
+  ipp_printer_info.ipp_features.push_back(kFirstIppFeatureString);
+  ipp_printer_info.ipp_features.push_back(kSecondIppFeatureString);
+  ipp_printer_info.mopria_certified = kMopriaCertified;
+  ipp_printer_info.printer_kind.push_back(kFirstPrinterKind);
+  ipp_printer_info.printer_kind.push_back(kSecondPrinterKind);
 
   tracker_.RecordIppPrinterInstalled(
       test_printer, PrinterEventTracker::kAutomatic, ipp_printer_info);
@@ -172,6 +220,19 @@ TEST_F(PrinterEventTrackerTest, InstalledPrinterAuto) {
       testing::UnorderedElementsAreArray(
           {kFirstDocumentFormatSupported, kSecondDocumentFormatSupported,
            kDocumentFormatDefault, kDocumentFormatPreferred}));
+  EXPECT_THAT(recorded_event.urf_supported(),
+              testing::UnorderedElementsAreArray(
+                  {kFirstUrfSupported, kSecondUrfSupported}));
+  EXPECT_THAT(recorded_event.pdf_versions_supported(),
+              testing::UnorderedElementsAreArray(
+                  {kFirstPdfVersionSupported, kSecondPdfVersionSupported}));
+  EXPECT_THAT(recorded_event.ipp_features_supported(),
+              testing::UnorderedElementsAreArray(
+                  {kFirstIppFeatureSupported, kSecondIppFeatureSupported}));
+  EXPECT_EQ(recorded_event.mopria_certified(), kMopriaCertified);
+  EXPECT_THAT(recorded_event.printer_kind(),
+              testing::UnorderedElementsAreArray(
+                  {kFirstPrinterKind, kSecondPrinterKind}));
 
   // For autoconf printers, ppd identifier is blank but a successful setup is
   // recorded.

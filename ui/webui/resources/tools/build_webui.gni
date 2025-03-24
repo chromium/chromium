@@ -536,8 +536,14 @@ template("build_webui") {
   }
 
   if (generate_code_cache) {
+    generate_code_cache_grd_prefix = grd_prefix + "_code_cache"
+    generate_code_cache_grd_target_name = "build_code_cache_grd"
+    if (generate_grdp) {
+      generate_code_cache_grd_target_name = "build_code_cache_grdp"
+    }
+
     generate_code_cache("build_code_cache") {
-      visibility = [ ":build_code_cache_grdp" ]
+      visibility = [ ":$generate_code_cache_grd_target_name" ]
 
       # Rebase the minified file paths under the minified directory.
       minified_outputs =
@@ -554,14 +560,42 @@ template("build_webui") {
       deps = [ ":build_min_js" ]
     }
 
-    generate_grd("build_code_cache_grdp") {
+    generate_grd(generate_code_cache_grd_target_name) {
+      if (!generate_grdp) {
+        visibility = [ ":code_cache_resources_grit" ]
+      }
       if (defined(invoker.grd_resource_path_prefix)) {
         resource_path_prefix = invoker.grd_resource_path_prefix
       }
-      grd_prefix = grd_prefix + "_code_cache"
-      out_grd = "$target_gen_dir/code_cache_resources.grdp"
+      grd_prefix = generate_code_cache_grd_prefix
+      out_grd = "$target_gen_dir/code_cache_resources.grd"
+      if (generate_grdp) {
+        out_grd = "$target_gen_dir/code_cache_resources.grdp"
+      }
       manifest_files = [ "$target_gen_dir/build_code_cache_manifest.json" ]
       deps = [ ":build_code_cache" ]
+    }
+
+    if (!generate_grdp) {
+      grit("code_cache_resources") {
+        enable_input_discovery_for_gn_analyze = false
+        source = "$target_gen_dir/code_cache_resources.grd"
+
+        outputs = [
+          "grit/${generate_code_cache_grd_prefix}_resources.h",
+          "grit/${generate_code_cache_grd_prefix}_resources_map.cc",
+          "grit/${generate_code_cache_grd_prefix}_resources_map.h",
+          "${generate_code_cache_grd_prefix}_resources.pak",
+        ]
+
+        grit_output_dir = "$root_gen_dir/chrome"
+        if (defined(invoker.grit_output_dir)) {
+          grit_output_dir = invoker.grit_output_dir
+        }
+        output_dir = grit_output_dir
+
+        deps = [ ":$generate_code_cache_grd_target_name" ]
+      }
     }
   }
 

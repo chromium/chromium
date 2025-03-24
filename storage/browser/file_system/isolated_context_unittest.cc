@@ -174,6 +174,35 @@ TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
   ASSERT_FALSE(isolated_context()->GetRegisteredPath(fs5.id(), &path));
 }
 
+TEST_F(IsolatedContextTest, IsPathValid) {
+  struct {
+    base::FilePath::StringViewType path;
+    bool expected;
+  } cases[]{
+      {DRIVE FPL("/foo"), true},
+      {DRIVE FPL("foo"), false},
+      {DRIVE FPL("/foo/../bar"), false},
+#if BUILDFLAG(IS_ANDROID)
+      {FPL("content://authority/path"), true},
+#else
+      {FPL("content://authority/path"), false},
+#endif
+  };
+
+  for (const auto& tc : cases) {
+    base::FilePath path(tc.path);
+    IsolatedContext::FileInfoSet files;
+    std::string name;
+    EXPECT_EQ(tc.expected, files.AddPath(path, &name));
+    EXPECT_EQ(tc.expected, files.AddPathWithName(path, "name"));
+
+    IsolatedContext::ScopedFSHandle fs =
+        isolated_context()->RegisterFileSystemForPath(
+            kFileSystemTypeLocal, std::string(), path, nullptr);
+    EXPECT_EQ(tc.expected, fs.is_valid());
+  }
+}
+
 TEST_F(IsolatedContextTest, CrackWithRelativePaths) {
   struct Relatives {
     base::FilePath::StringType path;

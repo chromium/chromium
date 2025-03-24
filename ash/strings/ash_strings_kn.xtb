@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">ಪ್ರಖರತೆ ಹೆಚ್ಚು ಮಾಡುವಿಕೆಯನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="1680659827022803830">ವೀಡಿಯೊ ಕಾಲ್ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">ನೀವು ಈ ಫೀಚರ್ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಆಫ್ ಮಾಡಬಹುದು. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ಟೈಮರ್ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ವಿಳಾಸ: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ಸಕ್ರಿಯ ವಿಂಡೋ ಎಡಭಾಗದಲ್ಲಿ ಡಾಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್, ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4228078597006700451">ಕಂಟ್ರೋಲ್‌ಗಳನ್ನು ಸೆಟಪ್‌ ಮಾಡಿಲ್ಲ</translation>
 <translation id="4230560241506423345">ಹೊಸತು</translation>
+<translation id="4236726631849783264">ಶಿಫಾರಸು ಮಾಡಿದ ಕ್ರಮಗಳ ಕುರಿತ ರಿಮೈಂಡರ್</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ಅವಲೋಕನ ಮೋಡ್‌</translation>
 <translation id="4242533952199664413">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆ</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">ಮಾದ್ಯಮ</translation>
 <translation id="4279490309300973883">ಪ್ರತಿಬಿಂಬಿಸುವಿಕೆ</translation>
 <translation id="4280601795273309128">ಭದ್ರತಾ ಅಪ್‌ಡೇಟ್‌ಗಳು ಕೊನೆಗೊಂಡಿವೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.</translation>
-<translation id="4281739221820540368">Google Docs ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="4283888303416325161">ಇನ್ನಷ್ಟು ಸುರಕ್ಷತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="4285498937028063278">ಅನ್‌ಪಿನ್</translation>
 <translation id="428715201724021596">ಪ್ರೊಫೈಲ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{ಈಗಲೇ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}=1{1 ಸೆಕೆಂಡ್ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}one{# ಸೆಕೆಂಡ್‌ಗಳ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}other{# ಸೆಕೆಂಡ್‌ಗಳ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}}</translation>
 <translation id="4472575034687746823">ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="4477751544736611934">ಇದರಿಂದ ಡೇಟಾ ವೆಚ್ಚವನ್ನು ತೆರಬೇಕಾಗಬಹುದು.
 1 ಸಾಧನ ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಆಗಿ ಸೇವ್‌ ಮಾಡಿ</translation>
 <translation id="4548482551627849548">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ಎಡಭಾಗದಲ್ಲಿರುವ ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="4552748006424994716">ಪ್ರತಿಧ್ವನಿಯನ್ನು ತಪ್ಪಿಸಲು, ವೈರ್‌ ಸಂಪರ್ಕ ಹೊಂದಿದ್ದ ಹೆಡ್‌ಫೋನ್‌ ಮೂಲಕ ಮಾತ್ರ ನಿಮ್ಮ ಮೈಕ್ ಅನ್ನು ನೀವು ಆಲಿಸಬಹುದು.</translation>
+<translation id="4556953949326137018">"Calendar ಗೆ ಸೇರಿಸಿ" ಅಥವಾ "Google Docs ರಚಿಸಿ" ನಂತಹ ಶಿಫಾರಸು ಮಾಡಿದ ಕ್ರಮಗಳನ್ನು ನೀವು ಬಳಸಿದಾಗ, ಆಯ್ಕೆಮಾಡಿದ ಪ್ರದೇಶದಿಂದ ಕಂಟೆಂಟ್‌ ಅನ್ನು <ph name="LINK_TO_SERVICE_TERMS" /> ಗೆ ಒಳಪಟ್ಟು ಕ್ರಮಗಳನ್ನು ಶಿಫಾರಸು ಮಾಡಲು Google ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ವೈಯಕ್ತಿಕ, ಸೂಕ್ಷ್ಮವಾದ ಅಥವಾ ಗೌಪ್ಯವಾದ ಯಾವುದೇ ಮಾಹಿತಿಯನ್ನೂ ಸೇರಿಸಬೇಡಿ.</translation>
 <translation id="4560576029703263363">ಆನ್</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">ಮುಂದಿನದು</translation>
 <translation id="481749895090480684">ಟಾಸ್ಕ್ ಲಿಸ್ಟ್: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್</translation>
+<translation id="4828935196674083554">ಸೇರಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="482908187605862807">Play Store ನಿಂದ ಲಭ್ಯವಿರುವ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="4831034276697007977">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳನ್ನು ಖಚಿತವಾಗಿಯೂ ಆಫ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="4835677468087803981">ಪಿನ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">ಪೇಜ್ ಅಪ್</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ಎಲ್ಲಾ ಅಧಿಸೂಚನೆಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ.</translation>
+<translation id="6426905245930183644">ರಚಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6430225033895752525">ಫೋಕಸ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="643147933154517414">ಎಲ್ಲಾ ಮುಗಿದಿದೆ</translation>
 <translation id="6431865393913628856">ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡ್</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">ಉಪಕಾರ್ಯ</translation>
 <translation id="6613765291890844037">ಒಟ್ಟು <ph name="STORAGE_TOTAL_SIZE" /> ಸಂಗ್ರಹಣೆಯಲ್ಲಿ | <ph name="STORAGE_IN_USE_SIZE" /> ಬಳಕೆಯಲ್ಲಿದೆ</translation>
 <translation id="6614169507485700968">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಆನ್ ಆಗಿದೆ</translation>
-<translation id="6618277154885124991">Google Sheets ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="6622679827379792051">ನಿಮ್ಮ ಫೋನ್‌ನ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸುವುದಕ್ಕಾಗಿ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="662279009180869175">ಸ್ಪ್ಲಿಟ್ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಲು ಎಡ ಮತ್ತು ಬಲ ಆ್ಯರೋಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="6624493541160101248">ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್: <ph name="DESK_NAME" />. ಒಟ್ಟು <ph name="DESK_COUNT" /> ರಲ್ಲಿ ಡೆಸ್ಕ್‌ <ph name="DESK_INDEX" />.</translation>
@@ -2400,6 +2404,7 @@
 <translation id="8921624153894383499">Google ಸಹಾಯಕವು ಈ ಭಾಷೆಯನ್ನು ಮಾತನಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="8926951137623668982">ಶೆಲ್ಫ್ ಯಾವಾಗಲೂ ಮರೆಯಾಗಿದೆ</translation>
 <translation id="8929566928381252430">Caps Lock ಅನ್ನು ಬಳಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವಿರಾ? ಬಳಸಿ</translation>
+<translation id="8934418770423095813">Google Doc ರಚಿಸಿ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="8936501819958976551">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8938800817013097409">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿನ ಬಲ ಪೋರ್ಟ್‌)</translation>

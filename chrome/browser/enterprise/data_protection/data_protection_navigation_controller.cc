@@ -9,10 +9,10 @@
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/enterprise/watermarking/content/watermark_text_container.h"
 #include "components/enterprise/watermarking/watermark.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {

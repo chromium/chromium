@@ -37,9 +37,9 @@ export const CrSearchFieldMixinLit =
           };
         }
 
-        label: string = '';
-        clearLabel: string = '';
-        hasSearchText: boolean = false;
+        accessor label: string = '';
+        accessor clearLabel: string = '';
+        accessor hasSearchText: boolean = false;
         private effectiveValue_: string = '';
         private searchDelayTimer_: number = -1;
 

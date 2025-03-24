@@ -292,9 +292,8 @@ class Profile : public content::BrowserContext {
 
   // Returns whether the profile is associated with the account of a child.
   // This method should not be used in new code to gate child-specific
-  // functionality. Prefer a feture specific method
-  // (eg. `SupervisedUserService::IsURLFilteringEnabled()`) or alternatively
-  // use `SupervisedUserService::IsSubjectToParentalControls()`.
+  // functionality.
+  // Use `supervised_user::IsSubjectToParentalControls()` instead.
   virtual bool IsChild() const = 0;
 
   // Returns whether opening browser windows is allowed in this profile. For

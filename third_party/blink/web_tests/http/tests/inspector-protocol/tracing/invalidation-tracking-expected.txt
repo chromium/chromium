@@ -1,13 +1,6 @@
 Tests the data of invalidation tracking trace events
 Recording started
 Tracing complete
-Recording started
-Tracing complete
-Recording started
-Tracing complete
-ScheduleStyleInvalidationTracking
-Object: {
-}
 StyleRecalcInvalidationTracking
 Array: [
 	{
@@ -18,25 +11,6 @@ Array: [
 				nodeId: number
 				nodeName: string
 				reason: string
-				subtree: boolean
-			}
-		}
-		cat: string
-		name: string
-		ph: string
-		pid: number
-		s: string
-		tid: number
-		ts: number
-	}
-	{
-		args: {
-			data: {
-				extraData: string
-				frame: string
-				nodeId: number
-				nodeName: string
-				reason: string
 				stackTrace: [
 					{
 						columnNumber: number
@@ -74,6 +48,44 @@ Array: [
 						url: string
 					}
 				]
+				subtree: boolean
+			}
+		}
+		cat: string
+		name: string
+		ph: string
+		pid: number
+		s: string
+		tid: number
+		ts: number
+	}
+	{
+		args: {
+			data: {
+				extraData: string
+				frame: string
+				nodeId: number
+				nodeName: string
+				reason: string
+				subtree: boolean
+			}
+		}
+		cat: string
+		name: string
+		ph: string
+		pid: number
+		s: string
+		tid: number
+		ts: number
+	}
+	{
+		args: {
+			data: {
+				extraData: string
+				frame: string
+				nodeId: number
+				nodeName: string
+				reason: string
 				subtree: boolean
 			}
 		}
@@ -86,9 +98,6 @@ Array: [
 		ts: number
 	}
 ]
-StyleInvalidatorInvalidationTracking
-Object: {
-}
 LayoutInvalidationTracking
 Object: {
 	args: {
@@ -97,6 +106,15 @@ Object: {
 			nodeId: number
 			nodeName: string
 			reason: string
+			stackTrace: [
+				{
+					columnNumber: number
+					functionName: string
+					lineNumber: number
+					scriptId: string
+					url: string
+				}
+			]
 		}
 	}
 	cat: string
@@ -108,7 +126,7 @@ Object: {
 	ts: number
 }
 Number of StyleResolver::ResolveStyle events:
-11
+6
 Style recalc initiator:
 forceLayout
 Layout initiator:

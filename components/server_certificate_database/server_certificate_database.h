@@ -17,6 +17,8 @@
 
 namespace net {
 
+extern const base::FilePath::CharType kServerCertificateDatabaseName[];
+
 // Wraps the SQLite database that provides on-disk storage for user-configured
 // TLS certificates. This class is expected to be created and accessed on a
 // backend sequence.

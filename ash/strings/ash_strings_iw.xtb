@@ -983,7 +983,6 @@
 <translation id="4275663329226226506">מדיה</translation>
 <translation id="4279490309300973883">שיקוף</translation>
 <translation id="4280601795273309128">אין יותר עדכוני האבטחה. צריך לשדרג את המכשיר.</translation>
-<translation id="4281739221820540368">‏יצירת מסמך Google Docs</translation>
 <translation id="4283888303416325161">כדי לשפר את רמת ההגנה, צריך להזין סיסמה</translation>
 <translation id="4285498937028063278">ביטול ההצמדה</translation>
 <translation id="428715201724021596">מתבצע חיבור לפרופיל. הפעולה עשויה להימשך מספר דקות.</translation>
@@ -1716,7 +1715,6 @@
 <translation id="6612889377159412215">תת-משימה</translation>
 <translation id="6613765291890844037">נפח אחסון בשימוש: <ph name="STORAGE_IN_USE_SIZE" /> ‏| <ph name="STORAGE_TOTAL_SIZE" /> סה"כ</translation>
 <translation id="6614169507485700968">מסך הפרטיות פועל</translation>
-<translation id="6618277154885124991">‏יצירת גיליון אלקטרוני ב-Google Sheets</translation>
 <translation id="6622679827379792051">הגדרת ההצגה של האפליקציות שבטלפון</translation>
 <translation id="662279009180869175">אפשר לשנות את גודל המסך המפוצל בעזרת שימוש בחצים ימינה או שמאלה</translation>
 <translation id="6624493541160101248">שולחן העבודה הווירטואלי הנוכחי: <ph name="DESK_NAME" />. שולחן עבודה וירטואלי <ph name="DESK_INDEX" /> מתוך <ph name="DESK_COUNT" />.</translation>
@@ -2402,6 +2400,7 @@
 <translation id="8921624153894383499">‏Google Assistant לא מדברת בשפה הזאת.</translation>
 <translation id="8926951137623668982">המדף תמיד מוסתר</translation>
 <translation id="8929566928381252430">‏רוצה להשתמש במקש Caps Lock? שימוש במקש</translation>
+<translation id="8934418770423095813">‏יצירה של מסמך Google Docs</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{קובץ אחד}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="8936501819958976551">מושבתת</translation>
 <translation id="8938800817013097409">‏מכשיר עם יציאת USB-C (יציאה ימנית מאחור)</translation>

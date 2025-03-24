@@ -31,6 +31,8 @@ if (!is_android) {
 
 source_set("utils") {
   sources = [
+    "accessibility_state_utils.cc",
+    "accessibility_state_utils.h",
     "pdf_ocr_metrics.cc",
     "pdf_ocr_metrics.h",
   ]

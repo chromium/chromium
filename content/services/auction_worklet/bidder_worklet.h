@@ -947,6 +947,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
                               GenerateBidTaskList::iterator>
       finalize_receiver_set_;
 
+  // Whether any bid was finalized. We use this as a heuristic to indicate that
+  // at least one auction is going to proceed without being aborted. In
+  // particular, we use it to determine whether we should prepare contexts.
+  bool finalized_any_bid_ = false;
+
   ClosePipeCallback close_pipe_callback_;
 
   // Errors that occurred while loading the code, if any.

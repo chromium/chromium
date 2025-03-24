@@ -595,7 +595,8 @@ bool Bus::ReleaseOwnership(const std::string& service_name) {
   internal::ScopedDBusError error;
   const int result = dbus_bus_release_name(connection_, service_name.c_str(),
                                            error.get());
-  if (result == DBUS_RELEASE_NAME_REPLY_RELEASED) {
+  if (result == DBUS_RELEASE_NAME_REPLY_RELEASED ||
+      result == DBUS_RELEASE_NAME_REPLY_NON_EXISTENT) {
     owned_service_names_.erase(found);
     return true;
   } else {

@@ -4,6 +4,7 @@
 
 #include "content/browser/btm/btm_navigation_flow_detector.h"
 
+#include "base/check.h"
 #include "base/rand_util.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -552,20 +553,16 @@ void BtmNavigationFlowDetector::OnCookiesAccessed(
     const CookieAccessDetails& details) {
   // Ignore notifications for prerenders, fenced frames, etc., and for blocked
   // access attempts.
-  if (!btm::IsOrWasInPrimaryPage(render_frame_host) ||
+  if (!btm::IsOrWasInPrimaryPage(*render_frame_host) ||
       details.blocked_by_policy) {
     return;
   }
   // Attribute accesses by iframes to the first-party page they're embedded in.
-  const std::optional<GURL> first_party_url =
-      GetFirstPartyURL(render_frame_host);
-  if (!first_party_url.has_value()) {
-    return;
-  }
+  const GURL& first_party_url = GetFirstPartyURL(*render_frame_host);
   // BTM is only turned on when non-CHIPS 3PCs are blocked, so
   // mirror that behavior by ignoring non-CHIPS 3PC accesses.
   if (!HasCHIPS(details.cookie_access_result_list) &&
-      !IsSameSiteForBtm(first_party_url.value(), details.url)) {
+      !IsSameSiteForBtm(first_party_url, details.url)) {
     return;
   }
 
@@ -582,22 +579,18 @@ void BtmNavigationFlowDetector::OnCookiesAccessed(
     const CookieAccessDetails& details) {
   // Ignore notifications for prerenders, fenced frames, etc., and for blocked
   // access attempts.
-  if (!IsInPrimaryPage(navigation_handle) || details.blocked_by_policy) {
+  if (!IsInPrimaryPage(*navigation_handle) || details.blocked_by_policy) {
     return;
   }
 
   // Treat cookie accesses from iframe navigations as content-initiated.
-  if (IsInPrimaryPageIFrame(navigation_handle)) {
-    const std::optional<GURL> first_party_url =
-        GetFirstPartyURL(navigation_handle);
-    if (!first_party_url.has_value()) {
-      return;
-    }
+  if (IsInPrimaryPageIFrame(*navigation_handle)) {
+    const GURL& first_party_url = GetFirstPartyURL(*navigation_handle);
 
     // BTM is only turned on when non-CHIPS 3PCs are blocked, so
     // mirror that behavior by ignoring non-CHIPS 3PC accesses.
     if (!HasCHIPS(details.cookie_access_result_list) &&
-        !IsSameSiteForBtm(first_party_url.value(), details.url)) {
+        !IsSameSiteForBtm(first_party_url, details.url)) {
       return;
     }
 

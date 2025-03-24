@@ -81,7 +81,8 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
           profile),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile),
-      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
+      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      profile->IsOffTheRecord(), profile->IsGuestSession());
 }
 
 }  // namespace safe_browsing

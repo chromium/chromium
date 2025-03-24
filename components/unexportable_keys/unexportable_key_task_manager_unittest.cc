@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -13,6 +14,7 @@
 #include "base/token.h"
 #include "base/types/expected.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/mock_unexportable_key.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -24,22 +26,36 @@
 
 namespace unexportable_keys {
 
+using testing::ElementsAreArray;
+using testing::Return;
+
 namespace {
+// Result histograms:
 constexpr std::string_view kGenerateKeyTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult.GenerateKey";
 constexpr std::string_view kFromWrappedKeyTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult.FromWrappedKey";
 constexpr std::string_view kSignTaskResultHistogramName =
     "Crypto.UnexportableKeys.BackgroundTaskResult.Sign";
+// Retries histograms:
+constexpr std::string_view kGenerateKeyTaskRetriesSuccessHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.GenerateKey.Success";
+constexpr std::string_view kFromWrappedKeyTaskRetriesSuccessHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.FromWrappedKey.Success";
+constexpr std::string_view kSignTaskRetriesSuccessHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.Sign.Success";
+constexpr std::string_view kGenerateKeyTaskRetriesFailureHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.GenerateKey.Failure";
+constexpr std::string_view kFromWrappedKeyTaskRetriesFailureHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.FromWrappedKey.Failure";
+constexpr std::string_view kSignTaskRetriesFailureHistogramName =
+    "Crypto.UnexportableKeys.BackgroundTaskRetries.Sign.Failure";
 }  // namespace
 
 class UnexportableKeyTaskManagerTest : public testing::Test {
  public:
   UnexportableKeyTaskManagerTest() = default;
   ~UnexportableKeyTaskManagerTest() override = default;
-
-  const std::string kBaseTaskResultHistogramName =
-      "Crypto.UnexportableKeys.BackgroundTaskResult";
 
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
@@ -82,6 +98,9 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kGenerateKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kGenerateKeyTaskRetriesSuccessHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest,
@@ -105,6 +124,9 @@ TEST_F(UnexportableKeyTaskManagerTest,
       histogram_tester.GetAllSamples(kGenerateKeyTaskResultHistogramName),
       testing::ElementsAre(
           base::Bucket(ServiceError::kAlgorithmNotSupported, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kGenerateKeyTaskRetriesFailureHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsyncFailureNoKeyProvider) {
@@ -124,6 +146,9 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsyncFailureNoKeyProvider) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kGenerateKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(ServiceError::kNoKeyProvider, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kGenerateKeyTaskRetriesFailureHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
@@ -163,6 +188,9 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kFromWrappedKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kFromWrappedKeyTaskRetriesSuccessHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsyncFailureEmptyKey) {
@@ -181,6 +209,9 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsyncFailureEmptyKey) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kFromWrappedKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(ServiceError::kCryptoApiFailed, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kFromWrappedKeyTaskRetriesFailureHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest,
@@ -214,6 +245,9 @@ TEST_F(UnexportableKeyTaskManagerTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kFromWrappedKeyTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(ServiceError::kNoKeyProvider, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  kFromWrappedKeyTaskRetriesFailureHistogramName),
+              testing::ElementsAre(base::Bucket(0, 1)));
 }
 
 TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
@@ -233,13 +267,16 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   std::vector<uint8_t> data = {4, 8, 15, 16, 23, 42};
   task_manager().SignSlowlyAsync(key, data, BackgroundTaskPriority::kBestEffort,
-                                 sign_future.GetCallback());
+                                 /*max_retries=*/0, sign_future.GetCallback());
   EXPECT_FALSE(sign_future.IsReady());
   RunBackgroundTasks();
   EXPECT_TRUE(sign_future.IsReady());
   ASSERT_OK_AND_ASSIGN(const auto signed_data, sign_future.Get());
   EXPECT_THAT(histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
               testing::ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSignTaskRetriesSuccessHistogramName),
+      testing::ElementsAre(base::Bucket(0, 1)));
 
   // Also verify that the signature was generated correctly.
   crypto::SignatureVerifier verifier;
@@ -256,13 +293,65 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsyncNullKey) {
 
   task_manager().SignSlowlyAsync(nullptr, data,
                                  BackgroundTaskPriority::kBestEffort,
-                                 sign_future.GetCallback());
+                                 /*max_retries=*/0, sign_future.GetCallback());
   RunBackgroundTasks();
 
   EXPECT_EQ(sign_future.Get(), base::unexpected(ServiceError::kKeyNotFound));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
       testing::ElementsAre(base::Bucket(ServiceError::kKeyNotFound, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSignTaskRetriesFailureHistogramName),
+      testing::ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, RetrySignAsyncWithSuccess) {
+  auto key = std::make_unique<MockUnexportableKey>();
+  std::vector<uint8_t> data = {4, 8, 15, 16, 23, 42};
+  EXPECT_CALL(*key, SignSlowly(ElementsAreArray(data)))
+      .WillOnce(Return(std::nullopt))
+      .WillOnce(Return(std::nullopt))
+      .WillOnce(Return(std::vector<uint8_t>{1, 2, 3}));
+  auto ref_counted_key = base::MakeRefCounted<RefCountedUnexportableSigningKey>(
+      std::move(key), UnexportableKeyId());
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
+  task_manager().SignSlowlyAsync(ref_counted_key, data,
+                                 BackgroundTaskPriority::kBestEffort,
+                                 /*max_retries=*/2, sign_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_THAT(sign_future.Get(), base::test::HasValue());
+  EXPECT_THAT(histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
+              testing::ElementsAre(base::Bucket(kNoServiceErrorForMetrics, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSignTaskRetriesSuccessHistogramName),
+      testing::ElementsAre(base::Bucket(2, 1)));
+}
+
+TEST_F(UnexportableKeyTaskManagerTest, RetrySignAsyncWithFailure) {
+  auto key = std::make_unique<MockUnexportableKey>();
+  std::vector<uint8_t> data = {0, 1, 1, 2, 3, 5, 8};
+  EXPECT_CALL(*key, SignSlowly(ElementsAreArray(data)))
+      .Times(3)
+      .WillRepeatedly(Return(std::nullopt));
+  auto ref_counted_key = base::MakeRefCounted<RefCountedUnexportableSigningKey>(
+      std::move(key), UnexportableKeyId());
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
+  task_manager().SignSlowlyAsync(ref_counted_key, data,
+                                 BackgroundTaskPriority::kBestEffort,
+                                 /*max_retries=*/2, sign_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_EQ(sign_future.Get(),
+            base::unexpected(ServiceError::kCryptoApiFailed));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSignTaskResultHistogramName),
+      testing::ElementsAre(base::Bucket(ServiceError::kCryptoApiFailed, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSignTaskRetriesFailureHistogramName),
+      testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 }  // namespace unexportable_keys

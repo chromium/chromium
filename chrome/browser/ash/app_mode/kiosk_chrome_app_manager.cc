@@ -280,10 +280,7 @@ bool KioskChromeAppManager::GetSwitchesForSessionRestore(
 
 void KioskChromeAppManager::OnExternalCacheDamaged(const std::string& app_id) {
   CHECK(external_cache_);
-  auto crx_info = GetCachedCrx(app_id);
-  // TODO(crbug.com/383090254): Consider making this a CHECK.
-  DUMP_WILL_BE_CHECK(crx_info.has_value());
-  auto [crx_path, _] = std::move(crx_info).value_or(CachedCrxInfo());
+  auto [crx_path, _] = GetCachedCrx(app_id).value_or(CachedCrxInfo());
   external_cache_->OnDamagedFileDetected(crx_path);
 }
 

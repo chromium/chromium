@@ -1005,16 +1005,17 @@ void BaseRenderingContext2D::DrawTextInternal(
   const CanvasRenderingContext2DState& state = GetState();
   const ComputedStyle* computed_style =
       canvas ? canvas->EnsureComputedStyle() : nullptr;
-  TextDirection direction = ToTextDirection(
-      state.GetDirection(), GetCanvasRenderingContextHost(), computed_style);
+  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  TextDirection direction =
+      ToTextDirection(state.GetDirection(), host, computed_style);
   bool is_rtl = direction == TextDirection::kRtl;
   bool bidi_override =
       computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
 
-  PlainTextPainter* text_painter =
-      RuntimeEnabledFeatures::CanvasTextNgEnabled()
-          ? &GetCanvasRenderingContextHost()->GetPlainTextPainter()
-          : nullptr;
+  PlainTextPainter* text_painter = RuntimeEnabledFeatures::CanvasTextNgEnabled(
+                                       host->GetTopExecutionContext())
+                                       ? &host->GetPlainTextPainter()
+                                       : nullptr;
   TextRun text_run(text, direction, bidi_override, /* normalize_space */ true);
   // Draw the item text at the correct point.
   gfx::PointF location(ClampTo<float>(x), ClampTo<float>(y));
@@ -1144,14 +1145,16 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
   const CanvasRenderingContext2DState& state = GetState();
   const ComputedStyle* computed_style =
       canvas ? canvas->EnsureComputedStyle() : nullptr;
-  TextDirection direction = ToTextDirection(
-      state.GetDirection(), GetCanvasRenderingContextHost(), computed_style);
+  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  TextDirection direction =
+      ToTextDirection(state.GetDirection(), host, computed_style);
 
   return MakeGarbageCollected<TextMetrics>(
       font, direction, state.GetTextBaseline().AsEnum(),
       state.GetTextAlign().AsEnum(), text,
-      RuntimeEnabledFeatures::CanvasTextNgEnabled()
-          ? &GetCanvasRenderingContextHost()->GetPlainTextPainter()
+      RuntimeEnabledFeatures::CanvasTextNgEnabled(
+          host->GetTopExecutionContext())
+          ? &host->GetPlainTextPainter()
           : nullptr);
 }
 

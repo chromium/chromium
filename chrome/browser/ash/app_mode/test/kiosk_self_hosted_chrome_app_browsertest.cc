@@ -17,7 +17,9 @@
 
 namespace ash {
 
+using kiosk::test::LaunchAppManually;
 using kiosk::test::TheKioskApp;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -70,8 +72,8 @@ IN_PROC_BROWSER_TEST_F(KioskSelfHostedChromeAppTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskSelfHostedChromeAppTest, LaunchesSelfHostedApp) {
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  ASSERT_TRUE(WaitKioskLaunched());
 
   // Update checks should be made to the private store instead of CWS.
   EXPECT_GT(private_cws().GetUpdateCheckCountAndReset(), 0);

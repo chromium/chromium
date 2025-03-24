@@ -81,6 +81,8 @@ ASH_EXPORT bool CanScreenshot(bool take_screenshot);
 
 ASH_EXPORT bool CanShowStylusTools();
 
+ASH_EXPORT bool CanStartSunfishSession();
+
 ASH_EXPORT bool CanStopScreenRecording();
 
 ASH_EXPORT bool CanSwapPrimaryDisplay();
@@ -289,6 +291,9 @@ ASH_EXPORT void ShowShortcutCustomizationApp();
 
 // Brings up task manager.
 ASH_EXPORT void ShowTaskManager();
+
+// Starts a Sunfish-behavior capture mode session.
+ASH_EXPORT void StartSunfishSession();
 
 // Stops the capture mode recording.
 ASH_EXPORT void StopScreenRecording();

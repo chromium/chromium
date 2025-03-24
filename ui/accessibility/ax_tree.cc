@@ -824,6 +824,41 @@ bool AXTree::ComputeNodeIsIgnoredChanged(
   return old_node_is_ignored != new_node_is_ignored;
 }
 
+#if BUILDFLAG(IS_LINUX)
+ExtraAnnouncementNodes::ExtraAnnouncementNodes(AXNode* root) {
+  assertive_node_ = CreateNode("assertive", root);
+  polite_node_ = CreateNode("polite", root);
+}
+
+ExtraAnnouncementNodes::~ExtraAnnouncementNodes() {
+  assertive_node_.reset();
+  polite_node_.reset();
+}
+
+std::unique_ptr<AXNode> ExtraAnnouncementNodes::CreateNode(
+    const std::string& live_status,
+    AXNode* root) {
+  AXNodeData data;
+
+  // Use a negative number so as not to conflict with positive-numbered node IDs
+  // from tree sources.
+  data.id = root->tree()->GetNextNegativeInternalNodeId();
+  data.role = ax::mojom::Role::kTextField;
+  data.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
+                          live_status);
+
+  const auto count = (live_status == "assertive")
+                         ? ExtraAnnouncementNodes::kHighPriorityIndex
+                         : ExtraAnnouncementNodes::kNormalPriorityIndex;
+  auto node = std::make_unique<AXNode>(
+      /*tree=*/root->tree(), /*parent=*/root, /*id=*/data.id,
+      /*index_in_parent=*/count + root->GetChildCount(),
+      /*unignored_index_in_parent=*/count + root->GetUnignoredChildCount());
+  node->SetData(data);
+  return node;
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 AXTree::AXTree() {
   // TODO(chrishall): should language_detection_manager be a member or pointer?
   // TODO(chrishall): do we want to initialize all the time, on demand, or only
@@ -882,6 +917,9 @@ AXNode* AXTree::GetFromId(AXNodeID id) const {
 
 void AXTree::Destroy() {
   base::ElapsedThreadTimer timer;
+#if BUILDFLAG(IS_LINUX)
+  ClearExtraAnnouncementNodes();
+#endif  // BUILDFLAG(IS_LINUX)
 
   table_info_map_.clear();
   if (!root_)
@@ -2066,6 +2104,66 @@ void AXTree::NotifyNodeAttributesWillChange(
                     new_data);
 }
 
+#if BUILDFLAG(IS_LINUX)
+void AXTree::ClearExtraAnnouncementNodes() {
+  if (!extra_announcement_nodes_) {
+    return;
+  }
+
+  for (auto& observer : observers()) {
+    observer.OnNodeWillBeDeleted(this,
+                                 &extra_announcement_nodes_->AssertiveNode());
+    observer.OnNodeWillBeDeleted(this,
+                                 &extra_announcement_nodes_->PoliteNode());
+  }
+
+  std::vector<AXNodeID> deleted_ids;
+
+  {
+    ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*this);
+    deleted_ids.push_back(extra_announcement_nodes_->AssertiveNode().id());
+    deleted_ids.push_back(extra_announcement_nodes_->PoliteNode().id());
+    extra_announcement_nodes_.reset();
+  }
+
+  for (const auto& deleted_id : deleted_ids) {
+    for (auto& observer : observers()) {
+      observer.OnNodeDeleted(this, deleted_id);
+    }
+  }
+
+  for (auto& observer : observers()) {
+    observer.OnAtomicUpdateFinished(
+        this, /*root_changed=*/false,
+        {{root_, AXTreeObserver::ChangeType::NODE_CHANGED}});
+  }
+}
+
+void AXTree::CreateExtraAnnouncementNodes() {
+  if (extra_announcement_nodes_) {
+    return;
+  }
+
+  std::vector<AXTreeObserver::Change> changes;
+  extra_announcement_nodes_ = std::make_unique<ExtraAnnouncementNodes>(root_);
+
+  {
+    ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*this);
+  }
+
+  if (extra_announcement_nodes_) {
+    for (auto& observer : observers()) {
+      observer.OnNodeCreated(this, &extra_announcement_nodes_->AssertiveNode());
+      observer.OnNodeCreated(this, &extra_announcement_nodes_->PoliteNode());
+    }
+  }
+
+  for (auto& observer : observers()) {
+    observer.OnAtomicUpdateFinished(this, /*root_changed=*/false, changes);
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 void AXTree::NotifyNodeAttributesHaveBeenChanged(
     AXNode* node,
     AXTreeUpdateState& update_state,
@@ -2395,6 +2493,14 @@ bool AXTree::CreateNewChildVector(
     AXTreeUpdateState* update_state) {
   DCHECK(GetTreeUpdateInProgressState());
   bool success = true;
+#if BUILDFLAG(IS_LINUX)
+  // If the root node has children added, clear the extra announcement nodes,
+  // which should always have their indices as the last two children of the root
+  // node. They will be recreated if needed, and given the correct indices.
+  if (node == root() && extra_announcement_nodes_) {
+    ClearExtraAnnouncementNodes();
+  }
+#endif  // BUILDFLAG(IS_LINUX)
   for (size_t i = 0; i < new_child_ids.size(); ++i) {
     AXNodeID child_id = new_child_ids[i];
     AXNode* child = GetFromId(child_id);

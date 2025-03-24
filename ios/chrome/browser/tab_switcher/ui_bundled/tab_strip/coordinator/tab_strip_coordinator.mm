@@ -94,7 +94,7 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(TabStripCommands)];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   CHECK(profile);
   self.tabStripViewController = [[TabStripViewController alloc] init];
   self.tabStripViewController.layoutGuideCenter =
@@ -204,13 +204,12 @@
 
 - (void)showAlertForLastTabDragged:
     (TabStripLastTabDraggedAlertCommand*)command {
-  ProfileIOS* profile = self.browser->GetProfile();
-  if (profile->IsOffTheRecord()) {
+  if (self.profile->IsOffTheRecord()) {
     return;
   }
 
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
@@ -302,8 +301,7 @@
 
 - (void)showTabStripTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
-  if (!IsTabGroupSyncEnabled() ||
-      self.browser->GetProfile()->IsOffTheRecord()) {
+  if (!IsTabGroupSyncEnabled() || self.profile->IsOffTheRecord()) {
     return;
   }
 

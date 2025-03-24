@@ -194,12 +194,12 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void ReportPermissionsPolicyViolation(
       network::mojom::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
-      const std::optional<String>& reporting_endpoint,
+      const String& reporting_endpoint,
       const String& message = g_empty_string) const final;
   void ReportPotentialPermissionsPolicyViolation(
       network::mojom::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
-      const std::optional<String>& reporting_endpoint,
+      const String& reporting_endpoint,
       const String& message = g_empty_string,
       const String& allow_attribute = g_empty_string,
       const String& src_attribute = g_empty_string) const final;

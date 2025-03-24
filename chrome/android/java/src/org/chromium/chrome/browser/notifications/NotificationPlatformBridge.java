@@ -15,7 +15,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Spannable;
@@ -42,6 +43,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.SuspiciousNotificationWarningUtils.SuspiciousNotificationWarningInteractions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -788,6 +790,12 @@ public class NotificationPlatformBridge {
         // Record whether it's known whether notifications can be shown to the user at all.
         NotificationSystemStatusUtil.recordAppNotificationStatusHistogram();
 
+        if (image != null) {
+            RecordHistogram.recordCount100000Histogram(
+                    "Notifications.Android.ImageMemorySizeInKB",
+                    image.getAllocationByteCount() / 1000);
+        }
+
         NotificationBuilderBase notificationBuilder =
                 prepareNotificationBuilder(
                         identifyingAttributes,
@@ -847,7 +855,7 @@ public class NotificationPlatformBridge {
                         && ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                && VERSION.SDK_INT >= VERSION_CODES.P
                 && identifyingAttributes.notificationType == NotificationType.WEB_PERSISTENT
                 && !skipUAButtons
                 && !shouldTreatNotificationAsSuspicious) {
@@ -895,7 +903,7 @@ public class NotificationPlatformBridge {
                                 }
                                 NotificationUmaTracker.getInstance()
                                         .onNotificationShown(
-                                                NotificationUmaTracker.SystemNotificationType.SITES,
+                                                SystemNotificationType.SITES,
                                                 notification.getNotification());
                             } catch (RuntimeException e) {
                                 Log.e(

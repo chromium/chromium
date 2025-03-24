@@ -1589,7 +1589,7 @@ void MessagingBackendServiceImpl::DisplayInstantMessage(
     InstantMessage instant_message = base_message;
     instant_message.level = level;
     instant_message_delegate_->DisplayInstantaneousMessage(
-        {instant_message},
+        instant_message,
         base::BindOnce(&MessagingBackendServiceImpl::ClearMessageDirtyBit,
                        weak_ptr_factory_.GetWeakPtr(), db_message_uuid));
   }

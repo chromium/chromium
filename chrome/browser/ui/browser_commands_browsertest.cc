@@ -8,6 +8,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "browser_commands.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -277,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToNewWindow) {
   ui_test_utils::BrowserChangeObserver new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
-  chrome::MoveTabsToNewWindow(browser(), indices, group_id);
+  chrome::MoveGroupToNewWindow(browser(), group_id);
   ASSERT_TRUE(browser()->tab_strip_model()->count() == 1);
 
   Browser* active_browser = new_browser_observer.Wait();
