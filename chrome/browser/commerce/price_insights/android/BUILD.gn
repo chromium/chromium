@@ -55,7 +55,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_open_in_new_20dp.xml",
     "java/res/drawable/price_insights_sheet_background.xml",
     "java/res/drawable/price_insights_sheet_bottom_corner_background.xml",
-    "java/res/drawable/price_insights_sheet_content_background.xml",
     "java/res/drawable/price_insights_sheet_price_tracking_button_disabled.xml",
     "java/res/drawable/price_insights_sheet_price_tracking_button_enabled.xml",
     "java/res/drawable/price_insights_sheet_top_corner_background.xml",
