@@ -29,11 +29,12 @@ const size_t kEd25519SigLength = 64;
 constexpr std::string_view kAcceptSignature = "accept-signature";
 
 constexpr std::array<std::string_view, 9u> kDerivedComponents = {
-    "@authority", "@query-param", "@query", "@path", "@status"
+    "@authority", "@query-param", "@query", "@path",
+    "@scheme",    "@status"
     // TODO(383409584): We should support the remaining derived components from
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-derived-components:
     //
-    // "@method", "@request-target", "@scheme", "@target-uri",
+    // "@method", "@request-target", "@target-uri",
 };
 
 ParameterType ParamNameToType(std::string_view name) {
@@ -305,6 +306,8 @@ std::string SerializeDerivedComponent(
   } else if (component->name == "@path") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-request-path
     return request_url.path();
+  } else if (component->name == "@scheme") {
+    return request_url.scheme();
   } else if (component->name == "@status") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-status-code
     return base::NumberToString(response_status_code);

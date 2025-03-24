@@ -1027,6 +1027,42 @@ TEST_F(SRIMessageSignatureBaseTest, PathComponent) {
   }
 }
 
+TEST_F(SRIMessageSignatureBaseTest, SchemeComponent) {
+  struct {
+    std::string_view url;
+    std::string_view scheme;
+  } cases[] = {
+      {"https://url.test/", url::kHttpsScheme},
+      {"HTTPS://url.test/", url::kHttpsScheme},
+      {"http://url.test/", url::kHttpScheme},
+      {"HTTP://url.test/", url::kHttpScheme},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.url);
+
+    std::string input_header =
+        base::StrCat({"signature=(\"unencoded-digest\";sf \"@scheme\";req);",
+                      "keyid=\"", kPublicKey, "\";tag=\"sri\""});
+
+    std::stringstream expected_base;
+    expected_base
+        << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
+        << "\"@scheme\";req: " << test.scheme << '\n'
+        << "\"@signature-params\": (\"unencoded-digest\";sf \"@scheme\";req);"
+        << "keyid=\"" << kPublicKey << "\";tag=\"sri\"";
+
+    auto headers = ValidHeadersPlusInput(input_header.c_str());
+    auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+    ASSERT_EQ(1u, parsed->signatures.size());
+    EXPECT_EQ(0u, parsed->issues.size());
+
+    std::optional<std::string> result =
+        ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(expected_base.str(), result.value());
+  }
+}
+
 TEST_F(SRIMessageSignatureBaseTest, StatusComponent) {
   for (int i = 0; i < net::HttpStatusCode::HTTP_STATUS_CODE_MAX; i++) {
     std::optional<net::HttpStatusCode> test_code =
