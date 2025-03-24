@@ -53,26 +53,6 @@ public class MessageUtils {
         return message == null ? null : extractSyncTabGroupId(message.attribution);
     }
 
-    /** Returns the given name or the empty string. */
-    public static String extractGivenName(@Nullable InstantMessage message) {
-        GroupMember member = extractMember(message);
-        return member == null ? "" : member.givenName;
-    }
-
-    /** Returns the tab title or the empty string. */
-    public static @Nullable String extractTabTitle(@Nullable InstantMessage message) {
-        if (message == null) return "";
-        MessageAttribution attribution = getFirstAttribution(message);
-        return attribution == null || attribution.tabMetadata == null
-                ? ""
-                : attribution.tabMetadata.lastKnownTitle;
-    }
-
-    /** Returns the tab group title or the empty string. */
-    public static @Nullable String extractTabGroupTitle(@Nullable InstantMessage message) {
-        return message == null ? "" : extractTabGroupTitle(getFirstAttribution(message));
-    }
-
     /** Returns the tab group title or the empty string. */
     public static @Nullable String extractTabGroupTitle(@Nullable PersistentMessage message) {
         return message == null ? "" : extractTabGroupTitle(message.attribution);

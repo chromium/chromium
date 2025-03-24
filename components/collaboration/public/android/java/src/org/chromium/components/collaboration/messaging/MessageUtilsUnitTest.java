@@ -15,8 +15,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -26,8 +24,6 @@ public class MessageUtilsUnitTest {
     private static final String MESSAGE_ID = "Message ID";
     private static final int TAB_ID = 1;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
-    private static final String GIVEN_NAME = "Jane";
-    private static final String TAB_TITLE = "Tab Title";
     private static final String TAB_GROUP_TITLE = "Group Title";
     private static final String TAB_GROUP_SYNC_ID = "Group Sync ID";
 
@@ -81,60 +77,6 @@ public class MessageUtilsUnitTest {
         assertEquals(null, MessageUtils.extractTabGroupId(message));
 
         assertEquals(null, MessageUtils.extractTabGroupId((InstantMessage) null));
-    }
-
-    @Test
-    public void testExtractGivenName() {
-        InstantMessage message = new InstantMessage();
-        MessageAttribution attribution = new MessageAttribution();
-        message.attributions.add(attribution);
-        attribution.triggeringUser =
-                new GroupMember(null, null, null, MemberRole.OWNER, null, GIVEN_NAME);
-        assertEquals(GIVEN_NAME, MessageUtils.extractGivenName(message));
-
-        attribution.triggeringUser = null;
-        assertEquals("", MessageUtils.extractGivenName(message));
-
-        attribution = null;
-        assertEquals("", MessageUtils.extractGivenName(message));
-
-        assertEquals("", MessageUtils.extractGivenName(null));
-    }
-
-    @Test
-    public void testExtractTabTitle() {
-        InstantMessage message = new InstantMessage();
-        MessageAttribution attribution = new MessageAttribution();
-        message.attributions.add(attribution);
-        attribution.tabMetadata = new TabMessageMetadata();
-        attribution.tabMetadata.lastKnownTitle = TAB_TITLE;
-        assertEquals(TAB_TITLE, MessageUtils.extractTabTitle(message));
-
-        attribution.tabMetadata = null;
-        assertEquals("", MessageUtils.extractTabTitle(message));
-
-        attribution = null;
-        assertEquals("", MessageUtils.extractTabTitle(message));
-
-        assertEquals("", MessageUtils.extractTabTitle(null));
-    }
-
-    @Test
-    public void testExtractTabGroupTitle_Instant() {
-        InstantMessage message = new InstantMessage();
-        MessageAttribution attribution = new MessageAttribution();
-        message.attributions.add(attribution);
-        attribution.tabGroupMetadata = new TabGroupMessageMetadata();
-        attribution.tabGroupMetadata.lastKnownTitle = TAB_GROUP_TITLE;
-        assertEquals(TAB_GROUP_TITLE, MessageUtils.extractTabGroupTitle(message));
-
-        attribution.tabGroupMetadata = null;
-        assertEquals("", MessageUtils.extractTabGroupTitle(message));
-
-        attribution = null;
-        assertEquals("", MessageUtils.extractTabGroupTitle(message));
-
-        assertEquals("", MessageUtils.extractTabGroupTitle((InstantMessage) null));
     }
 
     @Test

@@ -6859,18 +6859,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DATA_SHARING_GENERIC_FAILURE_DESCRIPTION" desc="The body text the dialog shown when some share backend call fails, for example when leaving a group.">
         There was an error. Try again.
       </message>
-      <message name="IDS_DATA_SHARING_BROWSER_MESSAGE_CHANGED_TAB" desc="The text in a pop up message that occurs when someone else navigates the tab that was being shown.">
-        <ph name="GIVEN_NAME">%1$s<ex>Jane</ex></ph> changed tab “<ph name="TAB_NAME">%2$s<ex>Example Domain</ex></ph>”
-      </message>
-      <message name="IDS_DATA_SHARING_BROWSER_MESSAGE_REMOVED_TAB" desc="The text in a pop up message that occurs when someone else removes the tab that was being shown.">
-        <ph name="GIVEN_NAME">%1$s<ex>Jane</ex></ph> removed tab “<ph name="TAB_NAME">%2$s<ex>Example Domain</ex></ph>”
-      </message>
-      <message name="IDS_DATA_SHARING_BROWSER_MESSAGE_JOINED_TAB_GROUP" desc="The text in a pop up message that occurs when someone joins a shared tab group.">
-        <ph name="GIVEN_NAME">%1$s<ex>Jane</ex></ph> joined “<ph name="TAB_GROUP_NAME">%2$s<ex>Shopping</ex></ph>” tab group
-      </message>
-      <message name="IDS_DATA_SHARING_BROWSER_MESSAGE_NOT_AVAILABLE" desc="The text in a pop up message that occurs when you lose access to a shared tab group.">
-        The “<ph name="TAB_GROUP_NAME">%1$s<ex>Shopping</ex></ph>” tab group is no longer available
-      </message>
       <message name="IDS_DATA_SHARING_BROWSER_MESSAGE_REOPEN" desc="The action button text on a pop up message to create a tab to the URL a tab previously had.">
         Reopen
       </message>
