@@ -127,8 +127,17 @@ class TipsNotificationClientTest : public PlatformTest {
 
   // Returns a mock UNNotification for the given notification `type`.
   id MockNotification(TipsNotificationType type, bool for_reactivation) {
-    UNNotificationRequest* request = TipsNotificationRequest(
-        type, for_reactivation, TipsNotificationUserType::kUnknown);
+    UNNotificationRequest* request = [UNNotificationRequest
+        requestWithIdentifier:kTipsNotificationId
+                      content:ContentForTipsNotificationType(type,
+                                                             for_reactivation)
+                      trigger:[UNTimeIntervalNotificationTrigger
+                                  triggerWithTimeInterval:
+                                      TipsNotificationTriggerDelta(
+                                          for_reactivation,
+                                          TipsNotificationUserType::kUnknown)
+                                          .InSecondsF()
+                                                  repeats:NO]];
     id mock_notification = OCMClassMock([UNNotification class]);
     OCMStub([mock_notification request]).andReturn(request);
     return mock_notification;
