@@ -20,9 +20,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter ondownloadprogress
 [Worker] interface AILanguageDetector
 [Worker]     attribute @@toStringTag
+[Worker]     getter inputQuota
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker]     method detect
+[Worker]     method measureInputUsage
 [Worker] interface AILanguageDetectorFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method availability

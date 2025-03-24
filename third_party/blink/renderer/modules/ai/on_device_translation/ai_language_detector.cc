@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
 
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -48,6 +50,39 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> AILanguageDetector::detect(
 
 void AILanguageDetector::destroy(ScriptState*) {
   // TODO(crbug.com/349927087): Implement the function.
+}
+
+ScriptPromise<IDLDouble> AILanguageDetector::measureInputUsage(
+    ScriptState* script_state,
+    const WTF::String& input,
+    AILanguageDetectorDetectOptions* options,
+    ExceptionState& exception_state) {
+  // https://webmachinelearning.github.io/writing-assistance-apis/#measure-ai-model-input-usage
+  //
+  // If modelObject’s relevant global object is a Window whose associated
+  // Document is not fully active, then return a promise rejected with an
+  // "InvalidStateError" DOMException.
+  auto* context = ExecutionContext::From(script_state);
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    auto* document = window->document();
+    if (document && !document->IsActive()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "The document is not active");
+      return EmptyPromise();
+    }
+  }
+
+  // TODO(crbug.com/402136568): Implement the abort signal.
+
+  ScriptPromiseResolver<IDLDouble>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
+  resolver->Resolve(0);
+
+  return resolver->Promise();
+}
+
+double AILanguageDetector::inputQuota() const {
+  return std::numeric_limits<double>::infinity();
 }
 
 HeapVector<Member<LanguageDetectionResult>> AILanguageDetector::ConvertResult(
