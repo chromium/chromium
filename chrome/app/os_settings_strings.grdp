@@ -680,8 +680,8 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH" desc="The label for the input method option to enable double-space to type period (when an user types two consecutive space, it outputs a period).">
     Automatically switch to halfwidth
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE" desc="The label for the setting to set the shift key mode style.">
-    Shift Key Mode Style
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE" desc="The label for the dropdown to set the shift key mode switch for the Japanese keyboard. This controls the behavior of typing in Japanese while holding shift. The available dropdown values are 'Off', 'Alphanumeric', or 'Katakana'. In Japanese, this string is 'シフトキーでの入力切替'.">
+    Shift key mode switch
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE_OFF" desc="The label for the option to disable the shift key mode style.">
     Off
@@ -692,8 +692,8 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE_KATAKANA" desc="The label for the option to set the Shift key mode style to Katakana.">
     Katakana
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_USE_INPUT_HISTORY" desc="The label for the toggled settings to determine if the input history should be used or not.">
-    Use Input History
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_USE_INPUT_HISTORY" desc="The label for the toggle to determine if the input history should be used or not for the Japanese keyboard. If enabled, the input method may suggest text that was previously typed by the user. In Japanese, this string is '入力履歴からのサジェスト自動表示を有効にする'.">
+    Use input history
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_USE_SYSTEM_DICTIONARY" desc="The label for the toggled settings to determine if the system dictionary should be used or not.">
     Use system dictionary
@@ -788,8 +788,8 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_INPUT_MODE_KANA" desc="The label for the input mode option used to set the input mode to Kana. In Japanese, this string should be 'かな入力'.">
     Kana
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE" desc="The label for the setting used to set the Punctuation style for Japanese within the Japanese virtual and physical keyboard input settings. In Japanese, this string should be '句読点'.">
-    Punctuation Style
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE" desc="The label for the dropdown used to set the Punctuation style for Japanese within the Japanese virtual and physical keyboard input settings. This controls what character is inserted when the user presses punctuation keys like comma or period. In Japanese, this string should be '句読点'.">
+    Punctuation style
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_KUTEN_TOUTEN" translateable="false">
     、。
@@ -803,8 +803,8 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_PUNCTUATION_STYLE_COMMA_TOUTEN" translateable="false">
     ，。
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE"  desc="The label for the option to set the Symbol style for Japanese. This can be written as '記号' in Japanese.">
-    Symbol Style
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE"  desc="The label for the dropdown to set the Symbol style for the Japanese keyboard. This controls what character is inserted when the user presses symbol keys like brackets. This can be written as '記号' in Japanese.">
+    Symbol style
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE_CORNER_BRACKET_MIDDLE_DOT" translateable="false">
    「」・
@@ -818,8 +818,8 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SYMBOL_STYLE_SQUARE_BRACKET_MIDDLE_DOT" translateable="false">
    ［］・
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE" desc="The label for the Space input option within the Japanese settings page. It allows users of Japanese input settings to choose between fullwidth and halfwidth input modes. . In Japanese, this string should be 'スペースの入力'.">
-    Space Input Style
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE" desc="The label for the Space input style dropdown within the Japanese keyboard settings page. It controls whether typing spaces with the Japanese keyboard will insert fullwidth or halfwidth characters. The available dropdown values are 'Follow input mode', 'Fullwidth', and 'Halfwidth'. In Japanese, this string should be 'スペースの入力'.">
+    Space input style
     </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE_INPUT_MODE" desc="The label for option to set the space input style for the Japanese keyboard to Follow input mode. In Japanese, this string should be '入力モードに従う'.">
     Follow input mode
@@ -830,8 +830,8 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE_HALFWIDTH" desc="The label for input modes option to set the space input style for the Japanese keyboard to Halfwidth mode. In Japanese, this string should be '半角'.">
     Halfwidth
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT" desc="The label for the Japanese keyboard settings option to set the shortcut selection hotkeys for Japanese candidate selection. In Japanese, this string should be '候補選択ショートカット'.">
-    Selection Shortcut
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT" desc="The label for the Japanese keyboard settings dropdown to set the shortcut selection hotkeys for Japanese candidate selection. In Japanese, this string should be '候補選択ショートカット'.">
+    Selection shortcut
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_NO_SHORTCUT" desc="The label for the Japanese keyboard settings option to set that there is no shortcut set for the Japanese keyboard candidate selection. In Japanese, this string should be 'なし'.">
     No shortcut
@@ -842,8 +842,8 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_ASDFGHJKL" translateable="false">
     A -- L
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE" desc="The label for Japanese keyboard settings option within the settings page to set the keymap style for the Japanese keyboard. In Japaneses, this string should be 'キー設定の選択'.">
-    Keymap Style
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE" desc="The label for Japanese keyboard settings dropdown within the settings page to set the keymap style for the Japanese keyboard. The available dropdown values are 'Custom keymap', 'ATOK', 'MS-IME', 'Kotoeri', and 'ChromeOS'. In Japanese, this string should be 'キー設定の選択'.">
+    Keymap style
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CUSTOM" desc="The label for Japanese settings page to set the keymap style to use a Custom keymap. This is 'Custom Keymap' in Japanese. In Japanese, this string should be 'カスタム'.">
     Custom keymap
