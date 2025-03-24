@@ -125,11 +125,20 @@ class AutofillField : public FormFieldData {
   const std::u16string& parseable_label() const { return parseable_label_; }
   bool only_fill_when_focused() const { return only_fill_when_focused_; }
 
-  // Setters for the detected types.
   void set_heuristic_type(HeuristicSource s, FieldType t);
+
+  // Sets the server predictions to `predictions` after performing some
+  // filtering. If `predictions` is empty, it creates a `NO_SERVER_DATA`
+  // prediction.
   void set_server_predictions(
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction> predictions);
+  // Adds `prediction` to the back of the existing `server_predictions_` if
+  // the prediction's source passes various validity checks. If the only
+  // existing server prediction is an empty one, it replaces that one.
+  void MaybeAddServerPrediction(
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+          prediction);
 
   void set_may_use_prefilled_placeholder(
       std::optional<bool> may_use_prefilled_placeholder) {
