@@ -440,7 +440,10 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 - (BOOL)conditionallyRespondsToSelector:(SEL)selector {
   static std::unordered_set<SEL> methodSelectorsForActions = {
       @selector(accessibilityPerformPress),
-  };
+      @selector(accessibilityPerformDecrement),
+      @selector(accessibilityPerformIncrement),
+      @selector(accessibilityPerformShowMenu),
+      @selector(accessibilityPerformConfirm)};
 
   static std::unordered_set<SEL> methodSelectorsForParameterizedAttributes = {
       @selector(accessibilityCellForColumn:row:),
@@ -1385,6 +1388,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
               containsObject:evaluatedObject];
         }]];
   }
+
   return actions;
 }
 
