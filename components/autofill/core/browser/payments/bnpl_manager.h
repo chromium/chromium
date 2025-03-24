@@ -15,6 +15,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -117,18 +118,18 @@ class BnplManager {
     // Context token shared between client and Payments server.
     std::string context_token;
 
-    // Terms and legal messages from the selected issuer. These messages will
-    // be set in `OnDidGetDetailsForCreateBnplPaymentInstrument()` when the
-    // server response is received after the user selects an unlinked
-    // buy-now-pay-later issuer.
-    LegalMessageLines legal_message_lines;
-
     // URL that the the partner redirected the user to after finishing the BNPL
     // flow on the partner website.
     GURL redirect_url;
 
-    // The ID of the BNPL partner the user is trying to retrieve the VCN from.
-    std::string issuer_id;
+    // The BNPL partner the user is trying to retrieve the VCN from. Set when
+    // the user selects an issuer in the issuer selection dialog. If it is an
+    // unlinked issuer, and the user links it, `issuer` will still be the
+    // unlinked version throughout the flow. The instrument ID returned from the
+    // Payments server during the linking will be what is used to retrieve the
+    // VCN, and then afterwards the linked version will be synced down to Chrome
+    // for future flows.
+    BnplIssuer issuer;
 
     // The final checkout amount on the page (in micros), used for the ongoing
     // BNPL flow.

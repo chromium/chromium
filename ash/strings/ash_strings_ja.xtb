@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">明るさを上げる</translation>
 <translation id="1680659827022803830">ビデオ通話コントロール</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">この機能は [設定] でいつでもオフにできます。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> タイマー · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 アドレス: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">アクティブなウィンドウを左側に固定しました。</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />、インストール済みアプリ、一時停止中</translation>
 <translation id="4228078597006700451">コントロールが設定されていません</translation>
 <translation id="4230560241506423345">新規</translation>
+<translation id="4236726631849783264">提案されたアクションに関する注意事項</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">複数画面モード</translation>
 <translation id="4242533952199664413">設定を開く</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">メディア</translation>
 <translation id="4279490309300973883">ミラーリング</translation>
 <translation id="4280601795273309128">セキュリティ アップデートが終了しました。デバイスをアップグレードしてください。</translation>
-<translation id="4281739221820540368">Google ドキュメントを作成</translation>
 <translation id="4283888303416325161">セキュリティ強化のためパスワードを入力してください</translation>
 <translation id="4285498937028063278">固定を解除</translation>
 <translation id="428715201724021596">プロファイルに接続しています。この処理には数分かかることがあります。</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">音声認識ファイルをダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{今すぐデバイスを更新してください}=1{1 秒以内にデバイスを更新してください}other{# 秒以内にデバイスを更新してください}}</translation>
 <translation id="4472575034687746823">始める</translation>
+<translation id="4473489370276014885">Google コンタクト</translation>
 <translation id="4477350412780666475">次の曲</translation>
 <translation id="4477751544736611934">データ料金が発生する場合があります。
 1 台のデバイスが接続されています。</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">現在のページをブックマークとして保存する</translation>
 <translation id="4548482551627849548">アクティブなウィンドウを左側のデスクに移動する</translation>
 <translation id="4552748006424994716">エコーを防ぐため、マイクの音を有線ヘッドフォンでのみ聞くようにできます。</translation>
+<translation id="4556953949326137018">[カレンダーに追加] や [Google ドキュメントを作成] などの提案されたアクションを使用すると、選択した領域のコンテンツが Google のサーバーに送信され、<ph name="LINK_TO_SERVICE_TERMS" /> に沿ってアクションが提案されます。個人情報や機密情報は含めないでください。</translation>
 <translation id="4560576029703263363">オン</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">次の予定</translation>
 <translation id="481749895090480684">タスクリスト: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">カメラとマイク</translation>
+<translation id="4828935196674083554">追加しています...</translation>
 <translation id="482908187605862807">Google Play ストアから入手可能なアプリ</translation>
 <translation id="4831034276697007977">自動クリックをオフにしてもよろしいですか？</translation>
 <translation id="4835677468087803981">PIN を非表示</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">PageUp</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">通知をすべて消去</translation>
+<translation id="6426905245930183644">作成しています...</translation>
 <translation id="6430225033895752525">フォーカス モード設定を表示</translation>
 <translation id="643147933154517414">すべて確認済み</translation>
 <translation id="6431865393913628856">画面録画</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">サブタスク</translation>
 <translation id="6613765291890844037">使用中の保存容量 <ph name="STORAGE_IN_USE_SIZE" /> | 全体 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">プライバシー スクリーンはオンになっています</translation>
-<translation id="6618277154885124991">Google スプレッドシートを作成</translation>
 <translation id="6622679827379792051">スマートフォンのアプリの表示を設定</translation>
 <translation id="662279009180869175">分割画面のサイズを変更するには、左右の矢印キーを使用します</translation>
 <translation id="6624493541160101248">現在のデスク: <ph name="DESK_NAME" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
@@ -2400,6 +2404,7 @@
 <translation id="8921624153894383499">Google アシスタントはこの言語に対応していません。</translation>
 <translation id="8926951137623668982">シェルフは常に非表示です</translation>
 <translation id="8929566928381252430">CapsLock キーの代わりに次のキーを使用してください</translation>
+<translation id="8934418770423095813">Google ドキュメントを作成</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 件のファイル}other{# 件のファイル}}</translation>
 <translation id="8936501819958976551">無効</translation>
 <translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>

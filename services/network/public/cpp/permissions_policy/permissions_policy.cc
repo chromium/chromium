@@ -397,13 +397,13 @@ PermissionsPolicy::GetAllowlistForFeatureIfExists(
   return std::nullopt;
 }
 
-std::optional<std::string> PermissionsPolicy::GetEndpointForFeature(
+std::string PermissionsPolicy::GetEndpointForFeature(
     network::mojom::PermissionsPolicyFeature feature) const {
   auto endpoint = reporting_endpoints_.find(feature);
   if (endpoint != reporting_endpoints_.end()) {
     return endpoint->second;
   }
-  return std::nullopt;
+  return std::string();
 }
 
 // static

@@ -95,9 +95,9 @@ public class TabGroupUtilsUnitTest {
     public void testGetSelectedTabInGroupForTab() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabs, TAB1_ID);
-        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
-        doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
-        doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab2);
+        doReturn(mTab1).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION1);
+        doReturn(POSITION1).when(mTabGroupModelFilter).representativeIndexOf(mTab1);
+        doReturn(POSITION1).when(mTabGroupModelFilter).representativeIndexOf(mTab2);
 
         assertThat(
                 TabGroupUtils.getSelectedTabInGroupForTab(mTabGroupModelFilter, mTab1),

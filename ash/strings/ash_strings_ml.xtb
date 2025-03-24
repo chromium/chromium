@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">ഭാഷാ ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="1459693405370120464">കാലാവസ്ഥ</translation>
 <translation id="1460620680449458626">വോളിയം മ്യൂട്ട് ചെയ്‌തിരിക്കുന്നു.</translation>
+<translation id="1462439140224375968">Google Doc സൃഷ്ടിച്ചു</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> എന്നിവയ്ക്കും ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="1467432559032391204">ഇടത്</translation>
 <translation id="146902737843070955">നിങ്ങളുടെ അഡ്‌മിൻ ഈ മാറ്റം അഭ്യർത്ഥിച്ചു</translation>
@@ -215,6 +216,7 @@
 <translation id="1679841710523778799">തെളിച്ചം കൂട്ടുക</translation>
 <translation id="1680659827022803830">വീഡിയോ കോൾ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">നിങ്ങൾക്ക് ഏതുസമയത്തും ക്രമീകരണത്തിൽ ഈ ഫീച്ചർ ഓഫാക്കാം. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ടൈമർ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 വിലാസം: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">സജീവ വിൻഡോ ഇടതുവശത്ത് ഡോക്ക് ചെയ്‌തു.</translation>
@@ -592,6 +594,7 @@
 <translation id="301584155502740476">ഹോട്ട്സ്പോട്ട് വിശദാംശങ്ങൾ കാണിക്കുക. ഹോട്ട്സ്പോട്ട് ഓഫാണ്.</translation>
 <translation id="3017079585324758401">പശ്ചാത്തലം</translation>
 <translation id="3018135054368884502">മീഡിയ ഫാസ്റ്റ് ഫോർവേഡ് ചെയ്യുക</translation>
+<translation id="3026897869154397692">കലണ്ടറിൽ ചേർത്തു</translation>
 <translation id="3033545621352269033">ഓണാണ്</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> എന്ന ഡെസ്ക്കുമായി സംയോജിപ്പിക്കുക</translation>
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
@@ -967,6 +970,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ഇൻസ്‌റ്റാൾ ചെയ്‌ത ആപ്പ്, താൽക്കാലികമായി നിർത്തിയിരിക്കുന്നു</translation>
 <translation id="4228078597006700451">നിയന്ത്രണങ്ങൾ സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="4230560241506423345">പുതിയത്</translation>
+<translation id="4236726631849783264">നിർദ്ദേശിക്കുന്ന നടപടി സംബന്ധിച്ച റിമൈൻഡർ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">അവലോകന മോഡ്</translation>
 <translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
@@ -983,7 +987,6 @@
 <translation id="4275663329226226506">മീഡിയ</translation>
 <translation id="4279490309300973883">മിററിംഗ്</translation>
 <translation id="4280601795273309128">സുരക്ഷാ അപ്‌ഡേറ്റുകൾ അവസാനിച്ചു. നിങ്ങളുടെ ഉപകരണം അപ്‌ഗ്രേഡ് ചെയ്യുക.</translation>
-<translation id="4281739221820540368">Google Docs സൃഷ്‌ടിക്കുക</translation>
 <translation id="4283888303416325161">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
 <translation id="428715201724021596">പ്രൊഫൈലിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
@@ -1044,6 +1047,7 @@
 <translation id="4471354919263203780">സംഭാഷണം തിരിച്ചറിയൽ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{ഉപകരണം ഇപ്പോൾ അപ്‌ഡേറ്റ് ചെയ്യുക}=1{ഒരു സെക്കൻഡിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# സെക്കൻഡിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
 <translation id="4472575034687746823">ആരംഭിക്കാം</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">അടുത്ത ട്രാക്ക്</translation>
 <translation id="4477751544736611934">ഇതിന് ഡാറ്റാ നിരക്കുകൾ ഈടാക്കിയേക്കാം.
 ഒരു ഉപകരണം കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
@@ -1070,6 +1074,7 @@
 <translation id="4545950850562423083">നിലവിലെ പേജ് ബുക്ക്‌മാർക്കായി സംരക്ഷിക്കുക</translation>
 <translation id="4548482551627849548">സജീവ വിൻഡോ ഇടതുവശത്തെ ഡെസ്‌ക്കിലേക്ക് നീക്കുക</translation>
 <translation id="4552748006424994716">എക്കോ ഒഴിവാക്കാൻ, വയേർഡ് ഹെഡ്ഫോൺ വഴി മാത്രം മൈക്ക് ഉപയോഗിക്കാവുന്നതാണ്.</translation>
+<translation id="4556953949326137018">നിങ്ങൾ “Calendar-ലേക്ക് ചേർക്കുക” അല്ലെങ്കിൽ “Google Docs സൃഷ്ടിക്കുക” പോലുള്ള നിർദ്ദേശിക്കുന്ന നടപടികൾ ഉപയോഗിക്കുമ്പോൾ, നടപടികൾ നിർദ്ദേശിക്കാനായി തിരഞ്ഞെടുത്ത ഭാഗത്ത് നിന്നുള്ള ഉള്ളടക്കത്തെ <ph name="LINK_TO_SERVICE_TERMS" />-ന് വിധേയമായി Google സെർവറുകളിലേക്ക് അയയ്ക്കുന്നു. വ്യക്തിപരമോ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ രഹസ്യാത്മകമോ ആയ കാര്യങ്ങളൊന്നും ഉൾപ്പെടുത്തരുത്.</translation>
 <translation id="4560576029703263363">ഓണാണ്</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">പാസ്‌വേഡ് മറയ്ക്കുക</translation>
@@ -1153,6 +1158,7 @@
 <translation id="481455355267255546">അടുത്തത്</translation>
 <translation id="481749895090480684">ടാസ്ക്ക് ലിസ്റ്റ്: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
+<translation id="4828935196674083554">ചേർക്കുന്നു...</translation>
 <translation id="482908187605862807">Play Store-ൽ നിന്ന് ലഭ്യമായ ആപ്പുകൾ</translation>
 <translation id="4831034276697007977">സ്വയമേവയുള്ള ക്ലിക്കുകൾ ഓഫാക്കണമെന്ന് നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
 <translation id="4835677468087803981">പിൻ മറയ്ക്കുക</translation>
@@ -1650,6 +1656,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">എല്ലാ അറിയിപ്പുകളും മായ്ക്കുക</translation>
+<translation id="6426905245930183644">സൃഷ്ടിക്കുന്നു...</translation>
 <translation id="6430225033895752525">ഫോക്കസ് ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="643147933154517414">എല്ലാം ചെയ്‌തു</translation>
 <translation id="6431865393913628856">സ്‌ക്രീൻ റെക്കോർഡ്</translation>
@@ -1716,7 +1723,6 @@
 <translation id="6612889377159412215">ഉപടാസ്‌ക്</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> സ്റ്റോറേജ് ഉപയോഗത്തിലാണ് | ആകെ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">സ്വകാര്യതാ സ്‌ക്രീൻ ഓണാണ്</translation>
-<translation id="6618277154885124991">Google Sheets സൃഷ്ടിക്കുക</translation>
 <translation id="6622679827379792051">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="662279009180869175">സ്‌ക്രീൻ വിഭജന മോഡിന്റെ വലുപ്പം മാറ്റാൻ ഇടത്, വലത് അമ്പടയാളങ്ങൾ ഉപയോഗിക്കുക</translation>
 <translation id="6624493541160101248">നിലവിലെ ഡെസ്‌ക്: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ഡെസ്‌ക്കുകളിൽ <ph name="DESK_INDEX" />-ാമത്തേത്.</translation>
@@ -1890,6 +1896,7 @@
 <translation id="7228968829656641943">എന്റെ സ്ക്രീൻ തിരയാൻ തിരഞ്ഞെടുക്കുക. കീബോർഡ് നാവിഗേഷനായി ടാബ് അമർത്തുക, തുടർന്ന് സ്പെയ്‌സ് അമർത്തുക.</translation>
 <translation id="7229029500464092426">മെമ്മറി <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ആകെ</translation>
 <translation id="7239814253344511868">രണ്ട് മൗസ് ബട്ടണുകളും</translation>
+<translation id="7240636904654154599">Google Sheet സൃഷ്ടിച്ചു</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ബാറ്ററി ചാർജ് ശേഷിക്കുന്നു.
 നിങ്ങളുടെ ഉപകരണം പവറിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. അപ്‌ഡേറ്റ് നടപ്പിലാക്കാൻ ഈ Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്. ഇതിന് ഒരു മിനിറ്റ് വരെ സമയമെടുത്തേക്കാം.</translation>
@@ -2401,6 +2408,8 @@
 <translation id="8921624153894383499">Google അസിസ്‌റ്റന്‍റ് ഈ ഭാഷ സംസാരിക്കില്ല.</translation>
 <translation id="8926951137623668982">ഷെൽഫ് എപ്പോഴും അദൃശ്യമാണ്</translation>
 <translation id="8929566928381252430">Caps Lock ഉപയോഗിക്കാൻ ശ്രമിക്കുകയാണോ? ഉപയോഗിക്കൂ</translation>
+<translation id="8929623844713377237">കോൺടാക്റ്റ് സൃഷ്ടിച്ചു</translation>
+<translation id="8934418770423095813">Google ഡോക് സൃഷ്ടിക്കുക</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ഒരു ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="8936501819958976551">നിർജീവമാക്കി</translation>
 <translation id="8938800817013097409">USB-C ഉപകരണം (പുറകിൽ വലതുവശത്തെ പോർട്ട്)</translation>

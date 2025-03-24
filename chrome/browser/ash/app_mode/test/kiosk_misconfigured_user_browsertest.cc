@@ -4,6 +4,7 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
@@ -12,6 +13,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,16 +21,12 @@
 namespace ash {
 
 using kiosk::test::AutoLaunchKioskApp;
+using kiosk::test::CreateDeviceLocalAccountId;
 using kiosk::test::CurrentProfile;
 using kiosk::test::IsAppInstalled;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
-
-AccountId CreateDeviceLocalAccountId(std::string_view account_id,
-                                     policy::DeviceLocalAccountType type) {
-  return AccountId(AccountId::FromUserEmail(
-      policy::GenerateDeviceLocalAccountUserId(account_id, type)));
-}
 
 std::string_view GetAccountId(const KioskMixin::Option& option) {
   return std::visit(
@@ -125,7 +123,7 @@ class KioskMisconfiguredUserTest
 };
 
 IN_PROC_BROWSER_TEST_P(KioskMisconfiguredUserTest, LaunchesAndInstallsApp) {
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
   ASSERT_TRUE(IsAppInstalled(CurrentProfile(), AutoLaunchKioskApp()));
 }
 

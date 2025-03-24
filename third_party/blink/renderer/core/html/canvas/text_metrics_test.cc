@@ -232,7 +232,7 @@ TEST_P(CaretPositionForOffsetBidiTest, CaretPositionForOffsetsBidi) {
       GetFont(test_data.font), test_data.direction,
       V8CanvasTextBaseline::Enum::kAlphabetic, V8CanvasTextAlign::Enum::kLeft,
       text_string,
-      RuntimeEnabledFeatures::CanvasTextNgEnabled()
+      RuntimeEnabledFeatures::CanvasTextNgEnabled(nullptr)
           ? MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas)
           : nullptr);
 

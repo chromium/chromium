@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
@@ -78,7 +79,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
       }
 
       // Write recorded data chunk to the file and prepare for next chunk.
-      fwrite(chunk.data(), 1, chunk.size(), file_);
+      UNSAFE_TODO(fwrite(chunk.data(), 1, chunk.size(), file_));
       buffer_.Seek(chunk.size());
       bytes_written += chunk.size();
     }
@@ -304,7 +305,7 @@ TEST_F(MacAudioInputTest, DISABLED_AUAudioInputStreamRecordToFile) {
   AudioInputStream* ais = CreateDefaultAudioInputStream();
   EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
 
-  fprintf(stderr, "               File name  : %s\n", kFileName);
+  UNSAFE_TODO(fprintf(stderr, "               File name  : %s\n", kFileName));
   fprintf(stderr, "               Sample rate: %d\n", fs);
   WriteToFileAudioSink file_sink(kFileName);
   fprintf(stderr, "               >> Speak into the mic while recording...\n");

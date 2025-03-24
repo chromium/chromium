@@ -105,7 +105,7 @@ public final class TabGroupSyncUtils {
      */
     public static void unmapLocalIdsNotInTabGroupModelFilter(
             TabGroupSyncService tabGroupSyncService, TabGroupModelFilter filter) {
-        assert !filter.isIncognito();
+        assert !filter.getTabModel().isOffTheRecord();
 
         for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);

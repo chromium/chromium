@@ -584,6 +584,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3721119614952978349">Vi i Google</translation>
 <translation id="3737319253362202215">Podešavanja prevoda</translation>
 <translation id="3738139272394829648">Dodirni za pretragu</translation>
+<translation id="3739455665973395693">Nema ugroženih lozinki na Google nalogu</translation>
 <translation id="3739899004075612870">Obeleženo u <ph name="PRODUCT_NAME" />-u</translation>
 <translation id="3740525748616366977">Glasovna pretraga nije dostupna na ovom uređaju</translation>
 <translation id="376561056759077985">Neki podaci još nisu sačuvani</translation>
@@ -637,6 +638,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3985215325736559418">Želite li stvarno da ponovo preuzmete <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiraj link</translation>
 <translation id="4000212216660919741">Oflajn početna stranica</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 ugrožena lozinka na Google nalogu}one{# ugrožena lozinka na Google nalogu}few{# ugrožene lozinke na Google nalogu}other{# ugroženih lozinki na Google nalogu}}</translation>
 <translation id="4016425174436051808">Praćenje nije uspelo. Došlo je do greške.</translation>
 <translation id="4024768890073681126">Roditelj upravlja pregledačem</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# č}one{# č}few{# č}other{# č}}</translation>
@@ -692,6 +694,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4270730597186910506">Pratite proizvod ili opozovite njegovo praćenje.</translation>
 <translation id="4277529130885813215">Koristi drugi uređaj</translation>
 <translation id="4282440837784183472">Vaša organizacija, <ph name="MANAGED_DOMAIN" />, upravlja nalogom na koji se prijavljujete i načinom na koji Chrome može da se koristi. Administrator može da podesi ili ograniči određene funkcije.</translation>
+<translation id="4285498937028063278">Otkači</translation>
 <translation id="4285846616383034558">Kolačići, keš i drugi podaci o sajtovima</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Uključite otključavanje ekrana u Android podešavanjima<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nova kart. bez arhiviranja</translation>
@@ -831,6 +834,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="488187801263602086">Preimenujte datoteku</translation>
 <translation id="4885273946141277891">Nepodržan broj Chrome instanci.</translation>
+<translation id="4890973535105146893">Nema sačuvanih lozinki na Google nalogu</translation>
 <translation id="4905823827770127520">Uvrstite link do stranice</translation>
 <translation id="4908869848243824489">Google Discover</translation>
 <translation id="4910889077668685004">Aplikacije za plaćanje</translation>
@@ -920,6 +924,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
 <translation id="5326246328175179736">Ne možete da se prijavite pomoću ovog naloga</translation>
+<translation id="5327248766486351172">Naziv</translation>
 <translation id="5328542107300944283">Koristite uz <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Zahtevi za dozvolu</translation>
 <translation id="534580735623577507">Nema sajtova iz perioda <ph name="TIME_PERIOD" /></translation>
@@ -1075,6 +1080,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Ovde kontrolišite priče i aktivnosti</translation>
 <translation id="6071995715087444295">Da biste proverili da li ima ugroženih lozinki, prijavite se na Google nalog</translation>
+<translation id="6078323886959318429">Dodaj prečicu</translation>
 <translation id="6085886413119427067">Određuje kako da se poveže sa veb-sajtovima preko bezbedne veze</translation>
 <translation id="6087286598828478206">Želite da blokirate člana i napustite grupu?</translation>
 <translation id="60923314841986378">Još <ph name="HOURS" /> sata/i</translation>
@@ -1703,6 +1709,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Ne nudi prevod ovih jezika</translation>
 <translation id="8712637175834984815">Važi</translation>
+<translation id="8715286883001906001">Ojačajte lozinke na Google nalogu</translation>
 <translation id="8723453889042591629">Brzo prevedite ovu stranicu. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8731268612289859741">Bezbednosni kôd</translation>
@@ -1830,6 +1837,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="970715775301869095">Još <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Oflajn</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>
+<translation id="984756705737569814">Provera lozinki na Google nalogu nije uspela</translation>
 <translation id="987264212798334818">Opšte</translation>
 <translation id="988091779042748639">Da biste izbrisali istoriju pregledanja bez arhiviranja sa uređaja, zatvorite sve kartice bez arhiviranja.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> kartice/a</translation>

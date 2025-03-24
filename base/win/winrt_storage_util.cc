@@ -10,6 +10,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
@@ -69,7 +70,7 @@ HRESULT CreateIBufferFromData(const uint8_t* data,
     return hr;
   }
 
-  memcpy(p_buffer_data, data, length);
+  UNSAFE_TODO(memcpy(p_buffer_data, data, length));
 
   *buffer = std::move(internal_buffer);
 

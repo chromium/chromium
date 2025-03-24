@@ -4,6 +4,7 @@
 
 #include "media/gpu/windows/d3d12_video_processor_wrapper.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/windows/d3d12_helpers.h"
@@ -95,10 +96,11 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
   };
 
   HRESULT hr;
-  if (memcmp(&input_stream_desc, &input_stream_desc_,
-             sizeof(D3D12_VIDEO_PROCESS_INPUT_STREAM_DESC)) != 0 ||
-      memcmp(&output_stream_desc, &output_stream_desc_,
-             sizeof(D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC)) != 0) {
+  if (UNSAFE_TODO(memcmp(&input_stream_desc, &input_stream_desc_,
+                         sizeof(D3D12_VIDEO_PROCESS_INPUT_STREAM_DESC))) != 0 ||
+      UNSAFE_TODO(memcmp(&output_stream_desc, &output_stream_desc_,
+                         sizeof(D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC))) !=
+          0) {
     D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT support{
         .InputSample = {.Width = static_cast<UINT>(input_texture_desc.Width),
                         .Height = input_texture_desc.Height,

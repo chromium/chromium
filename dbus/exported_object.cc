@@ -50,9 +50,8 @@ class ResponseSenderWrapper {
     SCOPED_CRASH_KEY_STRING32("ResponseSenderWrapper", "DBusMember", member_);
 
     // `sender_` must have run (or not set).
-    CHECK(sender_.is_null())
+    LOG_IF(FATAL, !sender_.is_null())
         << "ResponseSender did not run for " << interface_ << "." << member_;
-    ;
   }
 
   // Convenience factory.
@@ -312,11 +311,7 @@ DBusHandlerResult ExportedObject::HandleMessage(
                                   iter->second, std::move(method_call)));
   } else {
     // If the D-Bus thread is not used, just call the method directly.
-    MethodCall* method = method_call.get();
-    iter->second.Run(method, ResponseSenderWrapper::Create(
-                                 std::move(interface), std::move(member),
-                                 base::BindOnce(&ExportedObject::SendResponse,
-                                                this, std::move(method_call))));
+    RunMethod(iter->second, std::move(method_call));
   }
 
   // It's valid to say HANDLED here, and send a method response at a later
@@ -327,7 +322,18 @@ DBusHandlerResult ExportedObject::HandleMessage(
 void ExportedObject::RunMethod(const MethodCallCallback& method_call_callback,
                                std::unique_ptr<MethodCall> method_call) {
   bus_->AssertOnOriginThread();
+
   MethodCall* method = method_call.get();
+
+  // Edge case that `method_call_callback` may be canceled when the method
+  // call message is processed. Send an error response.
+  if (method_call_callback.IsCancelled()) {
+    SendResponse(std::move(method_call), ErrorResponse::FromMethodCall(
+                                             method, DBUS_ERROR_UNKNOWN_METHOD,
+                                             "Method is no longer available"));
+    return;
+  }
+
   method_call_callback.Run(
       method, ResponseSenderWrapper::Create(
                   method->GetInterface(), method->GetMember(),

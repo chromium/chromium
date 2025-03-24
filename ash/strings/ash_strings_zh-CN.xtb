@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">调高亮度</translation>
 <translation id="1680659827022803830">视频通话控件</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">您随时可以在“设置”中停用此功能。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />定时器   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 地址：<ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">将活动窗口停靠在左侧。</translation>
@@ -966,6 +967,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安装的应用，已暂停</translation>
 <translation id="4228078597006700451">尚未设置控件</translation>
 <translation id="4230560241506423345">新建</translation>
+<translation id="4236726631849783264">建议的操作注意事项</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概览模式</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -982,7 +984,6 @@
 <translation id="4275663329226226506">媒体</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4280601795273309128">安全更新已终止。请升级您的设备。</translation>
-<translation id="4281739221820540368">创建 Google 文档</translation>
 <translation id="4283888303416325161">请输入密码以增强安全性</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428715201724021596">正在连接到配置文件。这可能需要几分钟的时间。</translation>
@@ -1043,6 +1044,7 @@
 <translation id="4471354919263203780">正在下载语音识别文件... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{立即更新此设备}=1{请在 1 秒内更新此设备}other{请在 # 秒内更新此设备}}</translation>
 <translation id="4472575034687746823">开始使用</translation>
+<translation id="4473489370276014885">Google 通讯录</translation>
 <translation id="4477350412780666475">下一曲</translation>
 <translation id="4477751544736611934">这可能会产生流量费用。
 已连接 1 部设备。</translation>
@@ -1069,6 +1071,7 @@
 <translation id="4545950850562423083">将当前网页保存为书签</translation>
 <translation id="4548482551627849548">将活动窗口移至左侧桌面</translation>
 <translation id="4552748006424994716">为避免回声，您只能使用有线耳机收听麦克风的声音。</translation>
+<translation id="4556953949326137018">当您使用“添加到日历”或“创建 Google 文档”等建议的操作时，系统会将所选区域的内容发送到 Google 服务器以执行建议的操作，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="4560576029703263363">已开启</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
@@ -1152,6 +1155,7 @@
 <translation id="481455355267255546">即将到来的活动</translation>
 <translation id="481749895090480684">任务列表：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
+<translation id="4828935196674083554">正在添加…</translation>
 <translation id="482908187605862807">Play 商店提供的应用</translation>
 <translation id="4831034276697007977">确定要关闭自动点击吗？</translation>
 <translation id="4835677468087803981">隐藏 PIN 码</translation>
@@ -1648,6 +1652,7 @@
 <translation id="641817663353603351">向上翻页</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">清除所有通知</translation>
+<translation id="6426905245930183644">正在创建…</translation>
 <translation id="6430225033895752525">显示专注模式设置</translation>
 <translation id="643147933154517414">大功告成</translation>
 <translation id="6431865393913628856">屏幕录制</translation>
@@ -1714,7 +1719,6 @@
 <translation id="6612889377159412215">子任务</translation>
 <translation id="6613765291890844037">存储空间：已用 <ph name="STORAGE_IN_USE_SIZE" /> | 总共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
-<translation id="6618277154885124991">创建 Google 表格</translation>
 <translation id="6622679827379792051">设置查看手机中的应用</translation>
 <translation id="662279009180869175">使用向左键和向右键可调整分屏大小</translation>
 <translation id="6624493541160101248">当前桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
@@ -2398,6 +2402,7 @@
 <translation id="8921624153894383499">Google 助理不支持此语言。</translation>
 <translation id="8926951137623668982">任务栏始终处于隐藏状态</translation>
 <translation id="8929566928381252430">要使用 Caps Lock 键吗？请使用</translation>
+<translation id="8934418770423095813">创建 Google 文档</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>

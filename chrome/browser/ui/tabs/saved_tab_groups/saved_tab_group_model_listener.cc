@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/local_tab_group_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -20,6 +19,7 @@
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "components/tab_groups/tab_group_id.h"
 
 namespace content {
@@ -114,7 +114,10 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
       // browser windows, as it gets created in the new window and destroyed in
       // the old window. In these cases, tracking must be paused, as otherwise
       // the saved group will get emptied out during the move.
-      CHECK(local_tab_group_listeners_.at(change.group).IsTrackingPaused());
+      if (change.GetCreateChange()->reason() ==
+          TabGroupChange::TabGroupCreationReason::kNewGroupCreated) {
+        CHECK(local_tab_group_listeners_.at(change.group).IsTrackingPaused());
+      }
       return;
     }
 

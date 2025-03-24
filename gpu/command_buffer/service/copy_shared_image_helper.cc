@@ -597,6 +597,23 @@ bool GraphiteImageReadPixels(skgpu::graphite::Context* graphite_context,
   CHECK(graphite_context);
   ReadPixelsContext context;
 
+#if !defined(SK_GRAPHITE_READ_PIXELS_SUPPORTS_BOTTOM_LEFT)
+  // Make the `src_rect` relative to the bottom left origin if needed. This
+  // works around lack of support for bottom-left origin data during readback in
+  // Graphite. Graphite correctly handles bottom-left origins when rendering, so
+  // if asyncRescaleAndReadPixels() were to render `sk_image` for any reason,
+  // this adjustment won't work. But this call isn't scaling and is presumably
+  // for a shared image that has copy-src usage, so it shouldn't happen. This is
+  // also a no-op when the src rect is the entire image, regardless of origin.
+  if (src_surface_origin == kBottomLeft_GrSurfaceOrigin) {
+    src_y = src_image_bounds.height() - src_rect.y() - src_rect.height();
+    src_rect = gfx::Rect(
+        src_rect.x(), src_y, src_rect.width(), src_rect.height());
+    // This adjustment should not change the fact that src_rect is still valid
+    CHECK(src_image_bounds.Contains(src_rect));
+  }
+#endif
+
   graphite_context->asyncRescaleAndReadPixels(
       sk_image.get(), dst_info, RectToSkIRect(src_rect),
       SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
@@ -609,6 +626,7 @@ bool GraphiteImageReadPixels(skgpu::graphite::Context* graphite_context,
     return false;
   }
 
+#if !defined(SK_GRAPHITE_READ_PIXELS_SUPPORTS_BOTTOM_LEFT)
   // Use CopyPlane to flip as Graphite doesn't support bottom left origin
   // images. Using a negative height causes CopyPlane to flip while copying.
   // TODO(crbug.com/40269891): Remove this if Graphite performs the flip
@@ -616,6 +634,11 @@ bool GraphiteImageReadPixels(skgpu::graphite::Context* graphite_context,
   const int height = src_surface_origin == kTopLeft_GrSurfaceOrigin
                          ? dst_info.height()
                          : -dst_info.height();
+#else
+  // Must copy the async results (often a GPU-mapped buffer) to the CPU
+  // pixel_address.
+  const int height = dst_info.height();
+#endif
   libyuv::CopyPlane(static_cast<const uint8_t*>(context.async_result->data(0)),
                     context.async_result->rowBytes(0),
                     static_cast<uint8_t*>(pixel_address), row_bytes,

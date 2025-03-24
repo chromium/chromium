@@ -27,8 +27,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
 using kiosk::test::AutoLaunchKioskApp;
 using kiosk::test::CachePolicy;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -116,7 +118,7 @@ class VirtualKeyboardFeaturesTest
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
   const KioskMixin::Config& config() {

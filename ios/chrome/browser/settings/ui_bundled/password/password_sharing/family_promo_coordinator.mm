@@ -52,7 +52,7 @@
   viewController.presentationController.delegate = self;
   viewController.sheetPresentationController.detents = @[
     viewController.preferredHeightDetent,
-    UISheetPresentationControllerDetent.largeDetent,
+    [UISheetPresentationControllerDetent largeDetent],
   ];
   self.viewController = viewController;
 

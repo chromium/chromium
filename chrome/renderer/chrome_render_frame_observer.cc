@@ -9,6 +9,7 @@
 
 #include <limits>
 #include <map>
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -83,6 +84,10 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/renderer/plugins/chrome_plugin_placeholder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/renderer/actor/tool_executor.h"
 #endif
 
 using blink::WebDocumentLoader;
@@ -610,6 +615,15 @@ void ChromeRenderFrameObserver::SetSupportsDraggableRegions(
 void ChromeRenderFrameObserver::SetShouldDeferMediaLoad(bool should_defer) {
   prerender::SetShouldDeferMediaLoad(render_frame(), should_defer);
 }
+
+#if BUILDFLAG(ENABLE_GLIC)
+void ChromeRenderFrameObserver::InvokeTool(
+    actor::mojom::ToolInvocationPtr request,
+    InvokeToolCallback callback) {
+  actor::ToolExecutor executor(render_frame());
+  executor.InvokeTool(std::move(request), std::move(callback));
+}
+#endif
 
 void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

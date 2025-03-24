@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill::payments {
@@ -139,7 +140,7 @@ void BnplManager::FetchVcnDetails(GURL url) {
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.redirect_url = std::move(url);
-  request_details.issuer_id = ongoing_flow_state_->issuer_id;
+  request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
 
   payments_autofill_client().ShowAutofillProgressDialog(
       AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
@@ -194,7 +195,7 @@ void BnplManager::OnVcnDetailsFetched(
     credit_card.SetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
                            base::UTF8ToUTF16(response_details.expiration_year));
     credit_card.set_cvc(base::UTF8ToUTF16(response_details.cvv));
-    credit_card.set_issuer_id(ongoing_flow_state_->issuer_id);
+    credit_card.set_issuer_id(ongoing_flow_state_->issuer.issuer_id());
     credit_card.set_is_bnpl_card(true);
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
         .Run(credit_card);
@@ -209,7 +210,7 @@ void BnplManager::OnVcnDetailsFetched(
 }
 
 void BnplManager::OnIssuerSelected(const BnplIssuer& selected_issuer) {
-  ongoing_flow_state_->issuer_id = selected_issuer.issuer_id();
+  ongoing_flow_state_->issuer = selected_issuer;
 
   if (selected_issuer.payment_instrument().has_value()) {
     ongoing_flow_state_->instrument_id = base::NumberToString(
@@ -226,7 +227,7 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
   request_details.app_locale = ongoing_flow_state_->app_locale;
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
-  request_details.issuer_id = ongoing_flow_state_->issuer_id;
+  request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
 
   autofill_client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
@@ -249,12 +250,19 @@ void BnplManager::OnDidGetDetailsForCreateBnplPaymentInstrument(
     LegalMessageLines parsed_legal_message_lines;
     if (LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
                                 /*escape_apostrophes=*/true)) {
-      ongoing_flow_state_->legal_message_lines =
-          std::move(parsed_legal_message_lines);
+      if (!parsed_legal_message_lines.empty()) {
+        BnplTosModel bnpl_tos_model;
+        bnpl_tos_model.legal_message_lines =
+            std::move(parsed_legal_message_lines);
+        bnpl_tos_model.issuer = ongoing_flow_state_->issuer;
 
-      // TODO(crbug.com/378518504): Display Terms of Service dialog.
-
-      return;
+        payments_autofill_client().ShowBnplTos(
+            std::move(bnpl_tos_model),
+            base::BindOnce(&BnplManager::OnTosDialogAccepted,
+                           weak_factory_.GetWeakPtr()),
+            base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+        return;
+      }
     }
   }
 
@@ -306,6 +314,12 @@ void BnplManager::FetchRedirectUrl() {
 void BnplManager::OnRedirectUrlFetched(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const BnplFetchUrlResponseDetails& response) {
+  // If the BNPL issuer selected is not linked, the ToS dialog must be showing,
+  // so close it.
+  if (!ongoing_flow_state_->issuer.payment_instrument().has_value()) {
+    payments_autofill_client().CloseBnplTos();
+  }
+
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     ongoing_flow_state_->redirect_url = std::move(response.redirect_url);
     ongoing_flow_state_->context_token = std::move(response.context_token);
@@ -449,7 +463,7 @@ void BnplManager::CreateBnplPaymentInstrument() {
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
   request_details.context_token = ongoing_flow_state_->context_token;
-  request_details.issuer_id = ongoing_flow_state_->issuer_id;
+  request_details.issuer_id = ongoing_flow_state_->issuer.issuer_id();
   request_details.risk_data = ongoing_flow_state_->risk_data;
   payments_autofill_client()
       .GetPaymentsNetworkInterface()

@@ -34,10 +34,3 @@ void RecordToastDismissReason(ToastId toast_id,
       base::StrCat({"Toast.", GetToastName(toast_id), ".Dismissed"}),
       close_reason);
 }
-
-void RecordToastDismissMenuClicked(ToastId toast_id,
-                                   toasts::ToastDismissMenuEntries command_id) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Toast.", GetToastName(toast_id), ".DismissMenuClicked"}),
-      command_id);
-}

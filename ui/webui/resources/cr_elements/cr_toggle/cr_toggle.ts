@@ -57,8 +57,8 @@ export class CrToggleElement extends CrToggleElementBase {
     };
   }
 
-  checked: boolean = false;
-  disabled: boolean = false;
+  accessor checked: boolean = false;
+  accessor disabled: boolean = false;
 
   private boundPointerMove_: ((e: PointerEvent) => void)|null = null;
   /**

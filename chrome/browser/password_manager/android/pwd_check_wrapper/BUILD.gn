@@ -17,6 +17,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_manager/android:java",

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
@@ -41,15 +39,11 @@ public class AddressBarPreference extends Preference implements RadioGroup.OnChe
         super.onBindViewHolder(holder);
         mGroup =
                 (RadioButtonWithDescriptionLayout)
-                        assumeNonNull(holder.findViewById(R.id.address_bar_radio_group));
+                        holder.findViewById(R.id.address_bar_radio_group);
         mGroup.setOnCheckedChangeListener(this);
 
-        mTopButton =
-                (RadioButtonWithDescription)
-                        assumeNonNull(holder.findViewById(R.id.address_bar_top));
-        mBottomButton =
-                (RadioButtonWithDescription)
-                        assumeNonNull(holder.findViewById(R.id.address_bar_bottom));
+        mTopButton = (RadioButtonWithDescription) holder.findViewById(R.id.address_bar_top);
+        mBottomButton = (RadioButtonWithDescription) holder.findViewById(R.id.address_bar_bottom);
 
         initializeRadioButtonSelection();
     }

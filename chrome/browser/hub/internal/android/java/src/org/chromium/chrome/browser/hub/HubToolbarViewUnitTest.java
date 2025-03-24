@@ -120,7 +120,7 @@ public class HubToolbarViewUnitTest {
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mColorMixer =
                 spy(
-                        new HubColorMixer(
+                        new HubColorMixerImpl(
                                 mActivity,
                                 new ObservableSupplierImpl<>(true),
                                 mFocusedPaneSupplier));
@@ -317,10 +317,14 @@ public class HubToolbarViewUnitTest {
     @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testHubSearchEnabledState() {
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
+        assertFalse(mSearchBox.isEnabled());
         assertFalse(mSearchBoxText.isEnabled());
+        assertFalse(mSearchLoupe.isEnabled());
 
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, true);
+        assertTrue(mSearchBox.isEnabled());
         assertTrue(mSearchBoxText.isEnabled());
+        assertTrue(mSearchLoupe.isEnabled());
     }
 
     @Test
@@ -336,8 +340,8 @@ public class HubToolbarViewUnitTest {
     }
 
     /**
-     * Setting the color twice forces {@link HubColorMixer} to make a color scheme change without an
-     * animation.
+     * Setting the color twice forces {@link HubColorMixerImpl} to make a color scheme change
+     * without an animation.
      */
     private void forceSetColorScheme(@HubColorScheme int colorScheme) {
         for (int i = 0; i < 2; i++) {

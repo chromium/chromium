@@ -6,6 +6,7 @@
 // that the app can be made entireless silent, as required by omaha.
 
 #include <Windows.h>
+
 #include <shlobj.h>  // Needed for IsUserAnAdmin()
 #include <stdlib.h>
 
@@ -14,6 +15,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -146,7 +148,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
                         time_string, std::size(time_string)) == 0) {
     HRESULT last_error_hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetTimeFormatEx(start) hr=" << putHR(last_error_hr);
-    wcscpy_s(time_string, std::size(time_string), L"Unknown");
+    UNSAFE_TODO(wcscpy_s(time_string, std::size(time_string), L"Unknown"));
   }
 
   LOGFN(INFO) << "Start: " << time_string;
@@ -216,7 +218,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
                           time_string, std::size(time_string)) == 0) {
       HRESULT last_error_hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "GetTimeFormatEx(end) hr=" << putHR(last_error_hr);
-      wcscpy_s(time_string, std::size(time_string), L"Unknown");
+      UNSAFE_TODO(wcscpy_s(time_string, std::size(time_string), L"Unknown"));
     }
 
     LOGFN(INFO) << (SUCCEEDED(hr) ? "Setup completed successfully"

@@ -1090,9 +1090,28 @@ bool CanMoveTabsToNewWindow(Browser* browser,
          static_cast<int>(tab_indices.size());
 }
 
+void MoveGroupToNewWindow(Browser* browser, tab_groups::TabGroupId group) {
+  Browser* new_browser;
+  if (browser->is_type_app() && browser->app_controller()->has_tab_strip()) {
+    new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
+        browser->app_name(), browser->is_trusted_source(), gfx::Rect(),
+        browser->profile(), true));
+    web_app::MaybeAddPinnedHomeTab(new_browser,
+                                   new_browser->app_controller()->app_id());
+  } else {
+    new_browser =
+        Browser::Create(Browser::CreateParams(browser->profile(), true));
+  }
+
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      browser->tab_strip_model()->DetachTabGroupForInsertion(group);
+  new_browser->tab_strip_model()->InsertDetachedTabGroupAt(
+      std::move(detached_group), 0);
+  new_browser->window()->Show();
+}
+
 void MoveTabsToNewWindow(Browser* browser,
-                         const std::vector<int>& tab_indices,
-                         std::optional<tab_groups::TabGroupId> group) {
+                         const std::vector<int>& tab_indices) {
   if (tab_indices.empty()) {
     return;
   }
@@ -1107,29 +1126,6 @@ void MoveTabsToNewWindow(Browser* browser,
   } else {
     new_browser =
         Browser::Create(Browser::CreateParams(browser->profile(), true));
-  }
-
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
-  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
-
-  tab_groups::TabGroupVisualData visual_data;
-
-  if (group.has_value()) {
-    const tab_groups::TabGroupVisualData* old_visual_data =
-        browser->tab_strip_model()
-            ->group_model()
-            ->GetTabGroup(group.value())
-            ->visual_data();
-
-    visual_data = tab_groups::TabGroupVisualData(old_visual_data->title(),
-                                                 old_visual_data->color(),
-                                                 false /* is_collapsed */);
-    if (tab_group_service && tab_group_service->GetGroup(group.value())) {
-      observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
-    }
-
-    new_browser->tab_strip_model()->AddTabGroup(group.value(), visual_data);
   }
 
   int indices_size = tab_indices.size();
@@ -1150,14 +1146,7 @@ void MoveTabsToNewWindow(Browser* browser,
     }
 
     new_browser->tab_strip_model()->AddTab(
-        std::move(tab_model), -1, ui::PAGE_TRANSITION_TYPED, add_types, group);
-  }
-
-  // Add all the tabs in the new browser to the group if it belonged in a group.
-  if (group.has_value()) {
-    if (observation_pauser) {
-      observation_pauser.reset();
-    }
+        std::move(tab_model), -1, ui::PAGE_TRANSITION_TYPED, add_types);
   }
 
   new_browser->window()->Show();

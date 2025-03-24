@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -234,13 +235,13 @@ void TabStripControlButton::UpdateBackground() {
 }
 
 int TabStripControlButton::GetCornerRadius() const {
-  return features::IsTabstripComboButtonEnabled()
+  return features::IsTabSearchMoving() && !features::HasTabSearchToolbarButton()
              ? kTabstripComboButtonCornerRadius
              : TabStripControlButton::kButtonSize.width() / 2;
 }
 
 int TabStripControlButton::GetFlatCornerRadius() const {
-  return features::IsTabstripComboButtonEnabled()
+  return features::IsTabSearchMoving() && !features::HasTabSearchToolbarButton()
              ? kTabstripComboButtonFlatCornerRadius
              : 0;
 }

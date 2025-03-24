@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -51,6 +52,7 @@ class WebContents;
 namespace tabs {
 class TabStripCollection;
 class TabGroupTabCollection;
+enum class SplitTabLayout;
 }
 
 class TabGroupModelFactory {
@@ -67,13 +69,15 @@ class TabGroupModelFactory {
 // container of the collection_ so client does not need to worry or deal with
 // the collection object.
 struct DetachedTabGroup {
-  explicit DetachedTabGroup(
-      std::unique_ptr<tabs::TabGroupTabCollection> collection);
+  DetachedTabGroup(std::unique_ptr<tabs::TabGroupTabCollection> collection,
+                   std::optional<int> active_index);
   DetachedTabGroup(const DetachedTabGroup&) = delete;
   DetachedTabGroup& operator=(const DetachedTabGroup&) = delete;
   ~DetachedTabGroup();
   DetachedTabGroup(DetachedTabGroup&&);
   std::unique_ptr<tabs::TabGroupTabCollection> collection_;
+  // Store the index of tab that was active in the detached group.
+  std::optional<int> active_index_ = std::nullopt;
 };
 
 // Holds state for a tab that has been detached from the tab strip.
@@ -537,10 +541,11 @@ class TabStripModel : public TabGroupController {
   GetAdjacentTabsAfterSelectedMove(base::PassKey<TabDragController>,
                                    int destination_index);
 
-  // Create a new split view and add the set of tabs pointed to by |indices| to
-  // it. Reorders the tabs so they are contiguous. |indices| must be sorted in
-  // ascending order.
-  void AddToNewSplit(const std::vector<int> indices);
+  // Create a new split view with the active tab and add the set of tabs pointed
+  // to by |indices| to it. Reorders the tabs so they are contiguous. |indices|
+  // must be sorted in ascending order.
+  split_tabs::SplitTabId AddToNewSplit(const std::vector<int> indices,
+                                       tabs::SplitTabLayout tab_layout);
 
   // Create a new tab group and add the set of tabs pointed to be |indices| to
   // it. Pins all of the tabs if any of them were pinned, and reorders the tabs
@@ -567,6 +572,10 @@ class TabStripModel : public TabGroupController {
   // are in, if any. The tabs are moved out of the group if necessary. |indices|
   // must be sorted in ascending order.
   void RemoveFromGroup(const std::vector<int>& indices);
+
+  // Unsplits all the tabs that are part of the split with `split_id`. The tabs
+  // maintain their group and pin properties.
+  void RemoveSplit(split_tabs::SplitTabId split_id);
 
   TabGroupModel* group_model() const { return group_model_.get(); }
 
@@ -938,12 +947,13 @@ class TabStripModel : public TabGroupController {
   // Adds all selected indices provided by `context_index` into a new tab group.
   void AddToNewGroupFromContextIndex(int context_index);
 
-  // Implementation of MoveTabsAndSetGroupImpl. Moves the set of tabs in
+  // Implementation of MoveTabsAndSetPropertiesImpl. Moves the set of tabs in
   // |indices| to the |destination_index| and updates the tabs to the
-  // appropriate |group|.
-  void MoveTabsAndSetGroupImpl(const std::vector<int>& indices,
-                               int destination_index,
-                               std::optional<tab_groups::TabGroupId> group);
+  // appropriate |group| and |pinned| properties.
+  void MoveTabsAndSetPropertiesImpl(const std::vector<int>& indices,
+                                    int destination_index,
+                                    std::optional<tab_groups::TabGroupId> group,
+                                    bool pinned);
 
   void AddToReadLaterImpl(const std::vector<int>& indices);
 

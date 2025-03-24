@@ -23,6 +23,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
+#include "device/bluetooth/bluetooth_socket_thread.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothAdapter_jni.h"
@@ -69,6 +70,7 @@ scoped_refptr<BluetoothAdapterAndroid> BluetoothAdapterAndroid::Create(
       bluetooth_adapter_wrapper));
 
   adapter->ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+  adapter->socket_thread_ = BluetoothSocketThread::Get();
 
   return adapter;
 }
@@ -220,8 +222,8 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
   if (iter == devices_.end()) {
     // New device.
     is_new_device = true;
-    device_android_owner =
-        BluetoothDeviceAndroid::Create(this, bluetooth_device_wrapper);
+    device_android_owner = BluetoothDeviceAndroid::Create(
+        this, bluetooth_device_wrapper, ui_task_runner_, socket_thread_);
     device_android = device_android_owner.get();
   } else {
     // Existing device.
@@ -320,7 +322,8 @@ void BluetoothAdapterAndroid::PopulatePairedDevice(
   }
 
   std::unique_ptr<BluetoothDeviceAndroid> device_owner =
-      BluetoothDeviceAndroid::Create(this, bluetooth_device_wrapper);
+      BluetoothDeviceAndroid::Create(this, bluetooth_device_wrapper,
+                                     ui_task_runner_, socket_thread_);
   devices_[device_address] = std::move(device_owner);
 
   // We don't notify observers for populated paired devices because there is no

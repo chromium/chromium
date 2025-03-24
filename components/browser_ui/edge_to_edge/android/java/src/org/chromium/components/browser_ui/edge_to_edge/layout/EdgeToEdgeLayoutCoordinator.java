@@ -126,6 +126,9 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         mView.setDisplayCutoutInsetLeft(cutout.left > 0 ? cutout : Insets.NONE);
         mView.setDisplayCutoutInsetRight(cutout.right > 0 ? cutout : Insets.NONE);
 
+        Insets captionBarInsets = windowInsets.getInsets(Type.captionBar());
+        mView.setCaptionBarInsets(captionBarInsets);
+
         int paddingInsetTypes = Type.systemBars() + Type.ime();
         if (shouldPadDisplayCutout(windowInsets, mActivity)) {
             paddingInsetTypes += Type.displayCutout();

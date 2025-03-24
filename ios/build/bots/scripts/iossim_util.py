@@ -483,7 +483,7 @@ def delete_simulator_runtime_after_days(days):
 
 
 def delete_least_recently_used_simulator_runtimes(
-    max_to_keep=constants.MAX_RUNTIME_KETP_COUNT):
+    max_to_keep=constants.MAX_RUNTIME_KEPT_COUNT):
   """Delete least recently used simulator runtimes.
 
   Delete simulator runtimes that are least recently used, based

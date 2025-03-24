@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/app_mode/test/kiosk_session_initialized_waiter.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/scoped_device_settings.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
@@ -79,7 +79,10 @@
 #include "net/http/http_status_code.h"
 
 namespace ash {
+
 namespace {
+
+using kiosk::test::WaitKioskLaunched;
 
 namespace em = enterprise_management;
 
@@ -1331,7 +1334,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,
   enrollment_screen()->OnConfirmationClosed();
 
   // Wait for app to be launched.
-  KioskSessionInitializedWaiter().Wait();
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 // Making sure the Kiosk flow still works when configured together with the
@@ -1377,7 +1380,7 @@ IN_PROC_BROWSER_TEST_F(
   enrollment_ui_.LeaveSuccessScreen();
 
   // Wait for app to be launched.
-  KioskSessionInitializedWaiter().Wait();
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
 // Test suite for a feature that allows to skip the Gaia screen by reusing the

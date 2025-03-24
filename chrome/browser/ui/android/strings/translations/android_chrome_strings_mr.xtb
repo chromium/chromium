@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
 <translation id="3737319253362202215">भाषांतराची सेटिंग्ज</translation>
 <translation id="3738139272394829648">शोधण्यासाठी स्विच करा</translation>
+<translation id="3739455665973395693">तुमच्या Google खाते मध्ये धोक्यात असलेले पासवर्ड नाहीत</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> मध्ये बुकमार्क केले</translation>
 <translation id="3740525748616366977">या डिव्हाइसवर व्हॉइस शोध उपलब्ध नाही</translation>
 <translation id="376561056759077985">काही डेटा अद्याप सेव्ह केला गेलेला नाही</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">तुम्ही <ph name="FILE_NAME" /> पुन्हा डाउनलोड करू इच्छिता?</translation>
 <translation id="3987993985790029246">लिंक कॉपी करा</translation>
 <translation id="4000212216660919741">ऑफलाइन होम</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{तुमच्या Google खाते मध्ये धोक्यात असलेला १ पासवर्ड आहे}other{तुमच्या Google खाते मध्ये धोक्यात असलेले # पासवर्ड आहेत}}</translation>
 <translation id="4016425174436051808">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="4024768890073681126">तुमचा ब्राउझर तुमच्या पालकाद्वारे व्यवस्थापित केला जातो</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# तास}other{# तास}}</translation>
@@ -692,6 +694,7 @@
 <translation id="4270730597186910506">उत्पादन ट्रॅक करा किंवा अनट्रॅक करा.</translation>
 <translation id="4277529130885813215">दुसरे डिव्‍हाइस वापरा</translation>
 <translation id="4282440837784183472">तुम्ही साइन इन करत असलेले खाते आणि Chrome कसे वापरले जाऊ शकते हे <ph name="MANAGED_DOMAIN" /> ही तुमची संस्था व्यवस्थापित करते. तुमच्या अ‍ॅडमिनिस्ट्रेटरला ठरावीक वैशिष्ट्ये सेट किंवा प्रतिबंधित करता येतात.</translation>
+<translation id="4285498937028063278">अनपिन</translation>
 <translation id="4285846616383034558">कुकी, कॅशे आणि इतर साइट डेटा</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android सेटिंग्जमध्ये स्क्रीन लॉक सुरू करणे<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">नवीन गुप्त टॅब</translation>
@@ -831,6 +834,7 @@
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="488187801263602086">फाइलला पुन्हा नाव द्या</translation>
 <translation id="4885273946141277891">Chrome उदाहरणांची असमर्थित संख्या.</translation>
+<translation id="4890973535105146893">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड नाहीत</translation>
 <translation id="4905823827770127520">पेजवर लिंकचा समावेश करा</translation>
 <translation id="4908869848243824489">Google चे Discover</translation>
 <translation id="4910889077668685004">पेमेंट ॲप्स</translation>
@@ -920,6 +924,7 @@
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5319359161174645648">Google Chrome ची शिफारस करते</translation>
 <translation id="5326246328175179736">तुम्ही हे खाते वापरून साइन इन करू शकत नाही</translation>
+<translation id="5327248766486351172">नाव</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />यासह वापरा</translation>
 <translation id="5342314432463739672">परवानगीच्या विनंत्या</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> कालावधीमध्ये कोणत्याही साइटना भेटी दिल्या गेल्या नाहीत</translation>
@@ -1075,6 +1080,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
 <translation id="6071995715087444295">धोक्यात असलेले पासवर्ड तपासण्यासाठी, तुमच्या Google खाते मध्ये साइन इन करा</translation>
+<translation id="6078323886959318429">शॉर्टकट जोडा</translation>
 <translation id="6085886413119427067">वेबसाइटशी सुरक्षित कनेक्शनवरून कसे कनेक्ट करावे ते निर्धारित करते</translation>
 <translation id="6087286598828478206">ब्लॉक करून गटामधून बाहेर पडायचे आहे का?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> तास शिल्लक</translation>
@@ -1703,6 +1709,7 @@
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="8712637175834984815">समजले</translation>
+<translation id="8715286883001906001">तुमच्या Google खाते मधील तुमचे पासवर्ड मजबूत करा</translation>
 <translation id="8723453889042591629">या पेजचे झटपट भाषांतर करा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करून धरून ठेवा.</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8731268612289859741">सुरक्षितता कोड</translation>
@@ -1830,6 +1837,7 @@
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनिटे शिल्लक</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="983192555821071799">सर्व टॅब बंद करा</translation>
+<translation id="984756705737569814">तुमच्या Google खाते मधील पासवर्ड तपासू शकत नाही</translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="988091779042748639">तुमच्या डिव्हाइसवरून गुप्त मोडमधील ब्राउझिंग इतिहास हटवण्यासाठी सर्व गुप्त टॅब बंद करा.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> टॅब</translation>

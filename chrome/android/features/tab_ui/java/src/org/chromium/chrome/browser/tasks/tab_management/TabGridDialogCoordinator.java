@@ -358,8 +358,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             // Refresh the TabSwitcher's tab list to reflect the last
                             // selected color in the color picker when it is dismissed. This
                             // call will be invoked for both Grid and List modes on the GTS.
-                            mTabSwitcherResetHandler.resetWithTabList(
-                                    mCurrentTabGroupModelFilterSupplier.get(), false);
+                            mTabSwitcherResetHandler.resetWithListOfTabs(
+                                    mCurrentTabGroupModelFilterSupplier
+                                            .get()
+                                            .getRepresentativeTabList());
                         }
                     }
                 };

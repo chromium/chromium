@@ -82,6 +82,7 @@ android_resources("java_resources") {
     "java/res/layout/account_selection_continue_button.xml",
     "java/res/layout/account_selection_data_sharing_consent_item.xml",
     "java/res/layout/account_selection_header_item.xml",
+    "java/res/layout/account_selection_login_buttons_start_separator.xml",
     "java/res/layout/account_selection_sheet.xml",
     "java/res/layout/error_description_text_item.xml",
     "java/res/layout/error_summary_text_item.xml",

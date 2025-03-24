@@ -226,11 +226,22 @@ public class Fido2CredentialRequest
         mMakeCredentialCallback = callback;
         mErrorCallback = errorCallback;
         mRecordingCallback = recordingCallback;
-
+        @Nullable Origin remoteDesktopOrigin = null;
+        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
+                && options.remoteDesktopClientOverride != null
+                && isChrome(mAuthenticationContextProvider.getWebContents())) {
+            // SECURITY: remoteDesktopClientOverride comes from the renderer process and is
+            // untrusted. We only use the override origin if the "caller origin" is explicitly
+            // allowlisted with an enterprise policy.
+            // This validation happens in the security checker's ValidateDomainAndRelyingPartyID
+            // method.
+            remoteDesktopOrigin = new Origin(options.remoteDesktopClientOverride.origin);
+        }
         frameHost.performMakeCredentialWebAuthSecurityChecks(
                 options.relyingParty.id,
                 origin,
                 options.isPaymentCredentialCreation,
+                remoteDesktopOrigin,
                 (result) -> {
                     if (result.securityCheckResult != AuthenticatorStatus.SUCCESS) {
                         mMakeCredentialErrorOutcome = MakeCredentialOutcome.SECURITY_ERROR;
@@ -264,13 +275,25 @@ public class Fido2CredentialRequest
         byte[] clientDataHash = null;
         if (!is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.APP)) {
             assert options.challenge != null;
-            final String callerOriginString = convertOriginToString(origin);
+            boolean effectiveCrossOrigin = isCrossOrigin;
+            String effectiveOriginString = convertOriginToString(origin);
+            // Handle remote desktop client override for ClientDataJSON.
+            // The origin from remoteDesktopClientOverride is only used after validation in
+            // ValidateDomainAndRelyingPartyID() confirmed that "caller origin" is allowlisted.
+            if (DeviceFeatureMap.isEnabled(
+                            DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
+                    && options.remoteDesktopClientOverride != null) {
+                effectiveOriginString =
+                        convertOriginToString(
+                                new Origin(options.remoteDesktopClientOverride.origin));
+                effectiveCrossOrigin = !options.remoteDesktopClientOverride.sameOriginWithAncestors;
+            }
             clientDataHash =
                     buildClientDataJsonAndComputeHash(
                             ClientDataRequestType.WEB_AUTHN_CREATE,
-                            callerOriginString,
+                            effectiveOriginString,
                             options.challenge,
-                            isCrossOrigin,
+                            effectiveCrossOrigin,
                             options.isPaymentCredentialCreation ? paymentOptions : null,
                             options.relyingParty.name,
                             topOrigin);
@@ -412,12 +435,23 @@ public class Fido2CredentialRequest
             returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
-
+        @Nullable Origin remoteDesktopOrigin = null;
+        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
+                && options.extensions.remoteDesktopClientOverride != null
+                && isChrome(mAuthenticationContextProvider.getWebContents())) {
+            // SECURITY: remoteDesktopClientOverride comes from the renderer process and is
+            // untrusted. We only use the override origin if the "caller origin" is explicitly
+            // allowlisted with an enterprise policy.
+            // This validation happens in the security checker's ValidateDomainAndRelyingPartyID
+            // method.
+            remoteDesktopOrigin = new Origin(options.extensions.remoteDesktopClientOverride.origin);
+        }
         mConditionalUiState = ConditionalUiState.WAITING_FOR_RP_ID_VALIDATION;
         frameHost.performGetAssertionWebAuthSecurityChecks(
                 options.relyingPartyId,
                 origin,
                 payment != null,
+                remoteDesktopOrigin,
                 (results) -> {
                     if (mConditionalUiState
                             == ConditionalUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE) {
@@ -460,14 +494,29 @@ public class Fido2CredentialRequest
         byte[] clientDataHash = null;
         if (!is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.APP)) {
             assert options.challenge != null;
+
+            boolean effectiveCrossOrigin = isCrossOrigin;
+            String effectiveOriginString = callerOriginString;
+            // Handle remote desktop client override for ClientDataJSON.
+            // The origin from remoteDesktopClientOverride is only used after validation in
+            // ValidateDomainAndRelyingPartyID() confirmed that "caller origin" is allowlisted.
+            if (DeviceFeatureMap.isEnabled(
+                            DeviceFeatureList.WEBAUTHN_REMOTE_DESKTOP_ALLOWED_ORIGINS)
+                    && options.extensions.remoteDesktopClientOverride != null) {
+                effectiveOriginString =
+                        convertOriginToString(
+                                new Origin(options.extensions.remoteDesktopClientOverride.origin));
+                effectiveCrossOrigin =
+                        !options.extensions.remoteDesktopClientOverride.sameOriginWithAncestors;
+            }
             clientDataHash =
                     buildClientDataJsonAndComputeHash(
                             (payment != null)
                                     ? ClientDataRequestType.PAYMENT_GET
                                     : ClientDataRequestType.WEB_AUTHN_GET,
-                            callerOriginString,
+                            effectiveOriginString,
                             options.challenge,
-                            isCrossOrigin,
+                            effectiveCrossOrigin,
                             payment,
                             options.relyingPartyId,
                             topOrigin);

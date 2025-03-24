@@ -69,16 +69,16 @@ export class CrLinkRowElement extends CrLitElement {
     };
   }
 
-  ariaShowLabel: boolean = false;
-  ariaShowSublabel: boolean = false;
-  startIcon: string = '';
-  label: string = '';
-  subLabel: string = '';
-  disabled: boolean = false;
-  external: boolean = false;
-  usingSlottedLabel: boolean = false;
-  roleDescription?: string;
-  buttonAriaDescription?: string;
+  accessor ariaShowLabel: boolean = false;
+  accessor ariaShowSublabel: boolean = false;
+  accessor startIcon: string = '';
+  accessor label: string = '';
+  accessor subLabel: string = '';
+  accessor disabled: boolean = false;
+  accessor external: boolean = false;
+  accessor usingSlottedLabel: boolean = false;
+  accessor roleDescription: string|undefined;
+  accessor buttonAriaDescription: string|undefined;
 
   override focus() {
     this.$.icon.focus();

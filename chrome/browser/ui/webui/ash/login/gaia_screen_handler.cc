@@ -186,6 +186,8 @@ void RecordAPILogin(bool is_third_party_idp, bool is_api_used) {
 
 // Timeout used to prevent infinite connecting to a flaky network.
 constexpr base::TimeDelta kConnectingTimeout = base::Seconds(60);
+// Delay before showing ErrorScreen after the network state becomes offline.
+constexpr base::TimeDelta kOfflineTimeout = base::Seconds(1);
 
 std::string GetEnterpriseDomainManager() {
   policy::BrowserPolicyConnectorAsh* connector =
@@ -1238,13 +1240,13 @@ void GaiaScreenHandler::Show() {
   }
   ShowInWebUI(std::move(data));
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
-  hidden_ = false;
 }
 
 void GaiaScreenHandler::Hide() {
-  hidden_ = true;
   network_state_informer_->RemoveObserver(this);
   enable_system_httpauth_.reset();
+  update_state_callback_.Cancel();
+  connecting_callback_.Cancel();
   auth_flow_auto_reload_manager_.Terminate();
 }
 
@@ -1494,7 +1496,7 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
         base::BindOnce(&GaiaScreenHandler::UpdateStateInternal,
                        weak_factory_.GetWeakPtr(), reason, true));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, update_state_callback_.callback(), offline_timeout_);
+        FROM_HERE, update_state_callback_.callback(), kOfflineTimeout);
     return;
   }
 
@@ -1527,12 +1529,6 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
       (proxy_auth_dialog_reload_times_ > 0);
 
   bool reload_gaia = false;
-
-  // This check is needed, because kiosk apps are started from GaiaScreen right
-  // now.
-  if (!(IsGaiaVisible() || IsGaiaHiddenByError())) {
-    return;
-  }
 
   if (state != NetworkStateInformer::CAPTIVE_PORTAL) {
     error_screen_->HideCaptivePortal();

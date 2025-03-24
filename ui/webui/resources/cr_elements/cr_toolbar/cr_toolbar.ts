@@ -93,20 +93,20 @@ export class CrToolbarElement extends CrLitElement {
     };
   }
 
-  pageName: string = '';
-  searchPrompt: string = '';
-  clearLabel: string = '';
-  menuLabel?: string;
-  spinnerActive: boolean = false;
-  showMenu: boolean = false;
-  showSearch: boolean = true;
-  override autofocus: boolean = false;
-  narrow: boolean = false;
-  narrowThreshold: number = 900;
-  alwaysShowLogo: boolean = false;
-  protected showingSearch_: boolean = false;
-  searchIconOverride?: string;
-  searchInputAriaDescription: string = '';
+  accessor pageName: string = '';
+  accessor searchPrompt: string = '';
+  accessor clearLabel: string = '';
+  accessor menuLabel: string|undefined;
+  accessor spinnerActive: boolean = false;
+  accessor showMenu: boolean = false;
+  accessor showSearch: boolean = true;
+  override accessor autofocus: boolean = false;
+  accessor narrow: boolean = false;
+  accessor narrowThreshold: number = 900;
+  accessor alwaysShowLogo: boolean = false;
+  protected accessor showingSearch_: boolean = false;
+  accessor searchIconOverride: string|undefined;
+  accessor searchInputAriaDescription: string = '';
   private narrowQuery_: MediaQueryList|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {

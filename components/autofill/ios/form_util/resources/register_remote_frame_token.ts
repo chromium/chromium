@@ -11,8 +11,8 @@
 // Requires functions from child_frame_registration_lib.ts.
 
 import {setRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {generateRandomId} from '//ios/web/public/js_messaging/resources/frame_id.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {generateRandomId} from '//ios/web/public/js_messaging/resources/utils.js';
 
 function registerRemoteToken(): void {
   const remoteFrameToken = generateRandomId();

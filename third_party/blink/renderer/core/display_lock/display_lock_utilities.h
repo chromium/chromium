@@ -55,7 +55,8 @@ class CORE_EXPORT DisplayLockUtilities {
         DocumentUpdateReason reason);
     friend void Document::UpdateStyleAndLayoutTreeForElement(
         const Element* node,
-        DocumentUpdateReason reason);
+        DocumentUpdateReason reason,
+        bool only_cv_auto);
     friend void Document::UpdateStyleAndLayoutTreeForSubtree(
         const Element* node,
         DocumentUpdateReason reason);

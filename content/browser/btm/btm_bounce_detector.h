@@ -583,7 +583,7 @@ namespace btm {
 ukm::SourceId GetRedirectSourceId(NavigationHandle* navigation_handle,
                                   size_t index);
 
-CONTENT_EXPORT bool IsOrWasInPrimaryPage(RenderFrameHost* render_frame_host);
+CONTENT_EXPORT bool IsOrWasInPrimaryPage(RenderFrameHost& render_frame_host);
 
 // Sets the `has_3pc_exception` field of each element of `redirects`.
 CONTENT_EXPORT void Populate3PcExceptions(

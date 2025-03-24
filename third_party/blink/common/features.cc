@@ -42,11 +42,9 @@ BASE_FEATURE_PARAM(int,
 
 // Serves as killswitch for changing CanCreateCanvasResourceProvider() to
 // create resource provider internally rather than Canvas2DLayerBridge.
-// TODO(crbug.com/40280152): Fix issues between interaction of this code and
-// CanvasRenderingContext2D::Restore() and re-enable.
 BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
              "AdjustCanCreateCanvas2dResourceProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Serves as killswitch for changing GetOrCreateCanvasResourceProvider() away
 // from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
@@ -728,7 +726,14 @@ BASE_FEATURE(kDropInputEventsWhilePaintHolding,
 
 BASE_FEATURE(kEstablishGpuChannelAsync,
              "EstablishGpuChannelAsync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             // TODO(crbug.com/1278147): Experiment with this more on desktop to
+             // see if it can help.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Whether to respect loading=lazy attribute for images when they are on
 // invisible pages.

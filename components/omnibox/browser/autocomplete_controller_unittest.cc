@@ -2390,7 +2390,65 @@ TEST_F(AutocompleteControllerTest,
       OmniboxActionId::CONTEXTUAL_SEARCH,
       controller_.internal_result_.match_at(1)->takeover_action->ActionId());
 }
-#endif
+
+TEST_F(AutocompleteControllerTest,
+       ContextualSearchActionAttachedInZeroSuggest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kContextualZeroSuggestLensFulfillment);
+
+  // Create a pedal provider to ensure that the contextual search action takes
+  // precedence over the pedal.
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
+  const auto add = [&](OmniboxPedal* pedal) {
+    pedals.insert(
+        std::make_pair(pedal->PedalId(), base::WrapRefCounted(pedal)));
+  };
+  add(new TestOmniboxPedalClearBrowsingData());
+  provider_client()->set_pedal_provider(std::make_unique<OmniboxPedalProvider>(
+      *provider_client(), std::move(pedals)));
+  EXPECT_NE(nullptr, provider_client()->GetPedalProvider());
+
+  // Create input for zero suggest.
+  controller_.input_ = AutocompleteInput(u"", metrics::OmniboxEventProto::OTHER,
+                                         TestSchemeClassifier());
+  controller_.input_.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  // Create ZPS matches.
+  auto contextual_search_match_1 =
+      CreatePersonalizedZeroPrefixMatch("contextual search match 1", 1450);
+  contextual_search_match_1.subtypes.insert(omnibox::SUBTYPE_CONTEXTUAL_SEARCH);
+  auto contextual_search_match_2 =
+      CreatePersonalizedZeroPrefixMatch("contextual search match 2", 1450);
+  contextual_search_match_2.subtypes.insert(omnibox::SUBTYPE_CONTEXTUAL_SEARCH);
+
+  SetAutocompleteMatches(
+      {CreatePersonalizedZeroPrefixMatch("normal zps match 1", 1200),
+       contextual_search_match_1, contextual_search_match_2,
+       CreatePersonalizedZeroPrefixMatch("noormal zps match 1", 1550)});
+
+  static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(provider_client()->GetTabMatcher()))
+      .set_url_substring_match("matches");
+
+  controller_.AttachActions();
+
+  // The takeover action should be for the contextual suggestions, but not
+  // others.
+  EXPECT_FALSE(controller_.internal_result_.match_at(0)->takeover_action);
+  EXPECT_FALSE(controller_.internal_result_.match_at(3)->takeover_action);
+
+  EXPECT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
+  EXPECT_EQ(
+      OmniboxActionId::CONTEXTUAL_SEARCH,
+      controller_.internal_result_.match_at(1)->takeover_action->ActionId());
+  EXPECT_TRUE(controller_.internal_result_.match_at(2)->takeover_action);
+  EXPECT_EQ(
+      OmniboxActionId::CONTEXTUAL_SEARCH,
+      controller_.internal_result_.match_at(2)->takeover_action->ActionId());
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(AutocompleteControllerTest, UpdateAssociatedKeywords) {
   controller_.keyword_provider_ =

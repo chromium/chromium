@@ -23,7 +23,6 @@ class CaptureModeBarView;
 class CaptureModeSettingsView;
 class CaptureRegionOverlayController;
 class MagnifierGlass;
-class PillButton;
 class RecordingTypeMenuView;
 class UserNudgeController;
 
@@ -58,8 +57,6 @@ class CaptureModeSessionTestApi {
   views::Widget* GetRecordingTypeMenuWidget();
 
   views::Widget* GetDimensionsLabelWidget();
-
-  views::Widget* GetFeedbackButtonWidget();
 
   UserNudgeController* GetUserNudgeController();
 
@@ -99,8 +96,6 @@ class CaptureModeSessionTestApi {
   ActionButtonContainerView::ErrorView* GetActionContainerErrorView() const;
 
   CaptureRegionOverlayController* GetCaptureRegionOverlayController() const;
-
-  PillButton* GetFeedbackButton();
 
  private:
   const raw_ptr<CaptureModeSession, DanglingUntriaged> session_;

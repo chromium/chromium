@@ -11,6 +11,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 
 namespace winhttp {
@@ -94,7 +95,7 @@ class ScopedWinHttpProxyInfo {
       return nullptr;
     }
 
-    memcpy(string_mem, str.data(), size_in_bytes);
+    UNSAFE_TODO(memcpy(string_mem, str.data(), size_in_bytes));
     return string_mem;
   }
   WINHTTP_PROXY_INFO proxy_info_ = {};

@@ -523,13 +523,16 @@ void RecordInfo::DetermineTracingMethods() {
   for (Bases::iterator it = GetBases().begin(); it != GetBases().end(); ++it) {
     // TODO: Does it make sense to inherit multiple dispatch methods?
     if (CXXMethodDecl* dispatch = it->second.info()->GetTraceDispatchMethod()) {
-      assert(!trace_dispatch_method_ && "Multiple trace dispatching methods");
+      if (trace_dispatch_method_ && !extra_trace_dispatch_method_) {
+        extra_trace_dispatch_method_ = trace_dispatch_method_;
+      }
       trace_dispatch_method_ = dispatch;
     }
     if (CXXMethodDecl* dispatch =
             it->second.info()->GetFinalizeDispatchMethod()) {
-      assert(!finalize_dispatch_method_ &&
-             "Multiple finalize dispatching methods");
+      if (finalize_dispatch_method_ && !extra_finalize_dispatch_method_) {
+        extra_finalize_dispatch_method_ = finalize_dispatch_method_;
+      }
       finalize_dispatch_method_ = dispatch;
     }
   }

@@ -14,6 +14,22 @@ import string
 from signing import commands
 
 
+def _get_valid_identities():
+    """Returns a set of the SHA-1 hashes of valid code signing identities
+
+    Raises:
+        ValueError: If no valid code signing identities are found.
+    """
+    command = ['security', 'find-identity', '-v', '-p', 'codesigning']
+    output = commands.run_command_output(command)
+
+    matches = re.findall(
+        rb'\d+\) ([0-9A-Fa-f]{40}) "', output, flags=re.MULTILINE)
+    if not matches:
+        raise ValueError('No valid code signing identities found')
+    return set(matches)
+
+
 def _get_identity_hash(identity):
     """Returns a string of the SHA-1 hash of a specified keychain identity.
 
@@ -29,15 +45,21 @@ def _get_identity_hash(identity):
     if len(identity) == 40 and all(ch in string.hexdigits for ch in identity):
         return identity.lower()
 
+    valid_identities = _get_valid_identities()
+
     command = ['security', 'find-certificate', '-a', '-c', identity, '-Z']
     output = commands.run_command_output(command)
 
-    hash_match = re.search(
+    hashes = re.findall(
         b'^SHA-1 hash: ([0-9A-Fa-f]{40})$', output, flags=re.MULTILINE)
-    if not hash_match:
+    if not hashes:
         raise ValueError('Cannot find identity', identity)
 
-    return hash_match.group(1).decode('utf-8').lower()
+    valid_hashes = [h for h in hashes if h in valid_identities]
+    if not valid_hashes:
+        raise ValueError('Identity found, but expired', identity)
+
+    return valid_hashes[0].decode('utf-8').lower()
 
 
 class CodeSignedProduct(object):

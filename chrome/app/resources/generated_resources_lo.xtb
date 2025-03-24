@@ -617,7 +617,6 @@
 <translation id="142655739075382478"><ph name="APP_NAME" /> ຖືກບລັອກໄວ້ຢູ່</translation>
 <translation id="1427179946227469514">ລະດັບສຽງສູງຕໍ່າຂອງການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="1427269577154060167">ປະເທດ</translation>
-<translation id="1427506552622340174">ຄລິກຂວາເພື່ອຂຽນໄດ້ຢ່າງໝັ້ນໃຈຫຼາຍຂຶ້ນ, ສະຫຼຸບເນື້ອຫາ, ຮັບຄຳນິຍາມ ແລະ ອື່ນໆ. ປັດຈຸບັນມີໃຫ້ບໍລິການແບບຈຳກັດ.</translation>
 <translation id="142765311413773645">ໃບອະນຸຍາດ <ph name="APP_NAME" /> ໝົດອາຍຸແລ້ວ</translation>
 <translation id="1428373049397869723">ທ່ານສາມາດເປີດ ແລະ ແກ້ໄຂໄຟລ໌ທີ່ຮອງຮັບໄດ້ດ້ວຍແອັບນີ້ຈາກແອັບ Finder ຫຼື ແອັບອື່ນ. ເພື່ອຄວບຄຸມວ່າໄຟລ໌ໃດເປີດແອັບນີ້ແບບເລີ່ມຕົ້ນ, <ph name="BEGIN_LINK" />ໃຫ້ສຶກສາວິທີຕັ້ງແອັບເລີ່ມຕົ້ນຢູ່ອຸປະກອນຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">ທ່ານບັນທຶກໝາຍເຫດສຳລັບລະຫັດຜ່ານໃນເວັບໄຊນີ້ແລ້ວ. ເພື່ອເບິ່ງຂໍ້ມູນດັ່ງກ່າວ, ໃຫ້ເລືອກຈັດການລະຫັດຜ່ານຂອງທ່ານໃນແຖບຊອກຫາ ແລະ ແຖບທີ່ຢູ່.</translation>
@@ -2235,6 +2234,7 @@
         ທ່ານສາມາດຈັດການການຕັ້ງຄ່າໄດ້ຈາກເມນູບັດ ຫຼື ເບິ່ງຕົວເລືອກເພີ່ມເຕີມໄດ້ໃນປັບແຕ່ງ Chrome.</translation>
 <translation id="2514326558286966059">ປົດລັອກໄດ້ໄວຂຶ້ນດ້ວຍລາຍນິ້ວມືຂອງທ່ານ</translation>
 <translation id="2514465118223423406">ເມື່ອເຊື່ອມຕໍ່ເມົ້າ</translation>
+<translation id="2514938842036917377">ສິ່ງນີ້ຈະລຶບຂໍ້ມູນ <ph name="TOTAL_USAGE" /> ທີ່ເກັບໄວ້ໂດຍ <ph name="SITE_NAME" />, ເວັບໄຊທີ່ກ່ຽວຂ້ອງ ແລະ ແອັບທີ່ຕິດຕັ້ງແລ້ວ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ຢືນຢັນຊື່ຜູ້ໃຊ້ຂອງທ່ານ</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
@@ -6619,7 +6619,6 @@
 <translation id="5643717184207603910">ຮັກສາປະສິດທິພາບໃຫ້ວ່ອງໄວຢູ່ສະເໝີ</translation>
 <translation id="5646376287012673985">ສະ​ຖານ​ທີ່</translation>
 <translation id="5646558797914161501">ນັກທຸລະກິດ</translation>
-<translation id="5646994841348250879">ເລືອກບັນຊີທີ່ຈະເຂົ້າສູ່ລະບົບ <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">ແຈັກໄມໂຄຣໂຟນ</translation>
 <translation id="5648166631817621825">7 ມື້ທີ່ຜ່ານມາ</translation>
 <translation id="5651308944918885595">ການຄົ້ນພົບການແບ່ງປັນໃກ້ຄຽງ</translation>
@@ -9093,6 +9092,7 @@
 <translation id="7443806024147773267">ເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານໄດ້ທຸກເມື່ອທີ່ທ່ານເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{ຄຸກກີ້ຈະຖືກບລັອກອີກເທື່ອໜຶ່ງໃນມື້ນີ້}=1{ຄຸກກີ້ຈະຖືກບລັອກອີກເທື່ອໜຶ່ງໃນມື້ອື່ນ}other{ອີກ # ມື້ຈົນກວ່າຈະບລັອກຄຸກກີ້ອີກເທື່ອໜຶ່ງ}}</translation>
 <translation id="7444983668544353857">ປິດການນຳໃຊ້ <ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">ສິ່ງນີ້ຈະລຶບຂໍ້ມູນ <ph name="TOTAL_USAGE" /> ທີ່ເກັບໄວ້ໂດຍ <ph name="SITE_NAME" /> ແລະ ແອັບທີ່ຕິດຕັ້ງແລ້ວ</translation>
 <translation id="7448430327655618736">ຕິດຕັ້ງແອັບໂດຍອັດຕະໂນມັດ</translation>
 <translation id="7448664748118305024">ລຶບຂໍ້ມູນທີ່ເວັບໄຊບັນທຶກໄປໃສ່ອຸປະກອນຂອງທ່ານເມື່ອທ່ານປິດໜ້າຈໍທັງໝົດ</translation>
 <translation id="7450761244949417357">ກຳລັງເປີດໃນ <ph name="ALTERNATIVE_BROWSER_NAME" /> ຕອນນີ້</translation>
@@ -10545,7 +10545,6 @@
 <translation id="8452105022015742247">ກຳລັງໂອນຂໍ້ມູນບັນຊີ Google ຈາກໂທລະສັບ Android ຂອງທ່ານ</translation>
 <translation id="8455775311562941553">ເຊື່ອມຕໍ່ຫາ <ph name="HOST_DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="8456067150616457342">ຕັ້ງໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
-<translation id="8456200178779628126">ໃຊ້ Google AI ເພື່ອຮັບຄວາມຊ່ວຍເຫຼືອໃນການອ່ານ ແລະ ຂຽນ</translation>
 <translation id="845702320058262034">ບໍ່ສາມາດເຊື່ອມຕໍ່ໄດ້. ກວດໃຫ້ແນ່ໃຈວ່າ Bluetooth ຂອງໂທລະສັບຂອງທ່ານເປີດຢູ່.</translation>
 <translation id="8457251154056341970">ທ່ານຈະບໍ່ເຫັນ <ph name="MODULE_NAME" /> ຢູ່ໜ້ານີ້ອີກ</translation>
 <translation id="8457451314607652708">ນໍາບຸກມາກສ໌ເຂົ້າມາ</translation>
@@ -11443,7 +11442,6 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">ເມົ້າສ໌ USB ເຊື່ອມ​ຕໍ່ແລ້ວ</translation>
 <translation id="9075413375877487220">ສ່ວນຂະຫຍາຍນີ້ບໍ່ໄດ້ຮັບຄວາມເຊື່ອຖືຈາກ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນ.</translation>
-<translation id="9075985558450420812">ລະບຸພຣອມທີ່ກຳນົດເອງ ຫຼື ໄຮໄລ້ຂໍ້ຄວາມເພື່ອສ້າງຮູບ.</translation>
 <translation id="9076523132036239772">ຂໍອະໄພ, ບໍ່ສາມາດກວດສອບອີເມວ ຫຼືລະຫັດຜ່ານຂອງທ່ານໄດ້. ລອງເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍກ່ອນ.</translation>
 <translation id="9076821103818989526">ແຖບດ້ານຂ້າງ</translation>
 <translation id="9076977315710973122">ການແບ່ງປັນ SMB</translation>

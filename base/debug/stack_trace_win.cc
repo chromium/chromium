@@ -14,6 +14,7 @@
 #include <iterator>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -266,7 +267,7 @@ class SymbolContext {
       ULONG64 buffer[(sizeof(SYMBOL_INFO) + kMaxNameLength * sizeof(wchar_t) +
                       sizeof(ULONG64) - 1) /
                      sizeof(ULONG64)];
-      memset(buffer, 0, sizeof(buffer));
+      UNSAFE_TODO(memset(buffer, 0, sizeof(buffer)));
 
       // Initialize symbol information retrieval structures.
       DWORD64 sym_displacement = 0;
@@ -346,14 +347,14 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
   // context may have had more register state (YMM, etc) than we need to unwind
   // the stack. Typically StackWalk64 only needs integer and control registers.
   CONTEXT context_copy;
-  memcpy(&context_copy, context_record, sizeof(context_copy));
+  UNSAFE_TODO(memcpy(&context_copy, context_record, sizeof(context_copy)));
   context_copy.ContextFlags = CONTEXT_INTEGER | CONTEXT_CONTROL;
 
   // When walking an exception stack, we need to use StackWalk64().
   count_ = 0;
   // Initialize stack walking.
   STACKFRAME64 stack_frame;
-  memset(&stack_frame, 0, sizeof(stack_frame));
+  UNSAFE_TODO(memset(&stack_frame, 0, sizeof(stack_frame)));
 #if defined(ARCH_CPU_X86_64)
   DWORD machine_type = IMAGE_FILE_MACHINE_AMD64;
   stack_frame.AddrPC.Offset = context_record->Rip;

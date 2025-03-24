@@ -82,10 +82,7 @@ class ScopedLibcTZ {
  public:
   explicit ScopedLibcTZ(const std::string& timezone) {
     auto env = base::Environment::Create();
-    std::string old_timezone_value;
-    if (env->GetVar(kTZ, &old_timezone_value)) {
-      old_timezone_ = old_timezone_value;
-    }
+    old_timezone_ = env->GetVar(kTZ);
     if (!env->SetVar(kTZ, timezone)) {
       success_ = false;
     }

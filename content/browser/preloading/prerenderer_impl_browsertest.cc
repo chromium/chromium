@@ -130,7 +130,8 @@ class PrerendererImplBrowserTestBase : public ContentBrowserTest {
         blink::mojom::SpeculationTargetHint::kNoHint,
         /*eagerness=*/blink::mojom::SpeculationEagerness::kEager,
         /*no_vary_search_hint=*/nullptr,
-        /*injection_type=*/blink::mojom::SpeculationInjectionType::kNone);
+        /*injection_type=*/blink::mojom::SpeculationInjectionType::kNone,
+        /*tags=*/std::vector<std::optional<std::string>>());
   }
 
   std::vector<RequestPathAndSecPurposeHeader> GetObservedRequests() {

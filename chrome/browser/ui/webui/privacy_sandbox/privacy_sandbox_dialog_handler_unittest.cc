@@ -192,46 +192,6 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleClickLearnMore) {
   ASSERT_EQ(web_ui()->call_data().size(), 0U);
 }
 
-TEST_F(PrivacySandboxConsentDialogHandlerTest, PrivacyPolicyPageShown) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxPrivacyPolicy);
-  base::Value::List args;
-  args.Append(kCallbackId);
-  web_ui()->ProcessWebUIMessage(GURL(), "shouldShowPrivacySandboxPrivacyPolicy",
-                                std::move(args));
-
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ(data.arg1()->GetString(), kCallbackId);
-  EXPECT_EQ(data.function_name(), "cr.webUIResponse");
-  // Checks success of the callback.
-  ASSERT_TRUE(data.arg2()->is_bool());
-  EXPECT_TRUE(data.arg2()->GetBool());
-  // Checks that the feature flag is turned on.
-  ASSERT_TRUE(data.arg3()->is_bool());
-  EXPECT_TRUE(data.arg3()->GetBool());
-}
-
-TEST_F(PrivacySandboxConsentDialogHandlerTest, PrivacyPolicyPageNotShown) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(
-      privacy_sandbox::kPrivacySandboxPrivacyPolicy);
-  base::Value::List args;
-  args.Append(kCallbackId);
-  web_ui()->ProcessWebUIMessage(GURL(), "shouldShowPrivacySandboxPrivacyPolicy",
-                                std::move(args));
-
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ(data.arg1()->GetString(), kCallbackId);
-  EXPECT_EQ(data.function_name(), "cr.webUIResponse");
-  // Checks success of the callback.
-  ASSERT_TRUE(data.arg2()->is_bool());
-  EXPECT_TRUE(data.arg2()->GetBool());
-  // Checks that the feature flag is turned off.
-  ASSERT_TRUE(data.arg3()->is_bool());
-  EXPECT_FALSE(data.arg3()->GetBool());
-}
-
 TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleClickPrivacyPolicy) {
   base::HistogramTester histogram_tester;
   ShowDialog(PrivacySandboxService::PromptAction::kConsentShown);

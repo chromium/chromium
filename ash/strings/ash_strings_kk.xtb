@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">Жарықтықты арттыру</translation>
 <translation id="1680659827022803830">Бейнеқоңырау басқару элементтері</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Бұл функцияны кез келген уақытта "Параметрлер" бөлімінен өшіруге болады. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> таймер · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 мекенжайы: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Белсенді терезе сол жаққа бекітілген.</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, қолданба орнатылған, кідіртілген</translation>
 <translation id="4228078597006700451">Басқару элементтері орнатылмаған</translation>
 <translation id="4230560241506423345">Жаңа</translation>
+<translation id="4236726631849783264">Ұсынылған әрекеттер туралы еске салғыш</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Шолу режимі</translation>
 <translation id="4242533952199664413">Параметрлерді ашу</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">Мультимедиа</translation>
 <translation id="4279490309300973883">Экран көшірмесін көрсету</translation>
 <translation id="4280601795273309128">Қауіпсіздік жаңартулары аяқталды. Құрылғыңызды жаңартыңыз.</translation>
-<translation id="4281739221820540368">Google Docs жасау</translation>
 <translation id="4283888303416325161">Қауіпсіздікті күшейту үшін құпия сөзді енгізіңіз.</translation>
 <translation id="4285498937028063278">Босату</translation>
 <translation id="428715201724021596">Профильге қосылуда. Бұл бірнеше минутқа созылуы мүмкін.</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">Айтылған сөзді тану файлдары жүктеп алынуда... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Құрылғыны қазір жаңарту керек}=1{Құрылғыны 1 секундта жаңарту керек}other{Құрылғыны # секундта жаңарту керек}}</translation>
 <translation id="4472575034687746823">Іске кірісу</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">Келесі аудиотрек</translation>
 <translation id="4477751544736611934">Тариф ақысы алынуы мүмкін.
 1 құрылғы жалғанды.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">Ағымдағы бетті бетбелгі ретінде сақтау</translation>
 <translation id="4548482551627849548">Іске қосулы терезені сол жақтағы жұмыс үстеліне жылжыту</translation>
 <translation id="4552748006424994716">Жаңғырық болмауы үшін, микрофонды тек сымды құлақаспаппен тыңдауға болады.</translation>
+<translation id="4556953949326137018">"Calendar қолданбасына қосу" немесе "Google Docs құжатын жасау" сияқты ұсынылған әрекеттерді пайдаланған кезде, <ph name="LINK_TO_SERVICE_TERMS" /> бойынша әрекеттерді ұсыну үшін таңдалған аймақ Google серверлеріне жіберіледі. Жеке, шетін не құпия деректерді қоспаңыз.</translation>
 <translation id="4560576029703263363">Қосулы</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Құпия сөзді жасыру</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">Алдағы іс-шаралар</translation>
 <translation id="481749895090480684">Тапсырмалар тізімі: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камера және микрофон</translation>
+<translation id="4828935196674083554">Қосылып жатыр…</translation>
 <translation id="482908187605862807">Play Store-дан қолжетімді қолданбалар</translation>
 <translation id="4831034276697007977">Автоматты түрде басу функциясын шынымен де өшіргіңіз келе ме?</translation>
 <translation id="4835677468087803981">PIN кодын жасыру</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Барлық хабарларды өшіріңіз</translation>
+<translation id="6426905245930183644">Жасалып жатыр…</translation>
 <translation id="6430225033895752525">Зейін қою режимінің параметрлерін көрсету</translation>
 <translation id="643147933154517414">Дайын</translation>
 <translation id="6431865393913628856">Экранды жазу</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">қосымша тапсырма</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> жады қолданыста | жалпы <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Құпиялық экраны қосулы.</translation>
-<translation id="6618277154885124991">Google Sheets жасау</translation>
 <translation id="6622679827379792051">Телефондағы қолданбаларды көру мүмкіндігін реттеу</translation>
 <translation id="662279009180869175">Бөлінген экран өлшемін өзгерту үшін сол және оң бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="6624493541160101248">Қазіргі жұмыс үстелі: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> жұмыс үстелі.</translation>
@@ -2400,6 +2404,7 @@
 <translation id="8921624153894383499">Google Assistant бұл тілде жұмыс істемейді.</translation>
 <translation id="8926951137623668982">Сөре үнемі жасырын тұрады.</translation>
 <translation id="8929566928381252430">Caps Lock пернесін пайдалану қажет пе? Пайдалану</translation>
+<translation id="8934418770423095813">Google құжатын жасау</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өшірілді</translation>
 <translation id="8938800817013097409">USB-C құрылғысы (артқы оң жақ порты)</translation>

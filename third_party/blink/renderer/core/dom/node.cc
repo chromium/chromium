@@ -1586,7 +1586,7 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
             kLocalStyleChange, StyleChangeReasonForTracing::Create(
                                    style_change_reason::kViewTransition));
       };
-      ViewTransitionUtils::ForEachTransitionPseudo(GetDocument(),
+      ViewTransitionUtils::ForEachTransitionPseudo(*this_element,
                                                    update_style_change);
     }
   }

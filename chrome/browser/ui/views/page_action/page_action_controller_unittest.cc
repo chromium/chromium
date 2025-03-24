@@ -10,7 +10,6 @@
 
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -496,6 +496,22 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideTooltip) {
       SetOverrideTooltip(_, std::optional<std::u16string>(std::nullopt)))
       .Times(1);
   controller().ClearOverrideTooltip(kActionItemId);
+}
+
+TEST_F(PageActionControllerMockModelTest, ShouldForciblyHidePageActions) {
+  controller().Initialize(tab_interface(), {kActionItemId});
+
+  EXPECT_CALL(models().Get(kActionItemId),
+              SetShouldHidePageAction(_, /*should_hide_page_actions*/ true))
+      .Times(1);
+
+  controller().SetShouldHidePageActions(true);
+
+  EXPECT_CALL(models().Get(kActionItemId),
+              SetShouldHidePageAction(_, /*should_hide_page_actions*/ false))
+      .Times(1);
+
+  controller().SetShouldHidePageActions(false);
 }
 
 }  // namespace

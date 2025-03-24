@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -54,8 +55,9 @@ bool CreatePairImpl(ScopedHandle* socket_a,
     unsigned long rnd_name;
     RandBytes(byte_span_from_ref(rnd_name));
 
-    swprintf(name, kPipePathMax, kPipeNameFormat, GetCurrentProcessId(),
-             GetCurrentThreadId(), rnd_name);
+    UNSAFE_TODO(swprintf(name, kPipePathMax, kPipeNameFormat,
+                         GetCurrentProcessId(), GetCurrentThreadId(),
+                         rnd_name));
 
     handle_a.Set(CreateNamedPipeW(
         name, flags, PIPE_TYPE_BYTE | PIPE_READMODE_BYTE, 1, kOutBufferSize,

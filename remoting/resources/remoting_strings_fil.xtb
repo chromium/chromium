@@ -40,6 +40,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="2758123043070977469">Nagkaisyu sa pag-authenticate, mag-log in muli.</translation>
 <translation id="2803375539583399270">Ilagay ang PIN</translation>
 <translation id="2919669478609886916">Kasalukuyan mong ibinabahagi ang machine na ito sa isa pang user. Nais mo bang ituloy ang pagbabahagi?</translation>
+<translation id="2929683002824598593">I-share ang device</translation>
 <translation id="2939145106548231838">Patunayan upang ma-host</translation>
 <translation id="3027681561976217984">Touch mode</translation>
 <translation id="3106379468611574572">Hindi tumutugon ang malayuang computer sa mga kahilingan sa koneksyon. Paki-verify na online ito at subukan ulit.</translation>
@@ -117,10 +118,12 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="6178645564515549384">Host ng native na pagmemensahe para sa remote na tulong</translation>
 <translation id="618120821413932081">I-update ang resolution ng malayong desktop upang tumugma sa window</translation>
 <translation id="6223301979382383752">Buksan ang Mga Kagustuhan sa Pag-record ng Screen</translation>
+<translation id="6252344563748670011">Nag-request si <ph name="CLIENT_USERNAME" /> ng access para makita ang iyong screen at kontrolin ang keyboard at mouse mo. Gusto mo bang i-share ang iyong device?</translation>
 <translation id="6284412385303060032">Nag-shutdown ang host na tumatakbo sa console logic screen upang masuportahan ang curtain mode sa pamamagitan ng paglipat sa isang host na tumatakbo sa isang user-specific session.</translation>
 <translation id="6542902059648396432">Mag-ulat ng isyu…</translation>
 <translation id="6583902294974160967">Suporta</translation>
 <translation id="6612717000975622067">Magpadala ng Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Kung wala kang gagawing pagkilos, awtomatikong magsisimulang mag-share ang iyong device sa loob ng # segundo.}one{Kung wala kang gagawing pagkilos, awtomatikong magsisimulang mag-share ang iyong device sa loob ng # segundo.}other{Kung wala kang gagawing pagkilos, awtomatikong magsisimulang mag-share ang iyong device sa loob ng # na segundo.}}</translation>
 <translation id="6654753848497929428">Ibahagi</translation>
 <translation id="677755392401385740">Sinimulan ang host para sa user: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Pantulong na application para magbukas ng URL sa client na <ph name="PRODUCT_NAME" /></translation>

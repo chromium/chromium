@@ -618,7 +618,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="142655739075382478"><ph name="APP_NAME" /> er á bannlista</translation>
 <translation id="1427179946227469514">Tónhæð talgervils</translation>
 <translation id="1427269577154060167">Land</translation>
-<translation id="1427506552622340174">Hægrismelltu til að skrifa af meira öryggi, taka saman efni, fá skilgreiningar og fleira. Tiltækileiki er takmarkaður eins og stendur.</translation>
 <translation id="142765311413773645">Leyfi <ph name="APP_NAME" /> er útrunnið</translation>
 <translation id="1428373049397869723">Þú getur opnað og breytt studdum skrám með þessu forriti úr Finder eða öðrum forritum. Til að stýra því hvaða skrár opna þetta forrit sjálfkrafa skaltu <ph name="BEGIN_LINK" />kynna þér hvernig sjálfgefin forrit eru sett upp í tækinu þínu<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Þú vistaðir glósu um aðgangsorð á þessu vefsvæði. Til að skoða hana skaltu velja „stjórna aðgangsorðum“ í leitar- og veffangastikunni.</translation>
@@ -1895,6 +1894,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Skrá var ekki tiltæk á vefsvæði</translation>
 <translation id="2300383962156589922">Sérsníða og stjórna <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Staðhæfingar á gildu vottorði</translation>
 <translation id="2301382460326681002">Rótarmappa viðbótarinnar er ógild.</translation>
 <translation id="2301402091755573488">Samnýttur flipi</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Eiginleikar villuleitar<ph name="END_H3" />
@@ -3598,6 +3598,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3503995387997205657">Þú getur endurheimt fyrri forrit</translation>
 <translation id="3505100368357440862">Innkaupatillögur</translation>
 <translation id="3507132249039706973">Kveikt er á hefðbundinni vörn</translation>
+<translation id="3507650052590605702">Stjórna aðgangsorði</translation>
 <translation id="3507888235492474624">Leita aftur að Bluetooth-tækjum</translation>
 <translation id="3508492320654304609">Ekki var hægt að eyða innskráningargögnum þínum</translation>
 <translation id="3508920295779105875">Velja aðra möppu...</translation>
@@ -6620,7 +6621,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5643717184207603910">Hafa afköst hröð</translation>
 <translation id="5646376287012673985">Staðsetning</translation>
 <translation id="5646558797914161501">Viðskiptamaður</translation>
-<translation id="5646994841348250879">Veldu reikning til að skrá þig inn á <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Hljóðnematengi</translation>
 <translation id="5648166631817621825">Síðastliðna sjö daga</translation>
 <translation id="5651308944918885595">Sýnileiki Nærdeilingar</translation>
@@ -9430,6 +9430,9 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7680416688940118410">Kvörðun snertiskjás</translation>
 <translation id="7681095912841365527">Vefsvæði getur notað Bluetooth</translation>
 <translation id="7681597159868843240">Yfirleitt nota vefsvæði hreyfiskynjara tækisins fyrir eiginleika á borð við sýndarveruleika eða hreystimælingar</translation>
+<translation id="7681757571815416227">Til að nota tækið með prófílnum sem tengist <ph name="DOMAIN" /> þarf fyrirtækið upplýsingar um tækið.
+
+Þetta geta verið upplýsingar um uppsettan hugbúnað, skrár, vafra, stýrikerfi tækisins og IP-tölur.</translation>
 <translation id="7683373461016844951">Ýttu á Í lagi til að halda áfram og ýttu á Bæta notanda við til að búa til nýjan prófíl fyrir netfangið þitt hjá <ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">Birtingarverkfæri fyrir sjónskerðingu</translation>
 <translation id="7684212569183643648">Kerfisstjórinn þinn setti upp</translation>
@@ -10210,6 +10213,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8217399928341212914">Halda áfram að útiloka sjálfvirkt niðurhal margra skráa</translation>
 <translation id="8219785583603399823">Sjá einkunnir fyrir þessa verslun</translation>
 <translation id="822050276545350872">Héðan í frá þarftu ekki að bíða</translation>
+<translation id="8221942262855134126">Stjórna aðgangsorði</translation>
 <translation id="8222112516148944758">Flipahóparnir þínir vistast og uppfærast sjálfkrafa í öllum tækjunum þínum</translation>
 <translation id="8222674561049363989">Skráin er ekki gilt skjal</translation>
 <translation id="822347941086490485">Leitar að HID-tækjum...</translation>
@@ -10546,7 +10550,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8452105022015742247">Flytur upplýsingar Google-reiknings úr Android-símanum þínum</translation>
 <translation id="8455775311562941553">Tengt við <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Velja sjálfgefinn vafra</translation>
-<translation id="8456200178779628126">Notaðu gervigreind Google til að fá aðstoð við skrif og lestur</translation>
 <translation id="845702320058262034">Ekki tókst að tengjast. Gakktu úr skugga um að kveikt sé á Bluetooth í símanum.</translation>
 <translation id="8457251154056341970">Þú sérð ekki <ph name="MODULE_NAME" /> á þessari síðu framar</translation>
 <translation id="8457451314607652708">Flytja bókamerki inn</translation>
@@ -11001,6 +11004,9 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8767069439158587614">Sýna allar leitir að <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Uppfæra Chrome sjálfkrafa fyrir alla notendur</translation>
 <translation id="8768049274922835860">Allir</translation>
+<translation id="8769047324653576116">Til að nota tækið með prófíl fyrirtækisins þarf fyrirtækið upplýsingar um tækið.
+
+Þetta geta verið upplýsingar um uppsettan hugbúnað, skrár, vafra, stýrikerfi tækisins og IP-tölur.</translation>
 <translation id="876956356450740926">Keyra forritunarverkfæri, forritunarumhverfi og ritla. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Rótarmappa viðbóta</translation>
 <translation id="8773535891252326047">Tengill á merktan texta afritaður</translation>
@@ -11442,7 +11448,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-mús tengd</translation>
 <translation id="9075413375877487220">Enn öruggari vefskoðun treystir ekki þessari viðbót.</translation>
-<translation id="9075985558450420812">Sláðu inn sérsniðna skipun eða yfirstrikaðu texta til að búa til mynd.</translation>
 <translation id="9076523132036239772">Því miður var ekki hægt að staðfesta netfangið þitt eða aðgangsorð. Prófaðu að tengjast neti fyrst.</translation>
 <translation id="9076821103818989526">Hliðargluggi</translation>
 <translation id="9076977315710973122">SMB-geymsla</translation>

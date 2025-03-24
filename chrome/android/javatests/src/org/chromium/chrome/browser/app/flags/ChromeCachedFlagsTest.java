@@ -19,8 +19,8 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.cached_flags.CachedFlag;
 
 import java.util.ArrayList;
@@ -33,10 +33,8 @@ import java.util.Set;
 @DoNotBatch(reason = "Tests state of flags at specific app startup points")
 public class ChromeCachedFlagsTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    private final ChromeTabbedActivityPublicTransitEntryPoints mEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(mActivityTestRule);
+    public FreshCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     // Baseline so that the test can be enabled and catch new violations.
     //
@@ -64,7 +62,7 @@ public class ChromeCachedFlagsTest {
         // flag values may differ.
         Assume.assumeTrue(!BuildConfig.IS_CHROME_BRANDED);
 
-        mEntryPoints.startOnBlankPageNonBatched();
+        mCtaTestRule.startOnBlankPage();
 
         List<List<CachedFlag>> allListsOfCachedFlags =
                 new ArrayList<>(ChromeCachedFlags.LISTS_OF_CACHED_FLAGS_FULL_BROWSER);

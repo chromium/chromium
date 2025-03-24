@@ -72,7 +72,7 @@ network::ResourceRequest CreateResourceRequest() {
   request.credentials_mode = mojom::CredentialsMode::kInclude;
   request.redirect_mode = mojom::RedirectMode::kFollow;
   request.fetch_integrity = "dummy_fetch_integrity";
-  request.expected_signatures = {};
+  request.expected_public_keys = {};
   request.keepalive = true;
   request.browsing_topics = true;
   request.ad_auction_headers = true;

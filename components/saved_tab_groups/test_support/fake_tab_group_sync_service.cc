@@ -256,6 +256,15 @@ void FakeTabGroupSyncService::OnCollaborationRemoved(
   // No op.
 }
 
+std::vector<const SavedTabGroup*> FakeTabGroupSyncService::ReadAllGroups()
+    const {
+  std::vector<const SavedTabGroup*> groups;
+  for (const SavedTabGroup& group : groups_) {
+    groups.push_back(&group);
+  }
+  return groups;
+}
+
 std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() const {
   std::vector<SavedTabGroup> groups;
   for (const SavedTabGroup& group : groups_) {
@@ -398,6 +407,11 @@ FakeTabGroupSyncService::GetSavedTabGroupControllerDelegate() {
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 FakeTabGroupSyncService::GetSharedTabGroupControllerDelegate() {
+  return base::WeakPtr<syncer::DataTypeControllerDelegate>();
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+FakeTabGroupSyncService::GetSharedTabGroupAccountControllerDelegate() {
   return base::WeakPtr<syncer::DataTypeControllerDelegate>();
 }
 

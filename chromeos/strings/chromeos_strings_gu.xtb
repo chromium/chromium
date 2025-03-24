@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
 <translation id="1908394185991500139">તીર ડાબું</translation>
+<translation id="1911678930322867245">ટોચ પર જમણી બાજુએ ખસેડો</translation>
 <translation id="1914144885717544695">શુક્રવારે</translation>
 <translation id="1915960750806557358">તમારો પ્રતિસાદ શેર કરો અથવા તમારી સમસ્યાનું વર્ણન કરો. વ્યક્તિગત, સંવેદનશીલ કે ગોપનીય હોય તેવી કોઈપણ માહિતી શામેલ ન કરવાની ખાતરી કરો.</translation>
 <translation id="1923388006036088459">ઍક્સેન્ટના રંગ</translation>
@@ -1542,16 +1543,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">સમુદ્ર કિનારો</translation>
 <translation id="819278132617411009">વધુ પ્રોડક્ટિવ બનવા માટે Google AIનો ઉપયોગ કરો</translation>
-<translation id="82003371436638355">જ્યારે તમે “તમારું પોતાનું બનાવો” કસ્ટમ પ્રૉમ્પ્ટ લખો. અથવા તમે “થીમ પસંદ કરો” પસંદ કરી શકો છો અને પછી તમારા AI વૉલપેપરને મનગમતું બનાવવા માટે અન્ડરલાઇન કરેલા શબ્દો પસંદ કરો.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI છબીઓના વધુ અનન્ય અને વૈવિધ્યસભર વિકલ્પો મેળવવા માટે "મને પ્રેરણા આપો" પસંદ કરો.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          જ્યારે તમે તમારું પોતાનું વૉલપેપર બનાવો છો, ત્યારે <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleની સેવાની શરતો અને પ્રાઇવસી પૉલિસી<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ને આધીન છબીઓ જનરેટ કરવા અને પ્રોડક્ટને બહેતર બનાવવા માટે પ્રૉમ્પ્ટને Googleના સર્વર પર મોકલવામાં આવે છે. વ્યક્તિગત, સંવેદનશીલ કે ગોપનીય હોય તેવી કોઈપણ માહિતી શામેલ કરશો નહીં.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          જનરેટિવ AI ભૂલો કરી શકે છે જેમાં લોકો વિશેની માહિતી પણ શામેલ છે, તેથી તેને બે વાર ચેક કરો. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />વધુ જાણો<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
@@ -1678,6 +1669,7 @@
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8833620912470026819">થોરનું જંગલ</translation>
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
+<translation id="8842526499753992487">ટોચ પર ડાબી બાજુએ ખસેડો</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8849799913685544685">દીવાદાંડી</translation>
 <translation id="8851859208664803097">રોક્યું - પ્રિન્ટ કનેક્ટ કરી શકાતું નથી</translation>

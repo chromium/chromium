@@ -64,8 +64,9 @@ class MemorySaverModeTest : public testing::GraphTestHarnessWithMockDiscarder {
 
     // This is usually called when the profile is created. Fake it here since it
     // doesn't happen in tests.
-    PageDiscardingHelper::GetFromGraph(graph())->SetNoDiscardPatternsForProfile(
-        static_cast<PageNode*>(page_node())->GetBrowserContextID(), {});
+    DiscardEligibilityPolicy::GetFromGraph(graph())
+        ->SetNoDiscardPatternsForProfile(
+            static_cast<PageNode*>(page_node())->GetBrowserContextID(), {});
 
     auto policy = std::make_unique<MemorySaverModePolicy>();
     policy_ = policy.get();
@@ -224,7 +225,7 @@ TEST_F(MemorySaverModeTest, DontDiscardIfPageIsNotATab) {
 
 // The tab shouldn't be discarded if it's playing audio. There are many other
 // conditions that prevent discarding, but they're implemented in
-// `PageDiscardingHelper` and therefore tested there.
+// `DiscardEligibilityPolicy` and therefore tested there.
 TEST_F(MemorySaverModeTest, DontDiscardIfPlayingAudio) {
   EXPECT_EQ(page_node()->GetType(), PageType::kTab);
   page_node()->SetIsVisible(true);

@@ -34,6 +34,11 @@ class SearchResultsView : public AshWebViewImpl {
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url) override;
+  bool TakeFocus(content::WebContents* web_contents, bool reverse) override;
+
+  // content::WebContentsObserver
+  void OnWebContentsFocused(
+      content::RenderWidgetHost* render_widget_host) override;
 
  private:
   base::WeakPtrFactory<SearchResultsView> weak_factory_{this};

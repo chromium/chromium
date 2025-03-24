@@ -4,7 +4,7 @@
 
 import os
 import sys
-from typing import Any, List, Set
+from typing import Any
 import unittest
 
 from telemetry.internal.platform import gpu_info as telemetry_gpu_info
@@ -31,20 +31,20 @@ class WebGpuCompatCtsIntegrationTest(
   def Name(cls) -> str:
     return 'webgpu_compat_cts'
 
-  def _GetSerialGlobs(self) -> Set[str]:
+  def _GetSerialGlobs(self) -> set[str]:
     serial_globs = super()._GetSerialGlobs()
     return serial_globs
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     serial_tests = super()._GetSerialTests()
     return serial_tests
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [EXPECTATIONS_FILE]
 
   @classmethod
-  def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
+  def GetPlatformTags(cls, browser: ct.Browser) -> list[str]:
     tags = super().GetPlatformTags(browser)
     if cls._use_min_es31:
       tags.append('compat-min-es31')

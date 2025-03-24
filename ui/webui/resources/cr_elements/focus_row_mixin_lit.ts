@@ -63,17 +63,17 @@ export const FocusRowMixinLit = <T extends Constructor<CrLitElement>>(
       };
     }
 
-    private row_: VirtualFocusRow|null = null;
-    private mouseFocused_: boolean = false;
+    private accessor row_: VirtualFocusRow|null = null;
+    private accessor mouseFocused_: boolean = false;
 
     // For notifying when the row is in focus.
-    isFocused: boolean = false;
+    accessor isFocused: boolean = false;
 
     // Should be bound to the index of the item from the iron-list or
     // infinite-list.
-    focusRowIndex?: number;
+    accessor focusRowIndex: number|undefined;
 
-    lastFocused: HTMLElement|null = null;
+    accessor lastFocused: HTMLElement|null = null;
 
     /**
      * This is different from tabIndex, since the template only does a
@@ -81,8 +81,8 @@ export const FocusRowMixinLit = <T extends Constructor<CrLitElement>>(
      * For example, when a control within a row is focused, it will have
      * tabIndex = -1 and listTabIndex = 0.
      */
-    listTabIndex?: number;
-    listBlurred: boolean = false;
+    accessor listTabIndex: number|undefined;
+    accessor listBlurred: boolean = false;
 
     private firstControl_: HTMLElement|null = null;
     private controlObservers_: MutationObserver[] = [];

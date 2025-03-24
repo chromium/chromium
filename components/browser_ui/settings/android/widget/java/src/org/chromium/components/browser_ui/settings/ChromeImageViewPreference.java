@@ -105,7 +105,7 @@ public class ChromeImageViewPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        mButton = (ImageView) assumeNonNull(holder.findViewById(R.id.image_view_widget));
+        mButton = (ImageView) holder.findViewById(R.id.image_view_widget);
         mButton.setBackgroundColor(Color.TRANSPARENT);
         mButton.setVisibility(View.VISIBLE);
 

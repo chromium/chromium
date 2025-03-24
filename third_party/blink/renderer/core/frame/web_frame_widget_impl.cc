@@ -4284,8 +4284,9 @@ void WebFrameWidgetImpl::AddImeTextSpansToExistingText(
     uint32_t end,
     const Vector<ui::ImeTextSpan>& ime_text_spans) {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
-  if (!focused_frame)
+  if (!focused_frame) {
     return;
+  }
   focused_frame->AddImeTextSpansToExistingText(base::ToVector(ime_text_spans),
                                                start, end);
 }
@@ -4598,6 +4599,21 @@ void WebFrameWidgetImpl::StopAutoscroll() {
     return;
   }
   focused_frame->StopAutoscroll();
+}
+
+void WebFrameWidgetImpl::RectForEditFieldChars(
+    const gfx::Range& range,
+    RectForEditFieldCharsCallback callback) {
+  WebLocalFrameImpl* focused_frame = FocusedWebLocalFrameInWidget();
+  if (!focused_frame) {
+    std::move(callback).Run(gfx::Rect());
+    return;
+  }
+  gfx::Rect rect;
+  focused_frame->FirstRectForCharacterRange(
+      base::checked_cast<wtf_size_t>(range.start()),
+      base::checked_cast<wtf_size_t>(range.length()), rect);
+  std::move(callback).Run(widget_base_->BlinkSpaceToEnclosedDIPs(rect));
 }
 #endif  // BUILDFLAG(IS_IOS)
 

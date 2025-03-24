@@ -371,13 +371,6 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebElement& element,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Queries the browser for Autocomplete and Autofill suggestions for the given
-  // `element`. `form_cache` can be used to optimize form extractions occurring
-  // synchronously after this function call.
-  void QueryAutofillSuggestions(const blink::WebFormControlElement& element,
-                                AutofillSuggestionTriggerSource trigger_source,
-                                const SynchronousFormCache& form_cache);
-
   // Sets the selected value of the the field identified by `field_id` to
   // `suggested_value`.
   void DoAcceptDataListSuggestion(FieldRendererId field_id,

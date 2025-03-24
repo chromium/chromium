@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/win/registry.h"
 #include "rlz/lib/assert.h"
 #include "rlz/lib/machine_deal_win.h"
@@ -150,7 +151,7 @@ bool CreateMachineState() {
 
   // Add ALL-USERS ALL-ACCESS ACL.
   EXPLICIT_ACCESS ea;
-  ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS));
+  UNSAFE_TODO(ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS)));
   ea.grfAccessPermissions = GENERIC_ALL | KEY_ALL_ACCESS;
   ea.grfAccessMode = GRANT_ACCESS;
   ea.grfInheritance= SUB_CONTAINERS_AND_OBJECTS_INHERIT;

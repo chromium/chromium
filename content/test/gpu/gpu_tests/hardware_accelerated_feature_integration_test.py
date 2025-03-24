@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import os
 import sys
-from typing import Any, List
+from typing import Any
 import unittest
 
 from gpu_tests import common_typing as ct
@@ -66,7 +64,7 @@ class HardwareAcceleratedFeatureIntegrationTest(
       self.fail('%s not hardware accelerated' % feature)
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',

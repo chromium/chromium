@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.prefetch.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
@@ -97,14 +95,13 @@ public class RadioButtonGroupPreloadPagesSettings extends Preference
         super.onBindViewHolder(holder);
         mExtendedPreloading =
                 (RadioButtonWithDescriptionAndAuxButton)
-                        assumeNonNull(holder.findViewById(R.id.extended_preloading));
+                        holder.findViewById(R.id.extended_preloading);
         mExtendedPreloading.setAuxButtonClickedListener(this);
         mStandardPreloading =
                 (RadioButtonWithDescriptionAndAuxButton)
-                        assumeNonNull(holder.findViewById(R.id.standard_preloading));
+                        holder.findViewById(R.id.standard_preloading);
         mStandardPreloading.setAuxButtonClickedListener(this);
-        mNoPreloading =
-                (RadioButtonWithDescription) assumeNonNull(holder.findViewById(R.id.no_preloading));
+        mNoPreloading = (RadioButtonWithDescription) holder.findViewById(R.id.no_preloading);
         RadioButtonWithDescriptionLayout groupLayout =
                 (RadioButtonWithDescriptionLayout) mNoPreloading.getRootView();
         groupLayout.setOnCheckedChangeListener(this);

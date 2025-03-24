@@ -374,6 +374,11 @@
       permissions_policy_name: "keyboard-map",
     },
     {
+      name: "LanguageDetector",
+      permissions_policy_name: "language-detector",
+      depends_on: ["LanguageDetectionAPI", "BuiltInAIAPI"],
+    },
+    {
       name: "LocalFonts",
       permissions_policy_name: "local-fonts",
       depends_on: ["FontAccess"],
@@ -439,6 +444,11 @@
       permissions_policy_name: "publickey-credentials-get",
     },
     {
+      name: "Rewriter",
+      permissions_policy_name: "rewriter",
+      depends_on: ["AIRewriterAPI", "BuiltInAIAPI"],
+    },
+    {
       name: "RunAdAuction",
       permissions_policy_name: "run-ad-auction",
       feature_default: "EnableForAll",
@@ -498,9 +508,19 @@
       visibility: "IsolatedContext",
     },
     {
+      name: "Summarizer",
+      permissions_policy_name: "summarizer",
+      depends_on: ["AISummarizationAPI", "BuiltInAIAPI"],
+    },
+    {
       name: "SyncXHR",
       feature_default: "EnableForAll",
       permissions_policy_name: "sync-xhr",
+    },
+    {
+      name: "Translator",
+      permissions_policy_name: "translator",
+      depends_on: ["TranslationAPI", "BuiltInAIAPI"],
     },
     {
       name: "TrustTokenRedemption",
@@ -557,6 +577,11 @@
     {
       name: "WindowManagement",
       permissions_policy_name: "window-management",
+    },
+    {
+      name: "Writer",
+      permissions_policy_name: "writer",
+      depends_on: ["AIWriterAPI", "BuiltInAIAPI"],
     },
   ],
 }

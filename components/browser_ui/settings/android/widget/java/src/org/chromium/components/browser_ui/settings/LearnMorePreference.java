@@ -40,7 +40,6 @@ public class LearnMorePreference extends Preference {
         super.onBindViewHolder(holder);
 
         mTitleView = (TextView) holder.findViewById(android.R.id.title);
-        assumeNonNull(mTitleView);
         mTitleView.setTextAppearance(R.style.TextAppearance_TextLarge_Link);
         mTitleView.setClickable(true);
         mTitleView.setOnClickListener(

@@ -328,4 +328,10 @@ void EventForwarder::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+float EventForwarder::GetCurrentTouchSequenceYOffset() {
+  CHECK(!java_obj_.is_null());
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return Java_EventForwarder_getWebContentsOffsetYInWindow(env, java_obj_);
+}
+
 }  // namespace ui

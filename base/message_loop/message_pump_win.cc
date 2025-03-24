@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -721,7 +722,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
 
 MessagePumpForIO::IOContext::IOContext() {
   std::construct_at(GetOverlapped());
-  std::memset(GetOverlapped(), 0, sizeof(OVERLAPPED));
+  UNSAFE_TODO(std::memset(GetOverlapped(), 0, sizeof(OVERLAPPED)));
 }
 
 MessagePumpForIO::IOContext::~IOContext() {

@@ -4,7 +4,6 @@
 
 import os
 import re
-from typing import Dict, FrozenSet, List, Match, Optional, Tuple, Union
 import unittest.mock as mock
 
 from gpu_tests import constants
@@ -57,7 +56,7 @@ INTEL_GEN_9 = {0x1900, 0x3100, 0x3E00, 0x5900, 0x5A00, 0x9B00}
 INTEL_GEN_12 = {0x4C00, 0x9A00, 0x4900, 0x4600, 0x4F00, 0x5600, 0xA700, 0x7D00}
 
 
-def _ParseANGLEGpuVendorString(device_string: str) -> Optional[str]:
+def _ParseANGLEGpuVendorString(device_string: str) -> str | None:
   if not device_string:
     return None
   # ANGLE's device (renderer) string is of the form:
@@ -69,7 +68,7 @@ def _ParseANGLEGpuVendorString(device_string: str) -> Optional[str]:
   return None
 
 
-def GetANGLEGpuDeviceId(device_string: str) -> Optional[str]:
+def GetANGLEGpuDeviceId(device_string: str) -> str | None:
   if not device_string:
     return None
   # ANGLE's device (renderer) string is of the form:
@@ -81,7 +80,7 @@ def GetANGLEGpuDeviceId(device_string: str) -> Optional[str]:
   return None
 
 
-def GetGpuVendorString(gpu_info: Optional[tgi.GPUInfo], index: int) -> str:
+def GetGpuVendorString(gpu_info: tgi.GPUInfo | None, index: int) -> str:
   if gpu_info:
     primary_gpu = gpu_info.devices[index]
     if primary_gpu:
@@ -102,8 +101,7 @@ def GetGpuVendorString(gpu_info: Optional[tgi.GPUInfo], index: int) -> str:
   return 'unknown_gpu'
 
 
-def GetGpuDeviceId(gpu_info: Optional[tgi.GPUInfo],
-                   index: int) -> Union[int, str]:
+def GetGpuDeviceId(gpu_info: tgi.GPUInfo | None, index: int) -> int | str:
   if gpu_info:
     primary_gpu = gpu_info.devices[index]
     if primary_gpu:
@@ -126,7 +124,7 @@ def IsIntelGen12(gpu_device_id: int) -> bool:
   return gpu_device_id & INTEL_DEVICE_ID_MASK in INTEL_GEN_12
 
 
-def GetGpuDriverVendor(gpu_info: Optional[tgi.GPUInfo]) -> Optional[str]:
+def GetGpuDriverVendor(gpu_info: tgi.GPUInfo | None) -> str | None:
   if gpu_info:
     primary_gpu = gpu_info.devices[0]
     if primary_gpu:
@@ -134,7 +132,7 @@ def GetGpuDriverVendor(gpu_info: Optional[tgi.GPUInfo]) -> Optional[str]:
   return None
 
 
-def GetGpuDriverVersion(gpu_info: Optional[tgi.GPUInfo]) -> Optional[str]:
+def GetGpuDriverVersion(gpu_info: tgi.GPUInfo | None) -> str | None:
   if gpu_info:
     primary_gpu = gpu_info.devices[0]
     if primary_gpu:
@@ -142,7 +140,7 @@ def GetGpuDriverVersion(gpu_info: Optional[tgi.GPUInfo]) -> Optional[str]:
   return None
 
 
-def GetANGLERenderer(gpu_info: Optional[tgi.GPUInfo]) -> str:
+def GetANGLERenderer(gpu_info: tgi.GPUInfo | None) -> str:
   retval = 'angle-disabled'
   if gpu_info and gpu_info.aux_attributes:
     gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
@@ -165,21 +163,21 @@ def GetANGLERenderer(gpu_info: Optional[tgi.GPUInfo]) -> str:
   return retval
 
 
-def GetCommandDecoder(gpu_info: Optional[tgi.GPUInfo]) -> str:
+def GetCommandDecoder(gpu_info: tgi.GPUInfo | None) -> str:
   if gpu_info and gpu_info.aux_attributes and \
       gpu_info.aux_attributes.get('passthrough_cmd_decoder', False):
     return 'passthrough'
   return 'no_passthrough'
 
 
-def GetSkiaGraphiteStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
+def GetSkiaGraphiteStatus(gpu_info: tgi.GPUInfo | None) -> str:
   if gpu_info and gpu_info.feature_status and gpu_info.feature_status.get(
       'skia_graphite') == 'enabled_on':
     return 'graphite-enabled'
   return 'graphite-disabled'
 
 
-def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo]) -> str:
+def GetSkiaRenderer(gpu_info: tgi.GPUInfo | None) -> str:
   retval = 'renderer-software'
   if gpu_info:
     gpu_feature_status = gpu_info.feature_status
@@ -196,7 +194,7 @@ def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo]) -> str:
   return retval
 
 
-def GetDisplayServer(browser_type: str) -> Optional[str]:
+def GetDisplayServer(browser_type: str) -> str | None:
   # Browser types run on a remote device aren't Linux, but the host running
   # this code uses Linux, so return early to avoid erroneously reporting a
   # display server.
@@ -209,36 +207,36 @@ def GetDisplayServer(browser_type: str) -> Optional[str]:
   return None
 
 
-def GetAsanStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
+def GetAsanStatus(gpu_info: tgi.GPUInfo | None) -> str:
   if gpu_info and gpu_info.aux_attributes.get('is_asan', False):
     return 'asan'
   return 'no-asan'
 
 
-def GetTargetCpuStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
+def GetTargetCpuStatus(gpu_info: tgi.GPUInfo | None) -> str:
   suffix = 'unknown'
   if gpu_info:
     suffix = gpu_info.aux_attributes.get('target_cpu_bits', 'unknown')
   return 'target-cpu-%s' % suffix
 
 
-def GetClangCoverage(gpu_info: Optional[tgi.GPUInfo]) -> str:
+def GetClangCoverage(gpu_info: tgi.GPUInfo | None) -> str:
   if gpu_info and gpu_info.aux_attributes.get('is_clang_coverage', False):
     return 'clang-coverage'
   return 'no-clang-coverage'
 
 
-def HasGlSkiaRenderer(gpu_feature_status: Dict[str, str]) -> bool:
+def HasGlSkiaRenderer(gpu_feature_status: dict[str, str]) -> bool:
   return (bool(gpu_feature_status)
           and gpu_feature_status.get('opengl') == 'enabled_on')
 
 
-def HasVulkanSkiaRenderer(gpu_feature_status: Dict[str, str]) -> bool:
+def HasVulkanSkiaRenderer(gpu_feature_status: dict[str, str]) -> bool:
   return (bool(gpu_feature_status)
           and gpu_feature_status.get('vulkan') == 'enabled_on')
 
 
-def ReplaceTags(tags: List[str]) -> List[str]:
+def ReplaceTags(tags: list[str]) -> list[str]:
   """Replaces certain strings in tags to make them consistent across platforms.
 
   Args:
@@ -294,7 +292,7 @@ def GetMockArgs(webgl_version: str = '1.0.0') -> mock.MagicMock:
   return args
 
 
-def MatchDriverTag(tag: str) -> Optional[Match[str]]:
+def MatchDriverTag(tag: str) -> re.Match[str] | None:
   return DRIVER_TAG_MATCHER.match(tag.lower())
 
 # No good way to reduce the number of local variables, particularly since each
@@ -304,9 +302,10 @@ def MatchDriverTag(tag: str) -> Optional[Match[str]]:
 def EvaluateVersionComparison(version: str,
                               operation: str,
                               ref_version: str,
-                              os_name: Optional[str] = None,
-                              driver_vendor: Optional[str] = None) -> bool:
-  def parse_version(ver: str) -> Union[Tuple[int, str], Tuple[None, None]]:
+                              os_name: str | None = None,
+                              driver_vendor: str | None = None) -> bool:
+
+  def parse_version(ver: str) -> tuple[int, str] | tuple[None, None]:
     if ver.isdigit():
       return int(ver), ''
     for i, digit in enumerate(ver):
@@ -426,5 +425,5 @@ def IsDriverTagDuplicated(driver_tag1: str, driver_tag2: str) -> bool:
 # pylint: enable=too-many-return-statements,too-many-branches
 
 
-def ExpectationsDriverTags() -> FrozenSet[str]:
+def ExpectationsDriverTags() -> frozenset[str]:
   return EXPECTATIONS_DRIVER_TAGS

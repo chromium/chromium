@@ -8,9 +8,9 @@
  */
 
 import {CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {generateRandomId, getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
+import {getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * The name of the message handler in C++ land which will process registration

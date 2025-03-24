@@ -259,8 +259,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         int index = 0;
         mTabModel.addTab(
                 tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        when(mTabGroupModelFilter.indexOf(tab)).thenReturn(index);
-        when(mTabGroupModelFilter.getTabAt(index)).thenReturn(tab);
+        when(mTabGroupModelFilter.representativeIndexOf(tab)).thenReturn(index);
+        when(mTabGroupModelFilter.getRepresentativeTabAt(index)).thenReturn(tab);
         controller.resetWithListOfTabs(Collections.singletonList(tab));
 
         return controller;
@@ -292,7 +292,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     public void testSetInitialScrollIndexOffset() {
         int index = 8;
-        when(mTabGroupModelFilter.index()).thenReturn(index);
+        when(mTabGroupModelFilter.getCurrentRepresentativeTabIndex()).thenReturn(index);
         mCoordinator.setInitialScrollIndexOffset();
 
         assertEquals(
@@ -306,7 +306,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     public void testRequestAccessibilityFocusOnCurrentTab() {
         int index = 2;
-        when(mTabGroupModelFilter.index()).thenReturn(index);
+        when(mTabGroupModelFilter.getCurrentRepresentativeTabIndex()).thenReturn(index);
         mCoordinator.requestAccessibilityFocusOnCurrentTab();
 
         assertEquals(
@@ -367,9 +367,9 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         int index = 0;
         mTabModel.addTab(
                 tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        when(mTabGroupModelFilter.indexOf(tab)).thenReturn(index);
-        when(mTabGroupModelFilter.getTabAt(index)).thenReturn(tab);
-        when(mTabGroupModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.representativeIndexOf(tab)).thenReturn(index);
+        when(mTabGroupModelFilter.getRepresentativeTabAt(index)).thenReturn(tab);
+        when(mTabGroupModelFilter.getIndividualTabAndGroupCount()).thenReturn(1);
         when(mTabGroupModelFilter.getRelatedTabList(tabId))
                 .thenReturn(Collections.singletonList(tab));
 
@@ -377,7 +377,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         doCallback(2, (Callback<Bitmap> callback) -> callback.onResult(bitmap))
                 .when(mTabContentManager)
                 .getTabThumbnailWithCallback(eq(tabId), any(), any());
-        mCoordinator.resetWithTabList(mTabGroupModelFilter);
+        mCoordinator.resetWithListOfTabs(Collections.singletonList(tab));
 
         TabListRecyclerView recyclerView = mActivity.findViewById(R.id.tab_list_recycler_view);
         // Manually size the view so that the children get added this is to work around robolectric

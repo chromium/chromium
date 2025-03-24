@@ -24,6 +24,10 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/compositor/compositor_switches.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/toasts/toast_features.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/browser_features.h"
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -34,11 +38,19 @@
 
 class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
-  SettingsBrowserTest() { set_test_loader_host(chrome::kChromeUISettingsHost); }
+  SettingsBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
+#if !BUILDFLAG(IS_CHROMEOS)
+         toast_features::kToastRefinements
+#endif
+        },
+        {});
+    set_test_loader_host(chrome::kChromeUISettingsHost);
+  }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using SettingsTest = SettingsBrowserTest;
@@ -703,19 +715,19 @@ class SettingsClearBrowsingDataV2Test : public SettingsBrowserTest {
       features::kDbdRevampDesktop};
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
+                       DeleteBrowsingDataAccountIndicator) {
+  RunTest("settings/clear_browsing_data_account_indicator_test.js",
+          "runMochaSuite('DeleteBrowsingDataAccountIndicator')");
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
                        DeleteBrowsingDataDialog) {
   RunTest("settings/clear_browsing_data_dialog_v2_test.js",
           "runMochaSuite('DeleteBrowsingDataDialog')");
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
-                       DeleteBrowsingDataAccountIndicator) {
-  RunTest("settings/clear_browsing_data_dialog_v2_test.js",
-          "runMochaSuite('DeleteBrowsingDataAccountIndicator')");
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 using SettingsCookiesPageTest = SettingsBrowserTest;
 

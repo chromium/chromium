@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/public/browser/web_contents.h"
@@ -47,6 +48,17 @@ bool CandidatesAreValid(
       mojo::ReportBadMessage(
           "SH_INVALID_REQUIRES_ANONYMOUS_CLIENT_IP_WHEN_CROSS_ORIGIN");
       return false;
+    }
+
+    // All speculation rules tags must be valid tokens and std::nullopt is valid
+    // by definition.
+    for (auto& tag : candidate->tags) {
+      if (tag.has_value() &&
+          !std::all_of(tag.value().begin(), tag.value().end(),
+                       base::IsAsciiPrintable<char>)) {
+        mojo::ReportBadMessage("SH_INVALID_TAG");
+        return false;
+      }
     }
   }
   return true;

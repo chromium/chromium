@@ -1036,19 +1036,19 @@ void HWNDMessageHandler::SizeConstraintsChanged() {
 
   // Windows cannot have WS_THICKFRAME set if translucent.
   // See CalculateWindowStylesFromInitParams().
-  if (delegate_->CanResize() && !is_translucent_) {
-    style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
-    if (!delegate_->CanMaximize()) {
-      style &= ~WS_MAXIMIZEBOX;
+  const bool thick_frame = !is_translucent_ && delegate_->CanResize();
+  bool can_maximize = thick_frame && delegate_->CanMaximize();
+
+  auto set_style_func = [](LONG& style, LONG bit, bool should_set) {
+    if (should_set) {
+      style |= bit;
+    } else {
+      style &= ~bit;
     }
-  } else {
-    style &= ~(WS_THICKFRAME | WS_MAXIMIZEBOX);
-  }
-  if (delegate_->CanMinimize()) {
-    style |= WS_MINIMIZEBOX;
-  } else {
-    style &= ~WS_MINIMIZEBOX;
-  }
+  };
+  set_style_func(style, WS_THICKFRAME, thick_frame);
+  set_style_func(style, WS_MAXIMIZEBOX, can_maximize);
+  set_style_func(style, WS_MINIMIZEBOX, delegate_->CanMinimize());
   SetWindowLong(hwnd(), GWL_STYLE, style);
 }
 

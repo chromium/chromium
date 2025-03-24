@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/event_logger.h"
@@ -69,7 +70,7 @@ PolicyFetchResponseValidator GetDefaultPolicyFetchResponseValidator();
 std::unique_ptr<policy::DeviceManagementService::Configuration>
 CreateDeviceManagementServiceConfig();
 
-// Creates a DMClient. |cloud_policy_client_provider| is used to construct the
+// Creates a DMClient. `cloud_policy_client_provider` is used to construct the
 // underlying CloudPolicyClient on a separate sequence.
 std::unique_ptr<DMClient> CreateDMClient(
     CloudPolicyClientProvider cloud_policy_client_provider,
@@ -78,7 +79,10 @@ std::unique_ptr<DMClient> CreateDMClient(
     PolicyFetchResponseValidator policy_fetch_response_validator =
         GetDefaultPolicyFetchResponseValidator(),
     std::unique_ptr<policy::DeviceManagementService::Configuration> config =
-        CreateDeviceManagementServiceConfig());
+        CreateDeviceManagementServiceConfig(),
+    // A default timeout of 25s is slightly shorter than O4's 30s timeout on
+    // RPCs to CECA.
+    base::TimeDelta task_timeout = base::Seconds(25));
 
 }  // namespace enterprise_companion
 

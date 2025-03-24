@@ -13,9 +13,19 @@ if (use_blink) {
     ]
     public_deps = [ "//content/public/browser" ]
     deps = [
+      ":features",
       "//base",
-      "//components/fingerprinting_protection_filter/interventions/common:features",
     ]
+  }
+
+  component("features") {
+    output_name = "fingerprinting_protection_interventions_features"
+    defines = [ "IS_FINGERPRINTING_PROTECTION_INTERVENTIONS_FEATURES_IMPL" ]
+    sources = [
+      "interventions_features.cc",
+      "interventions_features.h",
+    ]
+    deps = [ "//base" ]
   }
 
   source_set("unit_tests") {
@@ -24,8 +34,8 @@ if (use_blink) {
     public_deps = [ "//content/public/browser" ]
     deps = [
       ":browser",
+      ":features",
       "//base",
-      "//components/fingerprinting_protection_filter/interventions/common:features",
       "//content/test:test_support",
       "//testing/gtest",
       "//third_party/blink/public/common",

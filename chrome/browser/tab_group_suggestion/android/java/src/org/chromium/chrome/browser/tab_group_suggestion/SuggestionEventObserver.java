@@ -8,10 +8,12 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -25,9 +27,7 @@ public class SuggestionEventObserver {
 
     private final @NonNull TabModel mTabModel;
     private final @NonNull GroupSuggestionsService mGroupSuggestionsService;
-    private final @NonNull ObservableSupplier<Boolean> mHubVisibilitySupplier;
-    private final @NonNull ObservableSupplier<Pane> mFocusedPaneSupplier;
-    private final @NonNull Callback<Boolean> mHubVisiblityObserver = this::onHubVisiblilityChanged;
+    private final @NonNull Callback<Boolean> mHubVisibilityObserver = this::onHubVisibilityChanged;
     private final @NonNull TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
@@ -45,25 +45,31 @@ public class SuggestionEventObserver {
                 }
             };
 
+    private @Nullable ObservableSupplier<Boolean> mHubVisibilitySupplier;
+    private @Nullable ObservableSupplier<Pane> mFocusedPaneSupplier;
+
     /** Creates the observer. */
     public SuggestionEventObserver(
-            @NonNull Profile profile,
             @NonNull TabModel tabModel,
-            @NonNull ObservableSupplier<Boolean> hubVisibilitySupplier,
-            @NonNull ObservableSupplier<Pane> focusedPaneSupplier) {
+            @NonNull OneshotSupplierImpl<HubManager> hubManagerSupplier) {
         mTabModel = tabModel;
-        mHubVisibilitySupplier = hubVisibilitySupplier;
-        mFocusedPaneSupplier = focusedPaneSupplier;
-        mGroupSuggestionsService = GroupSuggestionsServiceFactory.getForProfile(profile);
+        mGroupSuggestionsService =
+                GroupSuggestionsServiceFactory.getForProfile(tabModel.getProfile());
         assert !tabModel.isIncognitoBranded();
         tabModel.addObserver(mTabModelObserver);
-        hubVisibilitySupplier.addObserver(mHubVisiblityObserver);
+        hubManagerSupplier.runSyncOrOnAvailable(
+                hubManager -> {
+                    mHubVisibilitySupplier = hubManager.getHubVisibilitySupplier();
+                    mHubVisibilitySupplier.addObserver(mHubVisibilityObserver);
+                    mFocusedPaneSupplier = hubManager.getPaneManager().getFocusedPaneSupplier();
+                });
     }
 
-    private void onHubVisiblilityChanged(boolean visible) {
+    private void onHubVisibilityChanged(boolean visible) {
         if (!visible) {
             return;
         }
+        assert mFocusedPaneSupplier != null;
         Pane currentPane = mFocusedPaneSupplier.get();
         if (currentPane != null && currentPane.getPaneId() == PaneId.TAB_SWITCHER) {
             mGroupSuggestionsService.didEnterTabSwitcher();
@@ -73,6 +79,8 @@ public class SuggestionEventObserver {
     /** Destroys the observer. */
     public void destroy() {
         mTabModel.removeObserver(mTabModelObserver);
-        mHubVisibilitySupplier.removeObserver(mHubVisiblityObserver);
+        if (mHubVisibilitySupplier != null) {
+            mHubVisibilitySupplier.removeObserver(mHubVisibilityObserver);
+        }
     }
 }

@@ -50,7 +50,7 @@ AXCallStatementInvoker::AXCallStatementInvoker(
     std::map<std::string, id>* storage)
     : node(nullptr), indexer_(indexer), storage_(storage) {}
 
-AXCallStatementInvoker::AXCallStatementInvoker(const id node,
+AXCallStatementInvoker::AXCallStatementInvoker(id node,
                                                const AXTreeIndexerMac* indexer)
     : node(node), indexer_(indexer), storage_(nullptr) {}
 
@@ -157,7 +157,7 @@ AXOptionalNSObject AXCallStatementInvoker::Invoke(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeFor(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   if (target == nil) {
     return AXOptionalNSObject::Error(
@@ -189,7 +189,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeFor(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeForAXCustomContent(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   AXCustomContent* content = target;
 
@@ -347,7 +347,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeForAXTextMarkerRange(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "anchor")
     return AXOptionalNSObject(AXTextMarkerRangeStart(target));
@@ -369,7 +369,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXTextMarkerRange(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeForArray(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "count") {
     if (property_node.arguments.size()) {
@@ -413,7 +413,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForArray(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeForDictionary(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   if (property_node.arguments.size() > 0) {
     LOG(ERROR) << "dictionary key is expected, got: "

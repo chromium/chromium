@@ -11,7 +11,7 @@ import json
 import os
 import tempfile
 import typing
-from typing import Any, Dict, List, Optional, Set, Tuple, Type
+from typing import Any, Type
 import unittest
 import unittest.mock as mock
 
@@ -95,7 +95,7 @@ def _GetSystemInfo(  # pylint: disable=too-many-arguments
 
 
 def _GetTagsToTest(browser: fakes.FakeBrowser,
-                   test_class: Optional[GpuTestClassType] = None) -> Set[str]:
+                   test_class: GpuTestClassType | None = None) -> set[str]:
   browser = typing.cast(ct.Browser, browser)
   test_class = test_class or gpu_integration_test.GpuIntegrationTest
   tags = None
@@ -111,7 +111,7 @@ def _GenerateNvidiaExampleTagsForTestClassAndArgs(
     is_asan: bool = False,
     is_clang_coverage: bool = False,
     target_cpu_bits: int = 64,
-) -> Set[str]:
+) -> set[str]:
   tags = None
   with mock.patch.object(
       test_class, 'ExpectationsFiles', return_value=['exp.txt']):
@@ -133,10 +133,10 @@ def _GenerateNvidiaExampleTagsForTestClassAndArgs(
 class _IntegrationTestArgs():
   """Struct-like object for defining an integration test."""
   test_name: str
-  failures: List[str] = ct.EmptyList()
-  successes: List[str] = ct.EmptyList()
-  skips: List[str] = ct.EmptyList()
-  additional_args: List[str] = ct.EmptyList()
+  failures: list[str] = ct.EmptyList()
+  successes: list[str] = ct.EmptyList()
+  skips: list[str] = ct.EmptyList()
+  additional_args: list[str] = ct.EmptyList()
 
 
 class GpuIntegrationTestUnittest(unittest.TestCase):
@@ -146,7 +146,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
 
   def _RunGpuIntegrationTests(self,
                               test_name: str,
-                              extra_args: Optional[List[str]] = None) -> None:
+                              extra_args: list[str] | None = None) -> None:
     extra_args = extra_args or []
     unittest_config = chromium_config.ChromiumConfig(
         top_level_dir=gpu_path_util.GPU_DIR,
@@ -205,7 +205,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
                                         args: mock.MagicMock,
                                         is_asan: bool = False,
                                         is_clang_coverage: bool = False,
-                                        target_cpu_bits: int = 64) -> Set[str]:
+                                        target_cpu_bits: int = 64) -> set[str]:
     tag_set = _GenerateNvidiaExampleTagsForTestClassAndArgs(
         test_class, args, is_asan, is_clang_coverage, target_cpu_bits)
     self.assertTrue(
@@ -638,7 +638,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
 
 
 def RunFakeBrowserStartWithArgsAndGpuInfo(
-    additional_args: List[str],
+    additional_args: list[str],
     gpu_info: Any,
     gpu_test_class: GpuTestClassType = gpu_integration_test.GpuIntegrationTest
 ) -> None:
@@ -663,8 +663,8 @@ def RunFakeBrowserStartWithArgsAndGpuInfo(
     cls.StartBrowser()
 
 
-def CreateGpuInfo(aux_attributes: Optional[dict] = None,
-                  feature_statuses: Optional[dict] = None) -> mock.Mock:
+def CreateGpuInfo(aux_attributes: dict | None = None,
+                  feature_statuses: dict | None = None) -> mock.Mock:
   aux_attributes = aux_attributes or {}
   feature_statuses = feature_statuses or {}
 
@@ -920,7 +920,7 @@ class GetGPUInfoErrorStringUnittest(unittest.TestCase):
 
 
 def _ExtractTestResults(
-    test_result: Dict[str, Dict]) -> Tuple[List[str], List[str], List[str]]:
+    test_result: dict[str, dict]) -> tuple[list[str], list[str], list[str]]:
   delimiter = test_result['path_delimiter']
   failures = []
   successes = []

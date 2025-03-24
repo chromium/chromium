@@ -108,8 +108,8 @@ HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
   }
   constexpr SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
       SECURITY_MANDATORY_LABEL_AUTHORITY;
-  if (std::memcmp(authority, &kMandatoryLabelAuth,
-                  sizeof(SID_IDENTIFIER_AUTHORITY))) {
+  if (UNSAFE_TODO(std::memcmp(authority, &kMandatoryLabelAuth,
+                              sizeof(SID_IDENTIFIER_AUTHORITY)))) {
     return E_FAIL;
   }
   PUCHAR count = ::GetSidSubAuthorityCount(sid);

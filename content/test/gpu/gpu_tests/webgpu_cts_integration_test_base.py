@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import collections
+from collections.abc import Mapping
 import enum
 import fnmatch
 import json
@@ -10,7 +10,6 @@ import logging
 import os
 import re
 import time
-from typing import Dict, List, Optional
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
@@ -79,15 +78,15 @@ class WorkerType(enum.Enum):
 @dataclasses.dataclass
 class WebGpuTestResult():
   """Struct-like object for holding a single test result."""
-  status: Optional[str] = None
-  log_pieces: List[str] = ct.EmptyList()
+  status: str | None = None
+  log_pieces: list[str] = ct.EmptyList()
 
 
 @dataclasses.dataclass
 class WebGpuTestArgs():
   """Struct-like object for holding arguments for a single test."""
   query: str
-  additional_browser_args: Optional[List[str]] = None
+  additional_browser_args: list[str] | None = None
 
 class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   # Whether the test page has already been loaded. Caching this state here is
@@ -103,27 +102,27 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
   _test_timeout = DEFAULT_TEST_TIMEOUT
   _enable_dawn_backend_validation = False
-  _use_webgpu_adapter: Optional[str] = None  # use the default
-  _original_environ: Optional[collections.abc.Mapping] = None
-  _use_webgpu_power_preference: Optional[str] = None
+  _use_webgpu_adapter: str | None = None  # use the default
+  _original_environ: Mapping | None = None
+  _use_webgpu_power_preference: str | None = None
   _use_fxc = False
-  _os_name: Optional[str] = None
-  _worker_type: Optional[WorkerType] = None
+  _os_name: str | None = None
+  _worker_type: WorkerType | None = None
 
-  _build_dir: Optional[str] = None
+  _build_dir: str | None = None
 
-  _test_list: Optional[List[str]] = None
-  _worker_test_globs: Optional[List[str]] = None
+  _test_list: list[str] | None = None
+  _worker_test_globs: list[str] | None = None
 
   total_tests_run = 0
 
-  websocket_server: Optional[wss.WebsocketServer] = None
+  websocket_server: wss.WebsocketServer | None = None
 
-  _slow_tests: Optional[expectations_parser.TestExpectations] = None
+  _slow_tests: expectations_parser.TestExpectations | None = None
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
-    self._query: Optional[str] = None
+    self._query: str | None = None
     self._longest_time_between_heartbeats = 0
     self._heartbeat_timeout = 0
     self._test_duration = 0
@@ -198,7 +197,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       cls._GetSlowTests().set_tags(cls.child.expectations.tags)
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -297,7 +296,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     super()._RestoreBrowserEnvironment()
 
   @classmethod
-  def _GetAdditionalBrowserArgsForQuery(cls, query: str) -> Optional[List[str]]:
+  def _GetAdditionalBrowserArgsForQuery(cls, query: str) -> list[str] | None:
     """Returns additional browser args for a given query.
 
     Should be overridden by child class to actually return args when necessary.
@@ -564,7 +563,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     return result
   # pylint: enable=too-many-branches
 
-  def HandleDurationTagOnFailure(self, message_state: Dict[str, bool],
+  def HandleDurationTagOnFailure(self, message_state: dict[str, bool],
                                  test_timeout: float) -> None:
     """Handles setting the JAVASCRIPT_DURATION tag on failure.
 
@@ -615,7 +614,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     return 'Slow' in expectation.raw_results
 
   @classmethod
-  def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
+  def GetPlatformTags(cls, browser: ct.Browser) -> list[str]:
     tags = super().GetPlatformTags(browser)
     if cls._enable_dawn_backend_validation:
       tags.append('dawn-backend-validation')
@@ -656,7 +655,7 @@ class WebGpuTestTimeoutError(RuntimeError):
   pass
 
 
-def VerifyMessageOrderTestStarted(message_state: Dict[str, bool]) -> None:
+def VerifyMessageOrderTestStarted(message_state: dict[str, bool]) -> None:
   """Helper function to verify that messages are ordered correctly.
 
   Handles MESSAGE_TYPE_TEST_STARTED messages.
@@ -673,7 +672,7 @@ def VerifyMessageOrderTestStarted(message_state: Dict[str, bool]) -> None:
   message_state[MESSAGE_TYPE_TEST_STARTED] = True
 
 
-def VerifyMessageOrderTestHeartbeat(message_state: Dict[str, bool]) -> None:
+def VerifyMessageOrderTestHeartbeat(message_state: dict[str, bool]) -> None:
   """Helper function to verify that messages are ordered correctly.
 
   Handles MESSAGE_TYPE_TEST_HEARTBEAT messages.
@@ -691,7 +690,7 @@ def VerifyMessageOrderTestHeartbeat(message_state: Dict[str, bool]) -> None:
         'Received heartbeat after test supposedly done')
 
 
-def VerifyMessageOrderTestStatus(message_state: Dict[str, bool]) -> None:
+def VerifyMessageOrderTestStatus(message_state: dict[str, bool]) -> None:
   """Helper function to verify that messages are ordered correctly.
 
   Handles MESSAGE_TYPE_TEST_STATUS messages.
@@ -711,7 +710,7 @@ def VerifyMessageOrderTestStatus(message_state: Dict[str, bool]) -> None:
   message_state[MESSAGE_TYPE_TEST_STATUS] = True
 
 
-def VerifyMessageOrderTestLog(message_state: Dict[str, bool]) -> None:
+def VerifyMessageOrderTestLog(message_state: dict[str, bool]) -> None:
   """Helper function to verify that messages are ordered correctly.
 
   Handles MESSAGE_TYPE_TEST_LOG messages.
@@ -728,7 +727,7 @@ def VerifyMessageOrderTestLog(message_state: Dict[str, bool]) -> None:
   message_state[MESSAGE_TYPE_TEST_LOG] = True
 
 
-def VerifyMessageOrderTestFinished(message_state: Dict[str, bool]) -> None:
+def VerifyMessageOrderTestFinished(message_state: dict[str, bool]) -> None:
   """Helper function to verify that messages are ordered correctly.
 
   Handles MESSAGE_TYPE_TEST_FINISHED messages.

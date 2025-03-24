@@ -7,7 +7,7 @@ package com.android.webview.chromium;
 import android.net.Uri;
 import android.webkit.WebResourceRequest;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.android_webview.AwWebResourceRequest;
 
 import java.util.Map;
 

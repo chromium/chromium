@@ -317,7 +317,7 @@ struct URLRequest {
   // to populate an `Accept-Signatures` header.
   //
   // https://www.rfc-editor.org/rfc/rfc9421.html#name-the-accept-signature-field
-  array<string> expected_signatures;
+  array<string> expected_public_keys;
 
   // https://fetch.spec.whatwg.org/#concept-request-destination
   RequestDestination destination;

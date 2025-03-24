@@ -336,6 +336,7 @@
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" />: Acceso a la red</translation>
 <translation id="5924017743176219022">Conectando a Internet...</translation>
 <translation id="5941711191222866238">Minimizar</translation>
+<translation id="5949225980829865667">Para acceder a este favorito y mucho más en todos tus dispositivos, accede a Chromium</translation>
 <translation id="5972142260211327093">Si Chromium te ubicó de manera aleatoria en una prueba activa, tu historial de navegación afecta los anuncios que ves y los intereses como se estima a continuación. Para proteger tu privacidad, Chromium borra tus intereses de manera continua todos los meses. Los intereses se actualizan a no ser que los quites.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{La organización cierra Chromium automáticamente si no lo usas durante 1 minuto.}other{La organización cierra Chromium automáticamente si no lo usas durante # minutos.}}</translation>
 <translation id="5987687638152509985">Actualiza Chromium para iniciar la sincronización</translation>

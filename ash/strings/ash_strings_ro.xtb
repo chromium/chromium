@@ -215,6 +215,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1679841710523778799">Mărește luminozitatea</translation>
 <translation id="1680659827022803830">Comenzi pentru apelurile video</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Poți dezactiva oricând această funcție din Setări. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Temporizator de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresă IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Fereastra activă a fost fixată în stânga.</translation>
@@ -967,6 +968,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicație instalată, în pauză</translation>
 <translation id="4228078597006700451">Comenzile nu sunt configurate</translation>
 <translation id="4230560241506423345">Nou</translation>
+<translation id="4236726631849783264">Un memento despre acțiunile sugerate</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modul de prezentare generală</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
@@ -983,7 +985,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Oglindire</translation>
 <translation id="4280601795273309128">Actualizările de securitate s-au încheiat. Fă upgrade dispozitivului.</translation>
-<translation id="4281739221820540368">Creează documente Google</translation>
 <translation id="4283888303416325161">Introdu parola pentru mai multă siguranță</translation>
 <translation id="4285498937028063278">Anulați fixarea</translation>
 <translation id="428715201724021596">Se conectează la profil. Poate dura câteva minute.</translation>
@@ -1044,6 +1045,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4471354919263203780">Se descarcă fișierele pentru recunoașterea vocală... <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Actualizează dispozitivul acum}=1{Actualizează dispozitivul într-o secundă}few{Actualizează dispozitivul în # secunde}other{Actualizează dispozitivul în # de secunde}}</translation>
 <translation id="4472575034687746823">Începeți</translation>
+<translation id="4473489370276014885">Agendă Google</translation>
 <translation id="4477350412780666475">Melodia următoare</translation>
 <translation id="4477751544736611934">Această opțiune poate genera costuri pentru date.
 Un dispozitiv conectat.</translation>
@@ -1070,6 +1072,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4545950850562423083">Salvează pagina actuală ca marcaj</translation>
 <translation id="4548482551627849548">Mută fereastra activă pe desktopul din stânga</translation>
 <translation id="4552748006424994716">Pentru a evita ecoul, poți asculta sunetul microfonului numai cu căști cu fir.</translation>
+<translation id="4556953949326137018">Când folosești acțiuni sugerate, cum ar fi „adaugă la Calendar” sau „creează documente Google”, conținutul din zona selectată este trimis pe serverele Google pentru a sugera acțiuni, în conformitate cu <ph name="LINK_TO_SERVICE_TERMS" />. Nu include conținut personal, sensibil sau confidențial.</translation>
 <translation id="4560576029703263363">Activat</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ascunde parola</translation>
@@ -1153,6 +1156,7 @@ Un dispozitiv conectat.</translation>
 <translation id="481455355267255546">Urmează</translation>
 <translation id="481749895090480684">Lista de sarcini: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">cameră și microfon</translation>
+<translation id="4828935196674083554">Se adaugă...</translation>
 <translation id="482908187605862807">Aplicații disponibile din Magazinul Play</translation>
 <translation id="4831034276697007977">Sigur vrei să dezactivezi clicurile automate?</translation>
 <translation id="4835677468087803981">Ascunde codul PIN</translation>
@@ -1650,6 +1654,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="641817663353603351">o pagină mai sus</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Șterge toate notificările</translation>
+<translation id="6426905245930183644">Se creează…</translation>
 <translation id="6430225033895752525">Afișează setările pentru Focus</translation>
 <translation id="643147933154517414">Gata</translation>
 <translation id="6431865393913628856">Înregistrarea ecranului</translation>
@@ -1716,7 +1721,6 @@ Instalare nouă</translation>
 <translation id="6612889377159412215">sarcină secundară</translation>
 <translation id="6613765291890844037">Spațiu de stocare folosit: <ph name="STORAGE_IN_USE_SIZE" /> | <ph name="STORAGE_TOTAL_SIZE" /> în total</translation>
 <translation id="6614169507485700968">Ecranul de confidențialitate este activat</translation>
-<translation id="6618277154885124991">Creează Foi de calcul Google</translation>
 <translation id="6622679827379792051">Configurează afișarea aplicațiilor telefonului</translation>
 <translation id="662279009180869175">Folosește săgețile spre stânga și spre dreapta pentru a redimensiona ecranul împărțit</translation>
 <translation id="6624493541160101248">Desktopul actual: <ph name="DESK_NAME" /> Desktopul <ph name="DESK_INDEX" /> din <ph name="DESK_COUNT" />.</translation>
@@ -2400,6 +2404,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8921624153894383499">Asistentul Google nu vorbește în această limbă.</translation>
 <translation id="8926951137623668982">Raftul este ascuns mereu</translation>
 <translation id="8929566928381252430">Încerci să folosești Caps Lock? Folosește</translation>
+<translation id="8934418770423095813">Creează un document Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="8936501819958976551">dezactivată</translation>
 <translation id="8938800817013097409">Dispozitiv USB-C (portul din dreapta în spate)</translation>

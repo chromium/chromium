@@ -78,14 +78,14 @@ export class CrToolbarSearchFieldElement extends
     };
   }
 
-  narrow: boolean = false;
-  showingSearch: boolean = false;
-  disabled: boolean = false;
-  override autofocus: boolean = false;
-  spinnerActive: boolean = false;
-  private searchFocused_: boolean = false;
-  iconOverride?: string;
-  inputAriaDescription: string = '';
+  accessor narrow: boolean = false;
+  accessor showingSearch: boolean = false;
+  accessor disabled: boolean = false;
+  override accessor autofocus: boolean = false;
+  accessor spinnerActive: boolean = false;
+  private accessor searchFocused_: boolean = false;
+  accessor iconOverride: string|undefined;
+  accessor inputAriaDescription: string = '';
 
   override firstUpdated() {
     this.addEventListener('click', e => this.showSearch_(e));

@@ -104,7 +104,8 @@ class MockIssuer {
                        ciphertext.u.ToBytesCompressed());
       ASSIGN_OR_RETURN(std::string e_compressed,
                        ciphertext.e.ToBytesCompressed());
-      tokens.emplace_back(1, std::move(u_compressed), std::move(e_compressed));
+      tokens.emplace_back(1, std::move(u_compressed), std::move(e_compressed),
+                          std::string(8, '0'));
     }
     return base::WrapUnique<MockIssuer>(new MockIssuer(
         std::move(context), std::move(group), std::move(encrypter),

@@ -1,9 +1,9 @@
 Name: rust_decimal
 URL: https://crates.io/crates/rust_decimal
-Version: 1.36.0
-Revision: 38ab8254ad77e0a612f8eef8f12a2f7febee3ff8
+Version: 1.37.0
+Revision: ffe9495d7734d8021718050f98e3f48f39c428b2
 License: MIT
-License File: //third_party/rust/chromium_crates_io/vendor/rust_decimal-1.36.0/LICENSE
+License File: //third_party/rust/chromium_crates_io/vendor/rust_decimal-1.37.0/LICENSE
 Shipped: yes
 Security Critical: yes
 

@@ -62,7 +62,8 @@ class BackGestureContextualNudgeControllerTest : public NoSessionAshTestBase {
       delegate = std::make_unique<TestShellDelegate>();
       delegate->SetCanGoBack(false);
     }
-    NoSessionAshTestBase::SetUp(std::move(delegate));
+    set_shell_delegate(std::move(delegate));
+    NoSessionAshTestBase::SetUp();
 
     auto accountId1 = SimulateUserLogin({kUser1Email});
     user1_pref_service_ =

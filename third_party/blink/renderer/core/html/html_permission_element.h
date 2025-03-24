@@ -35,7 +35,6 @@ class V8PermissionState;
 
 class CORE_EXPORT HTMLPermissionElement final
     : public HTMLElement,
-      public mojom::blink::PermissionObserver,
       public mojom::blink::EmbeddedPermissionControlClient,
       public ScrollSnapshotClient,
       public LocalFrameView::LifecycleNotificationObserver,
@@ -70,6 +69,8 @@ class CORE_EXPORT HTMLPermissionElement final
   // CachedPermissionStatus::Client overrides.
   void OnPermissionStatusInitialized(
       PermissionStatusMap initilized_map) override;
+  void OnPermissionStatusChange(mojom::blink::PermissionName permission_name,
+                                mojom::blink::PermissionStatus status) override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
@@ -318,13 +319,6 @@ class CORE_EXPORT HTMLPermissionElement final
   // PermissionService's API.
   void RequestPageEmbededPermissions();
 
-  void RegisterPermissionObserver(
-      const mojom::blink::PermissionDescriptorPtr& descriptor,
-      mojom::blink::PermissionStatus current_status);
-
-  // mojom::blink::PermissionObserver override.
-  void OnPermissionStatusChange(mojom::blink::PermissionStatus status) override;
-
   // mojom::blink::EmbeddedPermissionControlClient override.
   void OnEmbeddedPermissionControlRegistered(
       bool allowed,
@@ -364,12 +358,9 @@ class CORE_EXPORT HTMLPermissionElement final
   // Return true if the state has been changed.
   bool NotifyClickingDisablePseudoStateChanged();
 
-  // Verify whether the element has been registered in browser process by
-  // checking `permission_status_map_`. This map is initially empty and is
-  // populated only *after* the permission element has been registered in
-  // browser process.
-  bool IsRegisteredInBrowserProcess() const {
-    return !permission_observer_receivers_.empty();
+  // Verify whether the element has been registered in browser process.
+  bool is_registered_in_browser_process() const {
+    return is_registered_in_browser_process_;
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
@@ -491,17 +482,6 @@ class CORE_EXPORT HTMLPermissionElement final
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
-  // Holds all `PermissionObserver` receivers connected with remotes in browser
-  // process. Each of them corresponds to a permission observer of one
-  // descriptor in `permission_descriptors_`.
-  // This set uses `PermissionName` as context type. Once a receiver call is
-  // triggered, we look into its name to determine which permission is changed.
-  HeapMojoReceiverSet<mojom::blink::PermissionObserver,
-                      HTMLPermissionElement,
-                      HeapMojoWrapperMode::kWithContextObserver,
-                      mojom::blink::PermissionName>
-      permission_observer_receivers_;
-
   // Holds a receiver connected with a remote `EmbeddedPermissionControlClient`
   // in browser process, allowing this element to receive PEPC events from
   // browser process.
@@ -522,6 +502,8 @@ class CORE_EXPORT HTMLPermissionElement final
   AtomicString type_;
 
   bool is_precise_location_ = false;
+
+  bool is_registered_in_browser_process_ = false;
 
   // Holds reasons for which clicking is currently disabled (if any). Each
   // entry will have an expiration time associated with it, which can be

@@ -110,6 +110,18 @@ void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
       mojom_geometry.is_fixed_or_sticky_position);
 }
 
+void ConvertSecurityOrigin(
+    const url::Origin& origin,
+    optimization_guide::proto::SecurityOrigin* proto_origin) {
+  proto_origin->set_opaque(origin.opaque());
+
+  if (origin.opaque()) {
+    // TODO(khushalsagar) Serialize opaque origins.
+  } else {
+    proto_origin->set_value(origin.Serialize());
+  }
+}
+
 void ConvertNodeInteractionInfo(
     const blink::mojom::AIPageContentNodeInteractionInfo&
         mojom_node_interaction_info,
@@ -215,8 +227,8 @@ void ConvertImageInfo(
     proto_image_info->set_image_caption(*mojom_image_info.image_caption);
   }
   if (mojom_image_info.source_origin) {
-    proto_image_info->set_source_url(
-        mojom_image_info.source_origin->GetURL().spec());
+    ConvertSecurityOrigin(*mojom_image_info.source_origin,
+                          proto_image_info->mutable_security_origin());
   }
 }
 
@@ -483,9 +495,17 @@ void ConvertFrameData(
     AIPageContentMetadata& metadata,
     FrameTokenSet& frame_token_set) {
   ConvertFrameMetadata(render_frame_info.url, mojom_frame_data, metadata);
+  ConvertSecurityOrigin(render_frame_info.source_origin,
+                        proto_frame_data->mutable_security_origin());
   ConvertFrameInteractionInfo(
       *mojom_frame_data.frame_interaction_info,
       proto_frame_data->mutable_frame_interaction_info());
+  if (render_frame_info.url.SchemeIsHTTPOrHTTPS()) {
+    proto_frame_data->set_url(render_frame_info.url.spec());
+  }
+  if (mojom_frame_data.title) {
+    proto_frame_data->set_title(mojom_frame_data.title.value());
+  }
   AddDocumentIdentifier(render_frame_info.global_frame_token, frame_token_set,
                         render_frame_info.serialized_server_token,
                         proto_frame_data);
@@ -505,9 +525,6 @@ void ConvertIframeData(
     AIPageContentMetadata& metadata,
     FrameTokenSet& frame_token_set,
     optimization_guide::proto::IframeData* proto_iframe_data) {
-  if (!render_frame_info.source_origin.opaque()) {
-    proto_iframe_data->set_url(render_frame_info.source_origin.Serialize());
-  }
   proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
 
   ConvertFrameData(render_frame_info, mojom_local_frame_data,

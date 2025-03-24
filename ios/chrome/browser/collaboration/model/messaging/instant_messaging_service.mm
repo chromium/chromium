@@ -12,7 +12,7 @@ InstantMessagingService::InstantMessagingService() {}
 InstantMessagingService::~InstantMessagingService() {}
 
 void InstantMessagingService::DisplayInstantaneousMessage(
-    const std::vector<InstantMessage>& messages,
+    collaboration::messaging::InstantMessage message,
     MessagingBackendService::InstantMessageDelegate::SuccessCallback
         success_callback) {
   // TODO(crbug.com/375595834): Send the message to the UI components.

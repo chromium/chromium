@@ -6990,10 +6990,10 @@ class BrowserAutofillManagerWithAiModelTest
         {});
 
     // Pref and identity state.
-    client().SetUpPrefsAndIdentityForAutofillAi();
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
         webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
+    client().SetUpPrefsAndIdentityForAutofillAi();
 
     ON_CALL(client(), GetAutofillAiModelCache).WillByDefault(Return(&cache_));
     ON_CALL(client(), GetAutofillAiModelExecutor)

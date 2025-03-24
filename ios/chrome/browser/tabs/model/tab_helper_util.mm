@@ -145,8 +145,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   const bool is_off_the_record = profile->IsOffTheRecord();
   const bool for_prerender =
       IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kPrerender);
-  const bool for_bottom_sheet =
-      IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kBottomSheet);
+  const bool for_lens_overlay =
+      IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kLensOverlay);
 
   // When adding a new tab helper, please consider whether it should be filtered
   // out when the web_state is presented in the following context:
@@ -176,13 +176,13 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     JavaScriptFindTabHelper::CreateForWebState(web_state);
   }
 
-  if (!for_bottom_sheet) {
+  if (!for_lens_overlay) {
     HistoryTabHelper::CreateForWebState(web_state);
   }
   LoadTimingTabHelper::CreateForWebState(web_state);
   OverscrollActionsTabHelper::CreateForWebState(web_state);
   IOSTaskTabHelper::CreateForWebState(web_state);
-  if (!for_bottom_sheet &&
+  if (!for_lens_overlay &&
       IsPriceAlertsEligible(web_state->GetBrowserState())) {
     ShoppingPersistedDataTabHelper::CreateForWebState(web_state);
   }
@@ -190,7 +190,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       web_state, is_off_the_record,
       commerce::ShoppingServiceFactory::GetForProfile(profile));
 
-  if (!for_bottom_sheet && !for_prerender) {
+  if (!for_lens_overlay && !for_prerender) {
     // Since LensTabHelper listens for a custom scheme, it needs to be
     // created before AppLauncherTabHelper, which will filter out
     // unhandled schemes.
@@ -209,7 +209,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   InvalidUrlTabHelper::CreateForWebState(web_state);
 
-  if (!for_bottom_sheet) {
+  if (!for_lens_overlay) {
     InfobarOverlayRequestInserter::CreateForWebState(
         web_state, &DefaultInfobarOverlayRequestFactory);
     InfobarOverlayTabHelper::CreateForWebState(web_state);
@@ -280,7 +280,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   // allows to inhibit the creation of some of them. Once PreloadController
   // has been refactored to only create the necessary tab helpers, this
   // condition can be removed.
-  if (!for_bottom_sheet && !for_prerender) {
+  if (!for_lens_overlay && !for_prerender) {
     SadTabTabHelper::CreateForWebState(
         web_state, SadTabTabHelper::kDefaultRepeatFailureInterval);
     SnapshotTabHelper::CreateForWebState(web_state);
@@ -297,7 +297,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     ]);
   }
 
-  if (!for_bottom_sheet) {
+  if (!for_lens_overlay) {
     InfobarBadgeTabHelper::GetOrCreateForWebState(web_state);
   }
 
@@ -331,18 +331,18 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     FollowTabHelper::CreateForWebState(web_state);
   }
 
-  if (!for_bottom_sheet && !is_off_the_record) {
+  if (!for_lens_overlay && !is_off_the_record) {
     PriceNotificationsTabHelper::CreateForWebState(web_state);
   }
 
-  if (!for_bottom_sheet && !is_off_the_record && IsContextualPanelEnabled()) {
+  if (!for_lens_overlay && !is_off_the_record && IsContextualPanelEnabled()) {
     ContextualPanelModelService* model_service =
         ContextualPanelModelServiceFactory::GetForProfile(profile);
     ContextualPanelTabHelper::CreateForWebState(web_state,
                                                 model_service->models());
   }
 
-  if (!for_bottom_sheet && !is_off_the_record &&
+  if (!for_lens_overlay && !is_off_the_record &&
       IsAboutThisSiteFeatureEnabled()) {
     if (auto* optimization_guide_decider =
             OptimizationGuideServiceFactory::GetForProfile(profile)) {

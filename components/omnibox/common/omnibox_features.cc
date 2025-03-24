@@ -138,7 +138,7 @@ BASE_FEATURE(kZeroSuggestPrefetchingOnWeb,
 // Enables fullfillment of contextual zero-prefix suggestions by delegating the
 // logic to Lens.
 BASE_FEATURE(kContextualZeroSuggestLensFulfillment,
-             "kContextualZeroSuggestLensFullfilment",
+             "ContextualZeroSuggestLensFulfillment",
              DISABLED);
 
 // Features to provide head and tail non personalized search suggestion from

@@ -1,0 +1,5 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView interesting name='None selected listbox'
+++android.widget.ListView role_description='list box' clickable collection focusable multiselectable interesting name='None selected listbox' state_description='multiselectable, none selected.' item_count=4 row_count=4 column_count=1
+++android.widget.TextView interesting name='Some selected listbox'
+++android.widget.ListView role_description='list box' clickable collection focusable multiselectable interesting name='Some selected listbox' state_description='multiselectable, none selected.' item_count=4 row_count=4 column_count=1

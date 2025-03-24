@@ -694,6 +694,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4270730597186910506">Theo dõi hoặc bỏ theo dõi một sản phẩm.</translation>
 <translation id="4277529130885813215">Sử dụng thiết bị khác</translation>
 <translation id="4282440837784183472">Tổ chức <ph name="MANAGED_DOMAIN" /> của bạn quản lý tài khoản mà bạn hiện đang đăng nhập và cách bạn sử dụng Chrome. Quản trị viên có thể thiết lập hoặc hạn chế một số tính năng.</translation>
+<translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="4285846616383034558">Cookie, bộ nhớ đệm và dữ liệu trang web khác</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Bật phương thức khóa màn hình trong phần cài đặt Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Thẻ ẩn danh mới</translation>
@@ -923,6 +924,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5319359161174645648">Google đề xuất Chrome</translation>
 <translation id="5326246328175179736">Bạn không thể đăng nhập bằng tài khoản này</translation>
+<translation id="5327248766486351172">Tên</translation>
 <translation id="5328542107300944283">Sử dụng bằng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Yêu cầu cấp quyền</translation>
 <translation id="534580735623577507">Không có trang web nào trong <ph name="TIME_PERIOD" /></translation>
@@ -1078,6 +1080,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Kiểm soát tin bài và hoạt động của bạn tại đây</translation>
 <translation id="6071995715087444295">Để kiểm tra xem có mật khẩu nào bị lộ không, hãy đăng nhập vào Tài khoản Google của bạn</translation>
+<translation id="6078323886959318429">Thêm lối tắt</translation>
 <translation id="6085886413119427067">Xác định cách kết nối với các trang web qua đường kết nối an toàn</translation>
 <translation id="6087286598828478206">Chặn và rời khỏi nhóm?</translation>
 <translation id="60923314841986378">Còn <ph name="HOURS" /> giờ</translation>

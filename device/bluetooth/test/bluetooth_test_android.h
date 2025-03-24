@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 
 namespace device {
@@ -135,6 +136,24 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   // Instruct the fake LE scanner to invoke the failure callback with
   // |error_code|.
   void FailCurrentLeScan(int error_code);
+
+  // Instructs the fake device to throw an IOException with |error_message| next
+  // time |connectToService| or |connectToServiceInsecurely| is called with it.
+  void FailNextServiceConnection(BluetoothDevice* device,
+                                 const std::string& error_message);
+
+  // Gets all bytes the fake socket was requested to send since it was created.
+  std::vector<uint8_t> GetSentBytes(BluetoothSocket* socket);
+
+  // Feeds the fake socket |bytes| and serve them when it is requested to read.
+  // Can't be longer than 8KB.
+  void SetReceivedBytes(BluetoothSocket* socket,
+                        const std::vector<uint8_t>& bytes);
+
+  // Fails the next operation on the fake socket by throwing an IOException with
+  // |error_message|.
+  void FailNextOperation(BluetoothSocket* socket,
+                         const std::string& error_message);
 
   // Records that Java FakeBluetoothDevice connectGatt was called.
   void OnFakeBluetoothDeviceConnectGattCalled(JNIEnv* env);

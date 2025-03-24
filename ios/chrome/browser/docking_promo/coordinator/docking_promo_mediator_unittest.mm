@@ -31,8 +31,6 @@
 namespace {
 
 NSString* kFirstRunRecencyKey = @"FirstRunRecency";
-NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
-    @"StartSurfaceSceneEnterIntoBackgroundTime";
 
 }  // namespace
 

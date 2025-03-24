@@ -19,6 +19,7 @@
 
 namespace ash {
 
+using kiosk::test::LaunchAppManually;
 using kiosk::test::TheKioskApp;
 
 // Verifies Kiosk does not launch with `PERMANENTLY_UNTRUSTED` cros settings.
@@ -42,7 +43,7 @@ IN_PROC_BROWSER_TEST_P(KioskUntrustedCrosSettingsTest, DoesNotLaunch) {
   ScopedCrosSettingsTestHelper settings{/*create_settings_service=*/false};
   settings.ReplaceDeviceSettingsProviderWithStub();
   settings.SetTrustedStatus(CrosSettingsProvider::PERMANENTLY_UNTRUSTED);
-  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   // Kiosk does not launch when settings are `PERMANENTLY_UNTRUSTED`.
   EXPECT_FALSE(KioskController::Get().IsSessionStarting());

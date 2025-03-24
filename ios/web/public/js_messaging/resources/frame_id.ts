@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * Returns the frameId associated with this frame. A new value will be created
@@ -16,25 +16,6 @@ export function getFrameId(): string {
     gCrWeb.frameId = generateRandomId();
   }
   return gCrWeb.frameId;
-}
-
-/**
- * Generates a 128-bit cryptographically-strong random number. The properties
- * must match base::UnguessableToken, as these values may be deserialized into
- * that class on the C++ side.
- * @return the generated number as a hex string.
- */
-export function generateRandomId(): string {
-  // Generate 128 bit unique identifier.
-  const components = new Uint32Array(4);
-  window.crypto.getRandomValues(components);
-  let id = '';
-  for (const component of components) {
-    // Convert value to base16 string, add leading zeroes if needed (32 bits
-    // is 8 hex digits), and append to the ID.
-    id += component.toString(16).padStart(8, '0');
-  }
-  return id;
 }
 
 /**

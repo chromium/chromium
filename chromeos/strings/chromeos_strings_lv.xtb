@@ -232,6 +232,7 @@
 <translation id="1905710495812624430">Ir pārsniegts maksimālais atļautais mēģinājumu skaits.</translation>
 <translation id="1908234395526491708">UDP pieprasījumu kļūmes</translation>
 <translation id="1908394185991500139">kreisā bultiņa</translation>
+<translation id="1911678930322867245">Pārvietot uz augšējo labo stūri</translation>
 <translation id="1914144885717544695">piektdien</translation>
 <translation id="1915960750806557358">Sniedziet atsauksmes vai aprakstiet problēmu. Neiekļaujiet nekādu personas, sensitīvu vai konfidenciālu informāciju.</translation>
 <translation id="1923388006036088459">Izcēluma krāsas</translation>
@@ -1537,10 +1538,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8179976553408161302">Ievadīt</translation>
 <translation id="8183975772394450380">pludmale</translation>
 <translation id="819278132617411009">Izmantojiet Google MI, lai strādātu produktīvāk</translation>
-<translation id="82003371436638355">Atlasot opciju “Izveidot savu”, varat rakstīt pielāgotu uzvedni. Varat arī atlasīt opciju “Izvēlēties motīvu” un pēc tam atlasīt pasvītrotos vārdus, lai personalizētu MI tapeti.
-          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Atlasiet opciju “Iedvesmot mani”, lai iegūtu unikālākas un daudzveidīgākas MI attēlu iespējas.
-          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Kad izveidojat savu fona tapeti, uzvedne tiek nosūtīta Google serveriem, lai ģenerētu attēlus un uzlabotu produktu, ievērojot <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google pakalpojumu sniegšanas noteikumus un konfidencialitātes politiku<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neiekļaujiet nekādu personas, sensitīvu vai konfidenciālu informāciju.
-          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Ģeneratīvais MI var pieļaut kļūdas, tostarp par personām, tāpēc pārbaudiet tā atbildes. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Uzziniet vairāk<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.</translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
@@ -1667,6 +1664,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8820817407110198400">Grāmatzīmes</translation>
 <translation id="8833620912470026819">kaktusu mežs</translation>
 <translation id="8834539327799336565">Ierīces, ar kurām pašlaik izveidots savienojums</translation>
+<translation id="8842526499753992487">Pārvietot uz augšējo kreiso stūri</translation>
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8849799913685544685">bāka</translation>
 <translation id="8851859208664803097">Apturēts — printeris nav sasniedzams</translation>

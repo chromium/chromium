@@ -217,7 +217,7 @@ import java.util.Optional;
     }
 
     @CalledByNative
-    private void displayInstantaneousMessage(List<InstantMessage> messages, long nativeCallback) {
+    private void displayInstantaneousMessage(InstantMessage message, long nativeCallback) {
         if (mInstantMessageDelegate == null) {
             MessagingBackendServiceBridgeJni.get()
                     .runInstantaneousMessageSuccessCallback(
@@ -226,7 +226,7 @@ import java.util.Optional;
         }
 
         mInstantMessageDelegate.displayInstantaneousMessage(
-                messages,
+                message,
                 (Boolean success) -> {
                     assert success != null;
                     MessagingBackendServiceBridgeJni.get()

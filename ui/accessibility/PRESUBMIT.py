@@ -287,7 +287,9 @@ def CheckModesMatch(input_api, output_api):
     'kAXModeFormControls',
     'kFilterFirstFlag',
     'kFormsAndLabelsOnly',
+    'kOnScreenOnly',
     'kFilterLastFlag',
+    'kAXModeOnScreen',
   ]
 
   for value in ax_modes_in_header:

@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -79,8 +80,8 @@ class SystemFonts {
       new_height = logfont->lfHeight > 0 ? 1 : -1;
     logfont->lfHeight = new_height;
     if (!font_adjustment.font_family_override.empty()) {
-      auto result = wcscpy_s(logfont->lfFaceName,
-                             font_adjustment.font_family_override.c_str());
+      auto result = UNSAFE_TODO(wcscpy_s(
+          logfont->lfFaceName, font_adjustment.font_family_override.c_str()));
       DCHECK_EQ(0, result) << "Font name "
                            << font_adjustment.font_family_override
                            << " cannot be copied into LOGFONT structure.";

@@ -42,10 +42,6 @@
 - (void)touchesEndedWithEvent:(NSEvent*)event {
 }
 
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed {
-}
-
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed {
 }

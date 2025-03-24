@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
@@ -27,7 +25,6 @@ public class LongSummaryTextMessagePreference extends TextMessagePreference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         TextView summaryView = (TextView) holder.findViewById(android.R.id.summary);
-        assumeNonNull(summaryView);
         summaryView.setMaxLines(100);
     }
 }

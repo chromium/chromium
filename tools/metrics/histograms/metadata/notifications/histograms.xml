@@ -128,6 +128,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Android.ImageMemorySizeInKB" units="KB"
+    expires_after="2025-09-21">
+  <owner>peilinwang@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Record the memory size in KB of notification images. Recorded whenever we
+    try to display a notification with an image on Android with API level
+    greater than or equal to 19.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Android.IntentProcessedInParallel"
     units="intents" expires_after="2025-04-13">
   <owner>peter@chromium.org</owner>

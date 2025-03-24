@@ -23,7 +23,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -89,7 +88,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     private final AccountManagerFacade mAccountManagerFacade;
     private final IdentityManager mIdentityManager;
     private final IdentityMutator mIdentityMutator;
-    private final SyncService mSyncService;
     private final ObserverList<SignInStateObserver> mSignInStateObservers = new ObserverList<>();
     private final List<Runnable> mCallbacksWaitingForPendingOperation = new ArrayList<>();
 
@@ -118,6 +116,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      *
      * @param nativeSigninManagerAndroid A pointer to native's SigninManagerAndroid.
      */
+    // TODO(crbug.com/350461111): Remove syncService from parameter list.
     @CalledByNative
     @VisibleForTesting
     static SigninManager create(
@@ -132,11 +131,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         assert identityMutator != null;
         final SigninManagerImpl signinManager =
                 new SigninManagerImpl(
-                        nativeSigninManagerAndroid,
-                        profile,
-                        identityManager,
-                        identityMutator,
-                        syncService);
+                        nativeSigninManagerAndroid, profile, identityManager, identityMutator);
 
         identityManager.addObserver(signinManager);
         AccountInfoServiceProvider.init(identityManager);
@@ -148,14 +143,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             long nativeSigninManagerAndroid,
             Profile profile,
             IdentityManager identityManager,
-            IdentityMutator identityMutator,
-            SyncService syncService) {
+            IdentityMutator identityMutator) {
         ThreadUtils.assertOnUiThread();
         mNativeSigninManagerAndroid = nativeSigninManagerAndroid;
         mProfile = profile;
         mIdentityManager = identityManager;
         mIdentityMutator = identityMutator;
-        mSyncService = syncService;
 
         mSigninAllowedPref =
                 SigninManagerImplJni.get().isSigninAllowed(mNativeSigninManagerAndroid);
@@ -334,12 +327,16 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     @Override
-    public void signinAndEnableSync(
-            CoreAccountInfo coreAccountInfo,
-            @SigninAccessPoint int accessPoint,
-            @Nullable SignInCallback callback) {
-        signinInternal(
-                SignInState.createForSigninAndEnableSync(accessPoint, coreAccountInfo, callback));
+    public void turnOnSyncForTesting(
+            CoreAccountInfo coreAccountInfo, @SigninAccessPoint int accessPoint) {
+        assert mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).equals(coreAccountInfo)
+                : "Must be signed-in to turn on sync ";
+        @PrimaryAccountError
+        int primaryAccountError =
+                mIdentityMutator.setPrimaryAccount(
+                        coreAccountInfo.getId(), ConsentLevel.SYNC, accessPoint, () -> {});
+        assert primaryAccountError == PrimaryAccountError.NO_ERROR
+                : "Encountered error: " + primaryAccountError;
     }
 
     private void signinInternal(SignInState signInState) {
@@ -403,10 +400,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         assert !mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)
                 : "The user should not be already signed in";
 
-        @ConsentLevel
-        int consentLevel =
-                mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.SIGNIN;
-
         // Retain the sign-in callback since pref commit callback will be called after sign-in is
         // considered completed and sign-in state is reset.
         final SignInCallback signInCallback = mSignInState.mCallback;
@@ -414,7 +407,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         int primaryAccountError =
                 mIdentityMutator.setPrimaryAccount(
                         mSignInState.mCoreAccountInfo.getId(),
-                        consentLevel,
+                        ConsentLevel.SIGNIN,
                         mSignInState.getAccessPoint(),
                         () -> {
                             Log.d(TAG, "Sign-in native prefs written.");
@@ -434,16 +427,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
         // Should be called after setting the primary account.
         maybeUpdateLegacyPrimaryAccountEmail();
-
-        if (mSignInState.shouldTurnSyncOn()) {
-            mSyncService.setSyncRequested();
-
-            RecordUserAction.record("Signin_Signin_Succeed");
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Signin.SigninCompletedAccessPoint",
-                    mSignInState.getAccessPoint(),
-                    SigninAccessPoint.MAX_VALUE );
-        }
 
         if (mSignInState.mCallback != null) {
             mSignInState.mCallback.onSignInComplete();
@@ -820,12 +803,11 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     /**
-     * Contains all the state needed for signin. This forces signin flow state to be
-     * cleared atomically, and all final fields to be set upon initialization.
+     * Contains all the state needed for signin. This forces signin flow state to be cleared
+     * atomically, and all final fields to be set upon initialization.
      */
     private static class SignInState {
         private final @SigninAccessPoint Integer mAccessPoint;
-        private final boolean mShouldTurnSyncOn;
         private final CoreAccountInfo mCoreAccountInfo;
         final SignInCallback mCallback;
 
@@ -840,48 +822,24 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 @SigninAccessPoint int accessPoint,
                 CoreAccountInfo coreAccountInfo,
                 @Nullable SignInCallback callback) {
-            return new SignInState(accessPoint, coreAccountInfo, callback, false);
-        }
-
-        /**
-         * State for the sync consent flow.
-         *
-         * @param accessPoint {@link SigninAccessPoint} that has initiated the sign-in.
-         * @param coreAccountInfo The {@link CoreAccountInfo} to sign in with.
-         * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
-         */
-        static SignInState createForSigninAndEnableSync(
-                @SigninAccessPoint int accessPoint,
-                CoreAccountInfo coreAccountInfo,
-                @Nullable SignInCallback callback) {
-            return new SignInState(accessPoint, coreAccountInfo, callback, true);
+            return new SignInState(accessPoint, coreAccountInfo, callback);
         }
 
         private SignInState(
                 @SigninAccessPoint Integer accessPoint,
                 CoreAccountInfo coreAccountInfo,
-                @Nullable SignInCallback callback,
-                boolean shouldTurnSyncOn) {
+                @Nullable SignInCallback callback) {
             assert coreAccountInfo != null : "CoreAccountInfo must be set and valid to progress.";
             mAccessPoint = accessPoint;
             mCoreAccountInfo = coreAccountInfo;
             mCallback = callback;
-            mShouldTurnSyncOn = shouldTurnSyncOn;
         }
 
-        /**
-         * Getter for the access point that initiated sync consent flow. Shouldn't be called if
-         * {@link #shouldTurnSyncOn()} is false.
-         */
+        /** Getter for the access point that initiated sign-in flow. */
         @SigninAccessPoint
         int getAccessPoint() {
             assert mAccessPoint != null : "Not going to enable sync - no access point!";
             return mAccessPoint;
-        }
-
-        /** Whether this sign-in flow should also turn on sync. */
-        boolean shouldTurnSyncOn() {
-            return mShouldTurnSyncOn;
         }
     }
 

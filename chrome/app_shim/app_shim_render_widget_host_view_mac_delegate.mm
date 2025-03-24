@@ -70,11 +70,6 @@
   [_historySwiper touchesEndedWithEvent:event];
 }
 
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed {
-  [_historySwiper rendererHandledWheelEvent:event consumed:consumed];
-}
-
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed {
   [_historySwiper rendererHandledGestureScrollEvent:event consumed:consumed];

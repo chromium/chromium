@@ -9,13 +9,15 @@ import './ink_size_selector.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
-import type {Color} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
 
+import {InkAnnotationBrushMixin} from './ink_annotation_brush_mixin.js';
 import {getCss} from './viewer_side_panel.css.js';
 import {getHtml} from './viewer_side_panel.html.js';
 
-export class ViewerSidePanelElement extends CrLitElement {
+const ViewerSidePanelElementBase = InkAnnotationBrushMixin(CrLitElement);
+
+export class ViewerSidePanelElement extends ViewerSidePanelElementBase {
   static get is() {
     return 'viewer-side-panel';
   }
@@ -27,18 +29,6 @@ export class ViewerSidePanelElement extends CrLitElement {
   override render() {
     return getHtml.bind(this)();
   }
-
-  static override get properties() {
-    return {
-      currentColor: {type: Object},
-      currentSize: {type: Number},
-      currentType: {type: String},
-    };
-  }
-
-  currentColor?: Color;
-  currentSize: number = 0;
-  currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
   constructor() {
     super();

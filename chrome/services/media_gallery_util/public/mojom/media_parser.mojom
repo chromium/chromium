@@ -18,7 +18,7 @@ union VideoFrameData {
   media.mojom.VideoFrame? decoded_frame;
 };
 
-[EnableIf=is_android]
+[EnableIf=is_android_and_media_use_ffmpeg]
 struct ExtractVideoFrameResult {
   VideoFrameData frame_data;
   media.mojom.VideoDecoderConfig config;
@@ -41,7 +41,7 @@ interface MediaParser {
   // result on failure; on success, the result will contain:
   // - the decoded frame if the decoding can be done in the utility process or
   // - an encoded frame if decoding needs to happen in another process
-  [EnableIf=is_android]
+  [EnableIf=is_android_and_media_use_ffmpeg]
   ExtractVideoFrame(string mime_type,
                     uint32 total_size,
                     pending_remote<MediaDataSource> media_data_source)

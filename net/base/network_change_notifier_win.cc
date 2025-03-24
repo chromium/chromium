@@ -10,6 +10,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -45,7 +46,7 @@ NetworkChangeNotifierWin::NetworkChangeNotifierWin()
                               CONNECTION_NONE),
       sequence_runner_for_registration_(
           base::SequencedTaskRunner::GetCurrentDefault()) {
-  memset(&addr_overlapped_, 0, sizeof addr_overlapped_);
+  UNSAFE_TODO(memset(&addr_overlapped_, 0, sizeof addr_overlapped_));
   addr_overlapped_.hEvent = WSACreateEvent();
 
   cost_change_notifier_ = NetworkCostChangeNotifierWin::CreateInstance(

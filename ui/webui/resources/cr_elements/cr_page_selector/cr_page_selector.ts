@@ -49,7 +49,7 @@ export class CrPageSelectorElement extends CrPageSelectorElementBase {
     return getHtml.bind(this)();
   }
 
-  hasNestedSlots: boolean = false;
+  accessor hasNestedSlots: boolean = false;
 
   constructor() {
     super();

@@ -2425,6 +2425,14 @@ const CSSValue* ColumnFill::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.GetColumnFill());
 }
 
+const CSSValue* ColumnWrap::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.ColumnWrap());
+}
+
 const CSSValue* ColumnGap::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -2612,7 +2620,7 @@ const CSSValue* ColumnWidth::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeColumnWidth(stream, context);
+  return css_parsing_utils::ConsumeColumnLength(stream, context);
 }
 
 const CSSValue* ColumnWidth::CSSValueFromComputedStyleInternal(
@@ -2624,6 +2632,24 @@ const CSSValue* ColumnWidth::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
   return ZoomAdjustedPixelValue(style.ColumnWidth(), style);
+}
+
+const CSSValue* ColumnHeight::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeColumnLength(stream, context);
+}
+
+const CSSValue* ColumnHeight::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  if (style.HasAutoColumnHeight()) {
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+  return ZoomAdjustedPixelValue(style.ColumnHeight(), style);
 }
 
 // none | strict | content | [ size || layout || style || paint ]
@@ -3281,9 +3307,10 @@ const CSSValue* Cursor::ParseSingleValue(CSSParserTokenStream& stream,
     double num;
     gfx::Point hot_spot(-1, -1);
     bool hot_spot_specified = false;
-    if (css_parsing_utils::ConsumeNumberRaw(stream, context, num)) {
+    if (css_parsing_utils::ConsumeNumberRaw_DO_NOT_USE(stream, context, num)) {
       hot_spot.set_x(ClampTo<int>(num));
-      if (!css_parsing_utils::ConsumeNumberRaw(stream, context, num)) {
+      if (!css_parsing_utils::ConsumeNumberRaw_DO_NOT_USE(stream, context,
+                                                          num)) {
         return nullptr;
       }
       hot_spot.set_y(ClampTo<int>(num));
@@ -4496,7 +4523,8 @@ cssvalue::CSSFontVariationValue* ConsumeFontVariationTag(
   }
 
   double tag_value = 0;
-  if (!css_parsing_utils::ConsumeNumberRaw(stream, context, tag_value)) {
+  if (!css_parsing_utils::ConsumeNumberRaw_DO_NOT_USE(stream, context,
+                                                      tag_value)) {
     return nullptr;
   }
   return MakeGarbageCollected<cssvalue::CSSFontVariationValue>(
@@ -7785,7 +7813,8 @@ const CSSValue* Perspective::ParseSingleValue(
   bool use_legacy_parsing = localContext.UseAliasParsing();
   if (!parsed_value && use_legacy_parsing) {
     double perspective;
-    if (!css_parsing_utils::ConsumeNumberRaw(stream, context, perspective) ||
+    if (!css_parsing_utils::ConsumeNumberRaw_DO_NOT_USE(stream, context,
+                                                        perspective) ||
         perspective < 0.0) {
       return nullptr;
     }

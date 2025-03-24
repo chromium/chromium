@@ -78,7 +78,9 @@ ChromeEnterpriseRealTimeUrlLookupService::
         enterprise_connectors::ConnectorsService* connectors_service,
         ReferrerChainProvider* referrer_chain_provider,
         PrefService* pref_service,
-        signin::IdentityManager* identity_manager)
+        signin::IdentityManager* identity_manager,
+        bool is_off_the_record,
+        bool is_guest_session)
     : RealTimeUrlLookupServiceBase(
           url_loader_factory,
           cache_manager,
@@ -90,7 +92,9 @@ ChromeEnterpriseRealTimeUrlLookupService::
       connectors_service_(connectors_service),
       token_fetcher_(std::move(token_fetcher)),
       pref_service_(pref_service),
-      identity_manager_(identity_manager) {}
+      identity_manager_(identity_manager),
+      is_off_the_record_(is_off_the_record),
+      is_guest_session_(is_guest_session) {}
 
 ChromeEnterpriseRealTimeUrlLookupService::
     ~ChromeEnterpriseRealTimeUrlLookupService() = default;
@@ -99,7 +103,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanPerformFullURLLookup() const {
   return RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
       pref_service_,
       connectors_service_->GetDMTokenForRealTimeUrlCheck().has_value(),
-      profile_->IsOffTheRecord(), profile_->IsGuestSession());
+      is_off_the_record_, is_guest_session_);
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::

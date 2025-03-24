@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -37,6 +38,7 @@
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -366,6 +368,7 @@ PrefetchContainer::PrefetchContainer(
     const GURL& url,
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer,
+    std::optional<SpeculationRulesTags> speculation_rules_tags,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
@@ -378,6 +381,7 @@ PrefetchContainer::PrefetchContainer(
           PrefetchContainer::Key(referring_document_token, url),
           prefetch_type,
           referrer,
+          std::move(speculation_rules_tags),
           std::move(no_vary_search_hint),
           prefetch_document_manager,
           referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
@@ -414,6 +418,7 @@ PrefetchContainer::PrefetchContainer(
               url),
           prefetch_type,
           referrer,
+          /*speculation_rules_tags=*/std::nullopt,
           std::move(no_vary_search_hint),
           /*prefetch_document_manager=*/nullptr,
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
@@ -451,6 +456,7 @@ PrefetchContainer::PrefetchContainer(
               url),
           prefetch_type,
           referrer,
+          /*speculation_rules_tags=*/std::nullopt,
           std::move(no_vary_search_hint),
           /*prefetch_document_manager=*/nullptr,
           browser_context->GetWeakPtr(),
@@ -475,6 +481,7 @@ PrefetchContainer::PrefetchContainer(
     const PrefetchContainer::Key& key,
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer,
+    std::optional<SpeculationRulesTags> speculation_rules_tags,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     base::WeakPtr<BrowserContext> browser_context,
@@ -494,6 +501,7 @@ PrefetchContainer::PrefetchContainer(
       prefetch_type_(prefetch_type),
       referrer_(referrer),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
+      speculation_rules_tags_(std::move(speculation_rules_tags)),
       prefetch_document_manager_(std::move(prefetch_document_manager)),
       browser_context_(std::move(browser_context)),
       ukm_source_id_(ukm_source_id),
@@ -1761,6 +1769,17 @@ void PrefetchContainer::MakeResourceRequest(
   request->headers.SetHeader(blink::kSecPurposeHeaderName,
                              GetSecPurposeHeaderValue(url));
   request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
+
+  // Sec-Speculation-Tags is set only when the prefetch is triggered
+  // by speculation rules.
+  if (speculation_rules_tags_.has_value()) {
+    CHECK(IsSpeculationRuleType(prefetch_type_.trigger_type()));
+    std::optional<std::string> serialized_list =
+        speculation_rules_tags_->ConvertStringToHeaderString();
+    CHECK(serialized_list.has_value());
+    request->headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
+                               serialized_list.value());
+  }
 
   // There are sometimes other headers that are set during navigation.  These
   // aren't yet supported for prefetch, including browsing topics.

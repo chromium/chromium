@@ -215,6 +215,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1679841710523778799">Helderheid verhogen</translation>
 <translation id="1680659827022803830">Instellingen voor videogesprekken</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Je kunt deze functie op elk moment uitzetten in Instellingen. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Timer van <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-adres: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Actief venster links vastgezet.</translation>
@@ -967,6 +968,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, geïnstalleerde app, onderbroken</translation>
 <translation id="4228078597006700451">Bedieningselementen niet ingesteld</translation>
 <translation id="4230560241506423345">Nieuw</translation>
+<translation id="4236726631849783264">Een herinnering over aanbevolen acties</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overzichtsmodus</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
@@ -983,7 +985,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Beveiligingsupdates gestopt. Upgrade je apparaat.</translation>
-<translation id="4281739221820540368">Google-documenten maken</translation>
 <translation id="4283888303416325161">Geef het wachtwoord op voor extra beveiliging</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="428715201724021596">Verbinding maken met profiel. Dit kan een paar minuten duren.</translation>
@@ -1044,6 +1045,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4471354919263203780">Bestanden voor spraakherkenning downloaden... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Apparaat nu updaten}=1{Apparaat binnen 1 seconde updaten}other{Apparaat binnen # seconden updaten}}</translation>
 <translation id="4472575034687746823">Aan de slag</translation>
+<translation id="4473489370276014885">Google Contacten</translation>
 <translation id="4477350412780666475">Volgend nummer</translation>
 <translation id="4477751544736611934">Dit kan leiden tot datakosten.
 1 apparaat verbonden.</translation>
@@ -1070,6 +1072,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4545950850562423083">Huidige pagina opslaan als bookmark</translation>
 <translation id="4548482551627849548">Actief venster verplaatsen naar bureau aan de linkerkant</translation>
 <translation id="4552748006424994716">Je kunt met alleen een bedrade koptelefoon naar je microfoon luisteren om echo te voorkomen.</translation>
+<translation id="4556953949326137018">Als je aanbevolen acties gebruikt, zoals Toevoegen aan Agenda of Google-documenten maken, wordt de content van het geselecteerde gebied naar Google-servers gestuurd om acties aan te bevelen, onder de <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="4560576029703263363">Aan</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Wachtwoord verbergen</translation>
@@ -1153,6 +1156,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="481455355267255546">Volgende</translation>
 <translation id="481749895090480684">Takenlijst: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">camera en microfoon</translation>
+<translation id="4828935196674083554">Toevoegen...</translation>
 <translation id="482908187605862807">Beschikbare apps in de Play Store</translation>
 <translation id="4831034276697007977">Weet je zeker dat je automatische klikken wilt uitzetten?</translation>
 <translation id="4835677468087803981">Pincode verbergen</translation>
@@ -1650,6 +1654,7 @@ Geen apparaten verbonden.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Alle meldingen verwijderen</translation>
+<translation id="6426905245930183644">Maken…</translation>
 <translation id="6430225033895752525">Focusinstellingen tonen</translation>
 <translation id="643147933154517414">Klaar</translation>
 <translation id="6431865393913628856">Schermopname</translation>
@@ -1716,7 +1721,6 @@ Nieuwe installatie</translation>
 <translation id="6612889377159412215">subtaak</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> opslag in gebruik | totaal <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Privacyscherm staat aan</translation>
-<translation id="6618277154885124991">Google-spreadsheets maken</translation>
 <translation id="6622679827379792051">De weergave van apps van je telefoon instellen</translation>
 <translation id="662279009180869175">Gebruik de pijl-links en pijl-rechts om het formaat van het gesplitste scherm aan te passen</translation>
 <translation id="6624493541160101248">Huidig bureau: <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
@@ -2400,6 +2404,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8921624153894383499">De Google Assistent spreekt deze taal niet.</translation>
 <translation id="8926951137623668982">Plank altijd verborgen</translation>
 <translation id="8929566928381252430">Probeer je Caps Lock te gebruiken? Gebruik</translation>
+<translation id="8934418770423095813">Google-document maken</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 bestand}other{# bestanden}}</translation>
 <translation id="8936501819958976551">gedeactiveerd</translation>
 <translation id="8938800817013097409">USB-C-apparaat (poort rechts aan de achterkant)</translation>

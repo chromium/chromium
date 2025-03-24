@@ -55,6 +55,13 @@ struct PLATFORM_EXPORT Referrer {
   network::mojom::ReferrerPolicy referrer_policy;
 };
 
+inline bool operator==(const Referrer& a, const Referrer& b) {
+  return a.referrer == b.referrer && a.referrer_policy == b.referrer_policy;
+}
+inline bool operator!=(const Referrer& a, const Referrer& b) {
+  return !(a == b);
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBORIGIN_REFERRER_H_

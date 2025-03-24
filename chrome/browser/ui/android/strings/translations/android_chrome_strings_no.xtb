@@ -584,6 +584,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3721119614952978349">Deg og Google</translation>
 <translation id="3737319253362202215">Innstillinger for oversettelse</translation>
 <translation id="3738139272394829648">Trykk for å søke</translation>
+<translation id="3739455665973395693">Ingen kompromitterte passord i Google-kontoen din</translation>
 <translation id="3739899004075612870">Satt som bokmerke i <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Talesøk er ikke tilgjengelig på denne enheten</translation>
 <translation id="376561056759077985">Noen av dataene er ikke lagret ennå</translation>
@@ -637,6 +638,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3985215325736559418">Vil du laste ned <ph name="FILE_NAME" /> igjen?</translation>
 <translation id="3987993985790029246">Kopiér link</translation>
 <translation id="4000212216660919741">Hjem uten nett</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kompromittert passord i Google-kontoen din}other{# kompromitterte passord i Google-kontoen din}}</translation>
 <translation id="4016425174436051808">Kan ikke følge. Noe gikk galt.</translation>
 <translation id="4024768890073681126">Nettleseren administreres av forelderen din</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t}other{# t}}</translation>
@@ -692,6 +694,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4270730597186910506">Spor eller slutt å spore et produkt.</translation>
 <translation id="4277529130885813215">Bruk en annen enhet</translation>
 <translation id="4282440837784183472">Organisasjonen din, <ph name="MANAGED_DOMAIN" />, administrerer kontoen du logger på, og hvordan Chrome kan brukes. Administratoren kan konfigurere eller begrense visse funksjoner.</translation>
+<translation id="4285498937028063278">Løsne</translation>
 <translation id="4285846616383034558">Informasjonskapsler, buffer og andre nettstedsdata</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Slå på skjermlås i Android-innstillingene<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Ny inkognitofane</translation>
@@ -831,6 +834,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="488187801263602086">Endre navnet på filen</translation>
 <translation id="4885273946141277891">For mange Chrome-forekomster.</translation>
+<translation id="4890973535105146893">Ingen lagrede passord i Google-kontoen din</translation>
 <translation id="4905823827770127520">Inkluder en link til siden</translation>
 <translation id="4908869848243824489">Discover fra Google</translation>
 <translation id="4910889077668685004">Betalingsapper</translation>
@@ -920,6 +924,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
 <translation id="5326246328175179736">Du kan ikke logge på med denne kontoen</translation>
+<translation id="5327248766486351172">Navn</translation>
 <translation id="5328542107300944283">Bruk med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Tillatelsesforespørsler</translation>
 <translation id="534580735623577507">Ingen nettsteder fra <ph name="TIME_PERIOD" /></translation>
@@ -1075,6 +1080,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr nyhetssakene dine og aktiviteten din her</translation>
 <translation id="6071995715087444295">For å sjekke om du har passord som er utsatt for sikkerhetsbrudd, logg på Google-kontoen din</translation>
+<translation id="6078323886959318429">Legg til snarvei</translation>
 <translation id="6085886413119427067">Avgjør hvordan en sikker forbindelse brukes til å koble til nettsteder</translation>
 <translation id="6087286598828478206">Vil du blokkere og forlate gruppen?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timer igjen</translation>
@@ -1703,6 +1709,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
 <translation id="8712637175834984815">Skjønner</translation>
+<translation id="8715286883001906001">Gjør passordene i Google-kontoen din sikrere</translation>
 <translation id="8723453889042591629">Oversett denne siden raskt. Trykk og hold for å redigere denne snarveien.</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8731268612289859741">Sikkerhetskode</translation>
@@ -1830,6 +1837,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="970715775301869095"><ph name="MINUTES" /> minutter igjen</translation>
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="983192555821071799">Lukk alle faner</translation>
+<translation id="984756705737569814">Kan ikke sjekke passordene i Google-kontoen din</translation>
 <translation id="987264212798334818">Generelt</translation>
 <translation id="988091779042748639">For å slette Inkognito-nettleserloggen fra enheten, lukk alle inkognitofaner.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> faner</translation>

@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 
@@ -50,7 +51,7 @@ class ByteSlice {
   bool CopyDataAt(size_t at, size_t size, uint8_t* out_data) {
     if (!RangeCheck(at, size))
       return false;
-    memcpy(out_data, data_ + at, size);
+    UNSAFE_TODO(memcpy(out_data, data_ + at, size));
     return true;
   }
 

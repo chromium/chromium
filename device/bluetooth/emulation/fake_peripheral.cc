@@ -73,6 +73,28 @@ void FakePeripheral::SetNextGATTDiscoveryResponse(uint16_t code) {
   next_discovery_response_ = code;
 }
 
+void FakePeripheral::SimulateGATTConnectionResponse(uint16_t code) {
+  if (code == mojom::kHCISuccess) {
+    gatt_connected_ = true;
+    DidConnectGatt(/*error_code=*/std::nullopt);
+  } else if (code == mojom::kHCIConnectionTimeout) {
+    DidConnectGatt(ERROR_FAILED);
+  } else {
+    DidConnectGatt(ERROR_UNKNOWN);
+  }
+}
+
+void FakePeripheral::SimulateGATTDiscoveryResponse(uint16_t code) {
+  pending_gatt_discovery_ = false;
+  if (code == mojom::kHCISuccess) {
+    device_uuids_.ReplaceServiceUUIDs(gatt_services_);
+    SetGattServicesDiscoveryComplete(true);
+    GetAdapter()->NotifyGattServicesDiscovered(this);
+  } else {
+    SetGattServicesDiscoveryComplete(false);
+  }
+}
+
 bool FakePeripheral::AllResponsesConsumed() {
   return !next_connection_response_ && !next_discovery_response_ &&
          std::ranges::all_of(gatt_services_, [](const auto& e) {
@@ -308,7 +330,7 @@ bool FakePeripheral::IsGattServicesDiscoveryComplete() const {
   if (!pending_gatt_discovery_ && !discovery_complete) {
     pending_gatt_discovery_ = true;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&FakePeripheral::DispatchDiscoveryResponse,
+        FROM_HERE, base::BindOnce(&FakePeripheral::DispatchDiscoveryEvent,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -325,40 +347,34 @@ bool FakePeripheral::IsLowEnergyDevice() {
 void FakePeripheral::CreateGattConnectionImpl(
     std::optional<device::BluetoothUUID>) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&FakePeripheral::DispatchConnectionResponse,
+      FROM_HERE, base::BindOnce(&FakePeripheral::DispatchConnectionEvent,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FakePeripheral::DispatchConnectionResponse() {
-  DCHECK(next_connection_response_);
+void FakePeripheral::DispatchConnectionEvent() {
+  auto* fake_central = static_cast<FakeCentral*>(GetAdapter());
+  fake_central->DispatchGATTOperationEvent(
+      bluetooth::mojom::GATTOperationType::kConnect, address_);
 
+  if (!next_connection_response_) {
+    return;
+  }
   uint16_t code = next_connection_response_.value();
   next_connection_response_.reset();
-
-  if (code == mojom::kHCISuccess) {
-    gatt_connected_ = true;
-    DidConnectGatt(/*error_code=*/std::nullopt);
-  } else if (code == mojom::kHCIConnectionTimeout) {
-    DidConnectGatt(ERROR_FAILED);
-  } else {
-    DidConnectGatt(ERROR_UNKNOWN);
-  }
+  SimulateGATTConnectionResponse(code);
 }
 
-void FakePeripheral::DispatchDiscoveryResponse() {
-  DCHECK(next_discovery_response_);
+void FakePeripheral::DispatchDiscoveryEvent() {
+  auto* fake_central = static_cast<FakeCentral*>(GetAdapter());
+  fake_central->DispatchGATTOperationEvent(
+      bluetooth::mojom::GATTOperationType::kDiscovery, address_);
 
+  if (!next_discovery_response_) {
+    return;
+  }
   uint16_t code = next_discovery_response_.value();
   next_discovery_response_.reset();
-
-  pending_gatt_discovery_ = false;
-  if (code == mojom::kHCISuccess) {
-    device_uuids_.ReplaceServiceUUIDs(gatt_services_);
-    SetGattServicesDiscoveryComplete(true);
-    GetAdapter()->NotifyGattServicesDiscovered(this);
-  } else {
-    SetGattServicesDiscoveryComplete(false);
-  }
+  SimulateGATTDiscoveryResponse(code);
 }
 
 void FakePeripheral::DisconnectGatt() {}

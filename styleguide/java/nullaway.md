@@ -29,22 +29,17 @@ targets without `chromium_code = false`.
 * Java collections and Guava's `Preconditions` are [modeled directly] in
   NullAway.
     * Some additional types are modeled via [`ChromeNullAwayLibraryModel`].
-* Android `onCreate()` methods are implicitly marked `@Initializer`.
-* `assert foo != null` causes `foo` to no longer be nullable.
-* [`assumeNonNull(foo)`] causes `foo` to no longer be nullable without actually
-  checking.
+* Android's `onCreate()` (and similar) methods are implicitly marked `@Initializer`.
 
 [Chromium's NullAway configuration]: https://source.chromium.org/search?q=%22XepOpt:NullAway%22%20f:compile_java%20-f:third_party&sq=&ss=chromium
 [JSpecify mode]: https://github.com/uber/NullAway/wiki/JSpecify-Support
 [supported annotations]: https://github.com/uber/NullAway/wiki/Supported-Annotations
 [`ChromeNullAwayLibraryModel`]: https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/ChromeNullAwayLibraryModel.java
 [modeled directly]: https://github.com/uber/NullAway/blob/HEAD/nullaway/src/main/java/com/uber/nullaway/handlers/LibraryModelsHandler.java
-[`assumeNonNull(foo)`]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/openscreen/src/build/android/java/src/org/chromium/build/NullUtil.java
 
 ## Nullness Migration
 
-We are actively opting classes into enforcement and hope to be complete by
-March 2025. See details in [crbug.com/389129271].
+We are actively opting classes into enforcement. Track progress via [crbug.com/389129271].
 
 [crbug.com/389129271]: https://crbug.com/389129271
 
@@ -132,24 +127,29 @@ public void doThing(String value) {
 }
 ```
 
-### "assert", "assumeNonNull()", and "requireNonNull()"
+### "assert", "assumeNonNull()", "assertNonNull()", and "requireNonNull()"
 
 ```java
-// Always use "import static" for assumeNonNull.
+// Always use "import static" for assumeNonNull / assertNonNull.
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.build.NullUtil.assertNonNull;
 
 public String void example() {
-    // Prefer its statement form.
-    // It won't change git blame, and reads like a precondition.
+    // Prefer statements over expressions to keep preconditions separate from usage.
     assumeNonNull(mNullableThing);
+    assert mOtherThing != null;
 
-    // It supports nested fields.
-    assumeNonNull(mNullableThing.nullableField);
+    // It supports nested fields and getters.
+    assumeNonNull(someObj.nullableField);
+    assumeNonNull(someObj.getNullableThing());
 
     // Use its expression form when it is more readable to do so.
-    someHelper(assumeNonNull(Foo.getInstance()));
+    someHelper(assumeNonNull(Foo.maybeCreate(true)));
 
-    String ret = mNullableThing.getNullableString();
+    // Use assertNonNull when you need an assert as an expression.
+    mNonNullField = assertNonNull(dict.get("key"));
+
+    String ret = obj.getNullableString();
     if (willJustCrashLaterAnyways) {
         // Use "assert" when not locally dereferencing the object.
         assert ret != null;
@@ -161,15 +161,12 @@ public String void example() {
     return ret;
 }
 
-// Use "assert false" + "assumeNonNull(null)" for unreachable code.
+// Use "assertNonNull(null)" for unreachable code.
 public String describe(@MyIntDef int validity) {
     return switch (validity) {
         case MyIntDef.VALID -> "okay";
         case MyIntDef.INVALID -> "not okay";
-        default -> {
-            assert false;
-            yield assumeNonNull(null);
-        }
+        default -> assertNonNull(null);
     };
 }
 ```
@@ -181,10 +178,16 @@ public String describe(@MyIntDef int validity) {
 * NullAway warns if any non-null fields are still nullable at the end of a
   constructor.
   * When a class uses two-phase initialization (e.g., has an `onCreate()` or
-    `initialize()`), you can tell NullAway to not check for null until after
-    methods annotated with `@Initializer` are called.
+    `initialize()`), you can tell NullAway to pretend all such methods have
+    been called before performing validation.
   * `@Initializer` can also be used for `static` methods, which impacts
     warnings for `static` fields.
+  * That `@Initializer` methods are actually called is not checked.
+
+*** note
+**Note:** When multiple setters are always called after constructing an object,
+prefer to create an single `initialize()` method that sets them instead.
+***
 
 **Destruction:**
 
@@ -196,6 +199,23 @@ otherwise be non-null, you can either:
    `@EnsuresNonNullIf(value=..., result=false)`), or
 2) Annotate the `destroy()` method with `@SuppressWarnings("NullAway")`.
 
+**View Binders:**
+
+It might seem appropriate to mark `onBindViewHolder()` with `@Initializer`,
+but these are not really "methods that are called immediately after the
+constructor". Instead, consider adding an `assertBound()` method.
+
+Example:
+
+```java
+@EnsuresNonNull({"mField1", "mField2", ...})
+private void assertBound() {
+    assert mField1 != null;
+    assert mField2 != null;
+    ...
+}
+```
+
 ### JNI
 
 * Nullness is not checked for `@CalledByNative` methods ([crbug/389192501]).
@@ -203,6 +223,34 @@ otherwise be non-null, you can either:
   (when `@NullMarked` exists).
 
 [crbug/389192501]: https://crbug.com/389192501
+
+### Struct-like Classes
+
+NullAway has no special handling for classes with public fields and will emit
+a warning for any non-primitive non-`@Nullable` fields not initialized by a
+constructor.
+
+Fix this by:
+
+* Creating a constructor that sets these fields (Android Studio has a
+  `Generate->Constructor` function that will do this).
+* If this makes the call-site less readable, add `/* paramName= */` comments
+  for the parameters.
+* As a bonus, the constructor may also allow you to mark fields as `final`.
+
+### Rarely-Nullable Return Types
+
+In order to reduce excessive use of `assumeNonNull()`, here are two options
+for what to do with a method that rarely returns `null`:
+
+1) Mark it as: `@NullUnmarked // Do not force assumeNonNull() at call sites`
+   * This is what [`Activity.findViewById()`] does.
+   * Non-null parameters must be marked as `@NonNull` to not also be considered
+     to have unknown nullness (so that nullness of parameters is still checked).
+2) Add sibling `*Checked()` methods that assert their return value is non-null.
+   * The nullable `TabModel.getTabById()` has a non-nullable `TabModel.getTabByIdChecked()`
+
+[`Activity.findViewById()`]: https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/app/Activity.java?q=symbol%3A%5Cbandroid.app.Activity.findViewById%5Cb%20case%3Ayes
 
 ## NullAway Shortcomings
 
@@ -219,22 +267,20 @@ Validation of (but not use of) `@Contract` is buggy.
 
 **Q: Why not use Checker Framework?**
 
-A: Chromium already uses Error Prone, so NullAway was easy to integrate.
+* Chromium already uses Error Prone, so NullAway was easy to integrate.
 
-**Q: How do `@NullUnmarked` and `@SuppressWarnings("ErrorProne")` differ?**
+**Q: How do `@NullUnmarked` and `@SuppressWarnings("NullAway")` differ?**
 
-A: NullAway treats these two the same. In Chromium, `@SuppressWarnings` is used
-when a warning is unavoidable (appeasing NullAway would make the code worse),
-and `@NullUnmarked` is used when a method has not yet been updated to support
-`@Nullable` annotations (it's a remnant of our [automated adding of
-annotations]).
-
-[automated adding of annotations]: https://docs.google.com/document/d/1KNKs7jI8uoBLfBq4HCuGTYPLuTOMgUEuKrzyCUFjEk8/edit?tab=t.0#heading=h.1y1pwesy8vhq
+* Both suppress warnings on a method.
+* `@SuppressWarnings` leaves the method signature `@NullMarked`.
+* `@NullUnmarked` causes parameters and return types to have unknown
+  nullability, and thus also suppress nullness warnings that may exist at a
+  method's call sites.
 
 **Q: Can I use JSpecify Annotations?**
 
-A: Yes. For code that will be mirrored and built in other environments, it is
-best to use JSpecify annotations. You'll probably want to set:
+* Yes. For code that will be mirrored and built in other environments, it is
+  best to use JSpecify annotations. You'll probably want to set:
 
 ```gn
 deps += [ "//third_party/android_deps:org_jspecify_jspecify_java" ]

@@ -265,13 +265,14 @@ void AppShimHost::EnableAccessibilitySupport(
       content::BrowserAccessibilityState::GetInstance();
   switch (mode) {
     case chrome::mojom::AppShimScreenReaderSupportMode::kComplete: {
-      process_accessibility_mode_ =
-          accessibility_state->CreateScopedModeForProcess(ui::kAXModeComplete);
+      accessibility_state->OnScreenReaderDetected();
       break;
     }
     case chrome::mojom::AppShimScreenReaderSupportMode::kPartial: {
-      process_accessibility_mode_ =
-          accessibility_state->CreateScopedModeForProcess(ui::kAXModeBasic);
+      if (!accessibility_state->GetAccessibilityMode().has_mode(
+              ui::kAXModeBasic.flags())) {
+        accessibility_state->AddAccessibilityModeFlags(ui::kAXModeBasic);
+      }
       break;
     }
   }

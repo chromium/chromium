@@ -124,7 +124,7 @@ class TabModelRemover {
     TabGroupModelFilterInternal getTabGroupModelFilter() {
         TabGroupModelFilterInternal filter =
                 (TabGroupModelFilterInternal) mTabGroupModelFilterSupplier.get();
-        assert filter != null && !filter.isIncognitoBranded();
+        assert filter != null && !filter.getTabModel().isIncognitoBranded();
         return filter;
     }
 

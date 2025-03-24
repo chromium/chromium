@@ -295,6 +295,10 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Deletes the remote file under `path` and calls `callback` with result.
   virtual void DeleteRemoteFile(const base::FilePath& path,
                                 base::OnceCallback<void(bool)> callback) = 0;
+
+  // Returns true if Google is the default search engine for the active user,
+  // and false otherwise.
+  virtual bool ActiveUserDefaultSearchProviderIsGoogle() const = 0;
 };
 
 }  // namespace ash

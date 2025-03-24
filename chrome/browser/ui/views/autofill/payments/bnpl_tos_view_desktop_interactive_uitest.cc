@@ -10,6 +10,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -36,7 +37,16 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
-    controller_ = std::make_unique<BnplTosControllerImpl>();
+    test_autofill_client_ = std::make_unique<TestAutofillClient>();
+    static_cast<TestPaymentsDataManager&>(
+        test_autofill_client_->GetPaymentsAutofillClient()
+            ->GetPaymentsDataManager())
+        .SetAccountInfoForPayments(
+            test_autofill_client_->identity_test_environment()
+                .MakePrimaryAccountAvailable("somebody@example.test",
+                                             signin::ConsentLevel::kSignin));
+    controller_ =
+        std::make_unique<BnplTosControllerImpl>(test_autofill_client_.get());
   }
 
   void TearDownOnMainThread() override {
@@ -51,7 +61,6 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
             BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
         Do([this]() {
           BnplTosModel model;
-          model.account_info.email = "somebody@example.test";
           model.issuer = BnplIssuer(
               /*instrument_id=*/std::nullopt, std::string(kBnplAffirmIssuerId),
               std::vector<BnplIssuer::EligiblePriceRange>{});
@@ -76,6 +85,7 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  std::unique_ptr<TestAutofillClient> test_autofill_client_;
   std::unique_ptr<BnplTosControllerImpl> controller_;
 
   base::MockOnceClosure accept_callback_;

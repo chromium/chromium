@@ -103,9 +103,9 @@ enum class FlushReason {
   // This inhibits vector printing.
   kWebGPUExternalImage = 20,
 
-  // The canvas was processed by a `ShapeDetector`.
+  // The canvas contents were copied to an SkBitmap.
   // This inhibits vector printing.
-  kShapeDetector = 21,
+  kCopyToSkBitmap = 21,
 
   // The canvas was uploaded to a WebGL texture.
   // This inhibits vector printing.

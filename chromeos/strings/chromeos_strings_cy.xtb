@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Wedi mynd y tu hwnt i'r ymgeisiau uchaf a ganiateir.</translation>
 <translation id="1908234395526491708">Methiannau ceisiadau UDP</translation>
 <translation id="1908394185991500139">saeth i'r chwith</translation>
+<translation id="1911678930322867245">Symud i'r dde uchaf</translation>
 <translation id="1914144885717544695">ar ddydd Gwener</translation>
 <translation id="1915960750806557358">Rhannwch eich adborth neu disgrifiwch eich problem. Gwnewch yn siŵr nad ydych yn cynnwys unrhyw beth sy'n bersonol, yn sensitif neu'n gyfrinachol.</translation>
 <translation id="1923388006036088459">Lliwiau acen</translation>
@@ -1543,16 +1544,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">traeth</translation>
 <translation id="819278132617411009">Defnyddio Google AI i fod yn fwy cynhyrchiol</translation>
-<translation id="82003371436638355">Pan ddewiswch “Creu eich un eich hun,” ysgrifennwch anogwr personol. Neu gallwch ddewis “Dewis thema” ac yna dewis y geiriau sydd wedi'u tanlinellu i bersonoli'ch papur wal AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Dewiswch "Ysbrydolwch fi" i gael opsiynau lluniau AI mwy unigryw ac amrywiol.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pan fyddwch yn creu eich papur wal eich hun, anfonir yr anogwr at weinyddion Google i gynhyrchu lluniau a gwella'r cynnyrch, yn amodol ar <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Delerau Gwasanaeth a Pholisi Preifatrwydd Google.<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> Peidiwch â chynnwys unrhyw beth personol, sensitif neu gyfrinachol.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Gall AI cynhyrchiol wneud camgymeriadau, gan gynnwys am bobl, felly gwiriwch ef ddwywaith. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Dysgu rhagor<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Parhau</translation>
 <translation id="8206859287963243715">Symudol</translation>
 <translation id="8208861521865154048">Manteision</translation>
@@ -1679,6 +1670,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8820817407110198400">Nodau tudalen</translation>
 <translation id="8833620912470026819">coedwig cactws</translation>
 <translation id="8834539327799336565">Wedi'i gysylltu ar hyn o bryd</translation>
+<translation id="8842526499753992487">Symud i'r chwith uchaf</translation>
 <translation id="8845001906332463065">Cael help</translation>
 <translation id="8849799913685544685">goleudy</translation>
 <translation id="8851859208664803097">Wedi stopio - Argraffydd yn anghyraeddadwy</translation>

@@ -49,9 +49,9 @@ export class CrToolbarSelectionOverlayElement extends CrLitElement {
     };
   }
 
-  show: boolean = false;
-  cancelLabel: string = '';
-  selectionLabel: string = '';
+  accessor show: boolean = false;
+  accessor cancelLabel: string = '';
+  accessor selectionLabel: string = '';
 
   override firstUpdated() {
     this.setAttribute('role', 'toolbar');

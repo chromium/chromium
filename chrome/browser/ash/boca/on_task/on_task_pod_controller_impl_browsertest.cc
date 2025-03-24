@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, ReloadCurrentTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
-                       PinTabStripButtonDisabledWhenUnlocked) {
+                       DisablePinTabStripFunctionalityWhenUnlocked) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
-                       PinTabStripButtonEnabledWhenLocked) {
+                       EnablePinTabStripFunctionalityWhenLocked) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(

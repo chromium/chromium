@@ -171,12 +171,16 @@ public class AccountSelectionCoordinator
                                 : R.layout.account_selection_account_item),
                 AccountSelectionViewBinder::bindAccountView);
         adapter.registerType(
-                AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT,
+                AccountSelectionProperties.ITEM_TYPE_LOGIN,
                 new LayoutViewBuilder(
                         rpMode == RpMode.ACTIVE
                                 ? R.layout.account_selection_active_mode_add_account_row_item
                                 : R.layout.account_selection_add_account_row_item),
-                AccountSelectionViewBinder::bindAddAccountView);
+                AccountSelectionViewBinder::bindLoginButtonView);
+        adapter.registerType(
+                AccountSelectionProperties.ITEM_TYPE_SEPARATOR,
+                new LayoutViewBuilder(R.layout.account_selection_login_buttons_start_separator),
+                (unusedModel, unusedView, unusedKey) -> {});
         sheetItemListView.setAdapter(adapter);
 
         return contentView;

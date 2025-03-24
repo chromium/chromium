@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 
@@ -140,6 +140,13 @@ PageActionController::CreateActionItemSubscription(
                               base::Unretained(this), action_item));
   ActionItemChanged(action_item);
   return subscription;
+}
+
+void PageActionController::SetShouldHidePageActions(
+    bool should_hide_page_actions) {
+  for (auto& [id, model] : page_actions_) {
+    model->SetShouldHidePageAction(PassKey(), should_hide_page_actions);
+  }
 }
 
 void PageActionController::OnActionsChanged() {

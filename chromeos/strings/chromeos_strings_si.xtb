@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">ඉඩ දෙන උපරිම උත්සාහයන් ගණන ඉක්මවා ඇත.</translation>
 <translation id="1908234395526491708">UDP ඉල්ලීම් අසාර්ථක වීම්</translation>
 <translation id="1908394185991500139">ඊතලය වමට</translation>
+<translation id="1911678930322867245">ඉහළ දකුණ වෙත ගෙන යන්න</translation>
 <translation id="1914144885717544695">සිකුරාදා</translation>
 <translation id="1915960750806557358">ඔබේ ප්‍රතිපෝෂණය බෙදා ගන්න හෝ ඔබේ ගැටලුව විස්තර කරන්න. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකිරීමට වග බලා ගන්න.</translation>
 <translation id="1923388006036088459">අවධාරණ වර්ණ</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
 <translation id="8183975772394450380">වෙරළ</translation>
 <translation id="819278132617411009">වඩාත් ඵලදායී වීමට Google AI භාවිතා කරන්න</translation>
-<translation id="82003371436638355">ඔබ “ඔබේම එකක් තනන්න” තේරූ විට, අභිරුචි විමසුමක් ලියන්න. නැතහොත් ඔබට “තේමාවක් තෝරා ගන්න” තෝරාගෙන ඔබේ AI වෝල්පේපරය පුද්ගලායනය කිරීමට යටින් ඉරි ඇඳ ඇති වචන තෝරා ගත හැක.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ඉතා අද්විතීය සහ විවිධ AI රූප විකල්ප ලබා ගැනීමට "මා ප්‍රබෝධමත් කරන්න" තෝරන්න.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ඔබ ඔබේම බිතුපතක් නිර්මාණය කරන විට, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google හි සේවා නියම සහ පෞද්ගලිකත්ව ප්‍රතිපත්තියට<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> යටත්ව, රූප ජනනය කිරීමට සහ නිෂ්පාදනය වැඩි දියුණු කිරීමට Google සේවාදායකයන් වෙත විමසුමක් යවනු ලැබේ. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකරන්න.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          උත්පාදක AI හට පුද්ගලයින් ගැන පවා වැරදි සිදු විය හැක, එබැවින් එය දෙවරක් පරීක්ෂා කරන්න. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />තව දැන ගන්න<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">කරගෙන යන්න</translation>
 <translation id="8206859287963243715">සෙලියුලර්</translation>
 <translation id="8208861521865154048">අමතර වාසි</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">පිටුසන්</translation>
 <translation id="8833620912470026819">පතොක් වනාන්තරය</translation>
 <translation id="8834539327799336565">දැනට සම්බන්ධ වී ඇත</translation>
+<translation id="8842526499753992487">ඉහළ වම වෙත ගෙන යන්න</translation>
 <translation id="8845001906332463065">උදවු ලබා ගන්න</translation>
 <translation id="8849799913685544685">ප්‍රදීපාගාරය</translation>
 <translation id="8851859208664803097">නැවතී ඇත - මුද්‍රකයට ළඟා විය නොහැක</translation>

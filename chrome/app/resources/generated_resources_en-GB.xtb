@@ -267,6 +267,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1175572348579024023">Scroll</translation>
 <translation id="1175914831232945926">Digits</translation>
 <translation id="1176471985365269981">Not allowed to edit files or folders on your device</translation>
+<translation id="1176864681932214421">Create images with AI</translation>
 <translation id="1177073277575830464">Android quick setup is done. Continue setup on your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">You can connect to any eligible mobile network in Settings</translation>
 <translation id="1177548198167638471">Don't ask again</translation>
@@ -616,7 +617,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="142655739075382478"><ph name="APP_NAME" /> is blocked</translation>
 <translation id="1427179946227469514">Text-to-speech pitch</translation>
 <translation id="1427269577154060167">Country</translation>
-<translation id="1427506552622340174">Right-click to write with more confidence, summarise content, get definitions and more. Currently has limited availability.</translation>
 <translation id="142765311413773645"><ph name="APP_NAME" /> licence has expired</translation>
 <translation id="1428373049397869723">You can open and edit supported files with this app from Finder or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">You saved a note for a password on this site. To view it, select 'manage your passwords' in the search and address bar.</translation>
@@ -1893,6 +1893,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">File wasn’t available on site</translation>
 <translation id="2300383962156589922">Customise and control <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Qualified Certificate Statements</translation>
 <translation id="2301382460326681002">Extension root directory is invalid.</translation>
 <translation id="2301402091755573488">Shared tab</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Debugging features<ph name="END_H3" />
@@ -3596,6 +3597,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3503995387997205657">You can restore your previous apps</translation>
 <translation id="3505100368357440862">Shopping suggestions</translation>
 <translation id="3507132249039706973">Standard protection is on</translation>
+<translation id="3507650052590605702">Manage password</translation>
 <translation id="3507888235492474624">Re-scan Bluetooth devices</translation>
 <translation id="3508492320654304609">Your sign-in data couldn't be deleted</translation>
 <translation id="3508920295779105875">Choose Another Folder...</translation>
@@ -3698,6 +3700,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3582057310199111521">Entered on deceptive site and found in data breach</translation>
 <translation id="3582299299336701326">Turn light screens dark, and dark screens light. Press Search + Ctrl + H to turn colour inversion on and off.</translation>
 <translation id="3584169441612580296">Read and change photos, music and other media from your computer</translation>
+<translation id="3586741240886978899">You used on this site</translation>
 <translation id="3586806079541226322">Can't open this file</translation>
 <translation id="3586931643579894722">Hide details</translation>
 <translation id="3587279952965197737">Must be <ph name="MAX_CHARACTER_COUNT" /> characters or fewer</translation>
@@ -6617,7 +6620,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5643717184207603910">Keep performance speedy</translation>
 <translation id="5646376287012673985">Location</translation>
 <translation id="5646558797914161501">Businessman</translation>
-<translation id="5646994841348250879">Choose an account to sign in to <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
 <translation id="5651308944918885595">Nearby Share discoverability</translation>
@@ -9367,6 +9369,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingerprint set up}other{{COUNT} fingerprints set up}}</translation>
 <translation id="7650677314924139716">Current data usage setting is Wi-Fi only</translation>
 <translation id="7650920359639954963">Not enabled: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">To get this bookmark on all your devices, verify that it's you</translation>
 <translation id="7651400349472467012">Instant hotspot available</translation>
 <translation id="7651784568388208829">Phone Hub task continuation</translation>
 <translation id="765293928828334535">Apps, extensions and user scripts cannot be added from this website</translation>
@@ -9405,6 +9408,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7670434942695515800">For the best performance, upgrade to the latest version. Backing up your files is recommended in case the upgrade can’t be completed. Once the upgrade begins, Linux will shut down. Save open files before continuing. <ph name="LINK_START" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Subtitles</translation>
 <translation id="7671130400130574146">Use system title bar and borders</translation>
+<translation id="7671139479636735732">Right-click to easily visualise your ideas</translation>
 <translation id="767127784612208024">Touch to confirm reset</translation>
 <translation id="7671472752213333268">'<ph name="EXTENSION_NAME" />' wants to scan from '<ph name="SCANNER_NAME" />'.</translation>
 <translation id="7672504401554182757">Choose which device has the passkey for <ph name="APP_NAME" /></translation>
@@ -9424,6 +9428,9 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7680416688940118410">Touchscreen calibration</translation>
 <translation id="7681095912841365527">Site can use Bluetooth</translation>
 <translation id="7681597159868843240">Sites usually use your device's motion sensors for features like virtual reality or fitness tracking</translation>
+<translation id="7681757571815416227">To use your device with your <ph name="DOMAIN" /> profile, your organisation needs information about the device.
+
+This can include information about installed software, files, your browser, the device's operating system and IP addresses.</translation>
 <translation id="7683373461016844951">To continue, click OK, then click Add Person to create a new profile for your <ph name="DOMAIN" /> email address.</translation>
 <translation id="7683834360226457448">Low vision display tools</translation>
 <translation id="7684212569183643648">Installed by Your Administrator</translation>
@@ -10205,6 +10212,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8217399928341212914">Continue blocking automatic downloads of multiple files</translation>
 <translation id="8219785583603399823">See ratings for this shop</translation>
 <translation id="822050276545350872">From here on out, no waiting required</translation>
+<translation id="8221942262855134126">Manage password</translation>
 <translation id="8222112516148944758">Your tab groups automatically save and update across all your devices</translation>
 <translation id="8222674561049363989">File is not a valid document</translation>
 <translation id="822347941086490485">Finding HID devices…</translation>
@@ -10541,7 +10549,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8452105022015742247">Transferring Google Account info from your Android phone</translation>
 <translation id="8455775311562941553">Connected to <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8456067150616457342">Set your default browser</translation>
-<translation id="8456200178779628126">Use Google AI to get help reading and writing</translation>
 <translation id="845702320058262034">Can’t connect. Make sure that your phone’s Bluetooth is turned on.</translation>
 <translation id="8457251154056341970">You won't see <ph name="MODULE_NAME" /> on this page again</translation>
 <translation id="8457451314607652708">Import bookmarks</translation>
@@ -10996,6 +11003,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8767069439158587614">Show all searches for <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Automatically update Chrome for all users</translation>
 <translation id="8768049274922835860">Everyone</translation>
+<translation id="8769047324653576116">To use your device with your organisation profile, your organisation needs information about the device.
+
+This can include information about installed software, files, your browser, the device's operating system and IP addresses.</translation>
 <translation id="876956356450740926">Run developer tools, IDEs and editors. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Extension root directory</translation>
 <translation id="8773535891252326047">Link copied to highlight</translation>
@@ -11436,7 +11446,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB mouse connected</translation>
 <translation id="9075413375877487220">This extension is not trusted by Enhanced Safe Browsing.</translation>
-<translation id="9075985558450420812">Enter a custom prompt or highlight text to create an image.</translation>
 <translation id="9076523132036239772">Sorry, your email or password could not be verified. Try connecting to a network first.</translation>
 <translation id="9076821103818989526">Side panel</translation>
 <translation id="9076977315710973122">SMB share</translation>

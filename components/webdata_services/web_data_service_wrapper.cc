@@ -118,9 +118,10 @@ WebDataServiceWrapper::WebDataServiceWrapper(
     os_crypt_async::OSCryptAsync* os_crypt,
     bool use_in_memory_autofill_account_database) {
   base::FilePath path = context_path.Append(kWebDataFilename);
-  auto db_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+  auto db_task_runner = base::ThreadPool::CreateSequencedTaskRunnerForResource(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      path);
   profile_database_ = base::MakeRefCounted<WebDatabaseService>(
       path, ui_task_runner, db_task_runner);
 

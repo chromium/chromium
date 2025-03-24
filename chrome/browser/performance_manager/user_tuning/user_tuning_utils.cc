@@ -67,14 +67,14 @@ std::vector<std::string> GetCannotDiscardReasonsForPageNode(
 #if BUILDFLAG(IS_ANDROID)
   return {};
 #else
-  auto* discarding_helper = policies::PageDiscardingHelper::GetFromGraph(
+  auto* discarding_helper = policies::DiscardEligibilityPolicy::GetFromGraph(
       PerformanceManager::GetGraph());
   CHECK(discarding_helper);
   CHECK(page_node);
 
   std::vector<policies::CannotDiscardReason> cannot_discard_reasons;
   discarding_helper->CanDiscard(
-      page_node, policies::PageDiscardingHelper::DiscardReason::PROACTIVE,
+      page_node, policies::DiscardEligibilityPolicy::DiscardReason::PROACTIVE,
       policies::kNonVisiblePagesUrgentProtectionTime, &cannot_discard_reasons);
 
   std::vector<std::string> results;

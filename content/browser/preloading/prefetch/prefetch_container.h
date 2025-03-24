@@ -21,6 +21,7 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
@@ -109,6 +110,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const GURL& url,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
+      std::optional<SpeculationRulesTags> speculation_rules_tags,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
@@ -262,6 +264,10 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The previous URL, if this has been redirected. Invalid to call otherwise.
   GURL GetPreviousURL() const;
+
+  // Returns whether the tags of the speculation rules that triggered this
+  // prefetch exists.
+  bool HasSpeculationRulesTags() { return speculation_rules_tags_.has_value(); }
 
   // The type of this prefetch. Controls how the prefetch is handled.
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
@@ -796,6 +802,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const PrefetchContainer::Key& key,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer,
+      std::optional<SpeculationRulesTags> speculation_rules_tags,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
       base::WeakPtr<BrowserContext> browser_context,
@@ -894,6 +901,12 @@ class CONTENT_EXPORT PrefetchContainer {
   // The No-Vary-Search hint of the prefetch, which is specified by the
   // speculation rules and can be different from actual `no_vary_search_data_`.
   const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
+
+  // The tags of the speculation rules that triggered this prefetch, and this
+  // field is non-null if and only if this is created by SpeculationRules
+  // prefech. These are assumed to have been validated by the time this is
+  // constructed.
+  std::optional<SpeculationRulesTags> speculation_rules_tags_;
 
   // The |PrefetchDocumentManager| that requested |this|.
   // This will be nullptr when the prefetch is initiated by browser.

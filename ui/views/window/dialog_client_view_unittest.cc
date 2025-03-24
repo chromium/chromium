@@ -40,6 +40,22 @@
 
 namespace views {
 
+class DialogClientViewTest;
+
+class DialogClientViewTestDelegate : public DialogDelegateView {
+ public:
+  explicit DialogClientViewTestDelegate(DialogClientViewTest* parent);
+
+  // DialogDelegateView:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
+  gfx::Size GetMinimumSize() const override;
+  gfx::Size GetMaximumSize() const override;
+
+ private:
+  const raw_ptr<DialogClientViewTest> parent_;
+};
+
 // Base class for tests. Also acts as the dialog delegate and contents view for
 // TestDialogClientView.
 class DialogClientViewTest : public test::WidgetTest {
@@ -54,7 +70,7 @@ class DialogClientViewTest : public test::WidgetTest {
   void SetUp() override {
     WidgetTest::SetUp();
 
-    delegate_ = new TestDialogDelegateView(this);
+    delegate_ = new DialogClientViewTestDelegate(this);
     delegate_->set_use_custom_frame(false);
     delegate_->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
@@ -74,6 +90,10 @@ class DialogClientViewTest : public test::WidgetTest {
     widget_.ExtractAsDangling()->CloseNow();
     WidgetTest::TearDown();
   }
+
+  gfx::Size preferred_size() const { return preferred_size_; }
+  gfx::Size min_size() const { return min_size_; }
+  gfx::Size max_size() const { return max_size_; }
 
  protected:
   gfx::Rect GetUpdatedClientBounds() {
@@ -172,23 +192,6 @@ class DialogClientViewTest : public test::WidgetTest {
   test::TestLayoutProvider* layout_provider() { return layout_provider_.get(); }
 
  private:
-  class TestDialogDelegateView : public DialogDelegateView {
-   public:
-    explicit TestDialogDelegateView(DialogClientViewTest* parent)
-        : parent_(parent) {}
-
-    // DialogDelegateView:
-    gfx::Size CalculatePreferredSize(
-        const SizeBounds& /*available_size*/) const override {
-      return parent_->preferred_size_;
-    }
-    gfx::Size GetMinimumSize() const override { return parent_->min_size_; }
-    gfx::Size GetMaximumSize() const override { return parent_->max_size_; }
-
-   private:
-    const raw_ptr<DialogClientViewTest> parent_;
-  };
-
   // The dialog Widget.
   std::unique_ptr<test::TestLayoutProvider> layout_provider_;
   raw_ptr<Widget> widget_ = nullptr;
@@ -198,6 +201,23 @@ class DialogClientViewTest : public test::WidgetTest {
   gfx::Size min_size_;
   gfx::Size max_size_;
 };
+
+DialogClientViewTestDelegate::DialogClientViewTestDelegate(
+    DialogClientViewTest* parent)
+    : parent_(parent) {}
+
+gfx::Size DialogClientViewTestDelegate::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  return parent_->preferred_size();
+}
+
+gfx::Size DialogClientViewTestDelegate::GetMinimumSize() const {
+  return parent_->min_size();
+}
+
+gfx::Size DialogClientViewTestDelegate::GetMaximumSize() const {
+  return parent_->max_size();
+}
 
 TEST_F(DialogClientViewTest, UpdateButtons) {
   // Make sure this test runs on all platforms. Mac doesn't allow 0 size

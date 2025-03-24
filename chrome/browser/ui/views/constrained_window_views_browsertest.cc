@@ -31,9 +31,9 @@
 
 namespace {
 
-class TestDialog : public views::DialogDelegateView {
+class ConstrainedWindowTestDialog : public views::DialogDelegateView {
  public:
-  TestDialog() {
+  ConstrainedWindowTestDialog() {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetModalType(ui::mojom::ModalType::kChild);
     // Dialogs that take focus must have a name and role to pass accessibility
@@ -43,18 +43,20 @@ class TestDialog : public views::DialogDelegateView {
                                    ax::mojom::NameFrom::kAttribute);
   }
 
-  TestDialog(const TestDialog&) = delete;
-  TestDialog& operator=(const TestDialog&) = delete;
+  ConstrainedWindowTestDialog(const ConstrainedWindowTestDialog&) = delete;
+  ConstrainedWindowTestDialog& operator=(const ConstrainedWindowTestDialog&) =
+      delete;
 
-  ~TestDialog() override = default;
+  ~ConstrainedWindowTestDialog() override = default;
 
   views::View* GetInitiallyFocusedView() override { return this; }
 };
 
 // A helper function to create and show a web contents modal dialog.
-TestDialog* ShowModalDialog(content::WebContents* web_contents) {
-  auto dialog = std::make_unique<TestDialog>();
-  TestDialog* dialog_ptr = dialog.get();
+ConstrainedWindowTestDialog* ShowModalDialog(
+    content::WebContents* web_contents) {
+  auto dialog = std::make_unique<ConstrainedWindowTestDialog>();
+  ConstrainedWindowTestDialog* dialog_ptr = dialog.get();
   constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
   return dialog_ptr;
 }
@@ -100,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_FocusTest) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  TestDialog* const dialog1 = ShowModalDialog(web_contents);
+  ConstrainedWindowTestDialog* const dialog1 = ShowModalDialog(web_contents);
   views::ViewTracker tracker1(dialog1);
   EXPECT_EQ(dialog1, tracker1.view());
 
@@ -111,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_FocusTest) {
 
   // Create a second dialog. This will also be modal to |web_contents|, but will
   // remain hidden since the |dialog1| is still showing.
-  TestDialog* const dialog2 = ShowModalDialog(web_contents);
+  ConstrainedWindowTestDialog* const dialog2 = ShowModalDialog(web_contents);
   views::ViewTracker tracker2(dialog2);
   EXPECT_EQ(dialog2, tracker2.view());
   EXPECT_FALSE(dialog2->GetWidget()->IsVisible());
@@ -152,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_FocusTest) {
 
 // Tests that the tab-modal window is closed properly when its tab is closed.
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
-  TestDialog* const dialog =
+  ConstrainedWindowTestDialog* const dialog =
       ShowModalDialog(browser()->tab_strip_model()->GetActiveWebContents());
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());
@@ -175,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
 #define MAYBE_TabSwitchTest TabSwitchTest
 #endif
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabSwitchTest) {
-  TestDialog* const dialog =
+  ConstrainedWindowTestDialog* const dialog =
       ShowModalDialog(browser()->tab_strip_model()->GetActiveWebContents());
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());
@@ -207,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabSwitchTest) {
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  TestDialog* const dialog = ShowModalDialog(web_contents);
+  ConstrainedWindowTestDialog* const dialog = ShowModalDialog(web_contents);
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());
   dialog->GetWidget()->SetVisibilityChangedAnimationsEnabled(false);
@@ -235,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
 
 // Tests that the dialog closes when the escape key is pressed.
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, ClosesOnEscape) {
-  TestDialog* const dialog =
+  ConstrainedWindowTestDialog* const dialog =
       ShowModalDialog(browser()->tab_strip_model()->GetActiveWebContents());
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());

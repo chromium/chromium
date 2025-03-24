@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">Ավելացնել պայծառությունը</translation>
 <translation id="1680659827022803830">Տեսազանգերի կառավարում</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Գործառույթը ցանկացած պահի կարող եք անջատել Կարգավորումներում։ <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Ժամաչափ՝ <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 հասցե՝ <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Ակտիվ պատուհանն ամրացված է ձախ կողմում։</translation>
@@ -967,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, տեղադրված հավելված, դադարեցված է</translation>
 <translation id="4228078597006700451">Կառավարման տարրերը կարգավորված չեն</translation>
 <translation id="4230560241506423345">Նոր</translation>
+<translation id="4236726631849783264">Հիշեցում առաջարկվող գործողությունների մասին</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Համատեսքի ռեժիմ</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
@@ -983,7 +985,6 @@
 <translation id="4275663329226226506">Տեսախցիկ և խոսափող</translation>
 <translation id="4279490309300973883">Հայելապատճենում</translation>
 <translation id="4280601795273309128">Ձեր սարքն այլևս չի ստանա անվտանգության թարմացումներ։ Ձեռք բերեք նոր սարք։</translation>
-<translation id="4281739221820540368">Ստեղծել Google փաստաթուղթ</translation>
 <translation id="4283888303416325161">Անվտանգության նկատառումներից ելնելով՝ մուտքագրեք գաղտնաբառը</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="428715201724021596">Միանում է պրոֆիլին։ Դա կարող է մի քանի րոպե տևել։</translation>
@@ -1044,6 +1045,7 @@
 <translation id="4471354919263203780">Խոսքի ճանաչման ֆայլերը ներբեռնվում են… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Թարմացրեք սարքը հիմա}=1{Թարմացրեք սարքը 1 վայրկյանի ընթացքում}one{Թարմացրեք սարքը # վայրկյանի ընթացքում}other{Թարմացրեք սարքը # վայրկյանի ընթացքում}}</translation>
 <translation id="4472575034687746823">Սկսել</translation>
+<translation id="4473489370276014885">Google Կոնտակտներ</translation>
 <translation id="4477350412780666475">Հաջորդ կատարումը</translation>
 <translation id="4477751544736611934">Տվյալների փոխանցման համար կարող է գումար գանձվել։
 Միացած է 1 սարք։</translation>
@@ -1070,6 +1072,7 @@
 <translation id="4545950850562423083">Պահել ընթացիկ էջը որպես էջանիշ</translation>
 <translation id="4548482551627849548">Ակտիվ պատուհանը տեղափոխել ձախ աշխատասեղան</translation>
 <translation id="4552748006424994716">Արձագանքից խուսափելու համար խոսափողի ձայնը լսեք միայն լարով միացվող ականջակալով։</translation>
+<translation id="4556953949326137018">Երբ դուք օգտագործում եք առաջարկվող գործողություններ, ինչպիսիք են «ավելացնել Օրացույցում» կամ «ստեղծել Google փաստաթուղթ», ընտրված տարածքի բովանդակությունն ուղարկվում է Google-ի սերվերներին՝ գործողությունների առաջարկներ ստանալու համար՝ համաձայն <ph name="LINK_TO_SERVICE_TERMS" /> փաստաթղթի դրույթների։ Մի՛ ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։</translation>
 <translation id="4560576029703263363">Միացված է</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Թաքցնել գաղտնաբառը</translation>
@@ -1153,6 +1156,7 @@
 <translation id="481455355267255546">Հաջորդիվ</translation>
 <translation id="481749895090480684">Առաջադրանքների ցուցակ՝ <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
+<translation id="4828935196674083554">Ավելացվում է...</translation>
 <translation id="482908187605862807">Play Խանութում հասանելի հավելվածներ</translation>
 <translation id="4831034276697007977">Իսկապե՞ս ուզում եք անջատել ավտոմատ սեղմումները:</translation>
 <translation id="4835677468087803981">Թաքցնել PIN կոդը</translation>
@@ -1650,6 +1654,7 @@
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Մաքրել բոլոր ծանուցումները</translation>
+<translation id="6426905245930183644">Ստեղծում…</translation>
 <translation id="6430225033895752525">Ցույց տալ Առանց շեղումների ռեժիմի կարգավորումները</translation>
 <translation id="643147933154517414">Ամեն ինչ պատրաստ է</translation>
 <translation id="6431865393913628856">Էկրանի տեսագրում</translation>
@@ -1716,7 +1721,6 @@
 <translation id="6612889377159412215">ենթաառաջադրանք</translation>
 <translation id="6613765291890844037">Օգտագործվում է <ph name="STORAGE_IN_USE_SIZE" /> տարածք | Ընդհանուր տարածքը՝ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Գաղտնիության էկրանը միացված է</translation>
-<translation id="6618277154885124991">Ստեղծել Google աղյուսակ</translation>
 <translation id="6622679827379792051">Կարգավորել հեռախոսի հավելվածների դիտումը</translation>
 <translation id="662279009180869175">Տրոհված էկրանի չափը փոխելու համար օգտագործեք ձախ և աջ սլաքները</translation>
 <translation id="6624493541160101248">Ընթացիկ աշխատասեղանը՝ <ph name="DESK_NAME" />։ Աշխատասեղան <ph name="DESK_INDEX" />՝ <ph name="DESK_COUNT" />-ից։</translation>
@@ -2400,6 +2404,7 @@
 <translation id="8921624153894383499">Google օգնականն այս լեզվով չի խոսում:</translation>
 <translation id="8926951137623668982">Դարակը միշտ թաքցված է</translation>
 <translation id="8929566928381252430">Caps Lock ստե՞ղնն եք փորձում օգտագործել։ Օգտագործեք</translation>
+<translation id="8934418770423095813">Ստեղծել Google փաստաթուղթ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="8936501819958976551">անջատվեց</translation>
 <translation id="8938800817013097409">USB-C սարք (հետևի աջ միացք)</translation>

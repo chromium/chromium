@@ -102,7 +102,7 @@
         Browser* selectedTabBrowser = GetBrowserForTabWithCriteria(
             browserList, WebStateSearchCriteria{.identifier = identifier},
             profile->IsOffTheRecord());
-        CHECK(browser);
+        CHECK(selectedTabBrowser);
         currentWebStateList = selectedTabBrowser->GetWebStateList();
         index =
             GetWebStateIndex(currentWebStateList,

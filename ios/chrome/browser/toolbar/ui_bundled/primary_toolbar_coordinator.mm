@@ -59,7 +59,7 @@
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
 
-  BOOL isOffTheRecord = self.browser->GetProfile()->IsOffTheRecord();
+  BOOL isOffTheRecord = self.profile->IsOffTheRecord();
 
   self.viewController = [[PrimaryToolbarViewController alloc] init];
   self.viewController.shouldHideOmniboxOnNTP = !isOffTheRecord;
@@ -144,7 +144,7 @@
 
 // Returns the active banner promo app agent if it is available currently.
 - (DefaultBrowserBannerPromoAppAgent*)activeBannerPromoAppAgent {
-  if (self.browser->GetProfile()->IsOffTheRecord()) {
+  if (self.profile->IsOffTheRecord()) {
     return nil;
   }
 

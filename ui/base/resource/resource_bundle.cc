@@ -610,11 +610,10 @@ std::optional<ResourceBundle::LottieData> ResourceBundle::GetLottieData(
     int resource_id) const {
   // The prefix that GRIT prepends to Lottie assets, after compression if any.
   // See: tools/grit/grit/node/structure.py
-  constexpr char kLottiePrefix[6] = {'L', 'O', 'T', 'T', 'I', 'E'};
+  constexpr std::string_view kLottiePrefix = "LOTTIE";
 
   const std::string_view potential_lottie = GetRawDataResource(resource_id);
-  if (potential_lottie.substr(0u, std::size(kLottiePrefix)) !=
-      std::string_view(kLottiePrefix, std::size(kLottiePrefix))) {
+  if (!potential_lottie.starts_with(kLottiePrefix)) {
     return std::nullopt;
   }
 

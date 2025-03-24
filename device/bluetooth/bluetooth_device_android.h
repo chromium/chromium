@@ -12,6 +12,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -19,6 +20,7 @@
 
 namespace device {
 
+class BluetoothSocketThread;
 class BluetoothUUID;
 
 // BluetoothDeviceAndroid along with its owned Java class
@@ -35,7 +37,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   static std::unique_ptr<BluetoothDeviceAndroid> Create(
       BluetoothAdapterAndroid* adapter,
       const base::android::JavaRef<jobject>&
-          bluetooth_device_wrapper);  // Java Type: bluetoothDeviceWrapper
+          bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<BluetoothSocketThread> socket_thread);
 
   BluetoothDeviceAndroid(const BluetoothDeviceAndroid&) = delete;
   BluetoothDeviceAndroid& operator=(const BluetoothDeviceAndroid&) = delete;
@@ -117,7 +121,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
           bluetooth_gatt_service_wrapper);  // BluetoothGattServiceWrapper
 
  private:
-  explicit BluetoothDeviceAndroid(BluetoothAdapterAndroid* adapter);
+  BluetoothDeviceAndroid(
+      BluetoothAdapterAndroid* adapter,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<BluetoothSocketThread> socket_thread);
 
   // BluetoothDevice:
   void CreateGattConnectionImpl(
@@ -126,6 +133,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
 
   // Java object org.chromium.device.bluetooth.ChromeBluetoothDevice.
   base::android::ScopedJavaGlobalRef<jobject> j_device_;
+
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+  scoped_refptr<BluetoothSocketThread> socket_thread_;
 
   bool gatt_connected_ = false;
 };

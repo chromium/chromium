@@ -2034,6 +2034,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="Sunfish-session started using a long-press on the home button"/>
   <int value="55" label="Feedback dialog was opened"/>
   <int value="56" label="Feedback sent"/>
+  <int value="57" label="&quot;Do not show UI&quot; resulted from pinned mode"/>
 </enum>
 
 <!-- LINT.ThenChange(//ash/scanner/scanner_metrics.h:ScannerFeatureUserState) -->

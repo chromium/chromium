@@ -149,3 +149,17 @@ export function isTextField(element: Element): boolean {
     'number',
   ].includes(element.type);
 }
+
+/**
+ * Generates a 128-bit cryptographically-strong random number. The properties
+ * must match base::UnguessableToken, as these values may be deserialized into
+ * that class on the C++ side.
+ * @return the generated number as a hex string.
+ */
+export function generateRandomId(): string {
+  // Generate 128 bit unique identifier.
+  const components = new Uint32Array(4);
+  window.crypto.getRandomValues(components);
+  return components.reduce(
+      (id = '', component) => id + component.toString(16).padStart(8, '0'), '');
+}

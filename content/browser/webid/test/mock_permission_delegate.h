@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/optional_ref.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,6 +17,8 @@
 #include "url/gurl.h"
 
 namespace content {
+
+class IdentityRequestAccount;
 
 class MockPermissionDelegate
     : public FederatedIdentityPermissionContextDelegate {
@@ -74,8 +77,8 @@ class MockPermissionDelegate
               GetIdpSigninStatus,
               (const url::Origin&),
               (override));
-  MOCK_METHOD(std::vector<blink::common::webid::LoginStatusAccount>,
-              GetAccountProfiles,
+  MOCK_METHOD(std::vector<scoped_refptr<IdentityRequestAccount>>,
+              GetAccounts,
               (const url::Origin& identity_provider),
               (override));
   MOCK_METHOD(

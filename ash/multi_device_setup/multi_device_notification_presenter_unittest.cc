@@ -117,7 +117,8 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     delegate->SetMultiDeviceSetupBinder(base::BindRepeating(
         &multidevice_setup::MultiDeviceSetupBase::BindReceiver,
         base::Unretained(fake_multidevice_setup_.get())));
-    NoSessionAshTestBase::SetUp(std::move(delegate));
+    set_shell_delegate(std::move(delegate));
+    NoSessionAshTestBase::SetUp();
 
     test_system_tray_client_ = GetSystemTrayClient();
 

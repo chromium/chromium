@@ -8,18 +8,19 @@
 #include "services/shape_detection/public/mojom/textdetection.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/shapedetection/shape_detector.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
+
 class DetectedText;
 class ExecutionContext;
 
-class MODULES_EXPORT TextDetector final : public ShapeDetector {
+class MODULES_EXPORT TextDetector final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

@@ -15,6 +15,9 @@ docstring-quote = double
 
 [MESSAGES CONTROL]
 
+# TODO(crbug.com/405148966): Remove the unsubscriptable-object and
+# unsupported-binary-operation disables once pylint is upgraded to a
+# sufficiently new version that handles Python 3.10+ typing properly.
 # Disable the message, report, category or checker with the given id(s).
 disable=duplicate-code,
         fixme,
@@ -24,6 +27,8 @@ disable=duplicate-code,
         missing-docstring,
         too-few-public-methods,
         too-many-instance-attributes,
+        unsubscriptable-object,
+        unsupported-binary-operation,
 
 # Pylint, or at least v1.5.6, does not properly handle adding comments between
 # lines of disable= entries, nor does it allow multiple disable= lines, so

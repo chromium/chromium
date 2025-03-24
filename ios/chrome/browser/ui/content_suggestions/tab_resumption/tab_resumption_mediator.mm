@@ -83,10 +83,6 @@
 
 namespace {
 
-// The key to store the timestamp when the scene enters into background.
-NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
-    @"StartSurfaceSceneEnterIntoBackgroundTime";
-
 // Whether the item should be displayed immediately (before fetching an image).
 bool ShouldShowItemImmediately() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -322,7 +318,7 @@ class TabResumptionMediatorProxy {
         std::make_unique<StartSurfaceRecentTabObserverBridge>(self);
     StartSurfaceRecentTabBrowserAgent::FromBrowser(_browser)->AddObserver(
         _startSurfaceObserver.get());
-      _pageImageService = PageImageServiceFactory::GetForProfile(profile);
+    _pageImageService = PageImageServiceFactory::GetForProfile(profile);
     _imageFetcher = std::make_unique<image_fetcher::ImageDataFetcher>(
         profile->GetSharedURLLoaderFactory());
     _syncedSessionsObserverBridge.reset(
@@ -520,48 +516,47 @@ class TabResumptionMediatorProxy {
     return;
   }
 
-  base::Time mostRecentTabOpenedTime = base::Time::UnixEpoch();
-  base::Time lastSyncedTabSyncedTime = base::Time::UnixEpoch();
+  std::optional<base::Time> mostRecentTabOpenedTime;
+  std::optional<base::Time> lastSyncedTabSyncedTime;
 
   web::WebState* mostRecentTab = _recentTabBrowserAgent->most_recent_tab();
   if (mostRecentTab) {
-    NSDate* mostRecentTabDate = base::apple::ObjCCastStrict<NSDate>([_sceneState
-        sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime]);
-    if (mostRecentTabDate != nil) {
-      mostRecentTabOpenedTime = base::Time::FromNSDate(mostRecentTabDate);
-    }
+    mostRecentTabOpenedTime =
+        GetTimeMostRecentTabWasOpenForSceneState(_sceneState);
   }
 
   const synced_sessions::DistantSession* session = nullptr;
   const synced_sessions::DistantTab* tab = nullptr;
-  auto const syncedSessions =
-      std::make_unique<synced_sessions::SyncedSessions>(_sessionSyncService);
-    LastActiveDistantTab lastDistantTab = GetLastActiveDistantTab(
-        syncedSessions.get(), TabResumptionForXDevicesTimeThreshold());
-    if (lastDistantTab.tab) {
-      tab = lastDistantTab.tab;
-      if (_lastDistinctItemURL != tab->virtual_url) {
-        _lastDistinctItemURL = tab->virtual_url;
-        session = lastDistantTab.session;
-        lastSyncedTabSyncedTime = tab->last_active_time;
-      }
+  const synced_sessions::SyncedSessions syncedSessions(_sessionSyncService);
+  LastActiveDistantTab lastDistantTab = GetLastActiveDistantTab(
+      syncedSessions, TabResumptionForXDevicesTimeThreshold());
+  if (lastDistantTab.tab) {
+    tab = lastDistantTab.tab;
+    if (_lastDistinctItemURL != tab->virtual_url) {
+      _lastDistinctItemURL = tab->virtual_url;
+      session = lastDistantTab.session;
+      lastSyncedTabSyncedTime = tab->last_active_time;
     }
+  }
 
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   bool canShowMostRecentItem =
       activeWebState && NewTabPageTabHelper::FromWebState(activeWebState)
                             ->ShouldShowStartSurface();
   // If both times have not been updated, that means there is no item to return.
-  if (mostRecentTabOpenedTime == base::Time::UnixEpoch() &&
-      lastSyncedTabSyncedTime == base::Time::UnixEpoch()) {
+  if (!mostRecentTabOpenedTime.has_value() &&
+      !lastSyncedTabSyncedTime.has_value()) {
     return;
-  } else if (lastSyncedTabSyncedTime > mostRecentTabOpenedTime) {
+  }
+
+  if (lastSyncedTabSyncedTime > mostRecentTabOpenedTime) {
     [self fetchLastSyncedTabItemFromLastActiveDistantTab:tab session:session];
     _sessionTag = session->tag;
     _tabId = tab->tab_id;
   } else if (canShowMostRecentItem) {
     [self fetchMostRecentTabItemFromWebState:mostRecentTab
-                                  openedTime:mostRecentTabOpenedTime];
+                                  openedTime:mostRecentTabOpenedTime.value_or(
+                                                 base::Time::UnixEpoch())];
   }
 }
 

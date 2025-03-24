@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
@@ -52,7 +51,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/translate/translate_page_action_controller.h"
-#include "chrome/browser/ui/views/zoom/zoom_page_action_controller.h"
+#include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -64,6 +63,7 @@
 #include "components/metrics/content/dwa_web_contents_observer.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "net/base/features.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -210,8 +210,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     }
 
     if (IsPageActionMigrated(PageActionIconType::kZoom)) {
-      zoom_page_action_controller_ =
-          std::make_unique<zoom::ZoomPageActionController>(tab);
+      zoom_view_controller_ = std::make_unique<zoom::ZoomViewController>(tab);
     }
   }
 

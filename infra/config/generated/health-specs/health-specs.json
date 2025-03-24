@@ -7523,27 +7523,6 @@
           }
         ]
       },
-      "android-cronet-marshmallow-arm64-perf-rel": {
-        "contact_team_email": "cronet-team@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "android-cronet-riscv64-dbg": {
         "contact_team_email": "cronet-sheriff@google.com",
         "problem_specs": [

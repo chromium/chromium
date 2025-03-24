@@ -110,12 +110,6 @@ using testing::_;
 
 @synthesize unhandledWheelEventReceived = _unhandledWheelEventReceived;
 
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed {
-  if (!consumed)
-    _unhandledWheelEventReceived = true;
-}
-
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed {
   if (!consumed &&

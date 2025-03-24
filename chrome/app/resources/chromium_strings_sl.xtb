@@ -340,6 +340,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Prijava v omrežje</translation>
 <translation id="5924017743176219022">Vzpostavljanje povezave z internetom …</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
+<translation id="5949225980829865667">Če želite dostopati do tega zaznamka in drugega v vseh napravah, se prijavite v Chromium</translation>
 <translation id="5972142260211327093">Če vas je Chromium naključno prijavil za aktivni preizkus, zgodovina brskanja vpliva na oglase, ki so prikazani, in zanimanja, kot je ocenjeno spodaj. Chromium zaradi varovanja vaše zasebnosti vsak mesec sproti izbriše vaša zanimanja. Zanimanja se osvežujejo, razen če jih odstranite.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organizacija samodejno zapre Chromium, če ga ne uporabljate 1 minuto.}one{Organizacija samodejno zapre Chromium, če ga ne uporabljate # minuto.}two{Organizacija samodejno zapre Chromium, če ga ne uporabljate # minuti.}few{Organizacija samodejno zapre Chromium, če ga ne uporabljate # minute.}other{Organizacija samodejno zapre Chromium, če ga ne uporabljate # minut.}}</translation>
 <translation id="5987687638152509985">Posodobite Chromium, če želite začeti sinhronizacijo</translation>

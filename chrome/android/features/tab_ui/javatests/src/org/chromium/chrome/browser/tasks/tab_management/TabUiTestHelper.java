@@ -405,7 +405,8 @@ public class TabUiTestHelper {
                 cta.getTabModelSelector()
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(isIncognito);
-        assertEquals(1, filter.getCount());
+        assertEquals(1, filter.getTabGroupCount());
+        assertEquals(1, filter.getIndividualTabAndGroupCount());
     }
 
     /**

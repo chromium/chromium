@@ -176,6 +176,15 @@ class NativeWidgetMacTest : public WidgetTest {
   NativeWidgetMacTest(const NativeWidgetMacTest&) = delete;
   NativeWidgetMacTest& operator=(const NativeWidgetMacTest&) = delete;
 
+  // TODO(ellyjones): Once DialogDelegate::CreateDialogWidget can accept a
+  // unique_ptr, return unique_ptr here.
+  static DialogDelegateView* MakeModalDialog(ui::mojom::ModalType modal_type) {
+    auto dialog = std::make_unique<DialogDelegateView>(
+        DialogDelegateView::CreatePassKey());
+    dialog->SetModalType(modal_type);
+    return dialog.release();
+  }
+
   // Make an NSWindow with a close button and a title bar to use as a parent.
   // This NSWindow is backed by a widget that is not exposed to the caller.
   // To destroy the Widget, the native NSWindow must be closed.
@@ -1231,14 +1240,6 @@ TEST_F(NativeWidgetMacTest, CapturedMouseUpClearsDrag) {
 
 namespace {
 
-// TODO(ellyjones): Once DialogDelegate::CreateDialogWidget can accept a
-// unique_ptr, return unique_ptr here.
-DialogDelegateView* MakeModalDialog(ui::mojom::ModalType modal_type) {
-  auto dialog = std::make_unique<DialogDelegateView>();
-  dialog->SetModalType(modal_type);
-  return dialog.release();
-}
-
 // While in scope, waits for a call to a swizzled objective C method, then quits
 // a nested run loop.
 class ScopedSwizzleWaiter {
@@ -1299,8 +1300,8 @@ ScopedSwizzleWaiter* ScopedSwizzleWaiter::instance_ = nullptr;
 // animation). However, testing with overlapping swizzlers is tricky.
 Widget* ShowChildModalWidgetAndWait(NSWindow* native_parent) {
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::mojom::ModalType::kChild), gfx::NativeWindow(),
-      gfx::NativeView(native_parent.contentView));
+      NativeWidgetMacTest::MakeModalDialog(ui::mojom::ModalType::kChild),
+      gfx::NativeWindow(), gfx::NativeView(native_parent.contentView));
 
   modal_dialog_widget->SetBounds(gfx::Rect(50, 50, 200, 150));
   EXPECT_FALSE(modal_dialog_widget->IsVisible());
@@ -1331,8 +1332,8 @@ Widget* ShowChildModalWidgetAndWait(NSWindow* native_parent) {
 // sheet animation is blocking.
 Widget* ShowWindowModalWidget(NSWindow* native_parent) {
   Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::mojom::ModalType::kWindow), gfx::NativeWindow(),
-      gfx::NativeView(native_parent.contentView));
+      NativeWidgetMacTest::MakeModalDialog(ui::mojom::ModalType::kWindow),
+      gfx::NativeWindow(), gfx::NativeView(native_parent.contentView));
   sheet_widget->Show();
   return sheet_widget;
 }
@@ -1730,7 +1731,7 @@ TEST_F(NativeWidgetMacTest, CloseWindowModalSheetWithoutSheetParent) {
 TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
   NSWindow* parent = MakeBorderlessNativeParent();
   Widget* dialog = views::DialogDelegate::CreateDialogWidget(
-      new DialogDelegateView, gfx::NativeWindow(),
+      MakeModalDialog(ui::mojom::ModalType::kNone), gfx::NativeWindow(),
       gfx::NativeView(parent.contentView));
   NativeWidgetMacNSWindowHost* window_host =
       NativeWidgetMacNSWindowHost::GetFromNativeWindow(
@@ -1754,7 +1755,7 @@ TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
   Widget* parent_widget = CreateTopLevelNativeWidget();
   parent = parent_widget->GetNativeWindow().GetNativeNSWindow();
   dialog = views::DialogDelegate::CreateDialogWidget(
-      new DialogDelegateView, gfx::NativeWindow(),
+      MakeModalDialog(ui::mojom::ModalType::kNone), gfx::NativeWindow(),
       gfx::NativeView(parent.contentView));
   window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       dialog->GetNativeWindow());

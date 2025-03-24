@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
 <translation id="1908234395526491708">UDP сұрауының ақаулары</translation>
 <translation id="1908394185991500139">сол жақ көрсеткісі</translation>
+<translation id="1911678930322867245">Үстіңгі оң жаққа жылжыту</translation>
 <translation id="1914144885717544695">жұма күні</translation>
 <translation id="1915960750806557358">Пікір жіберіңіз немесе мәселені сипаттаңыз. Жеке басқа қатысты, шетін не құпия ештеңе қоспаңыз.</translation>
 <translation id="1923388006036088459">Акценттік түстер</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">жағажай</translation>
 <translation id="819278132617411009">Өнімділікті арттыру үшін Google AI пайдаланыңыз</translation>
-<translation id="82003371436638355">"Өзіңіздікін жасау" опциясын таңдаған соң, арнаулы нұсқауды жазыңыз. Сондай-ақ AI тұсқағазын жекелендіру үшін "Тақырыпты таңдау" опциясын, содан кейін асты сызылған сөздерді таңдаңыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Жасанды интеллект суреттерінің бірегей әрі әртүрлі опцияларын алу үшін "Маған шабыт керек" опциясын таңдаңыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Жасанды интеллект көмегімен жеке тұсқағазды жасаған кезде, суреттер жасау және өнімді жақсарту үшін нұсқау <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-дың Құпиялық саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> сәйкес Google серверлеріне жіберіледі. Жеке, шетін не құпия деректерді қоспаңыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Жасампаз жасанды интеллект қателесуі (соның ішінде адамдар туралы) мүмкін, сол себепті жақсылап тексеріңіз. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Толық ақпарат<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">Бетбелгілер</translation>
 <translation id="8833620912470026819">кактус орманы</translation>
 <translation id="8834539327799336565">Қазір жалғанғандар</translation>
+<translation id="8842526499753992487">Үстіңгі сол жаққа жылжыту</translation>
 <translation id="8845001906332463065">Анықтама алу</translation>
 <translation id="8849799913685544685">шамшырақ</translation>
 <translation id="8851859208664803097">Тоқтатылды: принтер қолжетімсіз</translation>

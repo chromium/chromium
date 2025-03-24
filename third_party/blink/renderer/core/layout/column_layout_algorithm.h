@@ -47,11 +47,19 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // multicol container, and retry in the next fragmentainer.
   BreakStatus LayoutChildren();
 
+  // Lay out and fragment content into columns. Keep going until done, out of
+  // space in any outer fragmentation context, or until a column spanner is
+  // found.
+  const LayoutResult* LayoutFragmentationContext(
+      const BlockBreakToken* next_column_token,
+      MarginStrut*);
+
   // Lay out one row of columns. The layout result returned is for the last
   // column that was laid out. The rows themselves don't create fragments. If
   // we're in a nested fragmentation context, and a break is inserted before the
   // row, nullptr is returned.
   const LayoutResult* LayoutRow(const BlockBreakToken* next_column_token,
+                                LayoutUnit row_offset,
                                 LayoutUnit miminum_column_block_size,
                                 MarginStrut*);
 

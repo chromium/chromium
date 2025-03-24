@@ -585,6 +585,7 @@ Une réauthentification en ligne peut être requise pour plusieurs raisons (par 
 <translation id="143649776386947790">Utiliser le comportement par défaut</translation>
 <translation id="1438739959477268107">Paramètre de génération de clé par défaut</translation>
 <translation id="1440408958042020947">Permet aux utilisateurs ayant activé Phone Hub d'accéder aux photos et vidéos récentes prises sur leur téléphone</translation>
+<translation id="1442458649848299896">Activer le contrôle du déploiement de la réduction <ph name="AL_HEADER_NAME" /> via des tests en conditions réelles</translation>
 <translation id="1443532790824582949">Activer le clavier virtuel tactile</translation>
 <translation id="1449083855104537880">Définissez cette règle sur "True" pour afficher les options d'accessibilité dans le menu de la barre d'état système. Si vous définissez cette règle sur "False", ces options ne s'affichent pas dans le menu.
 
@@ -1523,12 +1524,6 @@ Si cette règle n'est pas définie, la traduction instantanée sera initialement
       Si vous désactivez ce paramètre, <ph name="PRODUCT_NAME" /> ne détecte pas si une fenêtre est recouverte par d'autres.
 
       Si cette règle n'est pas configurée, les fenêtres recouvertes sont détectées.</translation>
-<translation id="2132424782557550556">Configure les règles de reporting cloud.
-
-      Ces règles sont ignorées si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
-
-      Ces règles ne sont appliquées que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
-      Elles sont toujours appliquées pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2134437727173969994">Autoriser le verrouillage de l'écran</translation>
 <translation id="2135335181634291106">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> vous permet de spécifier l'URL de l'icône favorite du moteur de recherche par défaut.
 
@@ -2117,6 +2112,7 @@ Si cette règle n'est pas configurée, la valeur par défaut est <ph name="POLIC
 <translation id="252742292004421898">Autoriser l'API Direct Sockets sur ces sites</translation>
 <translation id="2529880111512635313">Configurer la liste des applications et des extensions dont l'installation est forcée</translation>
 <translation id="253135976343875019">Délai d'inactivité avant l'affichage d'un avertissement (en cas de connexion secteur)</translation>
+<translation id="2532480434098051405">Autoriser Inline Image et améliorer les modèles d'IA.</translation>
 <translation id="2535370400681639351">Si cette règle est activée, les requêtes d'authentification gnubby sont envoyées par un proxy via une connexion hôte à distance.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, ces requêtes ne sont pas envoyées par un proxy.
@@ -3226,6 +3222,15 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 <translation id="3387999258705169775">Comportement par défaut pour la limitation imbriquée de la fonction setTimeout().</translation>
 <translation id="3388628790024977864">Interdire le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="GOOGLE_DRIVE_NAME" /> et <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Activer l'authentification gnubby pour l'hôte d'accès à distance</translation>
+<translation id="3394895899282672754">La réduction de l'en-tête de requête HTTP <ph name="AL_HEADER_NAME" /> et du getter JavaScript <ph name="JS_GETTER_NAME" /> est programmée pour des raisons de confidentialité.
+Pour faciliter les tests et assurer la compatibilité, cette règle vous permet d'activer ou de désactiver le déploiement de cette réduction.
+
+Si cette règle est activée ou n'est pas configurée, le déploiement de la réduction <ph name="AL_HEADER_NAME" /> sera appliqué via des tests en conditions réelles.
+Si cette règle est désactivée, les tests en conditions réelles ne pourront pas activer le déploiement de la réduction.
+
+Pour en savoir plus sur cette fonctionnalité, consultez https://github.com/explainers-by-googlers/reduce-accept-language.
+
+REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
 <translation id="3395744872155955051">Autoriser le choix de fichiers directement dans <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Ne pas afficher de recommandations d'applis dans le lanceur de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportement système par défaut (varie en fonction de la taille d'écran)</translation>
@@ -3553,6 +3558,17 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
       Pour en savoir plus sur <ph name="CORS" />, consultez la page <ph name="CORS_HELP_URL" />.
 
       La suppression de cette règle avait été annoncée pour la version 82 de <ph name="PRODUCT_NAME" />, mais elle a eu lieu à la version 84.</translation>
+<translation id="3604709604504768625">Cette règle contrôle les paramètres de la fonctionnalité Inline Image pour <ph name="PRODUCT_OS_NAME" />.
+
+0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties, des documents source et des commentaires écrits. Elles pourront également être examinées par des réviseurs humains dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les requêtes, les entrées, les sorties, les documents source et les commentaires écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3606571057705314194">Outil de sélection du profil désactivé au démarrage</translation>
 <translation id="3608206578291537084">Activer le pipeline de rapports chiffrés</translation>
 <translation id="3608281460204780443">Afficher l'icône du Chrome Web Store dans le lanceur d'applis <ph name="PRODUCT_OS_NAME" /> et sur la page de nouvel onglet</translation>
@@ -4181,6 +4197,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> n'est pas configurée, aucun mot clé n'active le moteur de recherche.</translation>
 <translation id="4090088362777472639">Hachage SHA-256 du playbook Ansible.</translation>
 <translation id="4091040199847925434">Désactiver les rapports sur les informations système et le contenu de pages utilisés pour améliorer la navigation sécurisée</translation>
+<translation id="4093058072421210667">Ne pas autoriser Inline Image.</translation>
 <translation id="4098920079809952737">Autoriser l'impression à la fois avec et sans graphiques d'arrière-plan</translation>
 <translation id="410061592404122032">Demander chaque fois qu'un site souhaite obtenir l'autorisation de gestion des fenêtres</translation>
 <translation id="410068710490553233">Autoriser la connexion à d'autres comptes Google</translation>
@@ -5038,6 +5055,7 @@ Si elle est définie sur "None" ou n'est pas définie, les certificats <ph name=
       Obsolète : Le modèle d'autorisations USB permettait de spécifier à la fois l'URL à l'origine de la requête et l'URL d'intégration. Il est obsolète et uniquement pris en charge pour la rétrocompatibilité, de cette manière : si l'URL à l'origine de la requête et l'URL d'intégration sont spécifiées, alors la seconde obtiendra l'autorisation en tant qu'origine de niveau supérieur et la première sera totalement ignorée.
 
       Si cette règle n'est pas définie, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
+<translation id="471269469779289997">Autoriser Inline Image sans améliorer les modèles d'IA.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo ne sera pas disponible.</translation>
 <translation id="4715773950737036924">Contrôlez la disponibilité des extensions dont la publication a été annulée sur le Chrome Web Store.</translation>
 <translation id="4722122254122249791">Activer l'isolation des sites pour des origines définies</translation>
@@ -5975,6 +5993,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
+<translation id="5368878547690689592">Contrôler le déploiement de la réduction <ph name="AL_HEADER_NAME" /></translation>
 <translation id="5369937289900051171">Impression couleur seulement</translation>
 <translation id="5370279767682621504">Activer la compatibilité avec HTTP 0.9 sur les ports non utilisés par défaut</translation>
 <translation id="5370765433640162225">Si cette règle est définie sur "True", le nettoyage automatique est lancé lors de la connexion pour vérifier que l'espace disque disponible est suffisant.
@@ -9332,6 +9351,7 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 
       Si cette règle est désactivée, les utilisateurs ne peuvent pas passer les pages d'avertissement.</translation>
 <translation id="7750991880413385988">Ouvrir la page Nouvel onglet</translation>
+<translation id="7752154519644940493">Paramètres de la fonctionnalité d'IA générative Inline Image</translation>
 <translation id="7753678409577376761">Activer le point d'entrée de la barre d'outils pour accéder aux fonctionnalités expérimentales du navigateur</translation>
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
 <translation id="7754893969683595513">Cette règle permet d'indiquer, en millisecondes, la fréquence à laquelle le service de gestion des appareils est interrogé en vue d'obtenir des informations sur les règles relatives aux utilisateurs. Les valeurs valides sont comprises entre 1 800 000 (30 minutes) et 86,4 millions (1 jour). Toute valeur en dehors de cette plage sera remplacée par la valeur minimale ou maximale la plus proche autorisée.
@@ -10461,6 +10481,7 @@ Elle n'est pas effective si elle est activée, laissée vide ou non configurée.
 <translation id="8575746110808109915">Cette règle permet d'activer ou non la fonctionnalité de restauration complète.
       Si cette règle est définie sur "True", les applis et fenêtres d'applis sont restaurées ou non après un plantage ou un redémarrage selon le paramètre de restauration des applis.
       Si cette règle est définie sur "False", seules les fenêtres du navigateur sont automatiquement lancées.</translation>
+<translation id="8579020983849384175">Éditeur de texte (compatible depuis la version 136)</translation>
 <translation id="8583509234908413302">Autoriser le retour à des versions antérieures des protocoles TLS/DTLS dans WebRTC</translation>
 <translation id="8584279193368801689">Limite le mode d'impression par code. Si cette règle n'est pas définie, aucune limite ne s'applique. Si le mode est indisponible, cette règle est ignorée. Notez que la fonctionnalité d'impression par code n'est activée que pour les imprimantes utilisant l'un des protocoles IPPS, HTTPS, USB ou IPP sur USB.</translation>
 <translation id="858510846828945657">Liste d'exceptions de la liste de blocage de domaines du service SSO flottant</translation>
@@ -11090,6 +11111,7 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
       Pour en savoir plus sur les formats d'entrée valides, rendez-vous sur https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur "<ph name="WILDCARD_VALUE" />" n'est pas acceptée pour cette règle. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
 <translation id="9010080992450148617">Autoriser les utilisateurs inscrits au Programme Protection Avancée à envoyer leurs téléchargements à Google pour une analyse approfondie</translation>
 <translation id="9012101302849557459">Étendre la compatibilité pour les applis Chrome sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name="LINUX_OS_NAME" />.</translation>
+<translation id="9013629280364842072">Désactiver le contrôle du déploiement de la réduction <ph name="AL_HEADER_NAME" /> via des tests en conditions réelles</translation>
 <translation id="9013875414788074110">Lors de la connexion, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut être effectuée sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
 
       Si cette règle est définie sur la valeur -1, l'utilisateur peut s'authentifier hors connexion sans limite de temps. Si elle est définie sur une autre valeur, celle-ci indique le délai suite à une authentification en ligne après lequel l'utilisateur doit à nouveau procéder à cette authentification.

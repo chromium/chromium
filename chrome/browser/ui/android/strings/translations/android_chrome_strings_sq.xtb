@@ -584,6 +584,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3721119614952978349">Ti dhe Google</translation>
 <translation id="3737319253362202215">Cilësimet e përkthimit</translation>
 <translation id="3738139272394829648">Prek për të kërkuar</translation>
+<translation id="3739455665973395693">Nuk ka fjalëkalime të komprometuara në "Llogarinë tënde të Google"</translation>
 <translation id="3739899004075612870">U shtua si faqeshënues në <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Kërkimi zanor nuk mund të përdoret në këtë pajisje</translation>
 <translation id="376561056759077985">Disa të dhëna nuk janë ruajtur ende</translation>
@@ -637,6 +638,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3985215325736559418">Dëshiron që ta shkarkosh përsëri <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
 <translation id="4000212216660919741">Shtëpia offline</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 fjalëkalim i komprometuar në "Llogarinë tënde të Google"}other{# fjalëkalime të komprometuara në "Llogarinë tënde të Google"}}</translation>
 <translation id="4016425174436051808">Nuk mund të ndiqet. Ndodhi një gabim.</translation>
 <translation id="4024768890073681126">Shfletuesi yt menaxhohet nga prindi yt</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# orë}other{# orë}}</translation>
@@ -692,6 +694,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4270730597186910506">Monitoro ose anulo monitorimin e një produkti</translation>
 <translation id="4277529130885813215">Përdor një pajisje tjetër</translation>
 <translation id="4282440837784183472">Organizata jote, <ph name="MANAGED_DOMAIN" />, menaxhon llogarinë ku je identifikuar dhe se si mund të përdoret Chrome. Administratori yt mund të konfigurojë ose të kufizojë veçori të caktuara.</translation>
+<translation id="4285498937028063278">Zhgozhdo</translation>
 <translation id="4285846616383034558">Kukit, memoria specifike dhe të dhëna të tjera të sajteve</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivizo kyçjen e ekranit te cilësimet e Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Skedë e re "e fshehtë"</translation>
@@ -831,6 +834,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4881695831933465202">Hap</translation>
 <translation id="488187801263602086">Riemërto skedarin</translation>
 <translation id="4885273946141277891">Numër i pambështetur i versioneve të Chrome.</translation>
+<translation id="4890973535105146893">Nuk ka fjalëkalime të ruajtura në "Llogarinë tënde të Google"</translation>
 <translation id="4905823827770127520">Përfshi një lidhje për te faqja</translation>
 <translation id="4908869848243824489">"Zbulo" nga Google</translation>
 <translation id="4910889077668685004">Aplikacionet e pagesës</translation>
@@ -920,6 +924,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5319359161174645648">Google rekomandon Chrome</translation>
 <translation id="5326246328175179736">Nuk mund të identifikohesh duke përdorur këtë llogari</translation>
+<translation id="5327248766486351172">Emri</translation>
 <translation id="5328542107300944283">Përdor me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5342314432463739672">Kërkesat për autorizim</translation>
 <translation id="534580735623577507">Asnjë sajt nga <ph name="TIME_PERIOD" /></translation>
@@ -1075,6 +1080,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="605721222689873409">VV</translation>
 <translation id="6059830886158432458">Kontrollo historitë dhe aktivitetin tënd këtu</translation>
 <translation id="6071995715087444295">Për të kontrolluar për fjalëkalimet e komprometuara, identifikohu në "Llogarinë tënde të Google"</translation>
+<translation id="6078323886959318429">Shto një shkurtore</translation>
 <translation id="6085886413119427067">Përcakton mënyrën e lidhjes me uebsajtet nëpërmjet një lidhjeje të sigurt</translation>
 <translation id="6087286598828478206">Dëshiron ta bllokosh grupin dhe të largohesh?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> orë të mbetura</translation>
@@ -1703,6 +1709,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
 <translation id="8712637175834984815">E kuptova</translation>
+<translation id="8715286883001906001">Forco fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="8723453889042591629">Përktheje me shpejtësi këtë faqe. Për ta modifikuar këtë shkurtore, preke dhe mbaje shtypur.</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8731268612289859741">Kodi i sigurisë</translation>
@@ -1830,6 +1837,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="970715775301869095"><ph name="MINUTES" /> minuta të mbetura</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Mbyll të gjitha skedat</translation>
+<translation id="984756705737569814">Nuk mund të kontrollohen fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="987264212798334818">Të përgjithshme</translation>
 <translation id="988091779042748639">Për të fshirë historikun e shfletimit në modalitetin "I fshehtë" nga pajisja jote, mbylli të gjitha skedat "e fshehta".</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> skeda</translation>

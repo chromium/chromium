@@ -132,7 +132,7 @@ TEST_F(InstantMessageQueueProcessorTest,
   auto message = CreateMessage(CollaborationEvent::TAB_REMOVED);
 
   // Remove user so that toast cannot be created from message.
-  message.attribution.triggering_user = std::nullopt;
+  message.attribution->triggering_user = std::nullopt;
 
   base::MockCallback<SuccessCallback> callback;
 

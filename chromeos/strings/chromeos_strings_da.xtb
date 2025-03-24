@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-anmodninger</translation>
 <translation id="1908394185991500139">venstrepil</translation>
+<translation id="1911678930322867245">Flyt til øverste højre hjørne</translation>
 <translation id="1914144885717544695">på fredag</translation>
 <translation id="1915960750806557358">Del din feedback, eller beskriv dit problem. Sørg for ikke at medtage personlige, følsomme eller fortrolige oplysninger.</translation>
 <translation id="1923388006036088459">Kontrastfarver</translation>
@@ -1543,16 +1544,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">en strand</translation>
 <translation id="819278132617411009">Brug Google AI til at blive mere produktiv</translation>
-<translation id="82003371436638355">Når du vælger "Opret dit eget", skal du angive en tilpasset prompt. Du kan også vælge "Vælg et tema" og derefter vælge de understregede ord for at foretage personlig tilpasning af din AI-baggrund.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Vælg "Lad mig inspirere" for at få mere unikke og varierede AI-billeder.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Når du opretter din egen baggrund, sendes prompten til Googles servere for at generere billeder og forbedre produktet i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles servicevilkår og privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Medtag ikke personlige, følsomme eller fortrolige oplysninger.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativ AI kan lave fejl, herunder om personer, så sørg for at dobbelttjekke svarene. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Få flere oplysninger<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
@@ -1679,6 +1670,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="8833620912470026819">kaktusskov</translation>
 <translation id="8834539327799336565">Forbundet lige nu</translation>
+<translation id="8842526499753992487">Flyt til øverste venstre hjørne</translation>
 <translation id="8845001906332463065">Få hjælp</translation>
 <translation id="8849799913685544685">et fyrtårn</translation>
 <translation id="8851859208664803097">Stoppet – Ingen forbindelse til printer</translation>

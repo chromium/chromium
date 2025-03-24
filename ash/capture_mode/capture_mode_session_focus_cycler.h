@@ -72,6 +72,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     kActionButtons,
     // The search results panel that can appear when Sunfish is enabled.
     kSearchResultsPanel,
+    // The web contents inside the search results panel.
+    kSearchResultsPanelWebContents,
   };
 
   // If a focusable capture session item is part of a views hierarchy, it needs
@@ -274,6 +276,10 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // Called when the disclaimer widget is closed, to pass focus back to the
   // focus cycler if needed.
   void OnDisclaimerWidgetClosed();
+
+  // Advances focus to the next item, assuming the last focusable element inside
+  // the search results panel web contents has been reached.
+  void AdvanceFocusAfterSearchResultsPanel(bool reverse);
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;

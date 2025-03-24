@@ -30,7 +30,9 @@ constexpr base::TimeDelta kDebounceDelay = base::Seconds(0.1);
 GlicFocusedTabManager::GlicFocusedTabManager(
     Profile* profile,
     GlicWindowController& window_controller)
-    : profile_(profile), window_controller_(window_controller) {
+    : profile_(profile),
+      window_controller_(window_controller),
+      focused_tab_data_(NoFocusedTabData()) {
   BrowserList::GetInstance()->AddObserver(this);
   window_activation_subscription_ =
       window_controller.AddWindowActivationChangedCallback(base::BindRepeating(
@@ -157,16 +159,16 @@ void GlicFocusedTabManager::MaybeUpdateFocusedTab(bool force_notify,
 void GlicFocusedTabManager::PerformMaybeUpdateFocusedTab(bool force_notify) {
   cached_force_notify_ = false;
   FocusedTabData new_focused_tab_data = ComputeFocusedTabData();
-  bool focus_changed = focused_tab_data_ != new_focused_tab_data;
-  if (focus_changed) {
+  bool focus_same = focused_tab_data_.IsSame(new_focused_tab_data);
+  if (!focus_same) {
     focused_tab_data_ = new_focused_tab_data;
 
     // This is sufficient for now because there's currently no way for an
     // invalid focusable to become valid without changing |WebContents|.
-    Observe(focused_tab_data_.focused_tab_contents.get());
+    Observe(focused_tab_data_.focus());
   }
 
-  if (focus_changed || force_notify) {
+  if (!focus_same || force_notify) {
     NotifyFocusedTabChanged();
   }
 }
@@ -179,9 +181,7 @@ FocusedTabData GlicFocusedTabManager::ComputeFocusedTabData() {
         (attached_browser->IsActive() || window_controller_->IsActive())) {
       return ComputeFocusableTabDataForBrowser(attached_browser);
     }
-
-    return FocusedTabData(nullptr, std::nullopt,
-                          glic::mojom::NoCandidateTabError::kNoFocusableTabs);
+    return {NoFocusedTabData("attached browser window inactive")};
   }
 
   if (window_controller_->IsActive()) {
@@ -195,29 +195,23 @@ FocusedTabData GlicFocusedTabManager::ComputeFocusedTabData() {
     return ComputeFocusableTabDataForBrowser(active_browser);
   }
 
-  // Otherwise return FocusedTabData with NoCandidateTabError::kNoFocusableTabs.
-  return FocusedTabData(nullptr, std::nullopt,
-                        glic::mojom::NoCandidateTabError::kNoFocusableTabs);
+  return {NoFocusedTabData("no active browser window")};
 }
 
 FocusedTabData GlicFocusedTabManager::ComputeFocusableTabDataForBrowser(
     Browser* browser) {
-  if (IsBrowserValid(browser) && IsBrowserStateValid(browser)) {
-    content::WebContents* const web_contents =
-        browser->GetActiveTabInterface()
-            ? browser->GetActiveTabInterface()->GetContents()
-            : nullptr;
-    std::optional<glic::mojom::NoCandidateTabError> no_focused_tab_error =
-        IsValidCandidate(web_contents);
-    std::optional<glic::mojom::InvalidCandidateError> invalid_candidate_error =
-        IsValidFocusable(web_contents);
-    return FocusedTabData(web_contents, invalid_candidate_error,
-                          no_focused_tab_error);
+  if (!IsBrowserValid(browser) || !IsBrowserStateValid(browser)) {
+    return {NoFocusedTabData("no active browser window")};
   }
-  // Otherwise return FocusedTabData with null web_contents and kNoFocusableTabs
-  // error.
-  return FocusedTabData(nullptr, std::nullopt,
-                        glic::mojom::NoCandidateTabError::kNoFocusableTabs);
+  content::WebContents* web_contents =
+      browser->GetActiveTabInterface()
+          ? browser->GetActiveTabInterface()->GetContents()
+          : nullptr;
+
+  if (!IsValidCandidate(web_contents) || !IsValidFocusable(web_contents)) {
+    return {NoFocusedTabData("no focusable tab available", web_contents)};
+  }
+  return {web_contents->GetWeakPtr()};
 }
 
 void GlicFocusedTabManager::NotifyFocusedTabChanged() {
@@ -248,26 +242,22 @@ bool GlicFocusedTabManager::IsBrowserStateValid(Browser* browser) {
   return true;
 }
 
-std::optional<glic::mojom::NoCandidateTabError>
-GlicFocusedTabManager::IsValidCandidate(content::WebContents* web_contents) {
-  if (!web_contents) {
-    return glic::mojom::NoCandidateTabError::kNoFocusableTabs;
-  }
-
-  return std::nullopt;
+bool GlicFocusedTabManager::IsValidCandidate(
+    content::WebContents* web_contents) {
+  return web_contents != nullptr;
 }
 
-std::optional<glic::mojom::InvalidCandidateError>
-GlicFocusedTabManager::IsValidFocusable(content::WebContents* web_contents) {
+bool GlicFocusedTabManager::IsValidFocusable(
+    content::WebContents* web_contents) {
   if (!web_contents) {
-    return glic::mojom::InvalidCandidateError::kUnknown;
+    return false;
   }
   auto url =
       const_cast<content::WebContents*>(web_contents)->GetLastCommittedURL();
   if (url.SchemeIs(content::kChromeDevToolsScheme)) {
-    return glic::mojom::InvalidCandidateError::kUnsupportedUrl;
+    return false;
   }
-  return std::nullopt;
+  return true;
 }
 
 FocusedTabData GlicFocusedTabManager::GetFocusedTabData() {

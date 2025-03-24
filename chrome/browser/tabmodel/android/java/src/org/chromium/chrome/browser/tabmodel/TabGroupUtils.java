@@ -21,7 +21,7 @@ public class TabGroupUtils {
      * @return The selected tab of the group which contains the {@code tab}
      */
     public static Tab getSelectedTabInGroupForTab(TabGroupModelFilter filter, Tab tab) {
-        return filter.getTabAt(filter.indexOf(tab));
+        return filter.getRepresentativeTabAt(filter.representativeIndexOf(tab));
     }
 
     /**

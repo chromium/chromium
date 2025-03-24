@@ -13,6 +13,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback.h"
@@ -59,7 +60,7 @@ constexpr char kUnsupportedObject[] =
     "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
 
 // static
-AXElementWrapper::AXType AXElementWrapper::TypeOf(const id node) {
+AXElementWrapper::AXType AXElementWrapper::TypeOf(id node) {
   DCHECK(IsValidElement(node));
   if (IsNSAccessibilityElement(node)) {
     return AXType::kNSAccessibilityElement;
@@ -71,29 +72,29 @@ AXElementWrapper::AXType AXElementWrapper::TypeOf(const id node) {
 }
 
 // static
-bool AXElementWrapper::IsValidElement(const id node) {
+bool AXElementWrapper::IsValidElement(id node) {
   return AXElementWrapper(node).IsValidElement();
 }
 
 // static
-bool AXElementWrapper::IsNSAccessibilityElement(const id node) {
+bool AXElementWrapper::IsNSAccessibilityElement(id node) {
   return AXElementWrapper(node).IsNSAccessibilityElement();
 }
 
 // static
-bool AXElementWrapper::IsAXUIElement(const id node) {
+bool AXElementWrapper::IsAXUIElement(id node) {
   return AXElementWrapper(node).IsAXUIElement();
 }
 
 // static
-NSArray* AXElementWrapper::ChildrenOf(const id node) {
+NSArray* AXElementWrapper::ChildrenOf(id node) {
   return AXElementWrapper(node).Children();
 }
 
 // Returns DOM id of a given node (either AXUIElement or
 // BrowserAccessibilityCocoa).
 // static
-std::string AXElementWrapper::DOMIdOf(const id node) {
+std::string AXElementWrapper::DOMIdOf(id node) {
   return AXElementWrapper(node).DOMId();
 }
 
@@ -114,7 +115,7 @@ id AXElementWrapper::AsId() const {
 }
 
 std::string AXElementWrapper::DOMId() const {
-  const id domid_value = *GetAttributeValue(@"AXDOMIdentifier");
+  id domid_value = *GetAttributeValue(@"AXDOMIdentifier");
   return base::SysNSStringToUTF8(static_cast<NSString*>(domid_value));
 }
 
@@ -279,7 +280,7 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
     base::apple::ScopedCFTypeRef<CFTypeRef> parameter_ref(
         CFBridgingRetain(parameter));
     if ([parameter isKindOfClass:[NSValue class]] &&
-        !strcmp([parameter objCType], @encode(NSRange))) {
+        !UNSAFE_TODO(strcmp([parameter objCType], @encode(NSRange)))) {
       NSRange range = [parameter rangeValue];
       parameter_ref.reset(AXValueCreate(kAXValueTypeCFRange, &range));
     }

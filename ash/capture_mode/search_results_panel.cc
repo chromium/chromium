@@ -203,7 +203,8 @@ SearchResultsPanel::SearchResultsPanel() {
                   IconButton::Builder()
                       .SetType(IconButton::Type::kSmallFloating)
                       .SetVectorIcon(&kMediumOrLargeCloseButtonIcon)
-                      .SetAccessibleName(u"Close Panel")
+                      .SetAccessibleName(l10n_util::GetStringUTF16(
+                          IDS_ASH_SUNFISH_SEARCH_DIALOG_CLOSE))
                       .Build())
                   .CopyAddressTo(&close_button_)
                   .SetCallback(base::BindRepeating(
@@ -305,6 +306,10 @@ SearchResultsPanel::GetHighlightableItems() const {
   return highlightable_items;
 }
 
+views::View* SearchResultsPanel::GetWebViewForFocus() {
+  return search_results_view_->GetInitiallyFocusedView();
+}
+
 void SearchResultsPanel::Navigate(const GURL& url) {
   search_results_view_->Navigate(url);
 }
@@ -329,6 +334,11 @@ void SearchResultsPanel::RefreshStackingOrder(aura::Window* new_root) {
 }
 
 bool SearchResultsPanel::IsTextfieldPseudoFocused() const {
+  if (features::IsSunfishLensWebEnabled()) {
+    return false;
+  }
+
+  CHECK(search_box_view_);
   return CaptureModeSessionFocusCycler::HighlightHelper::Get(
              search_box_view_->textfield_)
       ->has_focus();

@@ -343,6 +343,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Crypto.UnexportableKeys.BackgroundTaskRetries{TaskType}{Success}"
+    units="retries" expires_after="2025-09-30">
+  <owner>alexilin@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number retries it took to complete a TPM operation scheduled
+    through unexportable_keys::UnexportableKeyService, only for operations that
+    are completed with {Success}.
+
+    Recorded right after a TPM operation completes. Recorded only for
+    {TaskType}.
+  </summary>
+  <token key="TaskType">
+    <variant name=".FromWrappedKey"
+        summary="operations to create a signing key from a wrapped key"/>
+    <variant name=".GenerateKey"
+        summary="operations to generate a new signing key"/>
+    <variant name=".Sign" summary="signing operations"/>
+  </token>
+  <token key="Success">
+    <variant name=".Failure" summary="failure"/>
+    <variant name=".Success" summary="success"/>
+  </token>
+</histogram>
+
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskRunDuration{TaskType}"
     units="ms" expires_after="2025-09-30">
   <owner>alexilin@chromium.org</owner>

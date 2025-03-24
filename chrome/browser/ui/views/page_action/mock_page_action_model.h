@@ -72,6 +72,10 @@ class MockPageActionModel : public PageActionModelInterface {
               (base::PassKey<PageActionController>,
                const std::optional<std::u16string>& override_tooltip),
               (override));
+  MOCK_METHOD(void,
+              SetShouldHidePageAction,
+              (base::PassKey<PageActionController>, bool should_hide),
+              (override));
 };
 
 }  // namespace page_actions

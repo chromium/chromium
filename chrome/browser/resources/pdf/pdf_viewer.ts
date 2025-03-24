@@ -27,10 +27,6 @@ import {BeforeUnloadProxyImpl} from './before_unload_proxy.js';
 // </if>
 import type {Bookmark} from './bookmark_type.js';
 import type {BrowserApi} from './browser_api.js';
-// <if expr="enable_pdf_ink2">
-import type {AnnotationBrush, Color} from './constants.js';
-import {AnnotationBrushType} from './constants.js';
-// </if>
 import type {Attachment, DocumentMetadata, ExtendedKeyEvent, Point} from './constants.js';
 import {FittingType, FormFieldFocusType, SaveRequestType} from './constants.js';
 import type {MessageData} from './controller.js';
@@ -52,6 +48,9 @@ import type {ViewerPdfSidenavElement} from './elements/viewer_pdf_sidenav.js';
 import type {Ink2ThumbnailData} from './elements/viewer_thumbnail_bar.js';
 //</if>
 import type {ViewerToolbarElement} from './elements/viewer_toolbar.js';
+// <if expr="enable_pdf_ink2">
+import {Ink2Manager} from './ink2_manager.js';
+//</if>
 // <if expr="enable_ink">
 import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>
@@ -177,12 +176,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       canSerializeDocument_: {type: Boolean},
       clockwiseRotations_: {type: Number},
 
-      // <if expr="enable_pdf_ink2">
-      currentBrushColor_: {type: Object},
-      currentBrushSize_: {type: Number},
-      currentBrushType_: {type: AnnotationBrushType},
-      // </if>
-
       /** The number of pages in the PDF document. */
       docLength_: {type: Number},
       documentHasFocus_: {type: Boolean},
@@ -234,11 +227,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected bookmarks_: Bookmark[] = [];
   private canSerializeDocument_: boolean = false;
   protected clockwiseRotations_: number = 0;
-  // <if expr="enable_pdf_ink2">
-  protected currentBrushColor_?: Color;
-  protected currentBrushSize_?: number = 0;
-  protected currentBrushType_: AnnotationBrushType = AnnotationBrushType.PEN;
-  // </if>
   protected docLength_: number = 0;
   protected documentHasFocus_: boolean = false;
   protected documentMetadata_: DocumentMetadata = {
@@ -262,7 +250,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected hasEdits_: boolean = false;
   protected hasEnteredAnnotationMode_: boolean = false;
   // <if expr="enable_pdf_ink2">
-  private hasInitializedBrush_: boolean = false;
   protected hasInk2Edits_: boolean = false;
   private hasSavedEdits_: boolean = false;
   // </if>
@@ -542,11 +529,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
                              UserAction.EXIT_INK2_ANNOTATION_MODE);
       }
       this.pluginController_.setAnnotationMode(annotationMode);
-      if (!this.hasInitializedBrush_) {
-        this.hasInitializedBrush_ = true;
-        const defaultBrushMessage =
-            await this.pluginController_.getAnnotationBrush();
-        this.setAnnotationBrush_(defaultBrushMessage.data);
+      if (!Ink2Manager.getInstance().isInitializationStarted()) {
+        await Ink2Manager.getInstance().initializeBrush();
       }
       this.annotationMode_ = annotationMode;
       return;
@@ -1239,62 +1223,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // strokes have updated. If the user hasn't saved, only show the
     // beforeunload dialog if there's edits.
     this.setShowBeforeUnloadDialog_(this.hasSavedEdits_ || this.hasInk2Edits_);
-  }
-
-  protected onBrushColorChanged_(e: CustomEvent<{value: Color}>): void {
-    assert(this.currentBrushType_ !== AnnotationBrushType.ERASER);
-    const newColor = e.detail.value;
-    if (this.currentBrushColor_ === newColor) {
-      return;
-    }
-
-    this.currentBrushColor_ = newColor;
-    this.setAnnotationBrushInPlugin_();
-  }
-
-  protected onBrushSizeChanged_(e: CustomEvent<{value: number}>): void {
-    const newSize = e.detail.value;
-    if (this.currentBrushSize_ === newSize) {
-      return;
-    }
-
-    this.currentBrushSize_ = newSize;
-    this.setAnnotationBrushInPlugin_();
-  }
-
-  protected async onBrushTypeChanged_(
-      e: CustomEvent<{value: AnnotationBrushType}>): Promise<void> {
-    const newType = e.detail.value;
-    if (this.currentBrushType_ === newType) {
-      return;
-    }
-
-    assert(this.pluginController_);
-    const brushMessage =
-        await this.pluginController_.getAnnotationBrush(newType);
-    this.setAnnotationBrush_(brushMessage.data);
-    this.setAnnotationBrushInPlugin_();
-  }
-
-  /**
-   * Sets the current brush properties to the values in `brush`.
-   */
-  private setAnnotationBrush_(brush: AnnotationBrush): void {
-    this.currentBrushColor_ = brush.color;
-    this.currentBrushSize_ = brush.size;
-    this.currentBrushType_ = brush.type;
-  }
-
-  /**
-   * Sets the annotation brush in the plugin with the current brush parameters.
-   */
-  private setAnnotationBrushInPlugin_(): void {
-    assert(this.pluginController_);
-    this.pluginController_.setAnnotationBrush({
-      type: this.currentBrushType_,
-      color: this.currentBrushColor_,
-      size: this.currentBrushSize_,
-    });
   }
   // </if>
 

@@ -78,7 +78,7 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   // Adds shortcut buttons to the OnTask pod view.
   void AddShortcutButtons();
 
-  // Update the color and text of the pin tab strip button, and the tab strip
+  // Update the color and text of the `pin_tab_strip_button_`, and the tab strip
   // visibility.
   void UpdatePinTabStripButton();
 

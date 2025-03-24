@@ -40,7 +40,4 @@ void RecordToastCloseButtonClicked(ToastId toast_id);
 void RecordToastDismissReason(ToastId toast_id,
                               toasts::ToastCloseReason close_reason);
 
-void RecordToastDismissMenuClicked(ToastId toast_id,
-                                   toasts::ToastDismissMenuEntries command_id);
-
 #endif  // CHROME_BROWSER_UI_TOASTS_TOAST_METRICS_H_

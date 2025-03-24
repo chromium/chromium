@@ -49,13 +49,17 @@ class HomeButtonController : public AppListControllerObserver,
   // should pass the event along to Button to consume.
   bool MaybeHandleGestureEvent(ui::GestureEvent* event);
 
-  // Whether the Assistant is available via long-press.
-  bool IsAssistantAvailable();
+  // Whether long-pressing the home button will perform an action, such as
+  // opening the Assistant UI or opening a Sunfish-behavior capture session.
+  bool IsLongPressActionAvailable();
 
   // Whether the Assistant UI currently showing.
   bool IsAssistantVisible();
 
  private:
+  // Whether the Assistant is available via long-press.
+  bool IsAssistantAvailable();
+
   // Whether Sunfish or Scanner's UI can be shown.
   bool IsSunfishOrScannerAvailable() const;
 

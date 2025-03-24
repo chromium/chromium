@@ -218,6 +218,22 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
+    public void testHistoryPagePromoHidden_hasPrimaryAccount_cct() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mDelegate =
+                new HistoryPageSigninPromoDelegate(
+                        mContext,
+                        mProfile,
+                        mLauncher,
+                        mOnPromoStateChange,
+                        /* isCreatedInCct= */ true);
+        mDelegate.refreshPromoState(TestAccounts.ACCOUNT1);
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
     public void testNtpPromoHidden_dismissedBefore() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         ChromeSharedPreferences.getInstance()
@@ -316,7 +332,11 @@ public class SigninPromoDelegateTest {
                     case SigninAccessPoint.BOOKMARK_MANAGER -> new BookmarkSigninPromoDelegate(
                             mContext, mProfile, mLauncher, mOnPromoStateChange, mOnOpenSettings);
                     case SigninAccessPoint.HISTORY_PAGE -> new HistoryPageSigninPromoDelegate(
-                            mContext, mProfile, mLauncher, mOnPromoStateChange);
+                            mContext,
+                            mProfile,
+                            mLauncher,
+                            mOnPromoStateChange,
+                            /* isCreatedInCct= */ false);
                     case SigninAccessPoint.NTP_FEED_TOP_PROMO -> new NtpSigninPromoDelegate(
                             mContext, mProfile, mLauncher, mOnPromoStateChange);
                     case SigninAccessPoint.RECENT_TABS -> new RecentTabsSigninPromoDelegate(

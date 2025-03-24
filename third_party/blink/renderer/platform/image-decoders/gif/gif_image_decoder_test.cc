@@ -529,4 +529,29 @@ TEST(GIFImageDecoderTest, errorFrame) {
   EXPECT_FALSE(decoder->Failed());
 }
 
+// This is a regression test for https://crbug.com/404288140 where
+// the following DCHECK in `blink::ImageFrame::TakeBitmapDataIfWritable` would
+// fail when called from `blink::SkiaImageDecoderBase::Decode`:
+//
+//     ```
+//     bool ImageFrame::TakeBitmapDataIfWritable(ImageFrame* other) {
+//       DCHECK(other);
+//       DCHECK_EQ(kFrameComplete, other->status_);  // <- this one
+//     ```
+TEST(GIFImageDecoderTest, regressionAgainstReusingIncompletePreviousFrame) {
+  scoped_refptr<SharedBuffer> test_data = ReadFileToSharedBuffer(
+      kDecodersTestingDir,
+      "incomplete-prev-frame-reusing-clusterfuzz-repro.gif");
+  ASSERT_TRUE(test_data.get());
+
+  std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
+  decoder->SetData(test_data.get(), true);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(2);
+  // Lack of a `DCHECK`-triggered crash is the main verification in this test.
+  // But for completeness, some supplementary verification follows below...
+  EXPECT_TRUE(decoder->Failed());
+  EXPECT_TRUE(frame);
+  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameEmpty);
+}
+
 }  // namespace blink

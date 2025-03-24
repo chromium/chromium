@@ -238,6 +238,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
 <translation id="1908234395526491708">Échecs des demandes UDP</translation>
 <translation id="1908394185991500139">flèche gauche</translation>
+<translation id="1911678930322867245">Déplacer dans le coin supérieur droit</translation>
 <translation id="1914144885717544695">vendredi</translation>
 <translation id="1915960750806557358">Faites-nous part de vos commentaires ou décrivez votre problème. Assurez-vous de n'inclure aucune donnée personnelle ni aucune donnée confidentielle.</translation>
 <translation id="1923388006036088459">Couleurs de mise en évidence</translation>
@@ -1543,16 +1544,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8183975772394450380">plage</translation>
 <translation id="819278132617411009">Utiliser l'IA de Google pour être plus productif</translation>
-<translation id="82003371436638355">Lorsque vous sélectionnez « Créer le vôtre », écrivez une requête personnalisée. Vous pouvez également sélectionner « Choisir un thème », puis les mots soulignés pour personnaliser votre fond d'écran AI.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Sélectionnez « Inspire-moi » pour obtenir plus d'options d'images générée par l'IA uniques et variées.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Lorsque vous créez votre propre fond d'écran, la requête est envoyée aux serveurs de Google pour générer des images et améliorer le produit, sous réserve de la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />politique de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. N'incluez aucun élément personnel ni aucun élément confidentiel.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-L'IA générative peut se tromper, même à propos de personnes. Veuillez donc vérifier ses réponses. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />En savoir plus<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
@@ -1679,6 +1670,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8833620912470026819">forêt de cactus</translation>
 <translation id="8834539327799336565">Actuellement connecté</translation>
+<translation id="8842526499753992487">Déplacer dans le coin supérieur gauche</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8849799913685544685">phare</translation>
 <translation id="8851859208664803097">Arrêté - Imprimante inaccessible</translation>

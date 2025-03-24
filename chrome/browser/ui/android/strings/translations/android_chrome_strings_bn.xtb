@@ -584,6 +584,7 @@
 <translation id="3721119614952978349">আপনি এবং Google</translation>
 <translation id="3737319253362202215">অনুবাদ সেটিংস</translation>
 <translation id="3738139272394829648">স্পর্শের মাধ্যমে সার্চ</translation>
+<translation id="3739455665973395693">আপনার Google অ্যাকাউন্ট চুরি হয়ে যাওয়া কোনও পাসওয়ার্ড নেই</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> এ বুকমার্ক করা হয়েছে</translation>
 <translation id="3740525748616366977">এই ডিভাইসে ভয়েস সার্চ উপলভ্য নেই</translation>
 <translation id="376561056759077985">কিছু ডেটা এখনও সেভ হয়নি</translation>
@@ -637,6 +638,7 @@
 <translation id="3985215325736559418">আপনি কি আবার <ph name="FILE_NAME" /> ডাউনলোড করতে চান?</translation>
 <translation id="3987993985790029246">লিঙ্ক কপি করুন</translation>
 <translation id="4000212216660919741">অফলাইন হোম</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{আপনার Google অ্যাকাউন্টের চুরি হয়ে যাওয়া ১টি পাসওয়ার্ড}one{আপনার Google অ্যাকাউন্টের চুরি হয়ে যাওয়া #টি পাসওয়ার্ড}other{আপনার Google অ্যাকাউন্টের চুরি হয়ে যাওয়া #টি পাসওয়ার্ড}}</translation>
 <translation id="4016425174436051808">ফলো করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="4024768890073681126">আপনার অভিভাবক ব্রাউজার ম্যানেজ করছেন</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
@@ -692,6 +694,7 @@
 <translation id="4270730597186910506">কোনও প্রোডাক্ট ট্র্যাক করুন বা ট্র্যাক করা বন্ধ করুন।</translation>
 <translation id="4277529130885813215">অন্য ডিভাইস ব্যবহার করুন</translation>
 <translation id="4282440837784183472">আপনার সাইন-ইন করা অ্যাকাউন্ট এবং Chrome কীভাবে ব্যবহার করা হয় তা আপনার প্রতিষ্ঠান, <ph name="MANAGED_DOMAIN" /> ম্যানেজ করে। আপনার অ্যাডমিনিস্ট্রেটর নির্দিষ্ট ফিচার সেট-আপ বা সীমিত করতে পারেন।</translation>
+<translation id="4285498937028063278">আনপিন</translation>
 <translation id="4285846616383034558">কুকি, ক্যাশে ও অন্যান্য সাইট ডেটা</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android সেটিংসে স্ক্রিন লক চালু করুন<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">নতুন ছদ্মবেশী ট্যাব</translation>
@@ -831,6 +834,7 @@
 <translation id="4881695831933465202">খুলুন</translation>
 <translation id="488187801263602086">ফাইলটির আবার নাম দিন</translation>
 <translation id="4885273946141277891">অসমর্থিত সংখ্যার Chrome দৃষ্টান্তগুলি</translation>
+<translation id="4890973535105146893">আপনার Google অ্যাকাউন্ট কোনও সেভ করা পাসওয়ার্ড নেই</translation>
 <translation id="4905823827770127520">পৃষ্ঠাতে লিঙ্ক যোগ করুন</translation>
 <translation id="4908869848243824489">Google-এর ডিসকভার</translation>
 <translation id="4910889077668685004">পেমেন্ট অ্যাপ্লিকেশান</translation>
@@ -920,6 +924,7 @@
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5319359161174645648">Google Chrome ব্যবহার করার সুপারিশ করে</translation>
 <translation id="5326246328175179736">এই অ্যাকাউন্ট ব্যবহার করে আপনি সাইন-ইন করতে পারবেন না</translation>
+<translation id="5327248766486351172">নাম</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> দিয়ে ব্যবহার করুন</translation>
 <translation id="5342314432463739672">অনুমতি দেওয়ার অনুরোধ</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />-এর মধ্যে কোনও সাইট নেই</translation>
@@ -1075,6 +1080,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
 <translation id="6071995715087444295">চুরি হয়ে যাওয়া পাসওয়ার্ড চেক করতে, নিজের Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
+<translation id="6078323886959318429">শর্টকাট যোগ করুন</translation>
 <translation id="6085886413119427067">কোনও সুরক্ষিত কানেকশনের মাধ্যমে ওয়েবসাইটগুলিতে কীভাবে কানেক্ট করবেন তা নির্ধারণ করে</translation>
 <translation id="6087286598828478206">ব্লক করে গ্রুপ ছেড়ে বেরিয়ে যেতে চান?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ঘণ্টা বাকি আছে</translation>
@@ -1703,6 +1709,7 @@
 <translation id="869891660844655955">মেয়াদকাল সমাপ্তির তারিখ</translation>
 <translation id="8699120352855309748">এইসব ভাষায় অনুবাদ হবে না</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
+<translation id="8715286883001906001">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড শক্তিশালী করুন</translation>
 <translation id="8723453889042591629">এই পৃষ্ঠাটি দ্রুত অনুবাদ করুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8731268612289859741">সিকিউরিটি কোড</translation>
@@ -1830,6 +1837,7 @@
 <translation id="970715775301869095"><ph name="MINUTES" /> মিনিট বাকি আছে</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="983192555821071799">সমস্ত ট্যাবগুলি বন্ধ করুন</translation>
+<translation id="984756705737569814">আপনার Google অ্যাকাউন্টের পাসওয়ার্ড চেক করা যাচ্ছে না</translation>
 <translation id="987264212798334818">সাধারণ</translation>
 <translation id="988091779042748639">আপনার ডিভাইস থেকে 'ছদ্মবেশী মোড'-এ করা ব্রাউজিংয়ের ইতিহাস মুছে ফেলতে, সব 'ছদ্মবেশী ট্যাব' বন্ধ করুন।</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" />টি ট্যাব</translation>

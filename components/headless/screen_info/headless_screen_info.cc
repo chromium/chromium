@@ -29,6 +29,8 @@ constexpr char kInvalidScreenDevicePixelRatio[] =
     "Invalid screen device pixel ratio: ";
 constexpr char kInvalidWorkAreaInset[] = "Invalid work area inset: ";
 constexpr char kInvalidRotation[] = "Invalid rotation: ";
+constexpr char kNonZeroPrimaryScreenOrigin[] =
+    "Primary screen origin can only be at {0,0}";
 
 // Screen Info parameters, keep in sync with window.getScreenDetails() output.
 constexpr char kColorDepth[] = "colorDepth";
@@ -220,6 +222,10 @@ std::string ParseOneScreenInfo(std::string_view screen_info,
       }
       break;
     }
+  }
+
+  if (result.empty() && !new_screen_info.bounds.origin().IsOrigin()) {
+    return kNonZeroPrimaryScreenOrigin;
   }
 
   result.push_back(new_screen_info);

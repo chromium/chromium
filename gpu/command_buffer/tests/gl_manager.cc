@@ -99,7 +99,7 @@ class GpuMemoryBufferImplTest : public gfx::GpuMemoryBuffer {
   }
   gfx::GpuMemoryBufferId GetId() const override { NOTREACHED(); }
   gfx::GpuMemoryBufferType GetType() const override {
-    return gfx::NATIVE_PIXMAP;
+    return gfx::SHARED_MEMORY_BUFFER;
   }
   gfx::GpuMemoryBufferHandle CloneHandle() const override { NOTREACHED(); }
   void OnMemoryDump(

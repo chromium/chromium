@@ -37,6 +37,8 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_link_preview_triggerer.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -826,5 +828,38 @@ void HTMLAnchorElementBase::Trace(Visitor* visitor) const {
 
 HTMLAnchorElement::HTMLAnchorElement(Document& document)
     : HTMLAnchorElementBase(html_names::kATag, document) {}
+
+void HTMLAnchorElement::DetachLayoutTree(bool performing_reattach) {
+  if (ScrollMarkerGroupData* data = GetScrollMarkerGroupContainerData()) {
+    data->RemoveFromFocusGroup(*this);
+  }
+  HTMLAnchorElementBase::DetachLayoutTree(performing_reattach);
+}
+
+Element* HTMLAnchorElement::ScrollTargetElement() const {
+  const KURL& url = Url();
+  if (!url.HasFragmentIdentifier()) {
+    return nullptr;
+  }
+  String fragment = url.FragmentIdentifier().ToString();
+  Node* anchor_node = GetDocument().FindAnchor(fragment);
+  return DynamicTo<Element>(anchor_node);
+}
+
+PaintLayerScrollableArea*
+HTMLAnchorElement::AncestorScrollableAreaOfScrollTargetElement() const {
+  Element* scroll_target = ScrollTargetElement();
+  if (!scroll_target) {
+    return nullptr;
+  }
+  for (Element* parent =
+           LayoutTreeBuilderTraversal::ParentElement(*scroll_target);
+       parent; parent = LayoutTreeBuilderTraversal::ParentElement(*parent)) {
+    if (parent->GetLayoutBox() && parent->GetLayoutBox()->GetScrollableArea()) {
+      return parent->GetLayoutBox()->GetScrollableArea();
+    }
+  }
+  return nullptr;
+}
 
 }  // namespace blink

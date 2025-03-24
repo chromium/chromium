@@ -1032,4 +1032,68 @@ TEST(AXNodeTest, GroupAsTreeItemParentPosInSetSetSize) {
   EXPECT_EQ(tree.GetFromId(8)->GetSetSize(), 6);
 }
 
+#if BUILDFLAG(IS_LINUX)
+TEST(AXNodeTest, ExtraAnnouncementNodesNotCreated) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root};
+  initial_state.has_tree_data = true;
+
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  tree_data.title = "Application";
+  initial_state.tree_data = tree_data;
+
+  AXTree tree;
+  ASSERT_TRUE(tree.Unserialize(initial_state)) << tree.error();
+
+  const AXNode* root_node = tree.root();
+  ASSERT_EQ(root.id, root_node->id());
+
+  // Extra announcement nodes should not be created unless a call to
+  // GetExtraAnnouncementNode is made.
+  ASSERT_EQ(nullptr, tree.extra_announcement_nodes());
+}
+
+TEST(AXNodeTest, GetExtraAnnouncementNodeByPriority) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root};
+  initial_state.has_tree_data = true;
+
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  tree_data.title = "Application";
+  initial_state.tree_data = tree_data;
+
+  AXTree tree;
+  ASSERT_TRUE(tree.Unserialize(initial_state)) << tree.error();
+
+  const AXNode* root_node = tree.root();
+  ASSERT_EQ(root.id, root_node->id());
+
+  const AXNode* assertive_node = root_node->GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority::kHigh);
+  EXPECT_EQ(assertive_node->id(), -1);
+  EXPECT_EQ(assertive_node->data().GetStringAttribute(
+                ax::mojom::StringAttribute::kContainerLiveStatus),
+            "assertive");
+
+  const AXNode* polite_node = root_node->GetExtraAnnouncementNode(
+      ax::mojom::AriaNotificationPriority::kNormal);
+  EXPECT_EQ(polite_node->id(), -2);
+  EXPECT_EQ(polite_node->data().GetStringAttribute(
+                ax::mojom::StringAttribute::kContainerLiveStatus),
+            "polite");
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 }  // namespace ui

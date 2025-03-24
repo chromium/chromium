@@ -17,7 +17,7 @@ import java.util.Set;
 
 /** Interface for getting tab groups for the tabs in the {@link TabModel}. */
 @NullMarked
-public interface TabGroupModelFilter extends SupportsTabModelObserver, TabList {
+public interface TabGroupModelFilter extends SupportsTabModelObserver {
     /**
      * This method adds a {@link TabGroupModelFilterObserver} to be notified on {@link
      * TabGroupModelFilter} changes.
@@ -35,6 +35,34 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver, TabList {
 
     /** Returns the {@link TabModel} that the filter is acting on. */
     TabModel getTabModel();
+
+    /**
+     * Returns a list of {@link Tab} objects with a tab group being represented by one tab from its
+     * tab group.
+     */
+    List<Tab> getRepresentativeTabList();
+
+    /** Returns the number of individual tabs plus tab groups in the filter. */
+    int getIndividualTabAndGroupCount();
+
+    /**
+     * Returns the current representative tab's index or {@link TabModel.INVALID_TAB_INDEX} if none
+     * is selected.
+     */
+    int getCurrentRepresentativeTabIndex();
+
+    /** Returns the current representative tab or null if none is selected. */
+    @Nullable Tab getCurrentRepresentativeTab();
+
+    /**
+     * Returns the representative tab for an index or null if one does not exist. For an individual
+     * tab this is the tab itself. For a tab group this is the most recently selected tab in the
+     * group.
+     */
+    @Nullable Tab getRepresentativeTabAt(int index);
+
+    /** Returns the index of the individual tab or the tab group it belongs to. */
+    int representativeIndexOf(@Nullable Tab tab);
 
     /** Returns the number of tab groups. */
     int getTabGroupCount();

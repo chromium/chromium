@@ -40,6 +40,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="2758123043070977469">Terdapat masalah semasa mengesahkan, sila log masuk semula.</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
 <translation id="2919669478609886916">Anda sedang berkongsi mesin ini dengan pengguna lain. Adakah anda mahu terus berkongsi?</translation>
+<translation id="2929683002824598593">Kongsi peranti</translation>
 <translation id="2939145106548231838">Sahkan kepada hos</translation>
 <translation id="3027681561976217984">Mod sentuh</translation>
 <translation id="3106379468611574572">Komputer jauh tidak memberikan tindak balas terhadap permintaan sambungan. Sila sahkan bahawa ia berada dalam talian dan cuba lagi.</translation>
@@ -117,10 +118,12 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="6178645564515549384">Hos pemesejan asal untuk bantuan jauh</translation>
 <translation id="618120821413932081">Kemas kini peleraian jauh supaya sepadan dengan tetingkap</translation>
 <translation id="6223301979382383752">Buka Pilihan Perakaman Skrin</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> telah meminta akses untuk melihat skrin anda serta mengawal papan kekunci dan tetikus anda. Adakah anda mahu berkongsi peranti anda?</translation>
 <translation id="6284412385303060032">Hos yang berjalan pada skrin logik konsol telah ditutup untuk menyokong mod tirai dengan menukar kepada hos yang berjalan dalam sesi khusus pengguna.</translation>
 <translation id="6542902059648396432">Laporkan isu...</translation>
 <translation id="6583902294974160967">Sokongan</translation>
 <translation id="6612717000975622067">Hantar Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Jika anda tidak mengambil tindakan, peranti anda akan memulakan perkongsian secara automatik selepas # saat.}other{Jika anda tidak mengambil tindakan, peranti anda akan memulakan perkongsian secara automatik selepas # saat.}}</translation>
 <translation id="6654753848497929428">Kongsi</translation>
 <translation id="677755392401385740">Hos dimulakan untuk pengguna: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplikasi pembantu untuk membuka URL pada klien <ph name="PRODUCT_NAME" /></translation>

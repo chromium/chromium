@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Аракеттер уруксат берилген чегинен ашты.</translation>
 <translation id="1908234395526491708">Ишке ашпай калган UDP сурамдары</translation>
 <translation id="1908394185991500139">солго жебе</translation>
+<translation id="1911678930322867245">Жогорку оң бурчка жылдыруу</translation>
 <translation id="1914144885717544695">жумада</translation>
 <translation id="1915960750806557358">Пикириңизди бөлүшүп же көйгөйдү сүрөттөп бериңиз. Жеке же купуя нерсени кошпоңуз.</translation>
 <translation id="1923388006036088459">Негизги түстөр</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">жээк</translation>
 <translation id="819278132617411009">Майнаптуу иштөө үчүн Google'дун жасалма интеллектин колдонуңуз</translation>
-<translation id="82003371436638355">"Өзүңүздүкүн түзүңүз" вариантын тандасаңыз, сурамыңызды жазыңыз. Же "Тема тандоо" баскычын тандап, ЖИ тушкагазын жекелештирүү үчүн асты сызылган сөздөрдү тандай аласыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Өзгөчө жана түрдүү сүрөттөрдү алуу үчүн "Мени шыктандыр" дегенди тандаңыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Өзүңүздүн тушкагазыңызды түзсөңүз, сурам Google ЖИ серверлерине жөнөтүлүп, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'дун Тейлөө шарттарына жана Купуялык эрежелерине<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ылайык сүрөттөрдү түзүү жана кызматты жакшыртуу үчүн колдонулат. Жеке же купуя нерселерди кошпоңуз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генеративдик жасалма интеллект адамдар, ошондой эле башка нерселер тууралуу так эмес маалыматты көрсөтүшү мүмкүн, андыктан анын жоопторун эки жолу текшериңиз. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Кеңири маалымат<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Улантуу</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">Кыстармалар</translation>
 <translation id="8833620912470026819">кактус токою</translation>
 <translation id="8834539327799336565">Учурда туташып турган түзмөктөр</translation>
+<translation id="8842526499753992487">Жогорку сол бурчка жылдыруу</translation>
 <translation id="8845001906332463065">Жардам алуу</translation>
 <translation id="8849799913685544685">маяк</translation>
 <translation id="8851859208664803097">Токтоду – Принтер жеткиликсиз</translation>

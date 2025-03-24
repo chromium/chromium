@@ -70,7 +70,7 @@ public class ObservableSupplierImpl<E extends @Nullable Object> implements Obser
     }
 
     @Override
-    public void removeObserver(@Nullable Callback<E> obs) {
+    public void removeObserver(Callback<E> obs) {
         // ObserverList has its own ThreadChecker.
         mObservers.removeObserver(obs);
     }

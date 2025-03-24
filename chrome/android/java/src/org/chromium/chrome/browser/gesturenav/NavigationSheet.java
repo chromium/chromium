@@ -29,17 +29,18 @@ public interface NavigationSheet {
 
     /**
      * Create {@link NavigationSheet} object.
-     * @param rootView Root view whose dimension is used for the sheet.
+     *
+     * @param parentView Parent view whose dimension is used for the sheet.
      * @param context {@link Context} used to retrieve resources.
      * @param bottomSheetController {@link BottomSheetController} object.
      * @return NavigationSheet object.
      */
     public static NavigationSheet create(
-            View rootView,
+            View parentView,
             Context context,
             Supplier<BottomSheetController> bottomSheetController,
             Profile profile) {
-        return new NavigationSheetCoordinator(rootView, context, bottomSheetController, profile);
+        return new NavigationSheetCoordinator(parentView, context, bottomSheetController, profile);
     }
 
     /**

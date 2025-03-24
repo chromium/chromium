@@ -208,12 +208,6 @@ class TestService : public base::Thread {
       dbus::ExportedObject::ResponseSender response_sender,
       bool success);
 
-  // Simulate DBus service that uses ExportedObject but forgets to send a
-  // response. This would trigger a CHECK crash.
-  void NotSendingResponseCrash(
-      MethodCall* method_call,
-      dbus::ExportedObject::ResponseSender response_sender);
-
   // Name of this service.
   std::string service_name_;
 

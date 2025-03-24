@@ -54,6 +54,8 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   TranslationManagerImpl(content::BrowserContext* browser_context,
                          const url::Origin& origin);
 
+  content::BrowserContext* browser_context() { return browser_context_.get(); }
+
  private:
   friend class TranslationManagerImplTest;
 
@@ -87,10 +89,6 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   void TranslationAvailable(blink::mojom::TranslatorLanguageCodePtr source_lang,
                             blink::mojom::TranslatorLanguageCodePtr target_lang,
                             TranslationAvailableCallback callback) override;
-
-  static bool PassAcceptLanguagesCheck(const std::string& accept_languages_str,
-                                       const std::string& source_lang,
-                                       const std::string& target_lang);
 
   OnDeviceTranslationServiceController& GetServiceController();
 

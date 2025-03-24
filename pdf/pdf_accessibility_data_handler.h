@@ -5,6 +5,7 @@
 #ifndef PDF_PDF_ACCESSIBILITY_DATA_HANDLER_H_
 #define PDF_PDF_ACCESSIBILITY_DATA_HANDLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -24,7 +25,9 @@ class PdfAccessibilityDataHandler {
 
   virtual void SetAccessibilityViewportInfo(
       AccessibilityViewportInfo viewport_info) = 0;
-  virtual void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) = 0;
+  // `doc_info` must be non-nullptr.
+  virtual void SetAccessibilityDocInfo(
+      std::unique_ptr<AccessibilityDocInfo> doc_info) = 0;
   virtual void SetAccessibilityPageInfo(
       AccessibilityPageInfo page_info,
       std::vector<AccessibilityTextRunInfo> text_runs,

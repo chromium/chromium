@@ -191,15 +191,33 @@
       <message name="IDS_IOS_ADD_READING_LIST_SHARE_EXTENSION" desc="Share extension button to add to reading list [Length: 30em]" meaning="Button title [Length: 30em]">
         Add to Reading List
       </message>
-      <message name="IDS_IOS_ERROR_MESSAGE_SHARE_EXTENSION" desc="Share extension message to tell the user the URL cannot be processed. The name of the application will be put in place of APPLICATION_NAME">
+      <message name="IDS_IOS_CANCEL_BUTTON_SHARE_EXTENSION" desc="Label for the cancel button in the share extension.">
+      Cancel
+    </message>
+    <message name="IDS_IOS_ERROR_MESSAGE_SHARE_EXTENSION" desc="Share extension message to tell the user the URL cannot be processed. The name of the application will be put in place of APPLICATION_NAME">
         APPLICATION_NAME cannot handle this link.
       </message>
-      <message name="IDS_IOS_OK_BUTTON_SHARE_EXTENSION" desc="Label for the OK button in the share extension.">
+      <message name="IDS_IOS_MORE_OPTIONS_BUTTON_SHARE_EXTENSION" desc="Label for the more options button in the share extension.">
+      More options
+    </message>
+    <message name="IDS_IOS_OK_BUTTON_SHARE_EXTENSION" desc="Label for the OK button in the share extension.">
         OK
       </message>
-    <message name="IDS_IOS_OPEN_IN_CHROME_SHARE_EXTENSION" desc="Share extension button to open link in Chrome [Length: 30em]" meaning="Button title [Length: 30em]">
+    <message name="IDS_IOS_OPEN_IN_BUTTON_SHARE_EXTENSION" desc="Label for the open in button in the share extension.">
+        Open in
+    </message>
+      <message name="IDS_IOS_OPEN_IN_CHROME_SHARE_EXTENSION" desc="Share extension button to open link in Chrome [Length: 30em]" meaning="Button title [Length: 30em]">
         Open in Chrome
       </message>
-      </messages>
+    <message name="IDS_IOS_OPEN_IN_INCOGNITO_BUTTON_SHARE_EXTENSION" desc="Label for the open in incognito button in the share extension.">
+      Open in Incognito
+    </message>
+    <message name="IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION" desc="Label for the search in button in the share extension.">
+        Search in
+    </message>
+    <message name="IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION" desc="Label for the search in incognito button in the share extension.">
+        Search in Incognito
+    </message>
+    </messages>
   </release>
 </grit>

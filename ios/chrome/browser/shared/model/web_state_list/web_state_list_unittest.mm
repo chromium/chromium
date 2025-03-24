@@ -10,10 +10,12 @@
 #import "base/supports_user_data.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_groups_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -445,11 +447,34 @@ class TestWebStateListDelegate final : public WebStateListDelegate {
   raw_ptr<web::WebState> last_activated_web_state_;
 };
 
+class TestWebStateListGroupsDelegate final : public WebStateListGroupsDelegate {
+ public:
+  void SetShouldDeleteGroup(bool group_deletion) {
+    group_deletion_ = group_deletion;
+  }
+
+  // WebStateListGroupsDelegate implementation.
+  bool ShouldDeleteGroup(const TabGroup* group) final {
+    return group_deletion_;
+  }
+
+  std::unique_ptr<web::WebState> WebStateToAddToEmptyGroup() final {
+    auto fake_web_state = std::make_unique<web::FakeWebState>();
+    fake_web_state->SetCurrentURL(GURL(kChromeUINewTabURL));
+    fake_web_state->SetNavigationManager(
+        std::make_unique<FakeNavigationManager>());
+    return fake_web_state;
+  }
+
+ private:
+  bool group_deletion_ = true;
+};
+
 }  // namespace
 
 class WebStateListTest : public PlatformTest {
  public:
-  WebStateListTest() : web_state_list_(&delegate_) {
+  WebStateListTest() : web_state_list_(&delegate_, &groups_delegate_) {
     observer_.Observe(&web_state_list_);
   }
 
@@ -458,6 +483,7 @@ class WebStateListTest : public PlatformTest {
 
  protected:
   TestWebStateListDelegate delegate_;
+  TestWebStateListGroupsDelegate groups_delegate_;
   WebStateList web_state_list_;
   WebStateListTestObserver observer_;
 
@@ -3383,4 +3409,34 @@ TEST_F(WebStateListTest, CloseOtherWebStates_GroupNoPinned) {
   EXPECT_TRUE(web_state_list_.ContainsGroup(group_0));
   EXPECT_TRUE(observer_.batch_operation_started());
   EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Ensures when the delegate allows group deletion, detaching the last tab
+// results in the group's removal.
+TEST_F(WebStateListTest, GroupDeletedWhenShouldBeDeleted) {
+  WebStateListBuilderFromDescription builder(&web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ]"));
+
+  observer_.ResetStatistics();
+  web_state_list_.DetachWebStateAt(0);
+  EXPECT_EQ("|", builder.GetWebStateListDescription());
+  EXPECT_TRUE(observer_.web_state_detached());
+}
+
+// Ensures when the delegate prevents group deletion, the group remains, and
+// detaching its final tab results in a new tab being added to it.
+TEST_F(WebStateListTest, GroupNotDeletedWhenShouldNotBeDeleted) {
+  WebStateListBuilderFromDescription builder(&web_state_list_);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [ 0 a ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  groups_delegate_.SetShouldDeleteGroup(false);
+  web_state_list_.DetachWebStateAt(0);
+
+  EXPECT_NE("| [ 0 a ]", builder.GetWebStateListDescription());
+  EXPECT_TRUE(web_state_list_.ContainsGroup(group_0));
+  EXPECT_TRUE(observer_.web_state_detached());
+  EXPECT_TRUE(observer_.web_state_inserted());
+  EXPECT_EQ(1, group_0->range().count());
 }

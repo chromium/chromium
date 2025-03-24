@@ -86,7 +86,7 @@ class CollaborationMessagingObserver
 
   // MessagingBackendService::InstantMessageDelegate
   void DisplayInstantaneousMessage(
-      const std::vector<InstantMessage>& messages,
+      InstantMessage message,
       InstantMessageSuccessCallback success_callback) override;
 
  private:

@@ -54,6 +54,7 @@ idle-detection
 interest-cohort
 join-ad-interest-group
 keyboard-map
+language-detector
 local-fonts
 magnetometer
 media-playback-while-not-visible
@@ -68,6 +69,7 @@ private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-create
 publickey-credentials-get
+rewriter
 run-ad-auction
 screen-wake-lock
 serial
@@ -76,11 +78,14 @@ shared-storage
 shared-storage-select-url
 speaker-selection
 storage-access
+summarizer
 sync-xhr
+translator
 unload
 usb
 vertical-scroll
 web-app-installation
 window-management
+writer
 xr-spatial-tracking
 

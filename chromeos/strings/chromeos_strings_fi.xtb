@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
 <translation id="1908234395526491708">Epäonnistuneita UDP-pyyntöjä</translation>
 <translation id="1908394185991500139">vasen nuolinäppäin</translation>
+<translation id="1911678930322867245">Siirrä oikeaan yläkulmaan</translation>
 <translation id="1914144885717544695">perjantaina</translation>
 <translation id="1915960750806557358">Jaa palautteesi tai kerro ongelmastasi. Älä lisää henkilökohtaisia, arkaluontoisia tai luottamuksellisia tietoja.</translation>
 <translation id="1923388006036088459">Korostusvärit</translation>
@@ -1543,16 +1544,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ranta</translation>
 <translation id="819278132617411009">Käytä Google tekoälyä tuottavuuden tehostamiseen</translation>
-<translation id="82003371436638355">Kirjoita oma kehote, kun valitset "Luo oma". Voit myös valita "Valitse teema" ja sitten alleviivatut sanat, niin voit personoida AI-taustakuvaasi.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Valitse "Kaipaan inspiraatiota", jos haluat nähdä yksilöllisempiä ja monipuolisempia tekoälyn generoimia kuvavaihtoehtoja.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kun luot oman taustakuvan, kehote lähetetään Googlen palvelimille ja sitä käytetään kuvien luomiseen ja tuotteen parantamiseen <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlen käyttöehtojen ja tietosuojakäytännön<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> mukaisesti. Älä lisää henkilökohtaisia, arkaluontoisia tai luottamuksellisia tietoja.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatiivinen tekoäly voi tehdä virheitä, myös ihmisiin liittyviä, joten tarkista sen vastaukset. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Lue lisää<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Jatka</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8208861521865154048">Edut</translation>
@@ -1679,6 +1670,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8820817407110198400">Kirjanmerkit</translation>
 <translation id="8833620912470026819">kaktusmetsä</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
+<translation id="8842526499753992487">Siirrä vasempaan yläkulmaan</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8849799913685544685">majakka</translation>
 <translation id="8851859208664803097">Keskeytetty – ei yhteyttä tulostimeen</translation>

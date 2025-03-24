@@ -694,6 +694,7 @@
 <translation id="4270730597186910506">ഒരു ഉൽപ്പന്നം ട്രാക്ക് അല്ലെങ്കിൽ അൺട്രാക്ക് ചെയ്യുക.</translation>
 <translation id="4277529130885813215">മറ്റൊരു ഉപകരണം ഉപയോഗിക്കുക</translation>
 <translation id="4282440837784183472">നിങ്ങളുടെ സ്ഥാപനമായ <ph name="MANAGED_DOMAIN" /> ആണ് നിങ്ങൾ സൈൻ ഇൻ ചെയ്യുന്ന അക്കൗണ്ടും Chrome എങ്ങനെ ഉപയോഗിക്കാമെന്നതും മാനേജ് ചെയ്യുന്നത്. ചില ഫീച്ചറുകൾ സജ്ജീകരിക്കാനും നിയന്ത്രിക്കാനും നിങ്ങളുടെ അഡ്‌മിന് കഴിയും.</translation>
+<translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
 <translation id="4285846616383034558">കുക്കികൾ, കാഷെ, മറ്റ് സൈറ്റ് ഡാറ്റ എന്നിവ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ സ്ക്രീൻ ലോക്ക് ഓണാക്കുക<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">പുതിയ അദൃശ്യ ടാബ്</translation>
@@ -923,6 +924,7 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5319359161174645648">Google ശുപാർശചെയ്യുന്നത് Chrome ആണ്</translation>
 <translation id="5326246328175179736">ഈ അക്കൗണ്ട് ഉപയോഗിച്ച് നിങ്ങൾക്ക് സൈൻ ഇൻ ചെയ്യാനാകില്ല</translation>
+<translation id="5327248766486351172">പേര്</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്നതിനൊപ്പം ഉപയോഗിക്കുക</translation>
 <translation id="5342314432463739672">അനുമതി അഭ്യർത്ഥനകൾ</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> കാലയളവിൽ സൈറ്റുകളൊന്നുമില്ല</translation>
@@ -1078,6 +1080,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
 <translation id="6071995715087444295">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾക്കായി പരിശോധിക്കാൻ, നിങ്ങളുടെ Google Account-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="6078323886959318429">കുറുക്കുവഴി ചേർക്കുക</translation>
 <translation id="6085886413119427067">സുരക്ഷിത കണക്ഷനിലൂടെ വെബ്‌സൈറ്റുകളിലേക്ക് എങ്ങനെ കണക്റ്റ് ചെയ്യാമെന്ന് നിർണ്ണയിക്കുന്നു</translation>
 <translation id="6087286598828478206">ഗ്രൂപ്പ് ബ്ലോക്ക് ചെയ്ത് അതിൽ നിന്ന് പുറത്ത് കടക്കണോ?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> മണിക്കൂർ ശേഷിക്കുന്നു</translation>

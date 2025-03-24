@@ -586,6 +586,7 @@ Eine erneute Onlineauthentifizierung kann aus verschiedenen Gründen erforderlic
 <translation id="143649776386947790">Standardeinstellung verwenden</translation>
 <translation id="1438739959477268107">Standardeinstellung für die Schlüsselgenerierung</translation>
 <translation id="1440408958042020947">Zulassen, dass Nutzer, die der Verwendung von Phone Hub zugestimmt haben, auf Fotos und Videos zugreifen können, die kürzlich mit ihrem Smartphone aufgenommen wurden</translation>
+<translation id="1442458649848299896">Steuerung des Roll-out zur „<ph name="AL_HEADER_NAME" />“-Reduzierung über Field Trials aktivieren</translation>
 <translation id="1443532790824582949">Touch-Bildschirmtastatur aktivieren</translation>
 <translation id="1449083855104537880">Wenn du die Richtlinie auf "True" setzt, werden die Optionen für Bedienungshilfen im Taskleistenmenü angezeigt. Wenn die Richtlinie auf "False" gesetzt ist, werden die Optionen nicht im Taskleistenmenü angezeigt.
 
@@ -1523,12 +1524,6 @@ Ist die Richtlinie nicht konfiguriert, ist die Funktion „Live-Übersetzung“ 
       Wenn du diese Einstellung deaktivierst, erkennt <ph name="PRODUCT_NAME" /> nicht, wenn Fenster von anderen Fenstern überdeckt sind.
 
       Wird diese Richtlinie nicht eingerichtet, ist die Okklusions-Erkennung deaktiviert.</translation>
-<translation id="2132424782557550556">Cloud-Berichterstellungsrichtlinien konfigurieren.
-
-      Wenn die Richtlinie <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> deaktiviert oder nicht konfiguriert ist, werden diese Richtlinien ignoriert.
-
-      Diese Richtlinien werden nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
-      Für <ph name="PRODUCT_OS_NAME" /> werden diese Richtlinien immer angewendet.</translation>
 <translation id="2134437727173969994">Sperren des Bildschirms erlauben</translation>
 <translation id="2135335181634291106">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />" die URL des Favicons des Standardsuchanbieters an.
 
@@ -2117,6 +2112,7 @@ Ist die Richtlinie nicht konfiguriert, ist „<ph name="POLICY_VALUE_VISIBLE" />
 <translation id="252742292004421898">Direct Sockets API auf diesen Websites zulassen</translation>
 <translation id="2529880111512635313">Liste der Apps und Erweiterungen konfigurieren, deren Installation erzwungen wurde</translation>
 <translation id="253135976343875019">Inaktivitätsspanne bis zur Warnung im Netzbetrieb</translation>
+<translation id="2532480434098051405">„Inline Image“ mit der Verbesserung von KI-Modellen zulassen.</translation>
 <translation id="2535370400681639351">Wenn diese Richtlinie aktiviert ist, werden Anfragen zur Gnubby-Authentifizierung bei einer Remote-Host-Verbindung über einen Proxy weitergeleitet.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden Anfragen zur Gnubby-Authentifizierung nicht über einen Proxy weitergeleitet.
@@ -3228,6 +3224,15 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 <translation id="3387999258705169775">Standardverhalten für die verschachtelte Mindestverzögerung der Funktion „setTimeout()“.</translation>
 <translation id="3388628790024977864"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="GOOGLE_DRIVE_NAME" /> und <ph name="GOOGLE_WORKSPACE_NAME" /> nicht zulassen</translation>
 <translation id="3389088527709746815">Gnubby-Authentifizierung für den Host für den Remote-Zugriff aktivieren</translation>
+<translation id="3394895899282672754">Der HTTP-Anfrageheader „<ph name="AL_HEADER_NAME" />“ und der JavaScript-Getter „<ph name="JS_GETTER_NAME" />“ sollen aus Datenschutzgründen reduziert werden.
+Um Tests zu erleichtern und die Kompatibilität zu gewährleisten, kannst du mit dieser Richtlinie das Roll-out zur Reduzierung aktivieren oder deaktivieren.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, wird das Roll-out zur „<ph name="AL_HEADER_NAME" />“-Reduzierung über Field Trials angewendet.
+Wenn diese Richtlinie deaktiviert ist, können Field Trials das Roll-out zur Reduzierung nicht aktivieren.
+
+Weitere Informationen zu dieser Funktion findest du unter https://github.com/explainers-by-googlers/reduce-accept-language.
+
+HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.</translation>
 <translation id="3395744872155955051">Auswahl von Dateien direkt aus <ph name="GOOGLE_DRIVE_NAME" /> zulassen</translation>
 <translation id="3397883909301547525">Keine App-Empfehlungen im Launcher von <ph name="PRODUCT_OS_NAME" /> anzeigen</translation>
 <translation id="3398051852031115795">Standardmäßiges Systemverhalten (abhängig von der Bildschirmgröße)</translation>
@@ -3556,6 +3561,17 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
       Details zu <ph name="CORS" /> erhältst du unter <ph name="CORS_HELP_URL" />.
 
       Hinweis: Diese Richtlinie sollte ursprünglich planmäßig in <ph name="PRODUCT_NAME" />-Version 82 entfernt werden, wurde aber erst in Version 84 entfernt.</translation>
+<translation id="3604709604504768625">Mit dieser Richtlinie werden für <ph name="PRODUCT_OS_NAME" /> die Einstellungen der Funktion „Inline Image“ festgelegt.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichem Feedback) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="3606571057705314194">Profil-Picker beim Start deaktiviert</translation>
 <translation id="3608206578291537084">Verschlüsselte Pipeline für die Berichterstellung aktivieren</translation>
 <translation id="3608281460204780443">Chrome Web Store-Symbol im <ph name="PRODUCT_OS_NAME" />-Launcher und auf der Seite „Neuer Tab“ anzeigen</translation>
@@ -4185,6 +4201,7 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />" nicht konfiguriert ist, lässt sich der Suchanbieter nicht durch einen Suchbegriff aktivieren.</translation>
 <translation id="4090088362777472639">SHA-256-Hash des Ansible-Playbooks.</translation>
 <translation id="4091040199847925434">Berichte zu Systeminformationen und Seiteninhalten, mit denen Safe Browsing verbessert wird, deaktivieren</translation>
+<translation id="4093058072421210667">„Inline Image“ nicht zulassen.</translation>
 <translation id="4098920079809952737">Drucken mit und ohne Hintergrundgrafiken zulassen</translation>
 <translation id="410061592404122032">Jedes Mal nachfragen, wenn eine Website um die Berechtigung für die Fensterverwaltung bittet</translation>
 <translation id="410068710490553233">Anmeldung in zusätzlichen Google-Konten zulassen</translation>
@@ -5029,6 +5046,7 @@ Ist sie auf „None“ gesetzt oder wird keine Einstellung gewählt, sind <ph na
       Eingestellt: Es war zuvor möglich, beim USB-Berechtigungsmodell sowohl die anfragende URL als auch die einbettende URL anzugeben. Dies wurde verworfen und wird aus Gründen der Abwärtskompatibilität nur noch folgendermaßen unterstützt: Wenn sowohl eine anfragende als auch eine einbettende URL angegeben ist, wird der einbettenden URL die Berechtigung als Quelle der obersten Ebene gegeben und die anfragende URL wird vollständig ignoriert.
 
       Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet (kein automatischer Zugriff).</translation>
+<translation id="471269469779289997">„Inline Image“ ohne die Verbesserung von KI-Modellen zulassen.</translation>
 <translation id="471360812659157054">window.webkitStorageInfo ist nicht verfügbar.</translation>
 <translation id="4715773950737036924">Verfügbarkeit von Erweiterungen steuern, die nicht im Chrome Web Store veröffentlicht sind</translation>
 <translation id="4722122254122249791">Website-Isolierung für angegebene Ursprünge aktivieren</translation>
@@ -5975,6 +5993,7 @@ Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im moni
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
+<translation id="5368878547690689592">Roll-out der „<ph name="AL_HEADER_NAME" />“-Reduzierung steuern</translation>
 <translation id="5369937289900051171">Nur Farbdruck</translation>
 <translation id="5370279767682621504">HTTP/0.9-Unterstützung für nicht standardmäßige Ports aktivieren</translation>
 <translation id="5370765433640162225">Wenn diese Richtlinie auf „true“ gesetzt ist, wird der Datenträger während der Anmeldung automatisch bereinigt, um für ausreichend freien Speicherplatz zu sorgen.
@@ -9316,6 +9335,7 @@ werden abgelehnt.</translation>
 
       Ist die Richtlinie deaktiviert, ist das nicht möglich.</translation>
 <translation id="7750991880413385988">"Neuer Tab"-Seite öffnen</translation>
+<translation id="7752154519644940493">Einstellungen für die GenAI-Funktion „Inline Image“</translation>
 <translation id="7753678409577376761">Eintrittspunkt für experimentelle Browserfunktionen auf Symbolleiste aktivieren</translation>
 <translation id="7754704193130578113">Vor dem Download von Dateien nach dem Speicherort fragen</translation>
 <translation id="7754893969683595513">Wenn die Richtlinie konfiguriert ist, wird der Zeitraum in Millisekunden angegeben, in dem Nutzerrichtlinieninformationen vom Geräteverwaltungsdienst abgefragt werden. Gültige Werte für diese Richtlinie liegen im Bereich zwischen 1.800.000 (30 Minuten) und 86.400.000 (1 Tag). Alle Werte, die nicht in diesem Bereich liegen, werden auf den jeweiligen Grenzwert gesetzt.
@@ -10443,6 +10463,7 @@ Sie ist nicht wirksam, wenn sie aktiviert, leer gelassen oder nicht konfiguriert
 <translation id="8575746110808109915">Wenn die Richtlinie konfiguriert ist, wird die Funktion zur vollständigen Wiederherstellung aktiviert.
       Ist sie auf „True“ gesetzt, werden Apps und App-Fenster nach einem Absturz oder Neustart je nach der Einstellung zur App-Wiederherstellung wiederhergestellt oder nicht.
       Wenn diese Richtlinie auf „False“ gesetzt ist, werden nur Browserfenster automatisch gestartet.</translation>
+<translation id="8579020983849384175">Texteditor (wird seit Version 136 unterstützt)</translation>
 <translation id="8583509234908413302">Veraltetes TLS/DTLS-Downgrade in WebRTC erlauben</translation>
 <translation id="8584279193368801689">Schränkt den PIN-Druckmodus ein. Ist die Richtlinie nicht konfiguriert, gelten keine Einschränkungen. Ist der Modus nicht verfügbar, wird diese Richtlinie ignoriert. Der PIN-Druckmodus wird nur für Drucker angewendet, die das IPPS-, HTTPS- oder USB-Protokoll bzw. IPP über USB verwenden.</translation>
 <translation id="858510846828945657">Ausnahmen der Domain-Sperrliste für Floating-SSO-Dienste</translation>
@@ -11075,6 +11096,7 @@ Hinweis: Derzeit wird nur der erste Eintrag berücksichtigt. Erweiterungen werde
       Genaue Informationen zu gültigen Eingabemustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie. Diese Richtlinie gleicht nur anhand der Quelle ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
 <translation id="9010080992450148617">Teilnehmern des erweiterten Sicherheitsprogramms das Senden von Downloads für einen Tiefenscan an Google erlauben</translation>
 <translation id="9012101302849557459">Unterstützung für Chrome-Apps unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph name="LINUX_OS_NAME" /> verlängern.</translation>
+<translation id="9013629280364842072">Steuerung des Roll-out zur „<ph name="AL_HEADER_NAME" />“-Reduzierung über Field Trials deaktivieren</translation>
 <translation id="9013875414788074110">Bei der Anmeldung kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
 
       Wenn für diese Richtlinie der Wert -1 festgelegt ist, kann sich der Nutzer ohne Zeitlimit offline authentifizieren. Wird ein anderer Wert festgelegt, gibt dieser den Zeitraum ab der letzten Online-Authentifizierung an, nach dem der Nutzer sich noch einmal online authentifizieren muss.

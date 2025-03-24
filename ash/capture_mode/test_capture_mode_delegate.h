@@ -178,6 +178,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   MOCK_METHOD(bool, IsNetworkConnectionOffline, (), (const, override));
   void DeleteRemoteFile(const base::FilePath& path,
                         base::OnceCallback<void(bool)> callback) override;
+  bool ActiveUserDefaultSearchProviderIsGoogle() const override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;

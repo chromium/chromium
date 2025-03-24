@@ -8,15 +8,19 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/android/download_protection_metrics_data.h"
+#include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
 #include "components/google/core/common/google_util.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -112,6 +116,11 @@ Outcome ConvertDownloadCheckResultReason(DownloadCheckResultReason reason) {
   }
 }
 
+void LogGetReferringAppInfoResult(internal::GetReferringAppInfoResult result) {
+  base::UmaHistogramEnumeration(
+      "SBClientDownload.Android.GetReferringAppInfo.Result", result);
+}
+
 }  // namespace
 
 DownloadProtectionDelegateAndroid::DownloadProtectionDelegateAndroid()
@@ -165,6 +174,32 @@ bool DownloadProtectionDelegateAndroid::IsSupportedDownload(
   }
   should_sample_override_ = std::nullopt;
   return should_sample;
+}
+
+void DownloadProtectionDelegateAndroid::PreSerializeRequest(
+    const download::DownloadItem* item,
+    safe_browsing::ClientDownloadRequest& request_proto) {
+  if (!item) {
+    return;
+  }
+
+  // Populate the ReferringAppInfo in the ClientDownloadRequest.
+  // Note: The web_contents will be null if the original download page has
+  // been navigated away from.
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetWebContents(item);
+  if (!web_contents) {
+    LogGetReferringAppInfoResult(
+        internal::GetReferringAppInfoResult::kNotAttempted);
+    return;
+  }
+  internal::ReferringAppInfo info =
+      GetReferringAppInfo(web_contents, /*get_webapk_info=*/true);
+  LogGetReferringAppInfoResult(internal::ReferringAppInfoToResult(info));
+  if (!info.has_referring_app() && !info.has_referring_webapk()) {
+    return;
+  }
+  *request_proto.mutable_referring_app_info() = GetReferringAppInfoProto(info);
 }
 
 const GURL& DownloadProtectionDelegateAndroid::GetDownloadRequestUrl() const {

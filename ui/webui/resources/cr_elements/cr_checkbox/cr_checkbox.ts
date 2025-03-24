@@ -74,11 +74,11 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     };
   }
 
-  checked: boolean = false;
-  disabled: boolean = false;
-  override ariaDescription: string|null = null;
-  ariaLabelOverride?: string;
-  override tabIndex: number = 0;
+  accessor checked: boolean = false;
+  accessor disabled: boolean = false;
+  override accessor ariaDescription: string|null = null;
+  accessor ariaLabelOverride: string|undefined;
+  override accessor tabIndex: number = 0;
 
   override firstUpdated() {
     this.addEventListener('click', this.onClick_.bind(this));

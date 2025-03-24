@@ -38,7 +38,6 @@
 #include "components/autofill/core/browser/integrators/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
-#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
@@ -1273,13 +1272,13 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
   return payment_instrument;
 }
 
-BnplIssuer GetTestLinkedBnplIssuer() {
+BnplIssuer GetTestLinkedBnplIssuer(std::string_view issuer_id) {
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   // Currency: USD, price lower bound: $50, price upper bound: $200.
   eligible_price_ranges.emplace_back(/*currency=*/"USD",
                                      /*price_lower_bound=*/50'000'000,
                                      /*price_upper_bound=*/200'000'000);
-  return BnplIssuer(12345, std::string(kBnplAffirmIssuerId),
+  return BnplIssuer(12345, std::string(issuer_id),
                     std::move(eligible_price_ranges));
 }
 

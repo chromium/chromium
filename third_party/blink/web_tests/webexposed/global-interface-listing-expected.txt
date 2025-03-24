@@ -98,10 +98,12 @@ interface AISummarizerFactory
     method create
 interface AITranslator
     attribute @@toStringTag
+    getter inputQuota
     getter sourceLanguage
     getter targetLanguage
     method constructor
     method destroy
+    method measureInputUsage
     method translate
     method translateStreaming
 interface AITranslatorFactory

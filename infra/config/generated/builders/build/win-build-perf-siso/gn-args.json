@@ -35,6 +35,7 @@
         "target_cpu": "x64",
         "target_os": "win",
         "use_clang_coverage": true,
+        "use_reclient": true,
         "use_remoteexec": true,
         "use_siso": true
       }

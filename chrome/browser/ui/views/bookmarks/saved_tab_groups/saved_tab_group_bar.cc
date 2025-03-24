@@ -432,15 +432,22 @@ void SavedTabGroupBar::UpsertSavedTabGroupButton(const base::Uuid& guid) {
 }
 
 void SavedTabGroupBar::SavedTabGroupReordered() {
-  std::vector<SavedTabGroupButton*> saved_buttons = GetSavedTabGroupButtons();
-  std::unordered_map<std::string, SavedTabGroupButton*> buttons_by_guid;
-  for (SavedTabGroupButton* button : saved_buttons) {
-    buttons_by_guid[button->guid().AsLowercaseString()] = button;
+  std::unordered_map<base::Uuid, SavedTabGroupButton*, base::UuidHash>
+      buttons_by_guid;
+  for (views::View* child : children()) {
+    SavedTabGroupButton* button =
+        views::AsViewClass<SavedTabGroupButton>(child);
+    if (button) {
+      buttons_by_guid[button->guid()] = button;
+    }
   }
 
-  const std::vector<SavedTabGroup>& groups = tab_group_service_->GetAllGroups();
+  // Assuming ReadAllGroups should return the groups in the correct order.
+  const std::vector<const SavedTabGroup*> groups =
+      tab_group_service_->ReadAllGroups();
   for (size_t i = 0; i < groups.size(); ++i) {
-    const std::string guid = groups[i].saved_guid().AsLowercaseString();
+    const base::Uuid& guid = groups[i]->saved_guid();
+
     if (base::Contains(buttons_by_guid, guid)) {
       views::View* const button = buttons_by_guid[guid];
       ReorderChildView(button, i);
@@ -456,11 +463,11 @@ void SavedTabGroupBar::SavedTabGroupReordered() {
 }
 
 void SavedTabGroupBar::LoadAllButtonsFromModel() {
-  const std::vector<SavedTabGroup>& saved_tab_groups =
-      tab_group_service_->GetAllGroups();
+  const std::vector<const SavedTabGroup*> groups =
+      tab_group_service_->ReadAllGroups();
 
-  for (size_t index = 0; index < saved_tab_groups.size(); index++) {
-    AddTabGroupButton(saved_tab_groups[index], index);
+  for (size_t index = 0; index < groups.size(); index++) {
+    AddTabGroupButton(*groups[index], index);
   }
 }
 

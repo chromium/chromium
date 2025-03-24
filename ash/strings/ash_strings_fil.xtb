@@ -149,6 +149,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1455242230282523554">Ipakita ang mga setting ng wika</translation>
 <translation id="1459693405370120464">Lagay ng Panahon</translation>
 <translation id="1460620680449458626">Naka-mute ang volume.</translation>
+<translation id="1462439140224375968">Ginawa ang Google Doc</translation>
 <translation id="14648076227129703">Pinapayagan nito ang access sa camera para sa <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, at lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
 <translation id="146902737843070955">Hiniling ng iyong administrator ang pagbabagong ito</translation>
@@ -215,6 +216,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1679841710523778799">Taasan ang brightness</translation>
 <translation id="1680659827022803830">Mga kontrol sa video call</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Puwede mong i-off ang feature na ito sa Mga Setting anumang oras. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> timer · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 address: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Naka-dock sa kaliwa ang aktibong window.</translation>
@@ -592,6 +594,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="301584155502740476">Ipakita ang mga detalye ng hotspot. Naka-off ang Hotspot.</translation>
 <translation id="3017079585324758401">Background</translation>
 <translation id="3018135054368884502">Mag-fast forward ng media</translation>
+<translation id="3026897869154397692">Idinagdag sa Calendar</translation>
 <translation id="3033545621352269033">Naka-on</translation>
 <translation id="3033912566804961911">Isama sa <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Buksan ang Mga File</translation>
@@ -967,6 +970,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Naka-install na App, Naka-pause</translation>
 <translation id="4228078597006700451">Hindi naka-set up ang mga kontrol</translation>
 <translation id="4230560241506423345">Bago</translation>
+<translation id="4236726631849783264">Isang paalala tungkol sa mga suggested action</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
@@ -983,7 +987,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4275663329226226506">Media</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
 <translation id="4280601795273309128">Natapos na ang mga update sa seguridad. I-upgrade ang iyong device.</translation>
-<translation id="4281739221820540368">Gumawa ng mga Google Doc</translation>
 <translation id="4283888303416325161">Ilagay ang password para sa higit pang seguridad</translation>
 <translation id="4285498937028063278">I-unpin</translation>
 <translation id="428715201724021596">Kumokonekta sa profile. Puwede itong tumagal nang ilang minuto.</translation>
@@ -1044,6 +1047,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4471354919263203780">Dina-download ang mga file ng pagkilala sa speech... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{I-update ang device ngayon}=1{I-update ang device sa loob ng 1 segundo}one{I-update ang device sa loob ng # segundo}other{I-update ang device sa loob ng # na segundo}}</translation>
 <translation id="4472575034687746823">Magsimula</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">Susunod na Track</translation>
 <translation id="4477751544736611934">Posibleng gumastos sa data.
 1 device ang nakakonekta.</translation>
@@ -1070,6 +1074,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4545950850562423083">I-save ang kasalukuyang page bilang bookmark</translation>
 <translation id="4548482551627849548">Ilipat ang aktibong window sa desk sa kaliwa</translation>
 <translation id="4552748006424994716">Para maiwasan ang echo, puwede kang makinig sa iyong mikropono gamit lang ang wired na headphone.</translation>
+<translation id="4556953949326137018">Kapag gumamit ka ng mga suggested action tulad ng “idagdag sa Calendar” o “gumawa ng mga Google Doc,” ipapadala sa mga server ng Google ang content mula sa napiling area para magmungkahi ng mga aksyon, na napapailalim sa <ph name="LINK_TO_SERVICE_TERMS" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
 <translation id="4560576029703263363">Naka-on</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Itago ang password</translation>
@@ -1153,6 +1158,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="481455355267255546">Susunod</translation>
 <translation id="481749895090480684">Listahan ng gawain: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">camera at mikropono</translation>
+<translation id="4828935196674083554">Idinaragdag...</translation>
 <translation id="482908187605862807">Mga available na app mula sa Play Store</translation>
 <translation id="4831034276697007977">Sigurado ka bang gusto mong i-off ang mga awtomatikong pag-click?</translation>
 <translation id="4835677468087803981">I-hide ang PIN</translation>
@@ -1650,6 +1656,7 @@ Walang nakakonektang device.</translation>
 <translation id="641817663353603351">page up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">I-clear ang lahat ng notification</translation>
+<translation id="6426905245930183644">Ginagawa...</translation>
 <translation id="6430225033895752525">Ipakita ang mga setting ng Pag-focus</translation>
 <translation id="643147933154517414">Tapos na ang lahat</translation>
 <translation id="6431865393913628856">Pag-record ng screen</translation>
@@ -1716,7 +1723,6 @@ Kaka-install lang</translation>
 <translation id="6612889377159412215">subtask</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> na storage ang ginagamit | <ph name="STORAGE_TOTAL_SIZE" /> ang kabuuan</translation>
 <translation id="6614169507485700968">Naka-on ang privacy screen</translation>
-<translation id="6618277154885124991">Gumawa ng mga Google Sheet</translation>
 <translation id="6622679827379792051">I-set up ang pagtingin sa mga app ng iyong telepono</translation>
 <translation id="662279009180869175">Gamitin ang pakaliwa at pakanang arrow para i-resize ang split screen</translation>
 <translation id="6624493541160101248">Kasalukuyang desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> ng <ph name="DESK_COUNT" />.</translation>
@@ -1889,6 +1895,7 @@ Kaka-install lang</translation>
 <translation id="7228968829656641943">Piliin para maghanap sa aking screen. Pindutin ang tab at pagkatapos ay ang space para sa pag-navigate gamit ang keyboard.</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> na memory | <ph name="TOTAL_MEMORY" /> sa kabuuan</translation>
 <translation id="7239814253344511868">Parehong button ng mouse</translation>
+<translation id="7240636904654154599">Ginawa ang Google Sheet</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% na lang ang baterya. Isaksak ang iyong device.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kailangang i-restart ang Chromebook na ito para mailapat ang isang update. Puwede itong umabot nang hanggang 1 minuto</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2398,6 +2405,8 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8921624153894383499">Hindi nagsasalita ng ganitong wika ang Google Assistant.</translation>
 <translation id="8926951137623668982">Palaging nakatago ang shelf</translation>
 <translation id="8929566928381252430">Sinusubukang gamitin ang Caps Lock? Gamitin ang</translation>
+<translation id="8929623844713377237">Ginawa ang contact</translation>
+<translation id="8934418770423095813">Gumawa ng Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}one{# file}other{# na file}}</translation>
 <translation id="8936501819958976551">na-deactivate</translation>
 <translation id="8938800817013097409">USB-C device (kanang port sa likod)</translation>
