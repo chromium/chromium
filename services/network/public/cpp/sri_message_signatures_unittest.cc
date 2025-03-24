@@ -486,9 +486,6 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputParameters) {
       "keyid=\"[KEY]\";keyid=\"not-[KEY]\";tag=\"sri\"",
       "keyid=\"[KEY]\";tag=\"sri\";tag=\"not-sri\"",
 
-      // Unknown parameter:
-      "keyid=\"[KEY]\";tag=\"sri\";unknown=1",
-
       // Alg is present:
       "alg=;keyid=\"[KEY]\";tag=\"sri\"",
       "alg=1;keyid=\"[KEY]\";tag=\"sri\"",
@@ -1152,6 +1149,36 @@ TEST_F(SRIMessageSignatureBaseTest, ParameterSorting) {
         ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
     EXPECT_THAT(result, testing::Optional(expected_base.str()));
   } while (std::next_permutation(params.begin(), params.end()));
+}
+
+TEST_F(SRIMessageSignatureBaseTest, UnknownParameters) {
+  std::vector<const char*> cases = {
+      "unknown",        "unknown=1",     "unknown=1.1", "unknown=\"string\"",
+      "unknown=:YQ==:", "unknown=token", "unknown=?0",
+      // We don't support Date or Display String yet.
+      // "unknown=@12345",
+      // "unknown=%\"display\"",
+  };
+
+  for (auto* const test : cases) {
+    SCOPED_TRACE(test);
+    std::string test_header =
+        base::StrCat({kValidSignatureInputHeader, ";", test});
+    auto headers = ValidHeadersPlusInput(test_header.data());
+    auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
+    ASSERT_EQ(1u, parsed->signatures.size());
+    EXPECT_EQ(0u, parsed->issues.size());
+
+    std::optional<std::string> result =
+        ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
+    ASSERT_TRUE(result.has_value());
+    std::string expected_base =
+        base::StrCat({"\"unencoded-digest\";sf: ", kValidDigestHeader,
+                      "\n\"@signature-params\": "
+                      "(\"unencoded-digest\";sf);keyid=\"",
+                      kPublicKey, "\";tag=\"sri\"", ";", test});
+    EXPECT_EQ(expected_base, result.value());
+  }
 }
 
 //
