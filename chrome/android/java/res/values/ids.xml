@@ -34,6 +34,7 @@ found in the LICENSE file.
     <item type="id" name="focus_url_bar" />
     <item type="id" name="show_menu" />
     <item type="id" name="open_recently_closed_tab" />
+    <item type="id" name="toggle_bookmark_bar" />
 
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />

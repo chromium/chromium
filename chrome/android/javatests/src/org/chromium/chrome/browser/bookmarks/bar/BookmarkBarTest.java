@@ -24,9 +24,13 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -228,6 +232,41 @@ public class BookmarkBarTest {
     public void testOnAllBookmarksButtonClick() {
         onViewWaiting(bookmarkBarItemWithText("All Bookmarks")).perform(click());
         onViewWaiting(bookmarkManagerToolbarWithText("Bookmarks")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkBarToggledViaKeyboard() {
+        final var activity = sActivityTestRule.getActivity();
+        final var profile = sActivityTestRule.getProfile(/* incognito= */ false);
+        final var keyEvent =
+                new KeyEvent(
+                        /* downTime= */ SystemClock.uptimeMillis(),
+                        /* eventTime= */ SystemClock.uptimeMillis(),
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_B,
+                        /* repeat= */ 0,
+                        KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Case: Toggle w/ feature enabled.
+                    // TODO(crbug.com/394614520): Verify UI updates once implemented.
+                    assertTrue(BookmarkBarUtils.isFeatureEnabled(activity));
+                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
+                    activity.onKeyDown(keyEvent.getKeyCode(), keyEvent);
+                    assertTrue(BookmarkBarUtils.isSettingEnabled(profile));
+                    activity.onKeyDown(keyEvent.getKeyCode(), keyEvent);
+                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
+
+                    // Case: Toggle w/ feature disabled.
+                    // TODO(crbug.com/394614520): Verify UI updates once implemented.
+                    BookmarkBarUtils.setFeatureEnabledForTesting(false);
+                    assertFalse(BookmarkBarUtils.isFeatureEnabled(activity));
+                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
+                    activity.onKeyDown(keyEvent.getKeyCode(), keyEvent);
+                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
+                });
     }
 
     @Test
