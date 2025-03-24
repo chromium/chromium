@@ -45,7 +45,7 @@ using DbusShortcuts = DbusArray<DbusStruct<DbusString, DbusDictionary>>;
 
 class MockObserver final : public GlobalAcceleratorListener::Observer {
  public:
-  virtual ~MockObserver() = default;
+  ~MockObserver() = default;
 
   void OnKeyPressed(const ui::Accelerator& accelerator) override {
     // GlobalAcceleratorListenerLinux uses ExecuteCommand() instead.
