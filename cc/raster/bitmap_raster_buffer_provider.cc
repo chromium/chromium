@@ -28,14 +28,10 @@ namespace {
 
 class BitmapRasterBufferImpl : public RasterBuffer {
  public:
-  BitmapRasterBufferImpl(const gfx::Size& size,
-                         const gfx::ColorSpace& color_space,
-                         ResourcePool::Backing* backing,
+  BitmapRasterBufferImpl(ResourcePool::Backing* backing,
                          uint64_t resource_content_id,
                          uint64_t previous_content_id)
-      : resource_size_(size),
-        color_space_(color_space),
-        resource_has_previous_content_(
+      : resource_has_previous_content_(
             resource_content_id && resource_content_id == previous_content_id),
         backing_(backing) {}
   BitmapRasterBufferImpl(const BitmapRasterBufferImpl&) = delete;
@@ -62,8 +58,9 @@ class BitmapRasterBufferImpl : public RasterBuffer {
     auto mapping = backing_->shared_image()->Map();
     void* memory = mapping->GetMemoryForPlane(0).data();
     RasterBufferProvider::PlaybackToMemory(
-        memory, format, resource_size_, stride, raster_source, raster_full_rect,
-        playback_rect, transform, color_space_, playback_settings);
+        memory, format, backing_->shared_image()->size(), stride, raster_source,
+        raster_full_rect, playback_rect, transform,
+        backing_->shared_image()->color_space(), playback_settings);
   }
 
   bool SupportsBackgroundThreadPriority() const override { return true; }
@@ -106,9 +103,8 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
   }
   ResourcePool::Backing* backing = resource.backing();
 
-  return std::make_unique<BitmapRasterBufferImpl>(
-      resource.size(), resource.color_space(), backing, resource_content_id,
-      previous_content_id);
+  return std::make_unique<BitmapRasterBufferImpl>(backing, resource_content_id,
+                                                  previous_content_id);
 }
 
 void BitmapRasterBufferProvider::Flush() {}
