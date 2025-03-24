@@ -5958,6 +5958,8 @@ class RendererPixelTestColorConversion
     this->display_color_spaces_ =
         gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSCRGBLinear80Nits());
     this->display_color_spaces_.SetSDRMaxLuminanceNits(80.f);
+    this->display_color_spaces_.SetOutputBufferFormats(
+        gfx::BufferFormat::RGBA_F16, gfx::BufferFormat::RGBA_F16);
 
     if (std::get<1>(GetParam())) {
       features_.InitAndEnableFeature(features::kColorConversionInRenderer);
@@ -6028,6 +6030,8 @@ class VideoPixelRendererPixelTestColorConversion
     this->display_color_spaces_ =
         gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSCRGBLinear80Nits());
     this->display_color_spaces_.SetSDRMaxLuminanceNits(80.f);
+    this->display_color_spaces_.SetOutputBufferFormats(
+        gfx::BufferFormat::RGBA_F16, gfx::BufferFormat::RGBA_F16);
 
     // Allow non-root render passes to have the above non-suitable-for-blending
     // color space by being scanout.
@@ -6174,6 +6178,10 @@ class ColorTransformPixelTest
     }
     this->display_color_spaces_ =
         gfx::DisplayColorSpaces(this->dst_color_space_);
+    if (this->dst_color_space_.IsWide()) {
+      this->display_color_spaces_.SetOutputBufferFormats(
+          gfx::BufferFormat::RGBA_F16, gfx::BufferFormat::RGBA_F16);
+    }
     this->premultiplied_alpha_ = std::get<3>(GetParam());
     if (std::get<4>(GetParam())) {
       features_.InitAndEnableFeature(features::kColorConversionInRenderer);
