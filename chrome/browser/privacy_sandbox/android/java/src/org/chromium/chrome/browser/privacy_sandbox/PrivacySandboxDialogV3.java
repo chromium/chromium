@@ -98,7 +98,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
     // TODO(crbug.com/392943234): Update the constructor to accept a layoutRes required for the
     // dialog.
-    // TODO(crbug.com/392943234): Write a java doc that defines the IDS this dialog expects.
     public PrivacySandboxDialogV3(
             Activity activity,
             Profile profile,
@@ -173,8 +172,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
                 contentToInflate = R.layout.privacy_sandbox_notice_eea_v3;
                 break;
             case PrivacySandboxDialogType.ROW_NOTICE:
-                contentToInflate = R.layout.privacy_sandbox_notice_row_v3;
-                break;
             case PrivacySandboxDialogType.RESTRICTED_NOTICE:
             default:
                 // TODO(crbug.com/392943234): Don't default to the eea consent
@@ -329,9 +326,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
     private void createPrivacyPolicyLink(
             Profile profile, ActivityWindowAndroid activityWindowAndroid) {
         mLearnMoreText = mContentView.findViewById(mLearnMoreTextIdRes);
-        if (mLearnMoreText == null) {
-            return;
-        }
         mLearnMoreText.setText(
                 SpanApplier.applySpans(
                         getContext().getString(mLearnMoreLinkString),
