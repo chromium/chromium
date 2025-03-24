@@ -4,9 +4,14 @@
 
 #include "components/autofill/content/browser/content_identity_credential_delegate.h"
 
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/federated_auth_autofill_source.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -44,9 +49,22 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
     return {};
   }
 
-  // TODO(crbug.com/380367784): transform the accounts suggestions into concrete
-  // autofill suggestions.
   std::vector<Suggestion> suggestions;
+  for (IdentityRequestAccountPtr account : *accounts) {
+    Suggestion suggestion(base::UTF8ToUTF16(account->email),
+                          SuggestionType::kIdentityCredential);
+
+    suggestion.icon = Suggestion::Icon::kEmail;
+    suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_IDENTITY_CREDENTIAL_MINOR_TEXT,
+        base::UTF8ToUTF16(account->identity_provider->idp_for_display)));
+    suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL))});
+    suggestion.payload = Suggestion::IdentityCredentialPayload(
+        account->identity_provider->idp_metadata.config_url, account->id);
+    suggestions.push_back(suggestion);
+  }
+
   return suggestions;
 }
 

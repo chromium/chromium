@@ -180,6 +180,15 @@
     Fill everything
   </message>
 
+  <!-- Autofill Identity Credentials Suggestions -->
+  <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_MINOR_TEXT" desc="The minor text to display in an autofill suggestion (e.g. an email) that is verified by a third party website (e.g. google.com)." translateable="false">
+    Verified by <ph name="IDP_ORIGIN">$1<ex>accounts.google.com</ex></ph>
+  </message>
+
+  <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL" desc="The label text to display for verified autofill suggestions. If the user selects such email suggestion, the website receives cryptographic proof that the user has access to the email. The benefit for the user indicate in this message is that they can skip the manual process of receiving a confirmation email and pressing a link to prove ownership of the email." translateable="false">
+    Skip confirmation emails
+  </message>
+
   <if expr="not use_titlecase">
     <message name="IDS_AUTOFILL_MANAGE_ADDRESSES" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage their Autofill preferences for addresses. Imperative. When the user clicks on it, opens the Autofill settings page." meaning="Manage addresses in the user profile that can be used by Chrome Autofill.">
       Manage addresses...
