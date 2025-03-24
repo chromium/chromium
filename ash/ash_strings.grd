@@ -4480,6 +4480,10 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Label for accelerator action - Take window screenshot or screen recording.">
         Take window screenshot or screen recording
       </message>
+      <!-- TODO: crbug.com/375967525 - Mark this string as translateable once it is confirmed. -->
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION" desc="Label for accelerator action - Search my screen." translateable="false">
+        Search my screen
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TILING_WINDOW_RESIZE_LEFT" desc="Label for accelerator action - Tiled resize window toward the left.">
         Tiled resize window toward the left
       </message>
@@ -6763,6 +6767,9 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_WINDOW_RECORD" desc="Alert spoken by screen readers on recording window screen.">
         Press enter to record window: <ph name="WINDOW_TITLE">$1<ex>Text</ex></ph>
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_DEFAULT_REGION_SELECTED" desc="Alert spoken by screen readers after a default capture region has been selected.">
+        Press tab to focus and move selected area
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME" desc="The accessible name of the selected region in capture mode.">
         Selected area, use arrow keys to move

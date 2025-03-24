@@ -1074,6 +1074,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kTakeWindowScreenshot:
       return accelerators::CanScreenshot(action ==
                                          AcceleratorAction::kTakeScreenshot);
+    case AcceleratorAction::kStartSunfishSession:
+      return accelerators::CanStartSunfishSession();
     case AcceleratorAction::kToggleProjectorMarker:
       return accelerators::CanToggleProjectorMarker();
     case AcceleratorAction::kToggleResizeLockMenu:
@@ -1531,6 +1533,9 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kStartAssistant:
       RecordToggleAssistant(accelerator);
       accelerators::ToggleAssistant();
+      break;
+    case AcceleratorAction::kStartSunfishSession:
+      accelerators::StartSunfishSession();
       break;
     case AcceleratorAction::kSuspend:
       base::RecordAction(UserMetricsAction("Accel_Suspend"));

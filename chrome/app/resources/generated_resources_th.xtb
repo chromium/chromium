@@ -2222,6 +2222,7 @@
         คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="2514326558286966059">ปลดล็อกได้เร็วขึ้นด้วยลายนิ้วมือ</translation>
 <translation id="2514465118223423406">เมื่อเชื่อมต่อเมาส์</translation>
+<translation id="2514938842036917377">การดำเนินการนี้จะลบข้อมูลที่ <ph name="SITE_NAME" />, เว็บไซต์ที่เกี่ยวข้อง และแอปที่ติดตั้งไว้จัดเก็บไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ยืนยันชื่อผู้ใช้ของคุณ</translation>
 <translation id="2517472476991765520">สแกน</translation>
@@ -9074,6 +9075,7 @@
 <translation id="7443806024147773267">เข้าถึงรหัสผ่านได้เมื่อใดก็ตามที่ลงชื่อเข้าใช้บัญชี Google อยู่</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{คุกกี้จะถูกบล็อกอีกครั้งในวันนี้}=1{คุกกี้จะถูกบล็อกอีกครั้งในวันพรุ่งนี้}other{คุกกี้จะถูกบล็อกอีกครั้งในอีก # วัน}}</translation>
 <translation id="7444983668544353857">ปิดการใช้งาน<ph name="NETWORKDEVICE" /></translation>
+<translation id="7446716846072322308">การดำเนินการนี้จะลบข้อมูลที่ <ph name="SITE_NAME" /> และเว็บไซต์ที่เกี่ยวข้องจัดเก็บไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="7448430327655618736">ติดตั้งแอปโดยอัตโนมัติ</translation>
 <translation id="7448664748118305024">ลบเว็บไซต์ข้อมูลที่บันทึกไว้ในอุปกรณ์เมื่อคุณปิดหน้าต่างทั้งหมด</translation>
 <translation id="7450761244949417357">เปิดอยู่ใน <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>

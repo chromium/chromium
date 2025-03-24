@@ -640,8 +640,7 @@ bool CaptureTypeRequiresNetworkConnection(PerformCaptureType capture_type) {
 // Returns the target panel bounds in screen coordinates.
 gfx::Rect CalculateSearchResultPanelScreenBounds(
     const gfx::Rect& work_area_in_screen,
-    const gfx::Rect& captured_region_in_screen,
-    const gfx::Rect& feedback_bounds_in_screen) {
+    const gfx::Rect& captured_region_in_screen) {
   // Attempt to place the panel on the left by default.
   gfx::Rect bounds(
       work_area_in_screen.x() + capture_mode::kPanelWorkAreaSpacing,
@@ -673,14 +672,6 @@ gfx::Rect CalculateSearchResultPanelScreenBounds(
                      capture_mode::kPanelWorkAreaSpacing);
       }
     }
-  }
-
-  // If the panel would overlap with the feedback button when it is created,
-  // instead place it just above the button.
-  if (bounds.Intersects(feedback_bounds_in_screen)) {
-    bounds.set_y(feedback_bounds_in_screen.y() -
-                 capture_mode::kSearchResultsPanelTotalHeight -
-                 capture_mode::kPanelButtonSpacing);
   }
 
   return bounds;
@@ -888,8 +879,7 @@ void CaptureModeController::MaybeUpdateSearchResultsPanelBounds() {
   wm::ConvertRectToScreen(current_root, &captured_region_in_screen);
 
   gfx::Rect panel_bounds_in_screen = CalculateSearchResultPanelScreenBounds(
-      work_area_in_screen, captured_region_in_screen,
-      capture_mode_session_->GetFeedbackWidgetScreenBounds());
+      work_area_in_screen, captured_region_in_screen);
 
   search_results_panel_widget_->SetBounds(panel_bounds_in_screen);
 }
@@ -1488,6 +1478,10 @@ void CaptureModeController::SendMultimodalSearch(const gfx::ImageSkia& image,
                           image));
 
   RecordMultimodalSearchRequest();
+}
+
+bool CaptureModeController::ActiveUserDefaultSearchProviderIsGoogle() const {
+  return delegate_->ActiveUserDefaultSearchProviderIsGoogle();
 }
 
 void CaptureModeController::OnRecordingEnded(

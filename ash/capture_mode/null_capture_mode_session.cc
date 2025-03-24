@@ -152,10 +152,6 @@ void NullCaptureModeSession::InitInternal() {
 
 void NullCaptureModeSession::ShutdownInternal() {}
 
-gfx::Rect NullCaptureModeSession::GetFeedbackWidgetScreenBounds() const {
-  return gfx::Rect();
-}
-
 void NullCaptureModeSession::OnSearchResultsPanelCreated(
     views::Widget* panel_widget) {}
 

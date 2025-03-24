@@ -136,6 +136,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   bool IsNetworkConnectionOffline() const override;
   void DeleteRemoteFile(const base::FilePath& path,
                         base::OnceCallback<void(bool)> callback) override;
+  bool ActiveUserDefaultSearchProviderIsGoogle() const override;
 
   void set_optical_character_recognizer_for_testing(
       scoped_refptr<screen_ai::OpticalCharacterRecognizer>

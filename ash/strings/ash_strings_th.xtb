@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">แสดงการตั้งค่าภาษา</translation>
 <translation id="1459693405370120464">สภาพอากาศ</translation>
 <translation id="1460620680449458626">ระดับเสียงปิดเสียงอยู่</translation>
+<translation id="1462439140224375968">สร้างเอกสารใน Google เอกสารแล้ว</translation>
 <translation id="14648076227129703">การดำเนินการนี้ช่วยให้ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
 <translation id="146902737843070955">ผู้ดูแลระบบขอให้ทำการเปลี่ยนแปลงนี้</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">แสดงรายละเอียดฮอตสปอต ฮอตสปอตปิดอยู่</translation>
 <translation id="3017079585324758401">พื้นหลัง</translation>
 <translation id="3018135054368884502">กรอสื่อไปข้างหน้า</translation>
+<translation id="3026897869154397692">เพิ่มลงในปฏิทินแล้ว</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3033912566804961911">รวมกับ <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">เปิดไฟล์</translation>
@@ -1889,6 +1891,7 @@
 <translation id="7228968829656641943">เลือกเพื่อค้นหาในหน้าจอของฉัน กดแป้น Tab แล้วกดแป้น Space เพื่อไปยังส่วนต่างๆ ด้วยแป้นพิมพ์</translation>
 <translation id="7229029500464092426">ใช้หน่วยความจำแล้ว <ph name="AVAILABLE_MEMORY" /> | รวมทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">ปุ่มเมาส์ทั้งสองปุ่ม</translation>
+<translation id="7240636904654154599">สร้างสเปรดชีตใน Google ชีตแล้ว</translation>
 <translation id="7244725679040769470">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% โปรดเชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Chromebook นี้ต้องรีสตาร์ทเพื่อใช้การอัปเดต ซึ่งอาจใช้เวลาถึง 1 นาที</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2399,6 +2402,7 @@
 <translation id="8921624153894383499">Google Assistant ยังพูดภาษานี้ไม่ได้</translation>
 <translation id="8926951137623668982">ซ่อนชั้นวางเสมอ</translation>
 <translation id="8929566928381252430">หากต้องการใช้ฟังก์ชัน Caps Lock ให้ใช้แป้น</translation>
+<translation id="8929623844713377237">สร้างรายชื่อติดต่อแล้ว</translation>
 <translation id="8934418770423095813">สร้างเอกสารใน Google เอกสาร</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ไฟล์}other{# ไฟล์}}</translation>
 <translation id="8936501819958976551">ปิดใช้งานอยู่</translation>

@@ -81,10 +81,6 @@ views::Widget* CaptureModeSessionTestApi::GetDimensionsLabelWidget() {
   return session_->dimensions_label_widget_.get();
 }
 
-views::Widget* CaptureModeSessionTestApi::GetFeedbackButtonWidget() {
-  return session_->feedback_button_widget_.get();
-}
-
 UserNudgeController* CaptureModeSessionTestApi::GetUserNudgeController() {
   return session_->user_nudge_controller_.get();
 }
@@ -175,10 +171,6 @@ CaptureModeSessionTestApi::GetActionContainerErrorView() const {
 CaptureRegionOverlayController*
 CaptureModeSessionTestApi::GetCaptureRegionOverlayController() const {
   return session_->capture_region_overlay_controller_.get();
-}
-
-PillButton* CaptureModeSessionTestApi::GetFeedbackButton() {
-  return session_->feedback_button_.get();
 }
 
 }  // namespace ash
