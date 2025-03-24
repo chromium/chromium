@@ -30,7 +30,6 @@
 #include "crypto/ec_signature_creator.h"
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
-#include "crypto/symmetric_key.h"
 
 namespace {
 
