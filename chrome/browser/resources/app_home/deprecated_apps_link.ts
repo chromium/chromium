@@ -19,7 +19,7 @@ export class DeprecatedAppsLinkElement extends CrLitElement {
     };
   }
 
-  deprecationLinkString: string = '';
+  accessor deprecationLinkString: string = '';
   display: boolean = false;
 
   static override get styles() {

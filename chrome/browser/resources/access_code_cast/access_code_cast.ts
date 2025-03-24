@@ -76,6 +76,12 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
         value: true,
         observer: 'castStateChange',
       },
+      inputLabel: String,
+      isWin: Boolean,
+      managedFootnote: String,
+      qrScannerEnabled: Boolean,
+      rememberDevices: Boolean,
+      submitDisabled: Boolean,
     };
   }
 
@@ -84,16 +90,16 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
   private static readonly ACCESS_CODE_LENGTH = 6;
 
-  private accessCode: string;
-  private canCast: boolean;
+  declare private accessCode: string;
+  declare private canCast: boolean;
   private inputEnabledStartTime: number;
-  private inputLabel: string;
-  private isWin: boolean;
-  private managedFootnote: string;
-  private qrScannerEnabled: boolean;
-  private rememberDevices: boolean;
+  declare private inputLabel: string;
+  declare private isWin: boolean;
+  declare private managedFootnote: string;
+  declare private qrScannerEnabled: boolean;
+  declare private rememberDevices: boolean;
   private state: PageState;
-  private submitDisabled: boolean;
+  declare private submitDisabled: boolean;
 
   constructor() {
     super();
