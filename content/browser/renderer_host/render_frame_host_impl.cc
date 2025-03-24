@@ -156,6 +156,7 @@
 #include "content/browser/site_info.h"
 #include "content/browser/sms/webotp_service.h"
 #include "content/browser/speech/speech_synthesis_impl.h"
+#include "content/browser/storage_access/storage_access_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/usb/web_usb_service_impl.h"
@@ -12666,6 +12667,12 @@ void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(
       std::move(details)));
 }
 
+void RenderFrameHostImpl::DoesDocumentHaveStorageAccess(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(
+      StorageAccessHandle::DoesFrameHaveStorageAccess(this));
+}
+
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -12677,6 +12684,8 @@ void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
       base::BindRepeating(
           &RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL,
           weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&RenderFrameHostImpl::DoesDocumentHaveStorageAccess,
+                          weak_ptr_factory_.GetWeakPtr()),
       !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
           GetBrowserContext())));
 }

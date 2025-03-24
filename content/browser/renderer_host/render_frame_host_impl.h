@@ -4277,6 +4277,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const GURL& blocked_url,
       std::optional<blink::mojom::PartitioningBlobURLInfo> info);
 
+  // This runs when fetches to cross-partition, same-origin Blob URL checks for
+  // storage access
+  void DoesDocumentHaveStorageAccess(base::OnceCallback<void(bool)> callback);
+
   // For frames and main thread worklets we use a navigation-associated
   // interface and bind `receiver` to a `BlobURLStore` instance, which
   // implements the Blob URL API in the browser process.
