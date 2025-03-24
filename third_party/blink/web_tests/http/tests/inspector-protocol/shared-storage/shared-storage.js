@@ -8,7 +8,7 @@
   }
 
   const baseOrigin = 'http://127.0.0.1:8000/';
-  const base = baseOrigin + 'inspector-protocol/resources/';
+  const resources = baseOrigin + 'inspector-protocol/shared-storage/resources/';
 
   async function getSharedStorageMetadata(dp, testRunner, origin) {
     const data = await dp.Storage.getSharedStorageMetadata(
@@ -60,7 +60,7 @@
         sharedStorage.set('key2-set-from-document', 'value3',
                           {ignoreIfPresent: true});
         sharedStorage.delete('key2-set-from-document');
-        const script_url = "${base}shared-storage-module.js";
+        const script_url = "${resources}shared-storage-module.js";
         sharedStorage.worklet.addModule(script_url);
   `);
 
