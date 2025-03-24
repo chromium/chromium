@@ -31671,6 +31671,14 @@ should be able to be added at any place in this file.
   <description>Cookies subpage opened from PageInfo.</description>
 </action>
 
+<action name="PageInfo.CookiesSubpage.RwsSiteSettingsOpened">
+  <owner>mjenn@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Opened the RWS site settings page for a website from PageInfo.
+  </description>
+</action>
+
 <action name="PageInfo.CookiesSubpage.SettingsLinkClicked">
   <owner>zsalata@google.com</owner>
   <owner>olesiamarukhno@google.com</owner>
