@@ -563,11 +563,13 @@ external/wpt/html/browsers/the-window-object/open-close/open-features-tokenizati
 external/wpt/html/browsers/the-window-object/window-open-popup-behavior.html
 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.dropShadow.tentative.html
 external/wpt/html/canvas/element/filters/2d.filter.layers.dropShadow.tentative.html
+external/wpt/html/canvas/element/manual/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm
 external/wpt/html/canvas/element/manual/filters/svg-filter-lh-rlh.html
 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.dropShadow.tentative.html
 external/wpt/html/canvas/offscreen/filters/2d.filter.canvasFilterObject.dropShadow.tentative.w.html
 external/wpt/html/canvas/offscreen/filters/2d.filter.layers.dropShadow.tentative.html
 external/wpt/html/canvas/offscreen/filters/2d.filter.layers.dropShadow.tentative.w.html
+external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.getcontext.html
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.getcontext.worker.html
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html
