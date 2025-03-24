@@ -856,7 +856,6 @@ source_set("web_applications_unit_tests") {
     "commands/web_app_uninstall_command_unittest.cc",
     "daily_metrics_helper_unittest.cc",
     "external_install_options_unittest.cc",
-    "externally_managed_app_manager_impl_unittest.cc",
     "externally_managed_app_manager_unittest.cc",
     "isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command_unittest.cc",
     "isolated_web_apps/commands/get_controlled_frame_partition_command_unittest.cc",

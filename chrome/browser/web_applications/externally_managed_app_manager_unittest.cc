@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -272,6 +273,14 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
+std::unique_ptr<WebAppInstallInfo> GetWebAppInstallInfo(const GURL& url) {
+  std::unique_ptr<WebAppInstallInfo> info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(url);
+  info->scope = url.GetWithoutFilename();
+  info->title = u"Web App";
+  return info;
+}
+
 // Test harness that keep the system as real as possible.
 class ExternallyAppManagerTest : public WebAppTest {
  public:
@@ -310,6 +319,16 @@ class ExternallyAppManagerTest : public WebAppTest {
           return options;
         });
     return output;
+  }
+
+  ExternalInstallOptions CreateExternalInstallOptionsWithAppInfo(
+      GURL install_url,
+      ExternalInstallSource source) {
+    ExternalInstallOptions options(install_url,
+                                   mojom::UserDisplayMode::kBrowser, source);
+    options.app_info_factory =
+        base::BindRepeating(&GetWebAppInstallInfo, install_url);
+    return options;
   }
 
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
@@ -410,6 +429,332 @@ TEST_F(ExternallyAppManagerTest, SimpleInstall) {
           kInstallUrl,
           ExternallyManagedAppManager::InstallResult(
               webapps::InstallResultCode::kSuccessNewInstall, app_id))));
+}
+
+// TODO(crbug.com/405912587): Investigate and enable on Linux TSAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_SimpleInstallWebAppInfo DISABLED_SimpleInstallWebAppInfo
+#else
+#define MAYBE_SimpleInstallWebAppInfo SimpleInstallWebAppInfo
+#endif  // BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+TEST_F(ExternallyAppManagerTest, MAYBE_SimpleInstallWebAppInfo) {
+  const GURL kStartUrl = GURL("https://www.example.com/index.html");
+  const GURL kInstallUrl =
+      GURL("https://www.example.com/nested/install_url.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
+
+  webapps::AppId app_id = web_contents_manager().CreateBasicInstallPageState(
+      kInstallUrl, kManifestUrl, kStartUrl);
+
+  InstallNowFuture future;
+  external_manager().InstallNow(
+      CreateExternalInstallOptionsWithAppInfo(
+          kInstallUrl, ExternalInstallSource::kExternalPolicy),
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Install should succeed.
+  ExternallyManagedAppManager::InstallResult result =
+      future.Get<ExternallyManagedAppManager::InstallResult>();
+  EXPECT_EQ(result,
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessNewInstall, app_id));
+}
+
+// TODO(crbug.com/405912587): Investigate and enable on Linux TSAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_MultipleInstallWebAppInfoInstallUrl \
+  DISABLED_MultipleInstallWebAppInfoInstallUrl
+#else
+#define MAYBE_MultipleInstallWebAppInfoInstallUrl \
+  MultipleInstallWebAppInfoInstallUrl
+#endif  // BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+TEST_F(ExternallyAppManagerTest, MAYBE_MultipleInstallWebAppInfoInstallUrl) {
+  const GURL kStartUrl1 = GURL("https://www.example1.com/index.html");
+  const GURL kInstallUrl1 =
+      GURL("https://www.example1.com/nested/install_url.html");
+  const GURL kManifestUrl1 = GURL("https://www.example1.com/manifest.json");
+
+  const GURL kStartUrl2 = GURL("https://www.example2.com/index.html");
+  const GURL kInstallUrl2 =
+      GURL("https://www.example2.com/nested/install_url.html");
+  const GURL kManifestUrl2 = GURL("https://www.example2.com/manifest.json");
+
+  webapps::AppId app_id1 = web_contents_manager().CreateBasicInstallPageState(
+      kInstallUrl1, kManifestUrl1, kStartUrl1);
+
+  webapps::AppId app_id2 = web_contents_manager().CreateBasicInstallPageState(
+      kInstallUrl2, kManifestUrl2, kStartUrl2);
+
+  InstallNowFuture future1;
+  InstallNowFuture future2;
+  external_manager().InstallNow(
+      CreateExternalInstallOptionsWithAppInfo(
+          kInstallUrl1, ExternalInstallSource::kExternalDefault),
+      future1.GetCallback());
+  external_manager().InstallNow(
+      CreateExternalInstallOptionsFromTemplate(
+          {kInstallUrl2}, ExternalInstallSource::kExternalPolicy)[0],
+      future2.GetCallback());
+  ASSERT_TRUE(future1.Wait());
+  ASSERT_TRUE(future2.Wait());
+
+  // Both installs should succeed.
+  ExternallyManagedAppManager::InstallResult result1 =
+      future1.Get<ExternallyManagedAppManager::InstallResult>();
+  ExternallyManagedAppManager::InstallResult result2 =
+      future2.Get<ExternallyManagedAppManager::InstallResult>();
+
+  EXPECT_EQ(result1,
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessNewInstall, app_id1));
+  EXPECT_EQ(result2,
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessNewInstall, app_id2));
+}
+
+// TODO(crbug.com/405912587): Investigate and enable on Linux TSAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_InstallWebAppInfoTwiceAlreadyInstalled \
+  DISABLED_InstallWebAppInfoTwiceAlreadyInstalled
+#else
+#define MAYBE_InstallWebAppInfoTwiceAlreadyInstalled \
+  InstallWebAppInfoTwiceAlreadyInstalled
+#endif  // BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+TEST_F(ExternallyAppManagerTest, MAYBE_InstallWebAppInfoTwiceAlreadyInstalled) {
+  const GURL kStartUrl = GURL("https://www.example.com/index.html");
+  const GURL kInstallUrl =
+      GURL("https://www.example.com/nested/install_url.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
+
+  webapps::AppId app_id = web_contents_manager().CreateBasicInstallPageState(
+      kInstallUrl, kManifestUrl, kStartUrl);
+
+  InstallNowFuture future1;
+  InstallNowFuture future2;
+  external_manager().Install(
+      CreateExternalInstallOptionsWithAppInfo(
+          kInstallUrl, ExternalInstallSource::kExternalDefault),
+      future1.GetCallback());
+  external_manager().Install(
+      CreateExternalInstallOptionsWithAppInfo(
+          kInstallUrl, ExternalInstallSource::kExternalDefault),
+      future2.GetCallback());
+  ASSERT_TRUE(future1.Wait());
+  ASSERT_TRUE(future2.Wait());
+
+  // Both installs should succeed, with the 2nd one returning a
+  // `kSuccessAlreadyInstalled` result.
+  ExternallyManagedAppManager::InstallResult result1 =
+      future1.Get<ExternallyManagedAppManager::InstallResult>();
+  ExternallyManagedAppManager::InstallResult result2 =
+      future2.Get<ExternallyManagedAppManager::InstallResult>();
+
+  EXPECT_EQ(result1,
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessNewInstall, app_id));
+  EXPECT_EQ(result2,
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessAlreadyInstalled, app_id));
+}
+
+// TODO(crbug.com/405912587): Investigate and enable on Linux TSAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_InstallOptionsTwiceForReinstall \
+  DISABLED_InstallOptionsTwiceForReinstall
+#else
+#define MAYBE_InstallOptionsTwiceForReinstall InstallOptionsTwiceForReinstall
+#endif  // BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+TEST_F(ExternallyAppManagerTest, MAYBE_InstallOptionsTwiceForReinstall) {
+  const GURL kStartUrl = GURL("https://www.example.com/index.html");
+  const GURL kInstallUrl =
+      GURL("https://www.example.com/nested/install_url.html");
+  const GURL kManifestUrl = GURL("https://www.example.com/manifest.json");
+
+  webapps::AppId app_id = web_contents_manager().CreateBasicInstallPageState(
+      kInstallUrl, kManifestUrl, kStartUrl);
+
+  ExternalInstallOptions options = CreateExternalInstallOptionsFromTemplate(
+      {kInstallUrl}, ExternalInstallSource::kExternalPolicy)[0];
+  options.force_reinstall = true;
+
+  InstallNowFuture future1;
+  InstallNowFuture future2;
+  external_manager().Install(options, future1.GetCallback());
+  external_manager().Install(options, future2.GetCallback());
+  ASSERT_TRUE(future1.Wait());
+  ASSERT_TRUE(future2.Wait());
+
+  // Both installs should succeed, with the 2nd one returning a
+  // `kSuccessNewInstall` result because of the `force_reinstall` flag.
+  ExternallyManagedAppManager::InstallResult result1 =
+      future1.Get<ExternallyManagedAppManager::InstallResult>();
+  ExternallyManagedAppManager::InstallResult result2 =
+      future2.Get<ExternallyManagedAppManager::InstallResult>();
+
+  EXPECT_EQ(result1,
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessNewInstall, app_id));
+  EXPECT_EQ(result2,
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessNewInstall, app_id));
+}
+
+// TODO(crbug.com/405912587): Investigate and enable on Linux TSAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_InstallReentrantCallback DISABLED_InstallReentrantCallback
+#else
+#define MAYBE_InstallReentrantCallback InstallReentrantCallback
+#endif  // BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+TEST_F(ExternallyAppManagerTest, MAYBE_InstallReentrantCallback) {
+  const GURL kStartUrl1 = GURL("https://www.example1.com/index.html");
+  const GURL kInstallUrl1 =
+      GURL("https://www.example1.com/nested/install_url.html");
+  const GURL kManifestUrl1 = GURL("https://www.example1.com/manifest.json");
+
+  const GURL kStartUrl2 = GURL("https://www.example2.com/index.html");
+  const GURL kInstallUrl2 =
+      GURL("https://www.example2.com/nested/install_url.html");
+  const GURL kManifestUrl2 = GURL("https://www.example2.com/manifest.json");
+
+  webapps::AppId app_id1 = web_contents_manager().CreateBasicInstallPageState(
+      kInstallUrl1, kManifestUrl1, kStartUrl1);
+
+  webapps::AppId app_id2 = web_contents_manager().CreateBasicInstallPageState(
+      kInstallUrl2, kManifestUrl2, kStartUrl2);
+
+  InstallNowFuture inside_future;
+  ExternallyManagedAppManager::InstallResult external_result;
+  external_manager().InstallNow(
+      CreateExternalInstallOptionsFromTemplate(
+          {kInstallUrl1}, ExternalInstallSource::kExternalPolicy)[0],
+      base::BindLambdaForTesting(
+          [&](const GURL& url,
+              ExternallyManagedAppManager::InstallResult result) {
+            // Verify the first installation has succeeded.
+            EXPECT_EQ(
+                result,
+                ExternallyManagedAppManager::InstallResult(
+                    webapps::InstallResultCode::kSuccessNewInstall, app_id1));
+            external_manager().InstallNow(
+                CreateExternalInstallOptionsFromTemplate(
+                    {kInstallUrl2}, ExternalInstallSource::kExternalPolicy)[0],
+                inside_future.GetCallback());
+          }));
+  ASSERT_TRUE(inside_future.Wait());
+
+  // The intermediary install inside the callback should succeed.
+  ExternallyManagedAppManager::InstallResult result =
+      inside_future.Get<ExternallyManagedAppManager::InstallResult>();
+  EXPECT_EQ(result,
+            ExternallyManagedAppManager::InstallResult(
+                webapps::InstallResultCode::kSuccessNewInstall, app_id2));
+}
+
+// TODO(crbug.com/405912587): Investigate and enable on Linux TSAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_MultipleAppsInstallSerial DISABLED_MultipleAppsInstallSerial
+#else
+#define MAYBE_MultipleAppsInstallSerial MultipleAppsInstallSerial
+#endif  // BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+TEST_F(ExternallyAppManagerTest, MAYBE_MultipleAppsInstallSerial) {
+  const GURL kStartUrl1 = GURL("https://www.example.com/index1.html");
+  const GURL kInstallUrl1 =
+      GURL("https://www.example.com/nested/install_url1.html");
+  const GURL kManifestUrl1 = GURL("https://www.example.com/manifest1.json");
+
+  webapps::AppId app_id1 = web_contents_manager().CreateBasicInstallPageState(
+      kInstallUrl1, kManifestUrl1, kStartUrl1);
+
+  SynchronizeFuture result1;
+  external_manager().SynchronizeInstalledApps(
+      CreateExternalInstallOptionsFromTemplate(
+          {kInstallUrl1}, ExternalInstallSource::kExternalPolicy),
+      ExternalInstallSource::kExternalPolicy, result1.GetCallback());
+  ASSERT_TRUE(result1.Wait());
+
+  // Empty uninstall results.
+  EXPECT_THAT(result1.Get<UninstallResults>(), IsEmpty());
+
+  // Install should succeed.
+  std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results1 =
+      result1.Get<InstallResults>();
+  EXPECT_THAT(
+      install_results1,
+      ElementsAre(std::make_pair(
+          kInstallUrl1,
+          ExternallyManagedAppManager::InstallResult(
+              webapps::InstallResultCode::kSuccessNewInstall, app_id1))));
+
+  const GURL kStartUrl2 = GURL("https://www.example2.com/index.html");
+  const GURL kInstallUrl2 =
+      GURL("https://www.example2.com/nested/install_url.html");
+  const GURL kManifestUrl2 = GURL("https://www.example2.com/manifest.json");
+
+  webapps::AppId app_id2 = web_contents_manager().CreateBasicInstallPageState(
+      kInstallUrl2, kManifestUrl2, kStartUrl2);
+
+  SynchronizeFuture result2;
+  external_manager().SynchronizeInstalledApps(
+      CreateExternalInstallOptionsFromTemplate(
+          {kInstallUrl2}, ExternalInstallSource::kExternalPolicy),
+      ExternalInstallSource::kExternalPolicy, result2.GetCallback());
+  ASSERT_TRUE(result2.Wait());
+
+  std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results2 =
+      result2.Get<InstallResults>();
+  EXPECT_THAT(
+      install_results2,
+      ElementsAre(std::make_pair(
+          kInstallUrl2,
+          ExternallyManagedAppManager::InstallResult(
+              webapps::InstallResultCode::kSuccessNewInstall, app_id2))));
+}
+
+// TODO(crbug.com/405912587): Investigate and enable on Linux TSAN bots.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_PlaceholderAppWindowsClosed DISABLED_PlaceholderAppWindowsClosed
+#else
+#define MAYBE_PlaceholderAppWindowsClosed PlaceholderAppWindowsClosed
+#endif  // BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+TEST_F(ExternallyAppManagerTest, MAYBE_PlaceholderAppWindowsClosed) {
+  const GURL kInstallUrl = GURL("https://www.example.com/install_url.html");
+  ExternalInstallOptions template_options(
+      kInstallUrl, mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalPolicy);
+  template_options.install_placeholder = true;
+
+  SynchronizeFuture result;
+  external_manager().SynchronizeInstalledApps(
+      CreateExternalInstallOptionsFromTemplate(
+          {kInstallUrl}, ExternalInstallSource::kExternalPolicy,
+          template_options),
+      ExternalInstallSource::kExternalPolicy, result.GetCallback());
+  ASSERT_TRUE(result.Wait());
+
+  // The webapps::AppId should be created from the install url.
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, kInstallUrl);
+
+  // Install should succeed.
+  std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results =
+      result.Get<InstallResults>();
+  EXPECT_THAT(
+      install_results,
+      ElementsAre(std::make_pair(
+          kInstallUrl,
+          ExternallyManagedAppManager::InstallResult(
+              webapps::InstallResultCode::kSuccessNewInstall, app_id))));
+
+  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+
+  ASSERT_TRUE(app);
+  EXPECT_THAT(app->management_to_external_config_map(),
+              ElementsAre(std::make_pair(WebAppManagement::kPolicy,
+                                         WebApp::ExternalManagementConfig(
+                                             /*is_placeholder=*/true,
+                                             /*install_urls=*/{kInstallUrl},
+                                             /*additional_policy_ids=*/{}))));
 }
 
 TEST_F(ExternallyAppManagerTest, TwoInstallUrlsSameApp) {
@@ -707,7 +1052,7 @@ TEST_F(ExternallyAppManagerTest, NoNetworkWithPlaceholder) {
       ExternalInstallSource::kExternalPolicy, result.GetCallback());
   ASSERT_TRUE(result.Wait());
 
-  // The webapps::AppId should be created from teh install url.
+  // The webapps::AppId should be created from the install url.
   webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kInstallUrl);
 
