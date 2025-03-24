@@ -643,6 +643,7 @@ class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
         'https://crbug.com/angleproject/1234',
         'http://crbug.com/2345',
         'crbug.com/3456',
+        'b/9999',
     ]
     orphaned_urls = ['https://crbug.com/1234', 'crbug.com/3456']
     result_output._OutputAffectedUrls(urls, orphaned_urls, self._file_handle)
@@ -652,7 +653,8 @@ class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
                                   'https://crbug.com/1234 '
                                   'https://crbug.com/angleproject/1234 '
                                   'http://crbug.com/2345 '
-                                  'https://crbug.com/3456\n'
+                                  'https://crbug.com/3456 '
+                                  'https://b/9999\n'
                                   'Closable bugs: '
                                   'https://crbug.com/1234 '
                                   'https://crbug.com/3456\n'))
@@ -669,12 +671,13 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     urls = [
         'crbug.com/1234',
         'https://crbug.com/angleproject/2345',
+        'b/9999',
     ]
     result_output._OutputUrlsForClDescription(urls, [], self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
-                                  'Bug: 1234, angleproject:2345\n'))
+                                  'Bug: 9999, 1234, angleproject:2345\n'))
 
   def testBugLimit(self) -> None:
     """Tests that only a certain number of bugs are allowed per line."""
