@@ -1970,17 +1970,27 @@ class EnclaveManager::StateMachine {
       state_ = State::kStop;
       return;
     }
-    if (result->gpm_pin_metadata &&
-        result->gpm_pin_metadata->usable_pin_metadata) {
-      const auto& metadata = *result->gpm_pin_metadata;
-      auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
-      if (wrapped_pin->ParseFromString(
-              metadata.usable_pin_metadata->wrapped_pin) &&
-          !CheckPINInvariants(*wrapped_pin).has_value()) {
-        if (metadata.public_key.has_value()) {
-          FIDO_LOG(EVENT) << "Updating GPM PIN data";
+    if (result->gpm_pin_metadata) {
+      // This code saves the PIN public key even if the security domain reports
+      // it is not usable or if it is invalid. This is necessary because the
+      // security domain requires the current PIN public key to be set when
+      // joining a PIN, which Chrome will do later during processing.
+      if (result->gpm_pin_metadata->public_key) {
+        FIDO_LOG(EVENT) << "Updating GPM PIN public key";
+        user_->set_pin_public_key(
+            std::move(*result->gpm_pin_metadata->public_key));
+      }
+      if (result->gpm_pin_metadata->usable_pin_metadata) {
+        const auto& metadata = *result->gpm_pin_metadata->usable_pin_metadata;
+        auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
+        if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
+            !CheckPINInvariants(*wrapped_pin).has_value()) {
+          FIDO_LOG(EVENT) << "Updating wrapped GPM PIN";
           *user_->mutable_wrapped_pin() = std::move(*wrapped_pin);
-          user_->set_pin_public_key(std::move(*metadata.public_key));
+        } else {
+          FIDO_LOG(ERROR)
+              << "Wrapped PIN from security domain update is invalid: "
+              << base::HexEncode(base::as_byte_span(metadata.wrapped_pin));
         }
       }
     }

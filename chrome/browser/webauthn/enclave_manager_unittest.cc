@@ -48,6 +48,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/trusted_vault/command_line_switches.h"
+#include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
@@ -1172,6 +1173,37 @@ TEST_F(EnclaveManagerTest, RenewPINWithStaleDataFromAnotherClient) {
   const std::string third_pin_key =
       security_domain_service_->GetPinMemberPublicKey();
   EXPECT_NE(second_pin_key, third_pin_key);
+}
+
+// Regression test for crbug.com/402425846.
+// Attempts renewing a PIN from local data when the security domain indicates
+// that the current PIN changed, and is also not usable for recovery.
+TEST_F(EnclaveManagerTest, RenewUnusablePINFromLocalData) {
+  const std::string kPin = "123456";
+
+  // Set up the manager with the PIN.
+  ASSERT_TRUE(Register());
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(kPin, setup_future.GetCallback());
+  ASSERT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  ASSERT_EQ(security_domain_service_->num_physical_members(), 1u);
+  ASSERT_EQ(security_domain_service_->num_pin_members(), 1u);
+  const std::string initial_pin_key =
+      security_domain_service_->GetPinMemberPublicKey();
+
+  // Update the joined PIN to one that has a different public key and is not
+  // usable for recovery.
+  security_domain_service_->MakePinMemberUnusable();
+  security_domain_service_->SetPinMemberPublicKey("Bad PK");
+
+  // Renew the PIN.
+  BoolFuture renew_future;
+  manager_.RenewPIN(renew_future.GetCallback());
+  ASSERT_TRUE(renew_future.Wait());
+  EXPECT_TRUE(renew_future.Get());
+  EXPECT_NE(security_domain_service_->GetPinMemberPublicKey(), "Bad PK");
 }
 
 TEST_F(EnclaveManagerTest, EpochChanged) {
