@@ -256,7 +256,8 @@ std::string GetDeviceID(IMMDevice* device) {
   ScopedCoMem<WCHAR> device_id_com;
   std::string device_id;
   if (SUCCEEDED(device->GetId(&device_id_com)))
-    base::WideToUTF8(device_id_com, wcslen(device_id_com), &device_id);
+    base::WideToUTF8(device_id_com, UNSAFE_TODO(wcslen(device_id_com)),
+                     &device_id);
   return device_id;
 }
 
@@ -283,7 +284,8 @@ HRESULT GetDeviceFriendlyNameInternal(IMMDevice* device,
   if (friendly_name_pv.get().vt == VT_LPWSTR &&
       friendly_name_pv.get().pwszVal) {
     base::WideToUTF8(friendly_name_pv.get().pwszVal,
-                     wcslen(friendly_name_pv.get().pwszVal), friendly_name);
+                     UNSAFE_TODO(wcslen(friendly_name_pv.get().pwszVal)),
+                     friendly_name);
   }
 
   return hr;
@@ -809,7 +811,7 @@ std::string CoreAudioUtil::GetAudioControllerID(IMMDevice* device,
 
   std::string controller_id;
   base::WideToUTF8(instance_id.get().pwszVal,
-                   wcslen(instance_id.get().pwszVal),
+                   UNSAFE_TODO(wcslen(instance_id.get().pwszVal)),
                    &controller_id);
 
   return controller_id;
@@ -957,7 +959,7 @@ HRESULT CoreAudioUtil::GetSharedModeMixFormat(IAudioClient* client,
   // the returned structure is correctly extended or not.
   CHECK_LE(wrapped_format.size(), sizeof(WAVEFORMATEXTENSIBLE))
       << "Format tag: 0x" << std::hex << wrapped_format->wFormatTag;
-  memcpy(format, wrapped_format.get(), wrapped_format.size());
+  UNSAFE_TODO(memcpy(format, wrapped_format.get(), wrapped_format.size()));
   DVLOG(2) << CoreAudioUtil::WaveFormatToString(format);
 
   return hr;

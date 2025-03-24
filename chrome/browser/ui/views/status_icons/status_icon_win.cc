@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -116,7 +117,7 @@ void StatusIconWin::SetToolTip(const std::u16string& tool_tip) {
   NOTIFYICONDATA icon_data;
   InitIconData(&icon_data);
   icon_data.uFlags = NIF_TIP;
-  wcscpy_s(icon_data.szTip, base::as_wcstr(tool_tip));
+  UNSAFE_TODO(wcscpy_s(icon_data.szTip, base::as_wcstr(tool_tip)));
   BOOL result = Shell_NotifyIcon(NIM_MODIFY, &icon_data);
   if (!result) {
     LOG(WARNING) << "Unable to set tooltip for status tray icon";
@@ -132,8 +133,8 @@ void StatusIconWin::DisplayBalloon(
   InitIconData(&icon_data);
   icon_data.uFlags = NIF_INFO;
   icon_data.dwInfoFlags = NIIF_INFO;
-  wcscpy_s(icon_data.szInfoTitle, base::as_wcstr(title));
-  wcscpy_s(icon_data.szInfo, base::as_wcstr(contents));
+  UNSAFE_TODO(wcscpy_s(icon_data.szInfoTitle, base::as_wcstr(title)));
+  UNSAFE_TODO(wcscpy_s(icon_data.szInfo, base::as_wcstr(contents)));
   icon_data.uTimeout = 0;
 
   if (!icon.isNull()) {
@@ -164,7 +165,7 @@ void StatusIconWin::UpdatePlatformContextMenu(StatusIconMenuModel* menu) {
 }
 
 void StatusIconWin::InitIconData(NOTIFYICONDATA* icon_data) {
-  memset(icon_data, 0, sizeof(NOTIFYICONDATA));
+  UNSAFE_TODO(memset(icon_data, 0, sizeof(NOTIFYICONDATA)));
   icon_data->cbSize = sizeof(NOTIFYICONDATA);
 
   icon_data->hWnd = window_;

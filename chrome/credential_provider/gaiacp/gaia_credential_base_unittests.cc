@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/base_paths_win.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -1785,7 +1786,7 @@ TEST_F(GcpGaiaCredentialBaseAdScenariosTest,
       SUCCEEDED(GetUserProperty(sid_str.c_str(), base::UTF8ToWide(kKeyDomain),
                                 domain_reg, &domain_reg_length)));
   ASSERT_TRUE(domain_reg[0]);
-  EXPECT_TRUE(wcscmp(domain_reg, domain_name) == 0);
+  EXPECT_TRUE(UNSAFE_TODO(wcscmp(domain_reg, domain_name)) == 0);
 
   // Verify that the registry entry for the username was created.
   wchar_t username_reg[256];
@@ -1794,7 +1795,7 @@ TEST_F(GcpGaiaCredentialBaseAdScenariosTest,
       SUCCEEDED(GetUserProperty(sid_str.c_str(), base::UTF8ToWide(kKeyUsername),
                                 username_reg, &username_reg_length)));
   ASSERT_TRUE(username_reg[0]);
-  EXPECT_TRUE(wcscmp(username_reg, user_name) == 0);
+  EXPECT_TRUE(UNSAFE_TODO(wcscmp(username_reg, user_name)) == 0);
 
   // Verify that the authentication results dictionary is now empty.
   ASSERT_TRUE(test->IsAuthenticationResultsEmpty());

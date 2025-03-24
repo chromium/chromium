@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -70,7 +71,7 @@ WEBAUTHN_HMAC_SECRET_SALT_VALUES* FillHMACSaltValues(
     return nullptr;
   }
 
-  memset(values_storage, 0, sizeof(*values_storage));
+  UNSAFE_TODO(memset(values_storage, 0, sizeof(*values_storage)));
   // These vectors must not reallocate because the Windows structures will have
   // pointers into their elements.
   salts_storage->reserve(inputs.size());

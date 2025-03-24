@@ -13,6 +13,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -156,7 +157,7 @@ bool ExpandUrlVarName(std::wstring* arg, const std::wstring& url_spec) {
   size_t url_index = arg->find(kUrlVarName);
   if (url_index == std::wstring::npos)
     return false;
-  arg->replace(url_index, wcslen(kUrlVarName), url_spec);
+  arg->replace(url_index, UNSAFE_TODO(wcslen(kUrlVarName)), url_spec);
   return true;
 }
 

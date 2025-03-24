@@ -20,6 +20,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -448,7 +449,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 
 std::wstring GetProgIdForClsid(REFCLSID clsid) {
   auto clsid_comparator = [](REFCLSID a, REFCLSID b) {
-    return std::memcmp(&a, &b, sizeof(a)) < 0;
+    return UNSAFE_TODO(std::memcmp(&a, &b, sizeof(a))) < 0;
   };
 
   const base::flat_map<CLSID, std::wstring, decltype(clsid_comparator)>

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -101,7 +102,7 @@ class TrustStoreWinTest : public testing::Test {
         CRYPTO_BUFFER_len(cert->cert_buffer())));
 
     CERT_ENHKEY_USAGE usage;
-    memset(&usage, 0, sizeof(usage));
+    UNSAFE_TODO(memset(&usage, 0, sizeof(usage)));
     if (!CertSetEnhancedKeyUsage(os_cert.get(), &usage)) {
       return false;
     }

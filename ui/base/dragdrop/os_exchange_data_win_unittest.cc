@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -198,7 +199,7 @@ TEST_F(OSExchangeDataWinTest, StringDataWritingViaCOM) {
   HGLOBAL glob = GlobalAlloc(GPTR, sizeof(wchar_t) * (input.size() + 1));
   base::win::ScopedHGlobal<wchar_t*> global_lock(glob);
   wchar_t* buffer_handle = global_lock.data();
-  wcscpy_s(buffer_handle, input.size() + 1, input.c_str());
+  UNSAFE_TODO(wcscpy_s(buffer_handle, input.size() + 1, input.c_str()));
   medium.hGlobal = glob;
   medium.pUnkForRelease = NULL;
   EXPECT_EQ(S_OK, com_data->SetData(&format_etc, &medium, TRUE));
@@ -233,7 +234,7 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
     HGLOBAL glob = GlobalAlloc(GPTR, sizeof(wchar_t) * (input.size() + 1));
     base::win::ScopedHGlobal<wchar_t*> global_lock(glob);
     wchar_t* buffer_handle = global_lock.data();
-    wcscpy_s(buffer_handle, input.size() + 1, input.c_str());
+    UNSAFE_TODO(wcscpy_s(buffer_handle, input.size() + 1, input.c_str()));
     medium.hGlobal = glob;
     medium.pUnkForRelease = NULL;
     EXPECT_EQ(S_OK, com_data->SetData(&format_etc, &medium, TRUE));
@@ -243,7 +244,7 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
     HGLOBAL glob = GlobalAlloc(GPTR, sizeof(wchar_t) * (input2.size() + 1));
     base::win::ScopedHGlobal<wchar_t*> global_lock(glob);
     wchar_t* buffer_handle = global_lock.data();
-    wcscpy_s(buffer_handle, input2.size() + 1, input2.c_str());
+    UNSAFE_TODO(wcscpy_s(buffer_handle, input2.size() + 1, input2.c_str()));
     medium.hGlobal = glob;
     medium.pUnkForRelease = NULL;
     EXPECT_EQ(S_OK, com_data->SetData(&format_etc, &medium, TRUE));

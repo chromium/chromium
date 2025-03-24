@@ -7,6 +7,7 @@
 #include <combaseapi.h>
 #include <windows.devices.input.h>
 
+#include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_winrt_initializer.h"
@@ -65,7 +66,7 @@ TEST_F(PenProcessorTest, TypicalCaseDMDisabled) {
                               /*direct_manipulation_enabled*/ false);
 
   POINTER_PEN_INFO pen_info;
-  memset(&pen_info, 0, sizeof(POINTER_PEN_INFO));
+  UNSAFE_TODO(memset(&pen_info, 0, sizeof(POINTER_PEN_INFO)));
   gfx::Point point(100, 100);
 
   std::unique_ptr<ui::Event> event =
@@ -119,7 +120,7 @@ TEST_F(PenProcessorTest, TypicalCaseDMEnabled) {
                               /*direct_manipulation_enabled*/ true);
 
   POINTER_PEN_INFO pen_info;
-  memset(&pen_info, 0, sizeof(POINTER_PEN_INFO));
+  UNSAFE_TODO(memset(&pen_info, 0, sizeof(POINTER_PEN_INFO)));
   gfx::Point point(100, 100);
 
   // Set up the modifier state that shift is down so we can test
@@ -127,7 +128,7 @@ TEST_F(PenProcessorTest, TypicalCaseDMEnabled) {
   BYTE restore_key_state[256];
   GetKeyboardState(restore_key_state);
   BYTE shift_key_state[256];
-  memset(shift_key_state, 0, sizeof(shift_key_state));
+  UNSAFE_TODO(memset(shift_key_state, 0, sizeof(shift_key_state)));
   // Mask high order bit on indicating it is down.
   // See MSDN GetKeyState().
   shift_key_state[VK_SHIFT] |= 0x80;
@@ -184,7 +185,7 @@ TEST_F(PenProcessorTest, UnpairedPointerDownTouchDMEnabled) {
                               /*direct_manipulation_enabled*/ true);
 
   POINTER_PEN_INFO pen_info;
-  memset(&pen_info, 0, sizeof(POINTER_PEN_INFO));
+  UNSAFE_TODO(memset(&pen_info, 0, sizeof(POINTER_PEN_INFO)));
   gfx::Point point(100, 100);
 
   pen_info.pointerInfo.pointerFlags =
@@ -202,7 +203,7 @@ TEST_F(PenProcessorTest, UnpairedPointerDownMouseDMEnabled) {
                               /*direct_manipulation_enabled*/ true);
 
   POINTER_PEN_INFO pen_info;
-  memset(&pen_info, 0, sizeof(POINTER_PEN_INFO));
+  UNSAFE_TODO(memset(&pen_info, 0, sizeof(POINTER_PEN_INFO)));
   gfx::Point point(100, 100);
 
   pen_info.pointerInfo.pointerFlags = POINTER_FLAG_FIRSTBUTTON;
@@ -219,7 +220,7 @@ TEST_F(PenProcessorTest, TouchFlagDMEnabled) {
                               /*direct_manipulation_enabled*/ true);
 
   POINTER_PEN_INFO pen_info;
-  memset(&pen_info, 0, sizeof(POINTER_PEN_INFO));
+  UNSAFE_TODO(memset(&pen_info, 0, sizeof(POINTER_PEN_INFO)));
   gfx::Point point(100, 100);
 
   pen_info.pointerInfo.pointerFlags =
@@ -249,7 +250,7 @@ TEST_F(PenProcessorTest, MouseFlagDMEnabled) {
                               /*direct_manipulation_enabled*/ true);
 
   POINTER_PEN_INFO pen_info;
-  memset(&pen_info, 0, sizeof(POINTER_PEN_INFO));
+  UNSAFE_TODO(memset(&pen_info, 0, sizeof(POINTER_PEN_INFO)));
   gfx::Point point(100, 100);
 
   pen_info.pointerInfo.pointerFlags = POINTER_FLAG_FIRSTBUTTON;
@@ -282,7 +283,7 @@ TEST_F(PenProcessorTest, PenEraserFlagDMEnabled) {
                               /*direct_manipulation_enabled*/ true);
 
   POINTER_PEN_INFO pen_info;
-  memset(&pen_info, 0, sizeof(POINTER_PEN_INFO));
+  UNSAFE_TODO(memset(&pen_info, 0, sizeof(POINTER_PEN_INFO)));
   gfx::Point point(100, 100);
 
   pen_info.pointerInfo.pointerFlags =
@@ -316,7 +317,7 @@ TEST_F(PenProcessorTest, MultiPenDMEnabled) {
 
   std::array<POINTER_PEN_INFO, 3> pen_info;
   for (auto& i : pen_info) {
-    memset(&i, 0, sizeof(POINTER_PEN_INFO));
+    UNSAFE_TODO(memset(&i, 0, sizeof(POINTER_PEN_INFO)));
   }
 
   gfx::Point point(100, 100);
@@ -354,7 +355,7 @@ TEST_F(PenProcessorTest, StylusHandwritingPropertiesDMEnabled) {
                               /*direct_manipulation_enabled=*/true);
   const uint32_t pointer_id = 1;
   POINTER_PEN_INFO pen_info;
-  memset(&pen_info, 0, sizeof(POINTER_PEN_INFO));
+  UNSAFE_TODO(memset(&pen_info, 0, sizeof(POINTER_PEN_INFO)));
   pen_info.pointerInfo.pointerFlags =
       POINTER_FLAG_INCONTACT | POINTER_FLAG_FIRSTBUTTON;
   pen_info.pointerInfo.ButtonChangeType = POINTER_CHANGE_FIRSTBUTTON_DOWN;

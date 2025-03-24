@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/functional/bind.h"
@@ -3579,7 +3580,8 @@ bool HWNDMessageHandler::IsSynthesizedMouseMessage(unsigned int message,
     ::ClientToScreen(hwnd(), &mouse_location);
     POINT cursor_pos = {0};
     ::GetCursorPos(&cursor_pos);
-    return memcmp(&cursor_pos, &mouse_location, sizeof(POINT)) == 0;
+    return UNSAFE_TODO(memcmp(&cursor_pos, &mouse_location, sizeof(POINT))) ==
+           0;
   }
   return false;
 }

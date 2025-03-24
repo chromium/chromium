@@ -13,6 +13,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -100,7 +101,7 @@ base::FilePath FindSpartanDatabase(const base::FilePath& profile_path) {
 
 struct GuidComparator {
   bool operator()(const GUID& a, const GUID& b) const {
-    return memcmp(&a, &b, sizeof(a)) < 0;
+    return UNSAFE_TODO(memcmp(&a, &b, sizeof(a))) < 0;
   }
 };
 

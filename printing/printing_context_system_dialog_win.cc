@@ -74,7 +74,7 @@ void PrintingContextSystemDialogWin::AskUserForSettings(
   dialog_options.nStartPage = START_PAGE_GENERAL;
   if (max_pages) {
     // Default initialize to print all the pages.
-    memset(ranges, 0, sizeof(ranges));
+    UNSAFE_TODO(memset(ranges, 0, sizeof(ranges)));
     ranges[0].nFromPage = 1;
     ranges[0].nToPage = max_pages;
     dialog_options.nPageRanges = 1;

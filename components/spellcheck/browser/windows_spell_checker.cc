@@ -15,6 +15,7 @@
 #include <locale>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -301,7 +302,7 @@ void BackgroundHelper::FillSuggestionList(
     hr = suggestions->Next(1, &suggestion, nullptr);
     if (hr == S_OK) {
       std::u16string utf16_suggestion;
-      if (base::WideToUTF16(suggestion.get(), wcslen(suggestion),
+      if (base::WideToUTF16(suggestion.get(), UNSAFE_TODO(wcslen(suggestion)),
                             &utf16_suggestion)) {
         optional_suggestions->push_back(utf16_suggestion);
       }
