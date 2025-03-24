@@ -110,6 +110,7 @@ interface RestrictedCookieManager {
                      url.mojom.Origin top_frame_origin,
                      StorageAccessApiStatus storage_access_api_status,
                      CookieInclusionStatus status,
+                     bool is_ad_tagged,
                      bool apply_devtools_overrides) => (bool success);
 
   // Subscribes to changes in the cookies transmitted in a request to an URL.
@@ -144,6 +145,7 @@ interface RestrictedCookieManager {
       url.mojom.Origin top_frame_origin,
       StorageAccessApiStatus storage_access_api_status,
       bool get_version_shared_memory,
+      bool is_ad_tagged,
       bool apply_devtools_overrides,
       string cookie)
       => (CookiesResponse? response);
