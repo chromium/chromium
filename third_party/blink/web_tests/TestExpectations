@@ -8169,7 +8169,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac15 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 [ Mac15 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 [ Mac15-arm64 ] compositing/webgl/webgl-with-accelerated-background-color.html [ Timeout ]
-[ Mac15-arm64 ] editing/selection/mouse/mouse-selection-horizontal.html [ Timeout ]
 [ Mac15-arm64 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-default-src-none.html [ Timeout ]
 [ Mac15-arm64 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-explicit.html [ Timeout ]
 [ Mac15-arm64 ] external/wpt/content-security-policy/webrtc/webrtc-allowed-nopolicy.html [ Timeout ]
@@ -9082,8 +9081,6 @@ crbug.com/402796552 [ Win11-arm64 ] webaudio/Analyser/realtimeanalyser-fftsize-r
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sawtooth.html [ Failure ]
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sine.html [ Failure ]
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-square.html [ Failure ]
-crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-sideways-lr.html [ Failure ]
-crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Failure ]
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]
 
