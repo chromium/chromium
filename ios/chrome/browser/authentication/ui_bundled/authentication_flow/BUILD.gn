@@ -76,6 +76,7 @@ source_set("authentication_flow_in_profile") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
   frameworks = [ "UIKit.framework" ]
 }
