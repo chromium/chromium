@@ -1315,7 +1315,10 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
       use_gl = browser_command_line->GetSwitchValueASCII(switches::kUseGL);
       break;
     case gpu::GpuMode::SOFTWARE_GL:
-      gl::SetSoftwareWebGLCommandLineSwitches(command_line);
+      if (!gl::HasRequestedSoftwareGLImplementationFromCommandLine(
+              command_line)) {
+        gl::SetSoftwareWebGLCommandLineSwitches(command_line);
+      }
       break;
     default:
       use_gl = gl::kGLImplementationDisabledName;

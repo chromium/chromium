@@ -180,6 +180,12 @@ GL_EXPORT void SetSoftwareGLCommandLineSwitches(
 GL_EXPORT void SetSoftwareWebGLCommandLineSwitches(
     base::CommandLine* command_line);
 
+// Check if there is a requested software GL implementation in the command line
+// arguments. Used to avoid requesting multiple times or overriding specific
+// user requests.
+GL_EXPORT bool HasRequestedSoftwareGLImplementationFromCommandLine(
+    const base::CommandLine* command_line);
+
 // Return requested GL implementation by checking commandline. If there isn't
 // gl related argument, nullopt is returned.
 GL_EXPORT std::optional<GLImplementationParts>
