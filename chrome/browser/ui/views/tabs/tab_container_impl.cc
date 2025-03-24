@@ -486,7 +486,6 @@ void TabContainerImpl::NotifyTabstripBubbleClosed() {
   }
 }
 
-// TODO(tbergquist): This should really return an optional<size_t>.
 std::optional<int> TabContainerImpl::GetModelIndexOf(
     const TabSlotView* slot_view) const {
   return tabs_view_model_.GetIndexOfView(slot_view);
@@ -500,7 +499,6 @@ int TabContainerImpl::GetTabCount() const {
   return tabs_view_model_.view_size();
 }
 
-// TODO(tbergquist): This should really return an optional<size_t>.
 std::optional<int> TabContainerImpl::GetModelIndexOfFirstNonClosingTab(
     Tab* tab) const {
   if (tab->closing()) {
