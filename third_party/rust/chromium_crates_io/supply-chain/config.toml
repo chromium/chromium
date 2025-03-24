@@ -80,9 +80,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."bytemuck_derive:1.9.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."byteorder:1.5.0"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."bytes:1.10.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
@@ -578,14 +575,8 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."yoke:0.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."zerocopy-derive:0.7.35"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."zerocopy-derive:0.8.23"]
 criteria = []
-
-[policy."zerocopy:0.7.35"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."zerocopy:0.8.23"]
 criteria = ["crypto-safe", "safe-to-run"]

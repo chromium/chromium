@@ -105,10 +105,6 @@ features = ["full"]
 [dependencies.unicode-linebreak]
 version = "0.1"
 
-[dependencies.zerocopy]
-version = "0.7.35"
-features = ["derive", "simd"]
-
 [dependencies.bytemuck]
 version = "1"
 features = ["nightly_portable_simd"]  # For std::simd coverage.
