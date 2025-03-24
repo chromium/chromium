@@ -42,9 +42,9 @@ export class CrToastDemoElement extends CrLitElement {
     };
   }
 
-  protected duration_: number = 0;
-  protected message_: string = 'Hello, world';
-  protected showDismissButton_: boolean = false;
+  protected accessor duration_: number = 0;
+  protected accessor message_: string = 'Hello, world';
+  protected accessor showDismissButton_: boolean = false;
 
   protected onHideToastClick_() {
     this.$.toast.hide();

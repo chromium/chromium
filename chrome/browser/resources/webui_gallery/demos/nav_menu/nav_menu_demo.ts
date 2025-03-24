@@ -42,10 +42,10 @@ export class NavMenuDemoElement extends CrLitElement {
     };
   }
 
-  protected isDrawerOpen_: boolean = false;
-  protected selectedIndex_?: number;
-  protected showIcons_: boolean = true;
-  protected showRipples_: boolean = true;
+  protected accessor isDrawerOpen_: boolean = false;
+  protected accessor selectedIndex_: number|undefined;
+  protected accessor showIcons_: boolean = true;
+  protected accessor showRipples_: boolean = true;
 
   protected showDrawerMenu_() {
     this.$.drawer.openDrawer();

@@ -40,17 +40,17 @@ export class CrToolbarDemoElement extends CrLitElement {
     };
   }
 
-  protected alwaysShowLogo_: boolean = true;
-  protected clearLabel_: string = 'Clear search';
-  protected log_: string[] = [];
-  protected menuLabel_: string = 'Menu';
-  protected narrow_?: boolean;
-  protected narrowThreshold_: number = 1000;
-  protected pageName_: string = 'Demo';
-  protected searchPrompt_: string = 'Search through some content';
-  protected showMenu_: boolean = true;
-  protected showSearch_: boolean = true;
-  protected showSlottedContent_: boolean = false;
+  protected accessor alwaysShowLogo_: boolean = true;
+  protected accessor clearLabel_: string = 'Clear search';
+  protected accessor log_: string[] = [];
+  protected accessor menuLabel_: string = 'Menu';
+  protected accessor narrow_: boolean|undefined;
+  protected accessor narrowThreshold_: number = 1000;
+  protected accessor pageName_: string = 'Demo';
+  protected accessor searchPrompt_: string = 'Search through some content';
+  protected accessor showMenu_: boolean = true;
+  protected accessor showSearch_: boolean = true;
+  protected accessor showSlottedContent_: boolean = false;
 
   protected onMenuClick_() {
     this.log_.push('Menu tapped.');

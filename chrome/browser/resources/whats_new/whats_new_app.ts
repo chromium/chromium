@@ -365,7 +365,7 @@ export class WhatsNewAppElement extends CrLitElement {
     };
   }
 
-  protected url_: string = '';
+  protected accessor url_: string = '';
 
   private isAutoOpen_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();

@@ -79,15 +79,15 @@ export class UserEducationInternalsElement extends
     };
   }
 
-  filter: string = '';
-  protected tutorials_: FeaturePromoDemoPageInfo[] = [];
-  protected featurePromos_: FeaturePromoDemoPageInfo[] = [];
+  accessor filter: string = '';
+  protected accessor tutorials_: FeaturePromoDemoPageInfo[] = [];
+  protected accessor featurePromos_: FeaturePromoDemoPageInfo[] = [];
   protected newBadges_: FeaturePromoDemoPageInfo[] = [];
   protected whatsNewModules_: WhatsNewModuleDemoPageInfo[] = [];
   protected whatsNewEditions_: WhatsNewEditionDemoPageInfo[] = [];
-  protected featurePromoErrorMessage_: string = '';
-  protected narrow_: boolean = false;
-  protected sessionExpanded_: boolean = false;
+  protected accessor featurePromoErrorMessage_: string = '';
+  protected accessor narrow_: boolean = false;
+  protected accessor sessionExpanded_: boolean = false;
   protected sessionData_: FeaturePromoDemoPageData[] = [];
 
   private handler_: UserEducationInternalsPageHandlerInterface;
