@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_SODA_INSTALLER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_SODA_INSTALLER_H_
 
+#include <queue>
+
 #include "base/functional/callback_forward.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
@@ -37,7 +39,10 @@ class SodaInstaller : public speech::SodaInstaller::Observer {
                       int progress) override;
 
  private:
-  AvailabilityCallback callback_;
+  void FlushCallbacks(bool result);
+
+  std::queue<AvailabilityCallback> callbacks_;
+  bool installing_ = false;
   const std::string language_;
   raw_ptr<PrefService> global_prefs_;
   raw_ptr<PrefService> profile_prefs_;
