@@ -242,6 +242,15 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
   return result;
 }
 
+bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
+                             viz::AggregatedRenderPassList* ref_pass_list,
+                             const PixelComparator& comparator) {
+  RenderReadbackTargetAndAreaToResultBitmap(
+      ref_pass_list, ref_pass_list->back().get(), nullptr);
+  std::unique_ptr<SkBitmap> output = std::move(result_bitmap_);
+  return RunPixelTest(pass_list, *output, comparator);
+}
+
 void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
                                std::unique_ptr<viz::CopyOutputResult> result) {
   ASSERT_FALSE(result->IsEmpty());

@@ -6014,6 +6014,138 @@ INSTANTIATE_TEST_SUITE_P(
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(RendererPixelTestColorConversion);
 
+#if BUILDFLAG(IS_WIN)
+class VideoPixelRendererPixelTestColorConversion
+    : public VideoRendererPixelTestBase,
+      public testing::WithParamInterface<std::tuple<RendererType, bool>> {
+ public:
+  VideoPixelRendererPixelTestColorConversion()
+      : VideoRendererPixelTestBase(std::get<0>(GetParam())) {}
+
+  void SetUp() override {
+    // Set a color space that is not suitable for blending to ensure we go
+    // through the color conversion code paths.
+    this->display_color_spaces_ =
+        gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSCRGBLinear80Nits());
+    this->display_color_spaces_.SetSDRMaxLuminanceNits(80.f);
+
+    // Allow non-root render passes to have the above non-suitable-for-blending
+    // color space by being scanout.
+    renderer_settings_.force_non_scanout_backing_for_pixel_tests = true;
+
+    if (std::get<1>(GetParam())) {
+      features_.InitWithFeatures({features::kDelegatedCompositing,
+                                  features::kColorConversionInRenderer},
+                                 {});
+    } else {
+      features_.InitWithFeatures({features::kDelegatedCompositing},
+                                 {features::kColorConversionInRenderer});
+    }
+
+    VideoRendererPixelTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// This checks the correct color conversion is happening in the following case:
+// a non-root render pass has a texture quad that requires a color conversion
+// filter, but no quads in the render pass require blending.
+//
+// In this case, the color conversion layer is elided, but we choose the wrong
+// "destination" color space for the color conversion filter when we draw the
+// texture quad.
+// See: crbug.com/397995970
+TEST_P(VideoPixelRendererPixelTestColorConversion,
+       RenderPassWithHdrVideoDoesntNeedBlending) {
+  // Create a test frame that embeds a pass which:
+  // - contains a texture quad that requires a color conversion filter and
+  // - needs blending, iff `child_pass_needs_blending`.
+  auto CreateFrame =
+      [&](bool child_pass_needs_blending) -> AggregatedRenderPassList {
+    const gfx::Rect rect(this->device_viewport_size_);
+
+    CompositorRenderPassId id{1};
+    auto child_pass = CreateTestRootRenderPass(id, rect);
+
+    auto color_space = gfx::ColorSpace::CreateHDR10();
+
+    CreateTestMultiplanarVideoDrawQuad(
+        TestVideoFrameBuilder(media::PIXEL_FORMAT_I420, color_space,
+                              kUnitSquare, rect.size(), rect.size())
+            .DrawSolid(144, 54, 34),
+        /*alpha_value=*/255, gfx::Transform(), gfx::MaskFilterInfo(),
+        /*sorting_context_id=*/0, child_pass.get(),
+        this->video_resource_updater_.get(), rect, rect,
+        this->resource_provider_.get(), this->child_resource_provider_.get(),
+        this->child_context_provider_.get());
+
+    AggregatedRenderPassList pass_list;
+
+    AggregatedRenderPassId hdr_child_id{2};
+    {
+      auto child_pass_copy = cc::CopyToAggregatedRenderPass(
+          child_pass.get(), hdr_child_id, gfx::ContentColorUsage::kHDR);
+
+      // Make `is_scanout == true` on Windows for non-root pass.
+      // See: `DirectRenderer::CalculateRenderPassRequirements`
+      {
+        EXPECT_TRUE(
+            base::FeatureList::IsEnabled(features::kDelegatedCompositing));
+        child_pass_copy->is_from_surface_root_pass = true;
+        child_pass_copy->will_backing_be_read_by_viz = false;
+      }
+
+      // When `ColorConversionInRenderer` is enabled, make the HDR child render
+      // pass not use the color conversion layer since it won't contain quads
+      // that require blending.
+      // When `ColorConversionInRenderer` is disabled, color conversion will
+      // happen unconditionally as a render pass.
+      for (auto* quad : child_pass_copy->quad_list) {
+        quad->needs_blending = child_pass_needs_blending;
+      }
+
+      pass_list.push_back(std::move(child_pass_copy));
+    }
+
+    // Add a root pass that embeds the problematic pass. The root render pass
+    // color space is handled specially and we are testing the non-root case.
+    {
+      AggregatedRenderPassId root_id{1};
+      auto root_pass = CreateTestRootRenderPass(root_id, rect);
+      root_pass->content_color_usage = gfx::ContentColorUsage::kSRGB;
+
+      SharedQuadState* shared_state = CreateTestSharedQuadState(
+          gfx::Transform(), rect, root_pass.get(), gfx::MaskFilterInfo());
+      CreateTestRenderPassDrawQuad(shared_state, rect, hdr_child_id,
+                                   root_pass.get());
+
+      pass_list.push_back(std::move(root_pass));
+    }
+
+    return pass_list;
+  };
+
+  // Render the child pass with blending to use as a baseline, since we expect
+  // the output to be the same in both cases.
+  AggregatedRenderPassList pass_list_with_blending =
+      CreateFrame(/*child_pass_needs_blending=*/true);
+
+  AggregatedRenderPassList pass_list_without_blending =
+      CreateFrame(/*child_pass_needs_blending=*/false);
+  EXPECT_TRUE(this->RunPixelTest(&pass_list_without_blending,
+                                 &pass_list_with_blending,
+                                 cc::AlphaDiscardingExactPixelComparator()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VideoPixelRendererPixelTestColorConversion,
+    testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
+                     testing::Bool()));
+#endif
+
 using PrimaryID = gfx::ColorSpace::PrimaryID;
 using TransferID = gfx::ColorSpace::TransferID;
 
