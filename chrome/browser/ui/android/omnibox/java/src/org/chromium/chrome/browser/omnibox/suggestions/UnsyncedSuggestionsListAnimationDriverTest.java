@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,8 +22,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link UnsyncedSuggestionsListAnimationDriver}. */
@@ -36,21 +41,36 @@ public class UnsyncedSuggestionsListAnimationDriverTest {
     private PropertyModel mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
     @Mock Runnable mShowRunnable;
     @Mock private ValueAnimator mValueAnimator;
-    private boolean mShouldAnimate = true;
+    private Context mContext;
+    private boolean mIsToolbarBottomAnchored = true;
+    private float mTranslation;
 
     @Before
     public void setUp() {
+        mContext = ContextUtils.getApplicationContext();
         mDriver =
                 new UnsyncedSuggestionsListAnimationDriver(
-                        mListModel, mShowRunnable, () -> mShouldAnimate, VERTICAL_OFFSET);
+                        mListModel,
+                        mShowRunnable,
+                        () -> mIsToolbarBottomAnchored,
+                        () -> mTranslation,
+                        mContext);
     }
 
     @Test
+    @DisableFeatures({OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE})
     public void testAnimationDisabled() {
-        mShouldAnimate = false;
+        mIsToolbarBottomAnchored = false;
         assertFalse(mDriver.isAnimationEnabled());
 
-        mShouldAnimate = true;
+        mIsToolbarBottomAnchored = true;
+        assertTrue(mDriver.isAnimationEnabled());
+    }
+
+    @Test
+    @EnableFeatures({OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE})
+    public void testAnimationFlagEnabled() {
+        mIsToolbarBottomAnchored = false;
         assertTrue(mDriver.isAnimationEnabled());
     }
 
@@ -78,6 +98,50 @@ public class UnsyncedSuggestionsListAnimationDriverTest {
         assertEquals(
                 mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
                 0.f,
+                MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testRunAnimationWithNtpTranslation() {
+        mTranslation = 200.0f;
+
+        mDriver.onOmniboxSessionStateChange(true);
+
+        verify(mShowRunnable).run();
+        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.0f, MathUtils.EPSILON);
+        assertEquals(
+                mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
+                200.0f + VERTICAL_OFFSET,
+                MathUtils.EPSILON);
+
+        doReturn(0.5f).when(mValueAnimator).getAnimatedFraction();
+        mTranslation = 100.0f;
+        mDriver.onAnimationUpdate(mValueAnimator);
+
+        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.5f, MathUtils.EPSILON);
+        assertEquals(
+                mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
+                100.0f + VERTICAL_OFFSET * 0.5f,
+                MathUtils.EPSILON);
+
+        doReturn(0.7f).when(mValueAnimator).getAnimatedFraction();
+        mTranslation = 23.0f;
+        mDriver.onAnimationUpdate(mValueAnimator);
+
+        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.7f, MathUtils.EPSILON);
+        assertEquals(
+                mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
+                23.0f + VERTICAL_OFFSET * 0.3f,
+                MathUtils.EPSILON);
+
+        doReturn(0.95f).when(mValueAnimator).getAnimatedFraction();
+        mTranslation = 0.f;
+        mDriver.onAnimationUpdate(mValueAnimator);
+
+        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.95f, MathUtils.EPSILON);
+        assertEquals(
+                mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
+                VERTICAL_OFFSET * 0.05f,
                 MathUtils.EPSILON);
     }
 

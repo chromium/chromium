@@ -25,13 +25,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.Nullable;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -144,7 +142,6 @@ public class AutocompleteMediatorUnitTest {
             mVisualStateObserver;
     private @Mock DeferredIMEWindowInsetApplicationCallback mDeferredImeCallback;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
-    private @Captor ArgumentCaptor<ImeSyncedSuggestionsListAnimationDriver> mDriverCaptor;
 
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
@@ -408,30 +405,6 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isKeyboardActive()).thenReturn(false);
         mMediator.onSuggestionDropdownHeightChanged(heightOfOAllSuggestions);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
-    @Config(sdk = VERSION_CODES.R)
-    public void onOmniboxSessionStateChange_startsAnimationDriver() {
-        mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
-        var animationDriver =
-                (ImeSyncedSuggestionsListAnimationDriver) mMediator.getAnimationDriverForTesting();
-        mMediator.onNativeInitialized();
-
-        // Animation shouldn't run if IME insets are not yet controllable.
-        mMediator.onOmniboxSessionStateChange(true);
-        verify(mInsetObserver, never()).addWindowInsetsAnimationListener(animationDriver);
-        mMediator.onOmniboxSessionStateChange(false);
-
-        animationDriver.onControllableInsetsChanged(null, WindowInsetsCompat.Type.ime());
-        // Animation can run now that IME insets are controllable.
-        mMediator.onOmniboxSessionStateChange(true);
-        verify(mInsetObserver).addWindowInsetsAnimationListener(animationDriver);
-
-        mMediator.onOmniboxSessionStateChange(false);
-        verify(mInsetObserver).removeWindowInsetsAnimationListener(animationDriver);
     }
 
     @Test
@@ -1211,6 +1184,7 @@ public class AutocompleteMediatorUnitTest {
 
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+        UnsyncedSuggestionsListAnimationDriver.setAnimationsDisabledForTesting(true);
 
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
@@ -1238,6 +1212,7 @@ public class AutocompleteMediatorUnitTest {
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(2, 100, 1, 100);
+        UnsyncedSuggestionsListAnimationDriver.setAnimationsDisabledForTesting(false);
     }
 
     @Test
