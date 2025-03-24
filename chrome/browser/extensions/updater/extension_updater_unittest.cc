@@ -245,21 +245,58 @@ class MockUpdateService : public UpdateService {
 // Base class for further specialized test classes.
 class MockService : public TestExtensionService {
  public:
-  explicit MockService(
-      TestExtensionPrefs* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : prefs_(prefs),
-        downloader_delegate_override_(nullptr),
-        test_shared_url_loader_factory_(url_loader_factory) {}
-
+  MockService() = default;
   MockService(const MockService&) = delete;
   MockService& operator=(const MockService&) = delete;
-
   ~MockService() override = default;
 
-  ExtensionPrefs* extension_prefs() { return prefs_->prefs(); }
+  const ExtensionId& crx_extension_id() const { return crx_extension_id_; }
 
-  PrefService* pref_service() { return prefs_->pref_service(); }
+  const base::FilePath& crx_install_path() const { return crx_install_path_; }
+
+  // Add a fake crx installer to be returned by a call to
+  // CreateUpdateInstaller() with a specific ID.
+  void AddFakeCrxInstaller(const std::string& id,
+                           scoped_refptr<CrxInstaller> crx_installer) {
+    fake_crx_installers_[id] = crx_installer;
+  }
+
+  scoped_refptr<CrxInstaller> CreateUpdateInstaller(
+      const CRXFileInfo& file,
+      bool file_ownership_passed) override {
+    crx_extension_id_ = file.extension_id;
+    crx_install_path_ = file.path;
+
+    if (base::Contains(fake_crx_installers_, crx_extension_id_)) {
+      return fake_crx_installers_[crx_extension_id_];
+    }
+
+    return nullptr;
+  }
+
+ private:
+  // Hold the set of ids that CreateUpdateInstaller() returns.
+  std::map<std::string, scoped_refptr<CrxInstaller>> fake_crx_installers_;
+
+  // The last values from the CRXFileInfo passed to CreateUpdateInstaller().
+  ExtensionId crx_extension_id_;
+  base::FilePath crx_install_path_;
+};
+
+// Helper to create ExtensionDownloader::Factory instances. This needs to be
+// its own class, not part of ExtensionUpdaterTest, because individual tests
+// create their own ExtensionDownloaderTestHelpers, and hence their own
+// SharedURLLoaderFactory instances.
+class TestDownloaderFactory {
+ public:
+  explicit TestDownloaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : test_shared_url_loader_factory_(url_loader_factory) {}
+
+  TestDownloaderFactory(const TestDownloaderFactory&) = delete;
+  TestDownloaderFactory& operator=(const TestDownloaderFactory&) = delete;
+
+  ~TestDownloaderFactory() = default;
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_.get();
@@ -268,22 +305,20 @@ class MockService : public TestExtensionService {
   const CoreAccountId& account_id() { return account_info_.account_id; }
 
   ExtensionDownloader::Factory GetDownloaderFactory() {
-    return base::BindRepeating(&MockService::CreateExtensionDownloader,
-                               base::Unretained(this));
+    return base::BindRepeating(
+        &TestDownloaderFactory::CreateExtensionDownloader,
+        base::Unretained(this));
   }
 
   ExtensionDownloader::Factory GetAuthenticatedDownloaderFactory() {
     return base::BindRepeating(
-        &MockService::CreateExtensionDownloaderWithIdentity,
+        &TestDownloaderFactory::CreateExtensionDownloaderWithIdentity,
         base::Unretained(this));
   }
 
   void OverrideDownloaderDelegate(ExtensionDownloaderDelegate* delegate) {
     downloader_delegate_override_ = delegate;
   }
-
- protected:
-  const raw_ptr<TestExtensionPrefs> prefs_;
 
  private:
   std::unique_ptr<ExtensionDownloader> CreateExtensionDownloader(
@@ -312,7 +347,7 @@ class MockService : public TestExtensionService {
   AccountInfo account_info_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
-  raw_ptr<ExtensionDownloaderDelegate> downloader_delegate_override_;
+  raw_ptr<ExtensionDownloaderDelegate> downloader_delegate_override_ = nullptr;
 
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
@@ -353,45 +388,6 @@ void SetupPendingExtensionManagerForTest(
         kMarkAcknowledged, kRemoteInstall));
   }
 }
-
-class ServiceForDownloadTests : public MockService {
- public:
-  explicit ServiceForDownloadTests(
-      TestExtensionPrefs* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : MockService(prefs, url_loader_factory) {}
-
-  // Add a fake crx installer to be returned by a call to
-  // CreateUpdateInstaller() with a specific ID.
-  void AddFakeCrxInstaller(const std::string& id,
-                           scoped_refptr<CrxInstaller> crx_installer) {
-    fake_crx_installers_[id] = crx_installer;
-  }
-
-  scoped_refptr<CrxInstaller> CreateUpdateInstaller(
-      const CRXFileInfo& file,
-      bool file_ownership_passed) override {
-    extension_id_ = file.extension_id;
-    install_path_ = file.path;
-
-    if (base::Contains(fake_crx_installers_, extension_id_)) {
-      return fake_crx_installers_[extension_id_];
-    }
-
-    return nullptr;
-  }
-
-  const ExtensionId& extension_id() const { return extension_id_; }
-  const base::FilePath& install_path() const { return install_path_; }
-
- private:
-  // Hold the set of ids that CreateUpdateInstaller() returns.
-  std::map<std::string, scoped_refptr<CrxInstaller>> fake_crx_installers_;
-
-  ExtensionId extension_id_;
-  base::FilePath install_path_;
-  GURL download_url_;
-};
 
 static const int kUpdateFrequencySecs = 15;
 
@@ -508,6 +504,10 @@ class ExtensionUpdaterTest : public testing::Test {
 
   TestingProfile* profile() { return prefs_->profile(); }
 
+  ExtensionPrefs* extension_prefs() { return prefs_->prefs(); }
+
+  PrefService* pref_service() { return prefs_->pref_service(); }
+
   // Creates test extensions and inserts them into list. The name and
   // version are all based on their index. If `update_url` is non-null, it
   // will be used as the update_url for each extension. If `key` is non-null,
@@ -619,7 +619,8 @@ class ExtensionUpdaterTest : public testing::Test {
   void TestExtensionUpdateCheckRequests(bool pending) {
     // Create an extension with an update_url.
     ExtensionDownloaderTestHelper helper;
-    MockService service(prefs_.get(), helper.url_loader_factory());
+    TestDownloaderFactory factory(helper.url_loader_factory());
+    MockService service;
     std::string update_url("http://foo.com/bar");
     ExtensionList extensions;
     PendingExtensionManager* pending_extension_manager =
@@ -634,9 +635,9 @@ class ExtensionUpdaterTest : public testing::Test {
     }
 
     // Set up and start the updater.
-    ExtensionUpdater updater(&service, service.extension_prefs(),
-                             service.pref_service(), profile(), 60 * 60 * 24,
-                             nullptr, service.GetDownloaderFactory());
+    ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                             profile(), 60 * 60 * 24, nullptr,
+                             factory.GetDownloaderFactory());
     updater.Start();
 
     // Tell the update that it's time to do update checks.
@@ -733,7 +734,8 @@ class ExtensionUpdaterTest : public testing::Test {
       int num_extensions,
       bool should_include_traffic_management_headers) {
     ExtensionDownloaderTestHelper helper;
-    MockService service(prefs_.get(), helper.url_loader_factory());
+    TestDownloaderFactory factory(helper.url_loader_factory());
+    MockService service;
     ExtensionList extensions;
 
     CreateTestExtensions(1, num_extensions, &extensions, &update_url,
@@ -991,7 +993,8 @@ class ExtensionUpdaterTest : public testing::Test {
   void TestDetermineUpdatesPending() {
     // Create a set of test extensions
     ExtensionDownloaderTestHelper helper;
-    MockService service(prefs_.get(), helper.url_loader_factory());
+    TestDownloaderFactory factory(helper.url_loader_factory());
+    MockService service;
     PendingExtensionManager* pending_extension_manager =
         PendingExtensionManager::Get(profile());
     SetupPendingExtensionManagerForTest(3, GURL(), pending_extension_manager);
@@ -1425,16 +1428,14 @@ class ExtensionUpdaterTest : public testing::Test {
       DownloadFetchPriority fetch_priority) {
     ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks;
     ExtensionDownloaderTestHelper helper;
-    std::unique_ptr<ServiceForDownloadTests> service =
-        std::make_unique<ServiceForDownloadTests>(prefs_.get(),
-                                                  helper.url_loader_factory());
-    ExtensionUpdater updater(service.get(), service->extension_prefs(),
-                             service->pref_service(), profile(),
-                             kUpdateFrequencySecs, nullptr,
-                             service->GetDownloaderFactory());
+    TestDownloaderFactory factory(helper.url_loader_factory());
+    std::unique_ptr<MockService> service = std::make_unique<MockService>();
+    ExtensionUpdater updater(service.get(), extension_prefs(), pref_service(),
+                             profile(), kUpdateFrequencySecs, nullptr,
+                             factory.GetDownloaderFactory());
     MockExtensionDownloaderDelegate delegate;
     delegate.DelegateTo(&updater);
-    service->OverrideDownloaderDelegate(&delegate);
+    factory.OverrideDownloaderDelegate(&delegate);
     updater.Start();
     updater.EnsureDownloaderCreated();
     updater.downloader_->extensions_queue_.set_backoff_policy(kNoBackoffPolicy);
@@ -1464,16 +1465,14 @@ class ExtensionUpdaterTest : public testing::Test {
   void TestSingleExtensionDownloading(bool pending, bool retry, bool fail) {
     ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks;
     ExtensionDownloaderTestHelper helper;
-    std::unique_ptr<ServiceForDownloadTests> service =
-        std::make_unique<ServiceForDownloadTests>(prefs_.get(),
-                                                  helper.url_loader_factory());
-    ExtensionUpdater updater(service.get(), service->extension_prefs(),
-                             service->pref_service(), profile(),
-                             kUpdateFrequencySecs, nullptr,
-                             service->GetDownloaderFactory());
+    TestDownloaderFactory factory(helper.url_loader_factory());
+    std::unique_ptr<MockService> service = std::make_unique<MockService>();
+    ExtensionUpdater updater(service.get(), extension_prefs(), pref_service(),
+                             profile(), kUpdateFrequencySecs, nullptr,
+                             factory.GetDownloaderFactory());
     MockExtensionDownloaderDelegate delegate;
     delegate.DelegateTo(&updater);
-    service->OverrideDownloaderDelegate(&delegate);
+    factory.OverrideDownloaderDelegate(&delegate);
     updater.Start();
     updater.EnsureDownloaderCreated();
     updater.downloader_->extensions_queue_.set_backoff_policy(kNoBackoffPolicy);
@@ -1544,7 +1543,7 @@ class ExtensionUpdaterTest : public testing::Test {
 
     if (fail) {
       // Don't expect any extension to have been installed.
-      EXPECT_TRUE(service->extension_id().empty());
+      EXPECT_TRUE(service->crx_extension_id().empty());
     } else {
       // Expect that ExtensionUpdater asked the mock extensions service to
       // install a file with the test data for the right id.
@@ -1574,6 +1573,7 @@ class ExtensionUpdaterTest : public testing::Test {
     const std::string version = "1.1";
     const std::string hash = "abcd";
     ExtensionDownloaderTestHelper helper;
+    TestDownloaderFactory factory(helper.url_loader_factory());
 
     // Set update manifest fetch data and result.
     GURL kUpdateURL("http://localhost/foo");
@@ -1623,18 +1623,15 @@ class ExtensionUpdaterTest : public testing::Test {
     // Create mock extension service for test. We need this mock service so that
     // the extension updater process can be intercepted before the installer
     // which is then called explicitly.
-    std::unique_ptr<ServiceForDownloadTests> service =
-        std::make_unique<ServiceForDownloadTests>(prefs_.get(),
-                                                  helper.url_loader_factory());
+    std::unique_ptr<MockService> service = std::make_unique<MockService>();
     service->AddFakeCrxInstaller(kTestExtensionId, mock_installer);
 
-    ExtensionUpdater updater(service.get(), service->extension_prefs(),
-                             service->pref_service(), prefs_->profile(),
-                             kUpdateFrequencySecs, nullptr,
-                             service->GetDownloaderFactory());
+    ExtensionUpdater updater(service.get(), extension_prefs(), pref_service(),
+                             prefs_->profile(), kUpdateFrequencySecs, nullptr,
+                             factory.GetDownloaderFactory());
     MockExtensionDownloaderDelegate& delegate = helper.delegate();
     delegate.DelegateTo(&updater);
-    service->OverrideDownloaderDelegate(&delegate);
+    factory.OverrideDownloaderDelegate(&delegate);
     updater.Start();
 
     // Create and initialize local cache.
@@ -1751,19 +1748,18 @@ class ExtensionUpdaterTest : public testing::Test {
       int valid_authuser,
       int max_authuser) {
     ExtensionDownloaderTestHelper helper;
-    std::unique_ptr<ServiceForDownloadTests> service =
-        std::make_unique<ServiceForDownloadTests>(prefs_.get(),
-                                                  helper.url_loader_factory());
+    TestDownloaderFactory factory(helper.url_loader_factory());
+    MockService service;
     const ExtensionDownloader::Factory& downloader_factory =
-        enable_oauth2 ? service->GetAuthenticatedDownloaderFactory()
-            : service->GetDownloaderFactory();
-    ExtensionUpdater updater(service.get(), service->extension_prefs(),
-                             service->pref_service(), profile(),
-                             kUpdateFrequencySecs, nullptr, downloader_factory);
+        enable_oauth2 ? factory.GetAuthenticatedDownloaderFactory()
+                      : factory.GetDownloaderFactory();
+    ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                             profile(), kUpdateFrequencySecs, nullptr,
+                             downloader_factory);
 
     MockExtensionDownloaderDelegate delegate;
     delegate.DelegateTo(&updater);
-    service->OverrideDownloaderDelegate(&delegate);
+    factory.OverrideDownloaderDelegate(&delegate);
 
     updater.Start();
     updater.EnsureDownloaderCreated();
@@ -1806,9 +1802,9 @@ class ExtensionUpdaterTest : public testing::Test {
     // HTTP header.
     if (enable_oauth2 && test_url.DomainIs("google.com") &&
         test_url.SchemeIsCryptographic()) {
-      service->identity_test_env()
+      factory.identity_test_env()
           ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-              service->account_id(), kFakeOAuth2Token, base::Time::Now());
+              factory.account_id(), kFakeOAuth2Token, base::Time::Now());
     }
 
     bool using_oauth2 = false;
@@ -1966,10 +1962,11 @@ class ExtensionUpdaterTest : public testing::Test {
   // returns nullptr, signaling install failures.
   void TestMultipleExtensionDownloading(bool updates_start_running) {
     ExtensionDownloaderTestHelper helper;
-    ServiceForDownloadTests service(prefs_.get(), helper.url_loader_factory());
-    ExtensionUpdater updater(
-        &service, service.extension_prefs(), service.pref_service(), profile(),
-        kUpdateFrequencySecs, nullptr, service.GetDownloaderFactory());
+    TestDownloaderFactory factory(helper.url_loader_factory());
+    MockService service;
+    ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                             profile(), kUpdateFrequencySecs, nullptr,
+                             factory.GetDownloaderFactory());
     updater.Start();
     updater.EnsureDownloaderCreated();
     updater.downloader_->extensions_queue_.set_backoff_policy(kNoBackoffPolicy);
@@ -2040,9 +2037,9 @@ class ExtensionUpdaterTest : public testing::Test {
     content::RunAllTasksUntilIdle();
 
     // Expect that the service was asked to do an install with the right data.
-    base::FilePath tmpfile_path = service.install_path();
+    base::FilePath tmpfile_path = service.crx_install_path();
     EXPECT_FALSE(tmpfile_path.empty());
-    EXPECT_EQ(id1, service.extension_id());
+    EXPECT_EQ(id1, service.crx_extension_id());
     RunUntilIdle();
 
     // Make sure the second fetch finished and asked the service to do an
@@ -2128,7 +2125,8 @@ class ExtensionUpdaterTest : public testing::Test {
     prefs_ = std::make_unique<TestExtensionPrefs>(
         base::SingleThreadTaskRunner::GetCurrentDefault());
     ExtensionDownloaderTestHelper helper;
-    MockService service(prefs_.get(), helper.url_loader_factory());
+    TestDownloaderFactory factory(helper.url_loader_factory());
+    MockService service;
     ExtensionList tmp;
     GURL url1("http://clients2.google.com/service/update2/crx");
     GURL url2("http://www.somewebsite.com");
@@ -2139,7 +2137,7 @@ class ExtensionUpdaterTest : public testing::Test {
     EXPECT_EQ(2u, tmp.size());
     SetExtensions(tmp, ExtensionList());
 
-    ExtensionPrefs* prefs = service.extension_prefs();
+    ExtensionPrefs* prefs = extension_prefs();
     const std::string& id = tmp[0]->id();
     Time now = Time::Now();
     if (rollcall_ping_days == 0) {
@@ -2161,9 +2159,9 @@ class ExtensionUpdaterTest : public testing::Test {
     if (active_bit)
       prefs->SetActiveBit(id, true);
 
-    ExtensionUpdater updater(
-        &service, service.extension_prefs(), service.pref_service(), profile(),
-        kUpdateFrequencySecs, nullptr, service.GetDownloaderFactory());
+    ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                             profile(), kUpdateFrequencySecs, nullptr,
+                             factory.GetDownloaderFactory());
     updater.Start();
     updater.CheckNow(ExtensionUpdater::CheckParams());
 
@@ -2255,16 +2253,17 @@ class ExtensionUpdaterTest : public testing::Test {
   // >= 1 day for the extension.
   void TestHandleManifestResults() {
     ExtensionDownloaderTestHelper helper;
-    MockService service(prefs_.get(), helper.url_loader_factory());
+    TestDownloaderFactory factory(helper.url_loader_factory());
+    MockService service;
     GURL update_url("http://www.google.com/manifest");
     ExtensionList tmp;
     CreateTestExtensions(1, 1, &tmp, &update_url.spec(),
                          ManifestLocation::kInternal);
     SetExtensions(tmp, ExtensionList());
 
-    ExtensionUpdater updater(
-        &service, service.extension_prefs(), service.pref_service(), profile(),
-        kUpdateFrequencySecs, nullptr, service.GetDownloaderFactory());
+    ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                             profile(), kUpdateFrequencySecs, nullptr,
+                             factory.GetDownloaderFactory());
     updater.Start();
     updater.EnsureDownloaderCreated();
 
@@ -2280,8 +2279,7 @@ class ExtensionUpdaterTest : public testing::Test {
     updater.downloader_->HandleManifestResults(std::move(fetch_data),
                                                std::move(results),
                                                /*error=*/std::nullopt);
-    Time last_ping_day =
-        service.extension_prefs()->LastPingDay(extension->id());
+    Time last_ping_day = extension_prefs()->LastPingDay(extension->id());
     EXPECT_FALSE(last_ping_day.is_null());
     int64_t seconds_diff = (Time::Now() - last_ping_day).InSeconds();
     EXPECT_LT(seconds_diff - kDaystartElapsedSeconds, 5);
@@ -2519,12 +2517,13 @@ TEST_F(ExtensionUpdaterTest, TestHandleManifestResults) {
 
 TEST_F(ExtensionUpdaterTest, TestNonAutoUpdateableLocations) {
   ExtensionDownloaderTestHelper helper;
-  MockService service(prefs_.get(), helper.url_loader_factory());
-  ExtensionUpdater updater(
-      &service, service.extension_prefs(), service.pref_service(), profile(),
-      kUpdateFrequencySecs, nullptr, service.GetDownloaderFactory());
+  TestDownloaderFactory factory(helper.url_loader_factory());
+  MockService service;
+  ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                           profile(), kUpdateFrequencySecs, nullptr,
+                           factory.GetDownloaderFactory());
   MockExtensionDownloaderDelegate delegate;
-  service.OverrideDownloaderDelegate(&delegate);
+  factory.OverrideDownloaderDelegate(&delegate);
 
   // Non-internal non-external extensions should be rejected.
   ExtensionList extensions;
@@ -2540,10 +2539,11 @@ TEST_F(ExtensionUpdaterTest, TestNonAutoUpdateableLocations) {
 
 TEST_F(ExtensionUpdaterTest, TestUpdatingDisabledExtensions) {
   ExtensionDownloaderTestHelper helper;
-  MockService service(prefs_.get(), helper.url_loader_factory());
-  ExtensionUpdater updater(
-      &service, service.extension_prefs(), service.pref_service(), profile(),
-      kUpdateFrequencySecs, nullptr, service.GetDownloaderFactory());
+  TestDownloaderFactory factory(helper.url_loader_factory());
+  MockService service;
+  ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                           profile(), kUpdateFrequencySecs, nullptr,
+                           factory.GetDownloaderFactory());
   NiceMock<MockUpdateService> update_service;
   OverrideUpdateService(&updater, &update_service);
 
@@ -2573,10 +2573,11 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingDisabledExtensions) {
 // the blocklisted extensions are still receive updates.
 TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
   ExtensionDownloaderTestHelper helper;
-  MockService service(prefs_.get(), helper.url_loader_factory());
-  ExtensionUpdater updater(
-      &service, service.extension_prefs(), service.pref_service(), profile(),
-      kUpdateFrequencySecs, nullptr, service.GetDownloaderFactory());
+  TestDownloaderFactory factory(helper.url_loader_factory());
+  MockService service;
+  ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                           profile(), kUpdateFrequencySecs, nullptr,
+                           factory.GetDownloaderFactory());
   NiceMock<MockUpdateService> update_service;
   OverrideUpdateService(&updater, &update_service);
 
@@ -2593,10 +2594,10 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
   const std::string& remotely_blocklisted_id = blocklisted_extensions[0]->id();
   blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
       remotely_blocklisted_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
-      service.extension_prefs());
+      extension_prefs());
   blocklist_prefs::AddOmahaBlocklistState(
       remotely_blocklisted_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
-      service.extension_prefs());
+      extension_prefs());
 
   // We expect that both enabled and remotely blocklisted extensions are
   // auto-updated.
@@ -2624,10 +2625,11 @@ TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
   DelayedInstallManager::Get(profile())->Insert(pending_update);
 
   ExtensionDownloaderTestHelper helper;
-  MockService service(prefs_.get(), helper.url_loader_factory());
-  ExtensionUpdater updater(
-      &service, service.extension_prefs(), service.pref_service(), profile(),
-      kUpdateFrequencySecs, nullptr, service.GetDownloaderFactory());
+  TestDownloaderFactory factory(helper.url_loader_factory());
+  MockService service;
+  ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                           profile(), kUpdateFrequencySecs, nullptr,
+                           factory.GetDownloaderFactory());
   NiceMock<MockUpdateService> update_service;
   OverrideUpdateService(&updater, &update_service);
 
@@ -2788,10 +2790,11 @@ TEST_F(ExtensionUpdaterTest, TestStartUpdateCheckMemory) {
 
 TEST_F(ExtensionUpdaterTest, TestCheckSoon) {
   ExtensionDownloaderTestHelper helper;
-  MockService service(prefs_.get(), helper.url_loader_factory());
-  ExtensionUpdater updater(
-      &service, service.extension_prefs(), service.pref_service(), profile(),
-      kUpdateFrequencySecs, nullptr, service.GetDownloaderFactory());
+  TestDownloaderFactory factory(helper.url_loader_factory());
+  MockService service;
+  ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                           profile(), kUpdateFrequencySecs, nullptr,
+                           factory.GetDownloaderFactory());
   EXPECT_FALSE(updater.WillCheckSoon());
   updater.Start();
   EXPECT_TRUE(updater.WillCheckSoon());
@@ -2811,7 +2814,8 @@ TEST_F(ExtensionUpdaterTest, TestCheckSoon) {
 
 TEST_F(ExtensionUpdaterTest, TestUninstallWhileUpdateCheck) {
   ExtensionDownloaderTestHelper helper;
-  MockService service(prefs_.get(), helper.url_loader_factory());
+  TestDownloaderFactory factory(helper.url_loader_factory());
+  MockService service;
   ExtensionList tmp;
   CreateTestExtensions(1, 1, &tmp, nullptr, ManifestLocation::kInternal);
   SetExtensions(tmp, ExtensionList());
@@ -2821,9 +2825,9 @@ TEST_F(ExtensionUpdaterTest, TestUninstallWhileUpdateCheck) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   ASSERT_TRUE(registry->enabled_extensions().GetByID(id));
 
-  ExtensionUpdater updater(
-      &service, service.extension_prefs(), service.pref_service(), profile(),
-      kUpdateFrequencySecs, nullptr, service.GetDownloaderFactory());
+  ExtensionUpdater updater(&service, extension_prefs(), pref_service(),
+                           profile(), kUpdateFrequencySecs, nullptr,
+                           factory.GetDownloaderFactory());
   ExtensionUpdater::CheckParams params;
   params.ids = {id};
   updater.Start();
@@ -2897,12 +2901,12 @@ class CanUseUpdateServiceTest : public ExtensionUpdaterTest {
   void SetUp() override {
     ExtensionUpdaterTest::SetUp();
 
-    service_ = std::make_unique<ServiceForDownloadTests>(
-        prefs_.get(), downloader_test_helper_.url_loader_factory());
+    factory_ = std::make_unique<TestDownloaderFactory>(
+        downloader_test_helper_.url_loader_factory());
+    service_ = std::make_unique<MockService>();
     updater_ = std::make_unique<ExtensionUpdater>(
-        service_.get(), service_->extension_prefs(), service_->pref_service(),
-        profile(), kUpdateFrequencySecs, nullptr,
-        service_->GetDownloaderFactory());
+        service_.get(), extension_prefs(), pref_service(), profile(),
+        kUpdateFrequencySecs, nullptr, factory_->GetDownloaderFactory());
 
     store_extension_ =
         ExtensionBuilder("store_extension")
@@ -2935,6 +2939,7 @@ class CanUseUpdateServiceTest : public ExtensionUpdaterTest {
     // Avoid dangling pointers.
     updater_.reset();
     service_.reset();
+    factory_.reset();
     ExtensionUpdaterTest::TearDown();
   }
 
@@ -2943,7 +2948,8 @@ class CanUseUpdateServiceTest : public ExtensionUpdaterTest {
 
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_checks_;
   ExtensionDownloaderTestHelper downloader_test_helper_;
-  std::unique_ptr<ServiceForDownloadTests> service_;
+  std::unique_ptr<TestDownloaderFactory> factory_;
+  std::unique_ptr<MockService> service_;
   std::unique_ptr<ExtensionUpdater> updater_;
 
   scoped_refptr<const Extension> store_extension_;
