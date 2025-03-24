@@ -94,6 +94,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
+  void OnContextActivatabilityChanged();
+
   // Sets the caption bubble model currently being used for this caption bubble.
   // There exists one CaptionBubble per profile, but one CaptionBubbleModel per
   // media stream. A new CaptionBubbleModel is set when transcriptions from a
