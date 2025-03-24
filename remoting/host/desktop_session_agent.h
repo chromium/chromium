@@ -159,7 +159,7 @@ class DesktopSessionAgent
   const std::string& client_jid() const override;
   void DisconnectSession(ErrorCode error,
                          std::string_view error_details,
-                         const base::Location& error_location) override;
+                         const SourceLocation& error_location) override;
   void OnLocalKeyPressed(std::uint32_t usb_keycode) override;
   void OnLocalPointerMoved(const webrtc::DesktopVector& position,
                            ui::EventType type) override;

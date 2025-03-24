@@ -11,6 +11,7 @@
 
 #include "remoting/base/session_options.h"
 #include "remoting/base/session_policies.h"
+#include "remoting/base/source_location.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport.h"
@@ -90,7 +91,7 @@ class ConnectionToClient {
   // Disconnect the client connection.
   virtual void Disconnect(ErrorCode error,
                           std::string_view error_details,
-                          const base::Location& error_location) = 0;
+                          const SourceLocation& error_location) = 0;
 
   // Start video stream that sends screen content from |desktop_capturer| to the
   // client. |screen_id| should be webrtc::kFullDesktopScreenId for

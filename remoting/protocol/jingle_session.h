@@ -16,6 +16,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "crypto/rsa_private_key.h"
+#include "remoting/base/source_location.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/datagram_channel_factory.h"
 #include "remoting/protocol/errors.h"
@@ -48,7 +49,7 @@ class JingleSession : public Session {
   void SetTransport(Transport* transport) override;
   void Close(protocol::ErrorCode error,
              std::string_view error_details,
-             const base::Location& error_location) override;
+             const SourceLocation& error_location) override;
   void AddPlugin(SessionPlugin* plugin) override;
 
  private:

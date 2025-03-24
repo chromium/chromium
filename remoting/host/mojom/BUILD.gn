@@ -135,6 +135,10 @@ mojom("mojom") {
           cpp = "::remoting::ScreenResolution"
         },
         {
+          mojom = "remoting.mojom.SourceLocation"
+          cpp = "::remoting::SourceLocation"
+        },
+        {
           mojom = "remoting.mojom.TextEvent"
           cpp = "::remoting::protocol::TextEvent"
         },
@@ -173,6 +177,7 @@ mojom("mojom") {
         "//mojo/public/cpp/base:shared_typemap_traits",
         "//mojo/public/cpp/bindings",
         "//mojo/public/cpp/bindings:protobuf_support",
+        "//remoting/base",
         "//remoting/host/base",
         "//remoting/proto",
         "//remoting/protocol",
