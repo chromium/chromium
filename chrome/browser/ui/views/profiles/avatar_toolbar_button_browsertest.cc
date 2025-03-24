@@ -1274,10 +1274,16 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
+// TODO(crbug.com/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GreetingShownWhenManagementNotAccepted DISABLED_GreetingShownWhenManagementNotAccepted
+#else
+#define MAYBE_GreetingShownWhenManagementNotAccepted GreetingShownWhenManagementNotAccepted
+#endif
 // test makes sure the greeting is not shown when the management badge is shown
 // in the profile avatar pill.
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       GreetingShownWhenManagementNotAccepted) {
+                       MAYBE_GreetingShownWhenManagementNotAccepted) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
@@ -1321,6 +1327,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar->GetText(), u"Work");
 }
 
+// TODO(crbug.com/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge DISABLED_PRE_SignedInWithNewSessionKeepWorkBadge
+#define MAYBE_SignedInWithNewSessionKeepWorkBadge DISABLED_SignedInWithNewSessionKeepWorkBadge
+#else
+#define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge PRE_SignedInWithNewSessionKeepWorkBadge
+#define MAYBE_SignedInWithNewSessionKeepWorkBadge SignedInWithNewSessionKeepWorkBadge
+#endif
 // Tests the flow for a managed sign-in.
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        PRE_SignedInWithNewSessionKeepWorkBadge) {
