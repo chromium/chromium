@@ -31,20 +31,20 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
-/** Tests for AudioDeviceListener. */
+/** Tests for CommunicationDeviceListener. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class AudioDeviceListenerTest {
+public class CommunicationDeviceListenerTest {
     @Mock Context mContext;
-    @Mock AudioDeviceSelector.Devices mDevices;
+    @Mock CommunicationDeviceSelector.Devices mDevices;
     @Mock UsbDevice mUsbDevice;
     @Mock UsbInterface mUsbInterface;
-    private AudioDeviceListener mListener;
+    private CommunicationDeviceListener mListener;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mListener = new AudioDeviceListener(mDevices);
+        mListener = new CommunicationDeviceListener(mDevices);
         mListener.init(/* hasBluetoothPermission= */ true);
 
         doReturn(1).when(mUsbDevice).getInterfaceCount();
@@ -58,7 +58,7 @@ public class AudioDeviceListenerTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Media.AudioDeviceConnectionStatus.Wired",
-                        AudioDeviceListener.ConnectionStatus.CONNECTED);
+                        CommunicationDeviceListener.ConnectionStatus.CONNECTED);
 
         Intent intent = new Intent(AudioManager.ACTION_HEADSET_PLUG);
         intent.putExtra("state", 1);
@@ -72,7 +72,7 @@ public class AudioDeviceListenerTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Media.AudioDeviceConnectionStatus.Bluetooth",
-                        AudioDeviceListener.ConnectionStatus.CONNECTED);
+                        CommunicationDeviceListener.ConnectionStatus.CONNECTED);
 
         Intent intent = new Intent(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
         intent.putExtra(BluetoothProfile.EXTRA_STATE, BluetoothProfile.STATE_CONNECTED);
@@ -96,7 +96,7 @@ public class AudioDeviceListenerTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Media.AudioDeviceConnectionStatus.Bluetooth",
-                        AudioDeviceListener.ConnectionStatus.CONNECTED);
+                        CommunicationDeviceListener.ConnectionStatus.CONNECTED);
 
         Intent intent =
                 new Intent(
@@ -113,7 +113,7 @@ public class AudioDeviceListenerTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Media.AudioDeviceConnectionStatus.USB",
-                        AudioDeviceListener.ConnectionStatus.CONNECTED);
+                        CommunicationDeviceListener.ConnectionStatus.CONNECTED);
 
         Intent intent = new Intent(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         intent.putExtra(UsbManager.EXTRA_DEVICE, mUsbDevice);

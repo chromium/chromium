@@ -42,21 +42,21 @@ class AudioManagerAndroid {
     private static final boolean DEBUG = false;
 
     /** Simple container for device information. */
-    public static class AudioDeviceName {
+    public static class AudioDevice {
         private final int mId;
         private final String mName;
 
-        public AudioDeviceName(int id, String name) {
+        public AudioDevice(int id, String name) {
             mId = id;
             mName = name;
         }
 
-        @CalledByNative("AudioDeviceName")
+        @CalledByNative("AudioDevice")
         private String id() {
             return String.valueOf(mId);
         }
 
-        @CalledByNative("AudioDeviceName")
+        @CalledByNative("AudioDevice")
         private String name() {
             return mName;
         }
@@ -89,7 +89,7 @@ class AudioManagerAndroid {
     private @Nullable ContentObserver mSettingsObserver;
     private @Nullable HandlerThread mSettingsObserverThread;
 
-    private AudioDeviceSelector mAudioDeviceSelector;
+    private CommunicationDeviceSelector mCommunicationDeviceSelector;
 
     /** Construction */
     @CalledByNative
@@ -106,16 +106,15 @@ class AudioManagerAndroid {
         mContentResolver = ContextUtils.getApplicationContext().getContentResolver();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            mAudioDeviceSelector = new AudioDeviceSelectorPreS(mAudioManager);
+            mCommunicationDeviceSelector = new CommunicationDeviceSelectorPreS(mAudioManager);
         } else {
-            mAudioDeviceSelector = new AudioDeviceSelectorPostS(mAudioManager);
+            mCommunicationDeviceSelector = new CommunicationDeviceSelectorPostS(mAudioManager);
         }
     }
 
     /**
-     * Saves the initial speakerphone and microphone state.
-     * Populates the list of available audio devices and registers receivers for broadcasting
-     * intents related to wired headset and Bluetooth devices and USB audio devices.
+     * Populates the list of available communication devices and registers receivers for
+     * broadcasting intents related to wired headset and Bluetooth devices and USB audio devices.
      */
     @CalledByNative
     private void init() {
@@ -132,7 +131,7 @@ class AudioManagerAndroid {
             logd("MODIFY_AUDIO_SETTINGS permission is missing");
         }
 
-        mAudioDeviceSelector.init();
+        mCommunicationDeviceSelector.init();
 
         mIsInitialized = true;
     }
@@ -149,7 +148,7 @@ class AudioManagerAndroid {
 
         stopObservingVolumeChanges();
 
-        mAudioDeviceSelector.close();
+        mCommunicationDeviceSelector.close();
 
         mIsInitialized = false;
     }
@@ -180,10 +179,10 @@ class AudioManagerAndroid {
         if (on) {
             // Store microphone mute state and speakerphone state so it can
             // be restored when closing.
-            mSavedIsSpeakerphoneOn = mAudioDeviceSelector.isSpeakerphoneOn();
+            mSavedIsSpeakerphoneOn = mCommunicationDeviceSelector.isSpeakerphoneOn();
             mSavedIsMicrophoneMute = mAudioManager.isMicrophoneMute();
 
-            mAudioDeviceSelector.setCommunicationAudioModeOn(true);
+            mCommunicationDeviceSelector.setCommunicationAudioModeOn(true);
 
             // Start observing volume changes to detect when the
             // voice/communication stream volume is at its lowest level.
@@ -194,11 +193,11 @@ class AudioManagerAndroid {
         } else {
             stopObservingVolumeChanges();
 
-            mAudioDeviceSelector.setCommunicationAudioModeOn(false);
+            mCommunicationDeviceSelector.setCommunicationAudioModeOn(false);
 
             // Restore previously stored audio states.
             setMicrophoneMute(mSavedIsMicrophoneMute);
-            mAudioDeviceSelector.setSpeakerphoneOn(mSavedIsSpeakerphoneOn);
+            mCommunicationDeviceSelector.setSpeakerphoneOn(mSavedIsSpeakerphoneOn);
         }
 
         setCommunicationAudioModeOnInternal(on);
@@ -232,17 +231,17 @@ class AudioManagerAndroid {
     }
 
     /**
-     * Activates, i.e., starts routing audio to, the specified audio device.
+     * Sets the system communication device, causing audio with communication-related usage to start
+     * being routed to the specified device. Required permissions:
+     * android.Manifest.permission.MODIFY_AUDIO_SETTINGS and
+     * android.Manifest.permission.RECORD_AUDIO.
      *
-     * @param deviceId Unique device ID (integer converted to string)
-     * representing the selected device. This string is empty if the so-called
-     * default device is requested.
-     * Required permissions: android.Manifest.permission.MODIFY_AUDIO_SETTINGS
-     * and android.Manifest.permission.RECORD_AUDIO.
+     * @param deviceId Unique communication device ID (integer converted to string) representing the
+     *     selected device. This string is empty if the so-called default device is requested.
      */
     @CalledByNative
-    private boolean setDevice(String deviceId) {
-        if (DEBUG) logd("setDevice: " + deviceId);
+    private boolean setCommunicationDevice(String deviceId) {
+        if (DEBUG) logd("setCommunicationDevice: " + deviceId);
         if (!mIsInitialized) return false;
 
         boolean hasRecordAudioPermission = hasPermission(android.Manifest.permission.RECORD_AUDIO);
@@ -254,18 +253,20 @@ class AudioManagerAndroid {
             return false;
         }
 
-        return mAudioDeviceSelector.selectDevice(deviceId);
+        return mCommunicationDeviceSelector.selectDevice(deviceId);
     }
 
     /**
-     * @return the current list of available audio devices. Note that this call does not trigger any
-     *     update of the list of devices, it only copies the current state in to the output array.
-     *     Required permissions: android.Manifest.permission.MODIFY_AUDIO_SETTINGS and
-     *     android.Manifest.permission.RECORD_AUDIO.
+     * Required permissions: android.Manifest.permission.MODIFY_AUDIO_SETTINGS and
+     * android.Manifest.permission.RECORD_AUDIO.
+     *
+     * @return the current list of available communication devices. Note that this call does not
+     *     trigger any update of the list of devices, it only copies the current state in to the
+     *     output array.
      */
     @CalledByNative
-    private AudioDeviceName @Nullable [] getAudioInputDeviceNames() {
-        if (DEBUG) logd("getAudioInputDeviceNames");
+    private AudioDevice @Nullable [] getCommunicationDevices() {
+        if (DEBUG) logd("getCommunicationDevices");
         if (!mIsInitialized) return null;
 
         boolean hasRecordAudioPermission = hasPermission(android.Manifest.permission.RECORD_AUDIO);
@@ -277,12 +278,12 @@ class AudioManagerAndroid {
             return null;
         }
 
-        return mAudioDeviceSelector.getAudioInputDeviceNames();
+        return mCommunicationDeviceSelector.getDevices();
     }
 
     @CalledByNative
     private boolean isBluetoothMicrophoneOn() {
-        return mAudioDeviceSelector.isBluetoothMicrophoneOn();
+        return mCommunicationDeviceSelector.isBluetoothMicrophoneOn();
     }
 
     @CalledByNative
