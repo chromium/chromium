@@ -265,9 +265,9 @@ class SunfishDisabledScannerDisabledTest : public SunfishTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that the accelerator entry point is a no-op when neither Sunfish nor
-// Scanner is enabled.
-TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointIsNoop) {
+// Tests that the debug accelerator entry point is a no-op when neither Sunfish
+// nor Scanner is enabled.
+TEST_F(SunfishDisabledScannerDisabledTest, DebugAccelEntryPointIsNoop) {
   PressAndReleaseKey(ui::VKEY_8,
                      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
 
@@ -275,9 +275,19 @@ TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointIsNoop) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+// Tests that the accelerator entry point is a no-op when neither Sunfish nor
+// Scanner is enabled.
+TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointIsNoop) {
+  PressAndReleaseKey(ui::VKEY_SPACE, ui::EF_COMMAND_DOWN);
+
+  auto* controller = CaptureModeController::Get();
+  EXPECT_FALSE(controller->IsActive());
+}
+
 // Tests that the accelerator entry point does not emit metrics when neither
 // Sunfish nor Scanner is enabled.
-TEST_F(SunfishDisabledScannerDisabledTest, AccelEntryPointDoesNotEmitMetrics) {
+TEST_F(SunfishDisabledScannerDisabledTest,
+       DebugAccelEntryPointDoesNotEmitMetrics) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
@@ -482,8 +492,8 @@ class SunfishTest : public SunfishTestBase {
   base::test::ScopedFeatureList scoped_feature_list_{features::kSunfishFeature};
 };
 
-// Tests that the accelerator starts capture mode in a new behavior.
-TEST_F(SunfishTest, AccelEntryPoint) {
+// Tests that the debug accelerator starts capture mode in a new behavior.
+TEST_F(SunfishTest, DebugAccelEntryPoint) {
   PressAndReleaseKey(ui::VKEY_8,
                      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
   auto* controller = CaptureModeController::Get();
@@ -494,8 +504,8 @@ TEST_F(SunfishTest, AccelEntryPoint) {
   EXPECT_EQ(active_behavior->behavior_type(), BehaviorType::kSunfish);
 }
 
-// Tests that the accelerator entry point emits the correct metrics.
-TEST_F(SunfishTest, AccelEntryPointMetrics) {
+// Tests that the debug accelerator entry point emits the correct metrics.
+TEST_F(SunfishTest, DebugAccelEntryPointMetrics) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
@@ -509,10 +519,10 @@ TEST_F(SunfishTest, AccelEntryPointMetrics) {
       ScannerFeatureUserState::kSunfishSessionStartedFromDebugShortcut, 1);
 }
 
-// Tests that the accelerator entry point is a no-op when Sunfish is disabled by
-// enterprise policy.
+// Tests that the debug accelerator entry point is a no-op when Sunfish is
+// disabled by enterprise policy.
 TEST_F(SunfishEnabledScannerDisabledTest,
-       AccelEntryPointIsNoopIfEnterpriseDisabled) {
+       DebugAccelEntryPointIsNoopIfEnterpriseDisabled) {
   auto* controller = CaptureModeController::Get();
   ASSERT_TRUE(controller);
   auto* test_delegate =
@@ -521,6 +531,30 @@ TEST_F(SunfishEnabledScannerDisabledTest,
 
   PressAndReleaseKey(ui::VKEY_8,
                      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+
+  EXPECT_FALSE(controller->IsActive());
+}
+
+// Tests that the accelerator starts capture mode in a new behavior.
+TEST_F(SunfishTest, AccelEntryPoint) {
+  PressAndReleaseKey(ui::VKEY_SPACE, ui::EF_COMMAND_DOWN);
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  CaptureModeBehavior* active_behavior =
+      controller->capture_mode_session()->active_behavior();
+  ASSERT_TRUE(active_behavior);
+  EXPECT_EQ(active_behavior->behavior_type(), BehaviorType::kSunfish);
+}
+
+TEST_F(SunfishEnabledScannerDisabledTest,
+       AccelEntryPointIsNoopIfEnterpriseDisabled) {
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_is_search_allowed_by_policy(false);
+
+  PressAndReleaseKey(ui::VKEY_SPACE, ui::EF_COMMAND_DOWN);
 
   EXPECT_FALSE(controller->IsActive());
 }
