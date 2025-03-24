@@ -376,7 +376,7 @@ public class NewTabAnimationLayout extends Layout {
      * @param newTab The new {@link Tab} to animate.
      */
     private @RectStart int getForegroundRectStart(Tab oldTab, Tab newTab) {
-        // TODO(crbug.com/40282469): Account for {@code oldTab} being null.
+        // TODO(crbug.com/40933120): Account for {@code oldTab} being null.
         boolean oldTabHasTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(oldTab);
         boolean newTabHasTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(newTab);
 
@@ -407,6 +407,20 @@ public class NewTabAnimationLayout extends Layout {
     }
 
     /**
+     * Returns the status bar height if {@link
+     * org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeBaseLayout} is not present.
+     */
+    private int getStatusBarHeightIfNeeded() {
+        // TODO(crbug.com/40282469): Remove this method once EdgeToEdgeBaseLayout is always present.
+        if (mAnimationHostView.getId() == mContentContainer.getId()) {
+            Rect compositorViewRect = new Rect();
+            mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
+            return compositorViewRect.top;
+        }
+        return 0;
+    }
+
+    /**
      * Forces the new tab animation to finish.
      *
      * <p>This method is intended for internal use within {@link NewTabAnimationLayout}. It ensures
@@ -416,7 +430,7 @@ public class NewTabAnimationLayout extends Layout {
      */
     @VisibleForTesting
     void forceNewTabAnimationToFinish() {
-        // TODO(crbug.com/40282469): Make sure the right mode is selected after forcing the
+        // TODO(crbug.com/40933120): Make sure the right mode is selected after forcing the
         // animation to finish.
         runQueuedRunnableIfExists();
         if (mTabCreatedForegroundAnimation != null) {
@@ -610,7 +624,8 @@ public class NewTabAnimationLayout extends Layout {
                 () -> {
                     mAnimationRunnable = null;
                     mTabCreatedBackgroundAnimation =
-                            mBackgroundHostView.getAnimatorSet(originX, originY);
+                            mBackgroundHostView.getAnimatorSet(
+                                    originX, originY, getStatusBarHeightIfNeeded());
                     mTabCreatedBackgroundAnimation.addListener(
                             new AnimatorListenerAdapter() {
                                 @Override
