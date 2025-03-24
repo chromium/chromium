@@ -130,6 +130,8 @@ GPU_EXPORT bool IsSyncPointGraphValidationEnabled();
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kANGLEPerContextBlobCache);
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kMacSupportMultiThreading);
+
 }  // namespace features
 
 #endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_

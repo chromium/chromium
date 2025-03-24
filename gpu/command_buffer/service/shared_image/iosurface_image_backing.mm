@@ -981,6 +981,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     GLenum gl_target,
     bool framebuffer_attachment_angle,
     bool is_cleared,
+    bool is_thread_safe,
     GrContextType gr_context_type,
     std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
@@ -992,7 +993,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
                          usage,
                          std::move(debug_label),
                          format.EstimatedSizeInBytes(size),
-                         /*is_thread_safe=*/false,
+                         is_thread_safe,
                          std::move(buffer_usage)),
       io_surface_(std::move(io_surface)),
       io_surface_size_(IOSurfaceGetWidth(io_surface_.get()),
@@ -1006,6 +1007,8 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       gr_context_type_(gr_context_type),
       weak_factory_(this) {
   CHECK(io_surface_);
+  CHECK(!is_thread_safe ||
+        base::FeatureList::IsEnabled(features::kMacSupportMultiThreading));
 
   // If this will be bound to different GL backends, then make RetainGLTexture
   // and ReleaseGLTexture actually create and destroy the texture.
