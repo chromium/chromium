@@ -52,6 +52,8 @@ void ComputePropertyTreeNodeUpdate(
       old_node->element_id == new_node.element_id &&
       old_node->local == new_node.local &&
       old_node->origin == new_node.origin &&
+      old_node->post_translation == new_node.post_translation &&
+      old_node->to_parent == new_node.to_parent &&
       old_node->sticky_position_constraint_id ==
           new_node.sticky_position_constraint_id &&
       old_node->anchor_position_scroll_data_id ==
@@ -84,6 +86,8 @@ void ComputePropertyTreeNodeUpdate(
   wire->element_id = new_node.element_id;
   wire->local = new_node.local;
   wire->origin = new_node.origin;
+  wire->post_translation = new_node.post_translation;
+  wire->to_parent = new_node.to_parent;
   if (new_node.sticky_position_constraint_id >= 0) {
     wire->sticky_position_constraint_id =
         base::checked_cast<uint32_t>(new_node.sticky_position_constraint_id);

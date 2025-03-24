@@ -179,6 +179,8 @@ struct TransformNode {
   // Actual transformation parameters for this node. See cc::TransformNode.
   gfx.mojom.Transform local;
   gfx.mojom.Point3F origin;
+  gfx.mojom.Vector2dF post_translation;
+  gfx.mojom.Transform to_parent;
   gfx.mojom.PointF scroll_offset;
   gfx.mojom.Vector2dF snap_amount;
 

@@ -103,6 +103,8 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.local = wire.local;
   node.origin = wire.origin;
+  node.post_translation = wire.post_translation;
+  node.set_to_parent(wire.to_parent);
   node.SetScrollOffset(wire.scroll_offset, cc::DamageReason::kUntracked);
   node.snap_amount = wire.snap_amount;
 
