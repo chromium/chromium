@@ -62,21 +62,18 @@ public class AdaptiveToolbarStats {
     /**
      * Called to record the selected radio button on the adaptive toolbar preference page.
      *
+     * @param uiState {@link UiState} describing the current UI state.
      * @param onStartup Whether this is called on startup.
      */
-    public static void recordRadioButtonStateAsync(
-            AdaptiveToolbarStatePredictor adaptiveToolbarStatePredictor, boolean onStartup) {
+    public static void recordRadioButtonStateAsync(UiState uiState, boolean onStartup) {
         String histogramName =
                 onStartup
                         ? "Android.AdaptiveToolbarButton.Settings.Startup"
                         : "Android.AdaptiveToolbarButton.Settings.Changed";
-        adaptiveToolbarStatePredictor.recomputeUiState(
-                uiState -> {
-                    RecordHistogram.recordEnumeratedHistogram(
-                            histogramName,
-                            getRadioButtonStateForMetrics(uiState),
-                            AdaptiveToolbarRadioButtonState.NUM_ENTRIES);
-                });
+        RecordHistogram.recordEnumeratedHistogram(
+                histogramName,
+                getRadioButtonStateForMetrics(uiState),
+                AdaptiveToolbarRadioButtonState.NUM_ENTRIES);
     }
 
     /**

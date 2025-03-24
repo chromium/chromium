@@ -81,6 +81,11 @@ public interface AdaptiveToolbarBehavior {
             public boolean useRawResults() {
                 return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
             }
+
+            @Override
+            public @AdaptiveToolbarButtonVariant int getSegmentationDefault() {
+                return AdaptiveToolbarFeatures.getDefaultButtonVariant(context);
+            }
         };
     }
 
@@ -126,4 +131,8 @@ public interface AdaptiveToolbarBehavior {
      * thresholds to fine-tune model distribution.
      */
     boolean useRawResults();
+
+    /** Returns the default button variant when none of the predicted results cannot be chosen. */
+    @AdaptiveToolbarButtonVariant
+    int getSegmentationDefault();
 }

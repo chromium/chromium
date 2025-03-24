@@ -114,4 +114,11 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     public boolean useRawResults() {
         return true;
     }
+
+    @Override
+    public @AdaptiveToolbarButtonVariant int getSegmentationDefault() {
+        // CCT MTB doesn't provide a default action. The button will be hidden if there is
+        // no action to display. The default is subject to change.
+        return AdaptiveToolbarButtonVariant.UNKNOWN;
+    }
 }
