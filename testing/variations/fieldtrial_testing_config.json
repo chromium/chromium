@@ -12375,6 +12375,15 @@
                     "enable_features": [
                         "IOSReactivationNotifications"
                     ]
+                },
+                {
+                    "name": "ESBFirst",
+                    "params": {
+                        "reactivation_order": "8,7,1"
+                    },
+                    "enable_features": [
+                        "IOSReactivationNotifications"
+                    ]
                 }
             ]
         }
