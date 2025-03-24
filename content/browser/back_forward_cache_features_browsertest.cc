@@ -92,10 +92,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-// The bool parameter is used for switching PlzDedicatedWorker.
 class BackForwardCacheWithDedicatedWorkerBrowserTest
-    : public BackForwardCacheBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public BackForwardCacheBrowserTest {
  public:
   const int kMaxBufferedBytesPerProcess = 10000;
   const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
@@ -103,11 +101,6 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
   BackForwardCacheWithDedicatedWorkerBrowserTest() { server_.Start(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (IsPlzDedicatedWorkerEnabled()) {
-      EnableFeatureAndSetParams(blink::features::kPlzDedicatedWorker, "", "");
-    } else {
-      DisableFeature(blink::features::kPlzDedicatedWorker);
-    }
     // Disable the feature to test eviction for dedicated worker.
     DisableFeature(
         blink::features::kAllowDatapipeDrainedAsBytesConsumerInBFCache);
@@ -122,8 +115,6 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
 
     server_.SetUpCommandLine(command_line);
   }
-
-  bool IsPlzDedicatedWorkerEnabled() { return GetParam(); }
 
   int port() const { return server_.server_address().port(); }
 
@@ -142,12 +133,8 @@ class BackForwardCacheWithDedicatedWorkerBrowserTest
   WebTransportSimpleTestServer server_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackForwardCacheWithDedicatedWorkerBrowserTest,
-                         testing::Bool());
-
 // Confirms that a page using a dedicated worker is cached.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        CacheWithDedicatedWorker) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
@@ -170,7 +157,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 // Confirms that an active page using a dedicated worker that calls
 // importScripts won't trigger an eviction IPC, causing the page to reload.
 // Regression test for https://crbug.com/1305041.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
     PageWithDedicatedWorkerAndImportScriptsWontTriggerReload) {
   CreateHttpsServer();
@@ -193,7 +180,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Confirms that a page using a dedicated worker with WebTransport is not
 // cached.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        DoNotCacheWithDedicatedWorkerWithWebTransport) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
@@ -225,7 +212,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 
 // Confirms that a page using a dedicated worker with a closed WebTransport is
 // cached as WebTransport is not a sticky feature.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        CacheWithDedicatedWorkerWithWebTransportClosed) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
@@ -261,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 #define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature \
   DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature
 #endif
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
     MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBlockingFeature) {
   CreateHttpsServer();
@@ -309,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // TODO(crbug.com/40821593): Disabled due to being flaky.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
     DISABLED_DoNotCacheWithDedicatedWorkerWithClosedWebTransportAndDocumentWithBroadcastChannel) {
   CreateHttpsServer();
@@ -371,7 +358,7 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the case when the page starts fetching in a dedicated worker, goes to
 // BFcache, and then a redirection happens. The cached page should evicted in
 // this case.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        FetchRedirectedWhileStoring) {
   CreateHttpsServer();
 
@@ -439,7 +426,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 // Tests the case when the page starts fetching in a nested dedicated worker,
 // goes to BFcache, and then a redirection happens. The cached page should
 // evicted in this case.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        FetchRedirectedWhileStoring_Nested) {
   CreateHttpsServer();
 
@@ -515,7 +502,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 // Tests the case when the page starts fetching in a dedicated worker, goes to
 // BFcache, and then the response amount reaches the threshold. The cached page
 // should evicted in this case.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
     FetchStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit) {
   CreateHttpsServer();
@@ -574,7 +561,7 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the case when the page starts fetching in a nested dedicated worker,
 // goes to BFcache, and then the response amount reaches the threshold. The
 // cached page should evicted in this case.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
     FetchStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit_Nested) {
   CreateHttpsServer();
@@ -638,7 +625,7 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the case when fetching started in a dedicated worker and the header was
 // received before the page is frozen, but parts of the response body is
 // received when the page is frozen.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
   CreateHttpsServer();
 
@@ -687,7 +674,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 // Tests the case when fetching started in a nested dedicated worker and the
 // header was received before the page is frozen, but parts of the response body
 // is received when the page is frozen.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
     PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested) {
   CreateHttpsServer();
@@ -743,7 +730,7 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the case when fetch started in a dedicated worker, but the response
 // never ends after the page is frozen. This should result in an eviction due to
 // timeout.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        ImageStillLoading_ResponseStartedWhileFrozen_Timeout) {
   CreateHttpsServer();
 
@@ -799,7 +786,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 // Tests the case when fetch started in a nested dedicated worker, but the
 // response never ends after the page is frozen. This should result in an
 // eviction due to timeout.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
     ImageStillLoading_ResponseStartedWhileFrozen_Timeout_Nested) {
   CreateHttpsServer();
@@ -861,7 +848,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests that dedicated workers in back/forward cache are not visible to a
 // service worker.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        ServiceWorkerClientMatchAll) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
@@ -885,10 +872,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   // Confirm there is no worker client.
   EXPECT_EQ(0, CountWorkerClients(rfh_a.get()));
 
-  // Call fetch in a dedicated worker. If the PlzDedicatedWorker is enabled, the
-  // number of worker clients should be 1. If PlzDedicatedWorker is disabled,
-  // worker clients are not supported, so the number should be 0.
-  int expected_number = IsPlzDedicatedWorkerEnabled() ? 1 : 0;
+  // Call fetch in a dedicated worker and verify that we see the expected number
+  // of worker clients.
+  const int kExpectedWorkerClientCount = 1;
   std::string dedicated_worker_script = JsReplace(
       R"(
     (async() => {
@@ -897,7 +883,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
     })();
   )",
       https_server()->GetURL("a.test", "/service_worker/count_worker_clients"));
-  EXPECT_EQ(base::NumberToString(expected_number),
+  EXPECT_EQ(base::NumberToString(kExpectedWorkerClientCount),
             EvalJs(rfh_a.get(), JsReplace(R"(
     new Promise(async (resolve) => {
       const blobURL = URL.createObjectURL(new Blob([$1]));
@@ -919,12 +905,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 
   // Restore from the back/forward cache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  EXPECT_EQ(expected_number, CountWorkerClients(current_frame_host()));
+  EXPECT_EQ(kExpectedWorkerClientCount,
+            CountWorkerClients(current_frame_host()));
 }
 
 // Tests that dedicated workers, including a nested dedicated workers, in
 // back/forward cache are not visible to a service worker.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        ServiceWorkerClientMatchAll_Nested) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
@@ -948,10 +935,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   // Confirm there is no worker client.
   EXPECT_EQ(0, CountWorkerClients(rfh_a.get()));
 
-  // Call fetch in a dedicated worker. If the PlzDedicatedWorker is enabled, the
-  // number of worker clients should be 2. If PlzDedicatedWorker is disabled,
-  // worker clients are not supported, so the number should be 0.
-  int expected_number = IsPlzDedicatedWorkerEnabled() ? 2 : 0;
+  // Call fetch in a dedicated worker and verify that we see the expected number
+  // of worker clients.
+  const int kExpectedWorkerClientCount = 2;
   std::string child_worker_script = JsReplace(
       R"(
     (async() => {
@@ -969,7 +955,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
     });
   )",
       child_worker_script);
-  EXPECT_EQ(base::NumberToString(expected_number),
+  EXPECT_EQ(base::NumberToString(kExpectedWorkerClientCount),
             EvalJs(rfh_a.get(), JsReplace(R"(
     new Promise(async (resolve) => {
       const blobURL = URL.createObjectURL(new Blob([$1]));
@@ -991,13 +977,14 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
 
   // Restore from the back/forward cache.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  EXPECT_EQ(expected_number, CountWorkerClients(current_frame_host()));
+  EXPECT_EQ(kExpectedWorkerClientCount,
+            CountWorkerClients(current_frame_host()));
 }
 
 // Tests that dedicated workers in back/forward cache are not visible to a
 // service worker. This works correctly even if a dedicated worker is not loaded
 // completely when the page is put into back/forward cache,
-IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        ServiceWorkerClientMatchAll_LoadWorkerAfterRestoring) {
   CreateHttpsServer();
 
@@ -1067,11 +1054,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
     });
   )")));
 
-  // If the PlzDedicatedWorker is enabled, the number of worker clients should
-  // be 1. If PlzDedicatedWorker is disabled, worker clients are not supported,
-  // so the number should be 0.
-  EXPECT_EQ(IsPlzDedicatedWorkerEnabled() ? 1 : 0,
-            CountWorkerClients(current_frame_host()));
+  EXPECT_EQ(1, CountWorkerClients(current_frame_host()));
 }
 
 // TODO(crbug.com/40290702): Shared workers are not available on Android.

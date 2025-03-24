@@ -55,7 +55,6 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -82,43 +81,22 @@ bool SupportsSharedWorker() {
 #endif
 }
 
+std::string ParamToTestSuffix(const testing::TestParamInfo<bool>& info) {
+  if (info.param) {
+    return "PrivateNetworkAccessForWorkersEnabled";
+  } else {
+    return "PrivateNetworkAccessForWorkersDisabled";
+  }
+}
+
 }  // namespace
 
-// These tests are parameterized on following options:
-// 0 => Base
-// 1 => kPlzDedicatedWorker enabled
-// 2 => kPrivateNetworkAccessForWorkers enabled
 class WorkerTest : public ContentBrowserTest,
-                   public testing::WithParamInterface<int> {
+                   public testing::WithParamInterface<bool> {
  public:
   WorkerTest() : select_certificate_count_(0) {
-    switch (GetParam()) {
-      case 0:  // Base case.
-        feature_list_.InitWithFeatures({},
-                                       {
-                                           blink::features::kPlzDedicatedWorker,
-                                       });
-        break;
-      case 1:  // PlzDedicatedWorker
-        feature_list_.InitWithFeatures(
-            {
-                blink::features::kPlzDedicatedWorker,
-            },
-            {
-                features::kPrivateNetworkAccessForWorkers,
-            });
-        break;
-      case 2:  // PrivateNetworkAccessForWorkers
-        feature_list_.InitWithFeatures(
-            {
-                blink::features::kPlzDedicatedWorker,
-                features::kPrivateNetworkAccessForWorkers,
-            },
-            {});
-        break;
-      default:
-        NOTREACHED();
-    }
+    feature_list_.InitWithFeatureState(
+      features::kPrivateNetworkAccessForWorkers, GetParam());
   }
 
   void SetUpOnMainThread() override {
@@ -322,7 +300,7 @@ class WorkerTest : public ContentBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 3));
+INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Bool(), ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(WorkerTest, SingleWorker) {
   RunTest(GetTestURL("single_worker.html", std::string()));
@@ -342,7 +320,8 @@ class WorkerTestWithAllowFileAccessFromFiles : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerTestWithAllowFileAccessFromFiles,
-                         testing::Range(0, 3));
+                         testing::Bool(),
+                         ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(WorkerTestWithAllowFileAccessFromFiles,
                        SingleWorkerFromFile) {
@@ -922,7 +901,7 @@ class WorkerFromCredentiallessIframeNikBrowserTest : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerFromCredentiallessIframeNikBrowserTest,
-                         testing::Range(0, 3));
+                         testing::Bool(), ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
                        SharedWorkerRequestIsDoneWithPartitionedNetworkState) {
