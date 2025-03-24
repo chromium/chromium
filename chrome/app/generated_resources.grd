@@ -11114,6 +11114,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_PICTURE_IN_PICTURE_SKIP_AD_CONTROL_TEXT" desc="Text label of the skip ad control button. The button appears when the user hovers over the Picture-in-Picture window.">
         Skip Ad
       </message>
+      <message name="IDS_PICTURE_IN_PICTURE_LIVE_STATUS_TEXT" desc="Text label of the live indicator. The indicator appears when the user hovers over the Picture-in-Picture window.">
+        LIVE
+      </message>
       <message name="IDS_PICTURE_IN_PICTURE_MUTE_MICROPHONE_TEXT" desc="Text label of the mute microphone control button. The button appears when the user hovers over the Picture-in-Picture window.">
         Mute microphone
       </message>
