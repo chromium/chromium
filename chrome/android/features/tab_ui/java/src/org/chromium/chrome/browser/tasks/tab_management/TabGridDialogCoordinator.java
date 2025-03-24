@@ -15,6 +15,7 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -170,8 +172,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 DataSharingService dataSharingService =
                         DataSharingServiceFactory.getForProfile(originalProfile);
 
+                @ColorInt
+                int backgroundColor = SemanticColorUtils.getDialogBgColor(mDialogView.getContext());
                 SharedImageTilesConfig config =
-                        new SharedImageTilesConfig.Builder(activity).build();
+                        new SharedImageTilesConfig.Builder(activity)
+                                .setBorderColor(backgroundColor)
+                                .setBackgroundColor(backgroundColor)
+                                .build();
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
                                 activity, config, dataSharingService, collaborationService);
