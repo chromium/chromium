@@ -5,7 +5,7 @@
 GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 
 /** Text fixture for the text navigation manager. */
-SwitchAccessTextNavigationManagerTest = class extends SwitchAccessE2ETest {
+SwitchAccessMV2TextNavigationManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -207,7 +207,7 @@ function setUpCursorChangeListener(
 
 // TODO(crbug.com/1268230): Re-enable test.
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_JumpToBeginning',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_JumpToBeginning',
     async function() {
       await runTextNavigationTest(this, {
         content: 'hi there',
@@ -221,7 +221,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/1268230): Re-enable test.
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_JumpToEnd',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_JumpToEnd',
     async function() {
       await runTextNavigationTest(this, {
         content: 'hi there',
@@ -235,7 +235,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/1177096) Renable test
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveBackwardOneChar',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_MoveBackwardOneChar',
     async function() {
       await runTextNavigationTest(this, {
         content: 'parrots!',
@@ -249,7 +249,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/1268230): Re-enable test.
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveBackwardOneWord',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_MoveBackwardOneWord',
     async function() {
       await runTextNavigationTest(this, {
         content: 'more parrots!',
@@ -263,7 +263,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/1268230): Re-enable test.
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveForwardOneChar',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_MoveForwardOneChar',
     async function() {
       await runTextNavigationTest(this, {
         content: 'hello',
@@ -277,7 +277,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/1268230): Re-enable test.
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveForwardOneWord',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_MoveForwardOneWord',
     async function() {
       await runTextNavigationTest(this, {
         content: 'more parrots!',
@@ -291,7 +291,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/1268230): Re-enable test.
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveUpOneLine',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_MoveUpOneLine',
     async function() {
       await runTextNavigationTest(this, {
         content: 'more parrots!',
@@ -307,7 +307,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/1268230): Re-enable test.
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveDownOneLine',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_MoveDownOneLine',
     async function() {
       await runTextNavigationTest(this, {
         content: 'more parrots!',
@@ -327,7 +327,7 @@ AX_TEST_F(
  * selection start index.
  */
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_SelectStart',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_SelectStart',
     async function() {
       const website =
           generateWebsiteWithTextArea('test', 'test123', 3, 20, 'hard');
@@ -348,7 +348,7 @@ AX_TEST_F(
  * bounds
  */
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_SelectEnd',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_SelectEnd',
     async function() {
       const website =
           generateWebsiteWithTextArea('test', 'test 123', 6, 20, 'hard');
@@ -372,7 +372,7 @@ AX_TEST_F(
  * function.
  */
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_SelectCharacter',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_SelectCharacter',
     async function() {
       await runTextSelectionTest(this, {
         content: 'hello world!',
@@ -392,7 +392,7 @@ AX_TEST_F(
  * the moveBackwardOneWord function.
  */
 AX_TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'DISABLED_SelectWordBackward',
+    'SwitchAccessMV2TextNavigationManagerTest', 'DISABLED_SelectWordBackward',
     async function() {
       await runTextSelectionTest(this, {
         content: 'hello world!',

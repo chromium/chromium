@@ -5,9 +5,9 @@
 GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 
 /** Test fixture for the node wrapper type. */
-SwitchAccessGroupNodeTest = class extends SwitchAccessE2ETest {};
+SwitchAccessMV2GroupNodeTest = class extends SwitchAccessE2ETest {};
 
-TEST_F('SwitchAccessGroupNodeTest', 'NodesRemoved', function() {
+TEST_F('SwitchAccessMV2GroupNodeTest', 'NodesRemoved', function() {
   const website = `<button></button>`;
   this.runWithLoadedTree(website, rootWebArea => {
     const button = rootWebArea.find({role: chrome.automation.RoleType.BUTTON});

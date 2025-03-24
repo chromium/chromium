@@ -5,14 +5,14 @@
 GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 
 /** Test fixture for the tab node type. */
-SwitchAccessTabNodeTest = class extends SwitchAccessE2ETest {
+SwitchAccessMV2TabNodeTest = class extends SwitchAccessE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     globalThis.MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
   }
 };
 
-AX_TEST_F('SwitchAccessTabNodeTest', 'FindCloseButton', async function() {
+AX_TEST_F('SwitchAccessMV2TabNodeTest', 'FindCloseButton', async function() {
   await this.runWithLoadedTree('');
   const tab = this.desktop_.find({role: chrome.automation.RoleType.TAB});
 
@@ -27,7 +27,7 @@ AX_TEST_F('SwitchAccessTabNodeTest', 'FindCloseButton', async function() {
   assertEquals(buttonCount, 1);
 });
 
-AX_TEST_F('SwitchAccessTabNodeTest', 'Construction', async function() {
+AX_TEST_F('SwitchAccessMV2TabNodeTest', 'Construction', async function() {
   await this.runWithLoadedTree('');
   const tabAutomationNode =
       this.desktop_.find({role: chrome.automation.RoleType.TAB});

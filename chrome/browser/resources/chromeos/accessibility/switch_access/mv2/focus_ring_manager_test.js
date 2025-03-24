@@ -5,7 +5,7 @@
 GEN_INCLUDE(['switch_access_e2e_test_base.js', 'test_utility.js']);
 
 /** Test fixture for the focus ring manager. */
-SwitchAccessFocusRingManagerTest = class extends SwitchAccessE2ETest {
+SwitchAccessMV2FocusRingManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -13,7 +13,7 @@ SwitchAccessFocusRingManagerTest = class extends SwitchAccessE2ETest {
   }
 };
 
-TEST_F('SwitchAccessFocusRingManagerTest', 'BackButtonFocus', function() {
+TEST_F('SwitchAccessMV2FocusRingManagerTest', 'BackButtonFocus', function() {
   this.runWithLoadedDesktop(desktop => {
     // Focus the back button.
     Navigator.byItem.moveTo_(
@@ -43,7 +43,7 @@ TEST_F('SwitchAccessFocusRingManagerTest', 'BackButtonFocus', function() {
 });
 
 AX_TEST_F(
-    'SwitchAccessFocusRingManagerTest', 'BackButtonForMenuFocus',
+    'SwitchAccessMV2FocusRingManagerTest', 'BackButtonForMenuFocus',
     async function() {
       const site = '<input type="text">';
       const rootWebArea = await this.runWithLoadedTree(site);
@@ -71,52 +71,59 @@ AX_TEST_F(
       assertEquals(0, preview.rects.length);
     });
 
-AX_TEST_F('SwitchAccessFocusRingManagerTest', 'ButtonFocus', async function() {
-  const site = '<button>Test</button>';
-  const rootWebArea = await this.runWithLoadedTree(site);
-  const button = rootWebArea.find({role: chrome.automation.RoleType.BUTTON});
-  Navigator.byItem.moveTo_(button);
+AX_TEST_F(
+    'SwitchAccessMV2FocusRingManagerTest', 'ButtonFocus', async function() {
+      const site = '<button>Test</button>';
+      const rootWebArea = await this.runWithLoadedTree(site);
+      const button =
+          rootWebArea.find({role: chrome.automation.RoleType.BUTTON});
+      Navigator.byItem.moveTo_(button);
 
-  const rings = FocusRingManager.instance.rings_;
-  const primary = rings[RingId.PRIMARY];
-  const preview = rings[RingId.PREVIEW];
-  assertEquals(1, primary.rects.length);
-  assertEquals(0, preview.rects.length);
-  // Primary focus should be on the button.
-  const focusLocation = primary.rects[0];
-  const buttonLocation = button.location;
-  assertTrue(RectUtil.equal(buttonLocation, focusLocation));
-});
+      const rings = FocusRingManager.instance.rings_;
+      const primary = rings[RingId.PRIMARY];
+      const preview = rings[RingId.PREVIEW];
+      assertEquals(1, primary.rects.length);
+      assertEquals(0, preview.rects.length);
+      // Primary focus should be on the button.
+      const focusLocation = primary.rects[0];
+      const buttonLocation = button.location;
+      assertTrue(RectUtil.equal(buttonLocation, focusLocation));
+    });
 
-AX_TEST_F('SwitchAccessFocusRingManagerTest', 'GroupFocus', async function() {
-  const site = `
+AX_TEST_F(
+    'SwitchAccessMV2FocusRingManagerTest', 'GroupFocus', async function() {
+      const site = `
     <div role="menu">
       <div role="menuitem">Dog</div>
       <div role="menuitem">Cat</div>
     </div>
   `;
-  const rootWebArea = await this.runWithLoadedTree(site);
-  const menu = rootWebArea.find({role: chrome.automation.RoleType.MENU});
-  const menuItem = rootWebArea.find(
-      {role: chrome.automation.RoleType.MENU_ITEM, attributes: {name: 'Dog'}});
-  assertNotNullNorUndefined(menu);
-  assertNotNullNorUndefined(menuItem);
-  Navigator.byItem.moveTo_(menu);
+      const rootWebArea = await this.runWithLoadedTree(site);
+      const menu = rootWebArea.find({role: chrome.automation.RoleType.MENU});
+      const menuItem = rootWebArea.find({
+        role: chrome.automation.RoleType.MENU_ITEM,
+        attributes: {name: 'Dog'}
+      });
+      assertNotNullNorUndefined(menu);
+      assertNotNullNorUndefined(menuItem);
+      Navigator.byItem.moveTo_(menu);
 
-  // Verify the number of rings.
-  const rings = FocusRingManager.instance.rings_;
-  const primary = rings[RingId.PRIMARY];
-  const preview = rings[RingId.PREVIEW];
-  assertEquals(1, primary.rects.length);
-  assertEquals(1, preview.rects.length);
+      // Verify the number of rings.
+      const rings = FocusRingManager.instance.rings_;
+      const primary = rings[RingId.PRIMARY];
+      const preview = rings[RingId.PREVIEW];
+      assertEquals(1, primary.rects.length);
+      assertEquals(1, preview.rects.length);
 
-  // Use ringNodesForTesting_ to verify the underlying nodes.
-  const ringNodes = FocusRingManager.instance.ringNodesForTesting_;
-  const primaryNode = ringNodes[RingId.PRIMARY].automationNode;
-  const previewNode = ringNodes[RingId.PREVIEW].automationNode;
+      // Use ringNodesForTesting_ to verify the underlying nodes.
+      const ringNodes = FocusRingManager.instance.ringNodesForTesting_;
+      const primaryNode = ringNodes[RingId.PRIMARY].automationNode;
+      const previewNode = ringNodes[RingId.PREVIEW].automationNode;
 
-  assertEquals(
-      menu, primaryNode, 'primary focus should be around the group (the menu)');
-  assertEquals(
-      menuItem, previewNode, 'preview focus should be around the menu item');
-});
+      assertEquals(
+          menu, primaryNode,
+          'primary focus should be around the group (the menu)');
+      assertEquals(
+          menuItem, previewNode,
+          'preview focus should be around the menu item');
+    });

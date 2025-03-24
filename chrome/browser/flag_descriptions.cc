@@ -6584,6 +6584,12 @@ const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[] =
     "Experimental migration of Enhanced Network TTS from extension manifest "
     "v2 to v3.";
 
+const char kAccessibilityManifestV3SwitchAccessName[] =
+    "Changes accessibility extension Switch Access manifest v2 to v3.";
+const char kAccessibilityManifestV3SwitchAccessDescription[] =
+    "Experimental migration of Switch Access from extension manifest "
+    "v2 to v3.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =

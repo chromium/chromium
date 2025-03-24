@@ -11422,6 +11422,8 @@ from previous Chrome versions.
   <int value="-1077752943" label="enable-password-generation"/>
   <int value="-1077534880" label="OmniboxDynamicMaxAutocomplete:enabled"/>
   <int value="-1077006912" label="ReadAnythingOmniboxIcon:disabled"/>
+  <int value="-1076662984"
+      label="AccessibilityManifestV3SwitchAccess:disabled"/>
   <int value="-1076661289"
       label="WebIdentityDigitalCredentialsCreation:disabled"/>
   <int value="-1075156797" label="enable-brotli"/>
@@ -17478,6 +17480,7 @@ from previous Chrome versions.
   <int value="1291790140" label="FastPairSubsequentPairingUX:enabled"/>
   <int value="1291966558" label="ScrollAnchoring:disabled"/>
   <int value="1292091029" label="OmniboxOneClickUnelide:disabled"/>
+  <int value="1292453125" label="AccessibilityManifestV3SwitchAccess:enabled"/>
   <int value="1292482533" label="EnableTabMuting:disabled"/>
   <int value="1292763218" label="SystemTrayUnified:disabled"/>
   <int value="1293262425" label="PasswordGenerationSoftNudge:enabled"/>
