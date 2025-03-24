@@ -16,7 +16,6 @@ edition = "2021"
 [workspace]
 
 [dependencies]
-anyhow = "1"
 base64 = "0.22"
 bitflags = "2"
 bytes = "1"
@@ -25,7 +24,6 @@ cxx = "1"
 fend-core = "1"
 font-types = "0.8"
 hex = "0.4"
-hex-literal = "0.4"
 itertools = "0.11"
 lazy_static = "1"
 libc = "0.2"
@@ -38,10 +36,7 @@ quote = "1"
 rand = "0.8"
 rand_pcg = "0.3"
 read-fonts = "0.27.3"
-regex = "1"
 rustc-demangle-capi = "0.1"
-serde = "1"
-serde_json = "1"
 sfv = "0.10.4"
 skrifa = "0.29"
 small_ctor = "0.1"
@@ -83,13 +78,6 @@ version = "0.4"
 # when debug asserts are off, which is when DCHECK_IS_ON() is false.
 features = [ "std", "release_max_level_info" ]
 
-[dependencies.rstest]
-default-features = false
-version = "0.22"
-
-[dependencies.rustversion]
-version = "1"
-
 # Temporarily inform our cargo tooling that we care about
 # the new version of serde_json_lenient. We are in the midst
 # of CLs that move from the older to the newer.
@@ -101,9 +89,6 @@ features = ["unbounded_depth", "float_roundtrip"]
 [dependencies.syn]
 version = "2"
 features = ["full"]
-
-[dependencies.unicode-linebreak]
-version = "0.1"
 
 [dependencies.bytemuck]
 version = "1"

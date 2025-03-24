@@ -44,9 +44,6 @@ ub-risk-4 = "ub-risk-4"
 [policy."adler2:2.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."aho-corasick:1.1.3"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
 [policy."android_system_properties:0.1.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -164,17 +161,11 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."getrandom:0.2.15"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."glob:0.3.2"]
-criteria = ["crypto-safe", "safe-to-run"]
-
 [policy."hashbrown:0.15.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."heck:0.4.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."hex-literal:0.4.1"]
-criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."hex:0.4.3"]
 criteria = ["crypto-safe", "safe-to-run"]
@@ -386,24 +377,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."regex-automata:0.4.9"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."regex-syntax:0.8.5"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."regex:1.11.1"]
-criteria = ["crypto-safe", "safe-to-run"]
-
-[policy."relative-path:1.9.3"]
-criteria = ["crypto-safe", "safe-to-run"]
-
-[policy."rstest:0.22.0"]
-criteria = ["crypto-safe", "safe-to-run"]
-
-[policy."rstest_macros:0.22.0"]
-criteria = ["crypto-safe", "safe-to-run"]
-
-[policy."rstest_reuse:0.7.0"]
-criteria = ["crypto-safe", "safe-to-run"]
-
 [policy."rust_decimal:1.37.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
@@ -413,26 +386,17 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rustc-demangle:0.1.24"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rustc_version:0.4.1"]
-criteria = ["crypto-safe", "safe-to-run"]
-
 [policy."rustversion:1.0.20"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."ryu:1.0.20"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."semver:1.0.26"]
-criteria = ["crypto-safe", "safe-to-run"]
-
 [policy."serde:1.0.219"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."serde_derive:1.0.219"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."serde_json:1.0.140"]
-criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."serde_json_lenient:0.2.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -498,9 +462,6 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = []
 
 [policy."unicode-ident:1.0.18"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
-
-[policy."unicode-linebreak:0.1.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-width:0.1.14"]

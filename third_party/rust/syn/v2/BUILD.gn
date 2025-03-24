@@ -101,7 +101,6 @@ cargo_crate("lib") {
     "printing",
     "proc-macro",
     "visit",
-    "visit-mut",
   ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates

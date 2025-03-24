@@ -147,10 +147,6 @@ configs_to_add = ['//build/config/compiler:optimize']
 [crate.hex]
 group = 'test'
 
-[crate.hex-literal]
-group = 'test'
-extra_input_roots = ['../README.md']
-
 [crate.itertools]
 group = 'test'
 
@@ -255,16 +251,6 @@ group = 'test'
 [crate.read-fonts]
 extra_src_roots = ['../generated']
 
-[crate.regex]
-group = 'test'
-
-[crate.relative-path]
-# TODO(https://crbug.com/369075726): Remove this exception.
-no_license_file_tracked_in_crbug_369075726 = true
-
-[crate.rstest]
-group = 'test'
-
 [crate.rust_decimal]
 build_script_outputs = ['README-lib.md']
 
@@ -277,9 +263,6 @@ build_script_outputs = [ "version.expr" ]
 shipped = false
 # TODO(https://crbug.com/369075726): Remove this exception.
 no_license_file_tracked_in_crbug_369075726 = true
-
-[crate.serde_json]
-group = 'test'
 
 [crate.skrifa]
 extra_src_roots = ['../generated']
@@ -295,10 +278,6 @@ license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
 
 [crate.temporal_rs]
 license_files = ["LICENSE-MIT", "LICENSE-APACHE"]
-
-[crate.unicode-linebreak]
-allow_first_party_usage = false
-build_script_outputs = [ "tables.rs" ]
 
 [crate.windows-sys]
 extra_kv = { visibility = [ '//build/rust/tests/windows_sys_test' ] }
