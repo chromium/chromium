@@ -9,7 +9,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -79,6 +78,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
         ReferrerChainProvider* referrer_chain_provider,
         PrefService* pref_service,
         signin::IdentityManager* identity_manager,
+        policy::ManagementService* management_service,
         bool is_off_the_record,
         bool is_guest_session)
     : RealTimeUrlLookupServiceBase(
@@ -93,6 +93,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
       token_fetcher_(std::move(token_fetcher)),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
+      management_service_(management_service),
       is_off_the_record_(is_off_the_record),
       is_guest_session_(is_guest_session) {}
 
@@ -112,9 +113,8 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
 
   // Don't allow using the access token if the managed profile doesn't match the
   // managed device.
-  if (policy::ManagementServiceFactory::GetForProfile(profile_)
-          ->HasManagementAuthority(
-              policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
+  if (management_service_->HasManagementAuthority(
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
       !enterprise_util::IsProfileAffiliated(profile_)) {
     return false;
   }
