@@ -164,6 +164,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
 
   views::Label* label = new views::Label(text, kInstructionTextContext);
   label->SetEnabledColor(kForegroundColor);
+  label->SetBackgroundColor(GetSubtleNotificationBackgroundColor());
 
   if (!format_as_key) {
     DCHECK(!key_image);

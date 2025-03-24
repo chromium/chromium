@@ -2006,8 +2006,8 @@ ci.thin_tester(
                 mixins = targets.mixin(
                     args = [
                         # TODO(crbug.com/402826437): Remove if this has no
-                        # effect on stability. Otherwisde, update this comment.
-                        "--jobs=2",
+                        # effect on stability. Otherwise, update this comment.
+                        "--jobs=1",
                     ],
                 ),
                 replacements = targets.replacements(

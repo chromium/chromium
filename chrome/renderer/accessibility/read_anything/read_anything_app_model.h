@@ -225,7 +225,6 @@ class ReadAnythingAppModel {
   int GetNumSelections() const;
   void SetNumSelections(int num_selections);
 
-  void AddUrlInformationForTreeId(const ui::AXTreeID& tree_id);
   bool IsDocs() const;
 
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;

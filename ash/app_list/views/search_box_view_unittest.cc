@@ -46,6 +46,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_state.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -80,6 +81,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/wm/core/window_util.h"
 
 namespace {
 // kBestMatch is the second result container for productivity launcher search.
@@ -1583,6 +1585,36 @@ TEST_P(SunfishLauncherButtonTest, TabletModeAppList) {
   ASSERT_TRUE(sunfish_button);
   GestureTapOn(sunfish_button);
   EXPECT_TRUE(presenter->GetTargetVisibility());
+}
+
+TEST_P(SunfishLauncherButtonTest, TabletModeSwitchesToLastWindow) {
+  if (!IsSunfishEnabled()) {
+    // TODO(b/356877313): Consider unparametizing these tests.
+    GTEST_SKIP() << "skip if not enabled";
+  }
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  // Activate some windows.
+  std::unique_ptr<aura::Window> w1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> w2 = CreateTestWindow();
+  std::unique_ptr<aura::Window> w3 = CreateTestWindow();
+  wm::ActivateWindow(w3.get());
+  wm::ActivateWindow(w2.get());
+  wm::ActivateWindow(w1.get());
+  // Add a number of apps.
+  AppListTestHelper* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+  AppListPresenterImpl* presenter =
+      Shell::Get()->app_list_controller()->fullscreen_presenter();
+  ASSERT_TRUE(presenter);
+  EXPECT_TRUE(presenter->GetTargetVisibility());
+
+  // Press the launcher button. Test the last window is now active.
+  views::ImageButton* sunfish_button =
+      helper->GetSearchBoxView()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+  GestureTapOn(sunfish_button);
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsActive());
 }
 
 }  // namespace

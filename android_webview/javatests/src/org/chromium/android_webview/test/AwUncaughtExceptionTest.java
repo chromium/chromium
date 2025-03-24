@@ -23,6 +23,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwThreadUtils;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.common.crash.AwCrashReporterClient;
 import org.chromium.base.JniAndroid;
 import org.chromium.base.ThreadUtils;

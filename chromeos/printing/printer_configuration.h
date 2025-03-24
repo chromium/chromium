@@ -34,7 +34,12 @@ struct COMPONENT_EXPORT(CHROMEOS_PRINTING) IppPrinterInfo {
   IppPrinterInfo();
   IppPrinterInfo(const std::vector<std::string>& document_formats,
                  const std::string& document_format_default,
-                 const std::string& document_format_preferred);
+                 const std::string& document_format_preferred,
+                 const std::vector<std::string>& urf_supported,
+                 const std::vector<std::string>& pdf_versions,
+                 const std::vector<std::string>& ipp_features,
+                 const std::string& mopria_certified,
+                 const std::vector<std::string>& printer_kind);
   IppPrinterInfo(const IppPrinterInfo& other);
   ~IppPrinterInfo();
 
@@ -49,6 +54,26 @@ struct COMPONENT_EXPORT(CHROMEOS_PRINTING) IppPrinterInfo {
   // document-format-preferred
   // MIME type for preferred format.
   std::string document_format_preferred;
+
+  // urf-supported
+  // A collection of supported URF printing modes.
+  std::vector<std::string> urf_supported;
+
+  // pdf-version-supported
+  // A collection of supported PDF versions.
+  std::vector<std::string> pdf_versions;
+
+  // ipp-features-supported
+  // A collection of supported IPP features.
+  std::vector<std::string> ipp_features;
+
+  // mopria-certified
+  // Mopria certification level of the printer.
+  std::string mopria_certified;
+
+  // printer-kind
+  // A collection of supported printing categories.
+  std::vector<std::string> printer_kind;
 };
 
 COMPONENT_EXPORT(CHROMEOS_PRINTING) std::string ToString(PrinterClass pclass);

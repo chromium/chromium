@@ -131,15 +131,14 @@ public class TriStateCookieSettingsPreference extends Preference
         mAllowButton = (RadioButtonWithDescription) assertNonNull(holder.findViewById(R.id.allow));
         mBlockThirdPartyIncognitoButton =
                 (RadioButtonWithDescriptionAndAuxButton)
-                        assumeNonNull(
-                                holder.findViewById(R.id.block_third_party_incognito_with_aux));
+                        holder.findViewById(R.id.block_third_party_incognito_with_aux);
         mBlockThirdPartyIncognitoButton.setAuxButtonClickedListener(this);
         mBlockThirdPartyButton =
                 (RadioButtonWithDescriptionAndAuxButton)
-                        assumeNonNull(holder.findViewById(R.id.block_third_party_with_aux));
+                        holder.findViewById(R.id.block_third_party_with_aux);
         mBlockThirdPartyButton.setAuxButtonClickedListener(this);
 
-        mRadioGroup = (RadioGroup) assumeNonNull(holder.findViewById(R.id.radio_button_layout));
+        mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
         mRadioGroup.setOnCheckedChangeListener(this);
 
         mManagedView =

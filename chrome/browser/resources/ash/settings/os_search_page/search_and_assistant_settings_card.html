@@ -141,22 +141,42 @@
           </settings-toggle-button>
         </template>
       </div>
-<if expr="_google_chrome">
       <div class="sub-item">
         <template is="dom-if" if="[[isLobsterSettingsToggleVisible_]]">
-          <settings-toggle-button id="lobsterToggle"
-              class="hr"
-              icon="ash-internal:lobster"
-              pref="{{prefs.settings.lobster_enabled}}"
-              label="$i18n{enableLobster}"
-              sub-label="$i18n{enableLobsterDesc}"
-              deep-link-focus-id$="[[Setting.kLobsterOnOff]]"
-              learn-more-url="$i18n{lobsterLearnMoreUrl}"
-              >
-          </settings-toggle-button>
+          <template is="dom-if" if="[[!isLobsterAllowedByEnterprisePolicy_]]"
+            restamp>
+            <!-- As the enterprise policy is under a different pref, use that
+                one here to make this toggle appear as managed. The toggle
+                needs to be explicitly disabled in case the policy is
+                recommended. -->
+            <settings-toggle-button id="lobsterEnterpriseToggle"
+                class="hr"
+                icon="ash-internal:lobster"
+                pref="{{prefs.settings.lobster.enterprise_settings}}"
+                numeric-unchecked-values=
+                  "[[enterprisePolicyToggleUncheckedValues_]]"
+                disabled
+                no-set-pref
+                label="$i18n{enableLobster}"
+                sub-label="$i18n{enableLobsterDesc}"
+                deep-link-focus-id$="[[Setting.kLobsterOnOff]]"
+                learn-more-url="$i18n{lobsterLearnMoreUrl}">
+            </settings-toggle-button>
+          </template>
+          <template is="dom-if" if="[[isLobsterAllowedByEnterprisePolicy_]]"
+            restamp>
+            <settings-toggle-button id="lobsterToggle"
+                class="hr"
+                icon="ash-internal:lobster"
+                pref="{{prefs.settings.lobster_enabled}}"
+                label="$i18n{enableLobster}"
+                sub-label="$i18n{enableLobsterDesc}"
+                deep-link-focus-id$="[[Setting.kLobsterOnOff]]"
+                learn-more-url="$i18n{lobsterLearnMoreUrl}">
+            </settings-toggle-button>
+          </template>
         </template>
       </div>
-</if>
     </iron-collapse>
   </template>
 

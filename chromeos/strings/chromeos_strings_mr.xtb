@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
 <translation id="1908234395526491708">UDP विनंती पूर्ण करता आली नाही</translation>
 <translation id="1908394185991500139">अ‍ॅरो लेफ्ट</translation>
+<translation id="1911678930322867245">सर्वात वरती उजवीकडे हलवा</translation>
 <translation id="1914144885717544695">शुक्रवारी</translation>
 <translation id="1915960750806557358">तुमचा फीडबॅक शेअर करा किंवा तुमच्या समस्येचे वर्णन करा. वैयक्तिक, संवेदनशील किंवा गोपनीय असे काहीही समाविष्ट न केल्याची खात्री करा.</translation>
 <translation id="1923388006036088459">ॲक्सेंट रंग</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">एंटर</translation>
 <translation id="8183975772394450380">समुद्रकिनारा</translation>
 <translation id="819278132617411009">आणखी उत्पादनक्षम होण्यासाठी Google AI वापरा</translation>
-<translation id="82003371436638355">तुम्ही “तुमच्या स्वतःची तयार करा” निवडता, तेव्हा कस्टम प्रॉम्प्ट लिहा. किंवा “तुम्ही थीम निवडा” हे निवडू शकता आणि त्यानंतर तुमचा AI वॉलपेपर पर्सनलाइझ करण्यासाठी, अधोरेखित केलेले शब्द निवडू शकता.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          आणखी युनिक आणि वैविध्यपूर्ण AI इमेजशी संबंधित पर्याय मिळवण्यासाठी "मला प्रेरणा द्या" निवडा.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          तुम्ही तुमच्या स्वतःचा वॉलपेपर तयार करता, तेव्हा इमेज जनरेट करण्यासाठी आणि उत्पादनामध्ये सुधारणा करण्यासाठी, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google च्या सेवा अटी आणि गोपनीयता धोरण<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> याच्या अधीन राहून प्रॉम्प्ट Google AI सर्व्हरना पाठवला जातो. वैयक्तिक, संवेदनशील किंवा गोपनीय असे काहीही समाविष्ट करू नका.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          जनरेटिव्ह AI हे लोकांच्या बाबतीतदेखील चुका करू शकते, त्यामुळे ते दोनदा तपासा. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />अधिक जाणून घ्या<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
 <translation id="8208861521865154048">लाभ</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8833620912470026819">निवडुंगाचे जंगल</translation>
 <translation id="8834539327799336565">सध्या कनेक्ट केलेली</translation>
+<translation id="8842526499753992487">सर्वात वरती डावीकडे हलवा</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8849799913685544685">लाइटहाउस</translation>
 <translation id="8851859208664803097">थांबवले - प्रिंटरशी कनेक्ट करता आले नाही</translation>

@@ -54,7 +54,7 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
         -1);
 
     // X direction.
-    if (RuntimeEnabledFeatures::CanvasTextNgEnabled()) {
+    if (RuntimeEnabledFeatures::CanvasTextNgEnabled(nullptr)) {
       EXPECT_EQ(
           78, MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas)
                   ->ComputeInlineSize(text_run, *font));
@@ -98,7 +98,7 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     EXPECT_CALL(mpc, drawTextBlob(_, 0, 0, _)).Times(1);
     EXPECT_CALL(mpc, restoreToCount(17)).WillOnce(Return());
 
-    if (RuntimeEnabledFeatures::CanvasTextNgEnabled()) {
+    if (RuntimeEnabledFeatures::CanvasTextNgEnabled(nullptr)) {
       MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas)
           ->DrawWithBidiReorder(text_run, 0, text_run.length(), *font,
                                 Font::kUseFallbackIfFontNotReady, mpc, location,

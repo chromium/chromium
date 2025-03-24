@@ -214,6 +214,11 @@ public class EventForwarder {
         return false;
     }
 
+    @CalledByNative
+    private float getWebContentsOffsetYInWindow() {
+        return mCurrentTouchOffsetY;
+    }
+
     private boolean sendTouchEvent(MotionEvent event, boolean isTouchHandleEvent) {
         assert mNativeEventForwarder != 0;
 

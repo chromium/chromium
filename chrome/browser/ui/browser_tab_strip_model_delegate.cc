@@ -161,21 +161,11 @@ void BrowserTabStripModelDelegate::MoveTabsToNewWindow(
 void BrowserTabStripModelDelegate::MoveGroupToNewWindow(
     const tab_groups::TabGroupId& group) {
   TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
-  if (!group_model) {
+  if (!group_model || !group_model->ContainsTabGroup(group)) {
     return;
   }
 
-  gfx::Range range = group_model->GetTabGroup(group)->ListTabs();
-
-  std::vector<int> indices;
-  indices.reserve(range.length());
-  for (auto i = range.start(); i < range.end(); ++i) {
-    indices.push_back(i);
-  }
-
-  // chrome:: to disambiguate the free function from
-  // BrowserTabStripModelDelegate::MoveTabsToNewWindow().
-  chrome::MoveTabsToNewWindow(browser_, indices, group);
+  chrome::MoveGroupToNewWindow(browser_, group);
 }
 
 std::optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(

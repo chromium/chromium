@@ -70,6 +70,10 @@ class DiagnosticsReporter {
                            const clang::CXXBaseSpecifier* base_spec);
   void TraceMethodForStackAllocatedClass(RecordInfo* parent,
                                          clang::CXXMethodDecl* trace);
+  void RedundantTraceDispatchMethod(RecordInfo* derived,
+                                    clang::CXXRecordDecl* base);
+  void RedundantFinalizeDispatchMethod(RecordInfo* derived,
+                                       clang::CXXRecordDecl* base);
 
   void NoteManualDispatchMethod(clang::CXXMethodDecl* dispatch);
   void NoteBaseRequiresTracing(BasePoint* base);
@@ -201,6 +205,8 @@ class DiagnosticsReporter {
   unsigned diag_mojo_receiver_in_gc_class_note;
   unsigned diag_mojo_associated_remote_in_gc_class_note;
   unsigned diag_mojo_associated_receiver_in_gc_class_note;
+  unsigned diag_redundant_trace_dispatch_method_;
+  unsigned diag_redundant_finalize_dispatch_method_;
 
   unsigned diag_unique_ptr_used_with_gc_;
   unsigned diag_optional_decl_used_with_gc_;

@@ -41,6 +41,10 @@
 
 namespace ash {
 
+using kiosk::test::LaunchAppManually;
+using kiosk::test::TheKioskApp;
+using kiosk::test::WaitKioskLaunched;
+
 namespace {
 
 constexpr char kDeviceAnnotatedAssetId[] = "iwa_test_asset_id";
@@ -164,8 +168,8 @@ class KioskIwaDeviceAttributesApiTest : public MixinBasedInProcessBrowserTest {
   }
 
   void LaunchIwaKiosk() {
-    ASSERT_TRUE(kiosk_.LaunchManually(kiosk::test::TheKioskApp()));
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+    ASSERT_TRUE(WaitKioskLaunched());
 
     SelectFirstBrowser();
     ASSERT_NE(web_contents(), nullptr);

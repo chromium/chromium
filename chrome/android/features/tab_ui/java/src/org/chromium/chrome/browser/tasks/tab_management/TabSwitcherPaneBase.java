@@ -436,22 +436,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     }
 
     @Override
-    public boolean resetWithTabs(@Nullable List<Tab> tabs, boolean quickMode) {
-        assert false : "Not reached.";
-        return true;
-    }
-
-    @Override
-    public void softCleanup() {
-        assert false : "Not reached.";
-    }
-
-    @Override
-    public void hardCleanup() {
-        assert false : "Not reached.";
-    }
-
-    @Override
     public void initWithNative() {
         if (mNativeInitialized) return;
 
@@ -529,7 +513,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
 
     /**
      * Request to show all the tabs in the pane. Subclasses should override this method to invoke
-     * {@link TabSwitcherResetHandler#resetWithTabList} with their available tabs.
+     * {@link TabSwitcherResetHandler#resetWithListOfTabs} with their available tabs.
      */
     protected abstract void showAllTabs();
 

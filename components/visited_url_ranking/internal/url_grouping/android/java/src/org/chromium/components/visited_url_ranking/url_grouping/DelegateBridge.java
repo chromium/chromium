@@ -6,19 +6,20 @@ package org.chromium.components.visited_url_ranking.url_grouping;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A wrapper for GroupSuggestionsService.Delegate
  *
  * <p>Hosts all the Java delegates of the service. Receives all the notifications from the native
  * counterpart GroupSuggestionsServiceAndroid and then notifies all the Java observers. NOTE: This
- * observer is not registered to the Java GroupSuggestionsService, this implements the
- * GroupSuggestionsService.Delegate only for readability. The native delegate is registered to the
- * native service.
+ * observer is not registered to the Java GroupSuggestionsService. The native delegate is registered
+ * to the native service.
  */
-public class DelegateBridge implements GroupSuggestionsService.Delegate {
+@NullMarked
+public class DelegateBridge {
     ObserverList<GroupSuggestionsService.Delegate> mJavaDelegates = new ObserverList<>();
 
     public DelegateBridge() {}
@@ -34,17 +35,15 @@ public class DelegateBridge implements GroupSuggestionsService.Delegate {
     }
 
     @CalledByNative
-    @Override
     public void showSuggestion(
-            GroupSuggestions groupSuggestions, Callback<UserResponseMetadata> callback) {
+            GroupSuggestions groupSuggestions, JniOnceCallback<UserResponseMetadata> callback) {
         // TODO(crbug.com/397221723): Only show suggestions to corresponding window.
         for (GroupSuggestionsService.Delegate javaDelegate : mJavaDelegates) {
-            javaDelegate.showSuggestion(groupSuggestions, callback);
+            javaDelegate.showSuggestion(groupSuggestions, (result) -> callback.onResult(result));
         }
     }
 
     @CalledByNative
-    @Override
     public void onDumpStateForFeedback(String dumpState) {
         for (GroupSuggestionsService.Delegate javaDelegate : mJavaDelegates) {
             javaDelegate.onDumpStateForFeedback(dumpState);

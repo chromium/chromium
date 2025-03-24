@@ -26,6 +26,8 @@ enum class ApplicationError {
   kIpcCallerNotAllowed,
   // Failed to initialize COM on Windows.
   kCOMInitializationFailed,
+  // The CloudPolicyClient timed out.
+  kCloudPolicyClientTimeout,
 };
 
 inline constexpr int kStatusOk = 0;

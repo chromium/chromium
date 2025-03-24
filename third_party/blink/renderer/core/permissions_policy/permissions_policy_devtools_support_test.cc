@@ -266,7 +266,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
           network::mojom::PermissionsPolicyFeature::kFullscreen);
   EXPECT_TRUE(status.enabled);
   EXPECT_FALSE(status.should_report);
-  EXPECT_EQ(status.reporting_endpoint, std::nullopt);
+  EXPECT_EQ(status.reporting_endpoint, String());
 
   status = MainFrame()
                .GetFrame()
@@ -276,7 +276,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
                    network::mojom::PermissionsPolicyFeature::kFullscreen);
   EXPECT_TRUE(status.enabled);
   EXPECT_FALSE(status.should_report);
-  EXPECT_EQ(status.reporting_endpoint, std::nullopt);
+  EXPECT_EQ(status.reporting_endpoint, String());
 
   status = MainFrame()
                .GetFrame()
@@ -287,7 +287,7 @@ TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
                    network::mojom::PermissionsPolicyFeature::kFullscreen);
   EXPECT_TRUE(status.enabled);
   EXPECT_FALSE(status.should_report);
-  EXPECT_EQ(status.reporting_endpoint, std::nullopt);
+  EXPECT_EQ(status.reporting_endpoint, String());
 
   EXPECT_EQ(locator, std::nullopt);
 }

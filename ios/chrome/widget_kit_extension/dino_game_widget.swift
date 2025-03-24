@@ -33,7 +33,7 @@ struct DinoGameWidget: Widget {
     let kind: String = "DinoGameWidget"
     var body: some WidgetConfiguration {
       AppIntentConfiguration(
-        kind: kind, intent: SelectProfileIntent.self, provider: ConfigurableProvider()
+        kind: kind, intent: SelectAccountIntent.self, provider: ConfigurableProvider()
       ) { entry in
         DinoGameWidgetEntryView(entry: entry)
       }

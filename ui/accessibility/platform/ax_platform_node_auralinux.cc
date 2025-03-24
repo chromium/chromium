@@ -4025,19 +4025,24 @@ void AXPlatformNodeAuraLinux::OnAriaNotificationPosted(
   }
 
   // Only newer Atk versions support the notification signal type.
-  DCHECK(base::Version(atk_get_version()).CompareTo(base::Version("2.50.0")) >= 0);
-
-  auto MapPropertiesToAtkLiveType = [&]() -> AriaNotificationAtkLive {
-    switch (priority_property) {
-      case ax::mojom::AriaNotificationPriority::kNormal:
-        return AriaNotificationAtkLive::kPolite;
-      case ax::mojom::AriaNotificationPriority::kHigh:
-        return AriaNotificationAtkLive::kAssertive;
-    }
-    NOTREACHED();
-  };
-  g_signal_emit_by_name(atk_object, "notification", announcement.c_str(),
-                        MapPropertiesToAtkLiveType());
+  if (base::Version(atk_get_version()).CompareTo(base::Version("2.50.0")) >=
+      0) {
+    auto MapPropertiesToAtkLiveType = [&]() -> AriaNotificationAtkLive {
+      switch (priority_property) {
+        case ax::mojom::AriaNotificationPriority::kNormal:
+          return AriaNotificationAtkLive::kPolite;
+        case ax::mojom::AriaNotificationPriority::kHigh:
+          return AriaNotificationAtkLive::kAssertive;
+      }
+      NOTREACHED();
+    };
+    g_signal_emit_by_name(atk_object, "notification", announcement.c_str(),
+                          MapPropertiesToAtkLiveType());
+  } else {
+    g_signal_emit_by_name(atk_object, "text-insert", 0, announcement.size(),
+                          announcement.c_str());
+    OnSubtreeCreated();
+  }
 }
 
 void AXPlatformNodeAuraLinux::OnAlertShown() {

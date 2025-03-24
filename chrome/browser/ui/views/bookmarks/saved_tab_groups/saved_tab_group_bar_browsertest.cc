@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -362,6 +364,58 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
   EXPECT_EQ(0, saved_tab_group_bar->GetNumberOfVisibleGroups());
 }
 
+// Disabled since it does not work for trybots but helps test performance
+// issues.
+IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
+                       DISABLED_LargeNumberOfSavedTabGroups) {
+  constexpr int kLargeGroupCount = 1000;
+  constexpr int kLargeTabInGroupCount = 1000;
+
+  if (IsMigrationEnabled()) {
+    TabGroupSyncService* service =
+        SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
+    auto* service_impl = static_cast<TabGroupSyncServiceImpl*>(service);
+    SavedTabGroupModel* model = service_impl->GetModelForTesting();
+    for (int i = 0; i < kLargeGroupCount; i++) {
+      base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+      SavedTabGroup group(u"Group Title", TabGroupColorId::kGrey, {}, 0,
+                          group_guid);
+      for (int j = 0; j < kLargeTabInGroupCount; j++) {
+        GURL url("https://www.example.com");
+        SavedTabGroupTab tab(url, u"Tab Title", group_guid, j);
+        tab.SetFavicon(favicon::GetDefaultFavicon());
+        group.AddTabFromSync(std::move(tab));
+      }
+      model->AddedFromSync(std::move(group));
+      service_impl->SetIsInitializedForTesting(true);
+    }
+  } else {
+    SavedTabGroupKeyedService* service =
+        SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+    SavedTabGroupModel* model = service->model();
+    std::vector<SavedTabGroup> groups;
+    for (int i = 0; i < 100; i++) {
+      base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+      SavedTabGroup group(u"Group Title", TabGroupColorId::kGrey, {}, 0,
+                          group_guid);
+      for (int j = 0; j < 100; j++) {
+        GURL url("https://www.example.com");
+        SavedTabGroupTab tab(url, u"Tab Title", group_guid, j);
+        tab.SetFavicon(favicon::GetDefaultFavicon());
+        group.AddTabFromSync(std::move(tab));
+      }
+      groups.push_back(std::move(group));
+    }
+    model->LoadStoredEntries(std::move(groups),
+                             std::vector<SavedTabGroupTab>());
+  }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* bookmark_bar = browser_view->bookmark_bar();
+  const SavedTabGroupBar* saved_tab_group_bar =
+      bookmark_bar->saved_tab_group_bar();
+  EXPECT_EQ(100, saved_tab_group_bar->GetNumberOfVisibleGroups());
+}
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
                          SavedTabGroupBarBrowserTest,
                          testing::Bool());

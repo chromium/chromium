@@ -15,6 +15,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
@@ -140,7 +141,6 @@ class MojoGpuVideoAcceleratorFactories
 
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;
-  void SetContextProviderLostOnMainThread();
 
   void OnChannelTokenReady(const base::UnguessableToken& token);
 
@@ -154,9 +154,11 @@ class MojoGpuVideoAcceleratorFactories
   // thread, but all subsequent access and destruction should happen only on the
   // media thread.
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
+
   // Signals if |context_provider_| is alive on the media thread. For use on the
-  // main thread.
-  bool context_provider_lost_ = false;
+  // main thread, and is deleted separately on the main thread to ensure there
+  // are no access violations.
+  std::unique_ptr<bool> context_provider_lost_ = std::make_unique<bool>(false);
   // A shadow of |context_provider_lost_| for the media thread.
   bool context_provider_lost_on_media_thread_ = false;
 
@@ -173,6 +175,9 @@ class MojoGpuVideoAcceleratorFactories
 
   gfx::ColorSpace rendering_color_space_;
 
+  // Safe only for use on `task_runner_`.
+  base::WeakPtrFactory<MojoGpuVideoAcceleratorFactories>
+      task_runner_weak_factory_{this};
 };
 
 }  // namespace media

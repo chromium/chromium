@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -142,7 +143,7 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
       : handle_(handle),
         interface_number_(interface_number),
         event_(CreateEvent(nullptr, false, false, nullptr)) {
-    memset(&overlapped_, 0, sizeof(overlapped_));
+    UNSAFE_TODO(memset(&overlapped_, 0, sizeof(overlapped_)));
     overlapped_.hEvent = event_.Get();
   }
 

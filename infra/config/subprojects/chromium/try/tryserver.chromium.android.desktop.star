@@ -91,8 +91,6 @@ try_.orchestrator_builder(
     experiments = {
         # crbug.com/40617829
         "chromium.enable_cleandead": 100,
-        # crbug.com/346598710
-        "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools

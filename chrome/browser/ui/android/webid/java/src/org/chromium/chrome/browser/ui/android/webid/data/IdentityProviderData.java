@@ -60,7 +60,7 @@ public class IdentityProviderData {
         return mDisclosureFields;
     }
 
-    public boolean getHasLoginStatusMismatch() {
+    public boolean hasLoginStatusMismatch() {
         return mHasLoginStatusMismatch;
     }
 

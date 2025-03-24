@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
 <translation id="1908234395526491708">Dështimet e kërkesave UDP</translation>
 <translation id="1908394185991500139">shigjeta majtas</translation>
+<translation id="1911678930322867245">Lëvize në krye djathtas</translation>
 <translation id="1914144885717544695">të premten</translation>
 <translation id="1915960750806557358">Ndaj komentet e tua ose përshkruaj problemin tënd. Sigurohu që të mos përdorësh asgjë që është personale, delikate ose konfidenciale.</translation>
 <translation id="1923388006036088459">Ngjyrat e theksimit</translation>
@@ -1543,16 +1544,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plazh</translation>
 <translation id="819278132617411009">Përdor IA-në e Google për të qenë më produktiv</translation>
-<translation id="82003371436638355">Kur zgjedh "Krijo tënden", shkruaj një kërkesë të personalizuar. Ndryshe, zgjidh "Zgjidh një temë" dhe më pas zgjidh fjalët e nënvizuara për të personalizuar imazhin e sfondit nga IA-ja.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Zgjidh "Më frymëzo" për të marrë opsione më të larmishme dhe më unike për imazhet nga IA-ja.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kur krijon imazhin tënd të sfondit, kërkesa dërgohet te serverët e Google për të gjeneruar imazhe dhe për të përmirësuar produktin, sipas <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />"Kushteve të privatësisë" dhe "Politikës së privatësisë" të Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Mos përfshi asgjë personale, delikate apo konfidenciale.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          IA-ja gjeneruese mund të bëjë gabime, duke përfshirë edhe për njerëzit, prandaj kontrolloje përsëri. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Mëso më shumë<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Vazhdo</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
 <translation id="8208861521865154048">Avantazhet</translation>
@@ -1679,6 +1670,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="8833620912470026819">pyll me kaktuse</translation>
 <translation id="8834539327799336565">Të lidhur aktualisht</translation>
+<translation id="8842526499753992487">Lëvize në krye majtas</translation>
 <translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8849799913685544685">far</translation>
 <translation id="8851859208664803097">U ndalua - Printeri është i paarritshëm</translation>

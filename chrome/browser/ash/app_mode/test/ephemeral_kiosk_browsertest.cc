@@ -25,6 +25,7 @@ namespace ash {
 
 using kiosk::test::CachePolicy;
 using kiosk::test::TheKioskApp;
+using kiosk::test::WaitKioskLaunched;
 using KioskEphemeralMode = policy::DeviceLocalAccount::EphemeralMode;
 
 namespace {
@@ -173,7 +174,7 @@ class EphemeralKioskTest : public MixinBasedInProcessBrowserTest,
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
   KioskMixin kiosk_{&mixin_host_,

@@ -1936,8 +1936,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectRemoteNewTabPage) {
           base::StrCat({kArbitraryPage, "#", data.new_tab_url}));
 }
 
+// TODO(crbug.com/331650494): Flaky on linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CantInspectViewSourceComponentExtension \
+  DISABLED_CantInspectViewSourceComponentExtension
+#else
+#define MAYBE_CantInspectViewSourceComponentExtension \
+  CantInspectViewSourceComponentExtension
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       CantInspectViewSourceComponentExtension) {
+                       MAYBE_CantInspectViewSourceComponentExtension) {
   std::string extension_id = BuildComponentExtension();
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",

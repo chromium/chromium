@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -315,7 +316,7 @@ std::optional<std::wstring> SecurityDescriptor::ToSddl(
 }
 
 void SecurityDescriptor::ToAbsolute(SECURITY_DESCRIPTOR& sd) {
-  memset(&sd, 0, sizeof(sd));
+  UNSAFE_TODO(memset(&sd, 0, sizeof(sd)));
   sd.Revision = SECURITY_DESCRIPTOR_REVISION;
   sd.Owner = owner_ ? owner_->GetPSID() : nullptr;
   sd.Group = group_ ? group_->GetPSID() : nullptr;

@@ -571,7 +571,7 @@ public class SigninPromoCoordinatorTest {
             case SigninAccessPoint.BOOKMARK_MANAGER -> new BookmarkSigninPromoDelegate(
                     context, profile, launcher, onPromoStateChange, onOpenSettings);
             case SigninAccessPoint.HISTORY_PAGE -> new HistoryPageSigninPromoDelegate(
-                    context, profile, launcher, onPromoStateChange);
+                    context, profile, launcher, onPromoStateChange, /* isCreatedInCct= */ false);
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> new NtpSigninPromoDelegate(
                     context, profile, launcher, onPromoStateChange);
             case SigninAccessPoint.RECENT_TABS -> new RecentTabsSigninPromoDelegate(

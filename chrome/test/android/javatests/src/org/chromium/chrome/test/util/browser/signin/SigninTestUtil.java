@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.junit.Assert;
@@ -139,41 +138,20 @@ public final class SigninTestUtil {
      * @param syncService Enable the sync with it if it is not null.
      */
     @WorkerThread
-    public static void signinAndEnableSync(
-            CoreAccountInfo coreAccountInfo, @Nullable SyncService syncService) {
-        CallbackHelper callbackHelper = new CallbackHelper();
+    static void signinAndEnableSync(CoreAccountInfo coreAccountInfo, SyncService syncService) {
+        assert syncService != null : "SyncService must not be null";
+        signinAndWaitForPrefsCommit(coreAccountInfo);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
                                     .getSigninManager(ProfileManager.getLastUsedRegularProfile());
-                    signinManager.signinAndEnableSync(
-                            coreAccountInfo,
-                            SigninAccessPoint.UNKNOWN,
-                            new SigninManager.SignInCallback() {
-                                @Override
-                                public void onSignInComplete() {
-                                    if (syncService != null) {
-                                        syncService.setInitialSyncFeatureSetupComplete(
-                                                SyncFirstSetupCompleteSource.BASIC_FLOW);
-                                    }
-                                    callbackHelper.notifyCalled();
-                                }
-
-                                @Override
-                                public void onSignInAborted() {
-                                    Assert.fail("Sign-in was aborted");
-                                }
-                            });
-                });
-        try {
-            callbackHelper.waitForOnly();
-        } catch (TimeoutException e) {
-            throw new RuntimeException("Timed out waiting for callback", e);
-        }
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
+                    signinManager.turnOnSyncForTesting(coreAccountInfo, SigninAccessPoint.UNKNOWN);
                     Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SYNC));
+                    syncService.setSyncRequested();
+                    syncService.setInitialSyncFeatureSetupComplete(
+                            SyncFirstSetupCompleteSource.BASIC_FLOW);
                 });
     }
 

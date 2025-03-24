@@ -190,9 +190,9 @@ CONTENT_EXPORT bool HasCHIPS(
 
 // Returns `True` iff the `navigation_handle` represents a navigation
 // happening in an iframe of the primary frame tree.
-inline bool IsInPrimaryPageIFrame(NavigationHandle* navigation_handle) {
-  return navigation_handle && navigation_handle->GetParentFrame()
-             ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
+inline bool IsInPrimaryPageIFrame(NavigationHandle& navigation_handle) {
+  return navigation_handle.GetParentFrame()
+             ? navigation_handle.GetParentFrame()->GetPage().IsPrimary()
              : false;
 }
 
@@ -205,37 +205,32 @@ inline bool IsSameSiteForBtm(const GURL& url1, const GURL& url2) {
 // Returns `True` iff the `navigation_handle` represents a navigation happening
 // in any frame of the primary page.
 // NOTE: This does not include fenced frames.
-inline bool IsInPrimaryPage(NavigationHandle* navigation_handle) {
-  return navigation_handle && navigation_handle->GetParentFrame()
-             ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
-             : navigation_handle->IsInPrimaryMainFrame();
+inline bool IsInPrimaryPage(NavigationHandle& navigation_handle) {
+  return navigation_handle.GetParentFrame()
+             ? navigation_handle.GetParentFrame()->GetPage().IsPrimary()
+             : navigation_handle.IsInPrimaryMainFrame();
 }
 
 // Returns `True` iff the 'rfh' exists and represents a frame in the primary
 // page.
-inline bool IsInPrimaryPage(RenderFrameHost* rfh) {
-  return rfh && rfh->GetPage().IsPrimary();
+inline bool IsInPrimaryPage(RenderFrameHost& rfh) {
+  return rfh.GetPage().IsPrimary();
 }
 
 // Returns the last committed or the to be committed url of the main frame of
 // the page containing the `navigation_handle`.
-inline std::optional<GURL> GetFirstPartyURL(
-    NavigationHandle* navigation_handle) {
-  if (!navigation_handle) {
-    return std::nullopt;
-  }
-  return navigation_handle->GetParentFrame()
-             ? navigation_handle->GetParentFrame()
+inline const GURL& GetFirstPartyURL(NavigationHandle& navigation_handle) {
+  return navigation_handle.GetParentFrame()
+             ? navigation_handle.GetParentFrame()
                    ->GetMainFrame()
                    ->GetLastCommittedURL()
-             : navigation_handle->GetURL();
+             : navigation_handle.GetURL();
 }
 
 // Returns an optional last committed url of the main frame of the page
 // containing the `rfh`.
-inline std::optional<GURL> GetFirstPartyURL(RenderFrameHost* rfh) {
-  return rfh ? std::optional<GURL>(rfh->GetMainFrame()->GetLastCommittedURL())
-             : std::nullopt;
+inline const GURL& GetFirstPartyURL(RenderFrameHost& rfh) {
+  return rfh.GetMainFrame()->GetLastCommittedURL();
 }
 
 // The amount of time since a page last received user activation before a

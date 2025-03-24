@@ -1189,6 +1189,9 @@ class CONTENT_EXPORT WebContentsImpl
   void OnInputIgnored(const blink::WebInputEvent& event) override;
   input::mojom::RenderInputRouterDelegate* GetRenderInputRouterDelegateRemote()
       override;
+#if BUILDFLAG(IS_ANDROID)
+  float GetCurrentTouchSequenceYOffset() override;
+#endif
 
   // RenderFrameHostManager::Delegate ------------------------------------------
 

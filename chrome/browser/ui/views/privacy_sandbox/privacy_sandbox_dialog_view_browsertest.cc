@@ -200,7 +200,7 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
   PrivacySandboxDialogViewPrivacyPolicyBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         // Enabled
-        {privacy_sandbox::kPrivacySandboxPrivacyPolicy},
+        {},
         // Disabled
         {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements});
   }
@@ -276,8 +276,7 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest
   PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         // Enabled Features
-        {privacy_sandbox::kPrivacySandboxPrivacyPolicy,
-         privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
+        {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
         // Disabled Features
         {privacy_sandbox::kPrivacySandboxAdTopicsContentParity});
   }

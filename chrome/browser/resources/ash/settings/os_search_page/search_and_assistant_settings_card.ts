@@ -98,6 +98,12 @@ export class SearchAndAssistantSettingsCardElement extends
         },
       },
 
+      isLobsterAllowedByEnterprisePolicy_: {
+        type: Boolean,
+        computed: 'isEnterprisePolicyAllowed_(' +
+            'prefs.settings.lobster.enterprise_settings.value)',
+      },
+
       isScannerAllowedByEnterprisePolicy_: {
         type: Boolean,
         computed: 'isEnterprisePolicyAllowed_(' +

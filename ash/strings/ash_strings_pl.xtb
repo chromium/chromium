@@ -215,6 +215,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1679841710523778799">Zwiększ jasność</translation>
 <translation id="1680659827022803830">Ustawienia rozmów wideo</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Minutnik <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adres IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Aktywne okno zadokowano po lewej.</translation>
@@ -967,6 +968,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4221957499226645091"><ph name="APP_NAME" />, zainstalowana aplikacja, wstrzymana</translation>
 <translation id="4228078597006700451">Elementy sterujące nie są skonfigurowane</translation>
 <translation id="4230560241506423345">Nowy</translation>
+<translation id="4236726631849783264">Przypomnienie o sugerowanych działaniach</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Tryb przeglądu</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
@@ -983,7 +985,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4275663329226226506">Multimedia</translation>
 <translation id="4279490309300973883">Odbicie lustrzane</translation>
 <translation id="4280601795273309128">Dobiegły końca aktualizacje zabezpieczeń. Zmień urządzenie na nowsze.</translation>
-<translation id="4281739221820540368">Utwórz dokumenty Google</translation>
 <translation id="4283888303416325161">Dla większego bezpieczeństwa wpisz hasło</translation>
 <translation id="4285498937028063278">Odepnij</translation>
 <translation id="428715201724021596">Łączę z profilem. Może to potrwać kilka minut.</translation>
@@ -1044,6 +1045,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4471354919263203780">Pobieram pliki rozpoznawania mowy... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Aktualizacja urządzenia nastąpi teraz}=1{Aktualizacja urządzenia nastąpi w ciągu 1 sekundy}few{Aktualizacja urządzenia nastąpi w ciągu # sekund}many{Aktualizacja urządzenia nastąpi w ciągu # sekund}other{Aktualizacja urządzenia nastąpi w ciągu # sekundy}}</translation>
 <translation id="4472575034687746823">Rozpocznij</translation>
+<translation id="4473489370276014885">Kontakty Google</translation>
 <translation id="4477350412780666475">Następny utwór</translation>
 <translation id="4477751544736611934">Może to spowodować koszty związane z przesyłaniem danych.
 Połączono 1 urządzenie.</translation>
@@ -1070,6 +1072,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4545950850562423083">Zapisz bieżącą stronę jako zakładkę</translation>
 <translation id="4548482551627849548">Przenieś aktywne okno na biurko po lewej</translation>
 <translation id="4552748006424994716">Aby uniknąć echa, możesz słuchać dźwięku z mikrofonu tylko przez słuchawki przewodowe.</translation>
+<translation id="4556953949326137018">Gdy korzystasz z sugerowanych działań takich jak „dodaj do Kalendarza” lub „utwórz plik Dokumentów Google”, zawartość wybranego obszaru jest wysyłana na serwery Google, aby zasugerować działania. Odbywa się to zgodnie z tymi warunkami: <ph name="LINK_TO_SERVICE_TERMS" />. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.</translation>
 <translation id="4560576029703263363">Włączono</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
@@ -1153,6 +1156,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="481455355267255546">Następne</translation>
 <translation id="481749895090480684">Lista zadań: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamery i mikrofonu</translation>
+<translation id="4828935196674083554">Dodaję…</translation>
 <translation id="482908187605862807">Aplikacje dostępne w Sklepie Play</translation>
 <translation id="4831034276697007977">Czy na pewno chcesz wyłączyć automatyczne kliknięcia?</translation>
 <translation id="4835677468087803981">Ukryj kod PIN</translation>
@@ -1650,6 +1654,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="641817663353603351">Page Up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Wyczyść wszystkie powiadomienia</translation>
+<translation id="6426905245930183644">Tworzę…</translation>
 <translation id="6430225033895752525">Pokaż ustawienia trybu skupienia</translation>
 <translation id="643147933154517414">Wszystko gotowe</translation>
 <translation id="6431865393913628856">Nagrywanie ekranu</translation>
@@ -1715,7 +1720,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6612889377159412215">zadanie podrzędne</translation>
 <translation id="6613765291890844037">Pamięć w użyciu <ph name="STORAGE_IN_USE_SIZE" /> | Łącznie <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Ekran chroniący prywatność jest włączony</translation>
-<translation id="6618277154885124991">Utwórz arkusze Google</translation>
 <translation id="6622679827379792051">Skonfiguruj wyświetlanie aplikacji z telefonu</translation>
 <translation id="662279009180869175">Aby zmienić rozmiar podzielonego ekranu, użyj strzałek w lewo i w prawo</translation>
 <translation id="6624493541160101248">Bieżące biurko: <ph name="DESK_NAME" /> Biurko <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
@@ -2399,6 +2403,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8921624153894383499">Asystent Google nie mówi w tym języku.</translation>
 <translation id="8926951137623668982">Półka zawsze ukryta</translation>
 <translation id="8929566928381252430">Próbujesz użyć klawisza Caps Lock? Użyj</translation>
+<translation id="8934418770423095813">Utwórz dokument Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="8936501819958976551">dezaktywowana</translation>
 <translation id="8938800817013097409">Urządzenie USB-C (prawy port z tyłu)</translation>

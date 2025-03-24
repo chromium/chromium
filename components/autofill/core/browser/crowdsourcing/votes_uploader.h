@@ -108,6 +108,7 @@ class VotesUploader : public AutofillDriverFactory::Observer {
   //
   // Virtual and protected for testing.
   virtual void UploadVote(std::unique_ptr<FormStructure> submitted_form,
+                          std::vector<AutofillUploadContents> upload_contents,
                           base::TimeTicks initial_interaction_timestamp,
                           base::TimeTicks submission_timestamp,
                           bool observed_submission,
@@ -127,7 +128,8 @@ class VotesUploader : public AutofillDriverFactory::Observer {
       bool observed_submission,
       const std::u16string& last_unlocked_credit_card_cvc,
       ukm::SourceId ukm_source_id,
-      std::unique_ptr<FormStructure> submitted_form);
+      std::pair<std::unique_ptr<FormStructure>,
+                std::vector<AutofillUploadContents>> form_and_upload_contents);
 
   // Uploads all pending votes for forms from `frame`.
   void FlushPendingVotesForFrame(const LocalFrameToken& frame);

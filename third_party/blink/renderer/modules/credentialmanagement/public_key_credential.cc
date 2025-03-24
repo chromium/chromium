@@ -94,9 +94,7 @@ void OnGetClientCapabilitiesComplete(
   results.emplace_back("extension:enforceCredentialProtectionPolicy", true);
   results.emplace_back("extension:minPinLength", true);
   results.emplace_back("extension:credProps", true);
-  results.emplace_back(
-      "extension:largeBlob",
-      RuntimeEnabledFeatures::WebAuthenticationLargeBlobExtensionEnabled());
+  results.emplace_back("extension:largeBlob", true);
   results.emplace_back("extension:credBlob", true);
   results.emplace_back("extension:getCredBlob", true);
   results.emplace_back(

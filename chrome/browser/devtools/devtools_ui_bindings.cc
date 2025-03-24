@@ -218,7 +218,13 @@ void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
   NOTIMPLEMENTED();
 #else
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  browser->OpenURL(params, /*navigation_handle_callback=*/{});
+  // Check if the browser is still alive, as it might have been closed in the
+  // meantime.
+  // TODO(https://crbug.com/403946437): We should definitely understand why this
+  // happens.
+  if (browser) {
+    browser->OpenURL(params, /*navigation_handle_callback=*/{});
+  }
 #endif
 }
 

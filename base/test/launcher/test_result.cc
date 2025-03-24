@@ -17,9 +17,9 @@ TestResultPart::TestResultPart() = default;
 TestResultPart::~TestResultPart() = default;
 
 TestResultPart::TestResultPart(const TestResultPart& other) = default;
-TestResultPart::TestResultPart(TestResultPart&& other) = default;
 TestResultPart& TestResultPart::operator=(const TestResultPart& other) =
     default;
+TestResultPart::TestResultPart(TestResultPart&& other) = default;
 TestResultPart& TestResultPart::operator=(TestResultPart&& other) = default;
 
 // static
@@ -50,6 +50,20 @@ std::string TestResultPart::TypeAsString() const {
       return "skip";
   }
   return "unknown";
+}
+
+SubTestResult::SubTestResult() = default;
+
+SubTestResult::SubTestResult(const SubTestResult& other) = default;
+SubTestResult::SubTestResult(SubTestResult&& other) noexcept = default;
+SubTestResult& SubTestResult::operator=(const SubTestResult& other) = default;
+SubTestResult& SubTestResult::operator=(SubTestResult&& other) noexcept =
+    default;
+
+SubTestResult::~SubTestResult() = default;
+
+std::string SubTestResult::FullName() const {
+  return classname + "." + name + "__" + subname;
 }
 
 TestResult::TestResult() : status(TEST_UNKNOWN) {}
@@ -106,6 +120,10 @@ void TestResult::AddLink(const std::string& name, const std::string& url) {
 
 void TestResult::AddTag(const std::string& name, const std::string& value) {
   tags[name].push_back(value);
+}
+
+void TestResult::AddSubTestResult(SubTestResult sub_test_result) {
+  sub_test_results.push_back(std::move(sub_test_result));
 }
 
 void TestResult::AddProperty(const std::string& name,

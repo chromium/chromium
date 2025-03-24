@@ -1538,12 +1538,16 @@ void FoldReshapableConstants(blink_mojom::GraphInfo& graph_info) {
     // For each constant operand, keep walking down the dependencies until no
     // reshape is found.
     while (true) {
+      // Do not fold if it reshapes to graph output.
       auto reshape_operation_it = std::ranges::find_if(
           graph_info.operations,
-          [&constant_operand_id](const blink_mojom::OperationPtr& operation) {
+          [&constant_operand_id,
+           &graph_info](const blink_mojom::OperationPtr& operation) {
             return operation->is_reshape() &&
                    operation->get_reshape()->input_operand_id ==
-                       constant_operand_id;
+                       constant_operand_id &&
+                   !graph_info.output_operands.Contains(
+                       operation->get_reshape()->output_operand_id);
           });
 
       // No reshapes depend on this constant. Nothing to do here.

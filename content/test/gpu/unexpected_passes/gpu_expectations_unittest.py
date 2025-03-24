@@ -56,14 +56,18 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     expectation_map = self.instance.CreateTestExpectationMap(
         filename, None, datetime.timedelta(days=0))
     # The Slow expectations should be omitted.
+    # yapf: disable
     expected_expectation_map = {
         filename: {
-            data_types.Expectation('foo/test', ['win', 'intel'], ['Failure']):
-            {},
-            data_types.Expectation('foo/test', ['linux', 'intel'], ['Failure']):
-            {},
+            data_types.Expectation(
+                'foo/test', ['win', 'intel'], ['Failure'],
+                data_types.WildcardType.NON_WILDCARD): {},
+            data_types.Expectation(
+                'foo/test', ['linux', 'intel'], ['Failure'],
+                data_types.WildcardType.NON_WILDCARD): {},
         },
     }
+    # yapf: enable
     self.assertEqual(expectation_map, expected_expectation_map)
     self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
 

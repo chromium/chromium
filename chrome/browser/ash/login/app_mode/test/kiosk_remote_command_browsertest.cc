@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/policy/test_support/remote_commands_service_mixin.h"
@@ -29,6 +30,8 @@
 #include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 
 namespace ash {
+
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -157,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
   audio_observer.WaitForVolumeChange();
   ASSERT_EQ(kInitVolumePercent, audio_handler.GetOutputVolumePercent());
 
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 
   // Create a remote command, enqueue from the server and fetch from the client.
   auto response = IssueCommandAndGetResponse(
@@ -179,7 +182,7 @@ IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
 IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, RebootWithRemoteCommand) {
   base::AddFeatureIdTagToTestResult(kKioskRemoteRebootCommandTag);
 
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 
   // Start observing restart requests in `PowerManagerClient`.
   RestartRequestObserver observer(chromeos::PowerManagerClient::Get());
@@ -200,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, RebootWithRemoteCommand) {
 IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, ScreenshotWithRemoteCommand) {
   base::AddFeatureIdTagToTestResult(kKioskRemoteScreenshotCommandTag);
 
-  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE(WaitKioskLaunched());
 
   // Skips real image upload.
   // TODO(crbug.com/269432279): Try real upload with embedded test server.

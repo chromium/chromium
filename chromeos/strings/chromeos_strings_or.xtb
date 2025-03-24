@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
 <translation id="1908234395526491708">UDP ଅନୁରୋଧ ବିଫଳ</translation>
 <translation id="1908394185991500139">ବାମପଟକୁ ତୀର</translation>
+<translation id="1911678930322867245">ଶୀର୍ଷ ଡାହାଣକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="1914144885717544695">ଶୁକ୍ରବାର ଦିନ</translation>
 <translation id="1915960750806557358">ଆପଣଙ୍କ ମତାମତ ସେୟାର କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ସମସ୍ୟାର ବର୍ଣ୍ଣନା କରନ୍ତୁ। ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ କିଛି ଅନ୍ତର୍ଭୁକ୍ତ ନକରିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="1923388006036088459">ଆକ୍ସେଣ୍ଟ ରଙ୍ଗଗୁଡ଼ିକ</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8183975772394450380">ବେଳାଭୂମି</translation>
 <translation id="819278132617411009">ଅଧିକ ପ୍ରଡକ୍ଟିଭ ହେବା ପାଇଁ Google AI ବ୍ୟବହାର କରନ୍ତୁ</translation>
-<translation id="82003371436638355">ଯେତେବେଳେ ଆପଣ "ନିଜର ତିଆରି କରନ୍ତୁ" ଚୟନ କରନ୍ତି, ସେତେବେଳେ ଏକ କଷ୍ଟମ ପ୍ରମ୍ପ୍ଟ ଲେଖନ୍ତୁ। ଅଥବା ଆପଣ "ଏକ ଥିମ ବାଛନ୍ତୁ" ଚୟନ କରିପାରିବେ ଏବଂ ତା'ପରେ ଆପଣଙ୍କର AI ୱାଲପେପରକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଅଣ୍ଡରଲାଇନ ହୋଇଥିବା ଶବ୍ଦଗୁଡ଼ିକୁ ଚୟନ କରିପାରିବେ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଅଧିକ ସ୍ୱତନ୍ତ୍ର ଏବଂ ବିଭିନ୍ନ AI ଇମେଜ ବିକଳ୍ପ ପାଇବା ପାଇଁ "ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଆପଣ ନିଜର ୱାଲପେପର ତିଆରି କରିବା ବେଳେ ଇମେଜ ଜେନେରେଟ କରିବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ସେବାର ସର୍ତ୍ତାବଳୀ ଏବଂ ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ଅଧୀନରେ Google ସର୍ଭରଗୁଡ଼ିକୁ ପ୍ରମ୍ପ୍ଟ ପଠାଯାଏ। କୌଣସି ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଜେନେରେଟିଭ AI ଭୁଲ କରିପାରେ, ଯେଉଁଥିରେ ଲୋକମାନଙ୍କ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ, ତେଣୁ ଏହାକୁ ଦୁଇଥର-ଯାଞ୍ଚ କରନ୍ତୁ। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8833620912470026819">କାକଟସ ଜଙ୍ଗଲ</translation>
 <translation id="8834539327799336565">ବର୍ତ୍ତମାନ ସଂଯୁକ୍ତ ଅଛି</translation>
+<translation id="8842526499753992487">ଶୀର୍ଷ ବାମକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="8845001906332463065">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="8849799913685544685">ଲାଇଟହାଉସ</translation>
 <translation id="8851859208664803097">ବନ୍ଦ ହୋଇଯାଇଛି - ପ୍ରିଣ୍ଟର ସହ ସଂଯୋଗ କରି ହେଉନାହିଁ</translation>

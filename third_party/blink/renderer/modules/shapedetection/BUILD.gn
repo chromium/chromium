@@ -13,8 +13,6 @@ blink_modules_sources("shapedetection") {
     "face_detector.cc",
     "face_detector.h",
     "shape_detection_type_converter.h",
-    "shape_detector.cc",
-    "shape_detector.h",
     "text_detector.cc",
     "text_detector.h",
   ]

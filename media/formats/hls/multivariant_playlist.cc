@@ -237,16 +237,21 @@ MultivariantPlaylist::Parse(std::string_view source,
                                                    inf_tag->audio->Str());
     }
 
-    std::optional<std::string> video_rendition_group_name;
-    if (inf_tag->video.has_value()) {
-      video_rendition_group_name = std::string(inf_tag->video->Str());
-    }
+    // TODO(crbug.com/402566477): Support multiple video renditions - for now
+    // just always report it as empty, and allow the users of VariantStream to
+    // access the implicit rendition instead.
+    scoped_refptr<RenditionGroup> video_renditions =
+        base::MakeRefCounted<RenditionGroup>(
+            base::PassKey<MultivariantPlaylist>{}, "DEFAULT");
+    RenditionGroup::RenditionTrack implicit_rendition =
+        video_renditions->MakeImplicitRendition({}, variant_uri,
+                                                ++rendition_unique_id);
 
-    variants.emplace_back(std::move(variant_uri), inf_tag->bandwidth,
-                          inf_tag->average_bandwidth, inf_tag->score,
-                          std::move(inf_tag->codecs), inf_tag->resolution,
-                          inf_tag->frame_rate, std::move(audio_renditions),
-                          std::move(video_rendition_group_name));
+    variants.emplace_back(
+        std::move(variant_uri), inf_tag->bandwidth, inf_tag->average_bandwidth,
+        inf_tag->score, std::move(inf_tag->codecs), inf_tag->resolution,
+        inf_tag->frame_rate, std::move(audio_renditions),
+        std::move(video_renditions), std::move(implicit_rendition));
 
     // Reset per-variant tags
     inf_tag.reset();
@@ -269,6 +274,14 @@ MultivariantPlaylist::Parse(std::string_view source,
     if (group.second->GetRenditions().empty()) {
       return ParseStatusCode::kRenditionGroupDoesNotExist;
     }
+  }
+
+  // Format each default rendition for all variants.
+  auto variant_format = VariantStream::OptimalFormatForCollection(variants);
+  int variant_index = 0;
+  for (VariantStream& variant : variants) {
+    std::string name = variant.Format(variant_format, variant_index++);
+    variant.UpdateImplicitRenditionMediaTrackName(name);
   }
 
   return base::MakeRefCounted<MultivariantPlaylist>(

@@ -19,8 +19,8 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/credential_management/content_credential_manager.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/password_manager/content/browser/content_credential_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
@@ -500,7 +500,7 @@ class ChromePasswordManagerClient
   // As a mojo service, will be registered into service registry
   // of the main frame host by ChromeContentBrowserClient
   // once main frame host was created.
-  password_manager::ContentCredentialManager content_credential_manager_;
+  credential_management::ContentCredentialManager content_credential_manager_;
 
   content::RenderFrameHostReceiverSet<autofill::mojom::PasswordGenerationDriver>
       password_generation_driver_receivers_;

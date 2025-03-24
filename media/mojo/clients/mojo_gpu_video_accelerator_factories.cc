@@ -90,11 +90,16 @@ MojoGpuVideoAcceleratorFactories::MojoGpuVideoAcceleratorFactories(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MojoGpuVideoAcceleratorFactories::BindOnTaskRunner,
-                     base::Unretained(this)));
+                     task_runner_weak_factory_.GetWeakPtr()));
 }
 
 MojoGpuVideoAcceleratorFactories::~MojoGpuVideoAcceleratorFactories() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // `context_provider_lost_` is a pointer to a boolean, and should be
+  // deleted on the main thread.
+  main_thread_task_runner_->DeleteSoon(FROM_HERE,
+                                       std::move(context_provider_lost_));
 }
 
 void MojoGpuVideoAcceleratorFactories::BindOnTaskRunner() {
@@ -112,7 +117,7 @@ void MojoGpuVideoAcceleratorFactories::BindOnTaskRunner() {
   // Request the channel token.
   context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
       base::BindOnce(&MojoGpuVideoAcceleratorFactories::OnChannelTokenReady,
-                     base::Unretained(this)));
+                     task_runner_weak_factory_.GetWeakPtr()));
 }
 
 bool MojoGpuVideoAcceleratorFactories::IsDecoderSupportKnown() {
@@ -403,7 +408,7 @@ MojoGpuVideoAcceleratorFactories::GetRenderingColorSpace() const {
 
 bool MojoGpuVideoAcceleratorFactories::CheckContextProviderLostOnMainThread() {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  return context_provider_lost_;
+  return *context_provider_lost_;
 }
 
 void MojoGpuVideoAcceleratorFactories::OnContextLost() {
@@ -414,18 +419,19 @@ void MojoGpuVideoAcceleratorFactories::OnContextLost() {
   // it notifying about the loss, and we'd be destroying it while it's on
   // the stack.
   context_provider_lost_on_media_thread_ = true;
+
   // Inform the main thread of the loss as well, so that this class can be
   // replaced.
   main_thread_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &MojoGpuVideoAcceleratorFactories::SetContextProviderLostOnMainThread,
-          base::Unretained(this)));
-}
+      FROM_HERE, base::BindOnce(
+                     [](bool* context_provider_lost) {
+                       *context_provider_lost = true;
 
-void MojoGpuVideoAcceleratorFactories::SetContextProviderLostOnMainThread() {
-  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  context_provider_lost_ = true;
+                       // Use of Unretained here is safe, because
+                       // `context_provider_lost_` is deleted on the main thread
+                       // using DeleteSoon().
+                     },
+                     base::Unretained(context_provider_lost_.get())));
 }
 
 }  // namespace media

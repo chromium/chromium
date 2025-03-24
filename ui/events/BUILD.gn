@@ -159,6 +159,13 @@ component("events_base") {
     deps += [ "//base:i18n" ]
   }
 
+  if (is_ios && use_blink) {
+    sources += [
+      "keycodes/keyboard_code_conversion_ios.h",
+      "keycodes/keyboard_code_conversion_ios.mm",
+    ]
+  }
+
   if (is_fuchsia) {
     sources += [
       "keycodes/keyboard_code_conversion_fuchsia.cc",

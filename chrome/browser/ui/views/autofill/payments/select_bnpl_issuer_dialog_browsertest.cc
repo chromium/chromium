@@ -40,7 +40,8 @@ class MAYBE_SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
 
     select_bnpl_issuer_dialog_controller_ =
         std::make_unique<SelectBnplIssuerDialogControllerImpl>(
-            issuers_,
+            issuer_contexts_,
+            /*app_locale=*/"en-US",
             /*selected_issuer_callback=*/base::DoNothing(),
             /*cancel_callback=*/base::DoNothing());
     controller()->ShowDialog(base::BindOnce(
@@ -54,8 +55,8 @@ class MAYBE_SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
     return true;
   }
 
-  void SetIssuers(std::vector<BnplIssuer> issuers) {
-    issuers_ = std::move(issuers);
+  void SetIssuerContexts(std::vector<BnplIssuerContext> issuer_contexts) {
+    issuer_contexts_ = std::move(issuer_contexts);
   }
 
   SelectBnplIssuerDialogControllerImpl* controller() {
@@ -63,14 +64,35 @@ class MAYBE_SelectBnplIssuerDialogBrowserTest : public DialogBrowserTest {
   }
 
  protected:
-  std::vector<BnplIssuer> issuers_;
+  std::vector<BnplIssuerContext> issuer_contexts_;
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl>
       select_bnpl_issuer_dialog_controller_;
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_SelectBnplIssuerDialogBrowserTest, UiShown) {
-  SetIssuers(
-      {test::GetTestLinkedBnplIssuer(), test::GetTestUnlinkedBnplIssuer()});
+IN_PROC_BROWSER_TEST_F(MAYBE_SelectBnplIssuerDialogBrowserTest,
+                       UiShown_IssuersEligibile) {
+  SetIssuerContexts(
+      {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
+                         BnplIssuerEligibilityForPage::kIsEligible),
+       BnplIssuerContext(test::GetTestUnlinkedBnplIssuer(),
+                         BnplIssuerEligibilityForPage::kIsEligible),
+       BnplIssuerContext(test::GetTestLinkedBnplIssuer(kBnplAfterpayIssuerId),
+                         BnplIssuerEligibilityForPage::kIsEligible)});
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(MAYBE_SelectBnplIssuerDialogBrowserTest,
+                       UiShown_IssuersNotEligibile) {
+  SetIssuerContexts(
+      {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
+                         BnplIssuerEligibilityForPage::
+                             kNotEligibleIssuerDoesNotSupportMerchant),
+       BnplIssuerContext(
+           test::GetTestLinkedBnplIssuer(kBnplZipIssuerId),
+           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow),
+       BnplIssuerContext(
+           test::GetTestLinkedBnplIssuer(kBnplAfterpayIssuerId),
+           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)});
   ShowAndVerifyUi();
 }
 

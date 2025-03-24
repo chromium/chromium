@@ -61,6 +61,9 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled
            ? AutocompleteProvider::TYPE_RECENTLY_CLOSED_TABS
            : 0) |
+      (OmniboxFieldTrial::IsStarterPackPageEnabled()
+           ? AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH
+           : 0) |
 #else
       AutocompleteProvider::TYPE_CLIPBOARD |
       AutocompleteProvider::TYPE_MOST_VISITED_SITES |

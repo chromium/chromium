@@ -7,9 +7,7 @@ package org.chromium.chrome.test.util.browser.signin;
 import static org.hamcrest.Matchers.is;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
@@ -110,11 +108,11 @@ public class SigninTestRule extends AccountManagerTestRule {
     /**
      * Adds and signs in an account with the default name and enables sync.
      *
-     * @param syncService SyncService object to set up sync, if null, sync won't start.
+     * @param syncService SyncService object to set up sync.
      */
-    public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
-            @Nullable SyncService syncService) {
+    public CoreAccountInfo addTestAccountThenSigninAndEnableSync(SyncService syncService) {
         assert !mIsSignedIn : "An account is already signed in!";
+        assert syncService != null : "SyncService must not be null";
         CoreAccountInfo coreAccountInfo = addAccount(TEST_ACCOUNT_EMAIL);
         SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
         mIsSignedIn = true;
@@ -158,44 +156,6 @@ public class SigninTestRule extends AccountManagerTestRule {
         // after sign-in completes.
         waitForChildSettingPropagation(testChildAccount);
         return testChildAccount;
-    }
-
-    /**
-     * Adds a child account, waits for auto-signin to complete, and enables sync.
-     *
-     * @param syncService SyncService object to set up sync, if null, sync won't start.
-     */
-    public CoreAccountInfo addChildTestAccountThenEnableSync(@Nullable SyncService syncService) {
-        CoreAccountInfo coreAccountInfo = addChildTestAccountThenWaitForSignin();
-
-        // The auto sign-in should leave the user in signed-in, non-syncing state - check this and
-        // enable sync.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assert IdentityServicesProvider.get()
-                                            .getIdentityManager(
-                                                    ProfileManager.getLastUsedRegularProfile())
-                                            .getPrimaryAccountInfo(ConsentLevel.SYNC)
-                                    == null
-                            : "Sync should not be enabled";
-                });
-        SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
-
-        return coreAccountInfo;
-    }
-
-    /**
-     * Adds and signs in an account with the default name and enables sync.
-     *
-     * @param syncService SyncService object to set up sync, if null, sync won't
-     *         start.
-     * @param isChild Whether this is a supervised child account.
-     */
-    public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
-            @Nullable SyncService syncService, boolean isChild) {
-        return isChild
-                ? addChildTestAccountThenEnableSync(syncService)
-                : addTestAccountThenSigninAndEnableSync(syncService);
     }
 
     /**

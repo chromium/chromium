@@ -164,11 +164,15 @@ public interface RenderFrameHost {
      * the callback is an object containing (1) the status code indicating the result of the
      * GetAssertion request security checks, and (2) whether the effectiveOrigin is a cross-origin
      * with any frame in this frame's ancestor chain.
+     *
+     * <p>`remoteDesktopClientOverrideOrigin` is the origin from the RemoteDesktopClientOverride
+     * client extension for this request, if present.
      */
     void performGetAssertionWebAuthSecurityChecks(
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialGetAssertion,
+            @Nullable Origin remoteDesktopClientOverrideOrigin,
             Callback<WebAuthSecurityChecksResults> callback);
 
     /**
@@ -180,11 +184,15 @@ public interface RenderFrameHost {
      * the callback is an object containing (1) the status code indicating the result of the
      * GetAssertion request security checks, and (2) whether the effectiveOrigin is a cross-origin
      * with any frame in this frame's ancestor chain.
+     *
+     * <p>`remoteDesktopClientOverrideOrigin` is the origin from the RemoteDesktopClientOverride
+     * client extension for this request, if present.
      */
     void performMakeCredentialWebAuthSecurityChecks(
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
+            @Nullable Origin remoteDesktopClientOverrideOrigin,
             Callback<WebAuthSecurityChecksResults> callback);
 
     /**

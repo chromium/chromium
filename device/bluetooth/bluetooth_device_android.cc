@@ -14,11 +14,15 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/base/features.h"
+#include "device/bluetooth/android/outcome.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
+#include "device/bluetooth/bluetooth_socket_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothDevice_jni.h"
@@ -30,12 +34,16 @@ using base::android::JavaRef;
 
 namespace device {
 
+class BluetoothSocketThread;
+
 std::unique_ptr<BluetoothDeviceAndroid> BluetoothDeviceAndroid::Create(
     BluetoothAdapterAndroid* adapter,
     const JavaRef<jobject>&
-        bluetooth_device_wrapper) {  // Java Type: bluetoothDeviceWrapper
+        bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    scoped_refptr<BluetoothSocketThread> socket_thread) {
   std::unique_ptr<BluetoothDeviceAndroid> device(
-      new BluetoothDeviceAndroid(adapter));
+      new BluetoothDeviceAndroid(adapter, task_runner, socket_thread));
 
   device->j_device_.Reset(Java_ChromeBluetoothDevice_create(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(device.get()),
@@ -233,14 +241,34 @@ void BluetoothDeviceAndroid::ConnectToService(
     const BluetoothUUID& uuid,
     ConnectToServiceCallback callback,
     ConnectToServiceErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  Outcome outcome(Java_ChromeBluetoothDevice_connectToService(
+      AttachCurrentThread(), j_device_, uuid.canonical_value()));
+  if (!outcome) {
+    std::move(error_callback).Run(outcome.GetExceptionMessage());
+    return;
+  }
+
+  scoped_refptr<BluetoothSocketAndroid> socket = BluetoothSocketAndroid::Create(
+      outcome.GetResult(), ui_task_runner_, socket_thread_);
+  socket->Connect(base::BindOnce(std::move(callback), socket),
+                  std::move(error_callback));
 }
 
 void BluetoothDeviceAndroid::ConnectToServiceInsecurely(
     const BluetoothUUID& uuid,
     ConnectToServiceCallback callback,
     ConnectToServiceErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  Outcome outcome(Java_ChromeBluetoothDevice_connectToServiceInsecurely(
+      AttachCurrentThread(), j_device_, uuid.canonical_value()));
+  if (!outcome) {
+    std::move(error_callback).Run(outcome.GetExceptionMessage());
+    return;
+  }
+
+  scoped_refptr<BluetoothSocketAndroid> socket = BluetoothSocketAndroid::Create(
+      outcome.GetResult(), ui_task_runner_, socket_thread_);
+  socket->Connect(base::BindOnce(std::move(callback), socket),
+                  std::move(error_callback));
 }
 
 void BluetoothDeviceAndroid::OnConnectionStateChange(
@@ -296,8 +324,13 @@ void BluetoothDeviceAndroid::CreateGattRemoteService(
   adapter_->NotifyGattServiceAdded(service_ptr);
 }
 
-BluetoothDeviceAndroid::BluetoothDeviceAndroid(BluetoothAdapterAndroid* adapter)
-    : BluetoothDevice(adapter) {}
+BluetoothDeviceAndroid::BluetoothDeviceAndroid(
+    BluetoothAdapterAndroid* adapter,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<BluetoothSocketThread> socket_thread)
+    : BluetoothDevice(adapter),
+      ui_task_runner_(ui_task_runner),
+      socket_thread_(socket_thread) {}
 
 void BluetoothDeviceAndroid::CreateGattConnectionImpl(
     std::optional<device::BluetoothUUID> service_uuid) {

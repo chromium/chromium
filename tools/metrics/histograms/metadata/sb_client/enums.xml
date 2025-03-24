@@ -128,6 +128,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Scam experiment verdict 1"/>
 </enum>
 
+<!-- LINT.IfChange(SafeBrowsingAndroidGetReferringAppInfoResult) -->
+
+<enum name="SafeBrowsingAndroidGetReferringAppInfoResult">
+  <int value="0" label="ReferringAppInfo lookup not attempted"/>
+  <int value="1" label="Referring app not found, referring WebAPK not found"/>
+  <int value="2" label="Referring app not found, referring WebAPK found"/>
+  <int value="3" label="Referring app found, referring WebAPK not found"/>
+  <int value="4" label="Referring app found, referring WebAPK found"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/referring_app_info.h:GetReferringAppInfoResult) -->
+
 <!-- LINT.IfChange(SafeBrowsingVerifyAppsEnabledResult) -->
 
 <enum name="SafeBrowsingVerifyAppsEnabledResult">

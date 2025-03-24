@@ -63,12 +63,6 @@ public interface DropdownItem {
     /** Returns true if the item should be a group header in the dropdown. */
     boolean isGroupHeader();
 
-    /** Returns whether the label should be displayed over multiple lines. */
-    boolean isMultilineLabel();
-
-    /** Returns whether the label should be displayed in bold. */
-    boolean isBoldLabel();
-
     /** Returns resource ID of label's font color. */
     int getLabelFontColorResId();
 

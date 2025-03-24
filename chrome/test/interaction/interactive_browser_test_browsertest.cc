@@ -1139,12 +1139,14 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestCodeCoverageBrowsertest,
 
 namespace {
 
-class TestDialog : public views::DialogDelegateView {
+class InteractiveBrowserTestDialog : public views::DialogDelegateView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementId);
 
-  TestDialog() { SetProperty(views::kElementIdentifierKey, kElementId); }
-  ~TestDialog() override = default;
+  InteractiveBrowserTestDialog() {
+    SetProperty(views::kElementIdentifierKey, kElementId);
+  }
+  ~InteractiveBrowserTestDialog() override = default;
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
@@ -1152,7 +1154,7 @@ class TestDialog : public views::DialogDelegateView {
   }
 
   static views::Widget* Show(Browser* parent, ui::mojom::ModalType modal_type) {
-    auto dialog = std::make_unique<TestDialog>();
+    auto dialog = std::make_unique<InteractiveBrowserTestDialog>();
     dialog->SetModalType(modal_type);
     views::Widget* widget = nullptr;
     switch (modal_type) {
@@ -1178,6 +1180,8 @@ class TestDialog : public views::DialogDelegateView {
     return widget;
   }
 };
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InteractiveBrowserTestDialog, kElementId);
 
 // Scoped object that closes a widget it does not own.
 class SafeWidgetRef {
@@ -1207,8 +1211,6 @@ class SafeWidgetRef {
  private:
   raw_ptr<views::Widget> widget_ = nullptr;
 };
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TestDialog, kElementId);
 
 }  // namespace
 
@@ -1251,16 +1253,16 @@ IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestDialogBrowsertest,
   SafeWidgetRef widget;
   RunTestSequence(
       Do([this, &widget]() {
-        widget = TestDialog::Show(browser(), GetParam());
+        widget = InteractiveBrowserTestDialog::Show(browser(), GetParam());
       }),
-      InAnyContext(WaitForShow(TestDialog::kElementId)),
+      InAnyContext(WaitForShow(InteractiveBrowserTestDialog::kElementId)),
       InSameContext(
           CheckView(
-              TestDialog::kElementId,
+              InteractiveBrowserTestDialog::kElementId,
               [](views::View* view) { return view->GetWidget()->parent(); },
               BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
           CheckElement(
-              TestDialog::kElementId,
+              InteractiveBrowserTestDialog::kElementId,
               [](ui::TrackedElement* el) { return el->context(); },
               browser()->window()->GetElementContext())));
 }

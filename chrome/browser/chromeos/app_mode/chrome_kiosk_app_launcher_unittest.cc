@@ -16,13 +16,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/test_app_window_contents.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/common/api/app_runtime.h"
 
@@ -183,7 +183,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldFailIfSecondaryAppNotInstalled) {
   primary_app_builder.AddSecondaryExtension(kSecondaryAppId);
   scoped_refptr<const extensions::Extension> primary_app =
       primary_app_builder.Build();
-  service()->AddExtension(primary_app.get());
+  registrar()->AddExtension(primary_app.get());
 
   CreateLauncher(/*is_network_ready=*/true);
 
@@ -202,7 +202,7 @@ TEST_F(ChromeKioskAppLauncherTest,
   primary_app_builder.set_offline_enabled(false);
   scoped_refptr<const extensions::Extension> primary_app =
       primary_app_builder.Build();
-  service()->AddExtension(primary_app.get());
+  registrar()->AddExtension(primary_app.get());
 
   CreateLauncher(/*is_network_ready=*/false);
 
@@ -219,7 +219,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedIfNetworkAvailable) {
   primary_app_builder.set_version("1.0");
   scoped_refptr<const extensions::Extension> primary_app =
       primary_app_builder.Build();
-  service()->AddExtension(primary_app.get());
+  registrar()->AddExtension(primary_app.get());
 
   CreateLauncher(/*is_network_ready=*/true);
 
@@ -244,21 +244,21 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithSecondaryApp) {
       kExtraSecondaryAppId, false);
   scoped_refptr<const extensions::Extension> primary_app =
       primary_app_builder.Build();
-  service()->AddExtension(primary_app.get());
+  registrar()->AddExtension(primary_app.get());
 
   TestKioskExtensionBuilder secondary_app_builder(Manifest::TYPE_PLATFORM_APP,
                                                   kSecondaryAppId);
   secondary_app_builder.set_kiosk_enabled(false);
   scoped_refptr<const extensions::Extension> secondary_app =
       secondary_app_builder.Build();
-  service()->AddExtension(secondary_app.get());
+  registrar()->AddExtension(secondary_app.get());
 
   TestKioskExtensionBuilder extra_secondary_app_builder(
       Manifest::TYPE_PLATFORM_APP, kExtraSecondaryAppId);
   extra_secondary_app_builder.set_kiosk_enabled(false);
   scoped_refptr<const extensions::Extension> extra_secondary_app =
       extra_secondary_app_builder.Build();
-  service()->AddExtension(extra_secondary_app.get());
+  registrar()->AddExtension(extra_secondary_app.get());
 
   CreateLauncher(/*is_network_ready=*/true);
 
@@ -282,7 +282,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithAppService) {
   primary_app_builder.set_version("1.0");
   scoped_refptr<const extensions::Extension> primary_app =
       primary_app_builder.Build();
-  service()->AddExtension(primary_app.get());
+  registrar()->AddExtension(primary_app.get());
 
   CreateLauncher(/*is_network_ready=*/true);
 

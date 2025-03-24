@@ -161,6 +161,8 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   // Cache of ShapeResults that is lazily created the first time it's needed.
   HeapVector<RunWithOffset> runs_with_offset_;
   bool shaping_needed_ = false;
+  // This flag should be removed on removal of "CanvasTextNg" origin trial.
+  bool split_by_word_ = false;
 };
 
 }  // namespace blink

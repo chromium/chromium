@@ -131,12 +131,12 @@ class AutofillAiManagerTest : public testing::Test {
         .WillByDefault(ReturnRef(autofill_client_));
     autofill_client().GetPersonalDataManager().SetPrefService(
         autofill_client().GetPrefs());
-    autofill_client().SetUpPrefsAndIdentityForAutofillAi();
     autofill_client().set_entity_data_manager(
         std::make_unique<autofill::EntityDataManager>(
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));
+    autofill_client().SetUpPrefsAndIdentityForAutofillAi();
     ON_CALL(client(), GetEntityDataManager)
         .WillByDefault(Return(autofill_client().GetEntityDataManager()));
   }
@@ -181,12 +181,6 @@ class AutofillAiManagerTest : public testing::Test {
   base::span<const EntityInstance> GetEntityInstances() {
     webdata_helper_.WaitUntilIdle();
     return edm().GetEntityInstances();
-  }
-
-  // Sets the opt-in status for AutofillAI.
-  void SetOptInStatus(bool opted_in) {
-    autofill_client().GetPrefs()->SetBoolean(
-        autofill::prefs::kAutofillPredictionImprovementsEnabled, opted_in);
   }
 
   autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
@@ -241,7 +235,7 @@ TEST_F(AutofillAiManagerTest, ShouldDisplayIph) {
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
   AddAutofillProfile();
-  SetOptInStatus(false);
+  autofill::SetAutofillAiOptInStatus(autofill_client(), false);
 
   EXPECT_TRUE(manager().ShouldDisplayIph(form.global_id(),
                                          form.fields()[0].global_id()));
@@ -257,7 +251,7 @@ TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphWhenOptedIn) {
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
   AddAutofillProfile();
-  SetOptInStatus(true);
+  autofill::SetAutofillAiOptInStatus(autofill_client(), true);
 
   EXPECT_FALSE(manager().ShouldDisplayIph(form.global_id(),
                                           form.fields()[0].global_id()));
@@ -275,7 +269,7 @@ TEST_F(AutofillAiManagerTest,
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
   AddAutofillProfile();
-  SetOptInStatus(false);
+  autofill::SetAutofillAiOptInStatus(autofill_client(), false);
 
   EXPECT_FALSE(manager().ShouldDisplayIph(form.global_id(),
                                           form.fields()[0].global_id()));
@@ -292,7 +286,7 @@ TEST_F(AutofillAiManagerTest, ShouldNotDisplayIphOnUnrelatedField) {
   ON_CALL(client(), GetCachedFormStructure)
       .WillByDefault(Return(&form_structure));
   AddAutofillProfile();
-  SetOptInStatus(false);
+  autofill::SetAutofillAiOptInStatus(autofill_client(), false);
 
   EXPECT_FALSE(manager().ShouldDisplayIph(form.global_id(),
                                           form.fields()[1].global_id()));

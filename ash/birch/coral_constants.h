@@ -9,6 +9,9 @@
 
 namespace ash {
 
+// The maximum number of entities to build suppression context.
+inline constexpr int kMaxItemsForCoralSuppressionContext = 10;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ASH_EXPORT CoralSource {

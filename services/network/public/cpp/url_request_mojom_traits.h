@@ -264,9 +264,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.fetch_integrity;
   }
-  static const std::vector<std::string>& expected_signatures(
+  static const std::vector<std::string>& expected_public_keys(
       const network::ResourceRequest& request) {
-    return request.expected_signatures;
+    return request.expected_public_keys;
   }
   static network::mojom::RequestDestination destination(
       const network::ResourceRequest& request) {

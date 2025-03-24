@@ -672,6 +672,11 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Google Chrome is not the current default browser.">
         Google Chrome isn't your default browser
       </message>
+      <if expr="is_win or is_macosx">
+        <message name="IDS_PDF_INFOBAR_TEXT" desc="Text to show in an infobar when Google Chrome is not the default PDF viewer.">
+          Set Google Chrome as your default PDF viewer
+        </message>
+      </if>
       <!-- Download Bubble Items -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE"
                desc="Summary of dangerous warning for a file (like an extension) from an unknown source.">

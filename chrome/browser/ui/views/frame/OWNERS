@@ -3,7 +3,6 @@ pkasting@chromium.org
 
 per-file *_ash*=jamescook@chromium.org
 per-file *_chromeos*=jamescook@chromium.org
-per-file *_lacros*=jamescook@chromium.org
 per-file *x11*=file://ui/ozone/platform/x11/OWNERS
 per-file *linux*=thomasanderson@chromium.org
 per-file system_web_app_non_client_frame_view_browsertest.cc=file://ash/webui/PLATFORM_OWNERS

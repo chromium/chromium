@@ -51,11 +51,8 @@ class CORE_EXPORT CachedPermissionStatus final
    public:
     virtual ~Client() = default;
 
-    // TODO(crbug.com/368238224): Only listen permission status change here and
-    // notify client. Then move the PermissionObserver from
-    // HTMLPermissionElement to here, to remove all the PermissionObserver
-    // duplicate IPC calls.
-    virtual void OnPermissionStatusChanged(
+    virtual void OnPermissionStatusChange(
+        mojom::blink::PermissionName permission_name,
         mojom::blink::PermissionStatus status) {}
 
     virtual void OnPermissionStatusInitialized(

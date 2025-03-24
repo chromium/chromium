@@ -92,8 +92,7 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
       is_shared_(group.is_shared_tab_group()),
       tab_group_color_id_(group.color()),
       guid_(group.saved_guid()),
-      local_group_id_(group.local_group_id()),
-      tabs_(group.saved_tabs()) {
+      local_group_id_(group.local_group_id()) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   GetViewAccessibility().SetName(GetAccessibleNameForButton());
   GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF16(
@@ -136,8 +135,6 @@ void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
   tab_group_color_id_ = group.color();
   local_group_id_ = group.local_group_id();
   guid_ = group.saved_guid();
-  tabs_.clear();
-  tabs_ = group.saved_tabs();
   is_shared_ = group.is_shared_tab_group();
 
   UpdateButtonLayout();

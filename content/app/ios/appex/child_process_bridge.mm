@@ -15,9 +15,11 @@
 #include "base/apple/bundle_locations.h"
 #include "base/apple/mach_port_rendezvous.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "content/app/ios/appex/child_process_sandbox.h"
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
+#include "sandbox/policy/switches.h"
 
 class GPUProcessTransport;
 
@@ -113,6 +115,11 @@ extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
 namespace content {
 
 void ChildProcessEnterSandbox() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          sandbox::policy::switches::kNoSandbox)) {
+    return;
+  }
+
   base::SysInfo::IsLowEndDevice();
 
   // Request the local time before entering the sandbox since that causes a

@@ -15,7 +15,12 @@ void TabEventsVisitTransformer::Transform(
     std::vector<URLVisitAggregate> aggregates,
     const FetchOptions& options,
     OnTransformCallback callback) {
-  // TODO: Attach signals about each tab from `tab_tracker`and return the list.
+  for (auto& candidate : aggregates) {
+    auto tab_data_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
+    auto* tab = std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
+    tab->recent_fg_count =
+        tab_tracker_->GetSelectedCount(tab->last_active_tab.id);
+  }
   std::move(callback).Run(Status::kSuccess, std::move(aggregates));
 }
 

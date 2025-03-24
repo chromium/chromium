@@ -50,8 +50,8 @@
 namespace {
 
 constexpr int kViewWidth = 448;
-constexpr int kViewHeight = 376;
-constexpr int kMaxWebViewHeight = 500;
+constexpr int kViewHeight = 440;
+constexpr int kMaxWebViewHeight = 540;
 constexpr gfx::Size kViewPreferredSize = gfx::Size(kViewWidth, kViewHeight);
 constexpr gfx::Size kErrorViewPreferredSize =
     gfx::Size(kViewWidth, kViewHeight);

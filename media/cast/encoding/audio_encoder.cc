@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -447,7 +448,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
 
     // Request AAC-LC encoding, with no downmixing or downsampling.
     AudioStreamBasicDescription out_asbd;
-    memset(&out_asbd, 0, sizeof(AudioStreamBasicDescription));
+    UNSAFE_TODO(memset(&out_asbd, 0, sizeof(AudioStreamBasicDescription)));
     out_asbd.mSampleRate = sampling_rate;
     out_asbd.mFormatID = kAudioFormatMPEG4AAC;
     out_asbd.mChannelsPerFrame = num_channels_;

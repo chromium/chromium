@@ -36,8 +36,8 @@ export class CrToastElement extends CrLitElement {
     };
   }
 
-  duration: number = 0;
-  open: boolean = false;
+  accessor duration: number = 0;
+  accessor open: boolean = false;
   private hideTimeoutId_: number|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {

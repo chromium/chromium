@@ -119,6 +119,8 @@ class TestResultsTracker {
                            SaveSummaryAsJSONWithOutTimestampInResult);
   FRIEND_TEST_ALL_PREFIXES(TestResultsTrackerTest,
                            SaveSummaryAsJSONWithTimestampInResult);
+  FRIEND_TEST_ALL_PREFIXES(TestResultsTrackerTest,
+                           SaveSummaryAsJSONWithSubTestResult);
   void GetTestStatusForIteration(int iteration, TestStatusMap* map) const;
 
   template <typename InputIterator>

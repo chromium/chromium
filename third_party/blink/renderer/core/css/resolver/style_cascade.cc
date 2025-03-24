@@ -113,16 +113,6 @@ const CSSValue* ParseAsCSSWideKeyword(const CSSVariableData& data) {
   return stream.AtEnd() ? value : nullptr;
 }
 
-const CSSValue* MaybeConvertToCSSWideKeyword(const CSSValue* value) {
-  if (const auto* unparsed = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
-    if (const CSSValue* css_wide =
-            ParseAsCSSWideKeyword(*unparsed->VariableDataValue())) {
-      return css_wide;
-    }
-  }
-  return nullptr;
-}
-
 const CSSValue* Parse(const CSSProperty& property,
                       CSSParserTokenStream& stream,
                       const CSSParserContext* context) {
@@ -200,8 +190,8 @@ bool IsInterpolation(CascadePriority priority) {
   }
 }
 
-std::optional<const CSSValue*> FindOrNullopt(
-    const HeapHashMap<String, Member<const CSSValue>>& map,
+std::optional<CSSVariableData*> FindOrNullopt(
+    const HeapHashMap<String, Member<CSSVariableData>>& map,
     const String& key) {
   auto it = map.find(key);
   if (it == map.end()) {
@@ -1353,7 +1343,7 @@ const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
                                                  CascadeResolver& resolver) {
   const CascadePriority* p = map_.FindRevertLayer(
       property.GetCSSPropertyName(), priority.ForLayerComparison());
-  if (!p) {
+  if (!p || !p->HasOrigin()) {
     origin = CascadeOrigin::kNone;
     return cssvalue::CSSUnsetValue::Create();
   }
@@ -1558,14 +1548,14 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
       // Ensure that any local variable with a matching name is applied
       // (i.e. exists on frame->locals).
       LookupAndApplyLocalVariable(var_name, resolver, context, *frame);
-      if (std::optional<const CSSValue*> local_variable =
+      if (std::optional<CSSVariableData*> local_variable =
               FindOrNullopt(frame->locals, var_name)) {
         return ResolveArgumentOrLocalInto(
             local_variable.value(), (has_fallback ? &fallback : nullptr), out);
       }
       // Note that there is no "lookup and apply" step for arguments; one
       // argument cannot reference another using var() or similar.
-      if (std::optional<const CSSValue*> argument =
+      if (std::optional<CSSVariableData*> argument =
               FindOrNullopt(frame->arguments, var_name)) {
         return ResolveArgumentOrLocalInto(
             argument.value(), (has_fallback ? &fallback : nullptr), out);
@@ -1693,17 +1683,14 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
   // of resolving the `unresolved_defaults` (against their corresponding types),
   // and inserting the results into `function_arguments`. This is explained
   // a bit further down in the function.
-  HeapHashMap<String, Member<const CSSValue>> function_arguments;
-  HeapHashMap<String, Member<const CSSValue>> unresolved_defaults;
+  HeapHashMap<String, Member<CSSVariableData>> function_arguments;
+  HeapHashMap<String, Member<CSSVariableData>> unresolved_defaults;
   HashMap<String, const CSSSyntaxDefinition*> default_types;
 
-  auto insert_default = [&unresolved_defaults, &default_types, &context](
+  auto insert_default = [&unresolved_defaults, &default_types](
                             const StyleRuleFunction::Parameter& parameter) {
     DCHECK(parameter.default_value);
-    const CSSValue* defaulted_value =
-        MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-            parameter.default_value, &context);
-    unresolved_defaults.insert(parameter.name, defaulted_value);
+    unresolved_defaults.insert(parameter.name, parameter.default_value);
     if (!parameter.type.IsUniversal()) {
       default_types.insert(parameter.name, &parameter.type);
     }
@@ -1736,10 +1723,7 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
           argument_string.ToString(),
           /*is_animation_tainted=*/false, /*is_attr_tainted=*/false,
           /*needs_variable_resolution=*/true);
-      // TODO(crbug.com/393924687): Work with CSSVariableData directly.
-      const CSSValue* argument_value =
-          MakeGarbageCollected<CSSUnparsedDeclarationValue>(argument_data,
-                                                            &context);
+
       // We need to resolve the argument in the context of this function,
       // so that we can do type coercion on the resolved value before the call.
       // In particular, we want any var() within the argument to be resolved
@@ -1751,15 +1735,15 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
       // same), we will effectively do type parsing of exactly the same data
       // twice. This is wasteful, and it's possible that we should do something
       // about it if it proves to be a common case.
-      argument_value = ResolveFunctionExpression(*argument_value, tree_scope,
-                                                 &parameter.type, resolver,
-                                                 context, function_context);
+      argument_data =
+          ResolveFunctionExpression(*argument_data, tree_scope, &parameter.type,
+                                    resolver, context, function_context);
 
       // An argument generally "captures" a failed resolution, without
       // propagation to the outer declaration; if e.g. a var() reference fails,
       // we should instead use the default value.
-      if (argument_value) {
-        function_arguments.insert(parameter.name, argument_value);
+      if (argument_data) {
+        function_arguments.insert(parameter.name, argument_data);
       } else if (parameter.default_value) {
         insert_default(parameter);
       } else {
@@ -1818,8 +1802,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     }
   }
 
-  const CSSUnparsedDeclarationValue* unresolved_result = nullptr;
-  HeapHashMap<String, Member<const CSSValue>> unresolved_locals;
+  CSSVariableData* unresolved_result = nullptr;
+  HeapHashMap<String, Member<CSSVariableData>> unresolved_locals;
 
   // Flattens the function body, consisting of any number of
   // CSSFunctionDeclarations and conditional rules, into the final
@@ -1850,28 +1834,24 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
 
-  const CSSValue* ret_value = ResolveFunctionExpression(
+  CSSVariableData* ret_data = ResolveFunctionExpression(
       *unresolved_result, function_tree_scope, &function->GetReturnType(),
       resolver, context, &local_function_context);
-  if (ret_value == nullptr) {
+  if (ret_data == nullptr) {
     return false;
   }
-  CSSVariableData* ret_data =
-      To<CSSUnparsedDeclarationValue>(*ret_value).VariableDataValue();
-  DCHECK(ret_data && !ret_data->NeedsVariableResolution());
+  DCHECK(!ret_data->NeedsVariableResolution());
   return out.Append(ret_data, ret_data->IsAttrTainted(),
                     CSSVariableData::kMaxVariableBytes);
 }
 
-bool StyleCascade::ResolveArgumentOrLocalInto(const CSSValue* value,
+bool StyleCascade::ResolveArgumentOrLocalInto(CSSVariableData* data,
                                               const TokenSequence* fallback,
                                               TokenSequence& out) {
-  // Note: `value` may be nullptr when a local variable became invalid
+  // Note: `data` may be nullptr when a local variable became invalid
   // due to e.g. failed substitutions.
-  if (value) {
-    CSSVariableData* data =
-        To<CSSUnparsedDeclarationValue>(*value).VariableDataValue();
-    DCHECK(data && !data->NeedsVariableResolution());
+  if (data) {
+    DCHECK(!data->NeedsVariableResolution());
     return out.Append(data, data->IsAttrTainted(),
                       CSSVariableData::kMaxVariableBytes);
   }
@@ -1891,15 +1871,14 @@ bool StyleCascade::ResolveArgumentOrLocalInto(const CSSValue* value,
 // (which needs a type), we would not be able to collapse calc() expressions
 // and similar, which could cause massive blowup as the values are passed
 // through a large tree of function calls.
-const CSSValue* StyleCascade::ResolveFunctionExpression(
-    const CSSValue& unresolved,
+CSSVariableData* StyleCascade::ResolveFunctionExpression(
+    CSSVariableData& unresolved,
     const TreeScope* tree_scope,
     const CSSSyntaxDefinition* type,
     CascadeResolver& resolver,
     const CSSParserContext& context,
     FunctionContext* function_context) {
-  CSSVariableData* data =
-      To<CSSUnparsedDeclarationValue>(unresolved).VariableDataValue();
+  CSSVariableData* data = &unresolved;
   if (data->NeedsVariableResolution()) {
     data = ResolveVariableData(data, tree_scope, context, function_context,
                                resolver);
@@ -1907,13 +1886,11 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
   if (!data) {
     return nullptr;
   }
-  // TODO(crbug.com/393924687): Work with CSSVariableData directly.
-  //
   // Note that we avoid CSSSyntaxDefinition::Parse for the universal syntax,
   // because it currently disallows CSS-wide keywords.
   // TODO(crbug.com/400340579): Universal syntax should allow CSS-wide keywords.
   if (!type || type->IsUniversal()) {
-    return MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
+    return data;
   }
   const CSSValue* value = type->Parse(data->OriginalText(), context,
                                       /*is_animation_tainted=*/false);
@@ -1924,15 +1901,14 @@ const CSSValue* StyleCascade::ResolveFunctionExpression(
   // extraneous calc(), resolve lengths and so on.
   value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(state_, *value,
                                                                  &context);
-  data = StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
+  return StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
       *value, data->IsAnimationTainted(), data->IsAttrTainted());
-  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
 }
 
 void StyleCascade::ApplyLocalVariables(CascadeResolver& resolver,
                                        const CSSParserContext& context,
                                        FunctionContext& function_context) {
-  for (const auto& [name, value] : function_context.unresolved_locals) {
+  for (const auto& [name, data] : function_context.unresolved_locals) {
     if (function_context.locals.find(name) != function_context.locals.end()) {
       // Already applied. This can happen because a call to ResolveLocalVariable
       // may trigger application of other local variables via var().
@@ -1940,8 +1916,8 @@ void StyleCascade::ApplyLocalVariables(CascadeResolver& resolver,
     }
     const CSSSyntaxDefinition* type =
         FindOrNull(function_context.local_types, name);
-    const CSSValue* resolved = ResolveLocalVariable(
-        AtomicString(name), *value, type, resolver, context, function_context);
+    CSSVariableData* resolved = ResolveLocalVariable(
+        AtomicString(name), *data, type, resolver, context, function_context);
     // Note: The following call may insert an explicit nullptr;
     // this is intentional.
     function_context.locals.insert(name, resolved);
@@ -1967,16 +1943,16 @@ void StyleCascade::LookupAndApplyLocalVariable(
 
   const CSSSyntaxDefinition* type =
       FindOrNull(function_context.local_types, name);
-  const CSSValue* resolved =
+  CSSVariableData* resolved =
       ResolveLocalVariable(AtomicString(name), *unresolved_it->value, type,
                            resolver, context, function_context);
   // Note: we may insert an explicit nullptr here; this is intentional.
   function_context.locals.insert(name, resolved);
 }
 
-const CSSValue* StyleCascade::ResolveLocalVariable(
+CSSVariableData* StyleCascade::ResolveLocalVariable(
     const AtomicString& name,
-    const CSSValue& unresolved,
+    CSSVariableData& unresolved,
     const CSSSyntaxDefinition* type,
     CascadeResolver& resolver,
     const CSSParserContext& context,
@@ -1989,9 +1965,13 @@ const CSSValue* StyleCascade::ResolveLocalVariable(
     return nullptr;
   }
   CascadeResolver::AutoLock lock(cycle_node, resolver);
-  const CSSValue* resolved =
+  CSSVariableData* resolved =
       ResolveFunctionExpression(unresolved, function_context.tree_scope, type,
                                 resolver, context, &function_context);
+
+  if (!resolved) {
+    return nullptr;
+  }
 
   // The CSS-wide keywords 'initial' and 'inherit' have special meaning
   // for local variables: 'initial' refers the argument value of the
@@ -1999,19 +1979,14 @@ const CSSValue* StyleCascade::ResolveLocalVariable(
   // frame.
   //
   // https://drafts.csswg.org/css-mixins-1/#resolve-function-styles
-  if (const CSSValue* css_wide = MaybeConvertToCSSWideKeyword(resolved)) {
+  if (const CSSValue* css_wide = ParseAsCSSWideKeyword(*resolved)) {
     if (css_wide->IsInitialValue()) {
       return FindOrNullopt(function_context.arguments, name).value_or(nullptr);
     }
     if (css_wide->IsInheritedValue()) {
       // The inherited value is whatever var(`name`) would resolve to
       // in the parent stack frame.
-      if (CSSVariableData* inherited = ResolveLikeVar(
-              name, resolver, context, function_context.parent)) {
-        return MakeGarbageCollected<CSSUnparsedDeclarationValue>(inherited,
-                                                                 &context);
-      }
-      return nullptr;
+      return ResolveLikeVar(name, resolver, context, function_context.parent);
     }
     // Other CSS-wide keywords (e.g. 'revert') are invalid.
     return nullptr;
@@ -2023,8 +1998,8 @@ const CSSValue* StyleCascade::ResolveLocalVariable(
 void StyleCascade::FlattenFunctionBody(
     StyleRuleGroup& group,
     const TreeScope* function_tree_scope,
-    const CSSUnparsedDeclarationValue*& result,
-    HeapHashMap<String, Member<const CSSValue>>& locals) {
+    CSSVariableData*& result,
+    HeapHashMap<String, Member<CSSVariableData>>& locals) {
   for (const Member<StyleRuleBase>& child : group.ChildRules()) {
     if (auto* function_declarations =
             DynamicTo<StyleRuleFunctionDeclarations>(child.Get())) {
@@ -2035,12 +2010,13 @@ void StyleCascade::FlattenFunctionBody(
         if (property_value.PropertyID() == CSSPropertyID::kVariable) {
           const auto& unresolved_local =
               To<CSSUnparsedDeclarationValue>(property_value.Value());
-          locals.Set(property_value.CustomPropertyName(), &unresolved_local);
+          locals.Set(property_value.CustomPropertyName(),
+                     unresolved_local.VariableDataValue());
         }
       }
       if (auto* r = DynamicTo<CSSUnparsedDeclarationValue>(
               propety_value_set.GetPropertyCSSValue(CSSPropertyID::kResult))) {
-        result = r;
+        result = r->VariableDataValue();
       }
     } else if (auto* supports_rule =
                    DynamicTo<StyleRuleSupports>(child.Get())) {

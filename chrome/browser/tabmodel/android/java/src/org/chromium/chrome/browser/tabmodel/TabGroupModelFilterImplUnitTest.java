@@ -437,7 +437,7 @@ public class TabGroupModelFilterImplUnitTest {
     public void setIncognito() {
         setupTabGroupModelFilter(true, false);
         setupTabGroupModelFilter(false, true);
-        assertThat(mTabGroupModelFilter.isIncognito(), equalTo(true));
+        assertThat(mTabGroupModelFilter.getTabModel().isIncognito(), equalTo(true));
         assertThat(mTabModel.getCount(), equalTo(6));
     }
 
@@ -457,7 +457,8 @@ public class TabGroupModelFilterImplUnitTest {
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         assertEquals(mTab1.getTabGroupId(), newTab.getTabGroupId());
         assertThat(
-                mTabGroupModelFilter.indexOf(newTab), equalTo(mTabGroupModelFilter.indexOf(mTab1)));
+                mTabGroupModelFilter.representativeIndexOf(newTab),
+                equalTo(mTabGroupModelFilter.representativeIndexOf(mTab1)));
     }
 
     @Test
@@ -473,7 +474,8 @@ public class TabGroupModelFilterImplUnitTest {
         assertEquals(mTab2.getTabGroupId(), TAB2_TAB_GROUP_ID);
         assertEquals(mTab2.getTabGroupId(), newTab.getTabGroupId());
         assertThat(
-                mTabGroupModelFilter.indexOf(newTab), equalTo(mTabGroupModelFilter.indexOf(mTab2)));
+                mTabGroupModelFilter.representativeIndexOf(newTab),
+                equalTo(mTabGroupModelFilter.representativeIndexOf(mTab2)));
     }
 
     @Test
@@ -481,13 +483,13 @@ public class TabGroupModelFilterImplUnitTest {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, Tab.INVALID_TAB_ID);
         doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
-        assertThat(mTabGroupModelFilter.getCount(), equalTo(4));
+        assertThat(mTabGroupModelFilter.getIndividualTabAndGroupCount(), equalTo(4));
 
         addTabToTabModel(-1, newTab);
 
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
-        assertThat(mTabGroupModelFilter.indexOf(newTab), equalTo(4));
-        assertThat(mTabGroupModelFilter.getCount(), equalTo(5));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(newTab), equalTo(4));
+        assertThat(mTabGroupModelFilter.getIndividualTabAndGroupCount(), equalTo(5));
         assertNull(newTab.getTabGroupId());
     }
 
@@ -496,7 +498,7 @@ public class TabGroupModelFilterImplUnitTest {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, Tab.INVALID_TAB_ID);
         doReturn(TabLaunchType.FROM_CHROME_UI).when(newTab).getLaunchType();
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
-        assertThat(mTabGroupModelFilter.getCount(), equalTo(4));
+        assertThat(mTabGroupModelFilter.getIndividualTabAndGroupCount(), equalTo(4));
 
         // Add a tab to the model not at the end and ensure the indexes are updated correctly for
         // all other tabs and groups.
@@ -505,16 +507,16 @@ public class TabGroupModelFilterImplUnitTest {
         assertNull(newTab.getTabGroupId());
 
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
-        assertThat(mTabGroupModelFilter.getCount(), equalTo(5));
+        assertThat(mTabGroupModelFilter.getIndividualTabAndGroupCount(), equalTo(5));
         assertThat(mTabGroupModelFilter.getTabModel().getCount(), equalTo(7));
 
-        assertThat(mTabGroupModelFilter.indexOf(mTab1), equalTo(0));
-        assertThat(mTabGroupModelFilter.indexOf(newTab), equalTo(1));
-        assertThat(mTabGroupModelFilter.indexOf(mTab2), equalTo(2));
-        assertThat(mTabGroupModelFilter.indexOf(mTab3), equalTo(2));
-        assertThat(mTabGroupModelFilter.indexOf(mTab4), equalTo(3));
-        assertThat(mTabGroupModelFilter.indexOf(mTab5), equalTo(4));
-        assertThat(mTabGroupModelFilter.indexOf(mTab6), equalTo(4));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab1), equalTo(0));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(newTab), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab2), equalTo(2));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab3), equalTo(2));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab4), equalTo(3));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab5), equalTo(4));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab6), equalTo(4));
     }
 
     @Test
@@ -1718,7 +1720,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTab4.setTabGroupId(TAB2_TAB_GROUP_ID);
         mTabGroupModelFilter.resetFilterState();
         assertThat(mTab4.getRootId(), equalTo(TAB2_ROOT_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab4), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab4), equalTo(1));
 
         TabStateAttributes.from(mTab4).clearTabStateDirtiness();
         reset(mAttributesObserver);
@@ -1729,7 +1731,7 @@ public class TabGroupModelFilterImplUnitTest {
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
         assertThat(mTab4.getRootId(), equalTo(TAB4_ROOT_ID));
         assertNull(mTab4.getTabGroupId());
-        assertThat(mTabGroupModelFilter.indexOf(mTab4), equalTo(2));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab4), equalTo(2));
         verify(mAttributesObserver).onTabStateDirtinessChanged(mTab4, DirtinessState.DIRTY);
         verifyNoMoreInteractions(mAttributesObserver);
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab4, TAB4_TAB_GROUP_ID);
@@ -1760,7 +1762,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTabModel.moveTab(mTab1.getId(), POSITION4 + 1);
         mTabGroupModelFilter.resetFilterState();
         assertThat(mTab1.getRootId(), equalTo(TAB4_ROOT_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab1), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab1), equalTo(1));
         assertFalse(Arrays.equals(mTabs.toArray(), expectedTabModel.toArray()));
 
         reset(mTabGroupModelFilterObserver);
@@ -1771,7 +1773,7 @@ public class TabGroupModelFilterImplUnitTest {
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
         assertThat(mTab1.getRootId(), equalTo(TAB1_ROOT_ID));
         assertNull(mTab1.getTabGroupId());
-        assertThat(mTabGroupModelFilter.indexOf(mTab1), equalTo(0));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab1), equalTo(0));
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab1, TAB1_TAB_GROUP_ID);
         verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab1, POSITION3);
@@ -1797,7 +1799,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTabModel.moveTab(mTab4.getId(), POSITION1 + 1);
         mTabGroupModelFilter.resetFilterState();
         assertThat(mTab4.getRootId(), equalTo(TAB1_ROOT_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab4), equalTo(0));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab4), equalTo(0));
         assertFalse(Arrays.equals(mTabs.toArray(), expectedTabModel.toArray()));
 
         reset(mTabGroupModelFilterObserver);
@@ -1808,7 +1810,7 @@ public class TabGroupModelFilterImplUnitTest {
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
         assertThat(mTab4.getRootId(), equalTo(TAB4_ROOT_ID));
         assertNull(mTab4.getTabGroupId());
-        assertThat(mTabGroupModelFilter.indexOf(mTab4), equalTo(2));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab4), equalTo(2));
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
         verify(mTabGroupModelFilterObserver).willMoveTabOutOfGroup(mTab4, TAB4_TAB_GROUP_ID);
         verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab4, POSITION1);
@@ -1835,9 +1837,9 @@ public class TabGroupModelFilterImplUnitTest {
         assertThat(mTab4.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertThat(mTab5.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertThat(mTab6.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab4), equalTo(1));
-        assertThat(mTabGroupModelFilter.indexOf(mTab5), equalTo(1));
-        assertThat(mTabGroupModelFilter.indexOf(mTab6), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab4), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab5), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab6), equalTo(1));
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
 
         // Undo the grouped action in reverse order so indexes are correct.
@@ -1861,9 +1863,9 @@ public class TabGroupModelFilterImplUnitTest {
         assertThat(mTab4.getTabGroupId(), equalTo(TAB4_TAB_GROUP_ID));
         assertThat(mTab5.getTabGroupId(), equalTo(TAB5_TAB_GROUP_ID));
         assertThat(mTab6.getTabGroupId(), equalTo(TAB5_TAB_GROUP_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab4), equalTo(2));
-        assertThat(mTabGroupModelFilter.indexOf(mTab5), equalTo(3));
-        assertThat(mTabGroupModelFilter.indexOf(mTab6), equalTo(3));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab4), equalTo(2));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab5), equalTo(3));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab6), equalTo(3));
     }
 
     @Test
@@ -1885,9 +1887,9 @@ public class TabGroupModelFilterImplUnitTest {
         assertThat(mTab1.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertThat(mTab2.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertThat(mTab3.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab1), equalTo(0));
-        assertThat(mTabGroupModelFilter.indexOf(mTab2), equalTo(0));
-        assertThat(mTabGroupModelFilter.indexOf(mTab3), equalTo(0));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab1), equalTo(0));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab2), equalTo(0));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab3), equalTo(0));
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
 
         // Undo the grouped action in reverse order so indexes are correct.
@@ -1912,9 +1914,9 @@ public class TabGroupModelFilterImplUnitTest {
         assertNull(mTab1.getTabGroupId());
         assertThat(mTab2.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertThat(mTab3.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab1), equalTo(0));
-        assertThat(mTabGroupModelFilter.indexOf(mTab2), equalTo(1));
-        assertThat(mTabGroupModelFilter.indexOf(mTab3), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab1), equalTo(0));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab2), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab3), equalTo(1));
     }
 
     @Test
@@ -1934,8 +1936,8 @@ public class TabGroupModelFilterImplUnitTest {
         assertThat(mTab6.getRootId(), equalTo(TAB2_ROOT_ID));
         assertThat(mTab5.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertThat(mTab6.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab5), equalTo(1));
-        assertThat(mTabGroupModelFilter.indexOf(mTab6), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab5), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab6), equalTo(1));
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
 
         // Undo the grouped action in reverse order so indexes are correct.
@@ -1954,8 +1956,8 @@ public class TabGroupModelFilterImplUnitTest {
         assertThat(mTab6.getRootId(), equalTo(TAB5_ROOT_ID));
         assertThat(mTab5.getTabGroupId(), equalTo(TAB5_TAB_GROUP_ID));
         assertThat(mTab6.getTabGroupId(), equalTo(TAB5_TAB_GROUP_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab5), equalTo(3));
-        assertThat(mTabGroupModelFilter.indexOf(mTab6), equalTo(3));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab5), equalTo(3));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab6), equalTo(3));
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
     }
 
@@ -1976,8 +1978,8 @@ public class TabGroupModelFilterImplUnitTest {
         assertThat(mTab6.getRootId(), equalTo(TAB2_ROOT_ID));
         assertThat(mTab5.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertThat(mTab6.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab5), equalTo(1));
-        assertThat(mTabGroupModelFilter.indexOf(mTab6), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab5), equalTo(1));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab6), equalTo(1));
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
 
         // Undo the grouped action in reverse order so indexes are correct.
@@ -2004,8 +2006,8 @@ public class TabGroupModelFilterImplUnitTest {
         assertThat(mTab6.getRootId(), equalTo(TAB5_ROOT_ID));
         assertThat(mTab5.getTabGroupId(), equalTo(TAB5_TAB_GROUP_ID));
         assertThat(mTab6.getTabGroupId(), equalTo(TAB5_TAB_GROUP_ID));
-        assertThat(mTabGroupModelFilter.indexOf(mTab5), equalTo(3));
-        assertThat(mTabGroupModelFilter.indexOf(mTab6), equalTo(3));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab5), equalTo(3));
+        assertThat(mTabGroupModelFilter.representativeIndexOf(mTab6), equalTo(3));
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
     }
 
@@ -2074,12 +2076,15 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     public void testIndexOfAnUndoableClosedTabNotCrashing() {
         mTabGroupModelFilter.closeTab(mTab1);
-        mTabGroupModelFilter.indexOf(mTab1);
+        mTabGroupModelFilter.representativeIndexOf(mTab1);
     }
 
     @Test
     public void testTabCount() {
-        assertThat("Should have 4 group tabs", mTabGroupModelFilter.getCount(), equalTo(4));
+        assertThat(
+                "Should have 4 group tabs",
+                mTabGroupModelFilter.getIndividualTabAndGroupCount(),
+                equalTo(4));
 
         assertThat(
                 "Should have 6 total tabs",

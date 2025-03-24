@@ -952,9 +952,9 @@ TEST_F(ShelfWidgetTest,
   ASSERT_FALSE(GetShelfWidget()->GetAnimatingBackground()->visible());
 }
 
-class ShelfWidgetAfterLoginTest : public AshTestBase {
+class ShelfWidgetAfterLoginTest : public NoSessionAshTestBase {
  public:
-  ShelfWidgetAfterLoginTest() { set_start_session(false); }
+  ShelfWidgetAfterLoginTest() = default;
 
   ShelfWidgetAfterLoginTest(const ShelfWidgetAfterLoginTest&) = delete;
   ShelfWidgetAfterLoginTest& operator=(const ShelfWidgetAfterLoginTest&) =
@@ -1035,9 +1035,9 @@ TEST_F(ShelfWidgetAfterLoginTest, CreateLockedShelf) {
             SHELF_VISIBLE, SHELF_AUTO_HIDE_HIDDEN);
 }
 
-class ShelfWidgetViewsVisibilityTest : public AshTestBase {
+class ShelfWidgetViewsVisibilityTest : public NoSessionAshTestBase {
  public:
-  ShelfWidgetViewsVisibilityTest() { set_start_session(false); }
+  ShelfWidgetViewsVisibilityTest() = default;
 
   ShelfWidgetViewsVisibilityTest(const ShelfWidgetViewsVisibilityTest&) =
       delete;

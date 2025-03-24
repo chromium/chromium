@@ -45,6 +45,8 @@
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
+#include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/window_state.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -565,8 +567,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   views::ImageButton* sunfish_button = CreateSunfishButton(base::BindRepeating(
       &SearchBoxView::SunfishButtonPressed, base::Unretained(this)));
   sunfish_button->SetFlipCanvasOnPaintForRTLUI(false);
-  // TODO(http://b/361850292): Upload label for translation.
-  std::u16string sunfish_button_label(u"Select to search");
+  std::u16string sunfish_button_label(
+      l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_SEARCH_BOX_BUTTON));
   sunfish_button->GetViewAccessibility().SetName(sunfish_button_label);
   sunfish_button->SetTooltipText(sunfish_button_label);
   // Update the visibility based on the search box model.
@@ -1267,6 +1269,13 @@ void SearchBoxView::SunfishButtonPressed() {
   if (is_app_list_bubble_) {
     // Only hide the launcher bubble in clamshell mode.
     view_delegate_->DismissAppList();
+  } else {
+    // Otherwise, show the last active window if one exists.
+    MruWindowTracker::WindowList windows =
+        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+    if (!windows.empty()) {
+      WindowState::Get(windows.front())->Activate();
+    }
   }
 
   SunfishScannerFeatureWatcher* feature_watcher =

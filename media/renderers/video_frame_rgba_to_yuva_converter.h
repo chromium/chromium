@@ -30,7 +30,7 @@ class VideoFrame;
 // color space conversion and RGB to YUV conversion. Waits for all sync
 // tokens in `acquire_sync_token` and `dst_video_frame` before doing the
 // copy. Updates `dst_video_frame`'s sync token to wait on copy completion.
-MEDIA_EXPORT bool CopyRGBATextureToVideoFrame(
+MEDIA_EXPORT std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
     viz::RasterContextProvider* raster_context_provider,
     const gfx::Size& src_size,
     scoped_refptr<gpu::ClientSharedImage> src_shared_image,

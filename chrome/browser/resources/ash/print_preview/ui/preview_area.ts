@@ -324,6 +324,7 @@ export class PrintPreviewPreviewAreaElement extends
             this.error = Error.INVALID_PRINTER;
             this.previewState = PreviewAreaState.ERROR;
           } else if (type !== 'CANCELLED') {
+            console.warn('Preview failed in getPreview(): ' + type);
             this.error = Error.PREVIEW_FAILED;
             this.previewState = PreviewAreaState.ERROR;
           }
@@ -372,6 +373,7 @@ export class PrintPreviewPreviewAreaElement extends
     if (success) {
       this.pluginLoadComplete_ = true;
     } else {
+      console.warn('Preview failed in onPluginLoadComplete_()');
       this.error = Error.PREVIEW_FAILED;
       this.previewState = PreviewAreaState.ERROR;
     }

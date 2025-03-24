@@ -39,4 +39,7 @@ public interface HubController {
      * @return whether the back press was handled.
      */
     boolean onHubLayoutBackPressed();
+
+    /** Returns the color mixer for the Hub. */
+    HubColorMixer getHubColorMixer();
 }

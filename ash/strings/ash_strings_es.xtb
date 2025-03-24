@@ -215,6 +215,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1679841710523778799">Aumentar el brillo</translation>
 <translation id="1680659827022803830">Controles de videollamada</translation>
 <translation id="169515659049020177">Mayús</translation>
+<translation id="1696984622403682083">Puedes desactivar esta función en cualquier momento desde Configuración. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Dirección IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">Ventana activa anclada a la izquierda.</translation>
@@ -968,6 +969,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicación instalada, pausada</translation>
 <translation id="4228078597006700451">Controles no configurados</translation>
 <translation id="4230560241506423345">Nuevo</translation>
+<translation id="4236726631849783264">Recordatorio sobre las acciones sugeridas</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo Vista general</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
@@ -984,7 +986,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4275663329226226506">Multimedia</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4280601795273309128">Actualizaciones de seguridad completadas. Actualiza tu dispositivo.</translation>
-<translation id="4281739221820540368">Crear documento de Google</translation>
 <translation id="4283888303416325161">Escribe la contraseña como medida de seguridad adicional</translation>
 <translation id="4285498937028063278">Desfijar</translation>
 <translation id="428715201724021596">Conectándose al perfil. Este proceso puede durar unos minutos.</translation>
@@ -1045,6 +1046,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4471354919263203780">Descargando archivos de reconocimiento de voz... <ph name="PERCENT" /> %</translation>
 <translation id="4471432286288241507">{0,plural, =0{Actualiza el dispositivo ahora}=1{Actualiza el dispositivo en un plazo de 1 segundo}other{Actualiza el dispositivo en un plazo de # segundos}}</translation>
 <translation id="4472575034687746823">Empezar</translation>
+<translation id="4473489370276014885">Contactos de Google</translation>
 <translation id="4477350412780666475">Pista siguiente</translation>
 <translation id="4477751544736611934">Es posible que se apliquen cargos por el uso de datos.
 1 dispositivo conectado.</translation>
@@ -1071,6 +1073,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4545950850562423083">Guardar página actual como marcador</translation>
 <translation id="4548482551627849548">Mover ventana activa al escritorio de la izquierda</translation>
 <translation id="4552748006424994716">Para evitar el eco, puedes escuchar tu micrófono solo usando los auriculares con cable.</translation>
+<translation id="4556953949326137018">Cuando uses acciones sugeridas como "añadir a Calendar" o "crear documentos de Google", el contenido de la zona seleccionada se enviará a los servidores de Google para sugerir acciones, de acuerdo con los <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="4560576029703263363">Activado</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
@@ -1154,6 +1157,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="481455355267255546">Próximamente</translation>
 <translation id="481749895090480684">Lista de tareas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">cámara y micrófono</translation>
+<translation id="4828935196674083554">Añadiendo...</translation>
 <translation id="482908187605862807">Aplicaciones disponibles en Play Store</translation>
 <translation id="4831034276697007977">¿Seguro que quieres desactivar los clics automáticos?</translation>
 <translation id="4835677468087803981">Ocultar PIN</translation>
@@ -1651,6 +1655,7 @@ No hay dispositivos conectados.</translation>
 <translation id="641817663353603351">Re Pág</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Borrar todas las notificaciones</translation>
+<translation id="6426905245930183644">Creando...</translation>
 <translation id="6430225033895752525">Mostrar configuración del modo Sin distracciones</translation>
 <translation id="643147933154517414">Hecho</translation>
 <translation id="6431865393913628856">Grabar pantalla</translation>
@@ -1717,7 +1722,6 @@ Nueva instalación</translation>
 <translation id="6612889377159412215">subtarea</translation>
 <translation id="6613765291890844037">Almacenamiento en uso: <ph name="STORAGE_IN_USE_SIZE" /> | Almacenamiento total: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">La pantalla de privacidad está activada</translation>
-<translation id="6618277154885124991">Crear hoja de cálculo de Google</translation>
 <translation id="6622679827379792051">Configurar la visualización de las aplicaciones de tu teléfono</translation>
 <translation id="662279009180869175">Usa las flechas hacia la izquierda y hacia la derecha para cambiar el tamaño de la pantalla dividida</translation>
 <translation id="6624493541160101248">Escritorio actual: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
@@ -2401,6 +2405,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8921624153894383499">El Asistente de Google no habla este idioma.</translation>
 <translation id="8926951137623668982">La estantería está siempre oculta</translation>
 <translation id="8929566928381252430">¿Estás intentando usar Bloq Mayús? Usa</translation>
+<translation id="8934418770423095813">Crear un documento de Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 archivo}other{# archivos}}</translation>
 <translation id="8936501819958976551">desactivado</translation>
 <translation id="8938800817013097409">Dispositivo USB tipo C (puerto derecho situado en la parte trasera)</translation>

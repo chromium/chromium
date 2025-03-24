@@ -122,7 +122,7 @@ public class TabModelRemoverUnitTest {
         mTabModel.setTabCreatorForTesting(mTabCreator);
         mTabModel.setActive(true);
 
-        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_1.tabGroupId))
                 .thenReturn(ROOT_ID_1);

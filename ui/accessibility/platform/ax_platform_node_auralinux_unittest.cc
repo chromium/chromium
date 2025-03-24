@@ -16,12 +16,14 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/atk_util_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
+#include "ui/base/glib/scoped_gsignal.h"
 
 // TODO(crbug.com/40248581): Remove this again.
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -2914,6 +2916,61 @@ TEST_F(AXPlatformNodeAuraLinuxTest, AccessibleURL) {
       GetPlatformNode(GetRoot()->children()[0]);
   ASSERT_TRUE(child_obj);
   EXPECT_EQ(child_obj->GetRootURL(), test_url);
+}
+
+TEST_F(AXPlatformNodeAuraLinuxTest, AriaNotification) {
+  if (base::Version(atk_get_version()).CompareTo(base::Version("2.50.0")) >=
+      0) {
+    AXNodeData root_data;
+    root_data.id = 1;
+    root_data.role = ax::mojom::Role::kRootWebArea;
+    Init(root_data);
+
+    AXNode* root_node = GetRoot();
+    AtkObject* root_object = AtkObjectFromNode(root_node);
+    AXPlatformNodeAuraLinux* root_platform_node = GetPlatformNode(root_node);
+
+    bool notification_signal_sent = false;
+    ScopedGSignal notification_signal(
+        root_object, "notification",
+        base::BindRepeating(
+            [](bool* flag, AtkObject* object, gchar announcement,
+               gint atk_live) { *flag = true; },
+            base::Unretained(&notification_signal_sent)));
+
+    root_platform_node->OnAriaNotificationPosted(
+        "Hello, world!", ax::mojom::AriaNotificationPriority::kNormal);
+    EXPECT_TRUE(notification_signal_sent);
+  } else {
+    AXNodeData root_data;
+    root_data.id = 1;
+    root_data.role = ax::mojom::Role::kRootWebArea;
+
+    AXNodeData child_data;
+    child_data.id = 2;
+    child_data.role = ax::mojom::Role::kTextField;
+    child_data.AddStringAttribute(
+        ax::mojom::StringAttribute::kContainerLiveStatus, "assertive");
+    root_data.child_ids.push_back(2);
+    Init(root_data, child_data);
+
+    AXNode* text_node = GetRoot()->children()[0];
+    AtkObject* text_object = AtkObjectFromNode(text_node);
+    AXPlatformNodeAuraLinux* text_platform_node = GetPlatformNode(text_node);
+    ASSERT_TRUE(ATK_IS_TEXT(text_object));
+
+    bool text_insert_signal_sent = false;
+    ScopedGSignal text_insert_signal(
+        text_object, "text-insert",
+        base::BindRepeating(
+            [](bool* flag, AtkObject*, gint text_offset, gint announcement_size,
+               gchar announcement) { *flag = true; },
+            base::Unretained(&text_insert_signal_sent)));
+
+    text_platform_node->OnAriaNotificationPosted(
+        "Hello, world!", ax::mojom::AriaNotificationPriority::kNormal);
+    EXPECT_TRUE(text_insert_signal_sent);
+  }
 }
 
 }  // namespace ui

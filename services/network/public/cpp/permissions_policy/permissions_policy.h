@@ -265,7 +265,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
   std::optional<const Allowlist> GetAllowlistForFeatureIfExists(
       network::mojom::PermissionsPolicyFeature feature) const;
 
-  std::optional<std::string> GetEndpointForFeature(
+  // Returns empty string when there is no reporting endpoint.
+  std::string GetEndpointForFeature(
       network::mojom::PermissionsPolicyFeature feature) const;
 
   // Returns a new permissions policy, based on this policy and a client hint

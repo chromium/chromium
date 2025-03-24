@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_service_factory.h"
 #include "chrome/browser/accessibility/media_app/test/fake_ax_media_app.h"
@@ -147,9 +148,6 @@ class AXMediaAppUntrustedServiceTest : public InProcessBrowserTest {
 
   FakeAXMediaApp fake_media_app_;
   std::unique_ptr<TestAXMediaAppUntrustedService> service_;
-
- private:
-  std::optional<content::ScopedAccessibilityModeOverride> mode_override_;
 };
 
 std::vector<PageMetadataPtr>
@@ -181,23 +179,37 @@ AXMediaAppUntrustedServiceTest::ClonePageMetadataPtrs(
 }
 
 void AXMediaAppUntrustedServiceTest::EnableScreenReaderForTesting() {
+  accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(true);
+#if BUILDFLAG(IS_CHROMEOS)
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
-  mode_override_.emplace(ui::kAXModeComplete);
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AXMediaAppUntrustedServiceTest::DisableScreenReaderForTesting() {
+  accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(false);
+#if BUILDFLAG(IS_CHROMEOS)
   AccessibilityManager::Get()->EnableSpokenFeedback(false);
-  mode_override_.reset();
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kNone);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AXMediaAppUntrustedServiceTest::EnableSelectToSpeakForTesting() {
+#if BUILDFLAG(IS_CHROMEOS)
   AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
-  mode_override_.emplace(ui::kAXModeComplete);
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AXMediaAppUntrustedServiceTest::DisableSelectToSpeakForTesting() {
+#if BUILDFLAG(IS_CHROMEOS)
   AccessibilityManager::Get()->SetSelectToSpeakEnabled(false);
-  mode_override_.reset();
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AXMediaAppUntrustedServiceTest::WaitForOcringPages(

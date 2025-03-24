@@ -128,6 +128,11 @@ struct AccessibilityImageInfo {
 };
 
 struct AccessibilityDocInfo {
+  AccessibilityDocInfo();
+  AccessibilityDocInfo(const AccessibilityDocInfo&) = delete;
+  AccessibilityDocInfo& operator=(const AccessibilityDocInfo&) = delete;
+  ~AccessibilityDocInfo();
+
   bool operator==(const AccessibilityDocInfo& other) const;
   bool operator!=(const AccessibilityDocInfo& other) const;
 

@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -31,6 +30,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -123,7 +123,7 @@ class TabDeclutterControllerBrowserTest : public InProcessBrowserTest {
     auto* tab_strip_region_view =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->tab_strip_region_view();
-    if (features::IsTabstripComboButtonEnabled()) {
+    if (features::IsTabSearchMoving()) {
       return tab_strip_region_view->GetTabStripActionContainer();
     }
     return tab_strip_region_view->tab_search_container_for_testing();
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
             tab_declutter_controller()->nudge_timer_interval());
 
   views::LabelButton* close_button;
-  if (features::IsTabstripComboButtonEnabled()) {
+  if (features::IsTabSearchMoving()) {
     TabStripActionContainer* tab_strip_action_container =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->tab_strip_region_view()

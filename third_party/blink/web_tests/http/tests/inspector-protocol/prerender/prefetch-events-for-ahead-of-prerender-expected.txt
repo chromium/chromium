@@ -134,6 +134,7 @@ Preload.prefetchStatusUpadted should be emitted for prefetch ahead of prerender
                     Purpose : prefetch
                     Referer : http://127.0.0.1:8000/inspector-protocol/prerender/resources/simple-prerender.html
                     Sec-Purpose : prefetch;prerender
+                    Sec-Speculation-Tags : null
                     Upgrade-Insecure-Requests : 1
                     sec-ch-ua : "content_shell";v="999"
                     sec-ch-ua-mobile : ?0

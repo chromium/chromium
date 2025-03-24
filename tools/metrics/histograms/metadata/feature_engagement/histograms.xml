@@ -819,7 +819,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
     Records the amount of time a specific IPH promo spends in queue before not
     being shown. Is not recorded for promos that are immediately rejected due to
     failed requirements, promos which are explicitly canceled, or promos which
-    are actually shown (see UserEducation.MessageShown.TimeInQueue.{}).
+    are actually shown (see UserEducation.MessageShown.TimeInQueue.*).
   </summary>
 </histogram>
 
@@ -848,7 +848,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
   <summary>
     Records the amount of time a specific IPH promo spends in queue before being
     shown. Is not recorded if the promo is not shown (see
-    UserEducation.MessageNotShown.TimeInQueue.{}).
+    UserEducation.MessageNotShown.TimeInQueue.*).
   </summary>
 </histogram>
 

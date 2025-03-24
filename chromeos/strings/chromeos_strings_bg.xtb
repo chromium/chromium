@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
 <translation id="1908234395526491708">Неуспешни заявки през UDP</translation>
 <translation id="1908394185991500139">стрелка за наляво</translation>
+<translation id="1911678930322867245">Преместване горе вдясно</translation>
 <translation id="1914144885717544695">в петък</translation>
 <translation id="1915960750806557358">Споделете отзиви или опишете проблема си. Не включвайте лично, чувствително или поверително съдържание.</translation>
 <translation id="1923388006036088459">Цветове на акцентирането</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плаж</translation>
 <translation id="819278132617411009">Използвайте AI на Google, за да повишите продуктивността си</translation>
-<translation id="82003371436638355">Когато изберете „Създаване на ваша собствена“, напишете персонализирана подкана. Можете също да изберете „Избиране на тема“ и след това да изберете от подчертаните думи, за да персонализирате тапета от AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Изберете „Вдъхнови ме“, за да получите повече уникални и разнообразни опции за изображения от AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Когато създавате собствен тапет, подканата се изпраща до сървърите на Google с цел генериране на изображения и подобряване на продукта, като това е предмет на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Общите условия и Декларацията за поверителност на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не включвайте лично, чувствително или поверително съдържание.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генеративният AI може да допуска грешки, включително за хора, затова проверявайте отговорите. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Научете повече<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Възобновяване</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="8833620912470026819">кактусова гора</translation>
 <translation id="8834539327799336565">Свързани сега</translation>
+<translation id="8842526499753992487">Преместване горе вляво</translation>
 <translation id="8845001906332463065">Получете помощ</translation>
 <translation id="8849799913685544685">морски фар</translation>
 <translation id="8851859208664803097">Спря – няма връзка с принтера</translation>

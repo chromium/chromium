@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BACKGROUND_GLIC_GLIC_CONTROLLER_H_
 #define CHROME_BROWSER_BACKGROUND_GLIC_GLIC_CONTROLLER_H_
 
-#include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 
 namespace glic {
 

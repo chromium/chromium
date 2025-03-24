@@ -14,14 +14,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
-#include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_launch_queue_delegate_impl.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -29,6 +27,8 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/tab_collections/public/tab_interface.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
@@ -107,13 +107,13 @@ const base::UnguessableToken& WebAppTabHelper::GetAudioFocusGroupIdForTesting()
   return audio_focus_group_id_;
 }
 
-WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
+webapps::LaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
   if (!launch_queue_) {
-    std::unique_ptr<LaunchQueueDelegate> delegate =
+    std::unique_ptr<webapps::LaunchQueueDelegate> delegate =
         std::make_unique<LaunchQueueDelegateImpl>(
             provider_->registrar_unsafe());
-    launch_queue_ = std::make_unique<WebAppLaunchQueue>(web_contents(),
-                                                        std::move(delegate));
+    launch_queue_ = std::make_unique<webapps::LaunchQueue>(web_contents(),
+                                                           std::move(delegate));
   }
   return *launch_queue_;
 }

@@ -4,7 +4,6 @@
 
 package org.chromium.android_webview;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**

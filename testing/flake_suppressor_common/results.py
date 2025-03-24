@@ -14,6 +14,7 @@ from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import data_types
 from flake_suppressor_common import expectations
 from flake_suppressor_common import tag_utils
+from unexpected_passes_common import expectations as unexpected_expectations
 
 # //third_party/catapult/third_party/typ imports.
 from typ import expectations_parser
@@ -134,8 +135,10 @@ class ResultProcessor():
     for filename, contents in origin_expectation_contents.items():
       list_parser = expectations_parser.TaggedTestListParser(contents)
       for e in list_parser.expectations:
+        wildcard_type = (
+            unexpected_expectations.WildcardTypeFromTypExpectation(e))
         expectation = data_types.Expectation(e.test, e.tags, e.raw_results,
-                                             e.reason)
+                                             wildcard_type, e.reason)
         origin_expectations[filename].append(expectation)
 
     # Discard any results that already have a matching expectation.

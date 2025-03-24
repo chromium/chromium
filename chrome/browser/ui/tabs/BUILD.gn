@@ -13,7 +13,6 @@ source_set("tabs_public") {
   public = [
     "public/tab_dialog_manager.h",
     "public/tab_features.h",
-    "public/tab_interface.h",
     "tab_network_state.h",
   ]
   sources = [ "tab_network_state.cc" ]
@@ -353,7 +352,6 @@ if (!is_android) {
       "//chrome/browser/ui/views/intent_picker:intent_picker_page_action",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/views/zoom:zoom_page_action",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/web_applications",
       "//components/browsing_topics",

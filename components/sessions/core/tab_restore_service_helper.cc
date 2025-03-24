@@ -695,7 +695,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
           // The entries_ may by changed after the tabs restored and the
           // entry_iterator may be no longer valid. So call RemoveEntryById here
           // instead of entries_.erase(entry_iterator).
-          RemoveEntryById(id);
+          RemoveEntryById(window.id);
         }
       }
 
@@ -751,7 +751,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
               // The entries_ may by changed after the tabs restored and the
               // entry_iterator may be no longer valid. So call RemoveEntryById
               // here instead of entries_.erase(entry_iterator).
-              RemoveEntryById(id);
+              RemoveEntryById(group.id);
             }
 
             break;

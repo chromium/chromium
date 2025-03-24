@@ -226,6 +226,8 @@ source_set("tab_group_sync_bridge") {
     "saved_tab_group_proto_conversions.h",
     "saved_tab_group_sync_bridge.cc",
     "saved_tab_group_sync_bridge.h",
+    "shared_tab_group_account_data_sync_bridge.cc",
+    "shared_tab_group_account_data_sync_bridge.h",
     "shared_tab_group_data_sync_bridge.cc",
     "shared_tab_group_data_sync_bridge.h",
     "sync_bridge_tab_group_model_wrapper.cc",

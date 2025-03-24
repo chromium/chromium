@@ -103,9 +103,9 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     };
   }
 
-  disabled: boolean = false;
-  ironIcon?: string;
-  protected multipleIcons_: boolean = false;
+  accessor disabled: boolean = false;
+  accessor ironIcon: string|undefined;
+  protected accessor multipleIcons_: boolean = false;
 
   /**
    * It is possible to activate a tab when the space key is pressed down. When

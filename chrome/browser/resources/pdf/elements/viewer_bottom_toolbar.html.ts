@@ -16,7 +16,8 @@ import type {ViewerBottomToolbarElement} from './viewer_bottom_toolbar.js';
 export function getHtml(this: ViewerBottomToolbarElement) {
   // clang-format off
   return html`
-    <ink-brush-selector .currentType="${this.currentType}">
+    <ink-brush-selector .currentType="${this.currentType}"
+        @current-type-changed="${this.onCurrentTypeChanged}">
     </ink-brush-selector>
     <span id="vertical-separator"></span>
     ${this.shouldShowBrushOptions_() ? html`
@@ -24,12 +25,15 @@ export function getHtml(this: ViewerBottomToolbarElement) {
           .buttonTitle="${this.getSizeTitle_()}">
         <cr-icon slot="icon" icon="${this.getSizeIcon_()}"></cr-icon>
         <ink-size-selector slot="menu" .currentSize="${this.currentSize}"
-            .currentType="${this.currentType}"></ink-size-selector>
+            .currentType="${this.currentType}"
+            @current-size-changed="${this.onCurrentSizeChanged}">
+        </ink-size-selector>
       </viewer-bottom-toolbar-dropdown>
       <viewer-bottom-toolbar-dropdown id="color"
           .buttonTitle="${this.getColorTitle_()}">
         <div slot="icon" id="color-chip"></div>
         <ink-color-selector slot="menu" .currentColor="${this.currentColor}"
+            @current-color-changed="${this.onCurrentColorChanged}"
             .currentType="${this.currentType}"></ink-color-selector>
       </viewer-bottom-toolbar-dropdown>` : ''}
   `;

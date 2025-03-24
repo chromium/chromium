@@ -20,6 +20,7 @@
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"
+#include "components/visited_url_ranking/public/tab_metadata.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
@@ -32,14 +33,69 @@ using URLVisitVariant = URLVisitAggregate::URLVisitVariant;
 
 namespace {
 
+TabMetadata::TabOrigin GetTabOriginFromLaunchType(int type) {
+  TabModel::TabLaunchType launch_type =
+      static_cast<TabModel::TabLaunchType>(type);
+  switch (launch_type) {
+    case TabModel::TabLaunchType::FROM_LINK:
+    case TabModel::TabLaunchType::FROM_EXTERNAL_APP:
+    case TabModel::TabLaunchType::FROM_CHROME_UI:
+    case TabModel::TabLaunchType::FROM_LONGPRESS_FOREGROUND:
+    case TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND:
+    case TabModel::TabLaunchType::FROM_REPARENTING:
+    case TabModel::TabLaunchType::FROM_LAUNCHER_SHORTCUT:
+    case TabModel::TabLaunchType::FROM_LAUNCH_NEW_INCOGNITO_TAB:
+    case TabModel::TabLaunchType::FROM_TAB_GROUP_UI:
+    case TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND_IN_GROUP:
+    case TabModel::TabLaunchType::FROM_APP_WIDGET:
+    case TabModel::TabLaunchType::FROM_LONGPRESS_INCOGNITO:
+    case TabModel::TabLaunchType::FROM_RECENT_TABS:
+    case TabModel::TabLaunchType::FROM_READING_LIST:
+    case TabModel::TabLaunchType::FROM_TAB_SWITCHER_UI:
+    case TabModel::TabLaunchType::FROM_OMNIBOX:
+    case TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND:
+    case TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND:
+      return TabMetadata::TabOrigin::kOpenedByUserAction;
+
+    case TabModel::TabLaunchType::FROM_RESTORE:
+    case TabModel::TabLaunchType::FROM_SPECULATIVE_BACKGROUND_CREATION:
+    case TabModel::TabLaunchType::FROM_BROWSER_ACTIONS:
+    case TabModel::TabLaunchType::FROM_STARTUP:
+    case TabModel::TabLaunchType::FROM_START_SURFACE:
+    case TabModel::TabLaunchType::FROM_RESTORE_TABS_UI:
+    case TabModel::TabLaunchType::UNSET:
+    case TabModel::TabLaunchType::FROM_SYNC_BACKGROUND:
+    case TabModel::TabLaunchType::FROM_COLLABORATION_BACKGROUND_IN_GROUP:
+    case TabModel::TabLaunchType::FROM_REPARENTING_BACKGROUND:
+      return TabMetadata::TabOrigin::kOpenedWithoutUserAction;
+
+    case TabModel::TabLaunchType::SIZE:
+      NOTREACHED();
+  }
+}
+
 URLVisitAggregate::Tab MakeAggregateTab(
-    TabAndroid* tab_android,
+    const TabModel* tab_model,
+    const TabAndroid* tab_android,
     syncer::DeviceInfo::FormFactor form_factor) {
-  return URLVisitAggregate::Tab(
+  auto tab = URLVisitAggregate::Tab(
       tab_android->GetAndroidId(),
       URLVisit(tab_android->GetURL(), tab_android->GetTitle(),
                tab_android->GetLastShownTimestamp(), form_factor,
                Source::kLocal));
+  if (!base::FeatureList::IsEnabled(features::kGroupSuggestionService)) {
+    return tab;
+  }
+  tab.tab_metadata.is_currently_active =
+      tab_model->IsActiveModel() &&
+      tab_model->GetTabAt(tab_model->GetActiveIndex()) == tab_android;
+  tab.tab_metadata.tab_android_launch_type =
+      tab_android->GetTabLaunchTypeAtCreation();
+  tab.tab_metadata.tab_origin =
+      GetTabOriginFromLaunchType(tab.tab_metadata.tab_android_launch_type);
+  tab.tab_metadata.parent_tab_id = tab_android->GetParentId();
+  tab.tab_metadata.local_tab_group_id = tab_android->GetTabGroupId();
+  return tab;
 }
 
 }  // namespace
@@ -85,14 +141,15 @@ void AndroidTabModelURLVisitDataFetcher::FetchURLVisitData(
            url_visit_tab_data_map.end());
       if (!tab_data_map_already_has_url_entry) {
         url_visit_tab_data_map.emplace(
-            url_key, MakeAggregateTab(tab_android, form_factor));
+            url_key, MakeAggregateTab(model, tab_android, form_factor));
       }
 
       auto& tab_data = url_visit_tab_data_map.at(url_key);
       if (tab_data_map_already_has_url_entry) {
         if (tab_data.last_active_tab.visit.last_modified <
             last_show_timestamp) {
-          tab_data.last_active_tab = MakeAggregateTab(tab_android, form_factor);
+          tab_data.last_active_tab =
+              MakeAggregateTab(model, tab_android, form_factor);
         }
         ++tab_data.tab_count;
       }

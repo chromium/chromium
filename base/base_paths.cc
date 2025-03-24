@@ -25,13 +25,13 @@ bool EnvOverridePathProvider(int key, FilePath* result) {
       // Allow passing this in the environment, for more flexibility in build
       // tree configurations (sub-project builds, gyp --output_dir, etc.)
       std::unique_ptr<Environment> env(Environment::Create());
-      std::string cr_source_root;
-      FilePath path;
-      if (env->GetVar("CR_SOURCE_ROOT", &cr_source_root)) {
+      std::optional<std::string> cr_source_root = env->GetVar("CR_SOURCE_ROOT");
+      if (cr_source_root.has_value()) {
+        FilePath path;
 #if BUILDFLAG(IS_WIN)
-        path = FilePath(UTF8ToWide(cr_source_root));
+        path = FilePath(UTF8ToWide(cr_source_root.value()));
 #else
-        path = FilePath(cr_source_root);
+        path = FilePath(cr_source_root.value());
 #endif
         if (!path.IsAbsolute()) {
           FilePath root;

@@ -584,16 +584,22 @@ void FeaturePromoController25::AddPreconditionProviders(
            const FeaturePromoParams& params) {
           FeaturePromoPreconditionList list;
           if (auto* const ptr = controller.get()) {
+            // First ensure that the feature is enabled.
             list.AddPrecondition(
                 std::make_unique<FeatureEnabledPrecondition>(*params.feature));
-            list.AddPrecondition(
-                std::make_unique<MeetsFeatureEngagementCriteriaPrecondition>(
-                    *params.feature, *ptr->feature_engagement_tracker()));
+            // Next verify that the feature has not been dismissed and is not
+            // blocked by other profile-based considerations.
             const bool for_demo =
                 ptr->demo_feature_name_ == spec.feature()->name;
             list.AddPrecondition(std::make_unique<LifecyclePrecondition>(
                 ptr->CreateLifecycleFor(spec, params), for_demo));
-            // Required state doesn't take the current promo into account.
+            // Next, verify that the promo is not excluded by any events or
+            // additional conditions.
+            list.AddPrecondition(
+                std::make_unique<MeetsFeatureEngagementCriteriaPrecondition>(
+                    *params.feature, *ptr->feature_engagement_tracker()));
+            // Finally, verify that the promo is eligible to show based on
+            // session policy.
             list.AddPrecondition(std::make_unique<SessionPolicyPrecondition>(
                 ptr->session_policy(),
                 ptr->session_policy()->GetPromoPriorityInfo(spec),

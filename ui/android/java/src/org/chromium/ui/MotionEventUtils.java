@@ -139,4 +139,8 @@ public class MotionEventUtils {
     public static boolean isTertiaryButton(int buttons) {
         return (buttons & MotionEvent.BUTTON_TERTIARY) != 0;
     }
+
+    public static boolean isSecondaryClick(int buttons) {
+        return (buttons & MotionEvent.BUTTON_SECONDARY) != 0;
+    }
 }

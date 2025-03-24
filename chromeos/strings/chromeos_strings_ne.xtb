@@ -5,6 +5,7 @@
 <translation id="1014750484722996375">डेस्कहरू</translation>
 <translation id="1018219910092211213">DNS समाधान गर्न सकिएन</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
+<translation id="1019971142067430077">यो सामग्रीका हकमा रेकर्डिङका शीर्षकहरू बनाउन सकिएन</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> का खास एसेटहरू उपलब्ध भएका छन्</translation>
 <translation id="1022628058306505708">अर्थ फ्लो</translation>
 <translation id="102432830749687801">आफ्नो विद्यालयको खाताको एक्सेस गुम्नुअघि नै सो खातामा भएको जानकारी आफ्नो व्यक्तिगत खातामा सार्न Google ले बनाएको कन्टेन्ट ट्रान्स्फर एप प्रयोग गर्नुहोस्।</translation>
@@ -101,6 +102,7 @@
 <translation id="1418991483994088776">सुनगाभा</translation>
 <translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">मसँग किपेयर छ</translation>
+<translation id="1422912431241997307">शीर्षक परिवर्तन गरिएको छ</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> थिचिएको छैन</translation>
 <translation id="1432110487435300883">अनुमानित परिणाम प्राप्त गर्न <ph name="CONVERSION_RATE" /> ले <ph name="CATEGORY_TEXT" /> लाई भाग गर्नुहोस्</translation>
 <translation id="1435763214710588005">चयन गरिएको दिनमा डेटा प्रयोग स्वतः रिसेट गर्छ</translation>
@@ -238,6 +240,7 @@
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
 <translation id="1908234395526491708">UDP सम्बन्धी अनुरोध गर्न सकिएन</translation>
 <translation id="1908394185991500139">"लेफ्ट एरो" जनाउने आइकन</translation>
+<translation id="1911678930322867245">सारेर सिरानको दायाँतिर लैजानुहोस्</translation>
 <translation id="1914144885717544695">शुक्रवार</translation>
 <translation id="1915960750806557358">आफ्नो प्रतिक्रिया दिनुहोस् वा समस्याका बारेमा वर्णन गर्नुहोस्। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश गरिएको छैन भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="1923388006036088459">एक्सेन्ट कलर</translation>
@@ -342,6 +345,7 @@
 <translation id="2418150275289244458">सेटिङमा गई खोल्नुहोस्</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> औँ फोटो</translation>
 <translation id="242825218556404975">बोली सुनिएन</translation>
+<translation id="2438248248625638801">रेकर्डिङका शीर्षकहरू बनाइँदै छन्</translation>
 <translation id="2446553403094072641">फ्लोटिङ पोइन्टको सटीकता</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2468124392950503650">सिर्जना गर्न प्रम्प्ट चयन गर्नुहोस् वा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रम्प्टसम्बन्धी गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> हेर्नुहोस्</translation>
@@ -420,6 +424,7 @@
 <translation id="2873483161362553159">ब्राउजर नेभिगेसन</translation>
 <translation id="2874939134665556319">अघिल्लो ट्र्याक</translation>
 <translation id="2875812231449496375">यो वालपेपर उत्कृष्ट देखियोस् भन्नाका लागि यो मोड अन गर्नुहोस्। तपाईं जुनसुकै बेला यो मोड अफ गर्न सक्नुहुन्छ।</translation>
+<translation id="2878126681324394319">सारांश तथा शीर्षक बनाउने मोडेल डाउनलोड गर्नुहोस्</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> घट्यो।</translation>
 <translation id="2880569433548999039">क्लाउड फ्लो स्क्रिन सेभर</translation>
 <translation id="2882230315487799269">AI प्रम्प्ट कस्टमाइज गर्नुहोस्</translation>
@@ -492,6 +497,7 @@
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
 <translation id="3305294846493618482">थप</translation>
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्यधिक मात्रामा बढी छ</translation>
+<translation id="3316495615885967552">सारांश तथा शीर्षक बनाउने मोडेल डाउनलोड गर्ने प्रक्रिया पूरा भयो</translation>
 <translation id="3321030238473337787">प्लेब्याकको गति</translation>
 <translation id="3327613592010997943">तपाईं यो डिभाइस <ph name="DAY" /> <ph name="TIME" /> बजे फेरि प्रयोग गर्न सक्नु हुने छ।</translation>
 <translation id="3328783797891415197">परीक्षण चलिरहेको छ</translation>
@@ -582,6 +588,7 @@
 <translation id="3767737419527918477">रेकर्डिङ फाइलहरू खोज्नुहोस्</translation>
 <translation id="3771294271822695279">भिडियो फाइलहरू</translation>
 <translation id="3771694256347217732">Google का सेवाका सर्तहरू</translation>
+<translation id="3772164567520167489">ट्रान्स्क्रिप्टको यो भाषामा रेकर्डिङका शीर्षकहरू बनाउन सकिएन</translation>
 <translation id="3780740315729837296">किबोर्डको की असाइन गर्नुहोस्</translation>
 <translation id="3784455785234192852">लक गर्नुहोस्</translation>
 <translation id="3785643128701396311">पिक्सेल आर्ट</translation>
@@ -596,6 +603,7 @@
 <translation id="3845880861638660475">डायलग बन्द गर्न <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> थिच्नुहोस्।</translation>
 <translation id="3848280697030027394">किबोर्डको ब्याकलाइटको चमक अझ अँध्यारो बनाउनुहोस्</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
+<translation id="3852931845120288955">शीर्षक (A देखि Z)</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3862598938296403232">विवरण हाल्नु पर्ने हुन्छ</translation>
 <translation id="386280020966669610">वालपेपरका बारेमा नयाँ जानकारी दिनुहोस्</translation>
@@ -650,6 +658,7 @@
 <translation id="4093865285251893588">प्रोफाइल फोटो</translation>
 <translation id="409427325554347132">जाँचसम्बन्धी विवरण सेभ गर्नुहोस्</translation>
 <translation id="409469431304488632">परीक्षण</translation>
+<translation id="4095155732125588500">सारांश तथा शीर्षक बनाउने मोडेल डाउनलोड गरिँदै छ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गर्नुहोस्</translation>
 <translation id="4111761024568264522">USB टचप्याड</translation>
@@ -674,6 +683,7 @@
 <translation id="4171077696775491955">"चमक घटाउनुहोस्" जनाउने आइकन</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
 <translation id="4176659219503619100">कन्ट्रोल प्यानल</translation>
+<translation id="4192913637640303603">रेकर्डिङका शीर्षकहरू बनाउन सकिएन</translation>
 <translation id="4193496492959950834">रेकर्डरका सेटिङ</translation>
 <translation id="4198398257084619072">पान्डाहरू</translation>
 <translation id="420283545744377356">स्क्रिन सेभर अफ गर्नुहोस्</translation>
@@ -956,6 +966,7 @@
 <translation id="550600468576850160">घाँसे मैदान</translation>
 <translation id="551689408806449779">डिभाइस डिस्कनेक्ट गरिएको छ। परीक्षण गर्न रिकनेक्ट गरी हेर्नुहोस्</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="552644173505433109">सारांश तथा नाम बनाउने मोडेलका बारेमा थप जान्नुहोस्</translation>
 <translation id="5527146180235316490">माइकसम्बन्धी विकल्पहरू</translation>
 <translation id="5534900277405737921">टेरेन</translation>
 <translation id="554067135846762198">कोरल र ट्यान</translation>
@@ -1054,6 +1065,7 @@
 <translation id="5982621672636444458">विकल्पहरू क्रमबद्ध गर्नुहोस्</translation>
 <translation id="5984145644188835034">डिफल्ट वालपेपर</translation>
 <translation id="5996832681196460718">रेशम</translation>
+<translation id="6016750809509395299">बनाइएका शीर्षकहरू:</translation>
 <translation id="6017514345406065928">हरियो</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">मासिक रूपमा डेटा प्रयोग स्वतः रिसेट गर्ने विकल्प अन गर</translation>
@@ -1091,6 +1103,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">इन्टरनेटमा जोड्न सकिएन</translation>
 <translation id="6156030503438652198">मरुन र गुलाबी</translation>
+<translation id="6163318050265152852">शीर्षकहरू बनाउन सकिएन। अझ छोटो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6185263894115593524">अरूलाई तपाईंको माइक्रोफोन वा क्यामेरा प्रयोग गर्न नदिन रिसेट गर्नुहोस्। आफूलाई विश्वास लाग्ने साइटहरूलाई मात्र अनुमतिहरू दिनुहोस्।</translation>
@@ -1170,6 +1183,7 @@
 <translation id="6500818810472529210">Google Search मा खोज परिणाम हेर्नुहोस्</translation>
 <translation id="650266656685499220">एल्बम सिर्जना गर्न Google Photos मा जानुहोस्</translation>
 <translation id="6505750420152840539">झिसमिसेदेखि रातिसम्म</translation>
+<translation id="6515056490985026110">शीर्षकहरू बनाउन सकिएन। अझ लामो ट्रान्स्क्रिप्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="6516990319416533844">ब्याट्री चार्ज हुने गति जाँच्न केही समयका लागि यन्त्र चलाएर ब्याट्री खपत हुन दिनुहोस्</translation>
 <translation id="6517239166834772319">एक्स्प्लोर</translation>
 <translation id="6526200165918397681">वालपेपरको रङसँग मिल्दो बनाउनुहोस्</translation>
@@ -1255,11 +1269,13 @@
 <translation id="6910312834584889076">स्क्यानरको कभर खुला छ। कभर लगाउनुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6910845598686542904">रेकर्डिङमा पहिचान गरिएका आवाजका मोडेलहरू विश्लेषण गर्न</translation>
 <translation id="6911383237894364323">मिडिया सर्भरहरूमा कनेक्ट गर्न सकिएन</translation>
+<translation id="6926069762081461162">रेकर्डिङको शीर्षक</translation>
 <translation id="6930242544192836755">अवधि</translation>
 <translation id="6930597342185648547">ब्याकग्राउन्डका बारेमा</translation>
 <translation id="6939766318048400022">क्याफे</translation>
 <translation id="6942253772720771875">आफ्नो प्रतिक्रिया दिनुहोस् वा समस्याका बारेमा वर्णन गर्नुहोस्</translation>
 <translation id="6943893908656559156">रिमोट आइडेन्टिटी (ऐच्छिक)</translation>
+<translation id="694981048020558038">रेकर्डिङको शीर्षक खोज्नुहोस्</translation>
 <translation id="6953137545147683679">सुन</translation>
 <translation id="6957231940976260713">सेवाको नाम</translation>
 <translation id="695776212669661671">"राइट एरो" जनाउने आइकन</translation>
@@ -1334,6 +1350,7 @@
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
 <translation id="7223952304612664117">तपाईंले यसो गर्नुभयो भने सिस्टमका सेवाले तपाईंको लोकेसन पत्ता लगाउन "लोकेसनको सटीकता" प्रयोग गर्न पाउँछन्। "लोकेसनको सटीकता" ले डिभाइसको लोकेसनको अनुमान लगाउन वायरलेस सिग्नल र सेन्सरसम्बन्धी डेटा प्रयोग गर्छ।</translation>
 <translation id="7233782086689993269">सर्टकट रिस्टोर गरियो</translation>
+<translation id="723419678599947502">Google AI प्रयोग गरी शीर्षक बनाउनुहोस्</translation>
 <translation id="725133483556299729">इमेल चयन गर्नुहोस्</translation>
 <translation id="7255187042098209569">गुलाबी र बैजनी</translation>
 <translation id="7267918995585557751">डिफल्ट सुरुवात पृष्ठ फिसिङ साइट होइन भन्ने कुरा सुनिश्चित गर्न रिसेट गर्नुहोस्। आफूलाई विश्वास लाग्ने वेबसाइटहरू मात्र प्रयोग गर्नुहोस्।</translation>
@@ -1482,6 +1499,7 @@
 <translation id="7897043345768902965">वाकवे</translation>
 <translation id="7902285181767404769">रेकर्ड गरिरहेका बेला नोटिफिकेसनको आवाज साइलेन्ट पार्नुहोस्</translation>
 <translation id="7903695460270716054">छनौट गरिएका कलाकृति तथा फोटोहरू छनौट गर्नुहोस्</translation>
+<translation id="7908543555831145677">रेकर्डिङका शीर्षक बनाइएका छन्</translation>
 <translation id="7912005977894000746">मुख्य पेजमा फर्कनुहोस्</translation>
 <translation id="7915220255123750251">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ।</translation>
 <translation id="7915759923880480519">तपाईंका नेटवर्कहरूमार्फत पठाइने डेटा सुरक्षित राख्न रिसेट गर्नुहोस्। तपाईंलाई विश्वास लाग्ने नेटवर्कहरू मात्र प्रयोग गर्नुहोस्।</translation>
@@ -1543,16 +1561,6 @@
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8183975772394450380">समुद्र किनारा</translation>
 <translation id="819278132617411009">अझ बढी उत्पादनशील हुन Google AI प्रयोग गर्नुहोस्</translation>
-<translation id="82003371436638355">तपाईंले “आफ्नै वालपेपर बनाउनुहोस्” चयन गरेपछि कस्टम प्रम्प्ट लेख्नुहोस्। वा तपाईं “कुनै थिम छनौट गर्नुहोस्” अनि अन्डरलाइन गरिएका शब्दहरू चयन गरेर आफ्नो AI वालपेपर पर्सनलाइज गर्न सक्नुहुन्छ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI फोटोका अझ अद्वितीय तथा विविधतायुक्त विकल्पहरू प्राप्त गर्न "मलाई कुनै प्रेरणादायी कुरा बताउनुहोस्" चयन गर्नुहोस्।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          तपाईंले आफ्नै वालपेपर सिर्जना गर्दा फोटोहरू सिर्जना गर्ने र यो उत्पादनको गुणस्तर सुधार गर्ने प्रयोजनका लागि यो प्रम्प्ट <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google का सेवाका सर्त र गोपनीयता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />बमोजिम Google का सर्भरमा पठाइन्छ। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश नगर्नुहोस्।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          जेनेरेटिभ AI ले मान्छे तथा अन्य कुराका बारेमा गलत जानकारी देखाउन सक्छ। त्यसैले यसले दिने जवाफ सही छ कि छैन फेरि जाँच्नुहोस्। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />थप जान्नुहोस्<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8206859287963243715">सेल्युलर</translation>
 <translation id="8208861521865154048">लाभहरू</translation>
@@ -1566,6 +1574,7 @@
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8262870577632766028">१ घण्टा</translation>
 <translation id="827422111966801947">इन्डिगो</translation>
+<translation id="8280687443902283243">शीर्षक परिवर्तन गर्नुहोस्</translation>
 <translation id="8286154143153872371">वालपेपर हेर्न कृपया इन्टरनेटमा कनेक्ट गर्नुहोस् र पेज रिलोड गर्नुहोस्।</translation>
 <translation id="8291967909914612644">गृह प्रदायकको देश</translation>
 <translation id="8294431847097064396">स्रोत</translation>
@@ -1573,6 +1582,7 @@
 <translation id="8308787307410010965">साइटको सामग्रीसम्बन्धी सेटिङ</translation>
 <translation id="8312330582793120272">"मिडिया प्ले गर्नुहोस्" जनाउने आइकन</translation>
 <translation id="8318753676953949627">कुनै पनि फोटो छैन</translation>
+<translation id="8319809980370328428">रेकर्डिङको सारांश तथा शीर्षक बनाउने मोडेल</translation>
 <translation id="8320910311642849813">जङ्गल</translation>
 <translation id="8322464149031882595">अगाडि जान क्लिक गर्नुहोस्</translation>
 <translation id="8329018942023753850">"क्याल्कुलेटर एप" जनाउने आइकन</translation>
@@ -1679,6 +1689,7 @@
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="8833620912470026819">क्याक्टस फरेस्ट</translation>
 <translation id="8834539327799336565">हाल कनेक्ट गरिएका डिभाइस</translation>
+<translation id="8842526499753992487">सारेर सिरानको बायाँतिर लैजानुहोस्</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8849799913685544685">लाइटहाउस</translation>
 <translation id="8851859208664803097">रोकियो - प्रिन्टरमा कनेक्ट गर्न सकिएन</translation>

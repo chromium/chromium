@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -36,6 +37,12 @@ bool GlicFreUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 }
 
 GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"errorNotice", IDS_GLIC_ERROR_NOTICE},
+      {"errorNoticeActionButton", IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON},
+      {"errorNoticeHeader", IDS_GLIC_ERROR_NOTICE_HEADER},
+  };
+
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
 
@@ -45,6 +52,9 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicFreResources, IDR_GLIC_FRE_FRE_HTML);
+
+  // Add localized strings.
+  source->AddLocalizedStrings(kStrings);
 
   // Set up FRE URL via cli flag, or default to the finch param value.
   source->AddString(

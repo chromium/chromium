@@ -123,4 +123,29 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
   return std::monostate();
 }
 
+RenditionGroup::RenditionTrack RenditionGroup::MakeImplicitRendition(
+    base::PassKey<MultivariantPlaylist>,
+    const GURL& default_rendition_uri,
+    uint64_t rendition_unique_id) {
+  auto& rendition =
+      renditions_.emplace_back(base::PassKey<RenditionGroup>(),
+                               Rendition::CtorArgs{
+                                   .uri = std::move(default_rendition_uri),
+                                   .name = "",
+                                   .language = std::nullopt,
+                                   .associated_language = std::nullopt,
+                                   .stable_rendition_id = std::nullopt,
+                                   .channels = std::nullopt,
+                                   .autoselect = true,
+                               });
+  MediaTrack track = MediaTrack::CreateVideoTrack(
+      /*id = */ rendition.GetName(),
+      /*kind =*/MediaTrack::VideoKind::kMain,
+      /*label = */ rendition.GetName(),
+      /*language = */ "",
+      /*enabled = */ true,
+      /*stream_id =*/rendition_unique_id);
+  return std::make_tuple(track, &rendition);
+}
+
 }  // namespace media::hls

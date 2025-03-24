@@ -440,24 +440,21 @@ source_set("common") {
   }
 }
 
-# The buffer validation functionality is in its own component so that it can be
-# depended on without pulling the entire //media/gpu target.
-component("buffer_validation") {
-  defines = [ "IS_MEDIA_GPU_BUFFER_VALIDATION_IMPL" ]
-  sources = [
-    "buffer_validation.cc",
-    "buffer_validation.h",
-  ]
+if (is_linux || is_chromeos) {
+  # The buffer validation functionality is in its own component so that it can be
+  # depended on without pulling the entire //media/gpu target.
+  component("buffer_validation") {
+    defines = [ "IS_MEDIA_GPU_BUFFER_VALIDATION_IMPL" ]
+    sources = [
+      "buffer_validation.cc",
+      "buffer_validation.h",
+    ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
-
-  public_deps = [
-    "//base",
-    "//media",
-  ]
+    public_deps = [
+      "//base",
+      "//media",
+    ]
+  }
 }
 
 source_set("command_buffer_helper") {

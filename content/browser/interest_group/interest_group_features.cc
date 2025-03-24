@@ -129,7 +129,7 @@ BASE_FEATURE(kFledgeStoreBandAKeysInDB,
 // also be enabled for KVv2 to be enabled.
 BASE_FEATURE(kFledgeUseKVv2SignalsCache,
              "FledgeUseKVv2SignalsCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a non-transient NIK for trusted selling signals.
 BASE_FEATURE(kFledgeUseNonTransientNIKForSeller,

@@ -2389,6 +2389,10 @@ class ComputedStyle final : public ComputedStyleBase {
     return ScrollMarkerGroup() == other.ScrollMarkerGroup();
   }
 
+  bool ScrollMarkerContainNone() const {
+    return ScrollMarkerContain() == EScrollMarkerContain::kNone;
+  }
+
   PhysicalBoxStrut ScrollMarginStrut() const {
     return {LayoutUnit(ScrollMarginTop()), LayoutUnit(ScrollMarginRight()),
             LayoutUnit(ScrollMarginBottom()), LayoutUnit(ScrollMarginLeft())};
@@ -2921,6 +2925,16 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void SetHasAutoColumnWidth() {
     SetHasAutoColumnWidthInternal(true);
     SetColumnWidthInternal(0);
+  }
+
+  // column-height
+  void SetColumnHeight(float f) {
+    SetHasAutoColumnHeightInternal(false);
+    SetColumnHeightInternal(f);
+  }
+  void SetHasAutoColumnHeight() {
+    SetHasAutoColumnHeightInternal(true);
+    SetColumnHeightInternal(0);
   }
 
   // contain

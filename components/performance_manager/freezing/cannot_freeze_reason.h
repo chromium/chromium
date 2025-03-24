@@ -12,8 +12,8 @@ namespace performance_manager {
 // List of reasons not to freeze a browsing instance.
 //
 // The reasons to not freeze a browsing instance overlap with the reasons to not
-// discard a tab (PageDiscardingHelper::CanDiscard). We could look into ways to
-// share logic.
+// discard a tab (DiscardEligibilityPolicy::CanDiscard). We could look into ways
+// to share logic.
 enum class CannotFreezeReason {
   kVisible = 0,
   kMin = kVisible,  // Lower bound for EnumSet.

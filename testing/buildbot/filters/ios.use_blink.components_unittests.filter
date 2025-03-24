@@ -310,6 +310,7 @@
 -AutofillAcrossIframesTest.FillMultiFrameForm_SingleField
 -AutofillAcrossIframesTest.FillSingleFrameForm
 -AutofillAcrossIframesTest.SubmitMultiFrameForm
+-AutofillAcrossIframesTest.SubmitMultiFrameForm_XHR
 -AutofillAcrossIframesTest.TextChangeOnMultiFrameForm
 -AutofillAcrossIframesTest.UpdateOnFrameDeletion
 

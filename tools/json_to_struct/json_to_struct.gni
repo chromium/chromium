@@ -30,6 +30,7 @@ template("json_to_struct") {
     script = "//tools/json_to_struct/json_to_struct.py"
 
     inputs = [
+      "//tools/json_to_struct/aggregation.py",
       "//tools/json_to_struct/element_generator.py",
       "//tools/json_to_struct/struct_generator.py",
       invoker.source,

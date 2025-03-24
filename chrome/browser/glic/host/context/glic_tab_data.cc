@@ -5,14 +5,28 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 
 #include <optional>
+#include <utility>
 
+#include "base/functional/overloaded.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace glic {
+namespace {
+// Returns whether `a` and `b` both point to the same web contents.
+// Note that if both `a` and `b` are invalidated, this returns true, even if the
+// web contents they once pointed to is different. For our purposes, this is OK.
+bool IsWeakWebContentsEqual(base::WeakPtr<content::WebContents> a,
+                            base::WeakPtr<content::WebContents> b) {
+  return std::make_pair(a.get(), a.WasInvalidated()) ==
+         std::make_pair(b.get(), b.WasInvalidated());
+}
+}  // namespace
 
 TabDataObserver::TabDataObserver(
     content::WebContents* web_contents,
@@ -76,103 +90,32 @@ void TabDataObserver::OnFaviconUpdated(
   SendUpdate();
 }
 
-// FocusedTabCandidate Implementations:
-FocusedTabCandidate::FocusedTabCandidate(
-    content::WebContents* const web_contents,
-    glic::mojom::InvalidCandidateError invalid_candidate_error)
-    : focused_tab_candidate_contents(web_contents ? web_contents->GetWeakPtr()
-                                                  : nullptr),
-      invalid_candidate_error(invalid_candidate_error) {}
-FocusedTabCandidate::~FocusedTabCandidate() = default;
-FocusedTabCandidate::FocusedTabCandidate(const FocusedTabCandidate& other) =
+NoFocusedTabData::NoFocusedTabData() = default;
+NoFocusedTabData::NoFocusedTabData(std::string_view reason,
+                                   content::WebContents* tab)
+    : active_tab(tab ? tab->GetWeakPtr() : nullptr), no_focus_reason(reason) {}
+NoFocusedTabData::~NoFocusedTabData() = default;
+NoFocusedTabData::NoFocusedTabData(const NoFocusedTabData& other) = default;
+NoFocusedTabData& NoFocusedTabData::operator=(const NoFocusedTabData& other) =
     default;
-FocusedTabCandidate::FocusedTabCandidate(FocusedTabCandidate&& other) noexcept
-    : focused_tab_candidate_contents(
-          std::move(other.focused_tab_candidate_contents)),
-      invalid_candidate_error(std::move(other.invalid_candidate_error)) {}
-FocusedTabCandidate& FocusedTabCandidate::operator=(
-    const FocusedTabCandidate& other) {
-  if (this != &other) {
-    focused_tab_candidate_contents = other.focused_tab_candidate_contents;
-    invalid_candidate_error = other.invalid_candidate_error;
-  }
-  return *this;
-}
-FocusedTabCandidate& FocusedTabCandidate::operator=(
-    FocusedTabCandidate&& other) noexcept {
-  if (this != &other) {
-    focused_tab_candidate_contents =
-        std::move(other.focused_tab_candidate_contents);
-    invalid_candidate_error = std::move(other.invalid_candidate_error);
-  }
-  return *this;
-}
-bool FocusedTabCandidate::operator==(const FocusedTabCandidate& other) const {
-  content::WebContents* this_contents_ptr =
-      focused_tab_candidate_contents.get();
-  content::WebContents* other_contents_ptr =
-      other.focused_tab_candidate_contents.get();
-  bool focused_tab_candidate_contents_changed =
-      (focused_tab_candidate_contents.WasInvalidated() ||
-       this_contents_ptr != other_contents_ptr);
-  bool invalid_candidate_error_changed =
-      invalid_candidate_error != other.invalid_candidate_error;
-  return !focused_tab_candidate_contents_changed &&
-         !invalid_candidate_error_changed;
-}
 
-// FocusedTabData Implementations:
-FocusedTabData::FocusedTabData(
-    content::WebContents* const web_contents,
-    std::optional<glic::mojom::InvalidCandidateError> invalid_candidate_error,
-    std::optional<glic::mojom::NoCandidateTabError> no_candidate_tab_error) {
-  if (web_contents && !invalid_candidate_error) {
-    focused_tab_contents = web_contents->GetWeakPtr();
-  } else {
-    if (web_contents && invalid_candidate_error) {
-      focused_tab_candidate =
-          FocusedTabCandidate(web_contents, invalid_candidate_error.value());
-    } else {
-      if (!no_candidate_tab_error) {
-        no_candidate_tab_error = glic::mojom::NoCandidateTabError::kUnknown;
-      }
-      this->no_candidate_tab_error = std::move(*no_candidate_tab_error);
-    }
-  }
-}
-FocusedTabData::~FocusedTabData() = default;
-FocusedTabData::FocusedTabData(const FocusedTabData& other) = default;
-FocusedTabData::FocusedTabData(FocusedTabData&& other) noexcept
-    : focused_tab_contents(std::move(other.focused_tab_contents)),
-      focused_tab_candidate(std::move(other.focused_tab_candidate)),
-      no_candidate_tab_error(std::move(other.no_candidate_tab_error)) {}
-FocusedTabData& FocusedTabData::operator=(const FocusedTabData& other) {
-  if (this != &other) {
-    focused_tab_contents = other.focused_tab_contents;
-    no_candidate_tab_error = other.no_candidate_tab_error;
-    focused_tab_candidate = other.focused_tab_candidate;
-  }
-  return *this;
-}
-FocusedTabData& FocusedTabData::operator=(FocusedTabData&& other) noexcept {
-  if (this != &other) {
-    focused_tab_contents = std::move(other.focused_tab_contents);
-    no_candidate_tab_error = std::move(other.no_candidate_tab_error);
-    focused_tab_candidate = std::move(other.focused_tab_candidate);
-  }
-  return *this;
-}
-bool FocusedTabData::operator==(const FocusedTabData& other) const {
-  content::WebContents* this_contents_ptr = focused_tab_contents.get();
-  content::WebContents* other_contents_ptr = other.focused_tab_contents.get();
-  bool focus_contents_changed = (focused_tab_contents.WasInvalidated() ||
-                                 this_contents_ptr != other_contents_ptr);
-  bool no_candidate_tab_error_changed =
-      no_candidate_tab_error != other.no_candidate_tab_error;
-  bool focused_tab_candidate_changed =
-      focused_tab_candidate != other.focused_tab_candidate;
-  return !focus_contents_changed && !no_candidate_tab_error_changed &&
-         !focused_tab_candidate_changed;
+base::expected<content::WebContents*, std::string_view>
+FocusedTabData::GetFocus() const {
+  using ResultType = decltype(GetFocus());
+  return std::visit(
+      base::Overloaded{
+          [](const base::WeakPtr<content::WebContents>& focused_tab)
+              -> ResultType {
+            if (focused_tab) {
+              return focused_tab.get();
+            }
+            return base::unexpected(std::string_view("focused tab removed"));
+          },
+          [](const NoFocusedTabData& no_focus) -> ResultType {
+            return base::unexpected(std::string_view(no_focus.no_focus_reason));
+          },
+      },
+      *this);
 }
 
 // CreateTabData Implementation:
@@ -199,23 +142,39 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
 
 // CreateFocusedTabData Implementation:
 glic::mojom::FocusedTabDataPtr CreateFocusedTabData(
-    FocusedTabData focused_tab_data) {
-  if (focused_tab_data.focused_tab_contents.get()) {
-    return glic::mojom::FocusedTabData::NewFocusedTab(
-        CreateTabData(focused_tab_data.focused_tab_contents.get()));
-  }
-  std::optional<FocusedTabCandidate> focused_tab_candidate =
-      focused_tab_data.focused_tab_candidate;
-  if (focused_tab_candidate.has_value()) {
-    return glic::mojom::FocusedTabData::NewFocusedTabCandidate(
-        glic::mojom::FocusedTabCandidate::New(
-            CreateTabData(focused_tab_candidate.value()
-                              .focused_tab_candidate_contents.get()),
-            focused_tab_candidate.value().invalid_candidate_error));
-  }
+    const FocusedTabData& focused_tab_data) {
+  return std::visit(
+      base::Overloaded{
+          [](const base::WeakPtr<content::WebContents>& focused_tab) {
+            return mojom::FocusedTabData::NewFocusedTab(
+                CreateTabData(focused_tab.get()));
+          },
+          [](const NoFocusedTabData& no_focus) {
+            return mojom::FocusedTabData::NewNoFocusedTabData(
+                mojom::NoFocusedTabData::New(
+                    CreateTabData(no_focus.active_tab.get()),
+                    std::string(no_focus.no_focus_reason)));
+          },
+      },
+      focused_tab_data);
+}
 
-  return glic::mojom::FocusedTabData::NewNoCandidateTabError(
-      focused_tab_data.no_candidate_tab_error.value());
+bool FocusedTabData::IsSame(const FocusedTabData& new_data) const {
+  if (index() != new_data.index()) {
+    return false;
+  }
+  switch (index()) {
+    case 0:
+      return IsWeakWebContentsEqual(std::get<0>(*this), std::get<0>(new_data));
+    case 1:
+      return std::get<1>(*this).IsSame(std::get<1>(new_data));
+  }
+  NOTREACHED();
+}
+
+bool NoFocusedTabData::IsSame(const NoFocusedTabData& other) const {
+  return IsWeakWebContentsEqual(active_tab, other.active_tab) &&
+         no_focus_reason == other.no_focus_reason;
 }
 
 }  // namespace glic

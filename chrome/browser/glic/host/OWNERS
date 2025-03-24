@@ -1,0 +1,8 @@
+birnie@google.com
+carlosk@chromium.org
+dewittj@chromium.org
+harringtond@chromium.org
+wry@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

@@ -8,6 +8,8 @@ component("persistent_cache") {
     "backend.h",
     "backend_params.cc",
     "backend_params.h",
+    "backend_params_manager.cc",
+    "backend_params_manager.h",
     "entry.cc",
     "entry.h",
     "sqlite/sqlite_entry_impl.cc",
@@ -44,6 +46,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "backend_params_manager_unittest.cc",
     "entry_unittest.cc",
     "mock/mock_backend_impl.cc",
     "mock/mock_backend_impl.h",
@@ -65,6 +68,7 @@ source_set("unit_tests") {
   deps = [
     ":persistent_cache",
     "//base",
+    "//base/test:test_support",
     "//sql",
     "//testing/gmock",
     "//testing/gtest",

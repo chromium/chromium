@@ -406,7 +406,6 @@ def parse_operation(
   ret = idl_type_to_iltype(op.return_type)
   return SignatureType(args=parse_args(op.arguments), ret=ret)
 
-
 def parse_interface(
     interface: Union[web_idl.interface.Interface,
                      web_idl.callback_interface.CallbackInterface]
@@ -450,7 +449,7 @@ def sort_object_groups(
   """Sorts the object groups given their dependencies to each others.
 
   Args:
-      ifaces: the objects (either interaface of dictionary)
+      ifaces: the objects (either interface of dictionary)
 
   Returns:
       the sorted groups

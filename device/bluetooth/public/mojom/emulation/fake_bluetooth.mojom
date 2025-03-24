@@ -46,6 +46,12 @@ enum WriteType {
   kWriteWithoutResponse,
 };
 
+// GATT operation type
+enum GATTOperationType {
+  kConnect,
+  kDiscovery,
+};
+
 // Stores the external appearance description of the device.
 struct Appearance {
   bool has_value;
@@ -193,6 +199,13 @@ interface FakeCentral {
   // This method aims to simulate the response once all of these procedures
   // have completed or if there was an error during any of them.
   SetNextGATTDiscoveryResponse(string address, uint16 code) => (bool success);
+
+  // Simulates the response code from the peripheral with |address| for a GATT
+  // operation of |type|.
+  SimulateGATTOperationResponse(
+      GATTOperationType type,
+      string address,
+      uint16 code) => (bool success);
 
   // Simulates a GATT disconnection from the peripheral with |address|.
   // Calls callback with false if there was any error when simulating the GATT
@@ -379,4 +392,16 @@ interface FakeCentral {
       string characteristic_id,
       string service_id,
       string peripheral_address) => (bool success, array<uint8>? value);
+
+  // Sets |client| as the fake central's client.
+  // If a client already exists, the method will CHECK() fail.
+  SetClient(
+      pending_associated_remote<FakeCentralClient> client);
+};
+
+// Client interface for receiving events from FakeCentral.
+interface FakeCentralClient {
+  // Called when the peripheral with |peripheral_address| receives a request of
+  // GATT operation |type|.
+  DispatchGATTOperationEvent(GATTOperationType type, string peripheral_address);
 };

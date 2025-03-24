@@ -357,8 +357,8 @@ public class AwContentsClientBridge {
             String description,
             boolean safebrowsingHit,
             boolean shouldOmitNotificationsForSafeBrowsingHit) {
-        AwContentsClient.AwWebResourceRequest request =
-                new AwContentsClient.AwWebResourceRequest(
+        AwWebResourceRequest request =
+                new AwWebResourceRequest(
                         url,
                         isOutermostMainFrame,
                         hasUserGesture,
@@ -416,8 +416,8 @@ public class AwContentsClientBridge {
             String[] requestHeaderValues,
             int threatType,
             final int requestId) {
-        AwContentsClient.AwWebResourceRequest request =
-                new AwContentsClient.AwWebResourceRequest(
+        AwWebResourceRequest request =
+                new AwWebResourceRequest(
                         url,
                         isOutermostMainFrame,
                         hasUserGesture,
@@ -458,8 +458,8 @@ public class AwContentsClientBridge {
             String reasonPhrase,
             String[] responseHeaderNames,
             String[] responseHeaderValues) {
-        AwContentsClient.AwWebResourceRequest request =
-                new AwContentsClient.AwWebResourceRequest(
+        AwWebResourceRequest request =
+                new AwWebResourceRequest(
                         url,
                         isOutermostMainFrame,
                         hasUserGesture,

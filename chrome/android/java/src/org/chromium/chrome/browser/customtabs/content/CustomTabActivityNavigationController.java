@@ -238,20 +238,11 @@ public class CustomTabActivityNavigationController
             return true;
         }
 
-        if (mTabController.dispatchBeforeUnloadIfNeeded()) {
-            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
-            MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
-                    MinimizeAppAndCloseTabType.CLOSE_TAB, separateTask);
-            return true;
-        }
-        if (mTabController.onlyOneTabRemaining()) {
-            finishActivity(separateTask);
-        } else {
-            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
-            MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
-                    MinimizeAppAndCloseTabType.CLOSE_TAB, separateTask);
-            mTabController.closeTab();
-        }
+        MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
+        MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
+                MinimizeAppAndCloseTabType.CLOSE_TAB, separateTask);
+
+        if (!mTabController.dispatchBeforeUnloadIfNeeded()) mTabController.closeTab();
 
         return true;
     }

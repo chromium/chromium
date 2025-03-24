@@ -163,28 +163,28 @@ export class CrInputElement extends CrLitElement {
     };
   }
 
-  override ariaDescription: string|null = null;
-  override ariaLabel: string = '';
-  override autofocus: boolean = false;
-  autoValidate: boolean = false;
-  disabled: boolean = false;
-  errorMessage: string = '';
-  inputmode?: string;
-  inputTabindex: number = 0;
-  invalid: boolean = false;
-  label: string = '';
-  max?: number;
-  min?: number;
-  maxlength?: number;
-  minlength?: number;
-  pattern?: string;
-  placeholder: string|null = null;
-  readonly: boolean = false;
-  required: boolean = false;
-  type: string = 'text';
-  value: string = '';
-  protected internalValue_: string = '';
-  protected focused_: boolean = false;
+  override accessor ariaDescription: string|null = null;
+  override accessor ariaLabel: string = '';
+  override accessor autofocus: boolean = false;
+  accessor autoValidate: boolean = false;
+  accessor disabled: boolean = false;
+  accessor errorMessage: string = '';
+  accessor inputmode: string|undefined;
+  accessor inputTabindex: number = 0;
+  accessor invalid: boolean = false;
+  accessor label: string = '';
+  accessor max: number|undefined;
+  accessor min: number|undefined;
+  accessor maxlength: number|undefined;
+  accessor minlength: number|undefined;
+  accessor pattern: string|undefined;
+  accessor placeholder: string|null = null;
+  accessor readonly: boolean = false;
+  accessor required: boolean = false;
+  accessor type: string = 'text';
+  accessor value: string = '';
+  protected accessor internalValue_: string = '';
+  protected accessor focused_: boolean = false;
 
   override firstUpdated() {
     // Use inputTabindex instead.

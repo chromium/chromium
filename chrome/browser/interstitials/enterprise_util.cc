@@ -13,10 +13,14 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/connectors/core/features.h"
 #endif
 
 namespace {
@@ -42,7 +46,7 @@ extensions::SafeBrowsingPrivateEventRouter* GetSafeBrowsingEventRouter(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 enterprise_connectors::ReportingEventRouter* GetReportingEventRouter(
     content::WebContents* web_contents) {
   // |web_contents| can be null in tests.
@@ -62,7 +66,7 @@ enterprise_connectors::ReportingEventRouter* GetReportingEventRouter(
   return enterprise_connectors::ReportingEventRouterFactory::
       GetForBrowserContext(browser_context);
 }
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -107,5 +111,19 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
 
   router->OnUrlFilteringInterstitial(page_url, threat_type, rt_lookup_response);
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseSecurityEventReportingOnAndroid) ||
+      base::FeatureList::IsEnabled(
+          enterprise_connectors::
+              kEnterpriseUrlFilteringEventReportingOnAndroid)) {
+    enterprise_connectors::ReportingEventRouter* router =
+        GetReportingEventRouter(web_contents);
+
+    router->OnUrlFilteringInterstitial(page_url, threat_type,
+                                       rt_lookup_response);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)

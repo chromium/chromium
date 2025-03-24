@@ -54,7 +54,8 @@ class FullscreenControllerTest : public AshTestBase {
     auto test_shell_delegate = std::make_unique<TestShellDelegate>();
     test_shell_delegate_ = test_shell_delegate.get();
 
-    AshTestBase::SetUp(std::move(test_shell_delegate));
+    set_shell_delegate(std::move(test_shell_delegate));
+    AshTestBase::SetUp();
 
     CreateFullscreenWindow();
   }

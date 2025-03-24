@@ -245,7 +245,7 @@ void MessagingBackendServiceBridge::HidePersistentMessage(
 }
 
 void MessagingBackendServiceBridge::DisplayInstantaneousMessage(
-    const std::vector<InstantMessage>& messages,
+    InstantMessage message,
     InstantMessageDelegate::SuccessCallback success_callback) {
   if (java_ref_.is_null()) {
     // We definitely failed to display the message.
@@ -265,7 +265,7 @@ void MessagingBackendServiceBridge::DisplayInstantaneousMessage(
           std::move(success_callback)));
 
   Java_MessagingBackendServiceBridge_displayInstantaneousMessage(
-      env, java_ref_, InstantMessagesToJava(env, messages), j_native_ptr);
+      env, java_ref_, InstantMessageToJava(env, message), j_native_ptr);
 }
 
 }  // namespace collaboration::messaging::android

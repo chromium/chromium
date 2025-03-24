@@ -123,7 +123,7 @@ public class AwServiceWorkerController {
         // All methods are called on the background thread.
         @Override
         public void shouldInterceptRequest(
-                AwContentsClient.AwWebResourceRequest request,
+                AwWebResourceRequest request,
                 WebResponseCallback callback,
                 AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
             // TODO: Consider analogy with AwContentsClient, i.e.

@@ -910,6 +910,15 @@
       invalidate: ["layout", "paint"],
     },
     {
+      name: "HasAutoColumnHeight",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "true",
+      computed_style_custom_functions: ["setter"],
+      invalidate: ["layout", "paint"],
+    },
+    {
       name: "HasAutoColumnCount",
       field_template: "primitive",
       type_name: "bool",

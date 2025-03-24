@@ -68,23 +68,10 @@ void PrivacySandboxDialogHandler::RegisterMessages() {
           &PrivacySandboxDialogHandler::HandleRecordPrivacyPolicyLoadTime,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "shouldShowPrivacySandboxPrivacyPolicy",
-      base::BindRepeating(&PrivacySandboxDialogHandler::
-                              HandleShouldShowPrivacySandboxPrivacyPolicy,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "shouldShowAdTopicsContentParity",
       base::BindRepeating(
           &PrivacySandboxDialogHandler::HandleShouldShowAdTopicsContentParity,
           base::Unretained(this)));
-}
-
-void PrivacySandboxDialogHandler::HandleShouldShowPrivacySandboxPrivacyPolicy(
-    const base::Value::List& args) {
-  AllowJavascript();
-  ResolveJavascriptCallback(args[0],
-                            base::FeatureList::IsEnabled(
-                                privacy_sandbox::kPrivacySandboxPrivacyPolicy));
 }
 
 void PrivacySandboxDialogHandler::HandleRecordPrivacyPolicyLoadTime(

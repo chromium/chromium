@@ -788,6 +788,12 @@ void BidderWorklet::FinishGenerateBid(
   task->finalize_generate_bid_receiver_id = std::nullopt;
   task->wait_promises = base::TimeTicks::Now() - task->trace_wait_deps_start;
   GenerateBidIfReady(task);
+  if (!finalized_any_bid_) {
+    finalized_any_bid_ = true;
+    if (features::kFledgeWaitForPromisesToPrepareContexts.Get()) {
+      MaybePrepareContexts();
+    }
+  }
 }
 
 BidderWorklet::GenerateBidTask::GenerateBidTask() = default;
@@ -2499,6 +2505,8 @@ void BidderWorklet::MaybePrepareContexts() {
   if (!base::FeatureList::IsEnabled(
           features::kFledgePrepareBidderContextsInAdvance) ||
       generate_bid_tasks_.empty() || !IsCodeReady() ||
+      (!finalized_any_bid_ &&
+       features::kFledgeWaitForPromisesToPrepareContexts.Get()) ||
       base::FeatureList::IsEnabled(features::kFledgeAlwaysReuseBidderContext)) {
     return;
   }

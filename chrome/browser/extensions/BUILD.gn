@@ -1493,6 +1493,10 @@ source_set("extensions") {
       ]
       allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
     }
+
+    if (!is_android && !is_chromeos) {
+      deps += [ "//chrome/browser/ui/toasts" ]
+    }
   }  # if (enable_extensions)
 }
 

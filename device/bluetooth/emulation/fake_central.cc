@@ -201,6 +201,29 @@ void FakeCentral::SetNextGATTDiscoveryResponse(
   std::move(callback).Run(true);
 }
 
+void FakeCentral::SimulateGATTOperationResponse(
+    mojom::GATTOperationType type,
+    const std::string& address,
+    uint16_t code,
+    SimulateGATTOperationResponseCallback callback) {
+  FakePeripheral* fake_peripheral = GetFakePeripheral(address);
+  if (fake_peripheral == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  switch (type) {
+    case mojom::GATTOperationType::kConnect:
+      fake_peripheral->SimulateGATTConnectionResponse(code);
+      std::move(callback).Run(true);
+      break;
+    case mojom::GATTOperationType::kDiscovery:
+      fake_peripheral->SimulateGATTDiscoveryResponse(code);
+      std::move(callback).Run(true);
+      break;
+  }
+}
+
 bool FakeCentral::AllResponsesConsumed() {
   return std::ranges::all_of(devices_, [](const auto& e) {
     // static_cast is safe because the parent class's devices_ is only
@@ -770,6 +793,20 @@ FakeRemoteGattDescriptor* FakeCentral::GetFakeRemoteGattDescriptor(
   // with FakeRemoteGattDescriptors.
   return static_cast<FakeRemoteGattDescriptor*>(
       fake_remote_gatt_characteristic->GetDescriptor(descriptor_id));
+}
+
+void FakeCentral::DispatchGATTOperationEvent(
+    mojom::GATTOperationType type,
+    const std::string& peripheral_address) {
+  if (client_.is_bound()) {
+    client_->DispatchGATTOperationEvent(type, peripheral_address);
+  }
+}
+
+void FakeCentral::SetClient(
+    ::mojo::PendingAssociatedRemote<mojom::FakeCentralClient> client) {
+  CHECK(!client_.is_bound());
+  client_.Bind(std::move(client));
 }
 
 }  // namespace bluetooth

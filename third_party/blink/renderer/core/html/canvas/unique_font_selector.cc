@@ -11,8 +11,9 @@
 
 namespace blink {
 
-UniqueFontSelector::UniqueFontSelector(FontSelector* base_selector)
-    : base_selector_(base_selector) {
+UniqueFontSelector::UniqueFontSelector(FontSelector* base_selector,
+                                       bool enable_cache)
+    : base_selector_(base_selector), enable_cache_(enable_cache) {
   if (base_selector != nullptr && IsMainThread()) {
     MemoryPressureListenerRegistry::Instance().RegisterClient(this);
   }
@@ -26,7 +27,7 @@ void UniqueFontSelector::Trace(Visitor* visitor) const {
 
 const Font* UniqueFontSelector::FindOrCreateFont(
     const FontDescription& description) {
-  if (!RuntimeEnabledFeatures::CanvasTextNgEnabled()) {
+  if (!enable_cache_) {
     return MakeGarbageCollected<Font>(description, base_selector_);
   }
 

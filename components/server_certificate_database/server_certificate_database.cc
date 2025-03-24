@@ -21,7 +21,7 @@
 
 namespace net {
 
-inline constexpr base::FilePath::CharType kServerCertificateDatabaseName[] =
+extern const base::FilePath::CharType kServerCertificateDatabaseName[] =
     FILE_PATH_LITERAL("ServerCertificate");
 
 // These database versions should roll together unless we develop migrations.

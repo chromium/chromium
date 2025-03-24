@@ -822,6 +822,32 @@ UIViewController* TopPresentedViewController() {
       assertWithMatcher:grey_nil()];
 }
 
+// Tests opening the context menu on a tab then deleting it then adding the tab
+// to a group.
+- (void)testAddTabToGroupAfterDelete {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check for the presence of the tab cell with the title `Tab 1` in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  DisplayContextMenuForTabCellAtIndex(0);
+
+  [ChromeEarlGrey closeTabAtIndex:0];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
+              IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1))]
+      performAction:grey_tap()];
+}
+
 // Tests ungrouping of a group from the overflow menu in the group view.
 - (void)testUngroupingGroupFromGroupView {
   if (@available(iOS 17, *)) {

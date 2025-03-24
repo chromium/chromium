@@ -9,8 +9,9 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
+#include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -43,6 +44,11 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+
+using kiosk::test::BlockKioskLaunch;
+using kiosk::test::LaunchAppManually;
+using kiosk::test::TheKioskApp;
+
 namespace {
 
 constexpr char kWifiServiceName[] = "stub_wifi";
@@ -51,6 +57,8 @@ constexpr char kWifiNetworkName[] = "wifi-test-network";
 const test::UIPath kNetworkBackButton = {"error-message", "backButton"};
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
+const test::UIPath kNetworkConfigureScreenCertsButton = {
+    "error-message", "configureCertsButton"};
 const test::UIPath kErrorMessageGuestSigninLink = {"error-message",
                                                    "error-guest-signin-link"};
 const test::UIPath kErrorMessageOfflineLoginLink = {"error-message",
@@ -60,6 +68,16 @@ ErrorScreen* GetScreen() {
   return static_cast<ErrorScreen*>(
       WizardController::default_controller()->GetScreen(
           ErrorScreenView::kScreenId));
+}
+
+std::vector<KioskMixin::Config> KioskErrorScreenTestConfigs() {
+  // TODO(crbug.com/379633748): Add IWA.
+  return {KioskMixin::Config{/*name=*/"WebApp",
+                             /*auto_launch_account_id=*/{},
+                             {KioskMixin::SimpleWebAppOption()}},
+          KioskMixin::Config{/*name=*/"ChromeApp",
+                             /*auto_launch_account_id=*/{},
+                             {KioskMixin::SimpleChromeAppOption()}}};
 }
 
 }  // namespace
@@ -302,7 +320,9 @@ INSTANTIATE_TEST_SUITE_P(
                     // Gaia dialog right away.
                     DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED));
 
-class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
+class KioskErrorScreenTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<KioskMixin::Config> {
  public:
   KioskErrorScreenTest() = default;
 
@@ -311,112 +331,44 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 
   ~KioskErrorScreenTest() override = default;
 
-  void SetUpInProcessBrowserTestFixture() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
+  const KioskMixin::Config& config() { return GetParam(); }
 
-    AddKioskAppToDevicePolicy();
-
-    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetOnline(bool is_online) {
-    network_helper_->SetServiceProperty(kWifiServiceName, shill::kStateProperty,
-                                        is_online
-                                            ? base::Value(shill::kStateOnline)
-                                            : base::Value(shill::kStateIdle));
-    // Network modification notifications are posted asynchronously. Wait until
-    // idle to ensure observers are notified.
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetUpOnMainThread() override {
-    network_helper_ = std::make_unique<NetworkStateTestHelper>(
-        /*use_default_devices_and_services=*/false);
-
-    network_helper_->service_test()->AddService(
-        kWifiServiceName, "wifi_guid", kWifiNetworkName, shill::kTypeWifi,
-        shill::kStateIdle, /*visible=*/true);
-
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    network_helper_.reset();
-    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
-  }
-
-  void SetBlockAppLaunch(bool block) {
-    if (block) {
-      block_app_launch_override_ = KioskTestHelper::BlockAppLaunch();
-    } else {
-      block_app_launch_override_.reset();
-    }
-  }
-
- protected:
-  LoginManagerMixin login_mixin_{&mixin_host_, {}, &fake_gaia_};
-
- private:
-  void AddKioskAppToDevicePolicy() {
-    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
-        device_state_.RequestDevicePolicyUpdate();
-    KioskAppsMixin::AppendKioskAccount(device_policy_update->policy_payload());
-    device_policy_update.reset();
-
-    device_state_.RequestDeviceLocalAccountPolicyUpdate(
-        KioskAppsMixin::kEnterpriseKioskAccountId);
-  }
-
-  std::unique_ptr<NetworkStateTestHelper> network_helper_;
-
-  base::AutoReset<bool> skip_splash_wait_override_ =
-      KioskTestHelper::SkipSplashScreenWait();
-  std::optional<base::AutoReset<bool>> block_app_launch_override_;
-
-  DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  EmbeddedTestServerSetupMixin embedded_test_server_setup_{
-      &mixin_host_, embedded_test_server()};
-  KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
+  NetworkStateMixin network_state_{&mixin_host_};
+  KioskMixin kiosk_{&mixin_host_, /*cached_configuration=*/config()};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  LoginManagerMixin login_mixin_{&mixin_host_, {}, &fake_gaia_};
 };
 
 // Verify that certificate manager dialog opens.
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
-  KioskAppsMixin::WaitForAppsButton();
-  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
-  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kTestChromeAppId));
-
+IN_PROC_BROWSER_TEST_P(KioskErrorScreenTest, OpenCertificateConfig) {
+  network_state_.SimulateOffline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
-
+  ASSERT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   DialogWindowWaiter waiter(
       l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE));
-
-  const test::UIPath kCertsButton = {"error-message", "configureCertsButton"};
-  test::OobeJS().CreateVisibilityWaiter(true, kCertsButton)->Wait();
-  test::OobeJS().ClickOnPath(kCertsButton);
-
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kNetworkConfigureScreenCertsButton)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kNetworkConfigureScreenCertsButton);
   waiter.Wait();
 }
 
 // The existence of user pods in the signin screen can influence
 // the presence of the back button in the network configuration
 // screen. Add a regular user to cover this case.
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+IN_PROC_BROWSER_TEST_P(KioskErrorScreenTest,
                        PRE_NoBackButtonInNetworkConfigureScreenAfterTimeout) {
   login_mixin_.LoginAsNewRegularUser();
   login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+IN_PROC_BROWSER_TEST_P(KioskErrorScreenTest,
                        NoBackButtonInNetworkConfigureScreenAfterTimeout) {
-  KioskAppsMixin::WaitForAppsButton();
-  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
-  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kTestChromeAppId));
-  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  network_state_.SimulateOffline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  ASSERT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   test::OobeJS().ExpectPathDisplayed(false, kNetworkBackButton);
   test::OobeJS().ExpectPathDisplayed(false,
@@ -426,22 +378,19 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
 // The existence of user pods in the signin screen can influence
 // the presence of the back button in the network configuration
 // screen. Add a regular user to cover this case.
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+IN_PROC_BROWSER_TEST_P(KioskErrorScreenTest,
                        PRE_NoBackButtonInNetworkConfigureScreenAfterShortcut) {
   login_mixin_.LoginAsNewRegularUser();
   login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+IN_PROC_BROWSER_TEST_P(KioskErrorScreenTest,
                        NoBackButtonInNetworkConfigureScreenAfterShortcut) {
-  SetOnline(true);
-  KioskAppsMixin::WaitForAppsButton();
-  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
-  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kTestChromeAppId));
-  SetBlockAppLaunch(true);
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  auto scoped_launch_blocker = BlockKioskLaunch();
   OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
-
   ASSERT_TRUE(LoginScreenTestApi::PressAccelerator(
       ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)));
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
@@ -454,31 +403,29 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
 // It shouldn't be possible to login as an existing user from the network
 // configuration screen (ErrorScreen) in kiosk mode. Verify that this option
 // is not available.
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+IN_PROC_BROWSER_TEST_P(KioskErrorScreenTest,
                        PRE_NoOfflineLoginInNetworkConfigureScreen) {
   login_mixin_.LoginAsNewRegularUser();
   login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+IN_PROC_BROWSER_TEST_P(KioskErrorScreenTest,
                        NoOfflineLoginInNetworkConfigureScreen) {
   // Make ErrorScreen to appear first to verify that the state of the
   // ErrorScreen is properly updated when it is shown from the kiosk mode.
-  SetOnline(false);
-  EXPECT_TRUE(LoginScreenTestApi::ClickAddUserButton());
+  network_state_.SimulateOffline();
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  ASSERT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   test::OobeJS().ExpectPathDisplayed(true, kErrorMessageOfflineLoginLink);
   test::OobeJS().ClickOnPath(kNetworkBackButton);
 
   // Now start an app.
-  SetOnline(true);
-  KioskAppsMixin::WaitForAppsButton();
-  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
-  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kTestChromeAppId));
-  SetBlockAppLaunch(true);
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+  auto scoped_launch_blocker = BlockKioskLaunch();
   OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
-
   ASSERT_TRUE(LoginScreenTestApi::PressAccelerator(
       ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)));
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
@@ -486,5 +433,10 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
   test::OobeJS().ExpectPathDisplayed(false, kNetworkBackButton);
   test::OobeJS().ExpectPathDisplayed(false, kErrorMessageOfflineLoginLink);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         KioskErrorScreenTest,
+                         testing::ValuesIn(KioskErrorScreenTestConfigs()),
+                         KioskMixin::ConfigName);
 
 }  // namespace ash

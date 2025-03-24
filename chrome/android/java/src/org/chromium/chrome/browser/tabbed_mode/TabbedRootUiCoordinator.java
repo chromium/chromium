@@ -684,14 +684,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void showFullHistorySheet() {
         if (mActivity == null) return;
         Tab tab = mActivityTabProvider.get();
-        if (tab == null || tab.getWebContents() == null || !tab.isUserInteractable()) return;
+        if (tab == null
+                || tab.getWebContents() == null
+                || !tab.isUserInteractable()
+                || tab.getContentView() == null) return;
         Profile profile = tab.getProfile();
         mNavigationSheet =
                 NavigationSheet.create(
-                        mActivity.getWindow().getDecorView().findViewById(android.R.id.content),
-                        mActivity,
-                        this::getBottomSheetController,
-                        profile);
+                        tab.getContentView(), mActivity, this::getBottomSheetController, profile);
         mNavigationSheet.setDelegate(
                 new TabbedSheetDelegate(
                         tab,

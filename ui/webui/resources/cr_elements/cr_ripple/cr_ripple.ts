@@ -36,9 +36,9 @@ export class CrRippleElement extends CrLitElement {
     };
   }
 
-  holdDown: boolean = false;
-  recenters: boolean = false;
-  noink: boolean = false;
+  accessor holdDown: boolean = false;
+  accessor recenters: boolean = false;
+  accessor noink: boolean = false;
 
   private ripples_: Element[] = [];
   private eventTracker_: EventTracker = new EventTracker();

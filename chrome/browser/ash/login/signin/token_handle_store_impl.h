@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/signin/token_handle_checker.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/known_user.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
@@ -20,7 +21,9 @@ namespace ash {
 // TODO(387248794): Rename to `TokenHandleStore` as part of cleanup.
 class TokenHandleStoreImpl : public TokenHandleStore {
  public:
-  static TokenHandleStoreImpl* Get();
+  explicit TokenHandleStoreImpl(
+      std::unique_ptr<user_manager::KnownUser> known_user);
+  ~TokenHandleStoreImpl() override;
 
   TokenHandleStoreImpl(const TokenHandleStoreImpl&) = delete;
   TokenHandleStoreImpl& operator=(const TokenHandleStoreImpl&) = delete;
@@ -42,10 +45,10 @@ class TokenHandleStoreImpl : public TokenHandleStore {
   void MaybeFetchTokenHandle(const AccountId& account_id);
 
  private:
-  friend base::NoDestructor<TokenHandleStoreImpl>;
+  // Checks if token handle is explicitly marked as valid for `account_id`.
+  bool HasTokenStatusInvalid(const AccountId& account_id) const;
 
-  TokenHandleStoreImpl();
-  ~TokenHandleStoreImpl() override;
+  std::unique_ptr<user_manager::KnownUser> known_user_;
 };
 
 }  // namespace ash

@@ -238,8 +238,10 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
 // without a valid unique_touch_event_id when it sees a GestureFlingStart
 // terminating the underlying mouse scroll sequence. If the GestureScrollEnd is
 // given a unique_touch_event_id of 0, then a crash will occur.
+// TODO(crbug.com/404887525): Test randomly times out due to not receiving the
+// InputEventAckWaiter kGestureScrollEnd event.
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
-                       TouchEmulatorPinchWithGestureFling) {
+                       DISABLED_TouchEmulatorPinchWithGestureFling) {
   auto* touch_emulator = host()->GetTouchEmulator(/*create_if_necessary=*/true);
   touch_emulator->Enable(input::TouchEmulator::Mode::kEmulatingTouchFromMouse,
                          ui::GestureProviderConfigType::GENERIC_MOBILE);

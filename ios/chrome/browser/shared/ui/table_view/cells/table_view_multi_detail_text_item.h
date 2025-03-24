@@ -32,6 +32,9 @@
 @property(nonatomic, readonly, strong) UILabel* leadingDetailTextLabel;
 @property(nonatomic, readonly, strong) UILabel* trailingDetailTextLabel;
 
+// Adjusts cell constraints based on icon visibility.
+- (void)updateConstraintsForTrailingIconVisible:(BOOL)visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_MULTI_DETAIL_TEXT_ITEM_H_

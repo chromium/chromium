@@ -12,6 +12,7 @@
 #include <optional>
 #include <sstream>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/alias.h"
@@ -575,7 +576,7 @@ gfx::Point DIPToScreenPoint(const gfx::Point& dip_point,
 // Create a fake FHD display used in case no displays are ever conneceted.
 ScreenWinDisplay CreateFallbackPrimaryScreenDisplay() {
   MONITORINFOEX monitor_info;
-  ::ZeroMemory(&monitor_info, sizeof(monitor_info));
+  UNSAFE_TODO(::ZeroMemory(&monitor_info, sizeof(monitor_info)));
   monitor_info.cbSize = sizeof(monitor_info);
   monitor_info.rcMonitor = gfx::Rect{1920, 1080}.ToRECT();
   monitor_info.rcWork = monitor_info.rcMonitor;

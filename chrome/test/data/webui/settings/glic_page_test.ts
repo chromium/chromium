@@ -4,32 +4,31 @@
 
 import 'chrome://settings/settings.js';
 
-import type {CrCollapseElement, CrShortcutInputElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 const POLICY_ENABLED_VALUE = 0;
 const POLICY_DISABLED_VALUE = 1;
 
+// Note - if adding tests related to the shortcut control, use
+// glic_page_focus_test.ts instead. That test suite is an interactive_ui_test
+// which correctly deals with focus. The shortcut control relies internally on
+// focus events to work so using this suite results in flaky tests.
 suite('GlicPage', function() {
   let page: SettingsGlicPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let glicBrowserProxy: TestGlicBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
-  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   function createGlicPage(initialShortcut: string) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     glicBrowserProxy = new TestGlicBrowserProxy();
     glicBrowserProxy.setGlicShortcutResponse(initialShortcut);
@@ -381,83 +380,5 @@ suite('GlicPage', function() {
     const infoCard = $<CrCollapseElement>('tabAccessInfoCollapse');
     assertTrue(!!infoCard);
     assertFalse(infoCard.opened);
-  });
-
-  suite('Metrics', () => {
-    let booleanHistograms: Array<[string, boolean]> = [];
-    let userActions: string[] = [];
-
-    function verifyBooleanMetric(histogramName: string, visible: boolean) {
-      assertTrue(booleanHistograms.some(
-          histogram =>
-              histogramName === histogram[0] && visible === histogram[1]));
-    }
-
-    function verifyUserAction(userAction: string) {
-      assertTrue(userActions.includes(userAction));
-    }
-
-    test('clear shortcut', async () => {
-      // Arrange.
-      const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
-      assertTrue(!!shortcutInput);
-      const field = shortcutInput.$.input;
-      assertEquals('⌃A', field.value);
-      // Open toggle, to allow focus on the shortcut input.
-      clickToggle();
-      await waitAfterNextRender(field);
-      // Clear any toggle-related metrics.
-      metricsBrowserProxy.reset();
-
-      // Act.
-      glicBrowserProxy.setGlicShortcutResponse('');
-      shortcutInput.$.edit.click();
-      await flushTasks();
-      keyDownOn(field, 27);  // Escape key.
-      await flushTasks();
-      assertEquals('', field.value);
-
-      // Assert.
-      booleanHistograms =
-          await metricsBrowserProxy.getArgs('recordBooleanHistogram');
-      assertEquals(1, booleanHistograms.length);
-      const hasValue = 'Glic.OsEntrypoint.Settings.Shortcut';
-      verifyBooleanMetric(hasValue, false);
-      userActions = await metricsBrowserProxy.getArgs('recordAction');
-      assertEquals(1, userActions.length);
-      verifyUserAction('GlicOsEntrypoint.Settings.ShortcutDisabled');
-    });
-
-    test('set shortcut', async () => {
-      // Arrange.
-      await createGlicPage(/*initialShortcut=*/ '');
-      const shortcutInput = $<CrShortcutInputElement>('shortcutInput');
-      assertTrue(!!shortcutInput);
-      const field = shortcutInput.$.input;
-      assertEquals('', field.value);
-      // Open toggle, to allow focus on the shortcut input.
-      clickToggle();
-      await waitAfterNextRender(field);
-      // Clear any toggle-related metrics.
-      metricsBrowserProxy.reset();
-
-      // Act.
-      glicBrowserProxy.setGlicShortcutResponse('⌃A');
-      shortcutInput.$.edit.click();
-      await flushTasks();
-      keyDownOn(field, 65, ['ctrl']);
-      await flushTasks();
-
-      // Assert.
-      booleanHistograms =
-          await metricsBrowserProxy.getArgs('recordBooleanHistogram');
-      assertEquals(2, booleanHistograms.length);
-      const hasValue = 'Glic.OsEntrypoint.Settings.Shortcut';
-      verifyBooleanMetric(hasValue, false);
-      verifyBooleanMetric(hasValue, true);
-      userActions = await metricsBrowserProxy.getArgs('recordAction');
-      assertEquals(1, userActions.length);
-      verifyUserAction('GlicOsEntrypoint.Settings.ShortcutEnabled');
-    });
   });
 });

@@ -145,18 +145,18 @@
       LayoutGuideCenterForBrowser(self.browser);
   self.viewController.isSearchOnlyUI = self.isSearchOnlyUI;
 
-  BOOL isIncognito = self.browser->GetProfile()->IsOffTheRecord();
+  BOOL isIncognito = self.profile->IsOffTheRecord();
   self.mediator = [[OmniboxMediator alloc]
       initWithIncognito:isIncognito
                 tracker:feature_engagement::TrackerFactory::GetForProfile(
-                            self.browser->GetProfile())
+                            self.profile)
           isLensOverlay:_isLensOverlay];
 
   TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
+      ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   self.mediator.templateURLService = templateURLService;
   self.mediator.faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForProfile(self.browser->GetProfile());
+      IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
   self.mediator.consumer = self.viewController;
   self.mediator.omniboxCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
@@ -175,8 +175,8 @@
   id<OmniboxCommands> omniboxHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(
-      self.textField, std::move(_client), self.browser->GetProfile(),
-      omniboxHandler, self.focusDelegate, _toolbarHandler, _isLensOverlay);
+      self.textField, std::move(_client), self.profile, omniboxHandler,
+      self.focusDelegate, _toolbarHandler, _isLensOverlay);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
@@ -287,8 +287,7 @@
       (!self.isSearchOnlyUI ||
        experimental_flags::IsOmniboxDebuggingEnabled())) {
     TemplateURLService* templateURLService =
-        ios::TemplateURLServiceFactory::GetForProfile(
-            self.browser->GetProfile());
+        ios::TemplateURLServiceFactory::GetForProfile(self.profile);
     self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
         self.textField, kDotComTLD, _keyboardMediator, templateURLService,
         HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands));

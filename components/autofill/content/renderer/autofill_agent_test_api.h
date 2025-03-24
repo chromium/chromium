@@ -29,10 +29,10 @@ class AutofillAgentTestApi {
     agent_->FocusedElementChanged(new_focused_element);
   }
 
-  void QueryAutofillSuggestions(const blink::WebFormControlElement& element,
-                                AutofillSuggestionTriggerSource trigger_source,
-                                const SynchronousFormCache& form_cache) {
-    agent_->QueryAutofillSuggestions(element, trigger_source, form_cache);
+  void ShowSuggestions(const blink::WebFormControlElement& element,
+                       AutofillSuggestionTriggerSource trigger_source,
+                       const SynchronousFormCache& form_cache) {
+    agent_->ShowSuggestions(element, trigger_source, form_cache);
   }
 
   void ShowSuggestionsForContentEditable(

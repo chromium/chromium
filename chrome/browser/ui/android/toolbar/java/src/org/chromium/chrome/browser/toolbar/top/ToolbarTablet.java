@@ -227,7 +227,7 @@ public class ToolbarTablet extends ToolbarLayout
                     }
                 });
 
-        mReloadButton.setOnKeyListener(
+        mReloadButtonCoordinator.setOnKeyListener(
                 new KeyboardNavigationListener() {
                     @Override
                     public View getNextFocusForward() {
@@ -505,7 +505,6 @@ public class ToolbarTablet extends ToolbarLayout
         mHomeButton.setBackgroundResource(toolbarIconRippleId);
         mBackButton.setBackgroundResource(toolbarIconRippleId);
         mForwardButton.setBackgroundResource(toolbarIconRippleId);
-        mReloadButton.setBackgroundResource(toolbarIconRippleId);
         getTabSwitcherButtonCoordinator()
                 .getContainerView()
                 .setBackgroundResource(toolbarIconRippleId);

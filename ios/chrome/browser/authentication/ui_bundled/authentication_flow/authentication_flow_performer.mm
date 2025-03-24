@@ -224,6 +224,29 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
                          sceneState:(SceneState*)sceneState {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
+  std::optional<std::string> profileName =
+      GetApplicationContext()
+          ->GetAccountProfileMapper()
+          ->FindProfileNameForGaiaID(GaiaId(identity.gaiaID));
+  if (!profileName.has_value()) {
+    __weak __typeof(_delegate) weakDelegate = _delegate;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](__typeof(_delegate) delegate) {
+                         [delegate didSwitchToProfileWithSuccess:false
+                                               newProfileBrowser:nullptr];
+                       },
+                       weakDelegate));
+    return;
+  }
+
+  [self switchToProfileWithName:*profileName sceneState:sceneState];
+}
+
+- (void)switchToProfileWithName:(const std::string&)profileName
+                     sceneState:(SceneState*)sceneState {
+  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+
   __weak __typeof(_delegate) weakDelegate = _delegate;
   OnProfileSwitchCompletion completion = base::BindOnce(
       [](__typeof(_delegate) delegate, bool success,
@@ -233,19 +256,8 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
       },
       weakDelegate);
 
-  std::optional<std::string> profileName =
-      GetApplicationContext()
-          ->GetAccountProfileMapper()
-          ->FindProfileNameForGaiaID(GaiaId(identity.gaiaID));
-  if (!profileName.has_value()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(completion), /*success=*/false,
-                                  /*new_profile_browser=*/nullptr));
-    return;
-  }
-
   [_changeProfileHandler
-      changeProfile:*profileName
+      changeProfile:profileName
            forScene:sceneState
        continuation:base::BindOnce(&AuthenticationFlowContinuation,
                                    std::move(completion))];

@@ -59,5 +59,5 @@ avd_variants {
 min_sdk: 28
 additional_apk {
   package_name: "chrome_internal/third_party/google3/apks/gmscore/x86"
-  version: "-rCzVFgS21dIKhLDnLwcldFij4xnnS0scaKnB44WlfoC" # 24.26.32
+  version: "OYrEFrkwaK-a1rf2CSiqXp1ZugsWxQj3wS6LxjoEywMC" # 25.07.33
 }

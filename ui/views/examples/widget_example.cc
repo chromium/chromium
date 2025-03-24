@@ -70,7 +70,8 @@ LabelButton* WidgetExample::BuildButton(View* container,
 }
 
 void WidgetExample::CreateDialogWidget(View* sender, bool modal) {
-  auto dialog = std::make_unique<DialogDelegateView>();
+  auto dialog =
+      std::make_unique<DialogDelegateView>(DialogDelegateView::CreatePassKey());
   dialog->SetTitle(IDS_WIDGET_WINDOW_TITLE);
   dialog->SetBackground(
       CreateSolidBackground(ExamplesColorIds::kColorWidgetExampleDialogBorder));

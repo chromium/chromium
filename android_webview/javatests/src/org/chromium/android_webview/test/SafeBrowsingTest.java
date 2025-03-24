@@ -33,6 +33,7 @@ import org.chromium.android_webview.AwContents.NativeDrawFunctorFactory;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.SafeBrowsingAction;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.common.AwSwitches;
@@ -1105,7 +1106,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         mContentsClient.getOnPageFinishedHelper().waitForCallback(pageFinishedCount);
         // Some click tests involve URLs that redirect and mAwContents.getUrl() sometimes
         // returns the post-redirect URL, so we instead check with ShouldInterceptRequest.
-        AwContentsClient.AwWebResourceRequest requestsForUrl =
+        AwWebResourceRequest requestsForUrl =
                 mContentsClient.getShouldInterceptRequestHelper().getRequestsForUrl(linkUrl);
         // Make sure the URL was seen for a main frame navigation.
         Assert.assertTrue(requestsForUrl.isOutermostMainFrame);

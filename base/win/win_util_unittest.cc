@@ -92,6 +92,12 @@ TEST(BaseWinUtilTest, TestUint32ToInvalidHandle) {
   EXPECT_EQ(INVALID_HANDLE_VALUE, Uint32ToHandle(invalid_handle));
 }
 
+TEST(BaseWinUtilTest, PseudoHandles) {
+  EXPECT_TRUE(IsPseudoHandle(::GetCurrentProcess()));
+  EXPECT_TRUE(IsPseudoHandle(::GetCurrentThread()));
+  EXPECT_FALSE(IsPseudoHandle(nullptr));
+}
+
 TEST(BaseWinUtilTest, WStringFromGUID) {
   const GUID kGuid = {0x7698f759,
                       0xf5b0,

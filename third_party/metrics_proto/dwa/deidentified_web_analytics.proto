@@ -132,6 +132,7 @@ message EncryptedPageLoadEvents {
   repeated EncryptedPageLoadEvent encrypted_page_load_events = 1;
 }
 
+// Next tag: 7
 message DeidentifiedWebAnalyticsEvent {
   // A hash of the event name/type (such as "ReportingAPIUsage").
   // Uses the same hash function as UMA.
@@ -141,6 +142,7 @@ message DeidentifiedWebAnalyticsEvent {
   // The type of content that the event is associated with.
   // CONTENT_TYPE_INVALID is an invalid value and should never used. The
   // client should check the value before sending the report.
+  // Next tag: 5
   message ContentMetric {
     enum ContentType {
       CONTENT_TYPE_INVALID = 0;
@@ -159,10 +161,12 @@ message DeidentifiedWebAnalyticsEvent {
     // A set of metrics collected as part of a single entry. A single entry
     // defines a series of metrics collected in one instance.
     // https://source.chromium.org/chromium/chromium/src/+/main:components/metrics/dwa/mojom/dwa_interface.mojom
+    // Next tag: 4
     message EntryMetrics {
       // A single metric, which is defined by a name hash and a value.
       message Metric {
         optional fixed64 name_hash = 1;
+
         optional int64 value = 2;
       }
 

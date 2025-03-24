@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_IOS_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_IOS_H_
 
-#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
-
 #include <string>
 #include <vector>
 
@@ -17,6 +15,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "ui/accelerated_widget_mac/ca_layer_frame_sink.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 
@@ -213,9 +212,15 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   bool CanResignFirstResponderForTesting() const;
   void ContentInsetChanged();
   void DeleteSurroundingText(int before, int after);
+  void SendKeyEvent(const input::NativeWebKeyboardEvent& event);
 
   void StartAutoscrollForSelectionToPoint(const gfx::PointF& point);
   void StopAutoscroll();
+
+  void RectForEditFieldChars(
+      const gfx::Range& range,
+      blink::mojom::FrameWidgetInputHandler::RectForEditFieldCharsCallback
+          callback);
 
  private:
   friend class MockPointerLockRenderWidgetHostView;
@@ -233,6 +238,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ApplyRootScrollOffsetChanged(const gfx::PointF& root_scroll_offset,
                                     bool force);
   void UpdateFrameBounds();
+  void ComputeDisplayFeature();
 
   blink::mojom::FrameWidgetInputHandler*
   GetFrameWidgetInputHandlerForFocusedWidget();
@@ -266,6 +272,12 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   // This stores the underlying view bounds. The UIView might change size but
   // we do not change its size during scroll.
   gfx::Rect view_bounds_;
+
+  // Represents a feature of the physical display whose offset and mask_length
+  // are expressed in DIPs relative to the view. See display_feature.h for more
+  // details.
+  std::optional<DisplayFeature> display_feature_;
+  bool display_feature_overridden_for_emulation_ = false;
 
   std::unique_ptr<BrowserCompositorIOS> browser_compositor_;
   std::unique_ptr<UIViewHolder> ui_view_;

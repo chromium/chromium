@@ -8,7 +8,7 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_create_options.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/ai_writer.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -20,49 +20,18 @@
 namespace blink {
 namespace {
 
-mojom::blink::AIWriterTone ToMojoAIWriterTone(V8AIWriterTone tone) {
-  switch (tone.AsEnum()) {
-    case V8AIWriterTone::Enum::kFormal:
-      return mojom::blink::AIWriterTone::kFormal;
-    case V8AIWriterTone::Enum::kNeutral:
-      return mojom::blink::AIWriterTone::kNeutral;
-    case V8AIWriterTone::Enum::kCasual:
-      return mojom::blink::AIWriterTone::kCasual;
-  }
-  NOTREACHED();
-}
-
-mojom::blink::AIWriterFormat ToMojoAIWriterFormat(V8AIWriterFormat format) {
-  switch (format.AsEnum()) {
-    case V8AIWriterFormat::Enum::kPlainText:
-      return mojom::blink::AIWriterFormat::kPlainText;
-    case V8AIWriterFormat::Enum::kMarkdown:
-      return mojom::blink::AIWriterFormat::kMarkdown;
-  }
-  NOTREACHED();
-}
-
-mojom::blink::AIWriterLength ToMojoAIWriterLength(V8AIWriterLength length) {
-  switch (length.AsEnum()) {
-    case V8AIWriterLength::Enum::kShort:
-      return mojom::blink::AIWriterLength::kShort;
-    case V8AIWriterLength::Enum::kMedium:
-      return mojom::blink::AIWriterLength::kMedium;
-    case V8AIWriterLength::Enum::kLong:
-      return mojom::blink::AIWriterLength::kLong;
-  }
-  NOTREACHED();
-}
-
 class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
                            public mojom::blink::AIManagerCreateWriterClient,
-                           public AIMojoClient<AIWriter> {
+                           public AIContextObserver<AIWriter> {
  public:
   CreateWriterClient(ScriptState* script_state,
                      AI* ai,
                      ScriptPromiseResolver<AIWriter>* resolver,
                      AIWriterCreateOptions* options)
-      : AIMojoClient(script_state, ai, resolver, options->getSignalOr(nullptr)),
+      : AIContextObserver(script_state,
+                          ai,
+                          resolver,
+                          options->getSignalOr(nullptr)),
         ai_(ai),
         receiver_(this, ai->GetExecutionContext()),
         options_(options) {
@@ -70,17 +39,8 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    ai_->GetAIRemote()->CreateWriter(
-        std::move(client_remote),
-        mojom::blink::AIWriterCreateOptions::New(
-            options->getSharedContextOr(g_empty_string),
-            ToMojoAIWriterTone(options->tone()),
-            ToMojoAIWriterFormat(options->format()),
-            ToMojoAIWriterLength(options->length()),
-            ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
-            ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
-            mojom::blink::AILanguageCode::New(
-                options->getOutputLanguageOr(g_empty_string))));
+    ai_->GetAIRemote()->CreateWriter(std::move(client_remote),
+                                     ToMojoWriterCreateOptions(options));
   }
   ~CreateWriterClient() override = default;
 
@@ -88,7 +48,7 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
   CreateWriterClient& operator=(const CreateWriterClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
-    AIMojoClient::Trace(visitor);
+    AIContextObserver::Trace(visitor);
     visitor->Trace(ai_);
     visitor->Trace(options_);
     visitor->Trace(receiver_);
@@ -181,15 +141,7 @@ ScriptPromise<V8AIAvailability> AIWriterFactory::availability(
   }
 
   ai_->GetAIRemote()->CanCreateWriter(
-      mojom::blink::AIWriterCreateOptions::New(
-          /*shared_context=*/g_empty_string,
-          ToMojoAIWriterTone(options->tone()),
-          ToMojoAIWriterFormat(options->format()),
-          ToMojoAIWriterLength(options->length()),
-          ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
-          ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
-          mojom::blink::AILanguageCode::New(
-              options->getOutputLanguageOr(g_empty_string))),
+      ToMojoWriterCreateOptions(options),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8AIAvailability>* resolver,
              AIWriterFactory* factory,

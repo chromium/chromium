@@ -93,8 +93,8 @@ public class SpinnerPreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        ((TextView) assumeNonNull(holder.findViewById(R.id.title))).setText(getTitle());
-        mSpinner = (Spinner) assumeNonNull(holder.findViewById(R.id.spinner));
+        ((TextView) holder.findViewById(R.id.title)).setText(getTitle());
+        mSpinner = (Spinner) holder.findViewById(R.id.spinner);
         mSpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override

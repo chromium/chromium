@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServi
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
@@ -58,6 +59,7 @@ public class TabGroupLabellerUnitTest {
     @Mock private TabListNotificationHandler mTabListNotificationHandler;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mTabModel;
 
     @Captor private ArgumentCaptor<PersistentMessageObserver> mPersistentMessageObserverCaptor;
     @Captor private ArgumentCaptor<Map<Integer, TabCardLabelData>> mLabelDataCaptor;
@@ -73,6 +75,7 @@ public class TabGroupLabellerUnitTest {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         mContext = ApplicationProvider.getApplicationContext();
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabGroupModelFilter.getGroupLastShownTabId(GROUP_ID1)).thenReturn(TAB_ID1);
         mTabGroupLabeller =
@@ -157,7 +160,7 @@ public class TabGroupLabellerUnitTest {
 
     @Test
     public void testShowAll_OffTheRecord() {
-        when(mTabGroupModelFilter.isOffTheRecord()).thenReturn(true);
+        when(mTabModel.isOffTheRecord()).thenReturn(true);
         List<PersistentMessage> messageList = List.of(makeStandardMessage());
         when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
 

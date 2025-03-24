@@ -238,6 +238,7 @@
 <translation id="1905710495812624430">Максималниот број дозволени обиди е надминат.</translation>
 <translation id="1908234395526491708">Неуспешни UDP-барања</translation>
 <translation id="1908394185991500139">стрелка налево</translation>
+<translation id="1911678930322867245">Премести горе десно</translation>
 <translation id="1914144885717544695">во петок</translation>
 <translation id="1915960750806557358">Споделете ги вашите повратни информации или опишете го проблемот. Погрижете се да не наведувате лични, чувствителни или доверливи податоци.</translation>
 <translation id="1923388006036088459">Бои за истакнување</translation>
@@ -1543,16 +1544,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плажа</translation>
 <translation id="819278132617411009">Користете ја Google AI за да бидете попродуктивни</translation>
-<translation id="82003371436638355">Кога ќе изберете „Создајте свој“, напишете приспособено барање. Или може да изберете „Изберете тема“, па да ги изберете подвлечените зборови за да се персонализира вашиот AI-тапет.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Изберете „Инспирирај ме“ за да добиете повеќе уникатни и разновидни опции за слики создадени од AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Кога создавате свој тапет, барањето се испраќа до серверите на Google за да се генерираат слики и да се подобрува производот, што подлежи на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Условите за користење“ и „Политиката за приватност“ на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не внесувајте лични, чувствителни или доверливи податоци.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генеративната AI може да прави грешки, што опфаќа и грешки за луѓе, па проверувајте ги одговорите. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Дознајте повеќе<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="8200772114523450471">Продолжи</translation>
 <translation id="8206859287963243715">Мобилен</translation>
 <translation id="8208861521865154048">Поволности</translation>
@@ -1679,6 +1670,7 @@
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="8833620912470026819">шума со кактуси</translation>
 <translation id="8834539327799336565">Моментално поврзани</translation>
+<translation id="8842526499753992487">Премести горе лево</translation>
 <translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8849799913685544685">светилник</translation>
 <translation id="8851859208664803097">Сопрено - печатачот е недостапен</translation>

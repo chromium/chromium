@@ -19,8 +19,6 @@ namespace blink {
 
 namespace {
 
-// TODO(tov): Make |kMaxClosePixelDelta| and |kMaxNoisePerChannel|
-// Finch-controlled.
 constexpr uint8_t kMaxClosePixelDelta = 10u;
 constexpr uint8_t kMaxNoisePerChannel = 3u;
 constexpr uint8_t kChannelsPerPixel = 4u;

@@ -371,7 +371,8 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 - (void)logBackgroundDurationMetricForActivationLevel:
     (SceneActivationLevel)level {
   const base::TimeDelta timeSinceBackground =
-      GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState);
+      GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState)
+          .value_or(base::TimeDelta());
   const BOOL isColdStart =
       (level > SceneActivationLevelBackground &&
        self.sceneState.profileState.startupInformation.isColdStart);

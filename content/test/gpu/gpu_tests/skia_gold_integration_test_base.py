@@ -9,7 +9,7 @@ import re
 import shutil
 import sys
 import tempfile
-from typing import Any, Dict, List, Optional
+from typing import Any
 import unittest
 
 from gpu_tests import color_profile_manager
@@ -40,16 +40,16 @@ SKIA_GOLD_CORPUS = 'chrome-gpu'
 class _ImageParameters():
   def __init__(self):
     # Parameters for cloud storage reference images.
-    self.vendor_id: Optional[int] = None
-    self.device_id: Optional[int] = None
-    self.vendor_string: Optional[str] = None
-    self.device_string: Optional[str] = None
+    self.vendor_id: int | None = None
+    self.device_id: int | None = None
+    self.vendor_string: str | None = None
+    self.device_string: str | None = None
     self.msaa: bool = False
-    self.model_name: Optional[str] = None
-    self.driver_version: Optional[str] = None
-    self.driver_vendor: Optional[str] = None
-    self.display_server: Optional[str] = None
-    self.skia_graphite_status: Optional[str] = None
+    self.model_name: str | None = None
+    self.driver_version: str | None = None
+    self.driver_vendor: str | None = None
+    self.display_server: str | None = None
+    self.skia_graphite_status: str | None = None
 
 
 # This and its subclasses could potentially be switched to using dataclasses,
@@ -67,13 +67,12 @@ class SkiaGoldTestCase():
   here. Additional information should be stored in the appropriate subclass.
   """
   # pylint: disable=too-many-arguments
-  def __init__(
-      self,
-      name: str,
-      gpu_process_disabled: bool = False,
-      grace_period_end: Optional[date] = None,
-      matching_algorithm: Optional[algo.SkiaGoldMatchingAlgorithm] = None,
-      refresh_after_finish: bool = False):
+  def __init__(self,
+               name: str,
+               gpu_process_disabled: bool = False,
+               grace_period_end: date | None = None,
+               matching_algorithm: algo.SkiaGoldMatchingAlgorithm | None = None,
+               refresh_after_finish: bool = False):
     """
     Args:
       name: A string containing the name of the test.
@@ -108,14 +107,14 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   # This information is class-scoped, so that it can be shared across
   # invocations of tests; but it's zapped every time the browser is
   # restarted with different command line arguments.
-  _image_parameters: Optional[_ImageParameters] = None
+  _image_parameters: _ImageParameters | None = None
 
-  _skia_gold_temp_dir: Optional[str] = None
-  _skia_gold_session_manager: Optional[sgsm.SkiaGoldSessionManager] = None
-  _skia_gold_properties: Optional[sgp.SkiaGoldProperties] = None
+  _skia_gold_temp_dir: str | None = None
+  _skia_gold_session_manager: sgsm.SkiaGoldSessionManager | None = None
+  _skia_gold_properties: sgp.SkiaGoldProperties | None = None
 
   # Loaded from disk at a later point.
-  _dom_automation_controller_script: Optional[str] = None
+  _dom_automation_controller_script: str | None = None
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -129,7 +128,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._skia_gold_temp_dir = tempfile.mkdtemp()
 
   @classmethod
-  def _GetStaticServerDirs(cls) -> List[str]:
+  def _GetStaticServerDirs(cls) -> list[str]:
     return TEST_DATA_DIRS
 
   @classmethod
@@ -161,7 +160,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     return cls._skia_gold_session_manager
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -373,7 +372,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     image_name = re.sub(r'(\.|/|-)', '_', image_name)
     return image_name
 
-  def GetGoldJsonKeys(self, test_case: SkiaGoldTestCase) -> Dict[str, str]:
+  def GetGoldJsonKeys(self, test_case: SkiaGoldTestCase) -> dict[str, str]:
     """Get all the JSON metadata that will be passed to goldctl."""
     img_params = self.GetImageParameters(test_case)
     # The frequently changing last part of the ANGLE driver version (revision of
@@ -430,7 +429,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     return gpu_keys
 
   # pylint: disable=no-self-use
-  def GetGoldOptionalKeys(self) -> Dict[str, str]:
+  def GetGoldOptionalKeys(self) -> dict[str, str]:
     """Get all the optional JSON metadata that will be passed to goldctl.
 
     This optional data is unrelated to the configurations that images are
@@ -555,11 +554,11 @@ def _ToHex(num: str) -> str:
   return hex(int(num))
 
 
-def _ToHexOrNone(num: Optional[str]) -> str:
+def _ToHexOrNone(num: str | None) -> str:
   return 'None' if num is None else _ToHex(num)
 
 
-def _ToNonEmptyStrOrNone(val: Optional[str]) -> str:
+def _ToNonEmptyStrOrNone(val: str | None) -> str:
   return 'None' if val == '' else str(val)
 
 

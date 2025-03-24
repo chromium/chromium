@@ -45,7 +45,7 @@ build_webui("build") {
     "//components/content_settings/core/common:content_settings_types_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/chrome/browser/glic/glic.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/glic/host/glic.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
   ]
 

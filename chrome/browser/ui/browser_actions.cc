@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -59,6 +58,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/grit/branded_strings.h"
@@ -71,6 +71,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -325,8 +326,12 @@ void BrowserActions::InitializeBrowserActions() {
           base::BindRepeating(
               [](Browser* browser, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                // TODO(crbug.com/376284060): Request zoom level
-                // on click.
+                browser->GetActiveTabInterface()
+                    ->GetTabFeatures()
+                    ->zoom_view_controller()
+                    ->UpdateBubbleVisibility(
+                        /*prefer_to_show_bubble=*/true,
+                        /*from_user_gesture=*/true);
               },
               base::Unretained(browser)))
           .SetActionId(kActionZoomNormal)

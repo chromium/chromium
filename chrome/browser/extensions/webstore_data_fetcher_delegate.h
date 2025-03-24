@@ -17,12 +17,6 @@ class WebstoreDataFetcherDelegate {
   // Invoked when the web store data request failed.
   virtual void OnWebstoreRequestFailure(const std::string& extension_id) = 0;
 
-  // Invoked when the web store response parsing is successful after the item
-  // JSON API is called to retrieve the extension's webstore data.
-  virtual void OnWebstoreItemJSONAPIResponseParseSuccess(
-      const std::string& extension_id,
-      const base::Value::Dict& webstore_data) = 0;
-
   // Invoked when the web store response parsing is successful after the new
   // item snippet API is called to retrieve the extension's webstore data.
   // Note that only one of OnWebstoreItemJSONAPIResponseParseSuccess or

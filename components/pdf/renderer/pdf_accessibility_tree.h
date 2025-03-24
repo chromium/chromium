@@ -90,7 +90,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   void SetAccessibilityViewportInfo(
       chrome_pdf::AccessibilityViewportInfo viewport_info) override;
   void SetAccessibilityDocInfo(
-      chrome_pdf::AccessibilityDocInfo doc_info) override;
+      std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info) override;
   void SetAccessibilityPageInfo(
       chrome_pdf::AccessibilityPageInfo page_info,
       std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs,
@@ -170,7 +170,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   void DoSetAccessibilityViewportInfo(
       const chrome_pdf::AccessibilityViewportInfo& viewport_info);
   void DoSetAccessibilityDocInfo(
-      const chrome_pdf::AccessibilityDocInfo& doc_info);
+      std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info);
   void DoSetAccessibilityPageInfo(
       const chrome_pdf::AccessibilityPageInfo& page_info,
       const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,

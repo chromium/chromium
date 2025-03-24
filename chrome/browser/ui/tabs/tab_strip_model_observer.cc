@@ -9,9 +9,10 @@
 
 #include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/tab_collections/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
@@ -261,7 +262,25 @@ void TabStripModelObserver::OnTabGroupAdded(
 void TabStripModelObserver::OnTabGroupWillBeRemoved(
     const tab_groups::TabGroupId& group_id) {}
 
-void TabStripModelObserver::OnSplitViewAdded(std::vector<int> indices) {}
+void TabStripModelObserver::OnSplitTabCreated(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    TabStripModelObserver::SplitTabAddReason reason,
+    tabs::SplitTabLayout tab_layout) {}
+
+void TabStripModelObserver::OnSplitTabRemoved(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    TabStripModelObserver::SplitTabRemoveReason reason) {}
+
+void TabStripModelObserver::OnSplitTabOrientationChanged(
+    split_tabs::SplitTabId split_id,
+    tabs::SplitTabLayout tab_layout) {}
+
+void TabStripModelObserver::OnSplitTabContentsUpdated(
+    split_tabs::SplitTabId split_id,
+    std::vector<std::pair<tabs::TabInterface*, int>> prev_tabs,
+    std::vector<std::pair<tabs::TabInterface*, int>> new_tabs) {}
 
 void TabStripModelObserver::TabChangedAt(WebContents* contents,
                                          int index,

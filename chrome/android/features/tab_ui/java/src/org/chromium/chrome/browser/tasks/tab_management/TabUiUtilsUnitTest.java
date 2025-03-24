@@ -111,7 +111,7 @@ public class TabUiUtilsUnitTest {
 
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mFilter.getTabModel()).thenReturn(mTabModel);
-        when(mFilter.isIncognitoBranded()).thenReturn(false);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTab.getRootId()).thenReturn(ROOT_ID);
         when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(ROOT_ID);

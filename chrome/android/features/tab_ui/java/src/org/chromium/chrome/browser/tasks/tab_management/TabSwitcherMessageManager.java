@@ -411,7 +411,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             // To make the message card in view when user enters tab switcher, we should scroll to
             // current tab with 0 offset. See {@link
             // TabSwitcherMediator#setInitialScrollIndexOffset} for more details.
-            actionProvider.scrollToTab(mCurrentTabGroupModelFilterSupplier.get().index());
+            actionProvider.scrollToTab(
+                    mCurrentTabGroupModelFilterSupplier.get().getCurrentRepresentativeTabIndex());
         }
         for (MessageUpdateObserver observer : mObservers) {
             observer.onShowPriceWelcomeMessage();
@@ -534,7 +535,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                         : MessageCardViewProperties.MessageCardScope.REGULAR;
 
         if (scope == MessageCardViewProperties.MessageCardScope.BOTH) return true;
-        return mCurrentTabGroupModelFilterSupplier.get().isIncognito()
+        return mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognito()
                 ? scope == MessageCardViewProperties.MessageCardScope.INCOGNITO
                 : scope == MessageCardViewProperties.MessageCardScope.REGULAR;
     }

@@ -8,10 +8,13 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The interface for a card shown in the settings promo card. */
+@NullMarked
 public interface SettingsPromoCardProvider {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({State.PROMO_HIDDEN, State.PROMO_SHOWING})

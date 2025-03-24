@@ -12,6 +12,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -30,7 +31,6 @@
 #include "content/public/browser/web_contents.h"
 #include "pdf/pdf_features.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/platform/ax_platform.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -107,14 +107,14 @@ std::vector<content::WebContents*> GetAllPdfWebContents(Profile* profile) {
 // enabled.
 bool IsAccessibilityEnabled(Profile* profile) {
   // Active if a screen reader is present.
-  if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
     return true;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Conditionally active if select-to-speak is enabled.
   if (features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
-      ash::AccessibilityManager::Get()->IsSelectToSpeakEnabled()) {
+      accessibility_state_utils::IsSelectToSpeakEnabled()) {
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

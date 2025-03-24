@@ -163,6 +163,8 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   void RemoveObserver(Observer* observer);
 
+  float GetCurrentTouchSequenceYOffset();
+
  private:
   friend class ViewAndroid;
 

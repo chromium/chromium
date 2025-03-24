@@ -269,7 +269,7 @@ MaybeCreateClassifyUrlNavigationThrottleFor(
       navigation_handle->GetWebContents()->GetBrowserContext());
   CHECK(profile);
 
-  if (!profile->IsChild()) {
+  if (!IsSubjectToParentalControls(*profile->GetPrefs())) {
     return nullptr;
   }
 

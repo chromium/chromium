@@ -1032,6 +1032,9 @@ extern const char kEnableResamplingScrollEventsExperimentalPredictionName[];
 extern const char
     kEnableResamplingScrollEventsExperimentalPredictionDescription[];
 
+extern const char kEnableWebAppUpdateTokenParsingName[];
+extern const char kEnableWebAppUpdateTokenParsingDescription[];
+
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorName[];
 extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];
 
@@ -1927,6 +1930,11 @@ extern const char kRetainOmniboxOnFocusName[];
 extern const char kRetainOmniboxOnFocusDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+extern const char kRootScrollbarFollowsTheme[];
+extern const char kRootScrollbarFollowsThemeDescription[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
 extern const char kRoundedWindows[];
 extern const char kRoundedWindowsDescription[];
 
@@ -2135,10 +2143,6 @@ extern const char kCommerceDeveloperDescription[];
 
 extern const char kDataSharingDebugLogsName[];
 extern const char kDataSharingDebugLogsDescription[];
-
-extern const char kTabGroupsDeferRemoteNavigationsId[];
-extern const char kTabGroupsDeferRemoteNavigationsName[];
-extern const char kTabGroupsDeferRemoteNavigationsDescription[];
 
 extern const char kTabGroupSyncServiceDesktopMigrationId[];
 extern const char kTabGroupSyncServiceDesktopMigrationName[];
@@ -2487,6 +2491,8 @@ extern const char kAccessibilityIncludeLongClickActionName[];
 extern const char kAccessibilityIncludeLongClickActionDescription[];
 extern const char kAccessibilityTextFormattingName[];
 extern const char kAccessibilityTextFormattingDescription[];
+extern const char kAccessibilityOnScreenModeName[];
+extern const char kAccessibilityOnScreenModeDescription[];
 extern const char kAccessibilityUnifiedSnapshotsName[];
 extern const char kAccessibilityUnifiedSnapshotsDescription[];
 extern const char kAccessibilityManageBroadcastReceiverOnBackgroundName[];
@@ -4374,6 +4380,12 @@ extern const char kCrosMallUrlDescription[];
 
 extern const char kCrosPrivacyHubName[];
 extern const char kCrosPrivacyHubDescription[];
+
+extern const char kCrosSeparateGeoApiKeyName[];
+extern const char kCrosSeparateGeoApiKeyDescription[];
+
+extern const char kCrOSEnforceMonoAudioCaptureName[];
+extern const char kCrOSEnforceMonoAudioCaptureDescription[];
 
 extern const char kCrOSEnforceSystemAecName[];
 extern const char kCrOSEnforceSystemAecDescription[];

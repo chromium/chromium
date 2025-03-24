@@ -64,17 +64,7 @@ static const char* kInterstitialDetails = "Details";
   config.features_enabled_and_params.push_back({kIOSQuickDelete, {}});
 
   if ([self isRunningTest:@selector
-            (testSupervisedUserInterstitialCanRequestLocalWebApproval)] ||
-      [self
-          isRunningTest:@selector
-          (testSupervisedUserInterstitialCanRequestLocalWebApprovalWithOrientationChanges
-              )]) {
-    config.features_enabled_and_params.push_back(
-        {supervised_user::kLocalWebApprovals, {}});
-    config.features_enabled_and_params.push_back(
-        {supervised_user::kSupervisedUserBlockInterstitialV3, {}});
-  } else if ([self isRunningTest:@selector
-                   (testSupervisedUserLocalWebApprovalDismissedAfterTimeout)]) {
+            (testSupervisedUserLocalWebApprovalDismissedAfterTimeout)]) {
     // Sets the local web approval (LWA) load timeout to 0 to simulate a LWA
     // load error.
     config.features_enabled_and_params.push_back(
@@ -82,6 +72,23 @@ static const char* kInterstitialDetails = "Details";
          {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "0"}}}});
     config.features_enabled_and_params.push_back(
         {supervised_user::kSupervisedUserBlockInterstitialV3, {}});
+  } else if (
+      [self isRunningTest:@selector
+            (testSupervisedUserShowInterstitialDetailsLinkForNarrowScreen)] ||
+      [self
+          isRunningTest:@selector
+          (testSupervisedUserShowInterstitialDetailsLinkOnClickForNarrowScreen)] ||
+      [self isRunningTest:@selector
+            (testSupervisedUserInterstitialOnBackButton)] ||
+      [self isRunningTest:@selector
+            (testSupervisedUserInterstitialShowBlockReasonAndDetails)]) {
+    // Tests that apply only in blocked url interstitial V2.
+    config.features_disabled.push_back(
+        supervised_user::kSupervisedUserBlockInterstitialV3);
+    if ([self isRunningTest:@selector
+              (testSupervisedUserInterstitialOnBackButton)]) {
+      config.features_disabled.push_back(supervised_user::kLocalWebApprovals);
+    }
   }
 
   // Makes sure the MVT is the top ranking magic stack module.
@@ -635,7 +642,8 @@ static const char* kInterstitialDetails = "Details";
   }
 }
 
-// Tests that the Back Button of the interstitial gets us to the previous page.
+// Test that the when Local Web Approval is disabled, the "Back" button of the interstitial
+// gets us to the previous page.
 - (void)testSupervisedUserInterstitialOnBackButton {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
@@ -661,6 +669,47 @@ static const char* kInterstitialDetails = "Details";
   // (allowed) page.
   [ChromeEarlGrey tapWebStateElementWithID:@"back-button"];
   [ChromeEarlGrey waitForWebStateContainingText:kDefaultContent];
+}
+
+// Test that the when Local Web Approval is enabled, users can request a local web
+// approval from the waiting screen.
+- (void)testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+
+  GURL allowedURL = self.testServer->GetURL(kDefaultPath);
+  GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
+  [SupervisedUserSettingsAppInterface
+      addWebsiteToBlockList:net::NSURLWithGURL(blockedURL)];
+
+  [ChromeEarlGrey loadURL:allowedURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kDefaultContent];
+
+  [ChromeEarlGrey loadURL:blockedURL];
+  [self checkInterstitalIsShown];
+
+  // On clicking "Ask in a message" button, the interstitial "Waiting" screen is
+  // displayed.
+  [ChromeEarlGrey tapWebStateElementWithID:@"remote-approvals-button"];
+  [self checkInterstitalIsShownInWaitingScreen];
+
+  // In the waiting screen, when local approvals are supported only a dedicated
+  // local request button is visible.
+  [self checkElementDisplayStyleVisibility:
+            @"local-approvals-remote-request-sent-button"
+                                 isVisible:YES];
+  [self checkElementDisplayStyleVisibility:@"local-approvals-button"
+                                 isVisible:NO];
+  [self checkElementDisplayStyleVisibility:@"back-button" isVisible:NO];
+
+  // On clicking the "Ask in person button" the parent approval widget opens.
+  [ChromeEarlGrey
+      tapWebStateElementWithID:@"local-approvals-remote-request-sent-button"];
+  // Wait for the bottom sheet to be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
 }
 
 // Tests that for already requested for approval urls, the interstitial is shown

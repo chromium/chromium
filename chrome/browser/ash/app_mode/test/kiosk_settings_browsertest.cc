@@ -35,6 +35,7 @@
 namespace ash {
 
 using chromeos::KioskSettingsNavigationThrottle;
+using kiosk::test::WaitKioskLaunched;
 
 namespace {
 
@@ -132,7 +133,7 @@ class KioskSettingsTest
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+    ASSERT_TRUE(WaitKioskLaunched());
   }
 
   KioskMixin kiosk_{&mixin_host_,

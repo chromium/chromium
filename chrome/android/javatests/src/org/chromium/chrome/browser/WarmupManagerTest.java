@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 
@@ -614,18 +615,27 @@ public class WarmupManagerTest {
     @SmallTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_AUTO})
     public void testApplyContextOverridesOnAutomotive() {
+        // UI scaling is turned off by default in integration tests, so it needs to explicitly be
+        // applied here.
+        DisplayUtil.setUiScalingFactorForAutomotiveForTesting(1.34f);
+
         Context baseContext = mContext.getApplicationContext();
+        int baseDensityDpi = baseContext.getResources().getDisplayMetrics().densityDpi;
         Context updatedContext = WarmupManager.applyContextOverrides(baseContext);
+        int updatedDensityDpi = updatedContext.getResources().getDisplayMetrics().densityDpi;
 
         assertNotEquals(
                 "The updated context should be different from the original context.",
                 baseContext,
                 updatedContext);
+        assertTrue(
+                "The updated context should have a higher densityDpi.",
+                updatedDensityDpi > baseDensityDpi);
         assertEquals(
                 "The updated context should have a scaled up densityDpi",
-                (int)
-                        (baseContext.getResources().getDisplayMetrics().densityDpi
-                                * DisplayUtil.getUiScalingFactorForAutomotive()),
-                updatedContext.getResources().getDisplayMetrics().densityDpi);
+                DisplayUtil.getUiDensityForAutomotive(baseContext, baseDensityDpi),
+                updatedDensityDpi);
+
+        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
     }
 }

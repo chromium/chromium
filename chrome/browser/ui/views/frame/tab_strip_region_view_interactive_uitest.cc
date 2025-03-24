@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   EXPECT_TRUE(tab_strip_region_view()->pane_has_focus());
 
   if (!tabs::GetTabSearchTrailingTabstrip(browser()->profile()) &&
-      !features::IsTabstripComboButtonEnabled()) {
+      !features::IsTabSearchMoving()) {
     EXPECT_TRUE(tab_0->HasFocus());
 
 #if !BUILDFLAG(IS_WIN)
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 
 IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
                        DefaultTestSearchContainerIsEndAligned) {
-  if (features::IsTabstripComboButtonEnabled()) {
+  if (features::IsTabSearchMoving() && !features::HasTabSearchToolbarButton()) {
     const int last_tab_start =
         tab_strip()->tab_at(tab_strip()->GetTabCount() - 1)->x();
     const int tab_strip_region_view_end =
@@ -252,7 +252,8 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
     EXPECT_GT(tab_search_combobutton_start, last_tab_start);
     EXPECT_LT(tab_search_combobutton_end, tab_strip_region_view_end);
 
-  } else if (!tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
+  } else if (!features::IsTabSearchMoving() &&
+             !tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
     // The TabSearchContainer is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
     const int tab_search_container_expected_end =
@@ -262,7 +263,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
 
     EXPECT_EQ(tab_search_container()->bounds().right(),
               tab_search_container_expected_end);
-  } else {
+  } else if (!features::IsTabSearchMoving()) {
     const int tab_search_container_expected_end =
         tab_strip_region_view()->GetLocalBounds().right() -
         GetLayoutConstant(TAB_STRIP_PADDING);
@@ -301,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchForcedPositionTest,
                        DefaultTestSearchContainerIsEndAligned) {
   // When the combobutton is enabled, the combobutton bounds should be after the
   // start of the last tab.
-  if (features::IsTabstripComboButtonEnabled()) {
+  if (features::IsTabSearchMoving() && !features::HasTabSearchToolbarButton()) {
     const int last_tab_start =
         tab_strip()->tab_at(tab_strip()->GetTabCount() - 1)->x();
     const int tab_strip_region_view_end =
@@ -313,7 +314,8 @@ IN_PROC_BROWSER_TEST_P(TabSearchForcedPositionTest,
 
     EXPECT_GT(tab_search_combobutton_start, last_tab_start);
     EXPECT_LT(tab_search_combobutton_end, tab_strip_region_view_end);
-  } else if (!tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
+  } else if (!features::IsTabSearchMoving() &&
+             !tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
     // The TabSearchContainer is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
     const int tab_search_container_expected_end =
@@ -323,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchForcedPositionTest,
 
     EXPECT_EQ(tab_search_container()->bounds().right(),
               tab_search_container_expected_end);
-  } else {
+  } else if (!features::IsTabSearchMoving()) {
     const int tab_search_container_expected_end =
         tab_strip_region_view()->GetLocalBounds().right() -
         GetLayoutConstant(TAB_STRIP_PADDING);

@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
@@ -66,12 +65,16 @@ public abstract class ShouldInterceptRequestMediator {
 
     @AnyThread
     public boolean canSkipShouldInterceptRequest(String url) {
-        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SHORT_CIRCUIT_SHOULD_INTERCEPT_REQUEST)) {
-            return false;
-        }
+        // A user is only put into an experiment group when the feature is checked. By having the
+        // feature check be the last clause in the conditional our experiment will only involve
+        // users for whom we actually skip shouldInterceptRequest, and so we can see the benefits
+        // of this optimization without it being diluted by all the users for whom
+        // shouldInterceptRequest will need to be called anyway.
         return mCanSkipSyncShouldInterceptRequest
                 && mAsyncCallback == null
-                && !url.equals(mNoSkipUrl);
+                && !url.equals(mNoSkipUrl)
+                && AwFeatureMap.isEnabled(
+                        AwFeatures.WEBVIEW_SHORT_CIRCUIT_SHOULD_INTERCEPT_REQUEST);
     }
 
     @AnyThread

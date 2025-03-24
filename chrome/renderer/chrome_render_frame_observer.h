@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -17,6 +18,10 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/common/actor.mojom.h"
+#endif
 
 class SkBitmap;
 
@@ -114,6 +119,11 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void LoadBlockedPlugins(const std::string& identifier) override;
   void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
   void SetShouldDeferMediaLoad(bool should_defer) override;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  void InvokeTool(actor::mojom::ToolInvocationPtr request,
+                  InvokeToolCallback callback) override;
+#endif
 
   // Initialize a |phishing_classifier_delegate_|.
   void SetClientSidePhishingDetection();

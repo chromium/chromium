@@ -236,7 +236,19 @@ source_set("referring_app_info") {
     "referring_app_info.h",
   ]
   deps = [
+    "//components/safe_browsing/core/browser/utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//url",
+  ]
+}
+
+source_set("referring_app_info_unittest") {
+  testonly = true
+  sources = [ "referring_app_info_unittest.cc" ]
+  deps = [
+    ":referring_app_info",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//testing/gtest",
     "//url",
   ]
 }
