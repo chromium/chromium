@@ -21,6 +21,9 @@
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
+#include "chrome/grit/side_panel_bookmarks_code_cache_resources_map.h"
+#include "chrome/grit/side_panel_customize_chrome_code_cache_resources_map.h"
+#include "chrome/grit/side_panel_reading_list_code_cache_resources_map.h"
 #include "chrome/grit/side_panel_shared_code_cache_resources_map.h"
 #include "content/public/common/content_features.h"
 #include "ui/webui/resources/grit/webui_code_cache_resources_map.h"
@@ -184,16 +187,25 @@ base::flat_map<GURL, int> GetWebUIResourceUrlToCodeCacheMap() {
     AppendWebUIResourceURLToCodeCachePairs(
         content::kChromeUIScheme, chrome::kChromeUIBookmarksSidePanelHost,
         kSidePanelSharedCodeCacheResources, url_to_code_cache_pairs);
+    AppendWebUIResourceURLToCodeCachePairs(
+        content::kChromeUIScheme, chrome::kChromeUIBookmarksSidePanelHost,
+        kSidePanelBookmarksCodeCacheResources, url_to_code_cache_pairs);
 
     // chrome://customize-chrome-side-panel.top-chrome
     AppendWebUIResourceURLToCodeCachePairs(
         content::kChromeUIScheme, chrome::kChromeUICustomizeChromeSidePanelHost,
         kSidePanelSharedCodeCacheResources, url_to_code_cache_pairs);
+    AppendWebUIResourceURLToCodeCachePairs(
+        content::kChromeUIScheme, chrome::kChromeUICustomizeChromeSidePanelHost,
+        kSidePanelCustomizeChromeCodeCacheResources, url_to_code_cache_pairs);
 
     // chrome://read-later.top-chrome
     AppendWebUIResourceURLToCodeCachePairs(
         content::kChromeUIScheme, chrome::kChromeUIReadLaterHost,
         kSidePanelSharedCodeCacheResources, url_to_code_cache_pairs);
+    AppendWebUIResourceURLToCodeCachePairs(
+        content::kChromeUIScheme, chrome::kChromeUIReadLaterHost,
+        kSidePanelReadingListCodeCacheResources, url_to_code_cache_pairs);
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)
 
