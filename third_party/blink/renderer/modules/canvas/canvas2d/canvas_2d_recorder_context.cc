@@ -1309,6 +1309,9 @@ void Canvas2DRecorderContext::setShadowBlur(double blur) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowBlur,
                                                 blur);
   }
+  if (blur > 0) {
+    SetTriggerForCanvasIntervention();
+  }
   state.SetShadowBlur(ClampTo<float>(blur));
 }
 
@@ -1332,6 +1335,7 @@ void Canvas2DRecorderContext::setShadowColor(const String& color_string) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowColor,
                                                 color.Rgb());
   }
+  SetTriggerForCanvasIntervention();
   state.SetShadowColor(color);
 }
 
@@ -1411,6 +1415,9 @@ void Canvas2DRecorderContext::setGlobalCompositeOperation(
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kSetGlobalCompositeOpertion, sk_blend_mode);
+  }
+  if (op != kCompositeSourceOver || blend_mode != BlendMode::kNormal) {
+    SetTriggerForCanvasIntervention();
   }
   state.SetGlobalComposite(sk_blend_mode);
 }
@@ -1845,6 +1852,9 @@ void Canvas2DRecorderContext::FillPathImpl(Path2D* dom_path,
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kFill__Path, dom_path->GetIdentifiableToken(), winding_rule);
   }
+  if (dom_path->HasTriggerForIntervention()) {
+    SetTriggerForCanvasIntervention();
+  }
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kFillPaintType,
                    winding_rule, path2d_use_paint_cache_);
 }
@@ -1861,6 +1871,9 @@ void Canvas2DRecorderContext::stroke(Path2D* dom_path) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kStroke__Path, dom_path->GetIdentifiableToken());
+  }
+  if (dom_path->HasTriggerForIntervention()) {
+    SetTriggerForCanvasIntervention();
   }
   DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, path2d_use_paint_cache_);

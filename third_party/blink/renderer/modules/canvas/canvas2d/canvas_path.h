@@ -180,6 +180,10 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   // than necessary.
   gfx::RectF BoundingRect() const;
 
+  bool HasTriggerForIntervention() const {
+    return has_trigger_for_intervention_;
+  }
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -202,6 +206,12 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
     return path_;
   }
 
+  // Called when a canvas operation is made that would trigger a canvas
+  // intervention.
+  void SetTriggerForCanvasIntervention() {
+    has_trigger_for_intervention_ = true;
+  }
+
   // This mirrors state that is stored in CanvasRenderingContext2DState.  We
   // replicate it here so that IsTransformInvertible() can be a non-virtual
   // inline-able call.  We do not replicate the whole CTM. Therefore
@@ -210,6 +220,8 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   bool is_transform_invertible_ = true;
 
   IdentifiabilityStudyHelper identifiability_study_helper_;
+
+  bool has_trigger_for_intervention_ = false;
 
  private:
   // Used to build up a line.

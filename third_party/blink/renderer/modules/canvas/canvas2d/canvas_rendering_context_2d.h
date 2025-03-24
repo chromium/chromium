@@ -247,6 +247,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   int LayerCount() const override;
 
+  bool ShouldTriggerIntervention() const override {
+    return HasTriggerForIntervention();
+  }
+
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
   UniqueFontSelector* GetFontSelector() const final;
