@@ -435,12 +435,12 @@
     },
     {
       name: "AriaNotify",
-      status: "test",
+      status: {"Android": "test", "Win": "test", "Mac": "test", "Linux": "test"},
       implied_by: ["AriaNotifyV2"],
     },
     {
       name: "AriaNotifyV2",
-      status: "test",
+      status: {"Android": "test", "Win": "test", "Mac": "test", "Linux": "test"},
     },
     {
       name: "AriaRowColIndexText",
