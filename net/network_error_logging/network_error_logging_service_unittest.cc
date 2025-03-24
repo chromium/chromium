@@ -1336,42 +1336,29 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
   EXPECT_EQ(kType_, reports()[0].type);
   EXPECT_EQ(0, reports()[0].depth);
 
-  const base::Value* body = reports()[0].body.get();
-  ASSERT_TRUE(body);
-  ASSERT_TRUE(body->is_dict());
-  const base::Value::Dict& body_dict = body->GetDict();
-
-  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
-                              NetworkErrorLoggingService::kReferrerKey);
-  ExpectDictDoubleValue(1.0, body_dict,
-                        NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kServerIP_.ToString(), body_dict,
-                              NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("http/1.1", body_dict,
-                              NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", body_dict,
-                              NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(200, body_dict,
-                               NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(1234, body_dict,
-                               NetworkErrorLoggingService::kElapsedTimeKey);
-  base::ExpectDictStringValue(
-      NetworkErrorLoggingService::kSignedExchangePhaseValue, body_dict,
-      NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("ok", body_dict,
-                              NetworkErrorLoggingService::kTypeKey);
-
-  const base::Value::Dict* sxg_body =
-      body_dict.FindDict(NetworkErrorLoggingService::kSignedExchangeBodyKey);
-  ASSERT_TRUE(sxg_body);
-
-  base::ExpectDictStringValue(kUrl_.spec(), *sxg_body,
-                              NetworkErrorLoggingService::kOuterUrlKey);
-  base::ExpectDictStringValue(kInnerUrl_.spec(), *sxg_body,
-                              NetworkErrorLoggingService::kInnerUrlKey);
-  EXPECT_EQ(
-      kCertUrl_.spec(),
-      sxg_body->Find(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
+  EXPECT_THAT(
+      reports()[0].body,
+      Pointee(base::test::IsSupersetOfValue(
+          base::Value::Dict()
+              .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
+              .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
+              .Set(NetworkErrorLoggingService::kServerIpKey,
+                   kServerIP_.ToString())
+              .Set(NetworkErrorLoggingService::kProtocolKey, "http/1.1")
+              .Set(NetworkErrorLoggingService::kMethodKey, "GET")
+              .Set(NetworkErrorLoggingService::kStatusCodeKey, 200)
+              .Set(NetworkErrorLoggingService::kElapsedTimeKey, 1234)
+              .Set(NetworkErrorLoggingService::kPhaseKey,
+                   NetworkErrorLoggingService::kSignedExchangePhaseValue)
+              .Set(NetworkErrorLoggingService::kTypeKey, "ok")
+              .Set(NetworkErrorLoggingService::kSignedExchangeBodyKey,
+                   base::Value::Dict()
+                       .Set(NetworkErrorLoggingService::kOuterUrlKey,
+                            kUrl_.spec())
+                       .Set(NetworkErrorLoggingService::kInnerUrlKey,
+                            kInnerUrl_.spec())
+                       .Set(NetworkErrorLoggingService::kCertUrlKey,
+                            base::Value::List().Append(kCertUrl_.spec()))))));
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
