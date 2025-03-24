@@ -3430,6 +3430,8 @@ void CaptureModeSession::SelectDefaultRegion() {
       default_capture_region.size(), kRegionDefaultRatio));
   UpdateCaptureRegion(default_capture_region, /*is_resizing=*/false,
                       /*by_user=*/true);
+  capture_mode_util::TriggerAccessibilityAlert(
+      IDS_ASH_SCREEN_CAPTURE_ALERT_DEFAULT_REGION_SELECTED);
 }
 
 void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,

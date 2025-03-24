@@ -6768,6 +6768,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_WINDOW_RECORD" desc="Alert spoken by screen readers on recording window screen.">
         Press enter to record window: <ph name="WINDOW_TITLE">$1<ex>Text</ex></ph>
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_DEFAULT_REGION_SELECTED" desc="Alert spoken by screen readers after a default capture region has been selected.">
+        Press tab to focus and move selected area
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SELECTED_AREA_ACCESSIBLE_NAME" desc="The accessible name of the selected region in capture mode.">
         Selected area, use arrow keys to move
       </message>
