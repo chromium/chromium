@@ -149,13 +149,18 @@ void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
   in_flight_event_count_ = 0;
   StopInputEventAckTimeout();
 
+  bool was_active = input_router_ && input_router_->IsActive();
+
   input_router_ = std::make_unique<InputRouterImpl>(
       this, this, fling_scheduler_.get(),
       GetInputRouterConfigForPlatform(task_runner_));
 
-  // input_router_ recreated, need to update the force_enable_zoom_ state.
+  // Restore states in the newly recreated `input_router_`.
   input_router_->SetForceEnableZoom(force_enable_zoom_);
   input_router_->SetDeviceScaleFactor(device_scale_factor);
+  if (was_active) {
+    input_router_->MakeActive();
+  }
 }
 
 void RenderInputRouter::SetFlingScheduler(
