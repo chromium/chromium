@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationBrushType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, AnnotationMode, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {InkColorSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -31,10 +31,10 @@ chrome.test.runTests([
   async function testOpenSidePanel() {
     const mockMetricsPrivate = setupMockMetricsPrivate();
 
-    viewer.$.toolbar.toggleAnnotation();
+    viewer.$.toolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
 
-    chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewer.$.toolbar.annotationMode);
     chrome.test.assertTrue(
         !!viewer.shadowRoot.querySelector('viewer-side-panel'));
     mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_SIDE_PANEL, 1);
@@ -45,7 +45,7 @@ chrome.test.runTests([
   // Test that the pen can be selected. Test that its size and color can be
   // selected.
   async function testSelectPen() {
-    chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewer.$.toolbar.annotationMode);
 
     // Default to a black pen. Cannot use assertAnnotationBrush() yet, since
     // there's no need to set the brush in the backend immediately after getting
@@ -82,7 +82,7 @@ chrome.test.runTests([
 
   // Test that the eraser can be selected.
   async function testSelectEraser() {
-    chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewer.$.toolbar.annotationMode);
 
     // Switch to eraser.
     setGetAnnotationBrushReply(mockPlugin, AnnotationBrushType.ERASER);
@@ -105,7 +105,7 @@ chrome.test.runTests([
 
   // Test that the highlighter can be selected.
   async function testSelectHighlighter() {
-    chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewer.$.toolbar.annotationMode);
 
     // Switch to highlighter.
     setGetAnnotationBrushReply(

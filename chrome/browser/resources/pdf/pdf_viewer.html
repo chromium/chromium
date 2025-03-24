@@ -35,7 +35,7 @@
     @zoom-changed="${this.onZoomChanged}" @zoom-in="${this.onZoomIn}"
     @zoom-out="${this.onZoomOut}" @rotate-left="${this.rotateCounterclockwise}"
 <if expr="enable_ink or enable_pdf_ink2">
-    @annotation-mode-toggled="${this.onAnnotationModeToggled_}"
+    @annotation-mode-updated="${this.onAnnotationModeUpdated_}"
 </if>
     @print="${this.onPrint_}" @save="${this.onToolbarSave_}"
 <if expr="enable_pdf_ink2">

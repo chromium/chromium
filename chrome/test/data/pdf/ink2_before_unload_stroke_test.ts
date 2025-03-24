@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {finishInkStroke, getNewTestBeforeUnloadProxy, setupTestMockPluginForInk} from './test_util.js';
@@ -15,11 +15,11 @@ chrome.test.runTests([
 
     const toolbar = document.body.querySelector('pdf-viewer')!.$.toolbar;
 
-    chrome.test.assertFalse(toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, toolbar.annotationMode);
 
-    toolbar.toggleAnnotation();
+    toolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
-    chrome.test.assertTrue(toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, toolbar.annotationMode);
 
     finishInkStroke(PluginController.getInstance());
 

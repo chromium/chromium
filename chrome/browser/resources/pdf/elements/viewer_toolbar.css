@@ -186,7 +186,7 @@ cr-progress,
   margin-inline-end: 4px;
 }
 
-:host([annotation-mode]) #annotate {
+:host([annotation-mode="draw"]) #annotate {
   background-color: var(--active-button-bg);
   border-radius: 50%;
 }
@@ -203,7 +203,7 @@ cr-progress,
   margin-inline: 0;
 }
 
-:host([annotation-mode]) #annotate-controls #annotate {
+:host([annotation-mode="draw"]) #annotate-controls #annotate {
   --cr-icon-button-fill-color: var(--viewer-icon-ink-selected-fill-color);
 }
 
