@@ -1296,7 +1296,7 @@ chromium-metrics-reviews@google.com.
   <summary>The direction of the navigation.</summary>
   <int value="0" label="ForwardNavigation"/>
   <int value="1" label="BackwardNavigation"/>
-  <int value="2" label="DifferentTab"/>
+  <int value="2" label="Neither"/>
 </enum>
 
 <enum name="NavigationInterceptResult">

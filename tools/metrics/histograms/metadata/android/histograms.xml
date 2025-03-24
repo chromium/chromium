@@ -845,15 +845,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackPress.Backfalsing" enum="NavigationDirection"
+<histogram name="Android.BackPress.Backfalsing2" enum="NavigationDirection"
     expires_after="2025-07-27">
   <owner>eleanorlee@google.com</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
-    Recorded when a user navigates to a URL and a backfalsing event happens.
-    Recorded for both swipes and clicks in both 3-button mode and gesture
-    navigation mode. Android only.
+    Recorded when a user navigates to a URL by a navigation gesture or a
+    navigation button and then a backfalsing event happens. Recorded for both
+    swipes and clicks in both 3-button mode and gesture navigation mode. Android
+    only.
   </summary>
 </histogram>
 
