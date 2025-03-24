@@ -297,7 +297,8 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinter) {
   // generic printer does not have the URI field set.
   CheckPrinterInfoUri(printer_info, "ipp", "", "");
 
-  ExpectDictBooleanValue(false, printer_info, "printerPpdReference.autoconf");
+  EXPECT_EQ(printer_info.FindBoolByDottedPath("printerPpdReference.autoconf"),
+            false);
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUri) {
@@ -309,7 +310,8 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUri) {
 
   CheckPrinterInfoUri(printer_info, "ipp", "printy.domain.co:555", "ipp/print");
 
-  ExpectDictBooleanValue(false, printer_info, "printerPpdReference.autoconf");
+  EXPECT_EQ(printer_info.FindBoolByDottedPath("printerPpdReference.autoconf"),
+            false);
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUsbUri) {
@@ -321,7 +323,8 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUsbUri) {
 
   CheckPrinterInfoUri(printer_info, "usb", "1234", "af9d?serial=ink1");
 
-  ExpectDictBooleanValue(false, printer_info, "printerPpdReference.autoconf");
+  EXPECT_EQ(printer_info.FindBoolByDottedPath("printerPpdReference.autoconf"),
+            false);
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoAutoconfPrinter) {
@@ -335,18 +338,19 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoAutoconfPrinter) {
 
   // Since this is an autoconf printer we expect "printerPpdReference.autoconf"
   // to be true.
-  ExpectDictBooleanValue(true, printer_info, "printerPpdReference.autoconf");
+  EXPECT_EQ(printer_info.FindBoolByDottedPath("printerPpdReference.autoconf"),
+            true);
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoManagedPrinter) {
   Printer printer = CreateGenericPrinter();
   printer.set_source(Printer::Source::SRC_USER_PREFS);
   base::Value::Dict printer_info = GetCupsPrinterInfo(printer);
-  ExpectDictBooleanValue(false, printer_info, "isManaged");
+  EXPECT_EQ(printer_info.FindBool("isManaged"), false);
 
   printer.set_source(Printer::Source::SRC_POLICY);
   printer_info = GetCupsPrinterInfo(printer);
-  ExpectDictBooleanValue(true, printer_info, "isManaged");
+  EXPECT_EQ(printer_info.FindBool("isManaged"), true);
 }
 
 }  // namespace chromeos
