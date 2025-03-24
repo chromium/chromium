@@ -27,6 +27,32 @@ class LoyaltyCard final {
 
   ~LoyaltyCard();
 
+  const std::string& id() const { return id_; }
+  void set_id(const std::string& id) { id_ = id; }
+
+  const std::string& merchant_name() const { return merchant_name_; }
+  void set_merchant_name(const std::string& merchant_name) {
+    merchant_name_ = merchant_name;
+  }
+
+  const std::string& program_name() const { return program_name_; }
+  void set_program_name(const std::string& program_name) {
+    program_name_ = program_name;
+  }
+
+  const GURL& program_logo() const { return program_logo_; }
+  void set_program_logo(const GURL& program_logo) {
+    program_logo_ = program_logo;
+  }
+
+  const std::string& unmasked_loyalty_card_suffix() const {
+    return unmasked_loyalty_card_suffix_;
+  }
+  void set_unmasked_loyalty_card_suffix(
+      const std::string& unmasked_loyalty_card_suffix) {
+    unmasked_loyalty_card_suffix_ = unmasked_loyalty_card_suffix;
+  }
+
   // Checks if this loyalty card is valid. A valid loyalty card contains a
   // non-empty loyalty card id and a logo URL which should be either empty or
   // valid.
@@ -34,18 +60,23 @@ class LoyaltyCard final {
 
   friend bool operator==(const LoyaltyCard&, const LoyaltyCard&) = default;
 
+ private:
   // A unique identifier coming from the server, which is used as a primary key
   // for storing loyalty cards in the database.
-  std::string loyalty_card_id;
+  std::string id_;
+
   // The merchant name e.g. "Deutsche Bahn".
-  std::string merchant_name;
+  std::string merchant_name_;
+
   // The loyalty card program name e.g. "BahnBonus".
-  std::string program_name;
+  std::string program_name_;
+
   // The logo icon URL.
-  GURL program_logo;
-  // The unmasked part of the  loyalty card issuer text code. The full number is
-  // not available on the client.
-  std::string unmasked_loyalty_card_suffix;
+  GURL program_logo_;
+
+  // The unmasked part of the  loyalty card issuer text code. The full number
+  // is not available on the client.
+  std::string unmasked_loyalty_card_suffix_;
 };
 
 }  // namespace autofill

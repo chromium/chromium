@@ -16,11 +16,11 @@ AutofillLoyaltyCardSpecifics CreateSpecificsFromLoyaltyCard(
     const LoyaltyCard& card) {
   AutofillLoyaltyCardSpecifics specifics =
       sync_pb::AutofillLoyaltyCardSpecifics();
-  specifics.set_id(card.loyalty_card_id);
-  specifics.set_merchant_name(card.merchant_name);
-  specifics.set_program_name(card.program_name);
-  specifics.set_program_logo(card.program_logo.possibly_invalid_spec());
-  specifics.set_loyalty_card_suffix(card.unmasked_loyalty_card_suffix);
+  specifics.set_id(card.id());
+  specifics.set_merchant_name(card.merchant_name());
+  specifics.set_program_name(card.program_name());
+  specifics.set_program_logo(card.program_logo().possibly_invalid_spec());
+  specifics.set_loyalty_card_suffix(card.unmasked_loyalty_card_suffix());
   return specifics;
 }
 
