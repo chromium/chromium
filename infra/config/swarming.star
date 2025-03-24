@@ -132,9 +132,11 @@ swarming.pool_realm(
         "project-webrtc-ci-task-accounts",
         "project-webrtc-try-task-accounts",
 
-        # ... and Angle.
+        # ... and Angle and Dawn.
         "project-angle-ci-task-accounts",
         "project-angle-try-task-accounts",
+        "project-dawn-ci-task-accounts",
+        "project-dawn-try-task-accounts",
 
         # Used by Pinpoint to trigger bisect jobs on machines in the Chrome-GPU pool.
         "service-account-chromeperf",
