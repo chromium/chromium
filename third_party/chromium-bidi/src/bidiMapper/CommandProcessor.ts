@@ -286,6 +286,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       // keep-sorted end
 
+      // Emulation module
+      // keep-sorted start block=yes
+      case 'emulation.setGeolocationOverride':
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
+      // keep-sorted end
+
       // Input module
       // keep-sorted start block=yes
       case 'input.performActions':

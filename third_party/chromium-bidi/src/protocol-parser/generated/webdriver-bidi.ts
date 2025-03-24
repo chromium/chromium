@@ -64,6 +64,7 @@ export const CommandDataSchema = z.lazy(() =>
   z.union([
     BrowserCommandSchema,
     BrowsingContextCommandSchema,
+    EmulationCommandSchema,
     InputCommandSchema,
     NetworkCommandSchema,
     ScriptCommandSchema,
@@ -674,13 +675,18 @@ export namespace BrowsingContext {
   export const NavigationSchema = z.lazy(() => z.string());
 }
 export namespace BrowsingContext {
-  export const NavigationInfoSchema = z.lazy(() =>
+  export const BaseNavigationInfoSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
       navigation: z.union([BrowsingContext.NavigationSchema, z.null()]),
       timestamp: JsUintSchema,
       url: z.string(),
     }),
+  );
+}
+export namespace BrowsingContext {
+  export const NavigationInfoSchema = z.lazy(
+    () => BrowsingContext.BaseNavigationInfoSchema,
   );
 }
 export namespace BrowsingContext {
@@ -1083,8 +1089,17 @@ export namespace BrowsingContext {
   export const DownloadWillBeginSchema = z.lazy(() =>
     z.object({
       method: z.literal('browsingContext.downloadWillBegin'),
-      params: BrowsingContext.NavigationInfoSchema,
+      params: BrowsingContext.DownloadWillBeginParamsSchema,
     }),
+  );
+}
+export namespace BrowsingContext {
+  export const DownloadWillBeginParamsSchema = z.lazy(() =>
+    z
+      .object({
+        suggestedFilename: z.string(),
+      })
+      .and(BrowsingContext.BaseNavigationInfoSchema),
   );
 }
 export namespace BrowsingContext {
@@ -1145,6 +1160,44 @@ export namespace BrowsingContext {
       message: z.string(),
       type: BrowsingContext.UserPromptTypeSchema,
       defaultValue: z.string().optional(),
+    }),
+  );
+}
+export const EmulationCommandSchema = z.lazy(
+  () => Emulation.SetGeolocationOverrideSchema,
+);
+export namespace Emulation {
+  export const SetGeolocationOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setGeolocationOverride'),
+      params: Emulation.SetGeolocationOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetGeolocationOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      coordinates: z.union([Emulation.GeolocationCoordinatesSchema, z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const GeolocationCoordinatesSchema = z.lazy(() =>
+    z.object({
+      latitude: z.number(),
+      longitude: z.number(),
+      accuracy: z.number().default(1).optional(),
+      altitude: z.union([z.number(), z.null().default(null)]).optional(),
+      altitudeAccuracy: z
+        .union([z.number(), z.null().default(null)])
+        .optional(),
+      heading: z.union([z.number(), z.null().default(null)]).optional(),
+      speed: z.union([z.number(), z.null().default(null)]).optional(),
     }),
   );
 }
