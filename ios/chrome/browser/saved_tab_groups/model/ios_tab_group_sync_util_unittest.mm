@@ -78,8 +78,7 @@ class TabGroupSyncUtilTest : public PlatformTest {
   }
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+    feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
     AppendNewWebState(browser_.get());
     AppendNewWebState(browser_.get());
     AppendNewWebState(browser_.get());

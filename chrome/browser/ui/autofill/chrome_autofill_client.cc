@@ -76,6 +76,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
@@ -97,7 +98,9 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/password_form_classification_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -127,6 +130,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
@@ -471,6 +475,24 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
   }
   return PlusAddressServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
+}
+
+void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
+  blink::mojom::AIPageContentOptionsPtr extraction_options =
+      optimization_guide::DefaultAIPageContentOptions();
+  extraction_options->on_critical_path = false;
+  optimization_guide::GetAIPageContent(
+      web_contents(), std::move(extraction_options),
+      base::BindOnce([](std::optional<optimization_guide::AIPageContentResult>
+                            result)
+                         -> std::optional<
+                             optimization_guide::proto::AnnotatedPageContent> {
+        if (!result) {
+          return std::nullopt;
+        }
+        // For now, discard all other metadata about the request.
+        return std::move(result)->proto;
+      }).Then(std::move(callback)));
 }
 
 AutofillAiDelegate* ChromeAutofillClient::GetAutofillAiDelegate() {

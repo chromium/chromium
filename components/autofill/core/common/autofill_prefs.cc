@@ -17,6 +17,15 @@
 
 namespace autofill::prefs {
 
+namespace {
+// To simplify the rollout of AutofillSilentlyRemoveQuasiDuplicates,
+// deduplication can be run a second time per milestone for users enrolled in
+// the experiment. This pref tracks whether deduplication was run a second time.
+// TODO(crbug.com/325450676): Remove after the rollout finished.
+constexpr char kAutofillRanQuasiDuplicateExtraDeduplication[] =
+    "autofill.ran_quasi_duplicate_extra_deduplication";
+}  // namespace
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Synced prefs. Used for cross-device choices, e.g., credit card Autofill.
   registry->RegisterBooleanPref(
@@ -72,11 +81,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated prefs registered for migration.
   registry->RegisterBooleanPref(kAutofillEnabledDeprecated, true);
-  registry->RegisterBooleanPref(kAutofillOrphanRowsRemoved, false);
-  registry->RegisterBooleanPref(kAutofillIbanEnabled, true);
-  registry->RegisterIntegerPref(kAutofillLastVersionDisusedAddressesDeleted, 0);
-  registry->RegisterIntegerPref(kAutofillLastVersionDisusedCreditCardsDeleted,
-                                0);
   registry->RegisterStringPref(kAutofillAblationSeedPref, "");
   registry->RegisterBooleanPref(kAutofillRanQuasiDuplicateExtraDeduplication,
                                 false);
@@ -106,19 +110,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
-  // Added 09/2022.
-  pref_service->ClearPref(kAutofillEnabledDeprecated);
-  // Added 05/2023.
-  pref_service->ClearPref(kAutofillOrphanRowsRemoved);
-  // Added 09/2023.
-  pref_service->ClearPref(kAutofillIbanEnabled);
-  // Added 10/2023
-  pref_service->ClearPref(kAutofillLastVersionDisusedAddressesDeleted);
-  pref_service->ClearPref(kAutofillLastVersionDisusedCreditCardsDeleted);
   // Added 07/2024 (moved from profile pref to local state)
   pref_service->ClearPref(kAutofillAblationSeedPref);
   // Added 10/2024
   pref_service->ClearPref(kAutofillRanQuasiDuplicateExtraDeduplication);
+  // Added 03/2025
+  pref_service->ClearPref(kAutofillEnabledDeprecated);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

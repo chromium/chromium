@@ -538,11 +538,14 @@ template("chrome_extra_paks") {
 
     if (enable_webui_generate_code_cache) {
       sources += [
+        "$root_gen_dir/chrome/side_panel_bookmarks_code_cache_resources.pak",
+        "$root_gen_dir/chrome/side_panel_customize_chrome_code_cache_resources.pak",
+        "$root_gen_dir/chrome/side_panel_reading_list_code_cache_resources.pak",
         "$root_gen_dir/chrome/side_panel_shared_code_cache_resources.pak",
         "$root_gen_dir/ui/webui/resources/webui_code_cache_resources.pak",
       ]
       deps += [
-        "//chrome/browser/resources/side_panel/shared:code_cache_resources",
+        "//chrome/browser/resources:code_cache_resources",
         "//ui/webui/resources:code_cache_resources",
       ]
     }

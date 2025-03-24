@@ -1079,13 +1079,7 @@ TEST_F(ReportingDeliveryAgentTest, SendReportsForMultipleSources) {
   ASSERT_EQ(2u, pending_uploads().size());
 }
 
-#if BUILDFLAG(CRONET_BUILD)
-#define MAYBE_SkipUploadForReportWithLargeBody \
-  DISABLED_SkipUploadForReportWithLargeBody
-#else
-#define MAYBE_SkipUploadForReportWithLargeBody SkipUploadForReportWithLargeBody
-#endif
-TEST_F(ReportingDeliveryAgentTest, MAYBE_SkipUploadForReportWithLargeBody) {
+TEST_F(ReportingDeliveryAgentTest, SkipUploadForReportWithLargeBody) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kExcludeLargeBodyReports,
@@ -1099,7 +1093,9 @@ TEST_F(ReportingDeliveryAgentTest, MAYBE_SkipUploadForReportWithLargeBody) {
   // first report. The SerializeReports method is called internally within
   // SendReports to handle the serialization process.
   EXPECT_FALSE(AreReportsProcessed());
-  EXPECT_TRUE(base::test::RunUntil([&] { return AreReportsProcessed(); }));
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return histograms.GetBucketCount("Net.Reporting.ReportsCount", 1) == 1;
+  }));
 
   histograms.ExpectBucketCount("Net.Reporting.ReportsCount", 1, 1);
   if constexpr (BUILDFLAG(CRONET_BUILD)) {
@@ -1109,13 +1105,14 @@ TEST_F(ReportingDeliveryAgentTest, MAYBE_SkipUploadForReportWithLargeBody) {
     // different value, instead of disabling the tests, so that once
     // CRONET_BUILD will support that, we will need to converge back to the same
     // value.
+    EXPECT_FALSE(AreReportsProcessed());
     histograms.ExpectBucketCount("Net.Reporting.FilteredReportsCount", 1, 1);
   } else {
+    // Verify that the cache is now empty (report should be removed after send,
+    // even if filtered)
+    EXPECT_TRUE(AreReportsProcessed());
     histograms.ExpectBucketCount("Net.Reporting.FilteredReportsCount", 1, 0);
   }
-  // Verify that the cache is now empty (report should be removed after send,
-  // even if filtered)
-  EXPECT_TRUE(AreReportsProcessed());
 }
 
 TEST_F(ReportingDeliveryAgentTest, ExcludeLargeBodyReports) {

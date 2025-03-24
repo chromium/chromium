@@ -13,7 +13,7 @@
 :host {
   --iron-collapse-transition-duration: 300ms;
   --cr-checkbox-label-padding-start: 8px;
-  --extensions-section-background-color: var(--color-sys-surface5);
+  --extensions-section-background-color: var(--color-sys-surface3);
   --scrollbar-width: 4px;
 }
 

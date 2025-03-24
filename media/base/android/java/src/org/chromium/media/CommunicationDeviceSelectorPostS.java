@@ -22,14 +22,20 @@ import org.chromium.build.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * Manages selection of the system communication device on Android S and above. For the purposes of
+ * having a common interface for the PreS and PostS variants of the CommunicationDeviceSelector,
+ * device metadata such as the internal device ID and its product name are not exposed outside of
+ * this class, with "synthetic" devices being used instead.
+ */
 @RequiresApi(Build.VERSION_CODES.S)
 @NullMarked
-class AudioDeviceSelectorPostS extends AudioDeviceSelector {
+class CommunicationDeviceSelectorPostS extends CommunicationDeviceSelector {
     private static final String TAG = "media";
 
     private boolean mHasBluetoothConnectPermission;
 
-    public AudioDeviceSelectorPostS(AudioManager audioManager) {
+    public CommunicationDeviceSelectorPostS(AudioManager audioManager) {
         super(audioManager);
     }
 

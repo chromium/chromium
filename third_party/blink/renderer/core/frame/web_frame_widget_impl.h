@@ -227,7 +227,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   cc::AnimationTimeline* ScrollAnimationTimeline() const final;
   void SetOverscrollBehavior(
       const cc::OverscrollBehavior& overscroll_behavior) final;
-  void RequestAnimationAfterDelay(const base::TimeDelta&) final;
+  void RequestAnimationAfterDelay(const base::TimeDelta&, bool urgent) final;
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
   void RequestDecode(const cc::DrawImage&,
                      base::OnceCallback<void(bool)>) override;
@@ -751,7 +751,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
  protected:
   // WidgetBaseClient overrides:
-  void ScheduleAnimation() override;
+  void ScheduleAnimation(bool urgent) override;
   void DidBeginMainFrame() override;
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override;

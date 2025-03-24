@@ -2572,6 +2572,12 @@ BASE_FEATURE(kUnloadBlocklisted,
              "UnloadBlocklisted",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When BeginMainFrame() is throttled, whether input-related BeginMainFrame()s
+// are marked urgent, and thus unthtrottled.
+BASE_FEATURE(kUrgentMainFrameForInput,
+             "UrgentMainFrameForInput",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Uses page viewport instead of frame viewport in the Largest Contentful Paint
 // heuristic where images occupying the full viewport are ignored.
 BASE_FEATURE(kUsePageViewportInLCP,

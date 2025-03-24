@@ -367,7 +367,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   scoped_refptr<StaticBitmapImage> SnapshotInternal(ImageOrientation,
                                                     FlushReason);
-  scoped_refptr<CanvasResource> GetImportedResource() const;
 
   CanvasResourceProvider(const ResourceProviderType&,
                          gfx::Size size,

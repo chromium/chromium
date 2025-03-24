@@ -153,6 +153,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProvider {
     kFalse,
   };
 
+  enum class LoadingState {
+    kNotStarted,
+    kStarted,
+    kFinished,
+  };
+
   // Converts `value` to bool. Returns corresponding true or false, or
   // `default_value` if unset.
   static bool FlagValueToBool(FlagValue value, bool default_value);
@@ -200,6 +206,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProvider {
 
   // Returns the status of RO_VPD and RW_VPD partitions.
   virtual VpdStatus GetVpdStatus() const = 0;
+
+  // Get the current state of loading VPD data.
+  virtual LoadingState GetLoadingState() const = 0;
 
   // Get the Singleton instance.
   static StatisticsProvider* GetInstance();

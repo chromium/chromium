@@ -3855,8 +3855,20 @@ void StyleEngine::RecalcTransitionPseudoStyle() {
   // we can optimize this to only when the pseudo element tree is dirtied.
   SelectorFilterParentScope filter_scope(
       nullptr, SelectorFilterParentScope::ScopeType::kRoot);
-  document_->documentElement()->RecalcTransitionPseudoTreeStyle(
-      view_transition_names_);
+
+  ViewTransitionUtils::ForEachTransition(
+      *document_, [&](ViewTransition& transition) {
+        Element* scope = transition.Scope();
+        if (!scope) {
+          scope = document_->documentElement();
+        }
+        if (!scope || !scope->InActiveDocument()) {
+          return;
+        }
+
+        // TODO(crbug.com/405117185): Use only the v-t-names inside the scope.
+        scope->RecalcTransitionPseudoTreeStyle(view_transition_names_);
+      });
 }
 
 void StyleEngine::RecalcStyle() {

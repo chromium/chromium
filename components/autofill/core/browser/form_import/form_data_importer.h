@@ -141,11 +141,12 @@ class FormDataImporter : public AddressDataManager::Observer,
           payment_method_type_if_non_interactive_authentication_flow_completed);
 
  private:
-  // Defines a candidate for address profile import.
-  struct AddressProfileImportCandidate {
-    AddressProfileImportCandidate();
-    AddressProfileImportCandidate(const AddressProfileImportCandidate& other);
-    ~AddressProfileImportCandidate();
+  // Defines an extracted address profile, which is a candidate for address
+  // profile import.
+  struct ExtractedAddressProfile {
+    ExtractedAddressProfile();
+    ExtractedAddressProfile(const ExtractedAddressProfile& other);
+    ~ExtractedAddressProfile();
 
     // The profile that was extracted from the form.
     AutofillProfile profile{i18n_model_definition::kLegacyHierarchyCountryCode};
@@ -174,8 +175,7 @@ class FormDataImporter : public AddressDataManager::Observer,
     // List of address profiles extracted from the form, which are candidates
     // for importing. The list is empty if none of the address profile fulfill
     // import requirements.
-    std::vector<AddressProfileImportCandidate>
-        address_profile_import_candidates;
+    std::vector<ExtractedAddressProfile> extracted_address_profiles;
     // IBAN extracted from the form, which is a candidate for importing. Present
     // if an IBAN is found in the form.
     std::optional<Iban> extracted_iban;
@@ -186,15 +186,15 @@ class FormDataImporter : public AddressDataManager::Observer,
                                     bool profile_autofill_enabled,
                                     bool payment_methods_autofill_enabled);
 
-  // Attempts to construct AddressProfileImportCandidates by extracting values
+  // Attempts to construct ExtractedAddressProfile by extracting values
   // from the fields in the `form`'s sections. Extraction can fail if the
   // fields' values don't pass validation. Apart from complete address profiles,
   // partial profiles for silent updates are extracted. All are stored in
-  // `extracted_form_data`'s `address_profile_import_candidates`.
+  // `extracted_form_data`'s `extracted_address_profiles`.
   // The function returns the number of _complete_ extracted profiles.
-  size_t ExtractAddressProfiles(const FormStructure& form,
-                                std::vector<AddressProfileImportCandidate>*
-                                    address_profile_import_candidates);
+  size_t ExtractAddressProfiles(
+      const FormStructure& form,
+      std::vector<ExtractedAddressProfile>* extracted_address_profiles);
 
   // Iterates over `section_fields` and builds a map from field type to observed
   // value for that field type.
@@ -213,14 +213,13 @@ class FormDataImporter : public AddressDataManager::Observer,
       LogBuffer* import_log_buffer,
       ProfileImportMetadata& import_metadata);
 
-  // Helper method for ImportAddressProfiles which only considers the fields
+  // Helper method for ExtractAddressProfiles which only considers the fields
   // for a specified `section`. If no section is passed, the import is
   // performed on the union of all sections.
   bool ExtractAddressProfileFromSection(
       base::span<const AutofillField* const> section_fields,
       const GURL& source_url,
-      std::vector<AddressProfileImportCandidate>*
-          address_profile_import_candidates,
+      std::vector<ExtractedAddressProfile>* extracted_address_profiles,
       LogBuffer* import_log_buffer);
 
   // Returns the extracted card if one was found in the form.
@@ -272,13 +271,12 @@ class FormDataImporter : public AddressDataManager::Observer,
       bool is_credit_card_upstream_enabled,
       ukm::SourceId ukm_source_id);
 
-  // Processes the address profile import candidates.
-  // |address_profile_import_candidates| contains the addresses extracted
-  // from the form. |allow_prompt| denotes if a prompt can be shown.
-  // Returns true if the import of a complete profile is initiated.
-  bool ProcessAddressProfileImportCandidates(
-      const std::vector<AddressProfileImportCandidate>&
-          address_profile_import_candidates,
+  // Processes the extracted address profiles. `extracted_address_profiles`
+  // contains the addresses extracted from the form. |allow_prompt| denotes if a
+  // prompt can be shown. Returns true if the import of a complete profile is
+  // initiated.
+  bool ProcessExtractedAddressProfiles(
+      const std::vector<ExtractedAddressProfile>& extracted_address_profiles,
       bool allow_prompt,
       ukm::SourceId ukm_source_id);
 

@@ -49,7 +49,10 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
     const FieldTypeSet& available_field_types,
     std::string_view login_form_signature,
-    bool observed_submission);
+    bool observed_submission,
+    // TODO(crbug.com/396325496): Remove default parameter.
+    const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
+        format_strings = {});
 
 // Encodes the list of `forms` and their fields that are valid into an
 // `AutofillPageQueryRequest` proto. The queried FormSignatures and

@@ -249,8 +249,8 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
                                /*profile_autofill_enabled=*/true,
                                /*payment_methods_autofill_enabled=*/true);
       test_api(*form_data_importer_)
-          .ProcessAddressProfileImportCandidates(
-              extracted_data.address_profile_import_candidates,
+          .ProcessExtractedAddressProfiles(
+              extracted_data.extracted_address_profiles,
               /*allow_prompt=*/true, ukm_source_id());
       EXPECT_FALSE(extracted_data.extracted_credit_card);
 

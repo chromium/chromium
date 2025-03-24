@@ -4,13 +4,20 @@
 
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 
+#include <map>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
+#include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -20,6 +27,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -186,6 +194,31 @@ void FindAndSetPossibleFieldTypes(
   }
 }
 
+// Matches a date consisting of year, month, and day in a the given string.
+std::vector<std::u16string> GetMatchingCompleteDateFormats(
+    std::u16string_view date) {
+  std::vector<std::u16string> format_strings;
+  for (std::u16string_view format :
+       {// Ordering: year month day.
+        u"YYYY*MM*DD", u"YY*MM*DD", u"YYYY+M+D", u"YY+M+D",
+        // Ordering: month day year.
+        u"MM*DD*YYYY", u"MM*DD*YY", u"M+D+YYYY", u"M+D+YY",
+        // Ordering: day month year.
+        u"DD*MM*YYYY", u"DD*MM*YY", u"D+M+YYYY", u"D+M+YY"}) {
+    data_util::Date result;
+    const char16_t* separator = nullptr;
+    if (data_util::ParseDate(date, format, result, separator) &&
+        data_util::IsValidDateForFormat(result, format)) {
+      std::u16string instantiated_format;
+      base::ReplaceChars(format, u"*+", separator, &instantiated_format);
+      if (data_util::ParseDate(date, instantiated_format, result)) {
+        format_strings.push_back(instantiated_format);
+      }
+    }
+  }
+  return format_strings;
+}
+
 }  // namespace
 
 void PreProcessStateMatchingTypes(const AutofillClient& client,
@@ -236,6 +269,104 @@ void DeterminePossibleFieldTypesForUpload(
   FindAndSetPossibleFieldTypes(profiles, credit_cards,
                                last_unlocked_credit_card_cvc, app_locale, form);
   DisambiguatePossibleFieldTypes(form);
+}
+
+std::map<FieldGlobalId, base::flat_set<std::u16string>>
+DeterminePossibleFormatStringsForUpload(
+    const base::span<const std::unique_ptr<AutofillField>> fields) {
+  // Cheap plausibility checks if the field is relevant for date matching.
+  auto may_be_interesting = [](const std::unique_ptr<AutofillField>& field) {
+    return field->form_control_type() == FormControlType::kInputText &&
+           (field->is_user_edited() || field->is_autofilled() ||
+            field->value(ValueSemantics::kInitial) !=
+                field->value(ValueSemantics::kCurrent));
+  };
+
+  // Cheap check if the field's value might contain a year, month, and day.
+  auto may_be_complete_date = [&](const std::unique_ptr<AutofillField>& field) {
+    static constexpr size_t kMinDateLength =
+        std::u16string_view(u"1.1.25").size();
+    static constexpr size_t kMaxDateLength =
+        std::u16string_view(u"2025 / 12 / 31").size();
+    const std::u16string& value = field->value(ValueSemantics::kCurrent);
+    return kMinDateLength <= value.size() && value.size() <= kMaxDateLength &&
+           std::ranges::all_of(value, [&](char16_t c) {
+             return base::IsAsciiDigit(c) || data_util::IsDateSeparatorChar(c);
+           });
+  };
+
+  // Cheap check if the field's value might contain a year, month, or day.
+  auto may_be_part_of_date = [](const std::unique_ptr<AutofillField>& field) {
+    const std::u16string& value = field->value(ValueSemantics::kCurrent);
+    return 1 <= value.size() && value.size() <= 4 &&
+           std::ranges::all_of(value, base::IsAsciiDigit<char16_t>);
+  };
+
+  // Cheap check if the three fields' values might together contain a year,
+  // month and day.
+  // TODO(crbug.com/396325496): Remove the label / separator comparisons if
+  // crrev.com/c/6360977 has landed.
+  auto may_be_split_date =
+      [&](base::span<const std::unique_ptr<AutofillField>, 3> group) {
+        return std::ranges::all_of(group, may_be_part_of_date) &&
+               (group[0]->label() == group[1]->label() ||
+                std::ranges::all_of(group[1]->label(),
+                                    data_util::IsDateSeparatorChar)) &&
+               group[1]->label() == group[2]->label();
+      };
+
+  std::map<FieldGlobalId, base::flat_set<std::u16string>> formats_by_field;
+
+  // Match formats against individual fields.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiVoteForFormatStringsFromSingleFields)) {
+    for (const std::unique_ptr<AutofillField>& field : fields) {
+      if (!may_be_interesting(field) || !may_be_complete_date(field)) {
+        continue;
+      }
+      const std::vector<std::u16string> formats =
+          GetMatchingCompleteDateFormats(
+              field->value(ValueSemantics::kCurrent));
+      if (!formats.empty()) {
+        formats_by_field.emplace(field->global_id(), std::move(formats));
+      }
+    }
+  }
+
+  // Match formats against groups of three consecutive fields.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
+    for (size_t i = 0; i + 2 < fields.size(); ++i) {
+      const base::span<const std::unique_ptr<AutofillField>, 3> group =
+          fields.subspan(i).first<3>();
+      if (!std::ranges::all_of(group, may_be_interesting) ||
+          !may_be_split_date(group) ||
+          !base::FeatureList::IsEnabled(
+              features::kAutofillAiVoteForFormatStringsFromMultipleFields)) {
+        continue;
+      }
+      static constexpr std::u16string_view kSeparator = u"-";
+      static_assert(
+          std::ranges::all_of(kSeparator, data_util::IsDateSeparatorChar));
+      const std::u16string date =
+          base::JoinString({group[0]->value(ValueSemantics::kCurrent),
+                            group[1]->value(ValueSemantics::kCurrent),
+                            group[2]->value(ValueSemantics::kCurrent)},
+                           kSeparator);
+      for (const std::u16string& format :
+           GetMatchingCompleteDateFormats(date)) {
+        const std::vector<std::u16string> partial_formats = base::SplitString(
+            format, kSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        if (partial_formats.size() == 3) {
+          for (size_t j = 0; j < 3; ++j) {
+            formats_by_field[group[j]->global_id()].insert(
+                std::move(partial_formats[j]));
+          }
+        }
+      }
+    }
+  }
+  return formats_by_field;
 }
 
 }  // namespace autofill

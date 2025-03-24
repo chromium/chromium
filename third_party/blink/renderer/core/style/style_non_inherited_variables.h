@@ -37,23 +37,20 @@ class CORE_EXPORT StyleNonInheritedVariables
     DCHECK(!value || !value->NeedsVariableResolution());
     variables_.SetData(name, value);
   }
-  StyleVariables::OptionalData GetData(const AtomicString& name) const {
+  std::optional<CSSVariableData*> GetData(const AtomicString& name) const {
     return variables_.GetData(name);
   }
 
   void SetValue(const AtomicString& name, const CSSValue* value) {
     variables_.SetValue(name, value);
   }
-  StyleVariables::OptionalValue GetValue(const AtomicString& name) const {
+  std::optional<const CSSValue*> GetValue(const AtomicString& name) const {
     return variables_.GetValue(name);
   }
 
   void CollectNames(HashSet<AtomicString>& names) const {
     variables_.CollectNames(names);
   }
-
-  const StyleVariables::DataMap& Data() const { return variables_.Data(); }
-  const StyleVariables::ValueMap& Values() const { return variables_.Values(); }
 
   friend CORE_EXPORT std::ostream& operator<<(
       std::ostream& stream,

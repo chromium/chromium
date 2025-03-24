@@ -254,12 +254,10 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 
 FormDataImporter::~FormDataImporter() = default;
 
-FormDataImporter::AddressProfileImportCandidate::
-    AddressProfileImportCandidate() = default;
-FormDataImporter::AddressProfileImportCandidate::AddressProfileImportCandidate(
-    const FormDataImporter::AddressProfileImportCandidate& other) = default;
-FormDataImporter::AddressProfileImportCandidate::
-    ~AddressProfileImportCandidate() = default;
+FormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile() = default;
+FormDataImporter::ExtractedAddressProfile::ExtractedAddressProfile(
+    const FormDataImporter::ExtractedAddressProfile& other) = default;
+FormDataImporter::ExtractedAddressProfile::~ExtractedAddressProfile() = default;
 
 void FormDataImporter::ImportAndProcessFormData(
     const FormStructure& submitted_form,
@@ -270,12 +268,11 @@ void FormDataImporter::ImportAndProcessFormData(
       ExtractFormData(submitted_form, profile_autofill_enabled,
                       payment_methods_autofill_enabled);
 
-  // Create a vector of address profile import candidates.
+  // Create a vector of extracted address profiles.
   // This is used to make preliminarily imported profiles available
   // to the credit card import logic.
   std::vector<AutofillProfile> preliminary_imported_address_profiles;
-  for (const auto& candidate :
-       extracted_data.address_profile_import_candidates) {
+  for (const auto& candidate : extracted_data.extracted_address_profiles) {
     if (candidate.all_requirements_fulfilled) {
       preliminary_imported_address_profiles.push_back(candidate.profile);
     }
@@ -304,10 +301,10 @@ void FormDataImporter::ImportAndProcessFormData(
         ProcessIbanImportCandidate(*extracted_data.extracted_iban);
   }
 
-  // If a prompt for credit cards or IBANs is potentially shown, do not allow
-  // for a second address profile import dialog.
-  ProcessAddressProfileImportCandidates(
-      extracted_data.address_profile_import_candidates,
+  ProcessExtractedAddressProfiles(
+      extracted_data.extracted_address_profiles,
+      // If a prompt for credit cards or IBANs is potentially shown, do not
+      // allow for a second address profile import dialog.
       /*allow_prompt=*/!cc_prompt_potentially_shown &&
           !iban_prompt_potentially_shown,
       ukm_source_id);
@@ -395,7 +392,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   if (profile_autofill_enabled &&
       !base::FeatureList::IsEnabled(features::kAutofillDisableAddressImport)) {
     num_complete_address_profiles = ExtractAddressProfiles(
-        submitted_form, &extracted_form_data.address_profile_import_candidates);
+        submitted_form, &extracted_form_data.extracted_address_profiles);
   }
 
   if (profile_autofill_enabled && payment_methods_autofill_enabled) {
@@ -418,8 +415,8 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
 
 size_t FormDataImporter::ExtractAddressProfiles(
     const FormStructure& form,
-    std::vector<FormDataImporter::AddressProfileImportCandidate>*
-        address_profile_import_candidates) {
+    std::vector<FormDataImporter::ExtractedAddressProfile>*
+        extracted_address_profiles) {
   // Create a buffer to collect logging output for the autofill-internals.
   LogManager* log_manager = client_->GetCurrentLogManager();
   LogBuffer import_log_buffer(IsLoggingActive(log_manager));
@@ -458,7 +455,7 @@ size_t FormDataImporter::ExtractAddressProfiles(
       // Try to extract an address profile from the form fields of this section.
       // Only allow for a prompt if no other complete profile was found so far.
       if (ExtractAddressProfileFromSection(fields, form.source_url(),
-                                           address_profile_import_candidates,
+                                           extracted_address_profiles,
                                            &import_log_buffer)) {
         num_complete_profiles++;
       }
@@ -663,8 +660,8 @@ FormDataImporter::GetAddressObservedFieldValues(
 bool FormDataImporter::ExtractAddressProfileFromSection(
     base::span<const AutofillField* const> section_fields,
     const GURL& source_url,
-    std::vector<FormDataImporter::AddressProfileImportCandidate>*
-        address_profile_import_candidates,
+    std::vector<FormDataImporter::ExtractedAddressProfile>*
+        extracted_address_profiles,
     LogBuffer* import_log_buffer) {
   // Tracks if the form section contains multiple distinct email addresses.
   bool has_multiple_distinct_email_addresses = false;
@@ -766,20 +763,20 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // incognito mode.
   DCHECK(!client_->IsOffTheRecord());
 
-  AddressProfileImportCandidate import_candidate;
-  import_candidate.profile = candidate_profile;
-  import_candidate.url = source_url;
-  import_candidate.all_requirements_fulfilled = all_fulfilled;
-  import_candidate.import_metadata = import_metadata;
-  address_profile_import_candidates->push_back(import_candidate);
+  ExtractedAddressProfile extracted_address_profile;
+  extracted_address_profile.profile = candidate_profile;
+  extracted_address_profile.url = source_url;
+  extracted_address_profile.all_requirements_fulfilled = all_fulfilled;
+  extracted_address_profile.import_metadata = import_metadata;
+  extracted_address_profiles->push_back(std::move(extracted_address_profile));
 
   // Return true if a complete importable profile was found.
   return all_fulfilled;
 }
 
-bool FormDataImporter::ProcessAddressProfileImportCandidates(
-    const std::vector<FormDataImporter::AddressProfileImportCandidate>&
-        address_profile_import_candidates,
+bool FormDataImporter::ProcessExtractedAddressProfiles(
+    const std::vector<FormDataImporter::ExtractedAddressProfile>&
+        extracted_address_profiles,
     bool allow_prompt,
     ukm::SourceId ukm_source_id) {
   int imported_profiles = 0;
@@ -789,7 +786,7 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
   // import addresses. If it is false, we should not display UI to import
   // addresses due to a possible dialog or bubble conflict.
   if (allow_prompt) {
-    for (const auto& candidate : address_profile_import_candidates) {
+    for (const auto& candidate : extracted_address_profiles) {
       // First try to import a single complete profile.
       if (!candidate.all_requirements_fulfilled) {
         continue;
@@ -810,7 +807,7 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
     return true;
   }
   // Otherwise try again but restrict the import to silent updates.
-  for (const auto& candidate : address_profile_import_candidates) {
+  for (const auto& candidate : extracted_address_profiles) {
     // First try to import a single complete profile.
     address_profile_save_manager_->ImportProfileFromForm(
         candidate.profile, client_->GetAppLocale(), candidate.url,

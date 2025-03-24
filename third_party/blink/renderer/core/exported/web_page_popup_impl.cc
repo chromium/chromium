@@ -217,7 +217,8 @@ class PagePopupChromeClient final : public EmptyChromeClient {
   }
 
   void ScheduleAnimation(const LocalFrameView*,
-                         base::TimeDelta delay = base::TimeDelta()) override {
+                         base::TimeDelta delay = base::TimeDelta(),
+                         bool urgent = false) override {
     // Destroying/removing the popup's content can be seen as a mutation that
     // ends up calling ScheduleAnimation(). Since the popup is going away, we
     // do not wish to actually do anything.
@@ -239,7 +240,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
       }
       return;
     }
-    popup_->widget_base_->RequestAnimationAfterDelay(delay);
+    popup_->widget_base_->RequestAnimationAfterDelay(delay, urgent);
   }
 
   cc::AnimationHost* GetCompositorAnimationHost(LocalFrame&) const override {
@@ -910,8 +911,8 @@ void WebPagePopupImpl::FocusChanged(mojom::blink::FocusState focus_state) {
                                          mojom::blink::FocusState::kFocused);
 }
 
-void WebPagePopupImpl::ScheduleAnimation() {
-  widget_base_->LayerTreeHost()->SetNeedsAnimate();
+void WebPagePopupImpl::ScheduleAnimation(bool urgent) {
+  widget_base_->LayerTreeHost()->SetNeedsAnimate(urgent);
 }
 
 void WebPagePopupImpl::UpdateVisualProperties(

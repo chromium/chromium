@@ -44,6 +44,7 @@ source_set("model") {
     ]
   }
   deps = [
+    ":features",
     ":infobar_delegates",
     ":password_checkup_metrics",
     ":store_factory",
@@ -240,6 +241,14 @@ source_set("sharing_factory") {
   ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -253,6 +262,7 @@ source_set("unit_tests") {
     "well_known_change_password_tab_helper_unittest.mm",
   ]
   deps = [
+    ":features",
     ":infobar_delegates",
     ":model",
     ":password_checkup_metrics",
@@ -285,7 +295,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/passwords/model/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

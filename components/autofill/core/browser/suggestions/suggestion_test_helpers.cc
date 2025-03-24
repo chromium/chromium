@@ -50,4 +50,8 @@ Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
                Field(&Suggestion::payload, payload));
 }
 
+Matcher<Suggestion> EqualsSuggestion(Suggestion::Icon icon) {
+  return Field(&Suggestion::icon, icon);
+}
+
 }  // namespace autofill

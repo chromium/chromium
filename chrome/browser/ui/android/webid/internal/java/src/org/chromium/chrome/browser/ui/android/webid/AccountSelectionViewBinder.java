@@ -215,7 +215,16 @@ class AccountSelectionViewBinder {
             }
             if (model.get(AccountProperties.SHOW_IDP)
                     && account.getSecondaryDescription() != null) {
-                secondaryDescription.setText(account.getSecondaryDescription());
+                if (account.isSignIn()) {
+                    // Include a hint that this is a returning account.
+                    secondaryDescription.setText(
+                            view.getContext()
+                                    .getString(
+                                            R.string.account_selection_returning_account_message,
+                                            account.getSecondaryDescription()));
+                } else {
+                    secondaryDescription.setText(account.getSecondaryDescription());
+                }
                 secondaryDescription.setVisibility(View.VISIBLE);
             } else {
                 secondaryDescription.setVisibility(View.GONE);

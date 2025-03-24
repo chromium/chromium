@@ -173,6 +173,7 @@ TEST(AutofillDataModelUtils, ParseDate) {
   EXPECT_EQ(ParseDate(u"202", u"YYYY"), std::nullopt);
   EXPECT_EQ(ParseDate(u"2025", u"YY"), std::nullopt);
   EXPECT_EQ(ParseDate(u"123", u"YY"), std::nullopt);
+  EXPECT_EQ(ParseDate(u"1", u"YY"), std::nullopt);
   EXPECT_EQ(ParseDate(u"7", u"MM"), std::nullopt);
   EXPECT_EQ(ParseDate(u"007", u"MM"), std::nullopt);
   EXPECT_EQ(ParseDate(u"07", u"M"), std::nullopt);

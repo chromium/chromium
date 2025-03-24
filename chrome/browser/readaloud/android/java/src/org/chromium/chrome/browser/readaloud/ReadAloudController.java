@@ -14,13 +14,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.LruCache;
 import android.view.WindowManager;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
 import com.google.common.hash.Hashing;
-
+import com.google.common.collect.ImmutableMap;
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -80,12 +83,6 @@ import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
-
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * The main entrypoint component for Read Aloud feature. It's responsible for checking its
@@ -192,39 +189,75 @@ public class ReadAloudController
         var oldValue = sClock;
         sClock = clock;
         ResettersForTesting.register(() -> sClock = oldValue);
+  }
+
+  private static class ReadabilityInfo {
+    private final Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult>
+        mReadabilityInfoPerMode;
+    private final long mResponseTimestamp;
+
+    /**
+     * Constructor.
+     *
+     * @param readabilityInfoPerMode Readability info per mode.
+     * @param responseTimestamp Timestamp when readability request responded.
+     */
+    ReadabilityInfo(
+        Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult>
+            readabilityInfoPerMode,
+        long responseTimestamp) {
+      mReadabilityInfoPerMode = readabilityInfoPerMode;
+      mResponseTimestamp = responseTimestamp;
     }
 
-    private static class ReadabilityInfo {
-        private final boolean mIsReadable;
-        private final long mResponseTimestamp;
-        private final boolean mTimepointsSupported;
-
-        /**
-         * Constructor.
-         *
-         * @param isReadable Is page readable.
-         * @param responseTimestamp Timestamp when readability request responded.
-         * @param timepointsSupported Whether or not timepoints are supported (needed for
-         *     highlighting).
-         */
-        ReadabilityInfo(boolean isReadable, long responseTimestamp, boolean timepointsSupported) {
-            mIsReadable = isReadable;
-            mResponseTimestamp = responseTimestamp;
-            mTimepointsSupported = timepointsSupported;
-        }
-
-        boolean isReadable() {
-            return mIsReadable;
-        }
-
-        long getResponseTime() {
-            return mResponseTimestamp;
-        }
-
-        boolean getTimepointsSupported() {
-            return mTimepointsSupported;
-        }
+    static ReadabilityInfo entirelyUnsupported(long responseTimestamp) {
+      return new ReadabilityInfo(
+          ImmutableMap.of(
+              PlaybackArgs.PlaybackMode.CLASSIC,
+              new ReadAloudReadabilityHooks.ReadabilityResult(false, false),
+              PlaybackArgs.PlaybackMode.OVERVIEW,
+              new ReadAloudReadabilityHooks.ReadabilityResult(false, false)),
+          responseTimestamp);
     }
+
+    static ReadabilityInfo forTimepoints(boolean timepointsSupported, long responseTimestamp) {
+        return new ReadabilityInfo(
+          ImmutableMap.of(
+              PlaybackArgs.PlaybackMode.CLASSIC,
+              new ReadAloudReadabilityHooks.ReadabilityResult(true, timepointsSupported),
+              PlaybackArgs.PlaybackMode.OVERVIEW,
+              new ReadAloudReadabilityHooks.ReadabilityResult(true, timepointsSupported)),
+          responseTimestamp);
+    }
+
+    boolean isReadable() {
+      return isReadable(PlaybackArgs.PlaybackMode.CLASSIC);
+    }
+
+    boolean isReadable(PlaybackArgs.PlaybackMode mode) {
+      return getReadabilityResultForMode(mode).readable;
+    }
+
+    long getResponseTime() {
+      return mResponseTimestamp;
+    }
+
+    boolean getTimepointsSupported() {
+      return getTimepointsSupported(PlaybackArgs.PlaybackMode.CLASSIC);
+    }
+
+    boolean getTimepointsSupported(PlaybackArgs.PlaybackMode mode) {
+      return getReadabilityResultForMode(mode).supportsHighlighting;
+    }
+
+    private ReadAloudReadabilityHooks.ReadabilityResult getReadabilityResultForMode(
+        PlaybackArgs.PlaybackMode mode) {
+      return mReadabilityInfoPerMode.getOrDefault(
+          mode,
+          new ReadAloudReadabilityHooks.ReadabilityResult(
+              /* readable= */ false, /* supportsHighlighting= */ false));
+    }
+  }
 
     // Information about a tab playback necessary for resuming later. Does not
     // include language or voice which should come from current tab state or
@@ -438,10 +471,11 @@ public class ReadAloudController
                         assert false;
                         return;
                     }
-                    ReadAloudReadabilityHooks.ReadabilityResult result = readabilityPerMode.getOrDefault(
-                        PlaybackArgs.PlaybackMode.CLASSIC,
-                        new ReadAloudReadabilityHooks.ReadabilityResult(/* readable = */false, /* supportsHighlighting = */ false));
-                    boolean isReadable = result.readable;
+                    ReadabilityInfo readabilityInfo =
+                            new ReadabilityInfo(
+                                    readabilityPerMode,
+                                    sClock.currentTimeMillis());
+                    boolean isReadable = readabilityInfo.isReadable();
 
                     Log.d(TAG, "onSuccess called for %s", url);
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
@@ -456,15 +490,10 @@ public class ReadAloudController
                         ReadAloudFeatures.activateKnownReadableTrial();
                     }
 
-                    // isPlaybackEnabled() should only be checked if isReadable == true.
-                    isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
                     int urlHash = urlToHash(url);
                     sReadabilityInfoMap.put(
                             urlHash,
-                            new ReadabilityInfo(
-                                    isReadable,
-                                    sClock.currentTimeMillis(),
-                                    result.supportsHighlighting));
+                            readabilityInfo);
                     mPendingRequests.remove(urlHash);
                     notifyReadabilityMayHaveChanged();
                 }
@@ -1054,7 +1083,7 @@ public class ReadAloudController
                         Log.e(TAG, "Attempting to play a non readable website");
                         sReadabilityInfoMap.put(
                                 sanitizedUrlHash,
-                                new ReadabilityInfo(false, sClock.currentTimeMillis(), false));
+                                ReadabilityInfo.entirelyUnsupported(sClock.currentTimeMillis()));
                         notifyReadabilityMayHaveChanged();
                     }
 
@@ -1752,7 +1781,7 @@ public class ReadAloudController
     }
 
     public void setTimepointsSupportedForTest(String url, boolean supported) {
-        sReadabilityInfoMap.put(urlToHash(url), new ReadabilityInfo(true, 0L, supported));
+        sReadabilityInfoMap.put(urlToHash(url), ReadabilityInfo.forTimepoints(supported, 0L));
     }
 
     public void setStateToRestoreOnBringingToForegroundForTests(RestoreState restoreState) {

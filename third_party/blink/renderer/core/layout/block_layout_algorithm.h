@@ -126,8 +126,15 @@ struct BlockLineClampData {
                          const PreviousInflowPosition& previous_inflow_position,
                          LayoutUnit block_end_padding) {
     if (data.state == LineClampData::kClampByLines) {
-      if (!layout_result->GetPhysicalFragment().IsFormattingContextRoot()) {
+      if (!layout_result->GetPhysicalFragment().IsFormattingContextRoot() &&
+          !ignore_further_lines) {
         data.lines_until_clamp = layout_result->LinesUntilClamp();
+
+        if (layout_result->WouldBeLastLineIfNotForEllipsis()) {
+          DCHECK(layout_result->GetPhysicalFragment().IsLineBox());
+          DCHECK_EQ(data.lines_until_clamp, 0);
+          ignore_further_lines = true;
+        }
       }
 
       if (IsPastClampPoint() &&
@@ -192,6 +199,12 @@ struct BlockLineClampData {
   // the last line or box before clamp. Can only be set if
   // data.state == kClampByLines.
   std::optional<PreviousInflowPosition> previous_inflow_position_when_clamped;
+
+  // If set, any lines added by any further layout results are ignored when
+  // decreasing the number of lines until clamp. Used when we know that the
+  // remaining lines in this block box would not exist if we weren't
+  // ellipsizing. Can only be set if data.state == kClampByLines.
+  bool ignore_further_lines = false;
 };
 
 // A class for general block layout (e.g. a <div> with no special style).

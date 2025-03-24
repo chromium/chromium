@@ -126,6 +126,14 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   LineClampState GetLineClampState(const LineInfo*,
                                    LayoutUnit line_box_height) const;
 
+  // Checks whether the remainder of the IFC (i.e. anything after the current
+  // break token) would be able to fit in the current line if it didn't have a
+  // line-clamp ellipsis that pushes some of that content to the next line.
+  //
+  // This method will try to compute that without performing actual line
+  // breaking, but it will return `nullopt` if it can't.
+  std::optional<bool> DoesRemainderFitInLineWithoutEllipsis(const LineInfo&);
+
   InlineLayoutStateStack* box_states_;
   InlineChildLayoutContext* context_;
 

@@ -6391,8 +6391,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest,
 // a new process will be created, which is also acceptable. This is different
 // from the Desktop scenario where the browser has more control over the process
 // lifecycle.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest,
-                       ReuseEmptyAvailableRenderIfAvailableForMainFrame) {
+// TODO(crbug.com/405884216): Very flaky on multiple bots.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest,
+    DISABLED_ReuseEmptyAvailableRenderIfAvailableForMainFrame) {
   // The test assumes that the main frame RFH will be reused when navigating.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
                                     BackForwardCache::TEST_REQUIRES_NO_CACHING);

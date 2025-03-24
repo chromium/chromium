@@ -283,7 +283,6 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
   config.features_enabled.push_back(kTabGroupsIPad);
-  config.features_enabled.push_back(kModernTabStrip);
   return config;
 }
 

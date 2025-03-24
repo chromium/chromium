@@ -584,6 +584,10 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [4760],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/bookmarks/code_cache_resources.grd": {
+    "META": {"sizes": {"includes": [45],}},
+    "includes": [4770],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/bookmarks/resources.grd": {
     "META": {"sizes": {"includes": [45],}},
     "includes": [4780],
@@ -591,6 +595,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/commerce/resources.grd": {
     "META": {"sizes": {"includes": [20],}},
     "includes": [4800],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/customize_chrome/code_cache_resources.grd": {
+    "META": {"sizes": {"includes": [80],}},
+    "includes": [4820],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/customize_chrome/resources.grd": {
     "META": {"sizes": {"includes": [80],}},
@@ -607,6 +615,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/read_anything/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [4880],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/reading_list/code_cache_resources.grd": {
+    "META": {"sizes": {"includes": [15],}},
+    "includes": [4890],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/reading_list/resources.grd": {
     "META": {"sizes": {"includes": [15],}},

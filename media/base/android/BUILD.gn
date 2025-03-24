@@ -187,14 +187,14 @@ if (is_android) {
     ]
     resources_package = "org.chromium.media"
     sources = [
-      "java/src/org/chromium/media/AudioDeviceListener.java",
-      "java/src/org/chromium/media/AudioDeviceSelector.java",
-      "java/src/org/chromium/media/AudioDeviceSelectorPostS.java",
-      "java/src/org/chromium/media/AudioDeviceSelectorPreS.java",
       "java/src/org/chromium/media/AudioManagerAndroid.java",
       "java/src/org/chromium/media/AudioTrackOutputStream.java",
       "java/src/org/chromium/media/BitrateAdjuster.java",
       "java/src/org/chromium/media/CodecProfileLevelList.java",
+      "java/src/org/chromium/media/CommunicationDeviceListener.java",
+      "java/src/org/chromium/media/CommunicationDeviceSelector.java",
+      "java/src/org/chromium/media/CommunicationDeviceSelectorPostS.java",
+      "java/src/org/chromium/media/CommunicationDeviceSelectorPreS.java",
       "java/src/org/chromium/media/HdrMetadata.java",
       "java/src/org/chromium/media/MaxAnticipatedResolutionEstimator.java",
       "java/src/org/chromium/media/MediaCodecBridge.java",
@@ -222,9 +222,9 @@ if (is_android) {
 
   robolectric_binary("media_base_junit_tests") {
     sources = [
-      "java/src/test/org/chromium/media/AudioDeviceListenerTest.java",
       "java/src/test/org/chromium/media/AudioTrackOutputStreamTest.java",
       "java/src/test/org/chromium/media/BitrateAdjusterTest.java",
+      "java/src/test/org/chromium/media/CommunicationDeviceListenerTest.java",
       "java/src/test/org/chromium/media/MediaFormatBuilderTest.java",
     ]
     deps = [

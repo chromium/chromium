@@ -354,6 +354,17 @@ message AutofillUploadContents {
     // between then and form submission. Set to `false` if the pre-filled value
     // wasn't changed. Not set if the field didn't have a pre-filled value.
     optional bool initial_value_changed = 47;
+
+    // List of format strings which the field's value matches.
+    message FormatString {
+      enum Type {
+        // The format string represents a date.
+        DATE = 0;
+      }
+      optional Type type = 49;
+      optional string format_string = 50;
+    }
+    repeated FormatString format_string = 51;
   }
   repeated Field field_data = 48;
   // Signature of the form action host (e.g. Hash64Bit("example.com")).

@@ -38,7 +38,6 @@ include_rules = [
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/synced_sessions/model",
   "+ios/chrome/browser/tabs/model",
-  "+ios/chrome/browser/tabs/ui_bundled/tab_strip_constants.h",
   "+ios/chrome/browser/tabs_search/model",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h",
