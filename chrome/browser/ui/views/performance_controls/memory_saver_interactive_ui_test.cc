@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -270,16 +271,29 @@ class MemorySaverChipInteractiveTest
           MemorySaverChipInteractiveTestParams> {
  public:
   MemorySaverChipInteractiveTest() {
-    scoped_feature_list_.InitWithFeatureStates({
-        {features::kWebContentsDiscard, GetParam().web_contents_discard},
-        {features::kPageActionsMigration, IsPageActionMigrationEnabled()},
-    });
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam().web_contents_discard) {
+      enabled_features.push_back({features::kWebContentsDiscard, {}});
+    } else {
+      disabled_features.push_back(features::kWebContentsDiscard);
+    }
+    if (GetParam().page_actions_migration_enabled) {
+      enabled_features.push_back(
+          {features::kPageActionsMigration,
+           {{features::kPageActionsMigrationMemorySaver.name, "true"}}});
+    } else {
+      disabled_features.push_back(features::kPageActionsMigration);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   ~MemorySaverChipInteractiveTest() override = default;
 
   bool IsPageActionMigrationEnabled() const {
-    return GetParam().page_actions_migration_enabled;
+    return IsPageActionMigrated(PageActionIconType::kMemorySaver);
   }
 
   void SetUpOnMainThread() override {
@@ -834,7 +848,13 @@ INSTANTIATE_TEST_SUITE_P(,
                                  .page_actions_migration_enabled = false},
                              MemorySaverChipInteractiveTestParams{
                                  .web_contents_discard = true,
-                                 .page_actions_migration_enabled = false}),
+                                 .page_actions_migration_enabled = false},
+                             MemorySaverChipInteractiveTestParams{
+                                 .web_contents_discard = false,
+                                 .page_actions_migration_enabled = true},
+                             MemorySaverChipInteractiveTestParams{
+                                 .web_contents_discard = true,
+                                 .page_actions_migration_enabled = true}),
 
                          [](const ::testing::TestParamInfo<
                              MemorySaverChipInteractiveTest::ParamType>& info) {
