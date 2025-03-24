@@ -1184,7 +1184,7 @@ class LensOverlayController : public LensSearchboxClient,
   // points since the state of the overlay has changed.
   void UpdateEntryPointsState();
 
-  // Owns this class.
+  // Owns the LensSearchController which owns this class
   raw_ptr<tabs::TabInterface> tab_;
 
   // A monotonically increasing id. This is used to differentiate between
