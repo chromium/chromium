@@ -1029,27 +1029,43 @@ void HWNDMessageHandler::SetAspectRatio(float aspect_ratio,
 
 void HWNDMessageHandler::SizeConstraintsChanged() {
   LONG style = GetWindowLong(hwnd(), GWL_STYLE);
+
   // Ignore if this is not a standard window.
   if (style & static_cast<LONG>(WS_POPUP | WS_CHILD)) {
-    return;
+    // Allow Glic to become resizable dynamically.
+    // TODO(404947780): this should be allowed for all widgets. thestig@
+    // suggested to scope the change to glic and and let other widgets to bypass
+    // the restriction on their own schedule.
+    if (debugging_id() != "GlicWidget") {
+      return;
+    }
   }
 
-  // Windows cannot have WS_THICKFRAME set if translucent.
-  // See CalculateWindowStylesFromInitParams().
-  const bool thick_frame = !is_translucent_ && delegate_->CanResize();
-  bool can_maximize = thick_frame && delegate_->CanMaximize();
+  // Key style considerations:
+  // - WS_THICKFRAME: Enables resizing. Cannot be used with translucent
+  //   windows (see CalculateWindowStylesFromInitParams() for details).
+  // - WS_CAPTION: Influences the default non-client frame thickness. It is used
+  //   in conjunction with WS_THICKFRAME to align with TYPE_WINDOW behavior,
+  //   allowing ui::GetResizableFrameThickness() to be used consistently when
+  //   removing the visible system frame.
+  const bool had_caption_on_init = window_style() & WS_CAPTION;
+  const bool can_resize = !is_translucent_ && delegate_->CanResize();
+  const bool can_maximize = can_resize && delegate_->CanMaximize();
 
-  auto set_style_func = [](LONG& style, LONG bit, bool should_set) {
+  auto set_style_func = [&style](LONG bit, bool should_set) {
     if (should_set) {
       style |= bit;
     } else {
       style &= ~bit;
     }
   };
-  set_style_func(style, WS_THICKFRAME, thick_frame);
-  set_style_func(style, WS_MAXIMIZEBOX, can_maximize);
-  set_style_func(style, WS_MINIMIZEBOX, delegate_->CanMinimize());
+  set_style_func(WS_THICKFRAME, can_resize);
+  set_style_func(WS_CAPTION, can_resize | had_caption_on_init);
+  set_style_func(WS_MAXIMIZEBOX, can_maximize);
+  set_style_func(WS_MINIMIZEBOX, delegate_->CanMinimize());
+
   SetWindowLong(hwnd(), GWL_STYLE, style);
+  SendFrameChanged();
 }
 
 // static

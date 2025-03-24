@@ -1431,10 +1431,22 @@ class LcppDataMapFeatures
   LcppDataMapFeatures() {
     scoped_feature_list_.InitWithFeatures(GetParam(),
                                           /*disabled_features=*/{});
+    scoped_feature_list_for_sliding_window_and_buckets_
+        .InitWithFeaturesAndParameters(
+            {{blink::features::kLCPCriticalPathPredictor,
+              {{blink::features::
+                    kLCPCriticalPathPredictorHistogramSlidingWindowSize.name,
+                "5"},
+               {blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets
+                    .name,
+                "2"}}}},
+            {});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList
+      scoped_feature_list_for_sliding_window_and_buckets_;
 };
 
 auto& kLCPPInitiatorOrigin = blink::features::kLCPPInitiatorOrigin;
@@ -1490,8 +1502,6 @@ TEST_P(LcppDataMapFeatures, Base) {
 TEST_P(LcppDataMapFeatures, LearnLcpp) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
-  EXPECT_EQ(5U, config.lcpp_histogram_sliding_window_size);
-  EXPECT_EQ(2U, config.max_lcpp_histogram_buckets);
   InitializeDB(config);
   EXPECT_TRUE(GetDataMap().empty());
 
@@ -1613,8 +1623,6 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
 TEST_P(LcppDataMapFeatures, LearnFontUrls) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
-  EXPECT_EQ(5U, config.lcpp_histogram_sliding_window_size);
-  EXPECT_EQ(2U, config.max_lcpp_histogram_buckets);
   InitializeDB(config);
   EXPECT_TRUE(GetDataMap().empty());
 
@@ -1659,8 +1667,6 @@ TEST_P(LcppDataMapFeatures, LearnFontUrls) {
 TEST_P(LcppDataMapFeatures, LearnSubresourceUrls) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
-  EXPECT_EQ(5U, config.lcpp_histogram_sliding_window_size);
-  EXPECT_EQ(2U, config.max_lcpp_histogram_buckets);
   InitializeDB(config);
   EXPECT_TRUE(GetDataMap().empty());
   const network::mojom::RequestDestination kEmpty =
@@ -1865,7 +1871,6 @@ class LcppMultipleKeyTest
     LoadingPredictorConfig config;
     PopulateTestConfig(&config);
     config.max_hosts_to_track_for_lcpp = 100u;
-    config.lcpp_histogram_sliding_window_size = 10u;
     config.lcpp_multiple_key_histogram_sliding_window_size = 100u;
     config.lcpp_multiple_key_max_histogram_buckets = 100u;
     InitializeDB(config);

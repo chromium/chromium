@@ -12,28 +12,37 @@ import org.chromium.build.annotations.NullMarked;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manages selection of the system communication device. A communication device is a paired input
+ * and output device. For compatibility with Android versions prior to S, "synthetic", generic
+ * device IDs are used here, representing e.g. the Bluetooth headset or the wired device with no
+ * other metadata.
+ */
 @NullMarked
-abstract class AudioDeviceSelector {
+abstract class CommunicationDeviceSelector {
     private static final String TAG = "media";
 
     protected static final boolean DEBUG = false;
 
     protected Devices mDeviceStates = new Devices();
 
-    protected final AudioDeviceListener mDeviceListener;
+    protected final CommunicationDeviceListener mDeviceListener;
 
     protected final AudioManager mAudioManager;
 
-    protected AudioDeviceSelector(AudioManager audioManager) {
+    protected CommunicationDeviceSelector(AudioManager audioManager) {
         mAudioManager = audioManager;
 
-        mDeviceListener = new AudioDeviceListener(mDeviceStates);
+        mDeviceListener = new CommunicationDeviceListener(mDeviceStates);
     }
 
-    /** Initialized the AudioDeviceSelector. */
+    /** Initializes the CommunicationDeviceSelector. */
     public abstract void init();
 
-    /** Closes the AudioDeviceSelector. Must be called before destruction if init() was called. */
+    /**
+     * Closes the CommunicationDeviceSelector. Must be called before destruction if init() was
+     * called.
+     */
     public abstract void close();
 
     /**
@@ -66,17 +75,17 @@ abstract class AudioDeviceSelector {
     public abstract boolean[] getAvailableDevices_Locked();
 
     public void setDeviceExistence_Locked(int deviceId, boolean exists) {
-        // Overridden by AudioDeviceSelectorPreS.
+        // Overridden by CommunicationDeviceSelectorPreS.
     }
 
-    public AudioManagerAndroid.AudioDeviceName[] getAudioInputDeviceNames() {
-        return mDeviceStates.getAudioInputDeviceNames();
+    public AudioManagerAndroid.AudioDevice[] getDevices() {
+        return mDeviceStates.getDevices();
     }
 
     /**
-     * Sets the passed ID as the active device if it is available. Also sets the given
-     * ID as the requested device ID, which will be prioritized when a device change
-     * occurs and maybeUpdateSelectedDevice() is called.
+     * Sets the passed ID as the active device if it is available. Also sets the given ID as the
+     * requested device ID, which will be prioritized when a device change occurs and
+     * maybeUpdateSelectedDevice() is called.
      */
     public boolean selectDevice(String stringDeviceId) {
         int deviceId = DeviceHelpers.parseStringId(stringDeviceId);
@@ -93,9 +102,8 @@ abstract class AudioDeviceSelector {
     }
 
     /**
-     * Updates the active device given the current list of devices and
-     * information about if a specific device has been selected or if
-     * the default device is selected.
+     * Updates the active device given the current list of devices and information about if a
+     * specific device has been selected or if the default device is selected.
      */
     protected void maybeUpdateSelectedDevice() {
         int nextDevice = mDeviceStates.getNextDeviceIfRequested();
@@ -136,9 +144,9 @@ abstract class AudioDeviceSelector {
         }
 
         /**
-         * Use a special selection scheme if the default device is selected.
-         * The "most unique" device will be selected; Wired headset first, then USB
-         * audio device, then Bluetooth and last the speaker phone.
+         * Use a special selection scheme if the default device is selected. The "most unique"
+         * device will be selected; Wired headset first, then USB audio device, then Bluetooth and
+         * last the speaker phone.
          */
         public static int selectDefaultDevice(boolean[] devices) {
             if (devices[Devices.ID_WIRED_HEADSET]) {
@@ -220,7 +228,7 @@ abstract class AudioDeviceSelector {
          *
          * @param deviceId The requested device ID (including the DEVICE_DEFAULT ID).
          * @return The ID of the audio device which should be selected, or DEVICE_INVALID if the
-         *         requested ID is unavailable.
+         *     requested ID is unavailable.
          */
         public int setRequestedDeviceIdAndGetNextId(int deviceId) {
             if (!DeviceHelpers.isDeviceValidOrDefault(deviceId)) return Devices.ID_INVALID;
@@ -240,8 +248,8 @@ abstract class AudioDeviceSelector {
         }
 
         /**
-         * Gets the ID of the device which should be currently selected, or ID_INVALID if no
-         * device was ever requested.
+         * Gets the ID of the device which should be currently selected, or ID_INVALID if no device
+         * was ever requested.
          */
         public int getNextDeviceIfRequested() {
             synchronized (mLock) {
@@ -258,8 +266,11 @@ abstract class AudioDeviceSelector {
             }
         }
 
-        /** Returns the list of currently available devices, to be used by the native side. */
-        public AudioManagerAndroid.AudioDeviceName[] getAudioInputDeviceNames() {
+        /**
+         * Returns the list of currently available communication devices, to be used by the native
+         * side.
+         */
+        public AudioManagerAndroid.AudioDevice[] getDevices() {
             boolean[] devices = null;
             synchronized (mLock) {
                 devices = getAvailableDevices_Locked();
@@ -268,15 +279,14 @@ abstract class AudioDeviceSelector {
 
             int activeDeviceCount = DeviceHelpers.getActiveDeviceCount(devices);
 
-            AudioManagerAndroid.AudioDeviceName[] array =
-                    new AudioManagerAndroid.AudioDeviceName[activeDeviceCount];
+            AudioManagerAndroid.AudioDevice[] array =
+                    new AudioManagerAndroid.AudioDevice[activeDeviceCount];
 
             int i = 0;
             for (int id = 0; id < devices.length; ++id) {
                 if (devices[id]) {
                     array[i] =
-                            new AudioManagerAndroid.AudioDeviceName(
-                                    id, DeviceHelpers.DEVICE_NAMES[id]);
+                            new AudioManagerAndroid.AudioDevice(id, DeviceHelpers.DEVICE_NAMES[id]);
                     list.add(DeviceHelpers.DEVICE_NAMES[id]);
                     i++;
                 }

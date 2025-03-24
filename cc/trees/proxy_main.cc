@@ -568,8 +568,8 @@ void ProxyMain::SetShouldWarmUp() {
 void ProxyMain::SetNeedsAnimate(bool urgent) {
   DCHECK(IsMainThread());
   if (SendCommitRequestToImplThreadIfNeeded(ANIMATE_PIPELINE_STAGE, urgent)) {
-    TRACE_EVENT_INSTANT0("cc", "ProxyMain::SetNeedsAnimate",
-                         TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT1("cc", "ProxyMain::SetNeedsAnimate",
+                         TRACE_EVENT_SCOPE_THREAD, "urgent", urgent);
   }
 }
 

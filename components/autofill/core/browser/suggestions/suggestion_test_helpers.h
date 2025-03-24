@@ -37,6 +37,8 @@ namespace autofill {
     Suggestion::Icon icon,
     const Suggestion::Payload& payload);
 
+::testing::Matcher<Suggestion> EqualsSuggestion(Suggestion::Icon icon);
+
 template <class... Matchers>
 inline auto SuggestionVectorIdsAre(const Matchers&... matchers) {
   return ::testing::ElementsAre(

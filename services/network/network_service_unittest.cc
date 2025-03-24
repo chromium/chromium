@@ -632,7 +632,8 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
       std::move(dns_client));
 
   service()->ConfigureStubHostResolver(
-      /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kOff,
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
+      net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
   EXPECT_TRUE(dns_client_ptr->CanUseInsecureDnsTransactions());
@@ -640,7 +641,8 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
             dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
 
   service()->ConfigureStubHostResolver(
-      /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kOff,
+      /*insecure_dns_client_enabled=*/false,
+      /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
@@ -648,7 +650,8 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
             dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
 
   service()->ConfigureStubHostResolver(
-      /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kAutomatic,
+      /*insecure_dns_client_enabled=*/false,
+      /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kAutomatic,
       /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
@@ -656,7 +659,8 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
             dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
 
   service()->ConfigureStubHostResolver(
-      /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kAutomatic,
+      /*insecure_dns_client_enabled=*/false,
+      /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kAutomatic,
       *net::DnsOverHttpsConfig::FromString("https://foo/"),
       /*additional_dns_types_enabled=*/true);
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
@@ -676,16 +680,43 @@ TEST_F(NetworkServiceTest, HandlesAdditionalDnsQueryTypesEnableDisable) {
       std::move(dns_client));
 
   service()->ConfigureStubHostResolver(
-      /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kOff,
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
+      net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
   EXPECT_TRUE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
 
   service()->ConfigureStubHostResolver(
-      /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kOff,
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
+      net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/false);
   EXPECT_FALSE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
+}
+
+TEST_F(NetworkServiceTest, HappyEyeballsV3EnableDisable) {
+  // Create valid DnsConfig.
+  net::DnsConfig config;
+  config.nameservers.emplace_back();
+  auto dns_client = std::make_unique<net::MockDnsClient>(
+      std::move(config), net::MockDnsClientRuleList());
+  dns_client->set_ignore_system_config_changes(true);
+  service()->host_resolver_manager()->SetDnsClientForTesting(
+      std::move(dns_client));
+
+  service()->ConfigureStubHostResolver(
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/true,
+      net::SecureDnsMode::kOff,
+      /*dns_over_https_config=*/{},
+      /*additional_dns_types_enabled=*/true);
+  EXPECT_TRUE(service()->host_resolver_manager()->IsHappyEyeballsV3Enabled());
+
+  service()->ConfigureStubHostResolver(
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
+      net::SecureDnsMode::kOff,
+      /*dns_over_https_config=*/{},
+      /*additional_dns_types_enabled=*/false);
+  EXPECT_FALSE(service()->host_resolver_manager()->IsHappyEyeballsV3Enabled());
 }
 
 TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
@@ -706,7 +737,8 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
   // Enable DNS over HTTPS for one server.
 
   service()->ConfigureStubHostResolver(
-      /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kAutomatic,
+      /*insecure_dns_client_enabled=*/false,
+      /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kAutomatic,
       kConfig1,
       /*additional_dns_types_enabled=*/true);
   EXPECT_EQ(kConfig1, dns_client_ptr->GetEffectiveConfig()->doh_config);
@@ -714,8 +746,8 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
   // Enable DNS over HTTPS for two servers.
 
   service()->ConfigureStubHostResolver(
-      /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kSecure,
-      kConfig2,
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
+      net::SecureDnsMode::kSecure, kConfig2,
       /*additional_dns_types_enabled=*/true);
   EXPECT_EQ(kConfig2, dns_client_ptr->GetEffectiveConfig()->doh_config);
 }
@@ -739,7 +771,8 @@ TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
                              FindProviderFeature("Cloudflare")});
 
   service()->ConfigureStubHostResolver(
-      /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kAutomatic,
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
+      net::SecureDnsMode::kAutomatic,
       /*dns_over_https_config=*/{},
       /*additional_dns_types_enabled=*/true);
 
@@ -1542,6 +1575,33 @@ TEST_F(NetworkServiceTestWithService, GetNetworkList) {
           }));
   run_loop.Run();
 }
+
+// DnsClient isn't supported on iOS.
+#if !BUILDFLAG(IS_IOS)
+
+// Ensures that network requests succeed after enabling/disabling
+// HappyEyeballsV3.
+TEST_F(NetworkServiceTestWithService, EnableDisableHappyEyeballsV3AndLoad) {
+  CreateNetworkContext();
+
+  service()->ConfigureStubHostResolver(
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/true,
+      net::SecureDnsMode::kOff,
+      /*dns_over_https_config=*/{},
+      /*additional_dns_types_enabled=*/false);
+  LoadURL(test_server()->GetURL("/echo"));
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+
+  service()->ConfigureStubHostResolver(
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
+      net::SecureDnsMode::kOff,
+      /*dns_over_https_config=*/{},
+      /*additional_dns_types_enabled=*/false);
+  LoadURL(test_server()->GetURL("/echo"));
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+}
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 class TestNetworkChangeManagerClient
     : public mojom::NetworkChangeManagerClient {

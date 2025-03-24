@@ -87,7 +87,7 @@ class PLATFORM_EXPORT ContouredRect {
   // end, center), and a curvature. It is used as a convenient way to perform
   // corner-related computations without having to worry about the
   // transpositions of the different corners.
-  class Corner {
+  class PLATFORM_EXPORT Corner {
    public:
     constexpr Corner(const gfx::RectF& rect, size_t rotation, float curvature)
         : curvature_(curvature) {
@@ -119,6 +119,9 @@ class PLATFORM_EXPORT ContouredRect {
     constexpr bool IsRound() const {
       return curvature_ == CornerCurvature::kRound;
     }
+    constexpr bool IsNotch() const {
+      return curvature_ == CornerCurvature::kNotch;
+    }
     constexpr bool IsConcave() const { return curvature_ < 1; }
     constexpr bool IsZero() const { return Start() == End(); }
     constexpr bool operator==(const Corner&) const = default;
@@ -144,11 +147,15 @@ class PLATFORM_EXPORT ContouredRect {
       return std::log(0.5) / std::log(half_corner);
     }
 
+    gfx::PointF HullPoint() const;
+
     constexpr gfx::PointF MapPoint(
         const gfx::Vector2dF& normalized_point) const {
       return Center() + gfx::ScaleVector2d(v1(), normalized_point.x()) +
              gfx::ScaleVector2d(v4(), normalized_point.y());
     }
+
+    Corner AlignedToOrigin(Corner origin) const;
 
    private:
     std::array<gfx::PointF, 4> vertices_;
@@ -211,20 +218,48 @@ class PLATFORM_EXPORT ContouredRect {
   void SetOriginRect(const FloatRoundedRect& rect) { origin_rect_ = rect; }
 
   constexpr Corner TopRightCorner() const {
-    return Corner(rect_.TopRightCorner(), 0, corner_curvature_.TopRight());
+    return origin_rect_ ? TopRightCornerInternal().AlignedToOrigin(
+                              ContouredRect(*origin_rect_, corner_curvature_)
+                                  .TopRightCornerInternal())
+                        : TopRightCornerInternal();
   }
+
   constexpr Corner BottomRightCorner() const {
-    return Corner(rect_.BottomRightCorner(), 1,
-                  corner_curvature_.BottomRight());
+    return origin_rect_ ? BottomRightCornerInternal().AlignedToOrigin(
+                              ContouredRect(*origin_rect_, corner_curvature_)
+                                  .BottomRightCornerInternal())
+                        : BottomRightCornerInternal();
   }
+
   constexpr Corner BottomLeftCorner() const {
-    return Corner(rect_.BottomLeftCorner(), 2, corner_curvature_.BottomLeft());
+    return origin_rect_ ? BottomLeftCornerInternal().AlignedToOrigin(
+                              ContouredRect(*origin_rect_, corner_curvature_)
+                                  .BottomLeftCornerInternal())
+                        : BottomLeftCornerInternal();
   }
+
   constexpr Corner TopLeftCorner() const {
-    return Corner(rect_.TopLeftCorner(), 3, corner_curvature_.TopLeft());
+    return origin_rect_ ? TopLeftCornerInternal().AlignedToOrigin(
+                              ContouredRect(*origin_rect_, corner_curvature_)
+                                  .TopLeftCornerInternal())
+                        : TopLeftCornerInternal();
   }
 
  private:
+  constexpr Corner TopRightCornerInternal() const {
+    return Corner(rect_.TopRightCorner(), 0, corner_curvature_.TopRight());
+  }
+  constexpr Corner BottomRightCornerInternal() const {
+    return Corner(rect_.BottomRightCorner(), 1,
+                  corner_curvature_.BottomRight());
+  }
+  constexpr Corner BottomLeftCornerInternal() const {
+    return Corner(rect_.BottomLeftCorner(), 2, corner_curvature_.BottomLeft());
+  }
+  constexpr Corner TopLeftCornerInternal() const {
+    return Corner(rect_.TopLeftCorner(), 3, corner_curvature_.TopLeft());
+  }
+
   FloatRoundedRect rect_;
   CornerCurvature corner_curvature_;
   std::optional<FloatRoundedRect> origin_rect_;

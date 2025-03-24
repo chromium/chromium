@@ -6,7 +6,6 @@
 
 #import "base/feature_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/features/features_utils.h"
 
 @implementation TabStripFeaturesUtils
 

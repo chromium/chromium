@@ -702,24 +702,30 @@ class FileURLLoader : public network::mojom::URLLoader {
       total_bytes_to_send -= actually_written_bytes;
     }
 
-    if (!net::GetMimeTypeFromFile(full_path, &head->mime_type)) {
-      std::string new_type;
-      net::SniffMimeType(
-          std::string_view(initial_read_buffer.data(), read_result.bytes_read),
-          request.url, head->mime_type,
-          GetContentClient()->browser()->ForceSniffingFileUrlsForHtml()
-              ? net::ForceSniffFileUrlsForHtml::kEnabled
-              : net::ForceSniffFileUrlsForHtml::kDisabled,
-          &new_type);
-      head->mime_type.assign(new_type);
-      head->did_mime_sniff = true;
-    }
-    if (!head->headers) {
+    if (head->headers) {
+      head->headers->GetMimeTypeAndCharset(&head->mime_type, &head->charset);
+    } else {
       head->headers =
           base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
     }
-    head->headers->AddHeader(net::HttpRequestHeaders::kContentType,
-                             head->mime_type);
+
+    // If the mime type is still empty, try to sniff it from the file contents.
+    if (head->mime_type.empty()) {
+      if (!net::GetMimeTypeFromFile(full_path, &head->mime_type)) {
+        net::SniffMimeType(
+            std::string_view(initial_read_buffer.data(),
+                             read_result.bytes_read),
+            request.url, /*type_hint=*/std::string(),
+            GetContentClient()->browser()->ForceSniffingFileUrlsForHtml()
+                ? net::ForceSniffFileUrlsForHtml::kEnabled
+                : net::ForceSniffFileUrlsForHtml::kDisabled,
+            &head->mime_type);
+        head->did_mime_sniff = true;
+      }
+      head->headers->AddHeader(net::HttpRequestHeaders::kContentType,
+                               head->mime_type);
+    }
+
     // We add a Last-Modified header to file responses so that our
     // implementation of document.lastModified can access it (crbug.com/875299).
     head->headers->AddHeader(net::HttpResponseHeaders::kLastModified,

@@ -13,6 +13,7 @@ public struct TabStripConstants {
     public static let tabStripTabCellPrefixIdentifier = "tabStripTabCellPrefixIdentifier"
     public static let tabStripGroupCellPrefixIdentifier = "tabStripGroupCellPrefixIdentifier"
     public static let topInset: CGFloat = 4
+    public static let height: CGFloat = 44
     public static let horizontalInset: CGFloat = 16
     public static let scrollDelayAfterInsert: DispatchTimeInterval = .milliseconds(500)
     public static let groupStrokeLineWidth: CGFloat = 2

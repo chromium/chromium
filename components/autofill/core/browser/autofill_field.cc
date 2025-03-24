@@ -326,48 +326,58 @@ std::optional<FieldType> AutofillField::GetAutofillAiServerTypePredictions()
 void AutofillField::set_server_predictions(
     std::vector<FieldPrediction> predictions) {
   overall_type_ = std::nullopt;
-  // Ensures that AutofillField::server_type() is a valid enum value.
-  for (auto& prediction : predictions) {
-    prediction.set_type(ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
-  }
-
   server_predictions_.clear();
   experimental_server_predictions_.clear();
 
   for (auto& prediction : predictions) {
-    if (!prediction.has_source()) {
-      // TODO(crbug.com/40243028): captured tests store old autofill api
-      // response recordings without `source` field. We need to maintain the old
-      // behavior until these recordings will be migrated.
-      server_predictions_.push_back(std::move(prediction));
-      continue;
-    }
-
-    if (prediction.source() == FieldPrediction::SOURCE_UNSPECIFIED) {
-      // A prediction with `SOURCE_UNSPECIFIED` is one of two things:
-      //   1. No prediction for default, a.k.a. `NO_SERVER_DATA`. The absence
-      //      of a prediction may not be creditable to a particular prediction
-      //      source.
-      //   2. An experiment that is missing from the `PredictionSource` enum.
-      //      Protobuf corrects unknown values to 0 when parsing.
-      // Neither case is actionable.
-      continue;
-    }
-
-    if (IsDefaultPrediction(prediction)) {
-      server_predictions_.push_back(std::move(prediction));
-    } else if (IsAutofillAiPrediction(prediction)) {
-      if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
-        server_predictions_.push_back(std::move(prediction));
-      }
-    } else {
-      experimental_server_predictions_.push_back(std::move(prediction));
-    }
+    MaybeAddServerPrediction(std::move(prediction));
   }
 
   if (server_predictions_.empty()) {
     // Equivalent to a `NO_SERVER_DATA` prediction from `SOURCE_UNSPECIFIED`.
     server_predictions_.emplace_back();
+  }
+}
+
+void AutofillField::MaybeAddServerPrediction(
+    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+        prediction) {
+  overall_type_ = std::nullopt;
+  if (server_predictions_.size() == 1 && !server_predictions_[0].has_type() &&
+      !server_predictions_[0].has_source()) {
+    // If the only existing "server prediction" is an empty one, remove it.
+    server_predictions_.clear();
+  }
+
+  prediction.set_type(ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
+
+  if (!prediction.has_source()) {
+    // TODO(crbug.com/40243028): captured tests store old autofill api
+    // response recordings without `source` field. We need to maintain the old
+    // behavior until these recordings will be migrated.
+    server_predictions_.push_back(std::move(prediction));
+    return;
+  }
+
+  if (prediction.source() == FieldPrediction::SOURCE_UNSPECIFIED) {
+    // A prediction with `SOURCE_UNSPECIFIED` is one of two things:
+    //   1. No prediction for default, a.k.a. `NO_SERVER_DATA`. The absence
+    //      of a prediction may not be creditable to a particular prediction
+    //      source.
+    //   2. An experiment that is missing from the `PredictionSource` enum.
+    //      Protobuf corrects unknown values to 0 when parsing.
+    // Neither case is actionable.
+    return;
+  }
+
+  if (IsDefaultPrediction(prediction)) {
+    server_predictions_.push_back(std::move(prediction));
+  } else if (IsAutofillAiPrediction(prediction)) {
+    if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
+      server_predictions_.push_back(std::move(prediction));
+    }
+  } else {
+    experimental_server_predictions_.push_back(std::move(prediction));
   }
 }
 

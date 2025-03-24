@@ -198,6 +198,10 @@ TEST_F(AuthenticationFlowInProfileTest, TestSignInWithUnknownIdentity) {
   FakeSystemIdentity* unknown_identity = [FakeSystemIdentity fakeIdentity3];
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), unknown_identity,
                                     access_point);
+  OCMExpect([performer_mock_ showAuthenticationError:[OCMArg any]
+                                      withCompletion:[OCMArg invokeBlock]
+                                      viewController:[OCMArg any]
+                                             browser:browser_.get()]);
   // Start `authentication_flow_in_profile_` for `unknown_identity`.
   base::test::TestFuture<SigninCoordinatorResult> future;
   [authentication_flow_in_profile_

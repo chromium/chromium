@@ -166,7 +166,7 @@ TEST_F(GridUtilsTest,
 // index when there is a group.
 TEST_F(GridUtilsTest, WebStateIndexFromGridDropItemIndex_group_sameCollection) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -222,7 +222,7 @@ TEST_F(GridUtilsTest, WebStateIndexFromGridDropItemIndex_group_sameCollection) {
 TEST_F(GridUtilsTest,
        WebStateIndexFromGridDropItemIndex_group_otherCollection) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -261,7 +261,7 @@ TEST_F(GridUtilsTest,
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -319,7 +319,7 @@ TEST_F(GridUtilsTest,
 TEST_F(GridUtilsTest,
        WebStateIndexAfterGridDropItemIndex_group_sameCollection) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -367,7 +367,7 @@ TEST_F(GridUtilsTest,
 TEST_F(GridUtilsTest,
        WebStateIndexAfterGridDropItemIndex_pinnedAndGroup_sameCollection) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kTabGroupsIPad, kModernTabStrip}, {});
+  scoped_feature_list.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;

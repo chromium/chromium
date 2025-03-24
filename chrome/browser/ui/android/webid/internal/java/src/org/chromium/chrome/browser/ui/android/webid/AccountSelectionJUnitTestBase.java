@@ -326,7 +326,7 @@ public class AccountSelectionJUnitTestBase {
                         "goto@email.example",
                         "Sam E. Goto",
                         "Sam",
-                        /* secondaryDescription= */ null,
+                        /* secondaryDescription= */ "email.example",
                         /* pictureBitmap= */ null,
                         /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
                                 100, 100, Bitmap.Config.ARGB_4444),

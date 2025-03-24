@@ -102,4 +102,11 @@ const char kWebViewUseSeparateResourceContext[] =
 // Override and enable features useful for BSA library testing/debugging.
 const char kDebugBsa[] = "debug-bsa";
 
+// Enables using startup tasks logic for webview chromium initialization which
+// - runs the startup tasks asynchronously if startup is triggered from a
+// background thread. Otherwise runs startup synchronously.
+// - caches any chromium startup exception and rethrows it if startup is retried
+// without a restart.
+const char kWebViewUseStartupTasksLogic[] = "webview-use-startup-tasks-logic";
+
 }  // namespace switches

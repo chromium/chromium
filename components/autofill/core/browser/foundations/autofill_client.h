@@ -64,7 +64,7 @@ class UkmRecorder;
 }
 
 namespace optimization_guide::proto {
-class UserAnnotationsEntry;
+class AnnotatedPageContent;
 }
 
 namespace version_info {
@@ -287,6 +287,12 @@ class AutofillClient {
 
   // Returns the `AutofillComposeDelegate` instance for the tab of this client.
   virtual AutofillComposeDelegate* GetComposeDelegate();
+
+  // Attempts to the annotated page content for the current tab and calls
+  // `callback` with the results.
+  using GetAiPageContentCallback = base::OnceCallback<void(
+      std::optional<optimization_guide::proto::AnnotatedPageContent>)>;
+  virtual void GetAiPageContent(GetAiPageContentCallback callback);
 
   // Returns the `AutofillAiDelegate` instance for the tab of this client.
   // Returns `nullptr` if, at the time of the AutofillClient's construction, the

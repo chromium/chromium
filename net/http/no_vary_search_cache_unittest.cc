@@ -4,12 +4,14 @@
 
 #include "net/http/no_vary_search_cache.h"
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,12 +26,19 @@
 #include "net/base/schemeful_site.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_response_headers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace net {
 
 namespace {
+
+using ::testing::_;
+using ::testing::EndsWith;
+using ::testing::Eq;
+using ::testing::Ge;
+using ::testing::Optional;
 
 constexpr size_t kMaxSize = 5;
 
@@ -870,6 +879,149 @@ TEST_P(NoVarySearchCacheTest, TruncatedPickle) {
     truncated.WriteBytes(pickle.payload_bytes().first(bytes));
     EXPECT_FALSE(ReadValueFromPickle<NoVarySearchCache>(truncated));
   }
+}
+
+// An Observer object implemented by GoogleMock.
+class MockObserver : public NoVarySearchCache::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnInsert,
+              (const std::string&,
+               const HttpNoVarySearchData&,
+               const std::optional<std::string>&,
+               base::Time),
+              (override));
+  MOCK_METHOD(void,
+              OnErase,
+              (const std::string&,
+               const HttpNoVarySearchData&,
+               const std::optional<std::string>&),
+              (override));
+};
+
+// A version of MockObserver that registers and unregisters itself
+// automatically.
+class ScopedMockObserver : public ::testing::StrictMock<MockObserver> {
+ public:
+  explicit ScopedMockObserver(NoVarySearchCache& cache) : cache_(&cache) {
+    cache.SetObserver(this);
+  }
+
+  ~ScopedMockObserver() override { cache_->SetObserver(nullptr); }
+
+ private:
+  raw_ptr<NoVarySearchCache> cache_;
+};
+
+// A matcher which matches No-Vary-Search: key-order
+const auto IsKeyOrder =
+    Eq(HttpNoVarySearchData::CreateFromNoVaryParams({}, false));
+
+TEST_P(NoVarySearchCacheTest, ObserveNewInsert) {
+  ScopedMockObserver observer(cache());
+
+  const base::Time now = base::Time::Now();
+
+  // This assumes that cache keys end with the URL as-is, which is currently
+  // true with all partitioning schemes.
+  EXPECT_CALL(observer, OnInsert(EndsWith("https://example.com/"), IsKeyOrder,
+                                 Optional(Eq("a=0")), Ge(now)));
+
+  Insert("a=0", "key-order");
+}
+
+TEST_P(NoVarySearchCacheTest, ObserveRefresh) {
+  Insert("a=1", "key-order");
+
+  // Start observing now.
+  ScopedMockObserver observer(cache());
+
+  const base::Time now = base::Time::Now();
+
+  EXPECT_CALL(observer, OnInsert(EndsWith("https://example.com/"), IsKeyOrder,
+                                 Optional(Eq("a=1")), Ge(now)));
+
+  Insert("a=1", "key-order");
+}
+
+TEST_P(NoVarySearchCacheTest, ObserveReplacement) {
+  Insert("a=2&k=1", "params=(\"k\")");
+
+  ScopedMockObserver observer(cache());
+
+  const auto params_k =
+      HttpNoVarySearchData::CreateFromNoVaryParams({"k"}, true);
+
+  const base::Time now = base::Time::Now();
+
+  EXPECT_CALL(observer, OnInsert(EndsWith("https://example.com/"), Eq(params_k),
+                                 Optional(Eq("a=2&k=2")), Ge(now)));
+  EXPECT_CALL(observer, OnErase).Times(0);
+
+  // This one replaces the one inserted earlier, but OnErase() is not called to
+  // reflect that the old one was removed.
+  Insert("a=2&k=2", "params=(\"k\")");
+}
+
+TEST_P(NoVarySearchCacheTest, ObserveErase) {
+  Insert("a=3", "key-order");
+
+  auto [original_url, erase_handle] =
+      cache().Lookup(TestRequest("a=3")).value();
+
+  ScopedMockObserver observer(cache());
+
+  EXPECT_CALL(observer, OnErase(EndsWith("https://example.com/"), IsKeyOrder,
+                                Optional(Eq("a=3"))));
+
+  cache().Erase(std::move(erase_handle));
+}
+
+TEST_P(NoVarySearchCacheTest, DontObserveEviction) {
+  ScopedMockObserver observer(cache());
+
+  EXPECT_CALL(observer, OnInsert(EndsWith("https://example.com/"), _, _, _))
+      .Times(kMaxSize + 1);
+
+  // Eviction does not result in a call to OnErase().
+  EXPECT_CALL(observer, OnErase).Times(0);
+
+  for (size_t i = 0; i < kMaxSize + 1; ++i) {
+    Insert(QueryWithIParameter(i), "key-order");
+  }
+}
+
+TEST_P(NoVarySearchCacheTest, DontObserveNonInsertion) {
+  ScopedMockObserver observer(cache());
+
+  EXPECT_CALL(observer, OnInsert).Times(0);
+
+  // This No-Vary-Search value is equivalent to the default, so doesn't get
+  // inserted into the cache.
+  Insert("a=5", "params=()");
+}
+
+TEST_P(NoVarySearchCacheTest, DontObserveClearData) {
+  Insert("a=6", "key-order");
+
+  ScopedMockObserver observer(cache());
+
+  EXPECT_CALL(observer, OnErase).Times(0);
+
+  // Matches everything.
+  cache().ClearData(UrlFilterType::kFalseIfMatches, {}, {}, base::Time(),
+                    base::Time::Max());
+}
+
+TEST_P(NoVarySearchCacheTest, DontObserveLookup) {
+  Insert("a=6", "key-order");
+
+  ScopedMockObserver observer(cache());
+
+  EXPECT_CALL(observer, OnInsert).Times(0);
+  EXPECT_CALL(observer, OnErase).Times(0);
+
+  cache().Lookup(TestRequest("a=6"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -547,7 +547,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
         SettingsUtils.addPreferencesFromResource(this, R.xml.single_website_preferences);
 
-        Preference siteTitlePref = assumeNonNull(findPreference(PREF_SITE_TITLE));
+        Preference siteTitlePref = findPreference(PREF_SITE_TITLE);
         siteTitlePref.setTitle(mSite.getTitle());
         setupContentSettingsPreferences();
         setUpEmbeddedContentSettingPreferences();
@@ -580,7 +580,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     @RequiresNonNull({"mSite"})
     private void setupContentSettingsPreferences() {
-        Preference permissionsHeaderPref = assumeNonNull(findPreference(PREF_PERMISSIONS_HEADER));
+        Preference permissionsHeaderPref = findPreference(PREF_PERMISSIONS_HEADER);
         mMaxPermissionOrder = permissionsHeaderPref.getOrder();
         for (@ContentSettingsType.EnumType int type : SiteSettingsUtil.SETTINGS_ORDER) {
             Preference preference = new ChromeSwitchPreference(getStyledContext());
@@ -610,7 +610,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     @RequiresNonNull({"mSite"})
     private void setUpClearDataPreference() {
         ClearWebsiteStorage preference = findPreference(PREF_CLEAR_DATA);
-        assumeNonNull(preference);
         long usage = mSite.getTotalUsage();
         int cookies = mSite.getNumberOfCookies();
         // Only take cookies into account when the new UI is enabled.
@@ -634,7 +633,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     @RequiresNonNull({"mSite"})
     private void setupResetSitePreference() {
         Preference preference = findPreference(PREF_RESET_SITE);
-        assumeNonNull(preference);
         preference.setTitle(
                 mHideNonPermissionPreferences
                         ? R.string.page_info_permissions_reset
@@ -986,9 +984,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             removePreferenceSafely(PREF_OS_PERMISSIONS_WARNING_DIVIDER);
         } else {
             Preference osWarning = findPreference(PREF_OS_PERMISSIONS_WARNING);
-            assumeNonNull(osWarning);
             Preference osWarningExtra = findPreference(PREF_OS_PERMISSIONS_WARNING_EXTRA);
-            assumeNonNull(osWarningExtra);
             categoryWithWarning.configureWarningPreferences(
                     osWarning,
                     osWarningExtra,
@@ -1046,7 +1042,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     private void setUpRelatedSitesPreferences() {
         PreferenceCategory relatedSitesHeader = findPreference(PREF_RELATED_SITES_HEADER);
-        assumeNonNull(relatedSitesHeader);
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         var rwsInfo = assumeNonNull(mSite).getRwsCookieInfo();
         boolean shouldRelatedSitesPrefBeVisible =
@@ -1056,7 +1051,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
         ButtonPreference relatedSitesClearDataButton =
                 findPreference(PREF_RELATED_SITES_CLEAR_DATA);
-        assumeNonNull(relatedSitesClearDataButton)
+        relatedSitesClearDataButton
                 .setVisible(
                         shouldRelatedSitesPrefBeVisible
                                 && getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi());
@@ -1131,7 +1126,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
 
         PreferenceCategory header = findPreference(PREF_FILE_EDITING_GRANTS);
-        assumeNonNull(header);
         if (setOrder) {
             header.setOrder(++mMaxPermissionOrder);
         }

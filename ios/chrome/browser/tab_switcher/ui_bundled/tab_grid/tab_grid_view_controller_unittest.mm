@@ -49,13 +49,12 @@ class TabGridViewControllerTest : public PlatformTest,
   TabGridViewControllerTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{kTabGroupsIPad, kModernTabStrip, kTabGroupSync},
+          /*enabled_features=*/{kTabGroupsIPad, kTabGroupSync},
           /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{},
-          /*disabled_features=*/{kTabGroupsIPad, kModernTabStrip,
-                                 kTabGroupSync});
+          /*disabled_features=*/{kTabGroupsIPad, kTabGroupSync});
     }
     InitializeViewController(TabGridPageConfiguration::kAllPagesEnabled);
 

@@ -19,7 +19,6 @@
 #include "base/containers/linked_list.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
@@ -82,6 +81,36 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
     base::WeakPtr<QueryString> query_string_;
   };
 
+  // An interface for observing changes to the NoVarySearchCache. Only
+  // insertions and refreshes via MaybeInsert() and erasures via Erase() are
+  // reported to this interface. Evictions are implicit, and modifications via
+  // ClearData() are expected to be followed by persisting a fresh copy of the
+  // database.
+  class NET_EXPORT_PRIVATE Observer {
+   public:
+    Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
+    // Called when an entry is inserted or refreshed by the MaybeInsert()
+    // method. Not called when MaybeInsert() results in no changes to the
+    // database.
+    virtual void OnInsert(const std::string& base_url_cache_key,
+                          const HttpNoVarySearchData& nvs_data,
+                          const std::optional<std::string>& query,
+                          base::Time update_time) = 0;
+
+    // Called when an entry is erased by the Erase() method.
+    virtual void OnErase(const std::string& base_url_cache_key,
+                         const HttpNoVarySearchData& nvs_data,
+                         const std::optional<std::string>& query) = 0;
+
+   protected:
+    // Observer objects are never deleted via a base class pointer.
+    virtual ~Observer();
+  };
+
   struct LookupResult {
     GURL original_url;
     EraseHandle erase_handle;
@@ -134,6 +163,12 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   // Erases the entry referenced by `erase_handle` from the cache. Does
   // nothing if the entry no longer exists.
   void Erase(EraseHandle handle);
+
+  // Set an Observer to be notified about subsequent changes to the cache. This
+  // object does not take ownership of the Observer. Calling the method again
+  // will replace the observer. The method can be called with nullptr to stop
+  // observing.
+  void SetObserver(Observer* observer);
 
   // Returns the size (number of stored original query strings) of the cache.
   size_t GetSizeForTesting() const;
@@ -235,6 +270,9 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
 
   // QueryString objects will be evicted to avoid exceeding `max_size_`.
   const size_t max_size_;
+
+  // An object to be notified about changes to this cache.
+  raw_ptr<Observer> observer_ = nullptr;
 };
 
 template <>

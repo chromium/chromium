@@ -19,6 +19,11 @@
 #include "chrome/browser/regional_capabilities/android/test_utils_jni_headers/RegionalCapabilitiesServiceTestUtil_jni.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#endif
+
 namespace regional_capabilities {
 
 namespace {
@@ -65,7 +70,138 @@ class TestSupportAndroid {
 
 }  // namespace
 
-class RegionalCapabilitiesServiceClientTest : public ::testing::Test {};
+class RegionalCapabilitiesServiceClientTest : public ::testing::Test {
+#if BUILDFLAG(IS_CHROMEOS)
+ public:
+  void SetUp() override {
+    ash::system::StatisticsProvider::SetTestProvider(&sys_info_);
+  }
+
+  void TearDown() override {
+    ash::system::StatisticsProvider::SetTestProvider(nullptr);
+  }
+
+  void SetLoadingState(ash::system::StatisticsProvider::LoadingState state) {
+    sys_info_.SetLoadingState(state);
+  }
+
+  void SetRegion(const std::string& region) {
+    sys_info_.SetMachineStatistic(ash::system::kRegionKey, region);
+  }
+
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
+ private:
+  base::HistogramTester histogram_tester_;
+  ash::system::FakeStatisticsProvider sys_info_;
+#endif
+};
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(RegionalCapabilitiesServiceClientTest,
+       GetFallbackCountryId_LoadingState) {
+  RegionalCapabilitiesServiceClient client(/* variations_service= */ nullptr);
+
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData,
+      ChromeOSFallbackCountry::kStatisticsLoadingNotFinished, 0);
+
+  SetLoadingState(ash::system::StatisticsProvider::LoadingState::kNotStarted);
+  EXPECT_EQ(client.GetFallbackCountryId(),
+            country_codes::GetCurrentCountryID());
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData,
+      ChromeOSFallbackCountry::kStatisticsLoadingNotFinished, 1);
+
+  SetLoadingState(ash::system::StatisticsProvider::LoadingState::kStarted);
+  EXPECT_EQ(client.GetFallbackCountryId(),
+            country_codes::GetCurrentCountryID());
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData,
+      ChromeOSFallbackCountry::kStatisticsLoadingNotFinished, 2);
+
+  SetLoadingState(ash::system::StatisticsProvider::LoadingState::kFinished);
+  EXPECT_EQ(client.GetFallbackCountryId(),
+            country_codes::GetCurrentCountryID());
+  histogram_tester().ExpectBucketCount(
+      kCrOSMissingVariationData,
+      ChromeOSFallbackCountry::kStatisticsLoadingNotFinished, 2);
+}
+
+TEST_F(RegionalCapabilitiesServiceClientTest,
+       GetFallbackCountryId_GroupedRegions) {
+  RegionalCapabilitiesServiceClient client(/* variations_service= */ nullptr);
+  SetLoadingState(ash::system::StatisticsProvider::LoadingState::kFinished);
+
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData, ChromeOSFallbackCountry::kGroupedRegion, 0);
+  int i = 0;
+  for (const std::string region : {"gcc", "LaTaM-Es-419", "NORDIC"}) {
+    SetRegion(region);
+    histogram_tester().ExpectUniqueSample(
+        kCrOSMissingVariationData, ChromeOSFallbackCountry::kGroupedRegion, i);
+    EXPECT_EQ(client.GetFallbackCountryId(),
+              country_codes::GetCurrentCountryID());
+    histogram_tester().ExpectUniqueSample(
+        kCrOSMissingVariationData, ChromeOSFallbackCountry::kGroupedRegion,
+        ++i);
+  }
+}
+
+TEST_F(RegionalCapabilitiesServiceClientTest,
+       GetFallbackCountryId_RegionTooShort) {
+  RegionalCapabilitiesServiceClient client(/* variations_service= */ nullptr);
+  SetLoadingState(ash::system::StatisticsProvider::LoadingState::kFinished);
+
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData, ChromeOSFallbackCountry::kRegionTooShort, 0);
+  EXPECT_EQ(client.GetFallbackCountryId(),
+            country_codes::GetCurrentCountryID());
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData, ChromeOSFallbackCountry::kRegionTooShort, 1);
+
+  SetRegion("a");
+  EXPECT_EQ(client.GetFallbackCountryId(),
+            country_codes::GetCurrentCountryID());
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData, ChromeOSFallbackCountry::kRegionTooShort, 2);
+}
+
+TEST_F(RegionalCapabilitiesServiceClientTest,
+       GetFallbackCountryId_RegionTooLong) {
+  RegionalCapabilitiesServiceClient client(/* variations_service= */ nullptr);
+  SetLoadingState(ash::system::StatisticsProvider::LoadingState::kFinished);
+
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData, ChromeOSFallbackCountry::kRegionTooLong, 0);
+  SetRegion("en_US");
+  EXPECT_EQ(client.GetFallbackCountryId(),
+            country_codes::GetCurrentCountryID());
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData, ChromeOSFallbackCountry::kRegionTooLong, 1);
+}
+
+TEST_F(RegionalCapabilitiesServiceClientTest,
+       GetFallbackCountryId_ValidRegion) {
+  RegionalCapabilitiesServiceClient client(/* variations_service= */ nullptr);
+  SetLoadingState(ash::system::StatisticsProvider::LoadingState::kFinished);
+
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData, ChromeOSFallbackCountry::kValidCountryCode, 0);
+  std::string country_code = "DE";
+  if (country_code == country_codes::GetCurrentCountryCode()) {
+    country_code = "BE";
+  }
+  SetRegion(country_code);
+  const int fallback_id = client.GetFallbackCountryId();
+  ASSERT_NE(fallback_id, country_codes::GetCurrentCountryID());
+  EXPECT_EQ(fallback_id, country_codes::CountryStringToCountryID(country_code));
+  histogram_tester().ExpectUniqueSample(
+      kCrOSMissingVariationData, ChromeOSFallbackCountry::kValidCountryCode, 1);
+}
+#endif
 
 TEST_F(RegionalCapabilitiesServiceClientTest, GetFallbackCountryId) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

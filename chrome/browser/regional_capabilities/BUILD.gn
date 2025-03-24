@@ -28,6 +28,10 @@ source_set("regional_capabilities") {
 
     deps += [ "//chrome/browser/regional_capabilities/android:jni_headers" ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/system:system" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -53,6 +57,10 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/regional_capabilities/android:test_utils_jni_headers",
     ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/system:system" ]
   }
 }
 

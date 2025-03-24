@@ -123,7 +123,10 @@ scoped_refptr<const Extension> CreateTestResponseHeaderExtension(
             "web_accessible_resources",
             base::Value::List().Append(
                 base::Value::Dict()
-                    .Set("resources", base::Value::List().Append("test.dat"))
+                    .Set("resources",
+                         base::Value::List()
+                             .Append("test.dat")
+                             .Append("mime_type_sniffer_test.gif1"))
                     .Set("matches", base::Value::List().Append("*://*/*"))))
         .SetManifestKey("background", base::Value::Dict().Set("service_worker",
                                                               "background.js"))
@@ -136,7 +139,9 @@ scoped_refptr<const Extension> CreateTestResponseHeaderExtension(
   return ExtensionBuilder("An extension with web-accessible resources")
       .SetManifestVersion(manifest_version)
       .SetManifestKey("web_accessible_resources",
-                      base::Value::List().Append("test.dat"))
+                      base::Value::List()
+                          .Append("test.dat")
+                          .Append("mime_type_sniffer_test.gif1"))
       .SetManifestKey(
           "background",
           base::Value::Dict().Set("scripts",
@@ -1117,6 +1122,22 @@ TEST_P(ExtensionProtocolsTest, ExtensionRequestsNotAborted) {
   // Request the background.js file. Ensure the request completes successfully.
   EXPECT_EQ(net::OK,
             DoRequestOrLoad(extension.get(), "background.js").result());
+}
+
+// Tests that mime type sniffing is not performed for extension resources.
+TEST_P(ExtensionProtocolsTest, MimeTypeSniffingNotPerformed) {
+  scoped_refptr<const Extension> extension =
+      CreateTestResponseHeaderExtension(GetParam());
+  AddExtension(extension, false, false);
+
+  auto get_result =
+      RequestOrLoad(extension->GetResourceURL("mime_type_sniffer_test.gif1"),
+                    network::mojom::RequestDestination::kDocument);
+  EXPECT_EQ(net::OK, get_result.result());
+
+  // With mime sniffing, the content type would be image/gif.
+  EXPECT_EQ("application/octet-stream",
+            get_result.GetResponseHeaderByName("Content-Type"));
 }
 
 }  // namespace extensions

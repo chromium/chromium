@@ -89,7 +89,6 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
 
         // Format the Learn More link in the second bullet point.
         TextMessagePreference bulletTwo = findPreference(PREF_BULLET_TWO);
-        assumeNonNull(bulletTwo);
         bulletTwo.setSummary(
                 SpanApplier.applySpans(
                         getResources()
@@ -103,7 +102,6 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                                         getContext(), (view) -> onLearnMoreClicked()))));
 
         ChromeSwitchPreference blockAll3pCookiesSwitch = findPreference(PREF_BLOCK_ALL_TOGGLE);
-        assumeNonNull(blockAll3pCookiesSwitch);
 
         // Block all 3rd party cookies switch.
         blockAll3pCookiesSwitch.setChecked(mDelegate.isBlockAll3pcEnabled());
@@ -116,7 +114,6 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
         mAllowedSiteCount = 0;
         ExpandablePreferenceGroup allowedGroup =
                 getPreferenceScreen().findPreference(ALLOWED_GROUP);
-        assumeNonNull(allowedGroup);
         allowedGroup.setOnPreferenceClickListener(this);
         refreshBlockingExceptions();
 
@@ -260,7 +257,6 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
 
         ExpandablePreferenceGroup allowedGroup =
                 getPreferenceScreen().findPreference(ALLOWED_GROUP);
-        assumeNonNull(allowedGroup);
         allowedGroup.removeAll();
         // Add the description preference.
         var description = new TextMessagePreference(getContext(), null);
@@ -278,7 +274,6 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
     private void updateExceptionsHeader() {
         ExpandablePreferenceGroup allowedGroup =
                 getPreferenceScreen().findPreference(ALLOWED_GROUP);
-        assumeNonNull(allowedGroup);
         SpannableStringBuilder spannable =
                 new SpannableStringBuilder(
                         getString(R.string.tracking_protection_allowed_group_title));

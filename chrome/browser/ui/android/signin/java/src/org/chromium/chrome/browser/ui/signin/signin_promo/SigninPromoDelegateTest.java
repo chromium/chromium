@@ -218,6 +218,17 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
+    public void testHistoryPagePromoHidden_hasPrimaryAccount_historySyncDeclinedOften() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        doReturn(true).when(mHistorySyncHelper).isDeclinedOften();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        setupDelegate(SigninAccessPoint.HISTORY_PAGE, /* visibleAccount= */ null);
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
     public void testHistoryPagePromoHidden_hasPrimaryAccount_cct() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);

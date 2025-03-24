@@ -466,11 +466,9 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   dns_config_change_manager_ = std::make_unique<DnsConfigChangeManager>();
 
-  net::HostResolver::ManagerOptions manager_options;
-  manager_options.enable_happy_eyeballs_v3 = params->happy_eyeballs_v3_enabled;
   host_resolver_manager_ = std::make_unique<net::HostResolverManager>(
-      manager_options, net::NetworkChangeNotifier::GetSystemDnsConfigNotifier(),
-      net_log_);
+      net::HostResolver::ManagerOptions(),
+      net::NetworkChangeNotifier::GetSystemDnsConfigNotifier(), net_log_);
   host_resolver_factory_ = std::make_unique<net::HostResolver::Factory>();
 
   http_auth_cache_copier_ = std::make_unique<HttpAuthCacheCopier>();
@@ -692,6 +690,7 @@ void NetworkService::CreateNetworkContext(
 
 void NetworkService::ConfigureStubHostResolver(
     bool insecure_dns_client_enabled,
+    bool happy_eyeballs_v3_enabled,
     net::SecureDnsMode secure_dns_mode,
     const net::DnsOverHttpsConfig& dns_over_https_config,
     bool additional_dns_types_enabled) {
@@ -712,6 +711,17 @@ void NetworkService::ConfigureStubHostResolver(
       base::FeatureList::IsEnabled(features::kDnsOverHttpsUpgrade);
 
   host_resolver_manager_->SetDnsConfigOverrides(overrides);
+
+  const bool happy_eyeballs_v3_changed =
+      happy_eyeballs_v3_enabled !=
+      host_resolver_manager_->IsHappyEyeballsV3Enabled();
+  host_resolver_manager_->SetIsHappyEyeballsV3Enabled(
+      happy_eyeballs_v3_enabled);
+  if (happy_eyeballs_v3_changed) {
+    for (NetworkContext* network_context : network_contexts_) {
+      network_context->CloseAllConnections(base::DoNothing());
+    }
+  }
 }
 
 void NetworkService::DisableQuic() {

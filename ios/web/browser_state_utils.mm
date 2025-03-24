@@ -15,8 +15,7 @@ WKWebsiteDataStore* GetDataStoreForBrowserState(BrowserState* browser_state) {
   CHECK(browser_state);
   WKWebViewConfigurationProvider& provider =
       WKWebViewConfigurationProvider::FromBrowserState(browser_state);
-  WKWebsiteDataStore* data_store =
-      provider.GetWebViewConfiguration().websiteDataStore;
+  WKWebsiteDataStore* data_store = provider.GetWebsiteDataStore();
   CHECK(data_store);
   return data_store;
 }

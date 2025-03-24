@@ -914,8 +914,8 @@ TEST_F(LocalFrameUkmAggregatorSimTest, VisualUpdateDelay) {
   Compositor().ResetLastFrameTime();
 
   // This is the code path for a normal invalidation from blink
-  WebView().MainFrameViewWidget()->RequestAnimationAfterDelay(
-      base::TimeDelta());
+  WebView().MainFrameViewWidget()->RequestAnimationAfterDelay(base::TimeDelta(),
+                                                              /*urgent=*/false);
 
   base::PlatformThread::Sleep(base::Microseconds(3000));
 

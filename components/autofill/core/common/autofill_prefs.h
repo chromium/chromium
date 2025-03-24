@@ -22,6 +22,8 @@ namespace autofill::prefs {
 // component. Keep alphabetized, and document each in the .cc file.
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 
+// Please use kAutofillCreditCardEnabled and kAutofillProfileEnabled instead.
+inline constexpr char kAutofillEnabledDeprecated[] = "autofill.enabled";
 // String serving as a seed for ablation studies.
 inline constexpr std::string_view kAutofillAblationSeedPref =
     "autofill.ablation_seed";
@@ -49,36 +51,15 @@ inline constexpr char kAutofillCreditCardFidoAuthEnabled[] =
 inline constexpr char kAutofillCreditCardFidoAuthOfferCheckboxState[] =
     "autofill.credit_card_fido_auth_offer_checkbox_state";
 #endif  // BUILDFLAG(IS_ANDROID)
-// Please use kAutofillCreditCardEnabled and kAutofillProfileEnabled instead.
-inline constexpr char kAutofillEnabledDeprecated[] = "autofill.enabled";
 // Boolean that is true if a form with an IBAN field has ever been submitted, or
 // an IBAN has ever been saved via Chrome payments settings page. This helps to
 // enable IBAN functionality for those users who are not in a country where IBAN
 // is generally available but have used IBAN already.
 inline constexpr char kAutofillHasSeenIban[] = "autofill.has_seen_iban";
-// Boolean that is true if Autofill is enabled and allowed to save IBAN data.
-inline constexpr char kAutofillIbanEnabled[] = "autofill.iban_enabled";
 // Integer that is set to the last version where the profile deduping routine
 // was run. This routine will be run once per version.
 inline constexpr char kAutofillLastVersionDeduped[] =
     "autofill.last_version_deduped";
-// To simplify the rollout of AutofillSilentlyRemoveQuasiDuplicates,
-// deduplication can be run a second time per milestone for users enrolled in
-// the experiment. This pref tracks whether deduplication was run a second time.
-// TODO(crbug.com/325450676): Remove after the rollout finished.
-inline constexpr char kAutofillRanQuasiDuplicateExtraDeduplication[] =
-    "autofill.ran_quasi_duplicate_extra_deduplication";
-// Integer that is set to the last version where disused addresses were
-// deleted. This deletion will be run once per version.
-inline constexpr char kAutofillLastVersionDisusedAddressesDeleted[] =
-    "autofill.last_version_disused_addresses_deleted";
-// Integer that is set to the last version where disused credit cards were
-// deleted. This deletion will be run once per version.
-inline constexpr char kAutofillLastVersionDisusedCreditCardsDeleted[] =
-    "autofill.last_version_disused_credit_cards_deleted";
-// Boolean that is true if the orphan rows in the autofill table were removed.
-inline constexpr char kAutofillOrphanRowsRemoved[] =
-    "autofill.orphan_rows_removed";
 // Boolean that is true, when users can save their CVCs.
 inline constexpr char kAutofillPaymentCvcStorage[] =
     "autofill.payment_cvc_storage";

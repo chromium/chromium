@@ -2690,29 +2690,27 @@ TEST_F(CompositorFrameReportingControllerTest, JankyScrolledFrameArg) {
   ASSERT_TRUE(status.ok()) << status.message();
   constexpr char query[] =
       R"(
-      SELECT COUNT(*) AS cnt
+      SELECT
+        EXTRACT_ARG(
+          slice.arg_set_id,
+          'event_latency.is_janky_scrolled_frame'
+        ) AS is_janky,
+        EXTRACT_ARG(
+          slice.arg_set_id,
+          'event_latency.is_janky_scrolled_frame_v3'
+        ) AS is_janky_v3
       FROM slice
       WHERE name = 'EventLatency'
-      AND EXTRACT_ARG(slice.arg_set_id,
-             'event_latency.is_janky_scrolled_frame') %s
+      ORDER BY ts ASC
       )";
-  auto result = ttp.RunQuery(base::StringPrintf(query, "= FALSE"));
+  auto result = ttp.RunQuery(query);
   ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_THAT(result.value(),
-              ::testing::ElementsAre(std::vector<std::string>{"cnt"},
-                                     std::vector<std::string>{"1"}));
-
-  result = ttp.RunQuery(base::StringPrintf(query, "= TRUE"));
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(result.value(),
-              ::testing::ElementsAre(std::vector<std::string>{"cnt"},
-                                     std::vector<std::string>{"1"}));
-
-  result = ttp.RunQuery(base::StringPrintf(query, "IS NULL"));
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(result.value(),
-              ::testing::ElementsAre(std::vector<std::string>{"cnt"},
-                                     std::vector<std::string>{"1"}));
+              ::testing::ElementsAre(
+                  std::vector<std::string>{"is_janky", "is_janky_v3"},
+                  std::vector<std::string>{"0", "0"},
+                  std::vector<std::string>{"1", "1"},
+                  std::vector<std::string>{"[NULL]", "[NULL]"}));
 }
 
 /*
@@ -2788,15 +2786,27 @@ TEST_F(CompositorFrameReportingControllerTest, JankyThrottledScrolledFrameArg) {
   ASSERT_TRUE(status.ok()) << status.message();
   constexpr char query[] =
       R"(
-      SELECT COUNT(*) AS cnt
+      SELECT
+        EXTRACT_ARG(
+          slice.arg_set_id,
+          'event_latency.is_janky_scrolled_frame'
+        ) AS is_janky,
+        EXTRACT_ARG(
+          slice.arg_set_id,
+          'event_latency.is_janky_scrolled_frame_v3'
+        ) AS is_janky_v3
       FROM slice
-      WHERE name = 'MissedFrame v3'
+      WHERE name = 'EventLatency'
+      ORDER BY ts ASC
       )";
   auto result = ttp.RunQuery(query);
   ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_THAT(result.value(),
-              ::testing::ElementsAre(std::vector<std::string>{"cnt"},
-                                     std::vector<std::string>{"1"}));
+              ::testing::ElementsAre(
+                  std::vector<std::string>{"is_janky", "is_janky_v3"},
+                  std::vector<std::string>{"0", "0"},
+                  std::vector<std::string>{"[NULL]", "1"},
+                  std::vector<std::string>{"0", "[NULL]"}));
 }
 
 // A simple test that ensures the vsync_interval is copied onto the

@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_DETERMINE_POSSIBLE_FIELD_TYPES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_DETERMINE_POSSIBLE_FIELD_TYPES_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -36,6 +40,16 @@ void DeterminePossibleFieldTypesForUpload(
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
     FormStructure& form);
+
+// Matches the current field values against regular expressions.
+// There are two types of matches:
+// - An individual field with value "09/03/2025" matches "DD/MM/YYYY" and
+//   "MM/DD/YYYY".
+// - Three consecutive fields with values "09", "03", "2025" match "DD" and "D",
+//   "MM" and "M", and "YYYY", respectively.
+std::map<FieldGlobalId, base::flat_set<std::u16string>>
+DeterminePossibleFormatStringsForUpload(
+    base::span<const std::unique_ptr<AutofillField>> fields);
 
 }  // namespace autofill
 

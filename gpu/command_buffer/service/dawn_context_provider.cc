@@ -91,6 +91,13 @@ NOINLINE NOOPT void DumpWithoutCrashingOnDXGIError(wgpu::ErrorType error_type,
   base::debug::DumpWithoutCrashing();
 }
 
+NOINLINE NOOPT void DumpWithoutCrashingOnD3D11DebugLayerError(
+    wgpu::ErrorType error_type,
+    std::string_view message) {
+  LOG(ERROR) << message;
+  base::debug::DumpWithoutCrashing();
+}
+
 NOINLINE NOOPT void DumpWithoutCrashingOnGenericError(
     wgpu::ErrorType error_type,
     std::string_view message) {
@@ -103,6 +110,8 @@ void DumpWithoutCrashingOnError(wgpu::ErrorType error_type,
   SetDawnErrorCrashKey(message);
   if (message.find("DXGI_ERROR") != std::string_view::npos) {
     DumpWithoutCrashingOnDXGIError(error_type, message);
+  } else if (message.find("The D3D11 debug layer") != std::string_view::npos) {
+    DumpWithoutCrashingOnD3D11DebugLayerError(error_type, message);
   } else {
     DumpWithoutCrashingOnGenericError(error_type, message);
   }

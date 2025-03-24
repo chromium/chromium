@@ -34,7 +34,8 @@ using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
 class MockSchedulingChromeClient : public EmptyChromeClient {
  public:
   void ScheduleAnimation(const LocalFrameView*,
-                         base::TimeDelta delay) override {
+                         base::TimeDelta delay,
+                         bool) override {
     has_scheduled_animation_ = true;
   }
 

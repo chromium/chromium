@@ -15,8 +15,15 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+/**
+ * Manages the device to be used for communication purpose on the system on versions prior to
+ * Android S. These versions predate the concept of communication devices, but this class uses
+ * device type-specific APIs such as AudioManager#setSpeakerphoneOn to approximate Android S+
+ * communication device management. As with communication devices on Android S+, selecting a device
+ * affects both input and output streams.
+ */
 @NullMarked
-class AudioDeviceSelectorPreS extends AudioDeviceSelector {
+class CommunicationDeviceSelectorPreS extends CommunicationDeviceSelector {
     private static final String TAG = "media";
 
     // Bluetooth audio SCO states. Example of valid state sequence:
@@ -36,7 +43,7 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
 
     private boolean[] mDeviceExistence = new boolean[Devices.DEVICE_COUNT];
 
-    public AudioDeviceSelectorPreS(AudioManager audioManager) {
+    public CommunicationDeviceSelectorPreS(AudioManager audioManager) {
         super(audioManager);
     }
 
@@ -114,8 +121,8 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
     }
 
     /**
-     * Registers receiver for the broadcasted intent related the existence
-     * of a BT SCO channel. Indicates if BT SCO streaming is on or off.
+     * Registers receiver for the broadcasted intent related the existence of a BT SCO channel.
+     * Indicates if BT SCO streaming is on or off.
      */
     private void registerForBluetoothScoIntentBroadcast() {
         IntentFilter filter = new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED);

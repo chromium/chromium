@@ -78,6 +78,7 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   void EmitPerWindowV3HistogramsAndResetCounters();
   void EmitPerScrollV3HistogramsAndResetCounters();
   void ReportLatestPresentationDataV3(
+      ScrollUpdateEventMetrics& earliest_event,
       base::TimeTicks first_input_generation_v3_ts,
       base::TimeTicks presentation_ts,
       base::TimeDelta vsync_interval);

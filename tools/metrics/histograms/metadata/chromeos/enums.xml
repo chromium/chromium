@@ -439,6 +439,20 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Stable"/>
 </enum>
 
+<!-- LINT.IfChange(ChromeOSFallbackCountry) -->
+
+<enum name="ChromeOSFallbackCountry">
+  <int value="0" label="No statistics provider is available"/>
+  <int value="1" label="Statistics provider hasn't finished loading data"/>
+  <int value="2"
+      label="Loaded region is a group and not an individual country"/>
+  <int value="3" label="Region in VPD is too short for country code"/>
+  <int value="4" label="Region in VPD is too long for country code"/>
+  <int value="5" label="Valid country code parsed from VPD"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/regional_capabilities/regional_capabilities_service_client.h:ChromeOSFallbackCountry) -->
+
 <enum name="ChromeOSIioServiceSensorUsage">
   <int value="0" label="ACCEL_base"/>
   <int value="1" label="ACCEL_lid"/>
