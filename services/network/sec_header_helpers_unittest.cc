@@ -14,6 +14,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/storage_access_status_cache.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -181,8 +182,8 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemoveFirstLast) {
 // unprivileged requests from chrome extension background page.
 TEST_F(SecHeaderHelpersTest, UnprivilegedRequestOnExtension) {
   net::URLRequest* current_url_request = url_request();
-  url_request()->set_storage_access_status(
-      net::cookie_util::StorageAccessStatus::kNone);
+  url_request()->set_storage_access_status(net::StorageAccessStatusCache(
+      net::cookie_util::StorageAccessStatus::kNone));
   GURL url = GURL(kSecureSite);
 
   // Set the request's net::IsolationInfo for Sec-Fetch-Frame-Top.
@@ -220,8 +221,8 @@ TEST_F(SecHeaderHelpersTest, UnprivilegedRequestOnExtension) {
 // requests from chrome extension background page.
 TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
   net::URLRequest* current_url_request = url_request();
-  current_url_request->set_storage_access_status(
-      net::cookie_util::StorageAccessStatus::kNone);
+  current_url_request->set_storage_access_status(net::StorageAccessStatusCache(
+      net::cookie_util::StorageAccessStatus::kNone));
   GURL url = GURL(kSecureSite);
 
   // Set the request's net::IsolationInfo for Sec-Fetch-Frame-Top.
@@ -353,7 +354,7 @@ INSTANTIATE_TEST_SUITE_P(
                                        std::string_view("cross-site")}));
 
 struct StorageAccessTestData {
-  std::optional<net::cookie_util::StorageAccessStatus> status;
+  net::StorageAccessStatusCache status;
   mojom::CredentialsMode credentials_mode;
   std::optional<std::string> expected_value;
   net::cookie_util::SecFetchStorageAccessOutcome expected_sample;
@@ -391,82 +392,91 @@ INSTANTIATE_TEST_SUITE_P(
     StorageAccessSecHeaderHelpersTest,
     testing::Values(
         StorageAccessTestData{
-            std::nullopt,
+            net::StorageAccessStatusCache(std::nullopt),
             mojom::CredentialsMode::kOmit,
             std::nullopt,
             net::cookie_util::SecFetchStorageAccessOutcome::
                 kOmittedStatusMissing,
         },
         StorageAccessTestData{
-            std::nullopt,
+            net::StorageAccessStatusCache(std::nullopt),
             mojom::CredentialsMode::kSameOrigin,
             std::nullopt,
             net::cookie_util::SecFetchStorageAccessOutcome::
                 kOmittedStatusMissing,
         },
         StorageAccessTestData{
-            std::nullopt,
+            net::StorageAccessStatusCache(std::nullopt),
             mojom::CredentialsMode::kInclude,
             std::nullopt,
             net::cookie_util::SecFetchStorageAccessOutcome::
                 kOmittedStatusMissing,
         },
         StorageAccessTestData{
-            net::cookie_util::StorageAccessStatus::kNone,
+            net::StorageAccessStatusCache(
+                net::cookie_util::StorageAccessStatus::kNone),
             mojom::CredentialsMode::kOmit,
             std::nullopt,
             net::cookie_util::SecFetchStorageAccessOutcome::
                 kOmittedRequestOmitsCredentials,
         },
         StorageAccessTestData{
-            net::cookie_util::StorageAccessStatus::kNone,
+            net::StorageAccessStatusCache(
+                net::cookie_util::StorageAccessStatus::kNone),
             mojom::CredentialsMode::kSameOrigin,
             std::nullopt,
             net::cookie_util::SecFetchStorageAccessOutcome::
                 kOmittedRequestOmitsCredentials,
         },
         StorageAccessTestData{
-            net::cookie_util::StorageAccessStatus::kNone,
+            net::StorageAccessStatusCache(
+                net::cookie_util::StorageAccessStatus::kNone),
             mojom::CredentialsMode::kInclude,
             "none",
             net::cookie_util::SecFetchStorageAccessOutcome::kValueNone,
         },
         StorageAccessTestData{
-            net::cookie_util::StorageAccessStatus::kInactive,
+            net::StorageAccessStatusCache(
+                net::cookie_util::StorageAccessStatus::kInactive),
             mojom::CredentialsMode::kOmit,
             std::nullopt,
             net::cookie_util::SecFetchStorageAccessOutcome::
                 kOmittedRequestOmitsCredentials,
         },
         StorageAccessTestData{
-            net::cookie_util::StorageAccessStatus::kInactive,
+            net::StorageAccessStatusCache(
+                net::cookie_util::StorageAccessStatus::kInactive),
             mojom::CredentialsMode::kSameOrigin,
             std::nullopt,
             net::cookie_util::SecFetchStorageAccessOutcome::
                 kOmittedRequestOmitsCredentials,
         },
         StorageAccessTestData{
-            net::cookie_util::StorageAccessStatus::kInactive,
+            net::StorageAccessStatusCache(
+                net::cookie_util::StorageAccessStatus::kInactive),
             mojom::CredentialsMode::kInclude,
             "inactive",
             net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
         },
         StorageAccessTestData{
-            net::cookie_util::StorageAccessStatus::kActive,
+            net::StorageAccessStatusCache(
+                net::cookie_util::StorageAccessStatus::kActive),
             mojom::CredentialsMode::kOmit,
             std::nullopt,
             net::cookie_util::SecFetchStorageAccessOutcome::
                 kOmittedRequestOmitsCredentials,
         },
         StorageAccessTestData{
-            net::cookie_util::StorageAccessStatus::kActive,
+            net::StorageAccessStatusCache(
+                net::cookie_util::StorageAccessStatus::kActive),
             mojom::CredentialsMode::kSameOrigin,
             std::nullopt,
             net::cookie_util::SecFetchStorageAccessOutcome::
                 kOmittedRequestOmitsCredentials,
         },
         StorageAccessTestData{
-            net::cookie_util::StorageAccessStatus::kActive,
+            net::StorageAccessStatusCache(
+                net::cookie_util::StorageAccessStatus::kActive),
             mojom::CredentialsMode::kInclude,
             "active",
             net::cookie_util::SecFetchStorageAccessOutcome::kValueActive,
