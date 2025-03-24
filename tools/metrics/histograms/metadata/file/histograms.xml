@@ -59,6 +59,11 @@ chromium-metrics-reviews@google.com.
   <variant name="ImplicitIdle"/>
 </variants>
 
+<variants name="DriveCommonTimings">
+  <variant name="FailTime" summary=""/>
+  <variant name="SuccessTime" summary=""/>
+</variants>
+
 <variants name="ExtendedFSPOperation">
   <variant name="Abort"/>
   <variant name="AddWatcher"/>
@@ -182,11 +187,13 @@ chromium-metrics-reviews@google.com.
   <summary>Records outcomes of attempts to mount Google Drive.</summary>
 </histogram>
 
-<histogram name="DriveCommon.Lifecycle.MountTime" units="ms"
-    expires_after="2025-07-01">
+<histogram name="DriveCommon.Lifecycle.MountTime.{DriveCommonTimings}"
+    units="ms" expires_after="2025-07-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>How long did it take to mount Google Drive.</summary>
+  <summary>
+    How long did it take to mount Google Drive. {DriveCommonTimings}
+  </summary>
 </histogram>
 
 <histogram name="DriveCommon.Lifecycle.Unmount" enum="DriveMountStatus"
@@ -196,51 +203,55 @@ chromium-metrics-reviews@google.com.
   <summary>Records outcomes of attempts to unmount Google Drive.</summary>
 </histogram>
 
-<histogram name="DriveCommon.LocalSearch.OfflineSearchTime" units="ms"
-    expires_after="2025-07-01">
+<histogram
+    name="DriveCommon.LocalSearch.OfflineSearchTime.{DriveCommonTimings}"
+    units="ms" expires_after="2025-07-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to perform a lookup of pinned files in local Google
-    Drive cache.
+    Drive cache. {DriveCommonTimings}
   </summary>
 </histogram>
 
-<histogram name="DriveCommon.LocalSearch.SharedSearchTime" units="ms"
-    expires_after="2025-07-01">
+<histogram name="DriveCommon.LocalSearch.SharedSearchTime.{DriveCommonTimings}"
+    units="ms" expires_after="2025-07-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to perform a search of shared files in local Google
-    Drive cache.
+    Drive cache. {DriveCommonTimings}
   </summary>
 </histogram>
 
-<histogram name="DriveCommon.LocalSearch.TextSearchTime" units="ms"
-    expires_after="2025-07-01">
+<histogram name="DriveCommon.LocalSearch.TextSearchTime.{DriveCommonTimings}"
+    units="ms" expires_after="2025-07-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to search a title in local Google Drive cache.
+    {DriveCommonTimings}
   </summary>
 </histogram>
 
-<histogram name="DriveCommon.RemoteSearch.SharedSearchTime" units="ms"
-    expires_after="2025-07-01">
+<histogram
+    name="DriveCommon.RemoteSearch.SharedSearchTime.{DriveCommonTimings}"
+    units="ms" expires_after="2025-07-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to perform a search of shared files in online Google
-    Drive.
+    Drive. {DriveCommonTimings}
   </summary>
 </histogram>
 
-<histogram name="DriveCommon.RemoteSearch.TextSearchTime" units="ms"
-    expires_after="2025-07-01">
+<histogram name="DriveCommon.RemoteSearch.TextSearchTime.{DriveCommonTimings}"
+    units="ms" expires_after="2025-07-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to perform a search in online Google Drive.
+    {DriveCommonTimings}
   </summary>
 </histogram>
 
