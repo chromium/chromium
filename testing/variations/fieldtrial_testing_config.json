@@ -11406,6 +11406,24 @@
             ]
         }
     ],
+    "HeapProfilerExcludeChromeOSRenderers": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "renderer-prob-pct": "0"
+                    },
+                    "enable_features": [
+                        "HeapProfilerReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeatmapPalmDetectionStudy": [
         {
             "platforms": [

@@ -64,7 +64,16 @@ constexpr base::FeatureParam<int> kNetworkSnapshotProbability{
 // (Memory.RenderProcessHost.Count2.All) ranged from 8 on Windows to 18 on Mac.
 // 10% is an easy default between 1/18 and 1/8.
 constexpr base::FeatureParam<int> kRendererSnapshotProbability{
-    &kHeapProfilerReporting, "renderer-prob-pct", 10};
+    &kHeapProfilerReporting, "renderer-prob-pct",
+#if BUILDFLAG(IS_CHROMEOS)
+    // base::debug::TraceStackFramePointers is crashing in ChromeOS rendererer
+    // processes. Disable heap profiling there for now.
+    // TODO(crbug.com/402542102): Find the root cause and re-enable.
+    0
+#else
+    10
+#endif
+};
 
 // Sample 50% of utility processes by default, because last time this was
 // evaluated (2024-08) the profiler collected 1.8x as many snapshots on Mac and
