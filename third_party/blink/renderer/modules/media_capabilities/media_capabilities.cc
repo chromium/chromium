@@ -993,14 +993,6 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
                                     &hdr_metadata_type);
   }
 
-  if (config->hasKeySystemConfiguration()) {
-    // GetEmeSupport() will call the VideoDecodePerfHistory service after
-    // receiving info about support for the configuration for encrypted content.
-    return GetEmeSupport(script_state, video_codec, video_profile,
-                         video_color_space, config, request_time,
-                         exception_state);
-  }
-
   bool audio_supported = true;
 
   if (config->hasAudio()) {
@@ -1022,6 +1014,14 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
   if (!IsVideoConfigurationSupported(video_mime_str, video_codec_str,
                                      video_color_space, hdr_metadata_type)) {
     return CreateResolvedPromiseToDecodingInfoWith(false, script_state, config);
+  }
+
+  if (config->hasKeySystemConfiguration()) {
+    // GetEmeSupport() will call the VideoDecodePerfHistory service after
+    // receiving info about support for the configuration for encrypted content.
+    return GetEmeSupport(script_state, video_codec, video_profile,
+                         video_color_space, config, request_time,
+                         exception_state);
   }
 
   auto* resolver = MakeGarbageCollected<
