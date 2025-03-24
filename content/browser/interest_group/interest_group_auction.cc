@@ -3534,7 +3534,6 @@ InterestGroupAuction::CreateReporter(
   DCHECK(!load_interest_groups_phase_callback_);
   DCHECK(!bidding_and_scoring_phase_callback_);
   DCHECK_EQ(*final_auction_result_, AuctionResult::kSuccess);
-  DCHECK(non_kanon_enforced_auction_leader_.top_bid);
 
   // This should only be called on top-level auctions.
   DCHECK(!parent_);
