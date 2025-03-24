@@ -2,14 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_cache_transaction.h"
-
-#include <array>
 
 #include "base/time/time.h"
 #include "build/build_config.h"  // For IS_POSIX
@@ -19,8 +12,10 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -112,57 +107,56 @@ bool ShouldByPassCacheForFirstPartySets(
           written_at_run_id.value() < clear_at_run_id.value());
 }
 
+// If the request includes one of these request headers, then avoid caching
+// to avoid getting confused.
 struct HeaderNameAndValue {
-  const char* name;
-  const char* value;
+  std::string_view name;
+  std::optional<std::string_view> value;
 };
 
 // If the request includes one of these request headers, then avoid caching
 // to avoid getting confused.
-constexpr HeaderNameAndValue kPassThroughHeaders[] = {
-    {"if-unmodified-since", nullptr},  // causes unexpected 412s
-    {"if-match", nullptr},             // causes unexpected 412s
-    {"if-range", nullptr},
-    {nullptr, nullptr}};
+constexpr auto kPassThroughHeaders = std::to_array(
+    {HeaderNameAndValue{"if-unmodified-since",
+                        std::nullopt},              // causes unexpected 412s
+     HeaderNameAndValue{"if-match", std::nullopt},  // causes unexpected 412s
+     HeaderNameAndValue{"if-range", std::nullopt}});
 
 struct ValidationHeaderInfo {
-  const char* request_header_name;
-  const char* related_response_header_name;
+  std::string_view request_header_name;
+  std::string_view related_response_header_name;
 };
 
-constexpr auto kValidationHeaders = std::to_array<ValidationHeaderInfo>({
-    {"if-modified-since", "last-modified"},
-    {"if-none-match", "etag"},
-});
+constexpr auto kValidationHeaders = std::to_array<ValidationHeaderInfo>(
+    {{"if-modified-since", "last-modified"}, {"if-none-match", "etag"}});
 
 // If the request includes one of these request headers, then avoid reusing
 // our cached copy if any.
-constexpr HeaderNameAndValue kForceFetchHeaders[] = {
-    {"cache-control", "no-cache"},
-    {"pragma", "no-cache"},
-    {nullptr, nullptr}};
+constexpr auto kForceFetchHeaders =
+    std::to_array({HeaderNameAndValue{"cache-control", "no-cache"},
+                   HeaderNameAndValue{"pragma", "no-cache"}});
 
 // If the request includes one of these request headers, then force our
 // cached copy (if any) to be revalidated before reusing it.
-constexpr HeaderNameAndValue kForceValidateHeaders[] = {
-    {"cache-control", "max-age=0"},
-    {nullptr, nullptr}};
+constexpr auto kForceValidateHeaders =
+    std::to_array({HeaderNameAndValue{"cache-control", "max-age=0"}});
 
 bool HeaderMatches(const HttpRequestHeaders& headers,
-                   const HeaderNameAndValue* search) {
-  for (; search->name; ++search) {
-    std::optional<std::string> header_value = headers.GetHeader(search->name);
+                   base::span<const HeaderNameAndValue> search_headers) {
+  for (const auto& search_header : search_headers) {
+    std::optional<std::string> header_value =
+        headers.GetHeader(search_header.name);
     if (!header_value) {
       continue;
     }
 
-    if (!search->value) {
+    if (!search_header.value) {
       return true;
     }
 
     HttpUtil::ValuesIterator v(*header_value, ',');
     while (v.GetNext()) {
-      if (base::EqualsCaseInsensitiveASCII(v.value(), search->value)) {
+      if (base::EqualsCaseInsensitiveASCII(v.value(), *search_header.value)) {
         return true;
       }
     }
@@ -2649,7 +2643,7 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   static const struct {
     // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to
     // constexpr tables), so there is no benefit to using a raw_ptr, only cost.
-    RAW_PTR_EXCLUSION const HeaderNameAndValue* search;
+    RAW_PTR_EXCLUSION const base::span<const HeaderNameAndValue> search;
     int load_flag;
   } kSpecialHeaders[] = {
       {kPassThroughHeaders, LOAD_DISABLE_CACHE},
@@ -4036,6 +4030,9 @@ bool HttpCache::Transaction::InWriters() const {
   return entry_ && entry_->HasWriters() &&
          entry_->writers()->HasTransaction(this);
 }
+
+HttpCache::Transaction::ValidationHeaders::ValidationHeaders() = default;
+HttpCache::Transaction::ValidationHeaders::~ValidationHeaders() = default;
 
 HttpCache::Transaction::NetworkTransactionInfo::NetworkTransactionInfo() =
     default;

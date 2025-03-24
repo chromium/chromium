@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -200,9 +201,14 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Helper struct to pair a header name with its value, for
   // headers used to validate cache entries.
   struct ValidationHeaders {
-    ValidationHeaders() = default;
+    ValidationHeaders();
 
-    std::string values[kNumValidationHeaders];
+    ValidationHeaders(const ValidationHeaders&) = delete;
+    ValidationHeaders& operator=(const ValidationHeaders&) = delete;
+
+    ~ValidationHeaders();
+
+    std::array<std::string, kNumValidationHeaders> values;
     void Reset() {
       initialized = false;
       for (auto& value : values) {
