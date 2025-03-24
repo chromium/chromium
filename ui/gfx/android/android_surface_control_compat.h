@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "ui/gfx/android/surface_control_frame_rate.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_transform.h"
@@ -164,7 +165,8 @@ class COMPONENT_EXPORT(GFX) SurfaceControl {
     void SetColorSpace(const Surface& surface,
                        const gfx::ColorSpace& color_space,
                        const std::optional<HDRMetadata>& metadata);
-    void SetFrameRate(const Surface& surface, float frame_rate);
+    void SetFrameRate(const Surface& surface,
+                      SurfaceControlFrameRate frame_rate);
     void SetParent(const Surface& surface, Surface* new_parent);
     void SetPosition(const Surface& surface, const gfx::Point& position);
     void SetScale(const Surface& surface, float sx, float sy);

@@ -1067,7 +1067,8 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void SkiaOutputSurfaceImpl::SetFrameRate(float frame_rate) {
+void SkiaOutputSurfaceImpl::SetFrameRate(
+    gfx::SurfaceControlFrameRate frame_rate) {
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetFrameRate,
                              base::Unretained(impl_on_gpu_.get()), frame_rate);
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,

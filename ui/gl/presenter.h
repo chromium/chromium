@@ -28,6 +28,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "ui/gfx/android/surface_control_frame_rate.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -130,7 +131,7 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
 
 #if BUILDFLAG(IS_ANDROID)
   // Sets preferred frame rate
-  virtual void SetFrameRate(float frame_rate) {}
+  virtual void SetFrameRate(gfx::SurfaceControlFrameRate frame_rate) {}
 #endif
 
   // Android specific. Sets vsync_id of the corresponding Choreographer frame.
