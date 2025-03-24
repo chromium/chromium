@@ -190,7 +190,8 @@ void RemoteCdmContext::Decrypt(StreamType stream_type,
   CHECK(encrypted_mojo_buffer);
   mojo_sequence_state_->GetCdmContextForOOPVD()->DecryptVideoBuffer(
       std::move(encrypted_mojo_buffer),
-      std::vector<uint8_t>(encrypted->begin(), encrypted->end()),
+      std::vector<uint8_t>(encrypted->data(),
+                           encrypted->data() + encrypted->size()),
       base::BindOnce(&RemoteCdmContext::OnDecryptVideoBufferDone,
                      base::Unretained(this), std::move(decrypt_cb)));
 }

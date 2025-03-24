@@ -29,11 +29,10 @@ namespace media {
 
 TEST(DecoderBufferTest, Constructors) {
   auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
-  auto buffer_span = base::span(*buffer);
-  EXPECT_FALSE(buffer_span.data());
-  EXPECT_EQ(0u, buffer_span.size());
-  EXPECT_TRUE(buffer_span.empty());
-  EXPECT_EQ(buffer_span, base::span<const uint8_t>());
+  EXPECT_FALSE(buffer->data());
+  EXPECT_EQ(0u, buffer->size());
+  EXPECT_TRUE(buffer->empty());
+  EXPECT_EQ(base::span(*buffer), base::span<const uint8_t>());
   EXPECT_FALSE(buffer->end_of_stream());
   EXPECT_FALSE(buffer->is_key_frame());
 
@@ -75,11 +74,10 @@ TEST(DecoderBufferTest, CopyFrom) {
   const size_t kDataSize = std::size(kData);
 
   scoped_refptr<DecoderBuffer> buffer2(DecoderBuffer::CopyFrom(kData));
-  auto buffer_span2 = base::span(*buffer2);
   ASSERT_TRUE(buffer2.get());
-  EXPECT_NE(kData, buffer_span2.data());
-  EXPECT_EQ(buffer_span2.size(), kDataSize);
-  EXPECT_EQ(buffer_span2, base::span(kData));
+  EXPECT_NE(kData, buffer2->data());
+  EXPECT_EQ(buffer2->size(), kDataSize);
+  EXPECT_EQ(base::span(*buffer2), base::span(kData));
   EXPECT_FALSE(buffer2->end_of_stream());
   EXPECT_FALSE(buffer2->is_key_frame());
 }
@@ -221,7 +219,7 @@ TEST(DecoderBufferTest, ReadingWriting) {
   ASSERT_TRUE(data);
   ASSERT_EQ(kDataSize, buffer->size());
   base::span(data, buffer->size()).copy_from(kData);
-  const uint8_t* read_only_data = base::span(*buffer).data();
+  const uint8_t* read_only_data = buffer->data();
   ASSERT_EQ(data, read_only_data);
   EXPECT_EQ(base::span(*buffer), base::span(kData));
   EXPECT_FALSE(buffer->end_of_stream());

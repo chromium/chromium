@@ -411,12 +411,12 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
   using ScopedPtrDav1dData = std::unique_ptr<Dav1dData, ScopedDav1dDataFree>;
   ScopedPtrDav1dData input_buffer;
+
   if (!buffer->end_of_stream()) {
-    auto buffer_span = base::span(*buffer);
     input_buffer.reset(new Dav1dData{});
-    const int res = dav1d_data_wrap(input_buffer.get(), buffer_span.data(),
-                                    buffer_span.size(), &ReleaseDecoderBuffer,
-                                    buffer.get());
+    const int res =
+        dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->size(),
+                        &ReleaseDecoderBuffer, buffer.get());
     if (res < 0) {
       if (res == DAV1D_ERR(ENOMEM)) {
         error_status_ = DecoderStatus::Codes::kOutOfMemory;

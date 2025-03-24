@@ -703,13 +703,11 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   void ValidateOpusData(scoped_refptr<media::DecoderBuffer> encoded_data) {
     // Decode |encoded_data| and check we get the expected number of frames
     // per buffer.
-    auto encoded_data_span = base::span(*encoded_data);
-    ASSERT_GE(static_cast<size_t>(opus_buffer_size_), encoded_data_span.size());
-    EXPECT_EQ(
-        kDefaultSampleRate * kOpusBufferDurationMs / 1000,
-        opus_decode_float(opus_decoder_, encoded_data_span.data(),
-                          static_cast<wtf_size_t>(encoded_data_span.size()),
-                          opus_buffer_.get(), opus_buffer_size_, 0));
+    ASSERT_GE(static_cast<size_t>(opus_buffer_size_), encoded_data->size());
+    EXPECT_EQ(kDefaultSampleRate * kOpusBufferDurationMs / 1000,
+              opus_decode_float(opus_decoder_, encoded_data->data(),
+                                static_cast<wtf_size_t>(encoded_data->size()),
+                                opus_buffer_.get(), opus_buffer_size_, 0));
   }
 
   void ValidatePcmData(scoped_refptr<media::DecoderBuffer> encoded_data) {

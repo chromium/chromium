@@ -240,9 +240,8 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
 
     mp4::writable_boxes::AV1CodecConfiguration av1_config;
     size_t config_size = 0;
-    auto encoded_data_span = base::span(encoded_data);
     auto codec_descriptions = libgav1::ObuParser::GetAV1CodecConfigurationBox(
-        encoded_data_span.data(), encoded_data_span.size(), &config_size);
+        encoded_data.data(), encoded_data.size(), &config_size);
     CHECK(codec_descriptions);
     CHECK_GT(config_size, 0u);
 

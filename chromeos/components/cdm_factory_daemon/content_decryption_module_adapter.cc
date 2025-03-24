@@ -353,8 +353,9 @@ void ContentDecryptionModuleAdapter::Decrypt(
     // clear content otherwise.
     DCHECK_EQ(stream_type, Decryptor::kVideo);
     cros_cdm_remote_->Decrypt(
-        std::vector<uint8_t>(encrypted->begin(), encrypted->end()), nullptr,
-        true,
+        std::vector<uint8_t>(encrypted->data(),
+                             encrypted->data() + encrypted->size()),
+        nullptr, true,
         encrypted->side_data() ? encrypted->side_data()->secure_handle : 0,
         base::BindOnce(&ContentDecryptionModuleAdapter::OnDecrypt,
                        base::Unretained(this), stream_type, encrypted,
@@ -376,7 +377,8 @@ void ContentDecryptionModuleAdapter::Decrypt(
   // TODO(jkardatzke): Evaluate the performance cost here of copying the data
   // and see if want to use something like MojoDecoderBufferWriter instead.
   cros_cdm_remote_->Decrypt(
-      std::vector<uint8_t>(encrypted->begin(), encrypted->end()),
+      std::vector<uint8_t>(encrypted->data(),
+                           encrypted->data() + encrypted->size()),
       decrypt_config->Clone(), stream_type == Decryptor::kVideo,
       encrypted->side_data() ? encrypted->side_data()->secure_handle : 0,
       base::BindOnce(&ContentDecryptionModuleAdapter::OnDecrypt,

@@ -170,8 +170,7 @@ void ParseAv1KeyFrame(const media::DecoderBuffer& buffer,
                       libgav1::BufferPool* buffer_pool,
                       bool* is_key_frame) {
   libgav1::DecoderState decoder_state;
-  auto buffer_span = base::span(buffer);
-  libgav1::ObuParser parser(buffer_span.data(), buffer_span.size(),
+  libgav1::ObuParser parser(buffer.data(), buffer.size(),
                             /*operating_point=*/0, buffer_pool, &decoder_state);
   libgav1::RefCountedBufferPtr frame;
   libgav1::StatusCode status_code = parser.ParseOneFrame(&frame);
@@ -183,24 +182,20 @@ void ParseVpxKeyFrame(const media::DecoderBuffer& buffer,
                       media::VideoCodec codec,
                       bool* is_key_frame) {
 #if BUILDFLAG(ENABLE_LIBVPX)
-  auto buffer_span = base::span(buffer);
   vpx_codec_stream_info_t stream_info = {0};
   stream_info.sz = sizeof(vpx_codec_stream_info_t);
   auto status = vpx_codec_peek_stream_info(
       codec == media::VideoCodec::kVP8 ? vpx_codec_vp8_dx()
                                        : vpx_codec_vp9_dx(),
-      buffer_span.data(), static_cast<uint32_t>(buffer_span.size()),
-      &stream_info);
+      buffer.data(), static_cast<uint32_t>(buffer.size()), &stream_info);
   *is_key_frame = (status == VPX_CODEC_OK) && stream_info.is_kf;
 #endif
 }
 
 void ParseH264KeyFrame(const media::DecoderBuffer& buffer, bool* is_key_frame) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  auto buffer_span = base::span(buffer);
-  auto result =
-      media::mp4::AVC::AnalyzeAnnexB(buffer_span.data(), buffer_span.size(),
-                                     std::vector<media::SubsampleEntry>());
+  auto result = media::mp4::AVC::AnalyzeAnnexB(
+      buffer.data(), buffer.size(), std::vector<media::SubsampleEntry>());
   *is_key_frame = result.is_keyframe.value_or(false);
 #endif
 }
@@ -208,10 +203,8 @@ void ParseH264KeyFrame(const media::DecoderBuffer& buffer, bool* is_key_frame) {
 void ParseH265KeyFrame(const media::DecoderBuffer& buffer, bool* is_key_frame) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  auto buffer_span = base::span(buffer);
-  auto result =
-      media::mp4::HEVC::AnalyzeAnnexB(buffer_span.data(), buffer_span.size(),
-                                      std::vector<media::SubsampleEntry>());
+  auto result = media::mp4::HEVC::AnalyzeAnnexB(
+      buffer.data(), buffer.size(), std::vector<media::SubsampleEntry>());
   *is_key_frame = result.is_keyframe.value_or(false);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -593,9 +586,8 @@ media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
 VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
   scoped_refptr<media::DecoderBuffer> decoder_buffer = chunk.buffer();
   if (decoder_specific_data_.decoder_helper) {
-    auto decoder_buffer_span = base::span(*chunk.buffer());
-    const uint8_t* src = decoder_buffer_span.data();
-    size_t src_size = decoder_buffer_span.size();
+    const uint8_t* src = chunk.buffer()->data();
+    size_t src_size = chunk.buffer()->size();
 
     // Note: this may not be safe if support for SharedArrayBuffers is added.
     uint32_t output_size =

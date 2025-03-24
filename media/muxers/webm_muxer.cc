@@ -20,7 +20,6 @@
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -468,14 +467,13 @@ bool WebmMuxer::WriteWebmFrame(EncodedFrame frame,
   uint8_t track_index = std::get_if<AudioParameters>(&frame.params)
                             ? audio_track_index_
                             : video_track_index_;
-  auto frame_data_span = base::span(*frame.data);
   return frame.data->side_data() && !frame.data->side_data()->alpha_data.empty()
              ? segment_.AddFrameWithAdditional(
-                   frame_data_span.data(), frame_data_span.size(),
+                   frame.data->data(), frame.data->size(),
                    frame.data->side_data()->alpha_data.data(),
                    frame.data->side_data()->alpha_data.size(), /*add_id=*/1,
                    track_index, recorded_timestamp, frame.data->is_key_frame())
-             : segment_.AddFrame(frame_data_span.data(), frame_data_span.size(),
+             : segment_.AddFrame(frame.data->data(), frame.data->size(),
                                  track_index, recorded_timestamp,
                                  frame.data->is_key_frame());
 }

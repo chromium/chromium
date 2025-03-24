@@ -135,7 +135,8 @@ void CdmContextForOOPVDImpl::OnDecryptDone(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<uint8_t> bytes;
   if (decoder_buffer) {
-    bytes.insert(bytes.begin(), decoder_buffer->begin(), decoder_buffer->end());
+    bytes.insert(bytes.begin(), decoder_buffer->data(),
+                 decoder_buffer->data() + decoder_buffer->size());
   }
 
   media::mojom::DecoderBufferPtr mojo_decoder_buffer;

@@ -142,7 +142,7 @@ std::string DecryptBuffer(const StreamParserBuffer& buffer,
   EXPECT_EQ(key.size(), 16UL);
   EXPECT_EQ(iv.size(), 16UL);
   std::string result;
-  uint8_t* in_ptr = const_cast<uint8_t*>(base::span(buffer).data());
+  uint8_t* in_ptr = const_cast<uint8_t*>(buffer.data());
   const DecryptConfig* decrypt_config = buffer.decrypt_config();
   for (const auto& subsample : decrypt_config->subsamples()) {
     std::string clear(reinterpret_cast<char*>(in_ptr), subsample.clear_bytes);
@@ -572,14 +572,16 @@ TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
   // Skip the last buffer, which may be truncated.
   for (size_t i = 0; i + 1 < video_buffer_capture_.size(); i++) {
     const auto& buffer = video_buffer_capture_[i];
-    std::string unencrypted_video_buffer((*buffer).begin(), (*buffer).end());
+    std::string unencrypted_video_buffer(
+        reinterpret_cast<const char*>(buffer->data()), buffer->size());
     EXPECT_EQ(decrypted_video_buffers[i], unencrypted_video_buffer);
   }
   audio_encryption_scheme = current_audio_config_.encryption_scheme();
   EXPECT_EQ(audio_encryption_scheme, EncryptionScheme::kUnencrypted);
   for (size_t i = 0; i + 1 < audio_buffer_capture_.size(); i++) {
     const auto& buffer = audio_buffer_capture_[i];
-    std::string unencrypted_audio_buffer((*buffer).begin(), (*buffer).end());
+    std::string unencrypted_audio_buffer(
+        reinterpret_cast<const char*>(buffer->data()), buffer->size());
     EXPECT_EQ(decrypted_audio_buffers[i], unencrypted_audio_buffer);
   }
 }

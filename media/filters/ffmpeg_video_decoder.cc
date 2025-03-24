@@ -355,9 +355,8 @@ bool FFmpegVideoDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
     packet->data = NULL;
     packet->size = 0;
   } else {
-    auto buffer_span = base::span(buffer);
-    packet->data = const_cast<uint8_t*>(buffer_span.data());
-    packet->size = buffer_span.size();
+    packet->data = const_cast<uint8_t*>(buffer.data());
+    packet->size = buffer.size();
 
     DCHECK(packet->data);
     DCHECK_GT(packet->size, 0);
