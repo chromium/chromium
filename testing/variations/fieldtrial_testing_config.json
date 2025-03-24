@@ -13931,22 +13931,6 @@
             ]
         }
     ],
-    "LocalWebApprovalsIos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LocalWebApprovals",
-                        "SupervisedUserBlockInterstitialV3"
-                    ]
-                }
-            ]
-        }
-    ],
     "LocalWebApprovalsLinuxMacWindows": [
         {
             "platforms": [
