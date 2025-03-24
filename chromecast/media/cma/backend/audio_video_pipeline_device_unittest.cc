@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
@@ -391,7 +392,8 @@ void BufferFeeder::FeedPcm() {
   auto silence_buffer = base::MakeRefCounted<::media::DecoderBuffer>(
       num_frames * audio_config_.channel_number *
       audio_config_.bytes_per_channel);
-  memset(silence_buffer->writable_data(), 0, silence_buffer->size());
+  UNSAFE_TODO(
+      memset(silence_buffer->writable_data(), 0, silence_buffer->size()));
   pending_buffer_ = new media::DecoderBufferAdapter(silence_buffer);
   pending_buffer_->set_timestamp(timestamp_helper_->GetTimestamp());
   timestamp_helper_->AddFrames(num_frames);

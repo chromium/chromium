@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -250,9 +251,9 @@ TEST_F(Etc1ThumbnailHelperTest, WriteReadAndDeleteThumbnail) {
   EXPECT_EQ(data_size_copy.width(), read_data_size.width());
   EXPECT_EQ(data_size_copy.height(), read_data_size.height());
 
-  EXPECT_EQ(
-      0, memcmp(compressed_data_copy->pixels(), read_compressed_data->pixels(),
-                compressed_data_copy->rowBytes()));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(compressed_data_copy->pixels(),
+                                  read_compressed_data->pixels(),
+                                  compressed_data_copy->rowBytes())));
 
   base::FilePath file_path_post_read = GetFile(tab_id);
   EXPECT_TRUE(base::PathExists(file_path_post_read));

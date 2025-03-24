@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -186,7 +187,7 @@ void PepperExternalFileRefBackend::GetMetadataComplete(
     ppapi::FileInfoToPepperFileInfo(
         file_info, PP_FILESYSTEMTYPE_EXTERNAL, &pp_file_info);
   } else {
-    memset(&pp_file_info, 0, sizeof(pp_file_info));
+    UNSAFE_TODO(memset(&pp_file_info, 0, sizeof(pp_file_info)));
   }
 
   host_->SendReply(reply_context,

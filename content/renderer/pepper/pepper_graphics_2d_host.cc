@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -789,9 +790,10 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
 
   void* src = image_data_->Map();
   auto dest = shared_image->Map();
-  memcpy(dest->GetMemoryForPlane(0).data(), src,
-         viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-             pixel_image_size, viz::SinglePlaneFormat::kBGRA_8888));
+  UNSAFE_TODO(
+      memcpy(dest->GetMemoryForPlane(0).data(), src,
+             viz::ResourceSizes::CheckedSizeInBytes<size_t>(
+                 pixel_image_size, viz::SinglePlaneFormat::kBGRA_8888)));
   image_data_->Unmap();
 
   *release_callback =
