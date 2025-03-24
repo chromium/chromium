@@ -508,18 +508,24 @@ struct PasswordGenerationUIData {
   bool generation_rejected;
 };
 
-// autofill::PasswordSuggestionRequest
+// autofill::TriggeringField
 // (components/autofill/core/common/password_form_fill_data.h)
-struct PasswordSuggestionRequest {
+struct TriggeringField {
   FieldRendererId element_id;
-  FormData form_data;
   AutofillSuggestionTriggerSource trigger_source;
-  uint64 username_field_index;
-  uint64 password_field_index;
   mojo_base.mojom.TextDirection text_direction;
   mojo_base.mojom.String16 typed_username;
   bool show_webauthn_credentials;
   gfx.mojom.RectF bounds;
+};
+
+// autofill::PasswordSuggestionRequest
+// (components/autofill/core/common/password_form_fill_data.h)
+struct PasswordSuggestionRequest {
+  TriggeringField field;
+  FormData form_data;
+  uint64 username_field_index;
+  uint64 password_field_index;
 };
 
 // autofill::ParsingResult

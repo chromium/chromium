@@ -8,18 +8,17 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
 namespace password_manager {
 
-struct PasswordFillingParams;
-
 class PasswordCredentialFillerImpl final : public PasswordCredentialFiller {
  public:
   PasswordCredentialFillerImpl(
       base::WeakPtr<PasswordManagerDriver> driver,
-      const PasswordFillingParams& password_filling_params);
+      const autofill::PasswordSuggestionRequest& request);
   PasswordCredentialFillerImpl(const PasswordCredentialFillerImpl&) = delete;
   PasswordCredentialFillerImpl& operator=(const PasswordCredentialFillerImpl&) =
       delete;

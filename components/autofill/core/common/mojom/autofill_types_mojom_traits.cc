@@ -631,20 +631,28 @@ bool StructTraits<autofill::mojom::PasswordGenerationUIDataDataView,
 }
 
 // static
+bool StructTraits<autofill::mojom::TriggeringFieldDataView,
+                  autofill::TriggeringField>::
+    Read(autofill::mojom::TriggeringFieldDataView data,
+         autofill::TriggeringField* out) {
+  out->show_webauthn_credentials = data.show_webauthn_credentials();
+
+  return data.ReadElementId(&out->element_id) &&
+         data.ReadTriggerSource(&out->trigger_source) &&
+         data.ReadTextDirection(&out->text_direction) &&
+         data.ReadTypedUsername(&out->typed_username) &&
+         data.ReadBounds(&out->bounds);
+}
+
+// static
 bool StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
                   autofill::PasswordSuggestionRequest>::
     Read(autofill::mojom::PasswordSuggestionRequestDataView data,
          autofill::PasswordSuggestionRequest* out) {
   out->username_field_index = data.username_field_index();
   out->password_field_index = data.password_field_index();
-  out->show_webauthn_credentials = data.show_webauthn_credentials();
 
-  return data.ReadElementId(&out->element_id) &&
-         data.ReadFormData(&out->form_data) &&
-         data.ReadTriggerSource(&out->trigger_source) &&
-         data.ReadTextDirection(&out->text_direction) &&
-         data.ReadTypedUsername(&out->typed_username) &&
-         data.ReadBounds(&out->bounds);
+  return data.ReadField(&out->field) && data.ReadFormData(&out->form_data);
 }
 
 bool StructTraits<
