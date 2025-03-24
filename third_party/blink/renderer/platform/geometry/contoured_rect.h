@@ -143,9 +143,7 @@ class PLATFORM_EXPORT ContouredRect {
       return std::pow(0.5, 1 / ClampCurvature(curvature));
     }
 
-    static inline float CurvatureForHalfCorner(float half_corner) {
-      return std::log(0.5) / std::log(half_corner);
-    }
+    static float CurvatureForHalfCorner(float half_corner);
 
     gfx::PointF HullPoint() const;
 
