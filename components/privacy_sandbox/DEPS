@@ -5,6 +5,7 @@ include_rules = [
   "+components/content_settings/core",
   "+components/embedder_support/android",
   "+components/keyed_service/core",
+  "+components/metrics/dwa",
   "+components/pref_registry",
   "+components/prefs",
   "+components/signin/public/identity_manager",

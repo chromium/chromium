@@ -149,4 +149,17 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PrivacySandbox.IsPrivateAggregationAllowed">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <metric name="Status" enum="PrivacySandboxApiAllowed">
+    <summary>
+      Whether or not the IsPrivateAggregationAllowed operation was allowed by
+      Privacy Sandbox settings and why. Recorded at the time settings are
+      checked when performing the operation.
+    </summary>
+  </metric>
+</event>
+
 </dwa-configuration>
