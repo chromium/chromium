@@ -278,6 +278,69 @@ std::optional<tab_groups::SavedTabGroupTab> GetTabFromGroup(
   return std::nullopt;
 }
 
+std::u16string GetTitleForTabRemovedMessage(const InstantMessage& message) {
+  std::optional<data_sharing::GroupMember> user =
+      message.attribution->triggering_user;
+  std::optional<TabMessageMetadata> tab_metadata =
+      message.attribution->tab_metadata;
+  const bool has_title =
+      tab_metadata.has_value() && tab_metadata->last_known_title.has_value();
+  if (!user.has_value() || !has_title) {
+    return std::u16string();
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_DATA_SHARING_TOAST_TAB_REMOVED, base::UTF8ToUTF16(user->given_name),
+      base::UTF8ToUTF16(tab_metadata->last_known_title.value()));
+}
+
+std::u16string GetTitleForTabUpdatedMessage(const InstantMessage& message) {
+  std::optional<data_sharing::GroupMember> user =
+      message.attribution->triggering_user;
+  std::optional<TabMessageMetadata> tab_metadata =
+      message.attribution->tab_metadata;
+  const bool has_title =
+      tab_metadata.has_value() && tab_metadata->last_known_title.has_value();
+  if (!user.has_value() || !has_title) {
+    return std::u16string();
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_DATA_SHARING_TOAST_TAB_UPDATED, base::UTF8ToUTF16(user->given_name),
+      base::UTF8ToUTF16(tab_metadata->last_known_title.value()));
+}
+
+std::u16string GetTitleForMemberAddedMessage(const InstantMessage& message) {
+  std::optional<data_sharing::GroupMember> user =
+      message.attribution->affected_user;
+  std::optional<TabGroupMessageMetadata> tab_group_metadata =
+      message.attribution->tab_group_metadata;
+  const bool has_group_title = tab_group_metadata.has_value() &&
+                               tab_group_metadata->last_known_title.has_value();
+  if (!user.has_value() || !has_group_title) {
+    return std::u16string();
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_DATA_SHARING_TOAST_NEW_MEMBER, base::UTF8ToUTF16(user->given_name),
+      base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()));
+}
+
+std::u16string GetTitleForTabGroupRemovedMessage(
+    const InstantMessage& message) {
+  std::optional<TabGroupMessageMetadata> tab_group_metadata =
+      message.attribution->tab_group_metadata;
+  const bool has_group_title = tab_group_metadata.has_value() &&
+                               tab_group_metadata->last_known_title.has_value();
+  if (!has_group_title) {
+    return std::u16string();
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_DATA_SHARING_TOAST_BLOCK_LEAVE,
+      base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()));
+}
+
 DirtyType GetDirtyTypeFromPersistentNotificationTypeForQuery(
     std::optional<PersistentNotificationType> type) {
   if (!type) {
@@ -671,6 +734,8 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
     InstantMessage instant_message =
         CreateInstantMessage(message, removed_group, /*tab=*/std::nullopt);
     instant_message.type = InstantNotificationType::UNDEFINED;
+    instant_message.localized_message =
+        GetTitleForTabGroupRemovedMessage(instant_message);
     DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
                           instant_message, {InstantNotificationLevel::BROWSER});
   }
@@ -788,6 +853,8 @@ void MessagingBackendServiceImpl::OnTabRemoved(
     InstantMessage instant_message =
         CreateInstantMessage(message, /*tab_group=*/std::nullopt, removed_tab);
     instant_message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
+    instant_message.localized_message =
+        GetTitleForTabRemovedMessage(instant_message);
 
     // TODO(crbug.com/390794240): Remove the id argument to
     // DisplayInstantMessage as it's now contained inside the
@@ -853,6 +920,8 @@ void MessagingBackendServiceImpl::OnTabUpdated(
     // TODO(crbug.com/391941212): CONFLICT_TAB_REMOVED and UNDEFINED don't seem
     // to be used. In that case, remove them.
     instant_message_base.type = InstantNotificationType::UNDEFINED;
+    instant_message_base.localized_message =
+        GetTitleForTabUpdatedMessage(instant_message_base);
 
     DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
                           instant_message_base,
@@ -1014,6 +1083,8 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
   if (instant_message_delegate_) {
     InstantMessage instant_message =
         CreateInstantMessage(message, tab_group, /*tab=*/std::nullopt);
+    instant_message.localized_message =
+        GetTitleForMemberAddedMessage(instant_message);
     DisplayInstantMessage(
         base::Uuid::ParseLowercase(message.uuid()), instant_message,
         {InstantNotificationLevel::SYSTEM, InstantNotificationLevel::BROWSER});

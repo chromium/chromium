@@ -12420,24 +12420,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
       <!-- /Page Action -->
 
-      <!-- Toast -->
-        <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED" desc="A description of the member removing a tab for the toast.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> removed tab “<ph name="WEBSITE_TITLE">$2<ex>chromium.org</ex></ph>”
-        </message>
-        <message name="IDS_DATA_SHARING_TOAST_TAB_REMOVED_ACTION" desc="The action that can be taken from the toast when a member removes a tab.">
-          Reopen
-        </message>
-        <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER" desc="A description of a new member being added to a shared group for the toast.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> joined "<ph name="GROUP_NAME">$2<ex>Vacation</ex></ph>" tab group
-        </message>
-        <message name="IDS_DATA_SHARING_TOAST_NEW_MEMBER_ACTION" desc="The action that can be taken from the toast when a member is added to a shared group.">
-          Manage
-        </message>
-        <message name="IDS_DATA_SHARING_TOAST_BLOCK_LEAVE" desc="A description of a member being blocked/leaving from a shared group for the toast.">
-          The "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" tab group is no longer available
-        </message>
-      <!-- /Toast -->
-
       <!-- User Education -->
         <message name="IDS_DATA_SHARING_USER_ED_FIRST_TAB_CHANGE" desc="A description of how shared tabs work in a shared group for user education.">
           Changes made are seen by everyone in the group

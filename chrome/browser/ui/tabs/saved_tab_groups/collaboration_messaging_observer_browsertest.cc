@@ -119,6 +119,7 @@ InstantMessage CreateInstantMessage(
                      : InstantNotificationType::UNDEFINED;
   message.level = InstantNotificationLevel::BROWSER;
   message.collaboration_event = event;
+  message.localized_message = u"Sample instant message";
 
   return message;
 }

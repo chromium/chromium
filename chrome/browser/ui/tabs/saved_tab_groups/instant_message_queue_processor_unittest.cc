@@ -62,6 +62,7 @@ InstantMessage CreateMessage(CollaborationEvent event) {
   message.type = event == CollaborationEvent::TAB_REMOVED
                      ? InstantNotificationType::CONFLICT_TAB_REMOVED
                      : InstantNotificationType::UNDEFINED;
+  message.localized_message = u"Message content";
 
   return message;
 }
