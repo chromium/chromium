@@ -365,6 +365,29 @@ TEST_F(PageActionViewTest, UpdateBorderAdjustsInsets) {
   EXPECT_NE(insets_with_chip, insets_without_chip);
 }
 
+// Test that UpdateIconImage() correctly handles ImageModels created without a
+// vector icon
+TEST_F(PageActionViewTest, UpdateIconImageHandlesDifferentImageTypes) {
+  // Set up for a non vector icon.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kDefaultIconSize, kDefaultIconSize);
+  const ui::ImageModel bitmap_image =
+      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
+
+  // Trigger the icon update.
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  // Check that the image model in the PageActionView is correctly set and is
+  // not a vector icon.
+  EXPECT_FALSE(page_action_view()
+                   ->GetImageModel(views::Button::STATE_NORMAL)
+                   ->IsEmpty());
+  EXPECT_FALSE(page_action_view()
+                   ->GetImageModel(views::Button::STATE_NORMAL)
+                   ->IsVectorIcon());
+}
+
 class PageActionViewTriggerTest : public PageActionViewTest {
  public:
   PageActionViewTriggerTest() = default;
