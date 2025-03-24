@@ -1490,9 +1490,16 @@ void CrostiniManager::InstallBaguette(BaguetteImageCallback callback) {
         } else if (result == BaguetteInstaller::InstallResult::Cancelled) {
           LOG(ERROR) << "Installing Baguette failed: cancelled";
           res = CrostiniResult::INSTALL_BAGUETTE_CANCELLED;
+        } else if (result == BaguetteInstaller::InstallResult::ChecksumError) {
+          LOG(ERROR) << "Installing Baguette failed: checksum did not match.";
+          res = CrostiniResult::INSTALL_BAGUETTE_CANCELLED;
+        } else if (result == BaguetteInstaller::InstallResult::DownloadError) {
+          LOG(ERROR) << "Installing Baguette failed: download failed.";
+          res = CrostiniResult::INSTALL_BAGUETTE_CANCELLED;
         } else {
-          NOTREACHED()
-              << "Got unexpected value of BaguetteInstaller::InstallResult";
+          LOG(ERROR)
+              << "Installing Baguette failed: encountered an unknown error.";
+          res = CrostiniResult::UNKNOWN_ERROR;
         }
         std::move(callback).Run(std::move(fd), res);
       },
