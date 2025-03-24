@@ -389,8 +389,7 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   }
 
   if (!demuxer_ || end_of_stream_) {
-    DUMP_WILL_BE_NOTREACHED()
-        << "Attempted to enqueue packet on a stopped stream";
+    DVLOG(3) << "Attempted to enqueue packet on a stopped stream";
     return;
   }
 

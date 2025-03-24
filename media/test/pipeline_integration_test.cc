@@ -820,16 +820,7 @@ TEST_F(PipelineIntegrationTest, TrackStatusChangesBeforePipelineStarted) {
   OnSelectedVideoTrackChanged(std::nullopt);
 }
 
-// TODO(crbug.com/405116279): Enable test when flake is fixed on Linux MSAN.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_TrackStatusChangesAfterPipelineEnded \
-  DISABLED_TrackStatusChangesAfterPipelineEnded
-#else
-#define MAYBE_TrackStatusChangesAfterPipelineEnded \
-  TrackStatusChangesAfterPipelineEnded
-#endif
-
-TEST_F(PipelineIntegrationTest, MAYBE_TrackStatusChangesAfterPipelineEnded) {
+TEST_F(PipelineIntegrationTest, TrackStatusChangesAfterPipelineEnded) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240.webm", kHashed));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
