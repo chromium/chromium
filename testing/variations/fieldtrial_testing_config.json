@@ -8091,12 +8091,26 @@
             ]
         }
     ],
-    "DirectCompositorThreadIpcDesktop": [
+    "DirectCompositorThreadIpcMacLinuxChromeOS": [
         {
             "platforms": [
                 "chromeos",
                 "linux",
-                "mac",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DirectCompositorThreadIpc"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DirectCompositorThreadIpcWin": [
+        {
+            "platforms": [
                 "windows"
             ],
             "experiments": [
