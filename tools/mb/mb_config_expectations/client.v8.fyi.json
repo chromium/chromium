@@ -10,7 +10,6 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true,
       "use_static_angle": true
@@ -24,7 +23,6 @@
       "is_debug": false,
       "is_lsan": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -36,7 +34,6 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -49,7 +46,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -62,7 +58,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true,
       "v8_enable_pointer_compression": false
@@ -76,7 +71,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -90,7 +84,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -102,7 +95,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -114,7 +106,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true,
       "v8_enable_debugging_features": true
@@ -127,7 +118,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -139,7 +129,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -151,7 +140,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -161,7 +149,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -176,7 +163,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }

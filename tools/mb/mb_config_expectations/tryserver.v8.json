@@ -7,7 +7,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
@@ -18,7 +17,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_reclient": false,
       "use_remoteexec": true,
       "use_siso": true
     }
