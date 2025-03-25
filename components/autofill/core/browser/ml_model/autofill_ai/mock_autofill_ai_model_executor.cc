@@ -10,4 +10,9 @@ MockAutofillAiModelExecutor::MockAutofillAiModelExecutor() = default;
 
 MockAutofillAiModelExecutor::~MockAutofillAiModelExecutor() = default;
 
+base::WeakPtr<AutofillAiModelExecutor>
+MockAutofillAiModelExecutor::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace autofill

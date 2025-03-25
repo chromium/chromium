@@ -61,6 +61,7 @@
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -760,6 +761,7 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
   ~MockAutofillClient() override = default;
 
+  MOCK_METHOD(void, GetAiPageContent, (GetAiPageContentCallback), (override));
   MOCK_METHOD(AutofillAiModelCache*, GetAutofillAiModelCache, (), (override));
   MOCK_METHOD(AutofillAiModelExecutor*,
               GetAutofillAiModelExecutor,
@@ -7055,15 +7057,33 @@ class BrowserAutofillManagerWithAiModelTest
   base::test::ScopedFeatureList feature_list_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
-  MockAutofillAiModelCache cache_;
-  MockAutofillAiModelExecutor executor_;
+  NiceMock<MockAutofillAiModelCache> cache_;
+  NiceMock<MockAutofillAiModelExecutor> executor_;
 };
 
 // Tests that the Autofill AI server model is run if cache and model are
 // available and the form is not contained in the cache.
 TEST_F(BrowserAutofillManagerWithAiModelTest, AutofillAiServerModelRun) {
   ON_CALL(cache(), Contains).WillByDefault(Return(false));
+  EXPECT_CALL(client(), GetAiPageContent).Times(0);
   EXPECT_CALL(executor(), GetPredictions);
+  SeeForm(/*may_run_model=*/true);
+}
+
+// Tests that BAM requests annotated page content and passes it on to the
+// model executor if kAutofillAiServerModelSendPageContent is true.
+TEST_F(BrowserAutofillManagerWithAiModelTest,
+       AutofillAiServerModelReceivesAnnotatedPageContent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiServerModel,
+      {{"autofill_ai_model_send_apc", "true"}});
+
+  ON_CALL(cache(), Contains).WillByDefault(Return(false));
+  EXPECT_CALL(client(), GetAiPageContent)
+      .WillOnce(RunOnceCallback<0>(
+          optimization_guide::proto::AnnotatedPageContent()));
+  EXPECT_CALL(executor(), GetPredictions(_, Not(Eq(std::nullopt))));
   SeeForm(/*may_run_model=*/true);
 }
 
