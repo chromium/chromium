@@ -114,6 +114,10 @@ export class InkColorSelectorElement extends InkColorSelectorElementBase {
     selectedButton.focus();
   }
 
+  protected getTabIndex_(color: string): number {
+    return this.isCurrentColor_(color) ? 0 : -1;
+  }
+
   protected isCurrentColor_(hex: string): boolean {
     return areColorsEqual(this.currentColor, hexToColor(hex));
   }

@@ -18,6 +18,7 @@ export function getHtml(this: InkColorSelectorElement) {
               name="${this.getColorName_()}" .value="${item.color}"
               .style="--item-color: ${this.getVisibleColor_(item.color)}"
               aria-label="${this.i18n(item.label)}"
+              tabindex="${this.getTabIndex_(item.color)}"
               title="${this.i18n(item.label)}"
               @click="${this.onColorClick_}"
               ?checked="${this.isCurrentColor_(item.color)}">
