@@ -29,10 +29,6 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
     super.testGenPreambleCommon('kSelectToSpeakExtensionId');
   }
 
-  get featureList() {
-    return {disabled: ['features::kAccessibilityManifestV3SelectToSpeak']};
-  }
-
   /**
    * Asserts that two strings are equal, collapsing repeated spaces and
    * removing leading / trailing whitespace.

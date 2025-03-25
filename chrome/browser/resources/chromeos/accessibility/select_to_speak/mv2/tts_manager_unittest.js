@@ -21,7 +21,7 @@ class MockTtsClient {
 /**
  * Test fixture for tts_manager.js.
  */
-SelectToSpeakMV2TtsManagerUnitTest = class extends SelectToSpeakE2ETest {
+SelectToSpeakTtsManagerUnitTest = class extends SelectToSpeakE2ETest {
   constructor() {
     super();
     this.mockTts = new MockTts();
@@ -37,7 +37,7 @@ SelectToSpeakMV2TtsManagerUnitTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-AX_TEST_F('SelectToSpeakMV2TtsManagerUnitTest', 'SpeakUtterance', function() {
+AX_TEST_F('SelectToSpeakTtsManagerUnitTest', 'SpeakUtterance', function() {
   this.ttsManager.speak(
       ' text with space ', this.mockTtsClient.getTtsOptions());
   const receivedEvent = this.mockTtsClient.receivedEvent;
@@ -46,7 +46,7 @@ AX_TEST_F('SelectToSpeakMV2TtsManagerUnitTest', 'SpeakUtterance', function() {
   assertTrue(this.ttsManager.isSpeaking());
 });
 
-AX_TEST_F('SelectToSpeakMV2TtsManagerUnitTest', 'StopUtterance', function() {
+AX_TEST_F('SelectToSpeakTtsManagerUnitTest', 'StopUtterance', function() {
   this.ttsManager.speak(
       ' text with space ', this.mockTtsClient.getTtsOptions());
   this.ttsManager.stop();
@@ -55,7 +55,7 @@ AX_TEST_F('SelectToSpeakMV2TtsManagerUnitTest', 'StopUtterance', function() {
   assertFalse(this.ttsManager.isSpeaking());
 });
 
-AX_TEST_F('SelectToSpeakMV2TtsManagerUnitTest', 'FinishUtterance', function() {
+AX_TEST_F('SelectToSpeakTtsManagerUnitTest', 'FinishUtterance', function() {
   this.ttsManager.speak(
       ' text with space ', this.mockTtsClient.getTtsOptions());
 
@@ -70,7 +70,7 @@ AX_TEST_F('SelectToSpeakMV2TtsManagerUnitTest', 'FinishUtterance', function() {
 });
 
 AX_TEST_F(
-    'SelectToSpeakMV2TtsManagerUnitTest', 'SendWordEventsWhenSpeaking',
+    'SelectToSpeakTtsManagerUnitTest', 'SendWordEventsWhenSpeaking',
     function() {
       this.ttsManager.speak(
           ' text with space ', this.mockTtsClient.getTtsOptions());
@@ -90,7 +90,7 @@ AX_TEST_F(
       assertTrue(this.ttsManager.isSpeaking());
     });
 
-AX_TEST_F('SelectToSpeakMV2TtsManagerUnitTest', 'PauseAndResume', function() {
+AX_TEST_F('SelectToSpeakTtsManagerUnitTest', 'PauseAndResume', function() {
   const options = this.mockTtsClient.getTtsOptions();
   options.rate = 0.5;
   this.ttsManager.speak(' text with space ', options);
@@ -136,7 +136,7 @@ AX_TEST_F('SelectToSpeakMV2TtsManagerUnitTest', 'PauseAndResume', function() {
 });
 
 AX_TEST_F(
-    'SelectToSpeakMV2TtsManagerUnitTest', 'ResumeWithNoRemainingContent',
+    'SelectToSpeakTtsManagerUnitTest', 'ResumeWithNoRemainingContent',
     function() {
       const options = this.mockTtsClient.getTtsOptions();
       this.ttsManager.speak(' text ', options);

@@ -9376,8 +9376,6 @@ from previous Chrome versions.
   <int value="-1874842483" label="FeedLoadingPlaceholder:disabled"/>
   <int value="-1874349308" label="PwaUniversalInstallUi:enabled"/>
   <int value="-1874141108" label="NewOmniboxAnswerTypes:enabled"/>
-  <int value="-1874109755"
-      label="AccessibilityManifestV3SelectToSpeak:disabled"/>
   <int value="-1872989945" label="enable-webview-based-signin"/>
   <int value="-1872867546" label="EnumerateAudioDevices:disabled"/>
   <int value="-1872205507" label="ShelfNewUi:enabled"/>
@@ -14064,7 +14062,6 @@ from previous Chrome versions.
   <int value="-41460305" label="InfobarScrollOptimization:disabled"/>
   <int value="-41254374" label="WebRtcMetronomeTaskQueue:enabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
-  <int value="-38525285" label="AccessibilityManifestV3SelectToSpeak:enabled"/>
   <int value="-38147034"
       label="AutofillEnableCvcStorageAndFillingEnhancement:enabled"/>
   <int value="-38104294" label="AudioSelectionImprovement:disabled"/>

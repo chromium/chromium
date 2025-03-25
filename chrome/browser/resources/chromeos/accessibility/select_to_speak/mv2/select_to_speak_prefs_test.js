@@ -8,7 +8,7 @@ GEN_INCLUDE(['../../common/testing/mock_storage.js']);
 /**
  * Browser tests for Select-to-speak's preferences and prefs migration.
  */
-SelectToSpeakMV2PrefsTest = class extends SelectToSpeakE2ETest {
+SelectToSpeakPrefsTest = class extends SelectToSpeakE2ETest {
   /** @override */
   constructor() {
     super();
@@ -111,8 +111,8 @@ SelectToSpeakMV2PrefsTest = class extends SelectToSpeakE2ETest {
   }
 
   async ensureStoragePrefsRemoved() {
-    const prefs = await this.getStoragePrefs(
-        SelectToSpeakMV2PrefsTest.STORAGE_PREF_NAMES);
+    const prefs =
+        await this.getStoragePrefs(SelectToSpeakPrefsTest.STORAGE_PREF_NAMES);
     assertEqualsJSON(prefs, {}, 'Storage Prefs still present.');
   }
 
@@ -124,7 +124,7 @@ SelectToSpeakMV2PrefsTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-SelectToSpeakMV2PrefsTest.STORAGE_PREF_NAMES = [
+SelectToSpeakPrefsTest.STORAGE_PREF_NAMES = [
   'backgroundShading',
   'enhancedNetworkVoices',
   'enhancedVoiceName',
@@ -138,7 +138,7 @@ SelectToSpeakMV2PrefsTest.STORAGE_PREF_NAMES = [
 
 // TODO(katie): Test no alert -- this is hard because it happens last.
 TEST_F(
-    'SelectToSpeakMV2PrefsTest', 'RemovesPrefsWithNoAlertIfAllDefault',
+    'SelectToSpeakPrefsTest', 'RemovesPrefsWithNoAlertIfAllDefault',
     function() {
       this.setGlobalRateAndPitch(1.0, 1.0);
       this.setStsRateAndPitch(1.0, 1.0);
@@ -149,8 +149,7 @@ TEST_F(
 
 // TODO(katie): Test no alert -- this is hard because it happens last.
 TEST_F(
-    'SelectToSpeakMV2PrefsTest', 'RemovesPrefsWithNoAlertIfAllEqual',
-    function() {
+    'SelectToSpeakPrefsTest', 'RemovesPrefsWithNoAlertIfAllEqual', function() {
       this.setGlobalRateAndPitch(1.5, 1.8);
       this.setStsRateAndPitch(1.5, 1.8);
       this.mockStorage_.callOnChangedListeners();
@@ -158,17 +157,16 @@ TEST_F(
       this.ensurePrefsRemovedAndGlobalSetTo(1.5, 1.8);
     });
 
-TEST_F(
-    'SelectToSpeakMV2PrefsTest', 'SavesNonDefaultStsPrefsToGlobal', function() {
-      this.setGlobalRateAndPitch(1.0, 1.0);
-      this.setStsRateAndPitch(2.0, 2.5);
-      this.mockStorage_.callOnChangedListeners();
+TEST_F('SelectToSpeakPrefsTest', 'SavesNonDefaultStsPrefsToGlobal', function() {
+  this.setGlobalRateAndPitch(1.0, 1.0);
+  this.setStsRateAndPitch(2.0, 2.5);
+  this.mockStorage_.callOnChangedListeners();
 
-      this.ensurePrefsRemovedAndGlobalSetTo(2.0, 2.5);
-    });
+  this.ensurePrefsRemovedAndGlobalSetTo(2.0, 2.5);
+});
 
 TEST_F(
-    'SelectToSpeakMV2PrefsTest',
+    'SelectToSpeakPrefsTest',
     'DoesNotSaveNonDefaultStsPrefsToGlobalIfGlobalChanged', function() {
       this.setGlobalRateAndPitch(1.0, 1.5);
       this.setStsRateAndPitch(1.0, 2.5);
@@ -178,7 +176,7 @@ TEST_F(
     });
 
 TEST_F(
-    'SelectToSpeakMV2PrefsTest', 'DoesNotSaveStsPrefsToGlobalIfGlobalChanged',
+    'SelectToSpeakPrefsTest', 'DoesNotSaveStsPrefsToGlobalIfGlobalChanged',
     function() {
       this.setGlobalRateAndPitch(2.0, 1.0);
       this.setStsRateAndPitch(1.0, 1.0);
@@ -191,8 +189,8 @@ TEST_F(
 // prefs are set to their default values, and verifies that there are still no
 // storage prefs. This mimics the state of a fresh user profile.
 AX_TEST_F(
-    'SelectToSpeakMV2PrefsTest',
-    'DefaultSettingsPrefsSetAfterNoStoragePrefsSet', async function() {
+    'SelectToSpeakPrefsTest', 'DefaultSettingsPrefsSetAfterNoStoragePrefsSet',
+    async function() {
       // Set no storage prefs.
       await this.setStoragePrefsAndMigrate({});
 
@@ -217,7 +215,7 @@ AX_TEST_F(
 // the prefs that were set are migrated, verifies the rest are set according to
 // their default values, and verifies that storage prefs are removed.
 AX_TEST_F(
-    'SelectToSpeakMV2PrefsTest',
+    'SelectToSpeakPrefsTest',
     'PrefsMigratedToSettingsAndDefaultsSetAfterSomeStoragePrefsSet',
     async function() {
       // Set some storage prefs.
@@ -252,7 +250,7 @@ AX_TEST_F(
 // prefs migrated to settings prefs, and verifies that storage prefs are
 // removed.
 AX_TEST_F(
-    'SelectToSpeakMV2PrefsTest',
+    'SelectToSpeakPrefsTest',
     'AllPrefsMigratedToSettingsAfterAllStoragePrefsSet', async function() {
       // Set all storage prefs.
       await this.setStoragePrefsAndMigrate({

@@ -9,7 +9,7 @@ GEN_INCLUDE(['../../common/testing/mock_tts.js']);
  * Browser tests for select-to-speak's feature to speak text
  * at the press of a keystroke.
  */
-SelectToSpeakMV2KeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
+SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
   constructor() {
     super();
     this.mockTts = new MockTts();
@@ -128,33 +128,33 @@ SelectToSpeakMV2KeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
 };
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'SpeaksTextAtKeystrokeFullText',
+    'SelectToSpeakKeystrokeSelectionTest', 'SpeaksTextAtKeystrokeFullText',
     async function() {
       await this.testSimpleTextAtKeystroke(
           'This is some text', 0, 17, 'This is some text');
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
-    'SpeaksTextAtKeystrokePartialText', async function() {
+    'SelectToSpeakKeystrokeSelectionTest', 'SpeaksTextAtKeystrokePartialText',
+    async function() {
       await this.testSimpleTextAtKeystroke(
           'This is some text', 0, 12, 'This is some');
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'SpeaksTextAtKeystrokeSingleWord',
+    'SelectToSpeakKeystrokeSelectionTest', 'SpeaksTextAtKeystrokeSingleWord',
     async function() {
       await this.testSimpleTextAtKeystroke('This is some text', 8, 12, 'some');
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
-    'SpeaksTextAtKeystrokePartialWord', async function() {
+    'SelectToSpeakKeystrokeSelectionTest', 'SpeaksTextAtKeystrokePartialWord',
+    async function() {
       await this.testSimpleTextAtKeystroke('This is some text', 8, 10, 'so');
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'SpeaksAcrossNodesAtKeystroke',
+    'SelectToSpeakKeystrokeSelectionTest', 'SpeaksAcrossNodesAtKeystroke',
     async function() {
       await this.testReadTextAtKeystroke(
           '<p>This is some <b>bold</b> text</p><p>Second paragraph</p>',
@@ -172,7 +172,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
+    'SelectToSpeakKeystrokeSelectionTest',
     'SpeaksAcrossNodesSelectedBackwardsAtKeystroke', async function() {
       await this.testReadTextAtKeystroke(
           '<p>This is some <b>bold</b> text</p><p>Second paragraph</p>',
@@ -191,7 +191,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'SpeakTextSurroundedByBrs',
+    'SelectToSpeakKeystrokeSelectionTest', 'SpeakTextSurroundedByBrs',
     async function() {
       // If you load this html and double-click on "Selected text", this is the
       // document selection that occurs -- into the second <br/> element.
@@ -229,8 +229,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
-    'StartsReadingAtFirstNodeWithText', async function() {
+    'SelectToSpeakKeystrokeSelectionTest', 'StartsReadingAtFirstNodeWithText',
+    async function() {
       await this.testReadTextAtKeystroke(
           '<div id="empty"></div><div><p>This is some <b>bold</b> text</p></div>',
           function(root) {
@@ -248,8 +248,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
-    'IgnoresTextMarkedNotUserSelectable', async function() {
+    'SelectToSpeakKeystrokeSelectionTest', 'IgnoresTextMarkedNotUserSelectable',
+    async function() {
       await this.testReadTextAtKeystroke(
           '<div><p>This is some <span style="user-select:none">unselectable</span> text</p></div>',
           function(root) {
@@ -267,7 +267,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
+    'SelectToSpeakKeystrokeSelectionTest',
     'HandlesSingleImageCorrectlyWithAutomation', async function() {
       await this.testReadTextAtKeystroke(
           '<img src="pipe.jpg" alt="one"/>', function(root) {
@@ -282,7 +282,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
+    'SelectToSpeakKeystrokeSelectionTest',
     'HandlesMultipleImagesCorrectlyWithAutomation', async function() {
       await this.testReadTextAtKeystroke(
           '<img src="pipe.jpg" alt="one"/>' +
@@ -300,7 +300,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
+    'SelectToSpeakKeystrokeSelectionTest',
     'HandlesMultipleImagesCorrectlyWithJS1', async function() {
       // Using JS to do the selection instead of Automation, so that we can
       // ensure this is stable against changes in chrome.automation.
@@ -321,7 +321,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
+    'SelectToSpeakKeystrokeSelectionTest',
     'HandlesMultipleImagesCorrectlyWithJS2', async function() {
       const selectionCode =
           'let body = document.getElementsByTagName("body")[0];' +
@@ -340,7 +340,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'TextFieldFullySelected',
+    'SelectToSpeakKeystrokeSelectionTest', 'TextFieldFullySelected',
     async function() {
       const selectionCode = 'let p = document.getElementsByTagName("p")[0];' +
           'let body = document.getElementsByTagName("body")[0];' +
@@ -363,7 +363,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'TwoTextFieldsFullySelected',
+    'SelectToSpeakKeystrokeSelectionTest', 'TwoTextFieldsFullySelected',
     async function() {
       const selectionCode =
           'let body = document.getElementsByTagName("body")[0];' +
@@ -386,7 +386,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'TextInputPartiallySelected',
+    'SelectToSpeakKeystrokeSelectionTest', 'TextInputPartiallySelected',
     async function() {
       const html = '<script type="text/javascript">' +
           'function doSelection() {' +
@@ -407,7 +407,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'TextAreaPartiallySelected',
+    'SelectToSpeakKeystrokeSelectionTest', 'TextAreaPartiallySelected',
     async function() {
       const html = '<script type="text/javascript">' +
           'function doSelection() {' +
@@ -428,7 +428,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'HandlesTextWithBr',
+    'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBr',
     async function() {
       const selectionCode =
           'let body = document.getElementsByTagName("body")[0];' +
@@ -444,7 +444,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'HandlesTextWithBrComplex',
+    'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrComplex',
     async function() {
       const selectionCode = 'let p = document.getElementsByTagName("p")[0];' +
           'let body = document.getElementsByTagName("body")[0];' +
@@ -460,7 +460,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'HandlesTextWithBrAfterText1',
+    'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrAfterText1',
     async function() {
       // A bug was that if the selection was on the rootWebArea, paragraphs were
       // not counted correctly. The more divs and paragraphs before the
@@ -479,7 +479,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'HandlesTextWithBrAfterText2',
+    'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextWithBrAfterText2',
     async function() {
       // A bug was that if the selection was on the rootWebArea, paragraphs were
       // not counted correctly. The more divs and paragraphs before the
@@ -504,7 +504,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'HandlesTextAreaAndBrs',
+    'SelectToSpeakKeystrokeSelectionTest', 'HandlesTextAreaAndBrs',
     async function() {
       const selectionCode =
           'let body = document.getElementsByTagName("body")[0];' +
@@ -521,7 +521,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'textFieldWithComboBoxSimple',
+    'SelectToSpeakKeystrokeSelectionTest', 'textFieldWithComboBoxSimple',
     async function() {
       const selectionCode =
           'let body = document.getElementsByTagName("body")[0];' +
@@ -541,8 +541,8 @@ AX_TEST_F(
 // selects only part of the text in a combo box.
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
-    'ContentEditableInternallySelected', async function() {
+    'SelectToSpeakKeystrokeSelectionTest', 'ContentEditableInternallySelected',
+    async function() {
       const html = '<script type="text/javascript">' +
           'function doSelection() {' +
           'let input = document.getElementById("input");' +
@@ -574,8 +574,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
-    'ContentEditableExternallySelected', async function() {
+    'SelectToSpeakKeystrokeSelectionTest', 'ContentEditableExternallySelected',
+    async function() {
       const selectionCode =
           'let body = document.getElementsByTagName("body")[0];' +
           'range.setStart(body, 1);' +
@@ -595,7 +595,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'ReordersSvgSingleLine',
+    'SelectToSpeakKeystrokeSelectionTest', 'ReordersSvgSingleLine',
     async function() {
       const selectionCode =
           'let body = document.getElementsByTagName("body")[0];' +
@@ -616,7 +616,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'ReordersSvgWithGroups',
+    'SelectToSpeakKeystrokeSelectionTest', 'ReordersSvgWithGroups',
     async function() {
       const selectionCode =
           'let body = document.getElementsByTagName("body")[0];' +
@@ -653,7 +653,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
+    'SelectToSpeakKeystrokeSelectionTest',
     'NonReorderedSvgPreservesSelectionStartEnd', async function() {
       const selectionCode = 'const t1 = document.getElementById("t1");' +
           'const t2 = document.getElementById("t2");' +
@@ -672,7 +672,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
+    'SelectToSpeakKeystrokeSelectionTest',
     'ReorderedSvgIgnoresSelectionStartEnd', async function() {
       const selectionCode = 'const t1 = document.getElementById("t1");' +
           'const t2 = document.getElementById("t2");' +
@@ -691,7 +691,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'OmniboxFullySelected',
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxFullySelected',
     async function() {
       let omnibox;
       await this.runWithLoadedDesktop(desktop => {
@@ -711,8 +711,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest',
-    'OmniboxPartiallySelectedFromStart', async function() {
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxPartiallySelectedFromStart',
+    async function() {
       let omnibox;
       await this.runWithLoadedDesktop(desktop => {
         omnibox = desktop.find({attributes: {className: 'OmniboxViewViews'}});
@@ -732,7 +732,7 @@ AX_TEST_F(
 
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'OmniboxPartiallySelectedToEnd',
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxPartiallySelectedToEnd',
     async function() {
       let omnibox;
       const root = await this.runWithLoadedDesktop(desktop => {
@@ -752,7 +752,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'OmniboxPartiallySelectedInMid',
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxPartiallySelectedInMid',
     async function() {
       let omnibox;
       await this.runWithLoadedDesktop(desktop => {
@@ -772,7 +772,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'OmniboxNoneSelected',
+    'SelectToSpeakKeystrokeSelectionTest', 'OmniboxNoneSelected',
     async function() {
       let omnibox;
       await this.runWithLoadedDesktop(desktop => {
@@ -790,8 +790,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMV2KeystrokeSelectionTest', 'SearchUpBeforeS',
-    async function() {
+    'SelectToSpeakKeystrokeSelectionTest', 'SearchUpBeforeS', async function() {
       // SelectToSpeakE2ETest.triggerReadSelectedText releases the 'S' key
       // before the 'SEARCH' key.
       // This test releases 'SEARCH' before 'S' to ensure that speech is still
