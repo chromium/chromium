@@ -251,7 +251,7 @@ class ChromePasswordProtectionService
 
   // Returns the GAIA-account-scoped PasswordStore associated with this
   // instance. The account password store contains passwords stored in the
-  // account and is accessible only when the user is signed in and non syncing.
+  // account and is accessible only when the user is signed in.
   password_manager::PasswordStoreInterface* GetAccountPasswordStore() const;
 
   // Gets prefs associated with `profile_`.

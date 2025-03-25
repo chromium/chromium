@@ -468,8 +468,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGrey verifySignedOut];
 }
 
-// Tests to sign out with a non managed account without syncing.
-- (void)testSignOutWithNonManagedAccountFromNoneSyncingAccount {
+// Tests to sign out with a non managed account.
+- (void)testSignOutWithNonManagedAccount {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
@@ -488,8 +488,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGreyUI verifyEmptyBackgroundIsAbsent];
 }
 
-// Tests to sign out with a managed account without syncing.
-- (void)testSignOutWithManagedAccountFromNoneSyncingAccount {
+// Tests to sign out with a managed account.
+- (void)testSignOutWithManagedAccount {
   // Sign In `fakeManagedIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];

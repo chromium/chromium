@@ -445,8 +445,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
       performAction:grey_tap()];
 }
 
-// Tests forced sign-in policy, and refuse sync.
-- (void)testForceSigninByPolicyWithoutSync {
+// Tests forced sign-in policy, and refuse history sync.
+- (void)testForceSigninByPolicyWithoutHistorySync {
   // Configure the policy to force sign-in.
   [self relaunchAppWithBrowserSigninMode:BrowserSigninMode::kForced];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -462,7 +462,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  // Refuse sync.
+  // Refuse history sync.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::PromoScreenSecondaryButtonMatcher()
                       scrollViewIdentifier:

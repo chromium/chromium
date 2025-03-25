@@ -417,7 +417,7 @@ void CompleteSigninFlow() {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
 
-  // Sign in account without enabling sync.
+  // Sign in account.
   WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Make sure the forced sign-in screen isn't shown.
@@ -437,7 +437,7 @@ void CompleteSigninFlow() {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
 
-  // Sign in account without enabling sync.
+  // Sign in account.
   WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Make sure the forced sign-in screen isn't shown.
@@ -483,7 +483,7 @@ void CompleteSigninFlow() {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
 
-  // Sign in account without enabling sync.
+  // Sign in account.
   WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Make sure the forced sign-in screen isn't shown.
@@ -698,7 +698,7 @@ void CompleteSigninFlow() {
   GREYAssertFalse([ChromeEarlGrey isLoading],
                   @"Page should not have been loaded yet");
 
-  // Sign in account without enabling sync.
+  // Sign in account.
   WaitForForcedSigninScreenAndSignin(fakeIdentity1);
 
   // Make sure the forced sign-in screen isn't shown because it should have
@@ -752,7 +752,7 @@ void CompleteSigninFlow() {
   // enabled and the browser is signed out.
   [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
 
-  // Sign in account without enabling sync.
+  // Sign in account.
   WaitForForcedSigninScreenAndSignin(fakeIdentity);
 
   // Make sure the forced sign-in screen isn't shown because it should have
