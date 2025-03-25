@@ -39,6 +39,7 @@
 #include "third_party/protobuf/src/google/protobuf/text_format.h"
 
 using chrome_root_store::RootStore;
+using chrome_root_store::TrustAnchor;
 
 namespace {
 
@@ -85,9 +86,59 @@ std::optional<std::map<std::string, std::string>> DecodeCerts(
   return std::move(certs);
 }
 
+// ReplaceTrustAnchors takes a repeated trust_anchors field from a proto and
+// replaces certs identified by a SHA-256 hash with the full cert bytes, using
+// the file found at certs_file_path to provide the full cert bytes.
+bool ReplaceTrustAnchors(
+    google::protobuf::RepeatedPtrField<TrustAnchor>* trust_anchors,
+    const base::FilePath& certs_file_path) {
+  std::map<std::string, std::string> certs;
+  if (!certs_file_path.empty()) {
+    std::string certs_data;
+    if (!base::ReadFileToString(base::MakeAbsoluteFilePath(certs_file_path),
+                                &certs_data)) {
+      LOG(ERROR) << "Could not read " << certs_file_path;
+      return false;
+    }
+    auto certs_opt = DecodeCerts(certs_data);
+    if (!certs_opt) {
+      LOG(ERROR) << "Could not decode " << certs_file_path;
+      return false;
+    }
+    certs = std::move(*certs_opt);
+  }
+
+  // Replace the filenames with the actual certificate contents.
+  for (auto& anchor : *trust_anchors) {
+    if (anchor.certificate_case() !=
+        chrome_root_store::TrustAnchor::kSha256Hex) {
+      continue;
+    }
+
+    auto iter = certs.find(anchor.sha256_hex());
+    if (iter == certs.end()) {
+      LOG(ERROR) << "Could not find certificate " << anchor.sha256_hex();
+      return false;
+    }
+
+    // Remove the certificate from `certs`. This both checks for duplicate
+    // certificates and allows us to check for unused certificates later.
+    anchor.set_der(std::move(iter->second));
+    certs.erase(iter);
+  }
+
+  if (!certs.empty()) {
+    LOG(ERROR) << "Unused certificate (SHA-256 hash " << certs.begin()->first
+               << ") in " << certs_file_path;
+    return false;
+  }
+  return true;
+}
+
 std::optional<RootStore> ReadTextRootStore(
     const base::FilePath& root_store_path,
-    const base::FilePath& certs_path) {
+    const base::FilePath& certs_path,
+    const base::FilePath& additional_certs_path) {
   std::string root_store_text;
   if (!base::ReadFileToString(base::MakeAbsoluteFilePath(root_store_path),
                               &root_store_text)) {
@@ -102,47 +153,15 @@ std::optional<RootStore> ReadTextRootStore(
     return std::nullopt;
   }
 
-  std::map<std::string, std::string> certs;
-  if (!certs_path.empty()) {
-    std::string certs_data;
-    if (!base::ReadFileToString(base::MakeAbsoluteFilePath(certs_path),
-                                &certs_data)) {
-      LOG(ERROR) << "Could not read " << certs_path;
-      return std::nullopt;
-    }
-    auto certs_opt = DecodeCerts(certs_data);
-    if (!certs_opt) {
-      LOG(ERROR) << "Could not decode " << certs_path;
-      return std::nullopt;
-    }
-    certs = std::move(*certs_opt);
-  }
-
-  // Replace the filenames with the actual certificate contents.
-  for (auto& anchor : *root_store.mutable_trust_anchors()) {
-    if (anchor.certificate_case() !=
-        chrome_root_store::TrustAnchor::kSha256Hex) {
-      continue;
-    }
-
-    auto iter = certs.find(anchor.sha256_hex());
-    if (iter == certs.end()) {
-      LOG(ERROR) << "Could not find certificate " << anchor.sha256_hex();
-      return std::nullopt;
-    }
-
-    // Remove the certificate from `certs`. This both checks for duplicate
-    // certificates and allows us to check for unused certificates later.
-    anchor.set_der(std::move(iter->second));
-    certs.erase(iter);
-  }
-
-  if (!certs.empty()) {
-    LOG(ERROR) << "Unused certificate (SHA-256 hash " << certs.begin()->first
-               << ") in " << certs_path;
+  if (!ReplaceTrustAnchors(root_store.mutable_trust_anchors(), certs_path)) {
+    LOG(ERROR) << "Failed to process " << certs_path;
     return std::nullopt;
   }
-
+  if (!ReplaceTrustAnchors(root_store.mutable_additional_certs(),
+                           additional_certs_path)) {
+    LOG(ERROR) << "Failed to process " << additional_certs_path;
+    return std::nullopt;
+  }
   return std::move(root_store);
 }
 
@@ -155,55 +174,49 @@ std::string VersionFromString(std::string_view version_str) {
   return base::StrCat({"\"", version_str, "\""});
 }
 
-// Returns true if file was correctly written, false otherwise.
-bool WriteRootCppFile(const RootStore& root_store,
-                      const base::FilePath cpp_path) {
-  // Root store should have at least one trust anchors.
-  CHECK_GT(root_store.trust_anchors_size(), 0);
-
+void WriteTrustAnchors(
+    const google::protobuf::RepeatedPtrField<TrustAnchor>& trust_anchors,
+    const std::string& cert_name_prefix,
+    std::string* string_to_write) {
   const std::string kNulloptString = "std::nullopt";
 
-  std::string string_to_write =
-      "// This file is auto-generated, DO NOT EDIT.\n\n";
-
-  for (int i = 0; i < root_store.trust_anchors_size(); i++) {
-    const auto& anchor = root_store.trust_anchors(i);
+  for (int i = 0; i < trust_anchors.size(); i++) {
+    const auto& anchor = trust_anchors.Get(i);
     // Every trust anchor at this point should have a DER.
     CHECK(!anchor.der().empty());
     std::string der = anchor.der();
 
-    base::StringAppendF(&string_to_write,
-                        "constexpr uint8_t kChromeRootCert%d[] = {", i);
+    base::StringAppendF(string_to_write, "constexpr uint8_t k%sCert%d[] = {",
+                        cert_name_prefix, i);
 
     // Convert each character to hex representation, escaped.
     for (auto c : der) {
-      base::StringAppendF(&string_to_write, "0x%02xu,",
-                          static_cast<uint8_t>(c));
+      base::StringAppendF(string_to_write, "0x%02xu,", static_cast<uint8_t>(c));
     }
 
     // End struct
-    string_to_write += "};\n";
+    *string_to_write += "};\n";
 
     if (anchor.constraints_size() > 0) {
       int constraint_num = 0;
       for (const auto& constraint : anchor.constraints()) {
         if (constraint.permitted_dns_names_size() > 0) {
-          base::StringAppendF(&string_to_write,
+          base::StringAppendF(string_to_write,
                               "constexpr std::string_view "
-                              "kChromeRootConstraint%dNames%d[] = {",
-                              i, constraint_num);
+                              "k%sConstraint%dNames%d[] = {",
+                              cert_name_prefix, i, constraint_num);
           for (const auto& name : constraint.permitted_dns_names()) {
-            base::StringAppendF(&string_to_write, "\"%s\",", name);
+            base::StringAppendF(string_to_write, "\"%s\",", name);
           }
-          string_to_write += "};\n";
+          *string_to_write += "};\n";
         }
         constraint_num++;
       }
 
-      base::StringAppendF(&string_to_write,
+      base::StringAppendF(string_to_write,
                           "constexpr StaticChromeRootCertConstraints "
-                          "kChromeRootConstraints%d[] = {",
-                          i);
+                          "k%sConstraints%d[] = {",
+                          cert_name_prefix, i);
 
       std::vector<std::string> constraint_strings;
       constraint_num = 0;
@@ -232,7 +245,7 @@ bool WriteRootCppFile(const RootStore& root_store,
 
         if (constraint.permitted_dns_names_size() > 0) {
           constraint_params.push_back(base::StringPrintf(
-              "kChromeRootConstraint%dNames%d", i, constraint_num));
+              "k%sConstraint%dNames%d", cert_name_prefix, i, constraint_num));
         } else {
           constraint_params.push_back("{}");
         }
@@ -243,13 +256,27 @@ bool WriteRootCppFile(const RootStore& root_store,
         constraint_num++;
       }
 
-      string_to_write += base::JoinString(constraint_strings, ",");
-      string_to_write += "};\n";
+      *string_to_write += base::JoinString(constraint_strings, ",");
+      *string_to_write += "};\n";
     }
   }
+}
 
+// Returns true if file was correctly written, false otherwise.
+bool WriteRootCppFile(const RootStore& root_store,
+                      const base::FilePath cpp_path) {
+  // Root store should have at least one trust anchor.
+  CHECK_GT(root_store.trust_anchors_size(), 0);
+
+  std::string string_to_write =
+      "// This file is auto-generated, DO NOT EDIT.\n\n";
+
+  WriteTrustAnchors(root_store.trust_anchors(), "ChromeRoot", &string_to_write);
+  WriteTrustAnchors(root_store.additional_certs(), "Additional",
+                    &string_to_write);
+
+  // Assemble list of trust anchors
   string_to_write += "constexpr ChromeRootCertInfo kChromeRootCertList[] = {\n";
-
   for (int i = 0; i < root_store.trust_anchors_size(); i++) {
     const auto& anchor = root_store.trust_anchors(i);
     base::StringAppendF(&string_to_write, "    {kChromeRootCert%d, ", i);
@@ -260,10 +287,30 @@ bool WriteRootCppFile(const RootStore& root_store,
     }
     string_to_write += "},\n";
   }
-  string_to_write += "};";
+  string_to_write += "};\n\n";
+
+  // Assemble list of QWAC issuers, which can come from both trust_anchors and
+  // additional_certs.
+  string_to_write +=
+      "constexpr base::span<const uint8_t> kEutlRootCertList[] = {\n";
+  for (int i = 0; i < root_store.trust_anchors_size(); i++) {
+    const auto& anchor = root_store.trust_anchors(i);
+    if (!anchor.eutl()) {
+      continue;
+    }
+    base::StringAppendF(&string_to_write, "    kChromeRootCert%d,\n", i);
+  }
+  for (int i = 0; i < root_store.additional_certs_size(); i++) {
+    const auto& anchor = root_store.additional_certs(i);
+    if (!anchor.eutl()) {
+      continue;
+    }
+    base::StringAppendF(&string_to_write, "    kAdditionalCert%d,\n", i);
+  }
+  string_to_write += "};\n\n";
 
   base::StringAppendF(&string_to_write,
-                      "\n\n\nstatic const int64_t kRootStoreVersion = %" PRId64
+                      "\nstatic const int64_t kRootStoreVersion = %" PRId64
                       ";\n",
                       root_store.version_major());
   if (!base::WriteFile(cpp_path, string_to_write)) {
@@ -370,6 +417,8 @@ int main(int argc, char** argv) {
   base::FilePath root_store_path =
       command_line.GetSwitchValuePath("root-store");
   base::FilePath certs_path = command_line.GetSwitchValuePath("certs");
+  base::FilePath additional_certs_path =
+      command_line.GetSwitchValuePath("additional-certs");
 
   if ((proto_path.empty() && root_store_cpp_path.empty() &&
        ev_roots_cpp_path.empty()) ||
@@ -377,6 +426,7 @@ int main(int argc, char** argv) {
     std::cerr << "Usage: root_store_tool "
               << "--root-store=TEXTPROTO_FILE "
               << "[--certs=CERTS_FILE] "
+              << "[--additional-certs=ADDITIONAL_CERTS_FILE] "
               << "[--write-proto=PROTO_FILE] "
               << "[--write-cpp-root-store=CPP_FILE] "
               << "[--write-cpp-ev-roots=CPP_FILE] " << std::endl;
@@ -384,7 +434,7 @@ int main(int argc, char** argv) {
   }
 
   std::optional<RootStore> root_store =
-      ReadTextRootStore(root_store_path, certs_path);
+      ReadTextRootStore(root_store_path, certs_path, additional_certs_path);
   if (!root_store) {
     return 1;
   }

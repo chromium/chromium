@@ -18,6 +18,7 @@ compiled_action("gen_root_store_inc") {
   args = [
     "--root-store=" + rebase_path("root_store.textproto", root_build_dir),
     "--certs=" + rebase_path("root_store.certs", root_build_dir),
+    "--additional-certs=" + rebase_path("additional.certs", root_build_dir),
     "--write-cpp-root-store=" +
         rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
                     root_build_dir),
