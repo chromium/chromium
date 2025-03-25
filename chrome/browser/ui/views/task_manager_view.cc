@@ -84,22 +84,28 @@ TaskManagerView* g_task_manager_view = nullptr;
 
 }  // namespace
 
-const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
-    {{
-         .associated_category = DisplayCategory::kTabsAndExtensions,
-         .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_AND_EXTENSIONS_NAME,
-         .icon = &views::kNewTabIcon,
-     },
-     {
-         .associated_category = DisplayCategory::kSystem,
+const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>({
+    {
+        .associated_category = DisplayCategory::kTabsAndExtensions,
+        .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_AND_EXTENSIONS_NAME,
+        .icon = &views::kNewTabIcon,
+    },
+    {
+        .associated_category = DisplayCategory::kSystem,
 #if BUILDFLAG(IS_CHROMEOS)
-         .title_id = IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME,
-         .icon = &kLaptopIcon,
+        .title_id = IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME,
+        .icon = &kLaptopIcon,
 #else
-         .title_id = IDS_TASK_MANAGER_CATEGORY_BROWSER_NAME,
-         .icon = &kBrowserLogoIcon,
+        .title_id = IDS_TASK_MANAGER_CATEGORY_BROWSER_NAME,
+        .icon = &kBrowserLogoIcon,
 #endif
-     }});
+    },
+    {
+        .associated_category = DisplayCategory::kAll,
+        .title_id = IDS_TASK_MANAGER_CATEGORY_ALL_NAME,
+        .icon = &kViewListIcon,
+    },
+});
 
 TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
