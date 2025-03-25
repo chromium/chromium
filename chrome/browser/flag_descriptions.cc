@@ -591,12 +591,6 @@ const char kAutofillDeprecateAccessibilityApiDescription[] =
     " other Autofill services, enable #enable-autofill-virtual-view-structure.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kAutofillDisableLocalCardMigrationName[] =
-    "Disable bulk local credit card migration flows";
-const char kAutofillDisableLocalCardMigrationDescription[] =
-    "When enabled, local credit card migration flows will not be offered, both "
-    "from checkout flows and from the payment methods settings page.";
-
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[] =
     "Enable allowlist for showing category benefits for BMO cards";
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =

@@ -11352,12 +11352,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)},
 
-    {"autofill-disable-local-card-migration",
-     flag_descriptions::kAutofillDisableLocalCardMigrationName,
-     flag_descriptions::kAutofillDisableLocalCardMigrationDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillDisableLocalCardMigration)},
     {"predictable-reported-quota",
      flag_descriptions::kPredictableReportedQuotaName,
      flag_descriptions::kPredictableReportedQuotaDescription, kOsAll,

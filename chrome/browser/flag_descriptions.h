@@ -368,9 +368,6 @@ extern const char kAutofillDeprecateAccessibilityApiName[];
 extern const char kAutofillDeprecateAccessibilityApiDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
-extern const char kAutofillDisableLocalCardMigrationName[];
-extern const char kAutofillDisableLocalCardMigrationDescription[];
-
 extern const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[];
 extern const char
     kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[];

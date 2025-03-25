@@ -14,11 +14,6 @@ BASE_FEATURE(kAutofillDisableDefaultSaveCardFixFlowDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// When enabled, local credit card migration flows will not be offered.
-BASE_FEATURE(kAutofillDisableLocalCardMigration,
-             "AutofillDisableLocalCardMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, card category benefits offered by BMO will be shown in Autofill
 // suggestions on the allowlisted merchant websites.
 BASE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits,

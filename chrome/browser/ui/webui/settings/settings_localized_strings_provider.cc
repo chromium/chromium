@@ -1403,25 +1403,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString("autofillPayOverTimeSettingsLearnMoreUrl",
                          chrome::kPayOverTimeLearnMoreUrl);
 
-  bool is_guest_mode = false;
-#if BUILDFLAG(IS_CHROMEOS)
-  is_guest_mode =
-      user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-      user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
-#else   // !BUILDFLAG(IS_CHROMEOS)
-  is_guest_mode = profile->IsOffTheRecord();
-#endif  // BUILDFLAG(IS_CHROMEOS)
   autofill::PaymentsDataManager& payments_data =
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile)
           ->payments_data_manager();
-  html_source->AddBoolean(
-      "migrationEnabled",
-      !is_guest_mode &&
-          autofill::IsCreditCardMigrationEnabled(
-              payments_data, SyncServiceFactory::GetForProfile(profile),
-              *profile->GetPrefs(),
-              /*is_test_mode=*/false,
-              /*log_manager=*/nullptr));
+  html_source->AddBoolean("migrationEnabled", false);
 
   html_source->AddBoolean("showIbansSettings",
                           autofill::ShouldShowIbanOnSettingsPage(

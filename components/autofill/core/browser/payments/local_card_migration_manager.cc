@@ -210,9 +210,8 @@ void LocalCardMigrationManager::OnUserDeletedLocalCardViaMigrationDialog(
 }
 
 bool LocalCardMigrationManager::IsCreditCardMigrationEnabled() {
-  return ::autofill::IsCreditCardMigrationEnabled(
-      payments_data_manager(), client_->GetSyncService(), *client_->GetPrefs(),
-      /*is_test_mode=*/observer_for_testing_, client_->GetCurrentLogManager());
+  // Feature is turned down and being cleaned up.
+  return false;
 }
 
 void LocalCardMigrationManager::OnDidGetUploadDetails(

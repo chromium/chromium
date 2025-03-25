@@ -592,11 +592,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "autofill-disable-local-card-migration",
-    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "autofill-enable-allowlist-for-bmo-card-category-benefits",
     "owners": [ "ferny@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 145
