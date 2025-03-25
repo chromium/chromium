@@ -2627,6 +2627,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-writing-modes/text-orientation-020.html [ Failure ]
 crbug.com/405453040 [ Mac14-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nested-root-capture-with-clip.html [ Failure ]
 crbug.com/405453040 [ Mac14-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-root-capture-with-clip.html [ Failure ]
 crbug.com/405453040 [ Mac14-arm64 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nested-root-capture-with-clip.html [ Failure ]
