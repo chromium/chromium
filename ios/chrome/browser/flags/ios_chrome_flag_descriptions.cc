@@ -291,12 +291,6 @@ const char kMeasurementsDescription[] =
     "When enabled, one tapping or long pressing on a measurement will trigger "
     "the measurement conversion experience.";
 
-const char kEnableNewParcelTrackingNumberDetectionName[] =
-    "Improve Tracking Number Detection";
-const char kEnableNewParcelTrackingNumberDetectionDescription[] =
-    "When enabled carrier names are parsed out and must match tracking "
-    "numbers.";
-
 const char kEnableExpKitTextClassifierDateName[] =
     "Date with Text Classifier in Experience Kit";
 const char kEnableExpKitTextClassifierDateDescription[] =
@@ -572,12 +566,6 @@ const char kIOSBrowserEditMenuMetricsDescription[] =
 const char kIOSDetectUsernameInUffName[] = "Detect username in UFF";
 const char kIOSDetectUsernameInUffDescription[] =
     "Detect the username in UFF for saving.";
-
-const char kIOSDisableParcelTrackingName[] = "Disable Parcel Tracking";
-const char kIOSDisableParcelTrackingDescription[] =
-    "Disables the parcel tracking feature; when set, users will not be offered "
-    "to track new parcels nor will they see Magic Stack cards for parcel "
-    "tracking.";
 
 const char kIOSDockingPromoName[] = "Docking Promo";
 const char kIOSDockingPromoDescription[] =

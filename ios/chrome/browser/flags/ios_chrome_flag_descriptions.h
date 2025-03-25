@@ -168,9 +168,6 @@ extern const char kPhoneNumberDescription[];
 extern const char kMeasurementsName[];
 extern const char kMeasurementsDescription[];
 
-extern const char kEnableNewParcelTrackingNumberDetectionName[];
-extern const char kEnableNewParcelTrackingNumberDetectionDescription[];
-
 extern const char kEnableExpKitTextClassifierDateName[];
 extern const char kEnableExpKitTextClassifierDateDescription[];
 
@@ -329,9 +326,6 @@ extern const char kIOSBrowserEditMenuMetricsDescription[];
 
 extern const char kIOSDetectUsernameInUffName[];
 extern const char kIOSDetectUsernameInUffDescription[];
-
-extern const char kIOSDisableParcelTrackingName[];
-extern const char kIOSDisableParcelTrackingDescription[];
 
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];
