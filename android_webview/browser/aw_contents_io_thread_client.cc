@@ -503,6 +503,11 @@ void StartShouldInterceptRequest(
   // keep this here to preserve trace comparisons across different milestones
   // and versions.
   TRACE_EVENT0("android_webview", "RunShouldInterceptRequest");
+  // The app may perform blocking calls as part of synchronous
+  // shouldInterceptRequest, so mark the rest of this scope as possibly
+  // blocking.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> obj = ref.get(env);
   if (!obj) {
