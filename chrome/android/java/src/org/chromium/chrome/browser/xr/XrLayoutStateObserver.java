@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
@@ -22,10 +23,10 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.ui.util.XrUtils;
 
 /** Class to observe the layout change on an XR device to initiate and end spatialization. */
 @NullMarked
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 public class XrLayoutStateObserver {
     private static final String TAG = "XrLayoutObserver";
     private static final int XR_SYSUI_FADING_TIME_MS = 300;
@@ -33,6 +34,7 @@ public class XrLayoutStateObserver {
     private final Activity mActivity;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final ViewGroup mHubRootView;
+    private final XrHelper mXrHelper;
     @Nullable private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     @Nullable private LayoutStateProvider mLayoutStateProvider;
     @Nullable private ViewGroup mControlContainer;
@@ -62,9 +64,11 @@ public class XrLayoutStateObserver {
 
         layoutStateProviderSupplier.onAvailable(
                 callbackController.makeCancelable(this::setLayoutStateProvider));
+        mXrHelper = new XrHelper(activity);
     }
 
     public void destroy() {
+        mXrHelper.reset();
         if (mLayoutStateProvider != null && mLayoutStateObserver != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }
@@ -115,11 +119,10 @@ public class XrLayoutStateObserver {
     }
 
     private void beginSpatialization() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         assert mCompositorViewHolderSupplier.hasValue();
 
         Log.i(TAG, "SPA beginSpatialization");
-        XrUtils.getInstance().viewInFullSpaceMode();
+        mXrHelper.viewInFullSpaceMode();
         mActivity.getWindow().getDecorView().setVisibility(View.INVISIBLE);
         showToolbar(false);
         ThreadUtils.postOnUiThreadDelayed(
@@ -135,11 +138,10 @@ public class XrLayoutStateObserver {
     }
 
     private void endSpatialization() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         assert mCompositorViewHolderSupplier.hasValue();
 
         Log.i(TAG, "SPA endSpatialization");
-        XrUtils.getInstance().viewInHomeSpaceMode();
+        mXrHelper.viewInHomeSpaceMode();
         ThreadUtils.postOnUiThreadDelayed(
                 () -> {
                     mCompositorViewHolderSupplier

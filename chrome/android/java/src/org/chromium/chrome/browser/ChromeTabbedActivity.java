@@ -827,7 +827,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                         adaptOnToolbarAlphaChange());
 
         // Set up layout state osberver for transitions between HSM and FSM on an XR device.
-        if (XrUtils.isXrDevice()) {
+        if (XrUtils.isXrDevice() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             mXrLayoutStateObserver =
                     new XrLayoutStateObserver(
                             this,
@@ -2280,10 +2280,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
 
         initHub();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            XrUtils.getInstance().init(this);
-        }
     }
 
     @Override
@@ -3583,7 +3579,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             mDseNewTabUrlManager.destroy();
         }
 
-        if (mXrLayoutStateObserver != null) {
+        if (mXrLayoutStateObserver != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             mXrLayoutStateObserver.destroy();
             mXrLayoutStateObserver = null;
         }
