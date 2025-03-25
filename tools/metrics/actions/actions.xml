@@ -48978,6 +48978,7 @@ should be able to be added at any place in this file.
       label="Show read anything side panel action"/>
   <suffix name="kActionSidePanelShowReadingList"
       label="Show reading list side panel action"/>
+  <suffix name="kActionTabSearch" label="Tab search action"/>
   <suffix name="kActionTaskManager" label="Task manager action"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned.ByContextMenu"/>

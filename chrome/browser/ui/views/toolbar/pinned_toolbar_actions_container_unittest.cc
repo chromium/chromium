@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -696,12 +697,16 @@ TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
   const auto pinnable_action_suffixes = base::ReadActionSuffixesForAction(
       "Actions.PinnedToolbarButtonActivation");
   EXPECT_EQ(1U, pinnable_action_suffixes.size());
-#if BUILDFLAG(IS_CHROMEOS)
-  // Downloads action item does not exist for ChromeOS. Only one of history
-  // or history clusters should be pinnable.
-  EXPECT_EQ(pinnable_count, pinnable_action_suffixes[0].size() - 2);
-#else
   // Only one of history or history clusters should be pinnable.
-  EXPECT_EQ(pinnable_count, pinnable_action_suffixes[0].size() - 1);
+  size_t expected_pinnable_count = pinnable_action_suffixes[0].size() - 1;
+  if (!features::HasTabSearchToolbarButton()) {
+    // Tab search is not pinnable if the feature is disabled.
+    expected_pinnable_count -= 1;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // Downloads action item does not exist for ChromeOS.
+  EXPECT_EQ(pinnable_count, expected_pinnable_count - 1);
+#else
+  EXPECT_EQ(pinnable_count, expected_pinnable_count);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
