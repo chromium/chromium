@@ -149,6 +149,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1455242230282523554">Wys taalinstellings</translation>
 <translation id="1459693405370120464">Weer</translation>
 <translation id="1460620680449458626">Volume is gedemp.</translation>
+<translation id="1462439140224375968">Google-dokument is geskep</translation>
 <translation id="14648076227129703">Dit gee kameratoegang vir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en webwerwe met die kameratoestemming</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="146902737843070955">Jou administrateur het hierdie verandering versoek</translation>
@@ -593,6 +594,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="301584155502740476">Wys warmkolbesonderhede. Warmkol is af.</translation>
 <translation id="3017079585324758401">Agtergrond</translation>
 <translation id="3018135054368884502">Spoel media vinnig vorentoe</translation>
+<translation id="3026897869154397692">By Kalender gevoeg</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3033912566804961911">Kombineer met <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Maak lêers oop</translation>
@@ -1482,6 +1484,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="5825969630400862129">Instellings vir gekoppelde toestelle</translation>
 <translation id="5830180081891717894">Nog <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Soek met Google</translation>
 <translation id="5841296711770970362">Gaan na volgende snit</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-warmkol is aan; geen toestelle is gekoppel nie</translation>
 <translation id="584525477304726060">Hou om groot te maak</translation>
@@ -1895,6 +1898,7 @@ Nuwe installasie</translation>
 <translation id="7228968829656641943">Kies om op my skerm te soek. Druk tab en dan spasie vir sleutelbordnavigasie.</translation>
 <translation id="7229029500464092426">Geheue <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totaal</translation>
 <translation id="7239814253344511868">Albei muisknoppies</translation>
+<translation id="7240636904654154599">Google-sigblad is geskep</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% batterykrag oor. Koppel jou toestel aan krag.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Hierdie Chromebook moet herbegin om 'n opdatering toe te pas. Dit kan tot 1 minuut neem.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2409,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8921624153894383499">Die Google Assistent praat nie hierdie taal nie.</translation>
 <translation id="8926951137623668982">Rak is altyd versteek</translation>
 <translation id="8929566928381252430">Probeer jy om Caps Lock te gebruik? Gebruik</translation>
+<translation id="8929623844713377237">Kontak is geskep</translation>
 <translation id="8934418770423095813">Skep Google Dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 lêer}other{# lêers}}</translation>
 <translation id="8936501819958976551">gedeaktiveer</translation>

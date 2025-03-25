@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">日曜日</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="4251839292699800785">洗練されたオフィス</translation>
+<translation id="4252261480746798874">[独自に作成] を選択すると、カスタムのプロンプトを入力できます。[テーマを選択] を選択した後、下線が引かれた単語を選択して AI 壁紙をカスタマイズすることもできます。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          [ひらめきがほしい] を選択すると、より個性的で多様な AI 画像オプションが表示されます。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          独自の壁紙を作成すると、<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google の利用規約とプライバシー ポリシー<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />に沿ってプロンプトが Google サーバーに送信され、画像の生成とサービスの改善に使用されます。個人情報や機密情報は含めないでください。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成 AI は間違った画像（人物に関する画像など）を生成することがあるため、生成された画像は再確認するようにしてください。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />詳細<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP レイテンシ</translation>
 <translation id="4266143281602681663">毛糸</translation>
 <translation id="4269815121975886860">起動時の設定</translation>

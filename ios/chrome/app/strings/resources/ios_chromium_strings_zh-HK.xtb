@@ -95,7 +95,6 @@
 <translation id="328933489847748230">{count,plural, =1{宜家顯示緊 1 個 Chromium 視窗}other{宜家顯示緊 {count} 個 Chromium 視窗}}</translation>
 <translation id="3344973607274501920">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
-<translation id="33788334537425157">啟用「關閉 Chromium 時鎖定無痕式分頁」</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}}</translation>
 <translation id="3410395242749598859">部分 Chromium 資料尚未儲存至 <ph name="EMAIL" />。
 請等待幾分鐘後再嘗試切換帳戶。如果現在切換帳戶，系統將刪除有關資料。</translation>

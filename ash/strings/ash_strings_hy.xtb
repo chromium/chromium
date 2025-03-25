@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Ցուցադրել լեզվի կարգավորումները</translation>
 <translation id="1459693405370120464">Եղանակ</translation>
 <translation id="1460620680449458626">Ձայնն անջատված է:</translation>
+<translation id="1462439140224375968">Ստեղծվեց Google փաստաթուղթ</translation>
 <translation id="14648076227129703">Սա հասանելի է դարձնում տեսախցիկը <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> հավելվածներին, ինչպես նաև բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="1467432559032391204">Ձախ</translation>
 <translation id="146902737843070955">Ձեր ադմինիստրատորը խնդրել է կատարել այս փոփոխությունը</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">Ցույց տալ թեժ կետի մանրամասները։ Թեժ կետն անջատված է։</translation>
 <translation id="3017079585324758401">Ֆոն</translation>
 <translation id="3018135054368884502">Առաջ տալ</translation>
+<translation id="3026897869154397692">Ավելացվեց Օրացույցում</translation>
 <translation id="3033545621352269033">Միացված է</translation>
 <translation id="3033912566804961911">Միավորել «<ph name="DESK_NAME" />» աշխատասեղանի հետ</translation>
 <translation id="3036649622769666520">Ֆայլերի բացում</translation>
@@ -1481,6 +1483,7 @@
 <translation id="5825969630400862129">Կապված սարքերի կարգավորումներ</translation>
 <translation id="5830180081891717894">ևս <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
+<translation id="5840658767386246331">Որոնել Google-ում</translation>
 <translation id="5841296711770970362">Անցնել հաջորդ կատարմանը</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-ի թեժ կետը միացված է, որևէ սարք դրան չի միացել</translation>
 <translation id="584525477304726060">Պահեք՝ մեծացնելու համար</translation>
@@ -1895,6 +1898,7 @@
 <translation id="7228968829656641943">Ընտրեք՝ էկրանին որոնելու համար։ Ստեղնաշարի միջոցով նավիգացիայի համար սեղմեք Tab կամ բացատի ստեղնը։</translation>
 <translation id="7229029500464092426">Օգտագործված հիշողության ծավալը՝ <ph name="AVAILABLE_MEMORY" /> | Ընդամենը՝ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Մկնիկի երկու ստեղները</translation>
+<translation id="7240636904654154599">Ստեղծվեց Google աղյուսակ</translation>
 <translation id="7244725679040769470">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%։ Միացրեք սարքը հոսանքին։</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />։ Այս Chromebook-ը պետք է վերագործարկվի՝ թարմացումը կիրառելու համար։ Դա կարող է տևել մինչև 1 րոպե։</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2409,7 @@
 <translation id="8921624153894383499">Google օգնականն այս լեզվով չի խոսում:</translation>
 <translation id="8926951137623668982">Դարակը միշտ թաքցված է</translation>
 <translation id="8929566928381252430">Caps Lock ստե՞ղնն եք փորձում օգտագործել։ Օգտագործեք</translation>
+<translation id="8929623844713377237">Ստեղծվեց բովանդակություն</translation>
 <translation id="8934418770423095813">Ստեղծել Google փաստաթուղթ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="8936501819958976551">անջատվեց</translation>

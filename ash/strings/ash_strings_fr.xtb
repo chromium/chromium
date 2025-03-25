@@ -149,6 +149,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
 <translation id="1459693405370120464">Météo</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
+<translation id="1462439140224375968">Document Google Docs créé</translation>
 <translation id="14648076227129703">L'accès à l'appareil photo est accordé à <ph name="APP1_NAME" /> et <ph name="APP2_NAME" />, ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
 <translation id="1467432559032391204">À gauche</translation>
 <translation id="146902737843070955">Votre administrateur a demandé cette modification</translation>
@@ -593,6 +594,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="301584155502740476">Voir les détails du point d'accès. Celui-ci est désactivé.</translation>
 <translation id="3017079585324758401">Arrière-plan</translation>
 <translation id="3018135054368884502">Faire une avance rapide sur le contenu multimédia</translation>
+<translation id="3026897869154397692">Ajouté à Agenda</translation>
 <translation id="3033545621352269033">Activé</translation>
 <translation id="3033912566804961911">Associer à <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Ouvrir les fichiers</translation>
@@ -1481,6 +1483,7 @@ Aucun appareil connecté.</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> autre(s)</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Rechercher avec Google</translation>
 <translation id="5841296711770970362">Passer au titre suivant</translation>
 <translation id="5842553299352339114">Le point d'accès <ph name="DEVICE_NAME" /> est activé, aucun appareil connecté</translation>
 <translation id="584525477304726060">Maintenez pour agrandir</translation>
@@ -1894,6 +1897,7 @@ Nouvelle installation</translation>
 <translation id="7228968829656641943">Sélectionner pour rechercher à l'écran. Appuyer sur Tabulation, puis sur Espace pour la navigation au clavier.</translation>
 <translation id="7229029500464092426">Mémoire : <ph name="AVAILABLE_MEMORY" /> | Total : <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Les deux boutons de la souris</translation>
+<translation id="7240636904654154599">Feuille de calcul Google Sheets créée</translation>
 <translation id="7244725679040769470">Il reste <ph name="PERCENTAGE" /> % de batterie.
 Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ce Chromebook doit redémarrer pour installer une mise à jour. Ceci peut prendre jusqu'à une minute.</translation>
@@ -2404,6 +2408,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8921624153894383499">L'Assistant Google ne parle pas cette langue.</translation>
 <translation id="8926951137623668982">Étagère toujours masquée</translation>
 <translation id="8929566928381252430">Vous essayez d'utiliser Verr Maj ? Utilisez</translation>
+<translation id="8929623844713377237">Contact créé</translation>
 <translation id="8934418770423095813">Créer un document Google Docs</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">a désactivé</translation>

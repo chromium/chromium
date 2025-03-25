@@ -91,6 +91,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1269405891096105529">Periferica non supportata in modalità ospite</translation>
 <translation id="1270290102613614947">Tastiera sullo schermo disattivata</translation>
 <translation id="1272079795634619415">Interrompi</translation>
+<translation id="12741168609094094">Seleziona qualsiasi elemento sullo schermo per cercare, copiare testo e altro</translation>
 <translation id="1275285675049378717">Alimentazione di <ph name="POWER_SOURCE" /></translation>
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1276975447697633661">Seleziona il file, quindi premi <ph name="KEY" /></translation>
@@ -149,6 +150,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
 <translation id="1459693405370120464">Meteo</translation>
 <translation id="1460620680449458626">Il volume è disattivato.</translation>
+<translation id="1462439140224375968">Documento Google creato</translation>
 <translation id="14648076227129703">Consente l'accesso alla fotocamera per <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
 <translation id="1467432559032391204">Sinistra</translation>
 <translation id="146902737843070955">L'amministratore ha richiesto questa modifica</translation>
@@ -226,6 +228,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1720230731642245863">L'hotspot è disattivato</translation>
 <translation id="1731815243805539470">Passa all'utente precedente</translation>
 <translation id="1733996486177697563">Passa dal tema chiaro al tema scuro e viceversa. Tocca e tieni premuto il desktop e seleziona Sfondo e stile.</translation>
+<translation id="1735992454301033090">Area selezionata, usa i tasti freccia per spostarti</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visibile ai dispositivi Bluetooth.</translation>
 <translation id="1737078180382804488">Chiudi la configurazione della visualizzazione di notifiche dello smartphone</translation>
 <translation id="174102739345480129">Evidenziatore OFF.</translation>
@@ -493,6 +496,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> della scorsa settimana</translation>
 <translation id="2687510499067466116">La scorciatoia da tastiera è cambiata</translation>
 <translation id="2689613560355655046">Scrivania 8</translation>
+<translation id="2692092709110488417">Premi Tab per mettere a fuoco e spostare l'area selezionata</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Mostra le impostazioni della tastiera. Tastiera selezionata: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Utilizza l'app Trasferimento dei contenuti per spostare i dati dell'account della scuola nel tuo account personale</translation>
@@ -593,6 +597,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="301584155502740476">Mostra i dettagli relativi all'hotspot. L'hotspot è disattivato.</translation>
 <translation id="3017079585324758401">Sfondo</translation>
 <translation id="3018135054368884502">Manda avanti velocemente i contenuti multimediali</translation>
+<translation id="3026897869154397692">Aggiunti al calendario</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3033912566804961911">Combina con <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Apri file</translation>
@@ -1027,6 +1032,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4412698727486357573">Centro assistenza</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
 <translation id="4417647906073317561">Impostazioni della modalità Niente distrazioni. Imposta un timer, un'attività e la musica per iniziare a concentrarti.</translation>
+<translation id="4418600384772451109">Chiudi riquadro</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
 <translation id="4426817706804363424">Complimenti!</translation>
 <translation id="4430019312045809116">Volume</translation>
@@ -1479,6 +1485,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5825969630400862129">Impostazioni dispositivi connessi</translation>
 <translation id="5830180081891717894">Altre <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Cerca con Google</translation>
 <translation id="5841296711770970362">Vai alla traccia successiva</translation>
 <translation id="5842553299352339114">Hotspot di <ph name="DEVICE_NAME" /> attivo, nessun dispositivo connesso</translation>
 <translation id="584525477304726060">Tieni premuto per ingrandire</translation>
@@ -1893,6 +1900,7 @@ Nuova installazione</translation>
 <translation id="7228968829656641943">Seleziona per cercare sullo schermo. Premi il tasto Tab e la Barra spaziatrice per navigare con la tastiera.</translation>
 <translation id="7229029500464092426">Memoria usata: <ph name="AVAILABLE_MEMORY" /> | Totale: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Entrambi i tasti mouse</translation>
+<translation id="7240636904654154599">Foglio Google creato</translation>
 <translation id="7244725679040769470">Batteria rimanente: <ph name="PERCENTAGE" />%. Collega il dispositivo all'alimentazione.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. È richiesto il riavvio del Chromebook per installare un aggiornamento. L'operazione può richiedere fino a 1 minuto.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2221,6 +2229,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8287009018010202411">Produttività</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>
+<translation id="8300451473979404345">Punto di manipolazione selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="8308637677604853869">Menu precedente</translation>
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Bloc maiusc è attivo</translation>
@@ -2281,6 +2290,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="851458219935658693">Mostra finestre della scrivania corrente, pulsante di opzione selezionato</translation>
 <translation id="851660987304951246">Usa Aiutami a leggere per riassumere rapidamente i contenuti o fare domande</translation>
 <translation id="8517041960877371778">Il tuo dispositivo <ph name="DEVICE_TYPE" /> potrebbe non caricarsi mentre è acceso.</translation>
+<translation id="8519329096920173967">Cerca sullo schermo con Google Lens</translation>
 <translation id="8535393432370007982">Annulla l'ordinamento per colore</translation>
 <translation id="8536886494750559755">Mostra impostazioni di Quick Share. Opzione visibile a tutti per <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Testo copiato negli appunti</translation>
@@ -2402,6 +2412,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8921624153894383499">L'Assistente Google non parla questa lingua.</translation>
 <translation id="8926951137623668982">Barra delle app sempre nascosta</translation>
 <translation id="8929566928381252430">Stai cercando di usare Bloc Maiusc? Usa</translation>
+<translation id="8929623844713377237">Contatto creato</translation>
 <translation id="8934418770423095813">Crea documento Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">disattivato</translation>

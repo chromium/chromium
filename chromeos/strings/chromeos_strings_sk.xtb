@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">v nedeľu</translation>
 <translation id="4250229828105606438">Snímka obrazovky</translation>
 <translation id="4251839292699800785">Štýlová kancelária</translation>
+<translation id="4252261480746798874">Keď vyberiete Vytvorte vlastnú, môžete napísať vlastný pokyn. Môžete zvoliť aj Vybrať motív a výberom podčiarknutých slov prispôsobiť tapetu od umelej inteligencie.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Vyberte Inšpiruj ma a získajte jedinečnejšie a rozmanitejšie možnosti obrázkov od umelej inteligencie.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Keď si vytvoríte vlastnú tapetu, príslušný pokyn sa odošle na servery Googlu na účely generovania obrázkov a zlepšovania danej služby v súlade so <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />zmluvnými podmienkami a pravidlami ochrany súkromia spoločnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neuvádzajte žiadne osobné, citlivé ani dôverné údaje.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatívna umelá inteligencia môže robiť chyby (napríklad aj o ľuďoch), preto si jej odpovede overujte. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Ďalšie informácie<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Latencia protokolu HTTP</translation>
 <translation id="4266143281602681663">priadza</translation>
 <translation id="4269815121975886860">Predvoľby pri spustení</translation>

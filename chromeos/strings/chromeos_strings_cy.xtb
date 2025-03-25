@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">ar ddydd Sul</translation>
 <translation id="4250229828105606438">Sgrinlun</translation>
 <translation id="4251839292699800785">Swyddfa steilus</translation>
+<translation id="4252261480746798874">Pan fyddwch yn dewis "Creu eich un chi," gallwch ysgrifennu anogwr personol. Gallwch hefyd ddewis "Dewis thema" ac yna dewis y geiriau wedi'u tanlinellu i bersonoleiddio'ch papur wal AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Dewiswch "Ysbrydolwch fi" i gael opsiynau lluniau AI mwy unigryw ac amrywiol.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pan fyddwch yn creu eich papur wal eich hun, anfonir yr anogwr at weinyddion Google i gynhyrchu lluniau a gwella'r cynnyrch, yn amodol ar <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Delerau Gwasanaeth a Pholisi Preifatrwydd Google.<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> Peidiwch â chynnwys unrhyw beth personol, sensitif neu gyfrinachol.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Gall AI cynhyrchiol wneud camgymeriadau, gan gynnwys am bobl, felly gwiriwch ef ddwywaith. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Dysgu rhagor<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Cuddni HTTP</translation>
 <translation id="4266143281602681663">edau</translation>
 <translation id="4269815121975886860">Dewisiadau cychwyn</translation>

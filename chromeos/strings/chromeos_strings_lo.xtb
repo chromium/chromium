@@ -11,6 +11,7 @@
 <translation id="102432830749687801">ກວດສອບໃຫ້ໝັ້ນໃຈວ່າທ່ານໃຊ້ແອັບການໂອນຍ້າຍເນື້ອຫາໂດຍ Google ເພື່ອຍ້າຍຂໍ້ມູນບັນຊີໂຮງຮຽນຂອງທ່ານໄປໃສ່ບັນຊີສ່ວນຕົວຂອງທ່ານກ່ອນທີ່ທ່ານຈະສູນເສຍສິດເຂົ້າເຖິງ.</translation>
 <translation id="1026212596705997935">ກຳລັງໃຊ້ທາງລັດສຳລັບ "<ph name="CONFLICT_ACCEL_NAME" />" ຢູ່. ກົດປຸ່ມທາງລັດໃໝ່. ເພື່ອແທນທີ່ທາງລັດທີ່ມີຢູ່ກ່ອນແລ້ວ, ໃຫ້ກົດປຸ່ມທາງລັດນີ້ອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="1030856839388844477">ຣີເຊັດການນຳໃຊ້ອິນເຕີເນັດ</translation>
+<translation id="1047095725494118091">ບໍ່ສາມາດດາວໂຫຼດໄດ້. ລອງໃໝ່ ຫຼື ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ຫົວຂໍ້, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ມີຄຸນສົມບັດໃໝ່, ກະລຸນາໃຊ້ລູກສອນຂຶ້ນເພື່ອສຶກສາເພີ່ມເຕີມ.</translation>
 <translation id="1049663189809099096">ເຫຼືອງພາສເທວ</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">ກຳລັງດາວໂຫຼດພາບພັກໜ້າຈໍ</translation>
 <translation id="1094693127011229778">ທີ່ຢູ່ IP ບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="1100902271996134409">ກຳລັງສ້າງຮູບພາບ...</translation>
+<translation id="1107856713690040084">ໄຟລ໌ສຽງ <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">ກ່ຽວ​ກັບ</translation>
 <translation id="1118572504348554005">ພວກເຮົາອາດແບ່ງປັນຄຳຕິຊົມທີ່ສົ່ງມາທາງແບບຟອມນີ້ກັບຮຸ້ນສ່ວນຂອງພວກເຮົາເພື່ອແກ້ບັນຫາຂໍ້ຜິດພາດ ແລະ ບັນຫາອື່ນໆທີ່ທ່ານລາຍງານໃຫ້ພວກເຮົາ. ກະລຸນາຢ່າໃສ່ຂໍ້ມູນລະອຽດອ່ອນ ເຊັ່ນ: ລະຫັດຜ່ານ.</translation>
 <translation id="1119403468619527527">ຄຳສັບໜ້ອຍເກີນໄປເພື່ອເຮັດໃຫ້ງ່າຍ</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">ເປີດໃຊ້ໂໝດມືດ</translation>
 <translation id="2164131940279488868">ກວດສອບວ່າໄດ້ເຊື່ອມຕໍ່ໄມແລ້ວເພື່ອເລີ່ມບັນທຶກສຽງ</translation>
 <translation id="2173302385160625112">ກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ</translation>
+<translation id="2176909213844392588">ບໍ່ສາມາດດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມຂອງພາສາ <ph name="LANGUAGE_NAME" /> ໄດ້. ລອງໃໝ່ ຫຼື ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="2180197493692062006">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງເປີດແອັບຄືນໃໝ່.</translation>
 <translation id="2189104374785738357">ແກ້ໄຂລາຍລະອຽດ APN</translation>
 <translation id="2195732836444333448">ຕອນນີ້ຮອດຂີດຈຳກັດແລ້ວ. ກະລຸນາກັບມາໃໝ່ໃນໄວໆນີ້.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">ຕົວປ້ອນເອກະສານ (ສອງດ້ານ)</translation>
 <translation id="3201315366910775591">ຄົນອື່ນໆສາມາດອັບເດດອະລະບ້ຳແບ່ງປັນໄດ້</translation>
 <translation id="3211671540163313381">Keymapping D-pad</translation>
+<translation id="3217462202230355157">ກວດສອບວ່າໄມຂອງທ່ານເຊື່ອມຕໍ່ຢູ່ ຫຼື ລອງຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="3226405216343213872">ກຳລັງຊອກຫາເຄື່ອງສະແກນ</translation>
 <translation id="3226657629376379887">ເມນູຄຳສັ່ງໂຄງຮ່າງ</translation>
 <translation id="3227186760713762082">ຫານ <ph name="CATEGORY_TEXT" /> ດ້ວຍ <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">ພິເສດສະເພາະ</translation>
 <translation id="3404249063913988450">ເປີດການນຳໃຊ້ສະກຣີນເຊັບເວີແລ້ວ</translation>
 <translation id="3413935475507503304">ເພື່ອດຳເນີນການຕໍ່ກັບອັບເດດ, ໃຫ້ຄລິກຕໍ່ໄປ</translation>
+<translation id="3416709353545797224">ກຳລັງບັນທຶກສຽງທັງໝົດຈາກ <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">ກາງແຈ້ງ</translation>
 <translation id="3428971106895559033">ພາສເທວ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">ກວດໃຫ້ແນ່ໃຈວ່າເຄື່ອງສະແກນເປີດຢູ່ ແລະ ມີໃຫ້ຜ່ານເຄືອຂ່າຍຂອງທ່ານ ຫຼື ການເຊື່ອມຕໍ່ໂດຍກົງ</translation>
 <translation id="4159238217853743776">ບາງສ່ວນ</translation>
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
+<translation id="416219735020840807">ບໍ່ສາມາດດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມໄດ້. ລອງໃໝ່ ຫຼື ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="4170180284036919717">ຖ່າຍຮູບ</translation>
 <translation id="4170700058716978431">ບໍ່ສຳເລັດ</translation>
 <translation id="4171077696775491955">ຫຼຸດຄວາມສະຫວ່າງລົງ</translation>
@@ -698,6 +704,16 @@
 <translation id="4249717042534905822">ໃນວັນອາທິດ</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4251839292699800785">ຫ້ອງການແບບມີສະໄຕລ໌</translation>
+<translation id="4252261480746798874">ເມື່ອທ່ານເລືອກ "ສ້າງຂອງທ່ານເອງ", ທ່ານສາມາດຂຽນພຣອມທີ່ກຳນົດເອງໄດ້. ນອກຈາກນີ້, ທ່ານຍັງສາມາດເລືອກ "ເລືອກຮູບແບບສີສັນ" ແລ້ວຈາກນັ້ນເລືອກຄຳສັບທີ່ຂີດກ້ອງໄວ້ເພື່ອປັບແຕ່ງຮູບພື້ນຫຼັງ AI ໃຫ້ເປັນແບບສ່ວນຕົວໄດ້ນຳ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ເລືອກ "ຂໍແຮງບັນດານໃຈໃຫ້ຂ້ອຍແດ່" ເພື່ອຮັບຕົວເລືອກຮູບ AI ທີ່ເປັນເອກະລັກ ແລະ ຫຼາກຫຼາຍຍິ່ງຂຶ້ນ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ເມື່ອທ່ານສ້າງຮູບພື້ນຫຼັງຂອງທ່ານເອງ, ລະບົບຈະສົ່ງພຣອມໄປຫາເຊີບເວີຂອງ Google ເພື່ອສ້າງຮູບ ແລະ ປັບປຸງຜະລິດຕະພັນ, ໂດຍເປັນໄປຕາມ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ຂໍ້ກຳນົດບໍລິການ ແລະ ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວຂອງ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. ຢ່າລະບຸຂໍ້ມູນໃດກໍຕາມທີ່ເປັນສ່ວນຕົວ, ລະອຽດອ່ອນ ຫຼື ເປັນຄວາມລັບ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI ສ້າງເນື້ອຫາອາດເຮັດຜິດພາດໄດ້, ເຊິ່ງຮວມທັງການໃຫ້ຂໍ້ມູນກ່ຽວກັບບຸກຄົນ, ດັ່ງນັ້ນກະລຸນາກວດສອບຄຳຕອບຊ້ຳ. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">ການຕອບສະໜອງ HTTP</translation>
 <translation id="4266143281602681663">ໄໝພົມ</translation>
 <translation id="4269815121975886860">ການຕັ້ງຄ່າເລີ່ມຕົ້ນ</translation>
@@ -942,6 +958,7 @@
 <translation id="5344619683981067131">ການປ່ຽນແທນຂໍ້ຄວາມທີ່ເລືອກດ້ວຍການແນະນຳ</translation>
 <translation id="5346687412805619883">ເຄືອຂ່າຍທ້ອງຖິ່ນ</translation>
 <translation id="5358174242040570474">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ໃຫ້ລອງເລືອກຮູບພື້ນຫຼັງອີກເທື່ອໜຶ່ງ ຫຼື ເປີດແອັບຄືນໃໝ່.</translation>
+<translation id="5368228070728130240">ບໍ່ສາມາດດາວໂຫຼດໂມເດວສຳລັບສະຫຼຸບ ແລະ ການສ້າງຊື່ໄດ້. ລອງໃໝ່ ຫຼື ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="5372659122375744710">ເຄືອຂ່າຍ WiFi ບໍ່ປອດໄພ</translation>
 <translation id="5376354385557966694">ໂໝດແຈ້ງອັດຕະໂນມັດ</translation>
 <translation id="5378184552853359930">ປະເພດ IP</translation>
@@ -1247,6 +1264,7 @@
 <translation id="6766275201586212568">ຄວາມລະອຽດ DNS ບໍ່ສຳເລັດ</translation>
 <translation id="6768237774506518020">ອັດຕາຄວາມບໍ່ສຳເລັດຂອງຄວາມລະອຽດ DNS ສູງ</translation>
 <translation id="6786747875388722282">ສ່ວນຂະຫຍາຍ</translation>
+<translation id="6789891265243243337">ເມື່ອສຽງ <ph name="DEVICE_TYPE" /> ເປີດຢູ່, ຕົວບັນທຶກຈະບັນທຶກສຽງທັງໝົດທີ່ຫຼິ້ນຢູ່ອຸປະກອນນີ້</translation>
 <translation id="6791471867139427246">ສີຂອງແສງຈາກແປ້ນພິມ</translation>
 <translation id="6796229976413584781">ລຶບທາງລັດແລ້ວ</translation>
 <translation id="6798678288485555829">ການນຳທາງຂໍ້ຄວາມ</translation>
@@ -1719,6 +1737,7 @@
 <translation id="8930622219860340959">ໄຮ້ສາຍ</translation>
 <translation id="8933650076320258356">ປຸ່ມທີ່ເລືອກແມ່ນ <ph name="KEYS" /> ສຳລັບ <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">ທີ່ຢູ່ IP ລູກຂ່າຍ</translation>
+<translation id="8938606491880817721">ບໍ່ສາມາດດາວໂຫຼດໄດ້. ລອງໃໝ່ ຫຼື ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ.</translation>
 <translation id="8944651180182756621">ສີຂອງຕົວເປີດໃຊ້</translation>
 <translation id="8945308580158685341">ເຜິ້ງ</translation>
 <translation id="894617464444543719">ອຸປະກອນແມ່ນໂທລະສັບ.</translation>

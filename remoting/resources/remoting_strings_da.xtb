@@ -40,6 +40,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="2758123043070977469">Der opstod et problem med godkendelse. Log ind igen.</translation>
 <translation id="2803375539583399270">Angiv pinkode</translation>
 <translation id="2919669478609886916">Du deler i øjeblikket denne maskine med en anden bruger. Vil du fortsætte med at dele?</translation>
+<translation id="2929683002824598593">Del enhed</translation>
 <translation id="2939145106548231838">Godkend over for host</translation>
 <translation id="3027681561976217984">Tryk</translation>
 <translation id="3106379468611574572">Fjerncomputeren svarer ikke på anmodninger om oprettelse af forbindelse. Kontrollér, at den er online, og prøv igen.</translation>
@@ -117,10 +118,12 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="6178645564515549384">Indbygget beskedhost til ekstern hjælp</translation>
 <translation id="618120821413932081">Opdater opløsningen for fjernskrivebordet, så det stemmer overens med vinduet</translation>
 <translation id="6223301979382383752">Åbn indstillingerne for skærmoptagelse</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> har anmodet om tilladelse til at se din skærm og styre dit tastatur og din mus. Vil du dele din enhed?</translation>
 <translation id="6284412385303060032">Hosten, der kører på loginskærmen for konsollen, er lukket ned for at understøtte curtain mode ved at skifte til en host, der kører i en brugerspecifik session.</translation>
 <translation id="6542902059648396432">Rapportér et problem…</translation>
 <translation id="6583902294974160967">Support</translation>
 <translation id="6612717000975622067">Send Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Hvis du ikke foretager dig noget, begynder din enhed automatisk at dele om # sekund.}one{Hvis du ikke foretager dig noget, begynder din enhed automatisk at dele om # sekund.}other{Hvis du ikke foretager dig noget, begynder din enhed automatisk at dele om # sekunder.}}</translation>
 <translation id="6654753848497929428">Del</translation>
 <translation id="677755392401385740">Host er startet for bruger: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Hjælpeapp til at åbne en webadresse i <ph name="PRODUCT_NAME" />-klienten</translation>

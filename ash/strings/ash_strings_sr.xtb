@@ -1015,6 +1015,7 @@
 <translation id="4351244548802238354">Затвори дијалог</translation>
 <translation id="4356872429719185452">Прегледајте детаље хотспота. Хотспот се укључује.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Снима се</translation>
+<translation id="4368227575116094370">Направи Google табелу</translation>
 <translation id="4371348193907997655">Подешавања пребацивања</translation>
 <translation id="4371834685492830207">PIN мора да садржи само важеће знакове</translation>
 <translation id="4375482231364171368">Претражи у траци за адресу</translation>
@@ -1484,6 +1485,7 @@
 <translation id="5825969630400862129">Подешавања повезаних уређаја</translation>
 <translation id="5830180081891717894">Још <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Заустави <ph name="ROUTE_TITLE" /> на уређају <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Претражујте помоћу Google-а</translation>
 <translation id="5841296711770970362">Иди на следећу песму</translation>
 <translation id="5842553299352339114">Укључен је <ph name="DEVICE_NAME" /> хотспот, није повезан ниједан уређај</translation>
 <translation id="584525477304726060">Задржите да бисте увећали</translation>
@@ -1515,6 +1517,7 @@
 <translation id="595202126637698455">Праћење учинка је омогућено</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Корисник под надзором</translation>
+<translation id="596035801491797438">Искључите Управљање лицем</translation>
 <translation id="5960410286721553511">Прегледајте недавне слике и медијски садржај са телефона</translation>
 <translation id="5965524703725988602">Укључите/искључите тамну тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Кретање кроз прозоре унапред</translation>

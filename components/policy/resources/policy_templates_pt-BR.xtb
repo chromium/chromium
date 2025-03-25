@@ -611,7 +611,6 @@ mudança de senha, mas também pode ser aplicada por determinadas políticas, co
 <translation id="143649776386947790">Usar o comportamento padrão</translation>
 <translation id="1438739959477268107">Configuração padrão de geração de chaves</translation>
 <translation id="1440408958042020947">Permite que os usuários que ativaram o recurso Seu smartphone acessem fotos e vídeos recentes capturados no smartphone deles</translation>
-<translation id="1442458649848299896">Ativar o lançamento da redução de <ph name="AL_HEADER_NAME" /> para controlar por testes de campo</translation>
 <translation id="1443532790824582949">Ativar o teclado virtual de toque</translation>
 <translation id="1449083855104537880">Se esta política for definida como verdadeira, as opções de acessibilidade serão exibidas no menu da bandeja do sistema. Se você definir a política como falsa, as opções não serão exibidas no menu.
 
@@ -3347,15 +3346,6 @@ Se esta política for definida como desativada, o recurso de escrita preditiva n
 <translation id="3387999258705169775">Comportamento padrão do ajuste aninhado da função setTimeout().</translation>
 <translation id="3388628790024977864">Não permitir o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Ativar a autenticação gnubby para o host de acesso remoto</translation>
-<translation id="3394895899282672754">O cabeçalho da solicitação HTTP <ph name="AL_HEADER_NAME" /> e o getter <ph name="JS_GETTER_NAME" /> do JavaScript serão reduzidos por motivos de privacidade.
-Para facilitar os testes e garantir a compatibilidade, esta política permite que você ative ou desative o lançamento da redução.
-
-Se a política for ativada ou deixada sem definição, o lançamento da redução de <ph name="AL_HEADER_NAME" /> será aplicado por testes de campo.
-Se a política for desativada, os testes de campo não poderão ativar o lançamento da redução.
-
-Para mais informações sobre esse recurso, acesse: https://github.com/explainers-by-googlers/reduce-accept-language (site em inglês).
-
-OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta política enquanto o navegador estiver em execução.</translation>
 <translation id="3395744872155955051">Permitir que arquivos sejam escolhidos diretamente no <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Não mostrar recomendações de apps no acesso rápido do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamento padrão do sistema (depende do tamanho da tela)</translation>
@@ -6221,7 +6211,6 @@ Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política tamb
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
-<translation id="5368878547690689592">Controle o lançamento da redução de <ph name="AL_HEADER_NAME" /></translation>
 <translation id="5369937289900051171">Apenas impressão colorida</translation>
 <translation id="5370279767682621504">Ativar suporte a HTTP/0.9 em portas não padrão</translation>
 <translation id="5370765433640162225">Quando esta política é definida como verdadeira, a limpeza automática é executada durante o login para garantir que haja espaço livre suficiente disponível em disco.
@@ -9090,6 +9079,38 @@ Não é possível usar programações com intervalos sobrepostos. Esta política
 Os dispositivos <ph name="PRODUCT_OS_NAME" /> vão usar o fuso horário do sistema para aplicar esses intervalos.
 
 Importante: as programações definidas por esta política podem não ocorrer como esperado se entrarem em conflito com outras configurações de gerenciamento de energia, como <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Verifique se essas configurações estão definidas para permitir que os intervalos de suspensão programados entrem em vigor.</translation>
+<translation id="7196944905905233325">Ativa o provedor do sistema de acessibilidade de <ph name="UIA_NAME" /> no
+<ph name="PRODUCT_NAME" /> para uso por ferramentas
+de acessibilidade.
+
+O <ph name="PRODUCT_NAME" /> é compatível
+com a política por um período de transição de
+um ano para permitir que administradores corporativos controlem a implantação
+do provedor de acessibilidade de <ph name="UIA_NAME" /> do navegador. A acessibilidade e outras ferramentas que usam o
+sistema de acessibilidade de <ph name="UIA_NAME" /> para interoperar
+com o navegador podem exigir atualizações para funcionar corretamente com o provedor de
+<ph name="UIA_NAME" /> do navegador. Os administradores podem usar
+a política para desativar temporariamente o provedor de
+<ph name="UIA_NAME" /> do navegador (voltando ao comportamento
+antigo) enquanto trabalham com os fornecedores para atualizar as ferramentas afetadas.
+
+Quando a política é definida como falsa, o <ph name="PRODUCT_NAME" />
+ativa apenas o provedor de <ph name="MSAA_NAME" />. A acessibilidade e outras ferramentas que usam o novo
+sistema de <ph name="UIA_NAME" /> para interoperar
+com o navegador vão se comunicar com ele por um shim de compatibilidade no
+<ph name="MS_WIN_NAME" />.
+
+Quando definida como verdadeira, o <ph name="PRODUCT_NAME" />
+ativa o provedor de <ph name="UIA_NAME" />, além do
+provedor de <ph name="MSAA_NAME" />.
+A acessibilidade e outras ferramentas que usam o sistema mais recente
+de <ph name="UIA_NAME" /> para interoperar com o navegador vão
+se comunicar diretamente com ele.
+
+Quando não definida, o sistema de variações no <ph name="PRODUCT_NAME" /> é usado para ativar ou desativar
+o provedor.
+
+A compatibilidade com essa configuração de política vai terminar no <ph name="PRODUCT_NAME" /> 146.</translation>
 <translation id="7198134478421755850">Extensão</translation>
 <translation id="7199304109870655950">Configurar opções de acesso remoto no host da Área de trabalho remota do Google Chrome.
 
@@ -11543,7 +11564,6 @@ Observação: no momento, apenas a primeira entrada será considerada. Extensõe
       Para informações detalhadas sobre padrões de entrada válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política. A política só faz a correspondência de origens, então os caminhos no padrão do URL serão ignorados.</translation>
 <translation id="9010080992450148617">Ativar o envio de downloads ao Google para verificação detalhada por usuários inscritos no Programa Proteção Avançada</translation>
 <translation id="9012101302849557459">Oferecer suporte para apps do Chrome no <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />.</translation>
-<translation id="9013629280364842072">Desativar o lançamento da redução de <ph name="AL_HEADER_NAME" /> para controlar por testes de campo</translation>
 <translation id="9013875414788074110">Durante o login, o <ph name="PRODUCT_OS_NAME" /> pode fazer autenticação em um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
 
       Quando esta política for definida para um valor de -1, o usuário poderá fazer a autenticação off-line indefinidamente. Quando esta política for definida como qualquer outro valor, ela especificará quanto tempo após a última autenticação on-line o usuário precisará usar novamente esse tipo de autenticação.

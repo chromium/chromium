@@ -40,6 +40,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="2758123043070977469">Hubo un problema de autenticación. Vuelve a acceder.</translation>
 <translation id="2803375539583399270">Ingresar PIN</translation>
 <translation id="2919669478609886916">En este momento compartes esta computadora con otro usuario. ¿Deseas continuar compartiéndola?</translation>
+<translation id="2929683002824598593">Compartir dispositivo</translation>
 <translation id="2939145106548231838">Autenticarse en host</translation>
 <translation id="3027681561976217984">Modo táctil</translation>
 <translation id="3106379468611574572">La computadora remota no responde a las solicitudes de conexión. Verifica que esté conectada a Internet y vuelve a intentarlo.</translation>
@@ -117,10 +118,12 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="6178645564515549384">Host de mensajería nativa para asistencia remota</translation>
 <translation id="618120821413932081">Actualizar la resolución remota para que se adapte a la ventana</translation>
 <translation id="6223301979382383752">Abrir preferencias de grabación de pantalla</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> solicitó acceso para ver tu pantalla y controlar el teclado y el mouse. ¿Quieres compartir tu dispositivo?</translation>
 <translation id="6284412385303060032">Se cerró el host que se ejecuta en la pantalla de acceso de la consola para poder admitir el modo de cortina. Por lo tanto, se cambió a un host que se ejecuta en una sesión específica de usuario.</translation>
 <translation id="6542902059648396432">Informar un problema</translation>
 <translation id="6583902294974160967">Asistencia</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Supr</translation>
+<translation id="6625262630437221505">{0,plural, =1{Si no tomas medidas, tu dispositivo comenzará a compartirse automáticamente dentro de # segundo.}other{Si no tomas medidas, tu dispositivo comenzará a compartirse automáticamente dentro de # segundos.}}</translation>
 <translation id="6654753848497929428">Compartir</translation>
 <translation id="677755392401385740">Host iniciado para usuario: <ph name="HOST_USERNAME" /></translation>
 <translation id="6902524959760471898">Aplicación auxiliar para abrir una URL en el cliente <ph name="PRODUCT_NAME" /></translation>

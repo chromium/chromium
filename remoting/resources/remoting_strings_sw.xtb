@@ -40,6 +40,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="2758123043070977469">Hitilafu imetokea wakati wa kuthibitisha, tafadhali ingia katika akaunti tena.</translation>
 <translation id="2803375539583399270">Weka PIN</translation>
 <translation id="2919669478609886916">Kwa sasa unashiriki mashine hii na mtumiaji mwengine. Unataka kuendelea kushiriki?</translation>
+<translation id="2929683002824598593">Ruhusu kifaa kifikiwe</translation>
 <translation id="2939145106548231838">Thibitisha ili upangishe</translation>
 <translation id="3027681561976217984">Hali ya kugusa</translation>
 <translation id="3106379468611574572">Kompyuta ya mbali haikubali maombi ya muunganisho. Tafadhali thibitisha kuwa iko kwenye mtandao na ujaribu tena.</translation>
@@ -117,10 +118,12 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="6178645564515549384">Mpangishi wa ujumbe halisi kwa usaidizi wa mbali</translation>
 <translation id="618120821413932081">Sasisha ubora wa mwonekano wa skrini ya mbali ili ilingane na dirisha</translation>
 <translation id="6223301979382383752">Fungua Mapendeleo ya Kurekodi Skrini</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ameomba idhini ya kuona skrini yako na kudhibiti kibodi na kipanya chako. Ungependa kuruhusu kifaa chako kifikiwe?</translation>
 <translation id="6284412385303060032">Seva pangishi inayotumika kwenye skrini ya dashibodi imezima ili kutumia hali ya pazia kwa kubadilisha hadi seva pangishi inayotumika katika kipindi mahususi cha mtumiaji.</translation>
 <translation id="6542902059648396432">Ripoti tatizo...</translation>
 <translation id="6583902294974160967">Usaidizi</translation>
 <translation id="6612717000975622067">Tuma Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Iwapo hutachukua hatua, kifaa chako kitaanza kufikiwa kiotomatiki ndani ya sekunde #.}other{Iwapo hutachukua hatua, kifaa chako kitaanza kufikiwa kiotomatiki ndani ya sekunde #.}}</translation>
 <translation id="6654753848497929428">Shiriki</translation>
 <translation id="677755392401385740">Seva pangishi ya mtumiaji: <ph name="HOST_USERNAME" /> Imeanza.</translation>
 <translation id="6902524959760471898">Programu ya kusaidia kufungua URL kwenye programu teja ya <ph name="PRODUCT_NAME" /></translation>

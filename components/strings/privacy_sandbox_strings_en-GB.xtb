@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1045545926731898784">This site belongs to a group of sites, defined by <ph name="SET_OWNER" />, that can share your activity across the group to help sites work as expected.</translation>
 <translation id="1055273091707420432">Chromium auto-deletes ad topics that are older than four weeks</translation>
 <translation id="1184166532603925201">When you're in Incognito mode, Chrome blocks sites from using third-party cookies</translation>
 <translation id="1297285729613779935">Site-suggested ads help protect your browsing history and identity while allowing sites to show you relevant ads. Using your activity, such as how you spend your time on sites that you visit, other sites can suggest related ads as you continue browsing. You can see a list of these sites and block the ones that you don't want in Settings.</translation>
@@ -12,6 +13,7 @@
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />How do sites use this data?<ph name="END_BOLD" /> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like Arts and Entertainment, Shopping and Sports. Later, a site that you visit can ask Chrome for a few of your topics to personalise the ads that you see.</translation>
 <translation id="1732764153129912782">You can make changes in ads privacy settings</translation>
 <translation id="1780659583673667574">For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.</translation>
+<translation id="1818866261309406359">Manage related sites data in a new tab</translation>
 <translation id="1887631853265748225">Ads privacy features help limit what websites and their advertising partners can learn about you when they show you personalised ads.</translation>
 <translation id="1954777269544683286">Google requires companies to state publicly that they won't use this data to track you across sites. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK" />Learn more in our privacy policy<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Features on some sites may not work</translation>
@@ -67,6 +69,7 @@
 <translation id="5117284457376555514">Sites can't use third-party cookies to personalise content and ads and learn about actions that you take on other sites unless you allow related sites to access them. Some site features may not work as expected.</translation>
 <translation id="5165490319523240316">Sites and their advertising partners can use your activity, such as how you spend your time on sites that you visit, to personalise ads on other sites. For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.</translation>
 <translation id="544199055391706031">Your activity is one of the many things that a site can use to suggest ads. When site-suggested ads are turned off, sites can still show you ads but they may be less personalised. Learn more about <ph name="BEGIN_LINK" />site-suggested ads<ph name="END_LINK" />.</translation>
+<translation id="5495405805627942351">Manage related sites data</translation>
 <translation id="5574580428711706114">Google requires companies to state publicly that they won't use this data to track you across sites. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1" />Learn more in our privacy policy<ph name="LINK_END1" />.</translation>
 <translation id="5576983628189470385">Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalise your experience for more than just ads. They may also combine it with other information that they already know about you. Companies are responsible for letting you know how they use your data. Learn more in our privacy policy.</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />How do sites use this data?<ph name="END_BOLD" /> Sites that you visit can ask Chrome for information that helps them measure the performance of their ads. Chrome protects your privacy by limiting the information that sites can share with one another.</translation>

@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">La tua password verrà salvata in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Apri nuova scheda in Chrome</translation>
 <translation id="1166460004393506534">Elimina i dati di navigazione in Chrome</translation>
-<translation id="1171255741903316750">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chrome"</translation>
 <translation id="1179527450541388808">Accedi più velocemente a Chrome dal dock della schermata Home del tuo iPad.</translation>
 <translation id="1180362651362502943">Continua a usare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="1200396280085622191">Utilizza Chrome ogni volta che tocchi i link in messaggi e altre app.</translation>
@@ -178,6 +177,7 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="5716154293141027663">Apri Chrome ogni volta che tocchi link in altre app</translation>
 <translation id="5752489513673657785">Un feed personalizzato creato da Google per te</translation>
 <translation id="5772407442571703917">Scarica Chrome qui.</translation>
+<translation id="5777468213129569553">Apri Chrome</translation>
 <translation id="5779767936254214055">Blocca le schede di navigazione in incognito quando esci da Chrome o passi a un'altra app.</translation>
 <translation id="5808435672482059465">Visualizza la tua cronologia di Chrome</translation>
 <translation id="5833027901704861726">Alcuni dati di Chrome non sono ancora stati salvati sull'account <ph name="EMAIL" />.

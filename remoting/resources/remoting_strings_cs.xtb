@@ -40,6 +40,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="2758123043070977469">Při ověřování došlo k problému. Přihlaste se prosím znovu.</translation>
 <translation id="2803375539583399270">Zadejte kód PIN</translation>
 <translation id="2919669478609886916">Momentálně sdílíte tento počítač s jiným uživatelem. Chcete ve sdílení pokračovat?</translation>
+<translation id="2929683002824598593">Sdílet zařízení</translation>
 <translation id="2939145106548231838">Ověření v hostitelském počítači</translation>
 <translation id="3027681561976217984">Dotykový režim</translation>
 <translation id="3106379468611574572">Vzdálený počítač nereaguje na žádosti o připojení. Zkontrolujte, zda je online, a zkuste to znovu.</translation>
@@ -117,10 +118,12 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="6178645564515549384">Nativní hostitelská aplikace pro komunikaci při vzdálené pomoci</translation>
 <translation id="618120821413932081">Upravit rozlišení vzdálené plochy tak, aby odpovídalo oknu</translation>
 <translation id="6223301979382383752">Otevřít nastavení nahrávání obrazovky</translation>
+<translation id="6252344563748670011">Uživatel <ph name="CLIENT_USERNAME" /> požádal o přístup k zobrazení obrazovky a ovládání vaší klávesnice a myši. Chcete své zařízení sdílet?</translation>
 <translation id="6284412385303060032">Hostitel spuštěný na obrazovce logiky konzole byl ukončen za účelem zajištění podpory režimu opony prostřednictvím přepnutí na hostitele spuštěného v relaci specifické pro uživatele.</translation>
 <translation id="6542902059648396432">Nahlásit problém…</translation>
 <translation id="6583902294974160967">Podpora</translation>
 <translation id="6612717000975622067">Odeslat akci Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Pokud nic nepodniknete, zařízení se za # sekundu automaticky začne sdílet.}few{Pokud nic nepodniknete, zařízení se za # sekundy automaticky začne sdílet.}many{Pokud nic nepodniknete, zařízení se za # sekundy automaticky začne sdílet.}other{Pokud nic nepodniknete, zařízení se za # sekund automaticky začne sdílet.}}</translation>
 <translation id="6654753848497929428">Sdílet</translation>
 <translation id="677755392401385740">Pro následujícího uživatele bylo zahájeno hostování: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Pomocná aplikace k otevírání adres URL v klientu <ph name="PRODUCT_NAME" /></translation>

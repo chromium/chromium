@@ -1014,6 +1014,7 @@
 <translation id="4351244548802238354">대화상자 닫기</translation>
 <translation id="4356872429719185452">핫스팟 세부정보를 표시합니다. 핫스팟을 켜는 중입니다.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  녹화 중</translation>
+<translation id="4368227575116094370">Google 시트 만들기</translation>
 <translation id="4371348193907997655">전송 설정</translation>
 <translation id="4371834685492830207">PIN에는 유효한 문자만 포함해야 합니다.</translation>
 <translation id="4375482231364171368">주소 표시줄에서 검색</translation>
@@ -1483,6 +1484,7 @@
 <translation id="5825969630400862129">연결된 기기 설정</translation>
 <translation id="5830180081891717894">그 외 <ph name="WINDOWS" />개</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
+<translation id="5840658767386246331">Google로 검색</translation>
 <translation id="5841296711770970362">다음 트랙으로 이동</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> 핫스팟이 켜져 있으며 연결된 기기가 없습니다.</translation>
 <translation id="584525477304726060">눌러서 최대화</translation>
@@ -1514,6 +1516,7 @@
 <translation id="595202126637698455">성능 추적 사용 중</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">관리 대상 사용자</translation>
+<translation id="596035801491797438">페이스 컨트롤 사용 중지</translation>
 <translation id="5960410286721553511">휴대전화의 최신 사진 및 미디어를 봅니다.</translation>
 <translation id="5965524703725988602">어두운 테마를 전환합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">여러 창 사이에서 앞으로 이동하기</translation>

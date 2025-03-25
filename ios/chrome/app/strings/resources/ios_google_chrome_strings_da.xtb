@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">Din adgangskode gemmes i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Åbn en ny fane i Chrome</translation>
 <translation id="1166460004393506534">Slet browserdata i Chrome</translation>
-<translation id="1171255741903316750">Aktivér "Lås inkognitofaner, når du lukker Chrome"</translation>
 <translation id="1179527450541388808">Få hurtigere adgang til Chrome via docken på din iPads startskærm.</translation>
 <translation id="1180362651362502943">Fortsæt med at bruge Chrome-dataene på din Google-konto.</translation>
 <translation id="1200396280085622191">Brug Chrome, hver gang du trykker på links i meddelelser og andre apps.</translation>
@@ -178,6 +177,7 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="5716154293141027663">Åbn Chrome, hver gang du trykker på links i andre apps</translation>
 <translation id="5752489513673657785">Et tilpasset feed, der som skabt til dig af Google</translation>
 <translation id="5772407442571703917">Download Chrome her.</translation>
+<translation id="5777468213129569553">Åbn Chrome</translation>
 <translation id="5779767936254214055">Lås dine inkognitofaner, når du forlader Chrome eller skifter til en anden app.</translation>
 <translation id="5808435672482059465">Se din Chrome-historik</translation>
 <translation id="5833027901704861726">Nogle af dine Chrome-data er endnu ikke gemt på <ph name="EMAIL" />.
