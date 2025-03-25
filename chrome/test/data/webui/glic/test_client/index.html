@@ -34,12 +34,14 @@ found in the LICENSE file.
   }
   .section h1 {
     text-align: center;
-    font-size: 15pt;
+    font-size: 14pt;
     user-select: none;
+    margin: 0.2em;
   }
   .section h2 {
-    font-size: 13pt;
+    font-size: 12pt;
     user-select: none;
+    margin: 0.2em;
   }
   .section {
     background-color: #eee;
@@ -52,13 +54,13 @@ found in the LICENSE file.
   .permission-switch {
     display: flex;
     align-items: center;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.3em;
   }
   .permission-switch label {
     margin-right: 0.5em;
   }
   input[type="text"] {
-    width: 400px;
+    width: 300px;
   }
   img {
     border: thick double black;
@@ -163,52 +165,62 @@ found in the LICENSE file.
   </label>
 </div>
 <div class="section">
-  <h1>Test SetPermissionState() and NotifyPermissionChanged()</h1>
-  <div class="permission-switches">
-    <div class="permission-switch">
-      <label for="microphoneSwitch">Microphone:</label>
-      <input type="checkbox" id="microphoneSwitch" disabled />
-    </div>
-    <div class="permission-switch">
-      <label for="geolocationSwitch">Geolocation:</label>
-      <input type="checkbox" id="geolocationSwitch" disabled />
-    </div>
-    <div class="permission-switch">
-      <label for="tabContextSwitch">Tab Context:</label>
-      <input type="checkbox" id="tabContextSwitch" disabled />
-    </div>
-    <div class="permission-switch">
-      <label for="osGeolocationPermissionSwitch">OS Geolocation:</label>
-      <input type="checkbox" id="osGeolocationPermissionSwitch" disabled />
-    </div>
+  <h1>Chrome Permissions</h1>
+  <div class="permission-switch">
+    <label for="microphoneSwitch">Microphone:</label>
+    <input type="checkbox" id="microphoneSwitch" disabled />
   </div>
+  <div class="permission-switch">
+    <label for="geolocationSwitch">Geolocation:</label>
+    <input type="checkbox" id="geolocationSwitch" disabled />
+  </div>
+  <div class="permission-switch">
+    <label for="tabContextSwitch">Tab Context:</label>
+    <input type="checkbox" id="tabContextSwitch" disabled />
+  </div>
+  <select id="permissionSelect">
+    <option value="geolocation">Geolocation</option>
+    <option value="microphone">Microphone</option>
+    <option value="tabContext">Tab Context</option>
+  </select>
+  <select id="enabledSelect">
+    <option value="true">True</option>
+    <option value="false">False</option>
+  </select>
+  <button id="testPermissionSwitch">Simulate External Permission
+    Update</button>
+</div>
+<div class="section">
+  <h1>MacOS Permissions</h2>
+  <button id="getOsMicrophonePermissionButton">Get OS Microphone permission state</button>
+  <span id="osMicrophonePermissionResult"></span>
   <div>
-      <button id="getOsMicrophonePermissionButton">Get OS Microphone Permission</button>
-      <span id="osMicrophonePermissionResult"></span>
-      </div>
-      <div>
-    <select id="permissionSelect">
-      <option value="geolocation">Geolocation</option>
-      <option value="microphone">Microphone</option>
-      <option value="tabContext">Tab Context</option>
-    </select>
-    <select id="enabledSelect">
-      <option value="true">True</option>
-      <option value="false">False</option>
-    </select>
-    <button id="testPermissionSwitch">Simulate External Permission
-      Update</button>
-    <button id="openSettings">Open Glic Settings</button>
-    <button id="openOsLocationSettings">Open OS Location Settings</button>
-    <button id="openOsMicrophoneSettings">Open OS Microphone Settings</button>
+  <div class="permission-switch">
+    <label for="osGeolocationPermissionSwitch">OS Geolocation:</label>
+    <input type="checkbox" id="osGeolocationPermissionSwitch" disabled />
+  </div>
+  <button id="openOsLocationSettings">Open OS Location settings</button>
+  <button id="openOsMicrophoneSettings">Open OS Microphone settings</button>
   </div>
 </div>
 <div class="section">
-  <h1>OS Glic Hotkey</h1>
-  <label for="osGlicHotkey">Hotkey:</label>
-  <input type="text" id="osGlicHotkey" name="osGlicHotkey" readonly>
+  <h1>Glic Settings</h1>
+  <div>
+    <label for="osGlicHotkey">Current keyboard shortcut:</label>
+    <input type="text" id="osGlicHotkey" name="osGlicHotkey" readonly>
+    <div>
+      <button id="openGlicSettings">Open Glic Settings</button>
+      <br/>
+      <label for="openGlicSettingsHighlight">And highlight field:</label>
+      <select id="openGlicSettingsHighlight">
+        <option value="none">None</option>
+        <option value="osHotkey">Keyboard shortcut</option>
+        <option value="osEntrypointToggle">OS Entrypoint</option>
+      </select>
+    </div>
   </div>
-  <div class="section">
+</div>
+<div class="section">
   <h1>Sizing</h1>
   <button id="enableTestSizingMode">Test Sizing</button>
   <input id="enableDragResize" type="checkbox">Enable drag resizing</input>

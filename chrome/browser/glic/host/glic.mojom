@@ -263,7 +263,7 @@ interface WebClientHandler {
       => (TabData? tab_data);
 
   // Opens the glic settings page.
-  OpenGlicSettingsPage();
+  OpenGlicSettingsPage(OpenSettingsOptions options);
 
   // Closes the Glic panel.
   ClosePanel();
@@ -688,6 +688,23 @@ enum WebClientSizingMode {
   // The web client resizes its content to fit the window size.
   // This can be tested using "--glic-sizing-fit-window".
   kFitWindow,
+};
+
+// Fields of interest from the Glic settings page.
+[Stable, Extensible]
+enum SettingsPageField {
+  [Default] kNone = 0,
+  // The OS hotkey configuration field.
+  kOsHotkey,
+  // The OS entrypoint enabling field.
+  kOsEntrypointToggle,
+};
+
+// Optional parameters for the openGlicSettingsPage function.
+struct OpenSettingsOptions {
+  // Optionally select a field to be highlighted while opening the Glic settings
+  // page.
+  SettingsPageField highlightField;
 };
 
 //

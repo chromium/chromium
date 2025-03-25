@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/glic/glic_settings_util.h"
+
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,18 +19,6 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
-
-namespace glic {
-
-void OpenGlicSettingsPage(Profile* profile) {
-  NavigateParams params(profile,
-                        chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage),
-                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
-  Navigate(&params);
-}
-
-}  // namespace glic
 
 namespace {
 
@@ -58,6 +48,14 @@ void OpenGlicSettingsPageWithPromo(Profile* profile,
 }  // namespace
 
 namespace glic {
+
+void OpenGlicSettingsPage(Profile* profile) {
+  NavigateParams params(profile,
+                        chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage),
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
+  Navigate(&params);
+}
 
 void OpenGlicOsToggleSetting(Profile* profile) {
   ShowPromoInPage::Params params;

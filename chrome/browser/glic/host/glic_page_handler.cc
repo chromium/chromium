@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -364,8 +365,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              std::move(callback));
   }
 
-  void OpenGlicSettingsPage() override {
-    glic_service_->OpenGlicSettingsPage();
+  void OpenGlicSettingsPage(mojom::OpenSettingsOptionsPtr options) override {
+    switch (options->highlightField) {
+      case mojom::SettingsPageField::kOsHotkey:
+        ::glic::OpenGlicKeyboardShortcutSetting(profile_);
+        break;
+      case mojom::SettingsPageField::kOsEntrypointToggle:
+        ::glic::OpenGlicOsToggleSetting(profile_);
+        break;
+      case mojom::SettingsPageField::kNone:  // Default value.
+        ::glic::OpenGlicSettingsPage(profile_);
+        break;
+    }
   }
 
   void ClosePanel() override { glic_service_->ClosePanel(); }

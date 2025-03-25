@@ -19,13 +19,11 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -216,10 +214,6 @@ void GlicKeyedService::CreateTab(
     tab_data->url = url;
   }
   std::move(callback).Run(std::move(tab_data));
-}
-
-void GlicKeyedService::OpenGlicSettingsPage() {
-  ::glic::OpenGlicSettingsPage(profile_);
 }
 
 void GlicKeyedService::ClosePanel() {
