@@ -218,11 +218,6 @@ class StaticMap {
     return instance;
   }
 
-  // Workaround for http://crbug.com/393942204
-  void Unused() {
-    absl::MutexLock l(&map_lock_);
-  }
-
   absl::Mutex map_lock_;
   MapType internal_map_;
 };
