@@ -26,7 +26,6 @@ import androidx.core.widget.ImageViewCompat;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.browser.feed.FeedFeatures;
-import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -578,8 +577,6 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     private void displayMenu(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
-        FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_FEED_HEADER_MENU);
-
         if (listItems == null) {
             assert false : "No list items model to display the menu";
             return;

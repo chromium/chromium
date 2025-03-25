@@ -1138,7 +1138,6 @@ public class FeedSurfaceMediator
         // Model and stream visibility set in {@link #updateSectionHeader}
         // which is called by the prefService observer.
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, isExpanded);
-        FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_TOGGLED_FEED);
         SuggestionsMetrics.recordArticlesListVisible(mProfile);
 
         int streamType =
@@ -1358,7 +1357,6 @@ public class FeedSurfaceMediator
             Intent intent = new Intent(mContext, FeedManagementActivity.class);
             intent.putExtra(FeedManagementActivity.INITIATING_STREAM_TYPE_EXTRA, feedType);
             FeedServiceBridge.reportOtherUserAction(feedType, FeedUserActionType.TAPPED_MANAGE);
-            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE);
             mContext.startActivity(intent);
         } else if (itemId == R.id.ntp_feed_header_menu_item_activity) {
             mActionDelegate.openUrl(
@@ -1366,25 +1364,21 @@ public class FeedSurfaceMediator
                     new LoadUrlParams("https://myactivity.google.com/myactivity?product=50"));
             FeedServiceBridge.reportOtherUserAction(
                     feedType, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
-            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MY_ACTIVITY);
         } else if (itemId == R.id.ntp_feed_header_menu_item_interest) {
             mActionDelegate.openUrl(
                     WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://www.google.com/preferences/interests"));
             FeedServiceBridge.reportOtherUserAction(
                     feedType, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
-            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
         } else if (itemId == R.id.ntp_feed_header_menu_item_reactions) {
             mActionDelegate.openUrl(
                     WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://www.google.com/search/contributions/reactions"));
             FeedServiceBridge.reportOtherUserAction(
                     feedType, FeedUserActionType.TAPPED_MANAGE_REACTIONS);
-            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
         } else if (itemId == R.id.ntp_feed_header_menu_item_learn) {
             mActionDelegate.openHelpPage();
             FeedServiceBridge.reportOtherUserAction(feedType, FeedUserActionType.TAPPED_LEARN_MORE);
-            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_LEARN_MORE);
         } else if (itemId == R.id.ntp_feed_header_menu_item_toggle_switch) {
             onSectionHeaderToggled();
         } else {
