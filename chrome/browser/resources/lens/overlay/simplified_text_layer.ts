@@ -75,6 +75,8 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   // this class needing to call getBoundingClientRect()
   private selectionOverlayRect: DOMRect;
   private listenerIds: number[] = [];
+  // Whether the user is in the middle of selecting a new region.
+  private isSelectingRegion: boolean = false;
   // Timeout for onTextReceived for the full image response text. The selected
   // region context menu should not be shown until either the text is received
   // or the timeout elapses.      ;
@@ -159,6 +161,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   onSelectionStart(): void {
+    this.isSelectingRegion = true;
     this.hasActionedText = false;
     // Hide highlighted lines but do not clear them in order to allow them to
     // fade out.
@@ -167,6 +170,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   onSelectionFinish(): void {
+    this.isSelectingRegion = false;
     // Clear the previous region selection text response as a new selection has
     // been made. Also clear any timeouts that also pertained to the last region
     // response.
@@ -276,6 +280,12 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   private onRegionTextReceived(text: Text) {
+    // If the user is currently selecting a new region, ignore any text received
+    // for the old region.
+    if (this.isSelectingRegion) {
+      return;
+    }
+
     // If there was rendered text, log a text gleam render end event.
     if (this.regionTextResponse &&
         this.regionTextResponse.receivedWords.length > 0) {

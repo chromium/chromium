@@ -565,4 +565,34 @@ suite('SimplifiedSelection', function() {
         (expectedLine2.y - expectedLine2.height / 2),
         secondRect.top / bodyRect.height, threshold);
   });
+
+  test('IgnoreTextReceivedWhileSelectingRegion', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+    // There should no highlighted lines.
+    await waitAfterNextRender(textLayerElement);
+    assertEquals(
+        0,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+
+    // Receiving text mid-selection should not be used.
+    textLayerElement.onSelectionStart();
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    textLayerElement.onSelectionFinish();
+
+    // There should still be no highlighted lines.
+    await waitAfterNextRender(textLayerElement);
+    assertEquals(
+        0,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+
+    // Text receievd now should render highlighted lines on the overlay.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+    assertEquals(
+        2,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+  });
 });
