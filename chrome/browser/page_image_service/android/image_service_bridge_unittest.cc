@@ -42,8 +42,7 @@ class ImageServiceBridgeTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager_->CreateTestingProfile("ImageServiceBridgeTest",
-                                                      /*testing_factories=*/{});
+    profile_ = profile_manager_->CreateTestingProfile("ImageServiceBridgeTest");
     identity_test_environment_ =
         std::make_unique<signin::IdentityTestEnvironment>();
 

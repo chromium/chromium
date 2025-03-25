@@ -121,7 +121,7 @@ class IsGuestModeEnabledTest : public testing::TestWithParam<bool> {
         /*avatar_id=*/0, /*testing_factories=*/{},
         /*is_supervised_profile=*/is_subject_to_parental_controls,
         /*is_new_profile=*/std::nullopt,
-        /*policy_service=*/std::nullopt, /*is_main_profile=*/false,
+        /*policy_service=*/std::nullopt,
         /*shared_url_loader_factory=*/nullptr);
 
     return profile;

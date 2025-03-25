@@ -172,7 +172,7 @@ void IsolatedWebAppTest::InstallComponentAsync(
 void IsolatedWebAppTest::SetUp() {
   ASSERT_TRUE(profile_manager_.SetUp());
   profile_ = profile_manager_.CreateTestingProfile(
-      TestingProfile::kDefaultProfileUserName, /*is_main_profile=*/true,
+      TestingProfile::kDefaultProfileUserName, /*testing_factories=*/{},
       url_loader_factory_.GetSafeWeakWrapper());
 
 #if BUILDFLAG(ENABLE_NACL)
