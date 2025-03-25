@@ -11,7 +11,7 @@ promise_test(async () => {
   await session.prompt("Please write a sentence in English.");
   // Register the event listener.
   const promise = new Promise(resolve => {
-    session.addEventListener("contextoverflow", () => {
+    session.addEventListener("quotaoverflow", () => {
       resolve(true);
     });
   });
@@ -22,4 +22,4 @@ promise_test(async () => {
   // Destroy the session here to stop the prompt, so that the next test can run
   // faster.
   session.destroy();
-}, "event listener should be triggered when the context overflows.");
+}, "event listener should be triggered when the quota overflows.");

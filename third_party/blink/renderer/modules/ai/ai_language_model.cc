@@ -451,7 +451,7 @@ ScriptPromise<IDLString> AILanguageModel::prompt(
       AIMetrics::AISessionType::kLanguageModel,
       WTF::BindOnce(&AILanguageModel::OnResponseComplete,
                     WrapWeakPersistent(this)),
-      WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
+      WTF::BindRepeating(&AILanguageModel::OnQuotaOverflow,
                          WrapWeakPersistent(this)));
   language_model_remote_->Prompt(std::move(prompts).value(),
                                  std::move(pending_remote));
@@ -513,7 +513,7 @@ ReadableStream* AILanguageModel::promptStreaming(
           AIMetrics::AISessionType::kLanguageModel,
           WTF::BindOnce(&AILanguageModel::OnResponseComplete,
                         WrapWeakPersistent(this)),
-          WTF::BindRepeating(&AILanguageModel::OnContextOverflow,
+          WTF::BindRepeating(&AILanguageModel::OnQuotaOverflow,
                              WrapWeakPersistent(this)));
 
   language_model_remote_->Prompt(std::move(prompts).value(),
@@ -631,8 +631,8 @@ scoped_refptr<base::SequencedTaskRunner> AILanguageModel::GetTaskRunner() {
   return task_runner_;
 }
 
-void AILanguageModel::OnContextOverflow() {
-  DispatchEvent(*Event::Create(event_type_names::kContextoverflow));
+void AILanguageModel::OnQuotaOverflow() {
+  DispatchEvent(*Event::Create(event_type_names::kQuotaoverflow));
 }
 
 }  // namespace blink

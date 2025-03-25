@@ -49,7 +49,7 @@ void EchoAILanguageModel::DoMockExecution(
   if (current_tokens_ >
       EchoAIManagerImpl::kMaxContextSizeInTokens - input.size()) {
     current_tokens_ = input.size();
-    responder->OnContextOverflow();
+    responder->OnQuotaOverflow();
   }
   current_tokens_ += input.size();
   responder->OnStreaming(kResponsePrefix,

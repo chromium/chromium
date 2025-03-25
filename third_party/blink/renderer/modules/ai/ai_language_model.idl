@@ -57,7 +57,7 @@ interface AILanguageModel : EventTarget {
   [Measure]
   readonly attribute float temperature;
 
-  attribute EventHandler oncontextoverflow;
+  attribute EventHandler onquotaoverflow;
 
   [
     Measure,

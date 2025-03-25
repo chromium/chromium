@@ -87,5 +87,5 @@ interface ModelStreamingResponder {
   // order to make space for the newly added items.
   // This might be called multiple times after prompting, but it won't happen
   // after `OnCompletion()` or `OnError()`.
-  OnContextOverflow();
+  OnQuotaOverflow();
 };

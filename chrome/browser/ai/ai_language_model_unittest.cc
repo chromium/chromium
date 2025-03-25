@@ -658,7 +658,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                   action);
             }));
 
-    EXPECT_CALL(mock_responder_2, OnContextOverflow())
+    EXPECT_CALL(mock_responder_2, OnQuotaOverflow())
         .Times(should_overflow_context ? 1 : 0);
 
     EXPECT_CALL(mock_responder_1, OnCompletion(_))
@@ -933,7 +933,7 @@ TEST_P(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
   });
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithContextOverflow) {
+TEST_P(AILanguageModelTest, PromptSessionWithQuotaOverflow) {
   RunPromptTest({.prompt_input = kTestPrompt,
                  .expected_prompt = kExpectedFormattedTestPrompt,
                  .should_overflow_context = true});
@@ -969,13 +969,13 @@ TEST_P(AILanguageModelTest, PromptBeforeDestroy) {
 
 // Tests that the session will call `AddContext()` from the second prompt when
 // there is no context overflow.
-TEST_P(AILanguageModelTest, PromptWithHistoryWithoutContextOverflow) {
+TEST_P(AILanguageModelTest, PromptWithHistoryWithoutQuotaOverflow) {
   TestSessionAddContext(/*should_overflow_context=*/false);
 }
 
 // Tests that the session will not call `AddContext()` from the second prompt
 // when there is context overflow.
-TEST_P(AILanguageModelTest, PromptWithHistoryWithContextOverflow) {
+TEST_P(AILanguageModelTest, PromptWithHistoryWithQuotaOverflow) {
   TestSessionAddContext(/*should_overflow_context=*/true);
 }
 

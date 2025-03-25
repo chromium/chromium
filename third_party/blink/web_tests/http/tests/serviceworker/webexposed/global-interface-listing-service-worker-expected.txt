@@ -29,7 +29,7 @@ interface AILanguageModel : EventTarget
     attribute @@toStringTag
     getter inputQuota
     getter inputUsage
-    getter oncontextoverflow
+    getter onquotaoverflow
     getter temperature
     getter topK
     method clone
@@ -38,7 +38,7 @@ interface AILanguageModel : EventTarget
     method measureInputUsage
     method prompt
     method promptStreaming
-    setter oncontextoverflow
+    setter onquotaoverflow
 interface AILanguageModelFactory
     attribute @@toStringTag
     method availability

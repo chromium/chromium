@@ -437,7 +437,7 @@ void AILanguageModel::ModelExecutionCallback(
                          current_response_));
       if (context_->AddContextItem(std::move(copy)) ==
           Context::SpaceReservationResult::kSpaceMadeAvailable) {
-        responder->OnContextOverflow();
+        responder->OnQuotaOverflow();
       }
     }
     responder->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
@@ -478,7 +478,7 @@ void AILanguageModel::PromptGetInputSizeCompletion(
   }
 
   if (space_reserved == Context::SpaceReservationResult::kSpaceMadeAvailable) {
-    responder->OnContextOverflow();
+    responder->OnQuotaOverflow();
   }
   current_item.tokens = number_of_tokens;
 

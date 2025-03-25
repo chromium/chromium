@@ -46,7 +46,7 @@ class AILanguageModel final : public EventTarget,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextoverflow, kContextoverflow)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(quotaoverflow, kQuotaoverflow)
 
   // ai_language_model.idl implementation.
   ScriptPromise<IDLString> prompt(ScriptState* script_state,
@@ -80,7 +80,7 @@ class AILanguageModel final : public EventTarget,
  private:
   void OnResponseComplete(
       mojom::blink::ModelExecutionContextInfoPtr context_info);
-  void OnContextOverflow();
+  void OnQuotaOverflow();
 
   uint64_t input_usage_;
   uint64_t input_quota_ = 0;

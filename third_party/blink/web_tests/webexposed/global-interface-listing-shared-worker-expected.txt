@@ -34,7 +34,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter inputQuota
 [Worker]     getter inputUsage
-[Worker]     getter oncontextoverflow
+[Worker]     getter onquotaoverflow
 [Worker]     getter temperature
 [Worker]     getter topK
 [Worker]     method clone
@@ -43,7 +43,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method measureInputUsage
 [Worker]     method prompt
 [Worker]     method promptStreaming
-[Worker]     setter oncontextoverflow
+[Worker]     setter onquotaoverflow
 [Worker] interface AILanguageModelFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method availability
