@@ -11697,6 +11697,21 @@
             ]
         }
     ],
+    "IOSAutofillCorrectUserEditedBitInParsedField": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillCorrectUserEditedBitInParsedField"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillFixPostFillingPaymentSheet": [
         {
             "platforms": [
