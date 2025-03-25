@@ -35,7 +35,8 @@ class DisruptiveNotificationPermissionsManager {
     kNotDisruptive = 6,
     kRevoke = 7,
     kNoRevokeDefaultBlock = 8,
-    kMaxValue = kNoRevokeDefaultBlock,
+    kAlreadyFalsePositive = 9,
+    kMaxValue = kAlreadyFalsePositive,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:DisruptiveNotificationRevocationResult)
 
