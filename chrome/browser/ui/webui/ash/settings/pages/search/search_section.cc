@@ -436,12 +436,6 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isLobsterSettingsToggleVisible",
                           IsLobsterSettingsToggleVisible(profile()));
 
-  // We should not use `CanShowSunfishUi` here, as it is false when the toggle
-  // is false.
-  // TODO: crbug.com/395736972 - Add an enterprise policy check.
-  html_source->AddBoolean("isSunfishSettingsToggleVisible",
-                          ash::features::IsSunfishFeatureEnabled());
-
   html_source->AddBoolean("isScannerSettingsToggleVisible",
                           IsScannerSettingsToggleVisible());
 

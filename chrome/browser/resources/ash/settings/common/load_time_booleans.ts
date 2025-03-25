@@ -111,10 +111,6 @@ export function isLobsterSettingsToggleVisible(): boolean {
   return loadTimeData.getBoolean('isLobsterSettingsToggleVisible');
 }
 
-export function isSunfishSettingsToggleVisible(): boolean {
-  return loadTimeData.getBoolean('isSunfishSettingsToggleVisible');
-}
-
 export function isScannerSettingsToggleVisible(): boolean {
   return loadTimeData.getBoolean('isScannerSettingsToggleVisible');
 }

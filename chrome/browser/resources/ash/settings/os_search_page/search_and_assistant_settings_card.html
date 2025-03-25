@@ -180,17 +180,6 @@
     </iron-collapse>
   </template>
 
-  <template is="dom-if" if="[[isSunfishSettingsToggleVisible_]]">
-    <!-- TODO: b/395736972 - Localise the label and add an icon, sublabel and
-        learn more link. -->
-    <settings-toggle-button
-        id="sunfishToggle"
-        class="hr"
-        pref="{{prefs.ash.capture_mode.sunfish_enabled}}"
-        label="Enable Sunfish"
-        deep-link-focus-id$="[[Setting.kSunfishOnOff]]">
-    </settings-toggle-button>
-  </template>
   <template is="dom-if" if="[[isScannerSettingsToggleVisible_]]">
     <!-- TODO: crbug.com/404069127 - Add a learn more link. -->
     <!-- \`restamp\` is needed to ensure that deep links work correctly if
