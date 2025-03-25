@@ -60,7 +60,7 @@ class AXTreeFixingScreenAIService final {
     // is done asynchronously, and requires both downloading and loading the
     // ScreenAI model. |This| service will inform the client once it is
     // initialized, beforehand requests will fail.
-    virtual void OnServiceStateChanged(bool service_ready);
+    virtual void OnServiceStateChanged(bool service_ready) = 0;
   };
 
   AXTreeFixingScreenAIService(MainNodeIdentificationDelegate& delegate,
