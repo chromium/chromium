@@ -84,7 +84,7 @@ will be necessary to check for changes to the property in `changedProperties`.
 This is also demonstrated in the example below.
 
 Suppose the Lit child has a property with `notify: true` as follows:
-```
+```ts
 static override get properties() {
   return {
     foo: {
@@ -97,14 +97,14 @@ static override get properties() {
 
 This property is also bound to a parent element that listens for the
 `-changed` event as follows:
-```
+```html
 <foo-child ?foo="${this.foo_}" on-foo-changed="${this.onFooChanged_}">
 </foo-child>
 <demo-child id="demo"></demo-child>
 ```
 
 The parent TypeScript code could look like this:
-```
+```ts
 static override get properties() {
   return {
     foo_: {type: Boolean},
@@ -148,7 +148,7 @@ empty at startup. The following example would reproduce this bug and
 have an empty `<select>` displayed at startup.
 
 `.html.ts` file with `<select>` bug:
-```
+```html
 <select .value="${this.mySelectValue}" @change="${this.onSelectChange_}">
   <option value="${MyEnum.FIRST}">Option 1</option>
   <option value="${MyEnum.SECOND}">Option 2</option>
@@ -157,7 +157,7 @@ have an empty `<select>` displayed at startup.
 
 Corresponding `.ts`. Note that the bug manifests even though `mySelectValue`
 is being initialized to a valid option.
-```
+```ts
 static get properties() {
   return {
     mySelectValue: {type: String},
@@ -175,7 +175,7 @@ The current recommended workaround is to instead bind to the `selected`
 attribute on each `<option>`, i.e.:
 
 `.html.ts` file:
-```
+```html
 <select @change="${this.onSelectChange_}">
   <option value="${MyEnum.FIRST}"
       ?selected="${this.isSelected_(MyEnum.FIRST)}">
@@ -189,7 +189,7 @@ attribute on each `<option>`, i.e.:
 ```
 
 Corresponding `.ts` file:
-```
+```ts
 static get properties() {
   return {
     mySelectValue: {type: String},
@@ -313,7 +313,7 @@ template and its styling, and a `.ts` file containing the element definition.
 ***
 
 Example `.ts` file:
-```
+```ts
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -371,7 +371,7 @@ customElements.define(MyExampleElement.is, MyExampleElement);
 ```
 
 Example CSS file:
-```
+```css
 /* Copyright 2024 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
@@ -406,7 +406,7 @@ generate the wrapper `.css.ts` file.
 ***
 
 Example `.html.ts `file:
-```
+```ts
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -425,7 +425,7 @@ export function getHtml(this: MyExampleElement) {
 ```
 
 `BUILD.gn` file configuration:
-```
+```python
 build_webui("build") {
   …
   # Use non_web_component_files since the .html.ts file is checked in.
@@ -493,12 +493,12 @@ in these cases the computation method can be used directly in the template
 without specifying parameters. An example of this follows.
 
 Polymer HTML template snippet:
-```
+```html
 <cr-button hidden="[[hideButton_]]">Click Me</cr-button>
 ```
 
 In the Polymer element definition:
-```
+```ts
 static get properties() {
   return {
    loading: Boolean,
@@ -519,12 +519,12 @@ private computeHideButton_(): boolean {
 This could be rewritten in Lit, omitting the `hideButton_` property entirely.
 
 Equivalent Lit HTML template snippet:
-```
+```html
 <cr-button ?hidden="${this.computeHideButton_()}">Click Me</cr-button>
 ```
 
 Equivalent Lit element definition:
-```
+```ts
 static get properties() {
   return {
    loading: {type: Boolean},
@@ -543,7 +543,7 @@ In other cases, where computed properties are bound to other elements, used as
 attributes, or are needed for other internal logic, they can be computed in the
 `willUpdate()` lifecycle callback when the properties that they depend on change
 as in the following example:
-```
+```ts
 override willUpdate(changedProperties: PropertyValues<this>) {
   super.willUpdate(changedProperties);
 
@@ -567,7 +567,7 @@ internal logic or requires accessing the element’s DOM:
     than triggering a second round of updates.
 
 Consider the following Polymer code, with a complex observer:
-```
+```ts
 static get properties() {
   return {
    max: Number,
@@ -591,7 +591,7 @@ private onValueSet_() {
 
 The Lit migrated code would look as follows, with the observer code split
 into `willUpdate()` and `updated()` based on whether it accesses the DOM:
-```
+```ts
 static override get properties() {
   return {
    max: {type: Number},
@@ -630,7 +630,7 @@ statements in the `.html.ts` file of the form
 `cr-toolbar`:
 
 Polymer `cr_toolbar.html`:
-```
+```html
 <div id="content">
   <template is="dom-if" if="[[showMenu]]" restamp>
     <cr-icon-button id="menuButton" class="no-overlap"
@@ -642,7 +642,7 @@ Polymer `cr_toolbar.html`:
 ```
 
 Lit `cr_toolbar.html.ts`:
-```
+```html
 <div id="content">
   ${this.showMenu ? html`
     <cr-icon-button id="menuButton" class="no-overlap"
@@ -677,7 +677,7 @@ One possibility is to set the index or item as data attributes on elements that
 fire events, as seen in the example that follows.
 
 From the Polymer element template:
-```
+```html
 <template is="dom-repeat" items="[[listItems]]">
   <div class="item-container [[getSelectedClass_(item, selectedItem)]]">
     <cr-button id="[[getItemId_(index)]]" on-click="onItemClick_">
@@ -688,7 +688,7 @@ From the Polymer element template:
 ```
 
 From the Polymer element definition:
-```
+```ts
 private getItemId_(index: number): string {
   return 'listItemId' + index;
 }
@@ -709,7 +709,7 @@ private onItemClick_(e: DomRepeatEvent<ListItemType>) {
 ```
 
 Lit template:
-```
+```ts
 ${this.listItems.map((item, index) => html`
   <div class="item-container ${this.getSelectedClass_(item)}">
     <cr-button id="${this.getItemId_(index)}"
@@ -725,7 +725,7 @@ Note the `data-index` setting the `data` attribute on the
 ***
 
 From the Lit element definition file:
-```
+```ts
 protected getItemId_(index: number): string {
   return 'listItemId' + index;
 }
@@ -763,7 +763,7 @@ An example based on a simplified form of `cr-url-list-item`, which uses
 composition, follows.
 
 From the Polymer `.html` template:
-```
+```html
 <div class="folder-and-count">
   <template is="dom-if" if="[[shouldShowFolderImages_(size)]]" restamp>
     <template is="dom-repeat" items="[[imageUrls]]"
@@ -778,7 +778,7 @@ From the Polymer `.html` template:
 ```
 
 From the Polymer element definition:
-```
+```ts
 private shouldShowImageUrl_(_url: string, index: number) {
   return index <= 1;
 }
@@ -798,7 +798,7 @@ private getDisplayedCount_() {
 ```
 
 From the Lit `.html.ts` template file:
-```
+```ts
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CrUrlListItemElement} from './cr_url_list_item.js';
@@ -842,7 +842,7 @@ export function getHtml(this: CrUrlListItemElement) {
 ```
 
 From the Lit element definition:
-```
+```ts
 protected getDisplayedCount_(): string {
   if (this.count && this.count > 999) {
     // The square to display the count only fits 3 characters.
@@ -891,7 +891,7 @@ their `updated()` lifecycle callback whenever any property that may impact
 their height has changed. See example below:
 
 From the `list_parent.html` template (`iron-list` client so must be Polymer)
-```
+```html
 <iron-list id="list" items="[[listItems_]]" as="item">
   <template>
     <custom-item description="[[item.description]]" name="[[item.name]]"
@@ -902,7 +902,7 @@ From the `list_parent.html` template (`iron-list` client so must be Polymer)
 ```
 
 From the child `custom_item.html.ts` template:
-```
+```html
 <div class="name">${this.name}</div>
 <div class="description" ?hidden="${!this.description}">
   ${this.description}
@@ -916,7 +916,7 @@ display gaps or overlap in the list. To prevent this, the child item should
 fire `iron-resize` in `updated()` if its `description` property changes.
 
 From `custom_item.ts`:
-```
+```ts
 override updated(changedProperties: PropertyValues<this>) {
   super.updated(changedProperties);
   if (changedProperties.has('description')) {
@@ -929,7 +929,7 @@ override updated(changedProperties: PropertyValues<this>) {
 ### Testing
 
 A large number of unit tests do something like the following:
-```
+```ts
 // Validate that the input is disabled when invalid is set.
 myTestElement.invalid = true;
 assertTrue(myTestElement.$.input.disabled);
@@ -948,7 +948,7 @@ to do this:
    render cycle).
 
 Updated example:
-```
+```ts
 // Validate that the input is disabled when invalid is set.
 myTestElement.invalid = true;
 await microtasksFinished();

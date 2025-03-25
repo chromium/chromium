@@ -124,7 +124,7 @@ Third, **add dependencies and corresponding path mappings** in the build
 targets that depend on the new shared library. This is best demonstrated with
 an example:
 
-```
+```python
 build_webui("build_my_webui") {
   grd_prefix = "my_webui"
   # Other params here
