@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,16 +13,16 @@ chrome.test.getConfig(function(config) {
     chrome.tabs.onUpdated.removeListener(listener);
 
     chrome.test.runTests([
-      function executeJavaScriptFileWithBadEncodingShouldFail() {
+      function executeJavaScriptFileWithBadMimeTypeShouldFail() {
         chrome.tabs.executeScript(tabId, {
-          file: 'bad_encoding/bad_encoding.js'
+          file: 'bad_mime_type.json'
         }, chrome.test.callbackFail(
-            'Could not load file \'bad_encoding/bad_encoding.js\' for ' +
-            'content script. It isn\'t UTF-8 encoded.'));
+            'Could not load file \'bad_mime_type.json\' for content script, ' +
+            'content scripts can only be loaded from supported JavaScript ' +
+            'files such as .js files.'));
       }
     ]);
   });
 
   chrome.tabs.create({ url: testUrl });
 });
-
