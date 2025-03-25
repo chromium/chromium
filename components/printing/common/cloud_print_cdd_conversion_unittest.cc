@@ -16,6 +16,9 @@ namespace cloud_print {
 
 namespace {
 
+using testing::Eq;
+using testing::Pointee;
+
 constexpr char kKeyPrinter[] = "printer";
 constexpr char kKeyVersion[] = "version";
 constexpr char kValueVersion[] = "1.0";
@@ -295,7 +298,8 @@ const base::Value::Dict* GetPrinterDict(const base::Value& caps_value) {
       caps_dict->size() != 2u) {
     return nullptr;
   }
-  base::ExpectDictStringValue(kValueVersion, *caps_dict, kKeyVersion);
+  EXPECT_THAT(caps_dict->FindString(kKeyVersion),
+              testing::Pointee(Eq(kValueVersion)));
   return caps_dict->FindDict(kKeyPrinter);
 }
 
@@ -312,27 +316,27 @@ TEST(CloudPrintCddConversionTest, ValidCloudPrintCddConversion) {
 #else
   ASSERT_EQ(9u, printer_dict->size());
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  base::ExpectDictValue(base::test::ParseJson(kExpectedCollateDefaultTrue),
-                        *printer_dict, "collate");
-  base::ExpectDictValue(base::test::ParseJson(kExpectedColor), *printer_dict,
-                        "color");
-  base::ExpectDictValue(base::test::ParseJson(kExpectedCopies), *printer_dict,
-                        "copies");
-  base::ExpectDictValue(base::test::ParseJson(kExpectedDpi), *printer_dict,
-                        "dpi");
-  base::ExpectDictValue(base::test::ParseJson(kExpectedDuplex), *printer_dict,
-                        "duplex");
-  base::ExpectDictValue(base::test::ParseJson(kExpectedMediaSize),
-                        *printer_dict, "media_size");
-  base::ExpectDictValue(base::test::ParseJson(kExpectedMediaType),
-                        *printer_dict, "media_type");
-  base::ExpectDictValue(base::test::ParseJson(kExpectedPageOrientation),
-                        *printer_dict, "page_orientation");
-  base::ExpectDictValue(base::test::ParseJson(kExpectedSupportedContentType),
-                        *printer_dict, "supported_content_type");
+
+  EXPECT_THAT(
+      *printer_dict,
+      base::test::IsSupersetOfValue(
+          base::Value::Dict()
+              .Set("collate",
+                   base::test::ParseJson(kExpectedCollateDefaultTrue))
+              .Set("color", base::test::ParseJson(kExpectedColor))
+              .Set("copies", base::test::ParseJson(kExpectedCopies))
+              .Set("dpi", base::test::ParseJson(kExpectedDpi))
+              .Set("duplex", base::test::ParseJson(kExpectedDuplex))
+              .Set("media_size", base::test::ParseJson(kExpectedMediaSize))
+              .Set("media_type", base::test::ParseJson(kExpectedMediaType))
+              .Set("page_orientation",
+                   base::test::ParseJson(kExpectedPageOrientation))
+              .Set("supported_content_type",
+                   base::test::ParseJson(kExpectedSupportedContentType))));
+
 #if BUILDFLAG(IS_CHROMEOS)
-  base::ExpectDictValue(base::test::ParseJson(kExpectedPinSupportedFalse),
-                        *printer_dict, "pin");
+  EXPECT_THAT(printer_dict->Find("pin"),
+              Pointee(base::test::IsJson(kExpectedPinSupportedFalse)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -367,8 +371,8 @@ TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
 #else
   ASSERT_EQ(9u, printer_dict->size());
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  base::ExpectDictValue(base::test::ParseJson(kExpectedCollateDefaultFalse),
-                        *printer_dict, "collate");
+  EXPECT_THAT(printer_dict->Find("collate"),
+              Pointee(base::test::IsJson(kExpectedCollateDefaultFalse)));
 }
 
 TEST(CloudPrintCddConversionTest, WiderPaper) {
@@ -390,8 +394,8 @@ TEST(CloudPrintCddConversionTest, WiderPaper) {
 #else
   ASSERT_EQ(9u, printer_dict->size());
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  base::ExpectDictValue(base::test::ParseJson(kExpectedMediaSizeWithWiderPaper),
-                        *printer_dict, "media_size");
+  EXPECT_THAT(printer_dict->Find("media_size"),
+              Pointee(base::test::IsJson(kExpectedMediaSizeWithWiderPaper)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -417,10 +421,13 @@ TEST(CloudPrintCddConversionTest, PinAndAdvancedCapabilities) {
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(11u, printer_dict->size());
-  base::ExpectDictValue(base::test::ParseJson(kExpectedPinSupportedTrue),
-                        *printer_dict, "pin");
-  base::ExpectDictValue(base::test::ParseJson(kExpectedAdvancedCapabilities),
-                        *printer_dict, "vendor_capability");
+  EXPECT_THAT(
+      *printer_dict,
+      base::test::IsSupersetOfValue(
+          base::Value::Dict()
+              .Set("pin", base::test::ParseJson(kExpectedPinSupportedTrue))
+              .Set("vendor_capability",
+                   base::test::ParseJson(kExpectedAdvancedCapabilities))));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -435,8 +442,8 @@ TEST(CloudPrintCddConversionTest, PageOutputQualityWithDefaultQuality) {
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(10u, printer_dict->size());
-  base::ExpectDictValue(base::test::ParseJson(kExpectedPageOutputQuality),
-                        *printer_dict, "vendor_capability");
+  EXPECT_THAT(printer_dict->Find("vendor_capability"),
+              Pointee(base::test::IsJson(kExpectedPageOutputQuality)));
 }
 
 TEST(CloudPrintCddConversionTest, PageOutputQualityNullDefaultQuality) {
@@ -448,9 +455,9 @@ TEST(CloudPrintCddConversionTest, PageOutputQualityNullDefaultQuality) {
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(10u, printer_dict->size());
-  base::ExpectDictValue(
-      base::test::ParseJson(kExpectedPageOutputQualityNullDefault),
-      *printer_dict, "vendor_capability");
+  EXPECT_THAT(
+      printer_dict->Find("vendor_capability"),
+      Pointee(base::test::IsJson(kExpectedPageOutputQualityNullDefault)));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
