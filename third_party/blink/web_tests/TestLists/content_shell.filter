@@ -576,9 +576,6 @@ external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.r
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.transfer.to.imagebitmap.html
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.transfer.to.imagebitmap.w.html
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.transferrable.w.html
-external/wpt/html/cross-origin-embedder-policy/credentialless/service-worker.https.window.html
-external/wpt/html/cross-origin-embedder-policy/reflection-require-corp.tentative.https.any.*
-external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html
 external/wpt/html/cross-origin-opener-policy/coop-coep-sandbox.https.html
 external/wpt/html/cross-origin-opener-policy/header-parsing-non-ascii.https.html
 external/wpt/html/cross-origin-opener-policy/historical/popup-same-site-unsafe-allow-outgoing-with-same-site.https.html
