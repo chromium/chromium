@@ -32,7 +32,7 @@ class PrivacySandboxDialogView : public views::View {
   void Close();
 
  private:
-  friend class PrivacySandboxQueueTestHelper;
+  friend class PrivacySandboxQueueTestNotice;
 
   void AdsDialogNoArgsCallback(
       PrivacySandboxService::AdsDialogCallbackNoArgsEvents event);
