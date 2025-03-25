@@ -886,7 +886,14 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
 }
 
 bool Tab::IsActive() const {
-  return controller_->IsActiveTab(this);
+  if (split()) {
+    return std::ranges::any_of(controller()->GetTabsInSplit(this),
+                               [this](const Tab* split_tab) {
+                                 return controller_->IsActiveTab(split_tab);
+                               });
+  } else {
+    return controller_->IsActiveTab(this);
+  }
 }
 
 void Tab::ActiveStateChanged() {

@@ -702,14 +702,7 @@ TabStyle::SeparatorOpacities TabStyleViewsImpl::GetSeparatorOpacities(
 float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
                                              bool leading) const {
   const auto has_visible_background = [](const Tab* const tab) {
-    if (tab->IsActive() || tab->IsSelected() || tab->IsMouseHovered()) {
-      return true;
-    }
-
-    return std::ranges::any_of(
-        tab->controller()->GetTabsInSplit(tab), [](const Tab* split_tab) {
-          return split_tab->IsActive() || split_tab->IsSelected();
-        });
+    return tab->IsActive() || tab->IsSelected() || tab->IsMouseHovered();
   };
 
   // These tab states all have visible backgrounds. Separators must not
@@ -892,19 +885,11 @@ SkColor TabStyleViewsImpl::GetCurrentTabBackgroundColor(
 }
 
 TabStyle::TabSelectionState TabStyleViewsImpl::GetSelectionState() const {
-  // Split tabs should share the selection state.
-  const std::vector<Tab*> split_tabs =
-      tab()->controller()->GetTabsInSplit(tab());
-
-  const bool is_split_active = std::ranges::any_of(
-      split_tabs, [](const Tab* split_tab) { return split_tab->IsActive(); });
-  if (tab_->IsActive() || is_split_active) {
+  if (tab_->IsActive()) {
     return TabStyle::TabSelectionState::kActive;
   }
 
-  const bool is_split_selected = std::ranges::any_of(
-      split_tabs, [](const Tab* split_tab) { return split_tab->IsSelected(); });
-  if (tab_->IsSelected() || is_split_selected) {
+  if (tab_->IsSelected()) {
     return TabStyle::TabSelectionState::kSelected;
   }
 
