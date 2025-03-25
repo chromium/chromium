@@ -978,7 +978,7 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP(
                                 std::move(result_callback)));
 
   auto it = async_ops_.find(operation);
-  CHECK(it != async_ops_.end(), base::NotFatalUntil::M130);
+  CHECK(it != async_ops_.end());
   (*it)->Release();
   async_ops_.erase(it);
 }
