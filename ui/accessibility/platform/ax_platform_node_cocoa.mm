@@ -1019,12 +1019,14 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return self;
 }
 
-- (void)detach {
+- (void)detachAndNotifyDestroyed:(BOOL)shouldNotify {
   if (!_node)
     return;
   _node = nil;
-  NSAccessibilityPostNotification(
-      self, NSAccessibilityUIElementDestroyedNotification);
+  if (shouldNotify) {
+    NSAccessibilityPostNotification(
+        self, NSAccessibilityUIElementDestroyedNotification);
+  }
 }
 
 - (NSRect)boundsInScreen {
