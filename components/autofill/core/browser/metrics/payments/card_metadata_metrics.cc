@@ -112,9 +112,7 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
     // `metadata_logging_context` that we have shown at least one product
     // description so we can log it later.
     if (!card.product_description().empty()) {
-      metadata_logging_context.card_product_description_shown =
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableCardProductName);
+      metadata_logging_context.card_product_description_shown = true;
     }
 
     // If there is rich card art we received from the metadata for this card,

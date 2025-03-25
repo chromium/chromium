@@ -88,12 +88,6 @@ BASE_FEATURE(kAutofillEnableCardInfoRuntimeRetrieval,
              "AutofillEnableCardInfoRuntimeRetrieval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, card product name (instead of issuer network) will be shown in
-// Payments Autofill UI.
-BASE_FEATURE(kAutofillEnableCardProductName,
-             "AutofillEnableCardProductName",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, we will store CVC for both local and server credit cards. This
 // will also allow the users to autofill their CVCs on checkout pages.
 BASE_FEATURE(kAutofillEnableCvcStorageAndFilling,

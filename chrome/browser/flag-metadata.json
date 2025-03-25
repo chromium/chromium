@@ -647,11 +647,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-enable-card-product-name",
-    "owners": [ "vishwasuppoor@chromium.org", "siyua@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "autofill-enable-cvc-storage-and-filling",
     "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 140

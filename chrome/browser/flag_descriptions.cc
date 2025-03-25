@@ -698,12 +698,6 @@ const char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
     "When enabled, runtime retrieval of CVC along with card number and expiry "
     "from issuer for enrolled cards will be enabled during form fill.";
 
-const char kAutofillEnableCardProductNameName[] =
-    "Enable showing card product name";
-const char kAutofillEnableCardProductNameDescription[] =
-    "When enabled, card product name (instead of issuer network) will be shown "
-    "in Payments Autofill UI.";
-
 const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[] =
     "Enable logging form events to all parsed form on a web page.";
 const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[] =

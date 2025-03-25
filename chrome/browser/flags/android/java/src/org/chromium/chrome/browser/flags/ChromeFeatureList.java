@@ -206,7 +206,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableCardBenefitsForAmericanExpress";
     public static final String AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO =
             "AutofillEnableCardBenefitsForBmo";
-    public static final String AUTOFILL_ENABLE_CARD_PRODUCT_NAME = "AutofillEnableCardProductName";
     public static final String AUTOFILL_ENABLE_LOCAL_IBAN = "AutofillEnableLocalIban";
     public static final String AUTOFILL_ENABLE_SERVER_IBAN = "AutofillEnableServerIban";
     public static final String AUTOFILL_ENABLE_CVC_STORAGE = "AutofillEnableCvcStorageAndFilling";
