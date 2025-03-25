@@ -115,6 +115,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Return true if auto-disable should be blocked.
   bool ShouldBlockAutoDisable();
 
+  // Signal to BrowserAccessibilityState that a page navigation has occurred.
+  void OnPageNavigationComplete();
+
  protected:
   BrowserAccessibilityStateImpl();
 
@@ -173,7 +176,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   bool has_enabled_accessibility_in_session_ = false;
 
   // Timer used to track the time between start-up and engine first-use.
-  base::ElapsedTimer timer_;
+  base::ElapsedTimer first_use_timer_;
+
+  // Counter used to track the number of page navigations between start-up
+  // and engine first-use.
+  uint32_t num_page_navs_before_first_use_ = 0;
 
   // The time of the first user input event; if we receive multiple
   // user input events within a 30-second period and no

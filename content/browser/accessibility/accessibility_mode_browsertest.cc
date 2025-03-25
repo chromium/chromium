@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -253,6 +255,34 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddScreenReaderModeFlag) {
   EXPECT_TRUE(
       textbox2->HasStringAttribute(ax::mojom::StringAttribute::kPlaceholder));
   EXPECT_EQ(original_id, textbox2->GetId());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, TestEngineUseHistograms) {
+  base::HistogramTester histograms;
+  histograms.ExpectTotalCount("Accessibility.EngineUse.PageNavsUntilStart", 0);
+  histograms.ExpectTotalCount("Accessibility.EngineUse.TimeUntilStart", 0);
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
+
+  // We only consider it a start when AXMode::kWebContents is set.
+  ScopedAccessibilityModeOverride native_apis(ui::AXMode::kNativeAPIs);
+  histograms.ExpectTotalCount("Accessibility.EngineUse.PageNavsUntilStart", 0);
+  histograms.ExpectTotalCount("Accessibility.EngineUse.TimeUntilStart", 0);
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  // This is considered a start of the engine (the Blink a11y pipeline).
+  ScopedAccessibilityModeOverride web_contents(ui::AXMode::kWebContents);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histograms
+               .GetAllSamples("Accessibility.EngineUse.PageNavsUntilStart")
+               .empty() == false;
+  }));
+
+  histograms.ExpectTotalCount("Accessibility.EngineUse.PageNavsUntilStart", 1);
+  histograms.ExpectUniqueSample("Accessibility.EngineUse.PageNavsUntilStart", 2,
+                                1);
+  histograms.ExpectTotalCount("Accessibility.EngineUse.TimeUntilStart", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,

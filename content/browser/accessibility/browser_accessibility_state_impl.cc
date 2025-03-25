@@ -482,15 +482,10 @@ void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
             base::Unretained(this)),
         base::Seconds(kOnAccessibilityUsageUpdateDelaySecs));
   }
+}
 
-  // Track the time since start-up before the kWebContents mode was enabled,
-  // ensuring we record this value only one time.
-  if (!has_enabled_accessibility_in_session_ &&
-      GetAccessibilityMode().has_mode(ui::AXMode::kWebContents)) {
-    has_enabled_accessibility_in_session_ = true;
-    UMA_HISTOGRAM_LONG_TIMES_100("Accessibility.EngineUse.TimeUntilStart",
-                                 timer_.Elapsed());
-  }
+void BrowserAccessibilityStateImpl::OnPageNavigationComplete() {
+  ++num_page_navs_before_first_use_;
 }
 
 void BrowserAccessibilityStateImpl::OnInputEvent(
@@ -518,6 +513,16 @@ void BrowserAccessibilityStateImpl::OnModeChangedForProcess(
   ui::RecordAccessibilityModeHistograms(ui::AXHistogramPrefix::kNone, new_mode,
                                         old_mode);
 
+  // Track the time since start-up before the kWebContents mode was enabled,
+  // ensuring we record this value only one time.
+  if (!has_enabled_accessibility_in_session_ &&
+      new_mode.has_mode(ui::AXMode::kWebContents)) {
+    has_enabled_accessibility_in_session_ = true;
+    UMA_HISTOGRAM_LONG_TIMES_100("Accessibility.EngineUse.TimeUntilStart",
+                                 first_use_timer_.Elapsed());
+    UMA_HISTOGRAM_COUNTS_10000("Accessibility.EngineUse.PageNavsUntilStart",
+                               num_page_navs_before_first_use_);
+  }
   // Add a crash key with the ax_mode, to enable searching for top crashes that
   // occur when accessibility is turned on. This adds it for the browser
   // process, and elsewhere the same key is added to renderer processes.

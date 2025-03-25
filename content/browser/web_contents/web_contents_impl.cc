@@ -7145,6 +7145,8 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // |max_loaded_frame_count_| is not necessarily 1 if the navigation was
     // served from BackForwardCache.
     max_loaded_frame_count_ = GetFrameTreeSize(&primary_frame_tree_);
+
+    BrowserAccessibilityStateImpl::GetInstance()->OnPageNavigationComplete();
   }
 
   // TODO(crbug.com/40202416): MPArch GuestView: We might need to look up the
