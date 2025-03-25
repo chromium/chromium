@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -126,5 +127,16 @@ public class PasswordManagerUnavailableDialogTest {
         assertEquals(
                 ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE,
                 mDialogModel.get(ModalDialogProperties.BUTTON_STYLES));
+    }
+
+    @Test
+    public void recordsNoGmsDialogShownHistogram() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PwmDeprecationDialogsMetricsRecorder
+                                .NO_GMS_NO_PASSWORDS_DIALOG_SHOWN_HISTOGRAM,
+                        true);
+        mCoordinator.showDialog(mActivity, mModalDialogManager, null);
+        histogramWatcher.assertExpected();
     }
 }

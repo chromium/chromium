@@ -4524,6 +4524,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UPM.NoGmsNoPasswordsDialogShown"
+    enum="BooleanShown" expires_after="2025-07-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records true whenever the dialog explaining why the password manager is no
+    longer available is shown to users on devices without Google Play Services.
+    This dialog is only shown if the users have already downloaded or don't have
+    passwords left over in Chrome. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UPMUpdateSignInCredentialsSucces"
     enum="Boolean" expires_after="2025-08-24">
   <owner>izuzic@google.com</owner>

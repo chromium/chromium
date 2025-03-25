@@ -28,6 +28,9 @@ class PasswordManagerUnavailableDialogMediator implements ModalDialogProperties.
         mModalDialogManager = modalDialogManager;
         mLaunchGmsUpdate = launchGmsUpdate;
         mIsUpdateDialog = isUpdateDialog;
+        if (!isUpdateDialog) {
+            PwmDeprecationDialogsMetricsRecorder.recordNoGmsNoPasswordsDialogShown();
+        }
     }
 
     private void runPositiveButtonCallback() {
