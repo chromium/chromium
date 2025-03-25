@@ -250,6 +250,13 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 .mergeListOfTabsToGroup(Arrays.asList(newTab), parentTab, false);
     }
 
+    @Test
+    public void testDestroy() {
+        verify(mTab).addObserver(any());
+        mTabWebContentsDelegateAndroid.destroy();
+        verify(mTab).removeObserver(any());
+    }
+
     private void assertForceDarkEnabledForWebContents(boolean isEnabled) {
         Assert.assertEquals(
                 "Value of #isForceDarkWebContentEnabled is different than test settings.",
