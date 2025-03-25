@@ -34,8 +34,6 @@ class MediaItemManager;
 //
 // This object is not the only producer of items containing device pickers.
 // MediaSessionItemProducer produces items containing pickers for active media.
-//
-// On Chrome OS, this object lives on the Ash side of the Ash-Lacros split.
 class SupplementalDevicePickerProducer final
     : public global_media_controls::MediaItemProducer,
       public global_media_controls::MediaItemManagerObserver,
