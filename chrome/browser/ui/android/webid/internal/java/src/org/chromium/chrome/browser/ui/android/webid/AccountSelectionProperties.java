@@ -53,13 +53,13 @@ class AccountSelectionProperties {
     /** Properties for an account entry in AccountSelection sheet. */
     static class AccountProperties {
         static class Avatar {
-            // Name is used to create a fallback monogram Icon.
-            final String mName;
+            // Display name is used to create a fallback monogram Icon.
+            final String mDisplayName;
             final Bitmap mAvatar;
             final int mAvatarSize;
 
-            Avatar(String name, @Nullable Bitmap avatar, int avatarSize) {
-                mName = name;
+            Avatar(String displayName, @Nullable Bitmap avatar, int avatarSize) {
+                mDisplayName = displayName;
                 mAvatar = avatar;
                 mAvatarSize = avatarSize;
             }
