@@ -720,6 +720,7 @@ float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
 
   // Separator should never be shown between split tabs.
   if (right_tab && right_tab->split().has_value() && left_tab &&
+      left_tab->split().has_value() &&
       right_tab->split().value() == left_tab->split().value()) {
     return 0.0f;
   }
