@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 
+#import <optional>
+
 #import "components/google/core/common/google_util.h"
 #import "components/lens/lens_url_utils.h"
 #import "net/base/url_util.h"
@@ -57,6 +59,19 @@ bool IsGoogleRedirection(const GURL& url,
                          web::WebStatePolicyDecider::RequestInfo request_info) {
   return IsGoogleHostURL(url) &&
          (request_info.transition_type & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+}
+
+GURL ProcessURLForHistory(const GURL& url) {
+  if (IsGoogleHostURL(url)) {
+    std::string lens_surface;
+    bool has_lens_surface = net::GetValueForKeyInQuery(
+        url, lens::kLensSurfaceQueryParameter, &lens_surface);
+    if (has_lens_surface) {
+      return net::AppendOrReplaceQueryParameter(
+          url, lens::kLensSurfaceQueryParameter, std::nullopt);
+    }
+  }
+  return url;
 }
 
 }  // namespace lens

@@ -149,6 +149,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1455242230282523554">Sýna tungumálastillingar</translation>
 <translation id="1459693405370120464">Veður</translation>
 <translation id="1460620680449458626">Slökkt er á hljóði.</translation>
+<translation id="1462439140224375968">Google-skjal búið til</translation>
 <translation id="14648076227129703">Þetta veitir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og öllum forritum og vefsvæðum með myndavélarheimild aðgang að myndavél</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
 <translation id="146902737843070955">Kerfisstjórinn bað um þessa breytingu</translation>
@@ -593,6 +594,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="301584155502740476">Sýna upplýsingar um heitan reit. Slökkt er á heitum reit.</translation>
 <translation id="3017079585324758401">Bakgrunnur</translation>
 <translation id="3018135054368884502">Spóla áfram í efni</translation>
+<translation id="3026897869154397692">Bætt við Dagatal</translation>
 <translation id="3033545621352269033">Kveikt</translation>
 <translation id="3033912566804961911">Sameina með <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Opna skrár</translation>
@@ -1012,6 +1014,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4351244548802238354">Loka glugga</translation>
 <translation id="4356872429719185452">Sýna upplýsingar um heitan reit. Heitur reitur kveikir á sér.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Upptaka í gangi</translation>
+<translation id="4368227575116094370">Búa til Google-töflureikni</translation>
 <translation id="4371348193907997655">Stillingar útsendingar</translation>
 <translation id="4371834685492830207">PIN-númer má eingöngu innihalda gilda stafi</translation>
 <translation id="4375482231364171368">Leita í veffangastiku</translation>
@@ -1481,6 +1484,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5825969630400862129">Stillingar tengdra tækja</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> í viðbót</translation>
 <translation id="5837036133683224804">Stöðva <ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Leita með Google</translation>
 <translation id="5841296711770970362">Fara í næsta lag</translation>
 <translation id="5842553299352339114">Kveikt er á heitum reit í <ph name="DEVICE_NAME" />, engin tæki tengd</translation>
 <translation id="584525477304726060">Haltu til að stækka</translation>
@@ -1512,6 +1516,7 @@ Engin tæki eru tengd.</translation>
 <translation id="595202126637698455">Kveikt á afkastarakningu</translation>
 <translation id="5955304353782037793">forrit</translation>
 <translation id="5958529069007801266">Stýrður notandi</translation>
+<translation id="596035801491797438">Slökkva á andlitsstýringu</translation>
 <translation id="5960410286721553511">Skoðaðu nýlegar myndir og margmiðlunarefni símans</translation>
 <translation id="5965524703725988602">Kveikja/slökkva á dökku þema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Fletta áfram í gegnum glugga</translation>
@@ -1894,6 +1899,7 @@ Ný uppsetning</translation>
 <translation id="7228968829656641943">Veldu til að leita á skjánum mínum. Ýttu á dálkalykil og svo bilslána til að fletta með lyklaborði.</translation>
 <translation id="7229029500464092426">Minni <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> samtals</translation>
 <translation id="7239814253344511868">Báðir músarlyklar</translation>
+<translation id="7240636904654154599">Google-töflureiknir búinn til</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% eftir af rafhlöðu. Tengdu tækið við rafmagn til að hlaða.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Endurræsa þarf Chromebook til að setja upp uppfærslu. Þetta getur tekið allt að mínútu.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2410,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8921624153894383499">Google-hjálparinn talar ekki þetta tungumál</translation>
 <translation id="8926951137623668982">Hilla alltaf falin</translation>
 <translation id="8929566928381252430">Ertu að reyna að nota hástafalás? Nota</translation>
+<translation id="8929623844713377237">Tengiliður búinn til</translation>
 <translation id="8934418770423095813">Búa til Google skjal</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="8936501819958976551">óvirkt</translation>

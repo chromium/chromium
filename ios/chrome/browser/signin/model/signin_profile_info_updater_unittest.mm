@@ -73,7 +73,7 @@ TEST_F(SigninProfileInfoUpdaterTest, SigninSignout) {
 
   // Signin.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kEmail, signin::ConsentLevel::kSync);
+      kEmail, signin::ConsentLevel::kSignin);
 
   {
     ProfileAttributesIOS attr = GetAttributesForProfile();
@@ -93,7 +93,7 @@ TEST_F(SigninProfileInfoUpdaterTest, AuthError) {
 
   // Signin.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kEmail, signin::ConsentLevel::kSync);
+      kEmail, signin::ConsentLevel::kSignin);
 
   {
     ProfileAttributesIOS attr = GetAttributesForProfile();

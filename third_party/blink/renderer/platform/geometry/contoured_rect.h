@@ -196,13 +196,19 @@ class PLATFORM_EXPORT ContouredRect {
   void Inset(const gfx::InsetsF& insets) { rect_.Inset(insets); }
   void Inset(float inset) { rect_.Inset(inset); }
   void OutsetForMarginOrShadow(float outset) {
-    rect_.OutsetForMarginOrShadow(outset);
+    OutsetForMarginOrShadow(gfx::OutsetsF(outset));
   }
 
   void Outset(const gfx::OutsetsF& outsets) { rect_.Outset(outsets); }
   void OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
-    rect_.OutsetForMarginOrShadow(outsets);
+    if (HasRoundCurvature()) {
+      rect_.OutsetForMarginOrShadow(outsets);
+    } else {
+      Outset(outsets);
+    }
   }
+
+  void ConstrainRadii() { rect_.ConstrainRadii(); }
 
   bool IntersectsQuad(const gfx::QuadF&) const;
 

@@ -364,22 +364,6 @@ using chrome_test_util::WindowWithNumber;
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-// Tests that a supervised user in the `ConsentLevel::kSync` state will remain
-// signed-in after clearing their browsing history.
-// TODO(crbug.com/40066949): Delete this test after the syncing state is gone.
-- (void)testSupervisedUserSyncingWhenClearingBrowsingData {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity
-                 withCapabilities:@{
-                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
-                 }];
-  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
-
-  [self openCBDAndClearData];
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-}
-
 // Tests that a supervised user in the `ConsentLevel::kSignin` state will remain
 // signed-in after clearing their browsing history.
 - (void)testSupervisedUserSignedInWhenClearingBrowsingData {

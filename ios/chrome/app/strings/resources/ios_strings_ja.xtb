@@ -40,6 +40,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> としてログイン</translation>
 <translation id="1149401351239820326">有効期限（月）</translation>
 <translation id="1150989369772528668">カレンダー</translation>
+<translation id="1161663161838091892">続行するにはタブと履歴を同期してください</translation>
 <translation id="1164891049599601209">不正なサイトで入力</translation>
 <translation id="1165039591588034296">エラー</translation>
 <translation id="1172898394251786223">次の項目</translation>
@@ -182,6 +183,7 @@
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> の通知をオンにする</translation>
 <translation id="1740468249224277719">ダブルタップしてインストール。</translation>
 <translation id="1740650426894359238">別のプロファイルに切り替え</translation>
+<translation id="1741219894094057085">スマートウォッチ</translation>
 <translation id="1743244221910283364">変更を破棄</translation>
 <translation id="174998178145075354">{count,plural, =1{キーボードの上部に利用可能な住所の候補が {count} 件表示されています。}other{キーボードの上部に利用可能な住所の候補が {count} 件表示されています。}}</translation>
 <translation id="1750238553597293878">Google アカウントのパスワードを引き続き使用してください</translation>
@@ -296,6 +298,7 @@
 <translation id="2202084845446535117">メール アカウントがありません</translation>
 <translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
 <translation id="2215819824168709130">価格のトラッキング カードを非表示にする</translation>
+<translation id="2216366330550244277">商品のページに移動します</translation>
 <translation id="2220529011494928058">問題を報告</translation>
 <translation id="2220887224562128152">ファイルを削除するようスケジュール設定すると、元に戻すことはできません。</translation>
 <translation id="2223461067862937305">QR コードを作成</translation>
@@ -477,7 +480,6 @@
 <translation id="2989523299700148168">最近のアクセス</translation>
 <translation id="2989805286512600854">新しいタブで開く</translation>
 <translation id="2996291259634659425">パスフレーズの作成</translation>
-<translation id="3000900718786961632">{COUNT,plural, =1{新しい荷物が追跡対象になりました}other{新しい荷物が追跡対象になりました}}</translation>
 <translation id="3010025794097054078">データ侵害や安全でないウェブサイトなどから保護してください。</translation>
 <translation id="301080557829842765">プライバシー ガイド</translation>
 <translation id="3012310354105716927">一部のデータがまだ保存されていません</translation>
@@ -703,6 +705,7 @@
 <translation id="4038354071007134711">このデバイスのアプリケーションではファイルを開けません。</translation>
 <translation id="4042870976416480368">ページ内を検索</translation>
 <translation id="4045648459118332842">ワンタップで、保存したパスワードを他のアプリでも利用できます</translation>
+<translation id="4047337302138771011">パスワードの共有</translation>
 <translation id="4049419681095579435">荷物はすでに追跡されています</translation>
 <translation id="4049507953662678203">ネットワークに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="4054572406751135230">ニュースやスポーツなどの最新情報をチェックできます。</translation>
@@ -954,6 +957,7 @@
 <translation id="5118462200606189584">アカウントを追加…</translation>
 <translation id="5118713593561876160">興味 / 関心</translation>
 <translation id="5118764316110575523">オフ</translation>
+<translation id="5119329531859909472">商品をトラッキングするには、[トラッキング] をタップします</translation>
 <translation id="5121618895923301719">この商品はすでにトラッキングしています。このページは<ph name="BEGIN_LINK" />モバイルのブックマーク<ph name="END_LINK" />に保存されます。</translation>
 <translation id="512533434554095351">問題のあるパスワードがいくつかあります。</translation>
 <translation id="5127538504377457572">アクティブ: <ph name="DAYS" /> 日前</translation>
@@ -1016,6 +1020,7 @@
 <translation id="5414763847370083940">値下げしたサイトがある場合は、アラートが表示されます。</translation>
 <translation id="5415289094036440596">パスキーは共有できません</translation>
 <translation id="5416455648658732408">タブグループに移動</translation>
+<translation id="5423269318075950257">価格のトラッキング</translation>
 <translation id="542659109038405424">訳文の言語</translation>
 <translation id="5429624150850059322">戻ったときは、タップして続行するまでタブがぼかして表示されます</translation>
 <translation id="5431239785743546285">既読のページ</translation>
@@ -1106,6 +1111,7 @@
 <translation id="5737974891429562743">アカウントのログイン情報が古くなっています。同期を開始するには更新してください。</translation>
 <translation id="5738385766833540397">トラッキングしている商品の値下げアラートを受け取る方法を管理します</translation>
 <translation id="5738887413654608789">この機能を使用すると、周囲で発信されているデータを受信して関連のあるウェブページを表示することができます。</translation>
+<translation id="573974402615125334">タブグループの共有、参加、共同作業を行うには、履歴とタブを同期してください</translation>
 <translation id="5740123193752401435">タブを検索…</translation>
 <translation id="5744274077973758795">「<ph name="FEATURE_NAME" />」の通知をオンにしました</translation>
 <translation id="574762237186762643">予定</translation>
@@ -1444,6 +1450,7 @@
 <translation id="7080806333218412752">セーフ ブラウジングに URL を送信して安全性を確認します。また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します。ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します。</translation>
 <translation id="7082853213442715471">オンにすると、一部のウェブ テクノロジーがブロックされ、ウェブサイトの読み込みが遅くなったり、正しく動作しなくなったりすることがあります。</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> の Google パスワード マネージャーに移動</translation>
+<translation id="7097046145876891318">アドレスバーで [価格の推移] をタップすると、価格の変動状況を確認できます</translation>
 <translation id="7101580180124131336">[フォロー中] に <ph name="CHANNEL_NAME" /> のコンテンツや関連するコンテンツが表示されるようになりました。</translation>
 <translation id="7102005569666697658">ダウンロードしています… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">[メニュー] → [設定] → [お支払い方法]</translation>
@@ -1737,6 +1744,7 @@
 <translation id="8325455175867928593">[興味 / 関心に基づくレビュー] を非表示にする</translation>
 <translation id="833647236762414178">パスワードとパスキーを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">データをバックアップして、他のデバイスで使用できるようにします。</translation>
+<translation id="8348530355586151720">その他メニューをタップ</translation>
 <translation id="8349305172487531364">ブックマーク バー</translation>
 <translation id="8364563001733875155">PIN を変更するには、まずデバイスでパスコードを設定してください。</translation>
 <translation id="8366466717204352506">一度も実行されていません</translation>
@@ -1892,7 +1900,6 @@
 <translation id="891282356902782456">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（<ph name="EMAIL" />）に保存してください。</translation>
 <translation id="8915916167043355778">すべて閉じる</translation>
 <translation id="892185197271200809">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
-<translation id="8921902386312975525">荷物を追跡するオプション</translation>
 <translation id="8923178205567790913">パスワード</translation>
 <translation id="892776311701544612">詳細…</translation>
 <translation id="8928133177108699615">デスクトップ</translation>

@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">භාෂා සැකසීම් පෙන්වන්න</translation>
 <translation id="1459693405370120464">කාලගුණය</translation>
 <translation id="1460620680449458626">හඬ නිහඬයි.</translation>
+<translation id="1462439140224375968">Google Doc සාදන ලදි</translation>
 <translation id="14648076227129703">මෙය <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, සහ කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි</translation>
 <translation id="1467432559032391204">වම</translation>
 <translation id="146902737843070955">ඔබේ පරිපාලකයා මෙම වෙනස ඉල්ලා ඇත</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් ක්‍රියා විරහිතයි.</translation>
 <translation id="3017079585324758401">පසුබිම</translation>
 <translation id="3018135054368884502">වේගයෙන් ඉදිරියට මාධ්‍ය</translation>
+<translation id="3026897869154397692">දින දර්ශනයට එක් කරන ලදි</translation>
 <translation id="3033545621352269033">සක්‍රියයි</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> සමග ඒකාබද්ධ කරන්න</translation>
 <translation id="3036649622769666520">ගොනුව විවෘත කරන්න</translation>
@@ -1481,6 +1483,7 @@
 <translation id="5825969630400862129">සම්බන්ධිත උපාංග සැකසීම්</translation>
 <translation id="5830180081891717894">තව <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> මත <ph name="ROUTE_TITLE" /> නවත්වන්න</translation>
+<translation id="5840658767386246331">Google සමග සොයන්න</translation>
 <translation id="5841296711770970362">මීළඟ ශ්‍රව්‍ය ඛණ්ඩයට යන්න</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> හොට්ස්පොට් ක්‍රියාත්මකයි, උපාංග කිසිවක් සම්බන්ධ නැත</translation>
 <translation id="584525477304726060">විශාල කිරීමට අල්ලාගෙන සිටින්න</translation>
@@ -1894,6 +1897,7 @@
 <translation id="7228968829656641943">මගේ තිරය සෙවීමට තෝරන්න. යතුරු පුවරු සංචාලනය සඳහා පටිත්ත ඔබා පසුව ඉඩ ඔබන්න.</translation>
 <translation id="7229029500464092426">මතකය <ph name="AVAILABLE_MEMORY" /> | එකතුව <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">මූසික බොත්තම් දෙකම</translation>
+<translation id="7240636904654154599">Google Sheet සාදන ලදි</translation>
 <translation id="7244725679040769470">බැටරිය <ph name="PERCENTAGE" />% ඉතිරිව ඇත. ඔබේ උපාංගය බලයට සම්බන්ධ කරන්න.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. යාවත්කාලීනයක් යෙදීමට මෙම Chromebook යළි ඇරඹීමට අවශ්‍යයි. මෙයට 1 විනාඩියක් ගත විය හැක.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@
 <translation id="8921624153894383499">Google සහායක මෙම භාෂාව කථා කරන්නේ නැත.</translation>
 <translation id="8926951137623668982">රාක්කය සැම විට සඟවා ඇත</translation>
 <translation id="8929566928381252430">Caps Lock භාවිතා කිරීමට උත්සාහ කරන්නේ ද? භාවිතා කරන්න</translation>
+<translation id="8929623844713377237">සම්බන්ධතාව නිර්මාණය කරන ලදි</translation>
 <translation id="8934418770423095813">Google Doc තනන්න</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ගොනුවක්}one{ගොනු #ක්}other{ගොනු #ක්}}</translation>
 <translation id="8936501819958976551">ක්‍රියා විරහිතයි</translation>

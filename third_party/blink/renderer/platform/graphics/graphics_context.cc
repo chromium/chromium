@@ -814,6 +814,27 @@ void GraphicsContext::FillRect(const gfx::RectF& rect,
   DrawRect(gfx::RectFToSkRect(rect), flags, auto_dark_mode);
 }
 
+void GraphicsContext::FillContouredRect(const ContouredRect& crect,
+                                        const Color& color,
+                                        const AutoDarkMode& auto_dark_mode) {
+  if (crect.HasRoundCurvature()) {
+    FillRoundedRect(crect.AsRoundedRect(), color, auto_dark_mode);
+    return;
+  }
+  const cc::PaintFlags& fill_flags = ImmutableState()->FillFlags();
+  Path path = crect.GetPath();
+  const SkColor4f sk_color = color.toSkColor4f();
+  if (sk_color == fill_flags.getColor4f()) {
+    DrawPath(path.GetSkPath(), fill_flags, auto_dark_mode);
+    return;
+  }
+
+  cc::PaintFlags flags = fill_flags;
+  flags.setColor(sk_color);
+
+  DrawPath(path.GetSkPath(), flags, auto_dark_mode);
+}
+
 void GraphicsContext::FillRoundedRect(const FloatRoundedRect& rrect,
                                       const Color& color,
                                       const AutoDarkMode& auto_dark_mode) {

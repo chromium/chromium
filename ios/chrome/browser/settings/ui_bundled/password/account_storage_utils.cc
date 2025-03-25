@@ -35,12 +35,8 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
     return false;
   }
 
-  // Syncing and signed-out users shouldn't see the icon.
-  // TODO(crbug.com/40066949): Remove usage of IsSyncFeatureEnabled() after
-  // kSync users are migrated to kSignin in phase 3. See ConsentLevel::kSync
-  // documentation for details.
-  if (sync_service->IsSyncFeatureEnabled() ||
-      sync_service->HasDisableReason(
+  // Signed-out users shouldn't see the icon.
+  if (sync_service->HasDisableReason(
           syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
     return false;
   }

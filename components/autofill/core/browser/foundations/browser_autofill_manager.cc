@@ -2550,11 +2550,6 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
                              &autofill_field)) {
     return nullptr;
   }
-
-  if (!form_structure->IsAutofillable()) {
-    return nullptr;
-  }
-
   return autofill_field;
 }
 

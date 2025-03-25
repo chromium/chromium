@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -197,6 +196,38 @@ void RecordIOSIdentityAvailableInProfile(
                                 identity_available);
 }
 
+// Enum for `Signin.IOSAccountSwitchType` histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(IOSAccountSwitchType)
+enum class IOSAccountSwitchType : int {
+  kPersonalToPersonal = 0,
+  kPersonalToManaged = 1,
+  kManagedToPersonal = 2,
+  kManagedToManaged = 3,
+  kMaxValue = kManagedToManaged
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:IOSAccountSwitchType)
+
+IOSAccountSwitchType GetAccountSwitchType(bool originalIdentityWasManaged,
+                                          bool newIdentityIsManaged) {
+  if (!originalIdentityWasManaged && !newIdentityIsManaged) {
+    return IOSAccountSwitchType::kPersonalToPersonal;
+  } else if (!originalIdentityWasManaged && newIdentityIsManaged) {
+    return IOSAccountSwitchType::kPersonalToManaged;
+  } else if (originalIdentityWasManaged && !newIdentityIsManaged) {
+    return IOSAccountSwitchType::kManagedToPersonal;
+  } else {
+    return IOSAccountSwitchType::kManagedToManaged;
+  }
+}
+
+void RecordAccountSwitchTypeMetric(bool originalIdentityWasManaged,
+                                   bool newIdentityIsManaged) {
+  base::UmaHistogramEnumeration(
+      "Signin.IOSAccountSwitchType",
+      GetAccountSwitchType(originalIdentityWasManaged, newIdentityIsManaged));
+}
+
 // Records histogram for the unsync data.
 void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
                                          syncer::DataTypeSet set) {
@@ -270,6 +301,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   // account the set is empty.
   // The value is set during `kCheckUnsyncedData` step.
   std::optional<syncer::DataTypeSet> _unsyncedDataTypes;
+
+  // For metrics: Whether there was a managed primary account at the beginning
+  // of the flow. Set to nullopt if there was no primary account at all.
+  std::optional<bool> _wasPrimaryAccountManaged;
 }
 
 @synthesize handlingError = _handlingError;
@@ -301,6 +336,16 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     _cancelationReason = CancelationReason::kNotCanceled;
     _profileSeparationDataMigrationSettings =
         policy::ProfileSeparationDataMigrationSettings::USER_OPT_IN;
+
+    ProfileIOS* profile = [self originalProfile];
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForProfile(profile);
+    if (authenticationService->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin)) {
+      _wasPrimaryAccountManaged =
+          authenticationService->HasPrimaryIdentityManaged(
+              signin::ConsentLevel::kSignin);
+    }
   }
   return self;
 }
@@ -645,6 +690,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 // appropriate profile.
 - (void)handOverToAuthenticationFlowInProfileStep {
   CHECK(_browserForAuthenticationFlowInProfile);
+  BOOL isManagedIdentity = _identityToSignInHostedDomain.length > 0;
+  if (_wasPrimaryAccountManaged.has_value()) {
+    RecordAccountSwitchTypeMetric(_wasPrimaryAccountManaged.value(),
+                                  isManagedIdentity);
+  }
+
   // The sign-in flow is passed to `authenticationFlowInProfile`, with the
   // completion block. `AuthenticationFlowInProfile` retains itself until the
   // sign-in is done. There is no need to own this instance.
@@ -652,7 +703,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       [[AuthenticationFlowInProfile alloc]
                initWithBrowser:_browserForAuthenticationFlowInProfile
                       identity:_identityToSignIn
-             isManagedIdentity:_identityToSignInHostedDomain.length > 0
+             isManagedIdentity:isManagedIdentity
                    accessPoint:_accessPoint
           precedingHistorySync:_precedingHistorySync
              postSignInActions:self.postSignInActions];

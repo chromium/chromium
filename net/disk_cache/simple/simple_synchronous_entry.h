@@ -60,7 +60,6 @@ struct RangeResult;
 class NET_EXPORT_PRIVATE SimpleEntryStat {
  public:
   SimpleEntryStat(base::Time last_used,
-                  base::Time last_modified,
                   const std::array<int32_t, kSimpleEntryStreamCount>& data_size,
                   const int32_t sparse_data_size);
 
@@ -70,11 +69,7 @@ class NET_EXPORT_PRIVATE SimpleEntryStat {
   int64_t GetFileSize(size_t key_length, int file_index) const;
 
   base::Time last_used() const { return last_used_; }
-  base::Time last_modified() const { return last_modified_; }
   void set_last_used(base::Time last_used) { last_used_ = last_used; }
-  void set_last_modified(base::Time last_modified) {
-    last_modified_ = last_modified;
-  }
 
   int32_t data_size(int stream_index) const { return data_size_[stream_index]; }
   void set_data_size(int stream_index, int data_size) {
@@ -88,7 +83,6 @@ class NET_EXPORT_PRIVATE SimpleEntryStat {
 
  private:
   base::Time last_used_;
-  base::Time last_modified_;
   std::array<int32_t, kSimpleEntryStreamCount> data_size_;
   int32_t sparse_data_size_;
 };

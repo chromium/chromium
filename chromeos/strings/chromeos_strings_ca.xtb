@@ -5,6 +5,7 @@
 <translation id="1014750484722996375">Escriptoris</translation>
 <translation id="1018219910092211213">No es pot resoldre el DNS</translation>
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
+<translation id="1019971142067430077">No es poden crear títols de la gravació per a aquest contingut</translation>
 <translation id="1020274983236703756">Els recursos exclusius de <ph name="PRODUCT_NAME" /> ja estan disponibles</translation>
 <translation id="1022628058306505708">Moviment de la Terra</translation>
 <translation id="102432830749687801">Assegura't d'utilitzar l'aplicació Transferència de contingut de Google per moure les dades del teu compte de centre educatiu al teu compte personal abans no perdis l'accés.</translation>
@@ -101,6 +102,7 @@
 <translation id="1418991483994088776">orquídia</translation>
 <translation id="142205161612889714">WEBM</translation>
 <translation id="142228117786570094">Tinc un parell de claus</translation>
+<translation id="1422912431241997307">El títol s'ha editat</translation>
 <translation id="1423591390236870726">No s'ha premut la tecla <ph name="KEY_NAME" /></translation>
 <translation id="1432110487435300883">Per obtenir un resultat aproximat, divideix el valor de <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Restableix l'ús de dades automàticament cada mes en un dia seleccionat</translation>
@@ -343,6 +345,7 @@
 <translation id="2418150275289244458">Obre a Configuració</translation>
 <translation id="2421798028054665193">Imatge <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="242825218556404975">No s'ha detectat cap veu</translation>
+<translation id="2438248248625638801">S'estan creant els títols de la gravació</translation>
 <translation id="2446553403094072641">Precisió de la coma flotant</translation>
 <translation id="2448312741937722512">Tipus</translation>
 <translation id="2468124392950503650">Selecciona una indicació per crear o veure la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guia d'indicacions<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
@@ -421,6 +424,7 @@
 <translation id="2873483161362553159">Navegació del navegador</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875812231449496375">Activa aquesta opció per obtenir els millors resultats amb aquest fons de pantalla. Pots desactivar-la en qualsevol moment.</translation>
+<translation id="2878126681324394319">Baixa el model de creació de títols i resums</translation>
 <translation id="2878387241690264070">S'ha descarregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="2880569433548999039">Estalvi de pantalla Moviment de núvols</translation>
 <translation id="2882230315487799269">Personalitza la indicació de la IA</translation>
@@ -493,6 +497,7 @@
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
 <translation id="3305294846493618482">més</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
+<translation id="3316495615885967552">S'ha completat la baixada del model de creació de títols i resums</translation>
 <translation id="3321030238473337787">Velocitat de reproducció</translation>
 <translation id="3327613592010997943">Podràs tornar a utilitzar aquest dispositiu <ph name="DAY" /> a les <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">La prova s'està executant</translation>
@@ -583,6 +588,7 @@
 <translation id="3767737419527918477">Cerca fitxers de gravacions</translation>
 <translation id="3771294271822695279">Fitxers de vídeo</translation>
 <translation id="3771694256347217732">Condicions del servei de Google</translation>
+<translation id="3772164567520167489">No es poden crear títols de la gravació en aquest idioma de transcripció</translation>
 <translation id="3780740315729837296">Assigna una tecla del teclat</translation>
 <translation id="3784455785234192852">Bloqueja</translation>
 <translation id="3785643128701396311">pixel art</translation>
@@ -597,6 +603,7 @@
 <translation id="3845880861638660475">Prem <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> per tancar el quadre de diàleg.</translation>
 <translation id="3848280697030027394">enfosquiment del teclat</translation>
 <translation id="385051799172605136">Enrere</translation>
+<translation id="3852931845120288955">Títol (de la A a la Z)</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3862598938296403232">La descripció és obligatòria</translation>
 <translation id="386280020966669610">Inspira'm</translation>
@@ -651,6 +658,7 @@
 <translation id="4093865285251893588">Imatge de perfil</translation>
 <translation id="409427325554347132">Desa els detalls de la prova</translation>
 <translation id="409469431304488632">Experiment</translation>
+<translation id="4095155732125588500">S'està baixant el model de creació de títols i resums</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Selecciona l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Ratolí tàctil USB</translation>
@@ -675,6 +683,7 @@
 <translation id="4171077696775491955">disminueix la brillantor</translation>
 <translation id="4176463684765177261">Desactivat</translation>
 <translation id="4176659219503619100">Tauler de control</translation>
+<translation id="4192913637640303603">No es poden crear títols de les gravacions</translation>
 <translation id="4193496492959950834">Configuració de la gravadora</translation>
 <translation id="4198398257084619072">pandes</translation>
 <translation id="420283545744377356">Desactiva l'estalvi de pantalla</translation>
@@ -957,6 +966,7 @@
 <translation id="550600468576850160">un prat</translation>
 <translation id="551689408806449779">El dispositiu s'ha desconnectat. Prova de connectar-te de nou per fer la prova.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="552644173505433109">Més informació sobre la creació de títols i resums</translation>
 <translation id="5527146180235316490">Opcions de micròfon</translation>
 <translation id="5534900277405737921">Terreny</translation>
 <translation id="554067135846762198">corall i canyella</translation>
@@ -1055,6 +1065,7 @@
 <translation id="5982621672636444458">Ordena les opcions</translation>
 <translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
 <translation id="5996832681196460718">seda</translation>
+<translation id="6016750809509395299">Títols generats:</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="6019566113895157499">Tecles de drecera</translation>
 <translation id="6034694447310538551">Activa el restabliment mensual automàtic</translation>
@@ -1092,6 +1103,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">No es pot connectar a Internet</translation>
 <translation id="6156030503438652198">granat i rosa</translation>
+<translation id="6163318050265152852">No es poden crear títols. Prova-ho amb una transcripció més curta.</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6184793017104303157">B4</translation>
 <translation id="6185263894115593524">Restableix per impedir que altres persones utilitzin el micròfon o la càmera. Concedeix permisos només als llocs web en què confiïs.</translation>
@@ -1171,6 +1183,7 @@
 <translation id="6500818810472529210">Consulta el resultat a la Cerca de Google</translation>
 <translation id="650266656685499220">Per crear àlbums, ves a Google Fotos</translation>
 <translation id="6505750420152840539">De l'alba a la foscor</translation>
+<translation id="6515056490985026110">No es poden crear títols. Prova-ho amb una transcripció més llarga.</translation>
 <translation id="6516990319416533844">Per provar la velocitat de càrrega de la bateria, deixa que s'exhaureixi una estona</translation>
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6526200165918397681">Fes coincidir el fons de pantalla</translation>
@@ -1256,11 +1269,13 @@
 <translation id="6910312834584889076">La tapa de l'escàner està oberta. Tanca-la i torna-ho a provar.</translation>
 <translation id="6910845598686542904">Computar models de les veus detectades a la gravació</translation>
 <translation id="6911383237894364323">No es pot connectar als servidors multimèdia</translation>
+<translation id="6926069762081461162">Títol de la gravació</translation>
 <translation id="6930242544192836755">Durada</translation>
 <translation id="6930597342185648547">Sobre el fons</translation>
 <translation id="6939766318048400022">Cafeteria</translation>
 <translation id="6942253772720771875">Comparteix els teus suggeriments o descriu el problema</translation>
 <translation id="6943893908656559156">Identitat remota (opcional)</translation>
+<translation id="694981048020558038">Cerca el títol de la gravació</translation>
 <translation id="6953137545147683679">or</translation>
 <translation id="6957231940976260713">Nom del servei</translation>
 <translation id="695776212669661671">fletxa dreta</translation>
@@ -1335,6 +1350,7 @@
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
 <translation id="7223952304612664117">Això permet que els serveis del sistema utilitzin la precisió de la ubicació per determinar la teva ubicació. Per estimar la ubicació del dispositiu, la precisió de la ubicació utilitza informació de sensors i senyals sense fil.</translation>
 <translation id="7233782086689993269">La drecera s'ha restaurat</translation>
+<translation id="723419678599947502">Crea un títol amb la IA de Google</translation>
 <translation id="725133483556299729">Selecciona una adreça electrònica</translation>
 <translation id="7255187042098209569">rosa i lila</translation>
 <translation id="7267918995585557751">Restableix per assegurar-te que la pàgina d'arrencada predeterminada no és un lloc web de pesca de credencials. Utilitza només llocs web en què confiïs.</translation>
@@ -1483,6 +1499,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7897043345768902965">passeig</translation>
 <translation id="7902285181767404769">Silencia les notificacions durant la gravació</translation>
 <translation id="7903695460270716054">Tria obres d'art i imatges seleccionades</translation>
+<translation id="7908543555831145677">Els títols de la gravació s'han creat correctament</translation>
 <translation id="7912005977894000746">Torna a la pàgina principal</translation>
 <translation id="7915220255123750251">Gestiona la configuració de l'APN de la xarxa. Els APN defineixen una connexió entre una xarxa mòbil i Internet.</translation>
 <translation id="7915759923880480519">Restableix per protegir les dades que s'envien a través de les teves xarxes. Utilitza només les xarxes en què confiïs.</translation>
@@ -1557,6 +1574,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Anyil</translation>
+<translation id="8280687443902283243">Edita el títol</translation>
 <translation id="8286154143153872371">Connecta't a una xarxa i torna a carregar la pàgina per veure el fons de pantalla.</translation>
 <translation id="8291967909914612644">País del proveïdor domèstic</translation>
 <translation id="8294431847097064396">Font</translation>
@@ -1564,6 +1582,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8308787307410010965">Configuració del contingut dels llocs web</translation>
 <translation id="8312330582793120272">reprodueix el contingut multimèdia</translation>
 <translation id="8318753676953949627">Cap imatge</translation>
+<translation id="8319809980370328428">Creació del títol i el resum de la gravació</translation>
 <translation id="8320910311642849813">un bosc</translation>
 <translation id="8322464149031882595">Fes clic per anar endavant</translation>
 <translation id="8329018942023753850">aplicació Calculadora</translation>

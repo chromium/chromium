@@ -698,16 +698,16 @@
 <translation id="4249717042534905822">星期日</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4251839292699800785">優雅的辦公室</translation>
-<translation id="4252261480746798874">選取「自製桌布」後，你可以自行輸入提示，也可以依序選取「選擇主題」和畫底線的字詞，打造個人化的 AI 桌布。
+<translation id="4252261480746798874">選取 [自行建立] 即可撰寫自訂提示。你也可以選取 [選擇主題]，再選取有底線的字詞以製作個人化 AI 桌布。
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          選取「給我靈感」可取得更多獨特而有變化的 AI 圖像選項。
+          選取 [給我驚喜] 即可取得更多獨特多變的 AI 圖片選項。
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          自製桌布時，系統會將提示傳送到 Google 伺服器，以產生圖像及提升產品品質，過程中會遵守 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《服務條款》和《隱私權政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />規定。請勿加入任何個人、敏感或機密資訊。
+          自製桌布時，系統會將提示傳送至 Google 伺服器，以便生成圖像及提升產品品質。在處理資料的過程中須遵守 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《服務條款》及《私隱權政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />。請勿加入任何個人、敏感或機密內容。
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          生成式 AI 提供的內容未必準確 (包括人物相關資訊)，因此請多加查證。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />瞭解詳情<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+          生成式 AI 可能會出錯 (包括人物資料)，請加以複查。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />瞭解詳情<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP 延遲時間</translation>
 <translation id="4266143281602681663">紗線</translation>
 <translation id="4269815121975886860">啟動偏好設定</translation>

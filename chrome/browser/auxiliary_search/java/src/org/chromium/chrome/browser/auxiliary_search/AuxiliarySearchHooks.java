@@ -27,6 +27,11 @@ public interface AuxiliarySearchHooks {
         return false;
     }
 
+    /** Returns whether multiple data source is enabled on the device. */
+    default boolean isMultiDataTypeEnabledOnDevice() {
+        return false;
+    }
+
     /** Returns the package name of the supported app which reads the donated Tabs. */
     @Nullable
     default String getSupportedPackageName() {

@@ -1905,12 +1905,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (BOOL)shouldShowHistorySyncOnPromoAction {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(_profile);
-  // TODO(crbug.com/40276546): Delete the usage of ConsentLevel::kSync after
-  // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
-  // details.
-  if (authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
-    return NO;
-  }
   // Check if History Sync Opt-In should be skipped.
   // In case it's not necessary to show the history opt-in, but the promo action
   // button is still available, sync errors should be checked to show the

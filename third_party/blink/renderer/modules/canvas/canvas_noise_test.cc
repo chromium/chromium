@@ -105,8 +105,7 @@ class CanvasNoiseTest : public PageTestBase {
       if (diff > 0) {
         ++num_changed_pixel_values;
       }
-      // TODO(tov): Figure out why the diffs can be larger than 3.
-      if (diff > 6) {
+      if (diff > 3) {
         ++too_large_diffs;
       }
     }

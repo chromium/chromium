@@ -40,6 +40,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="2758123043070977469">Došlo je do greške prilikom autentifikacije, prijavite se ponovo.</translation>
 <translation id="2803375539583399270">Unesite PIN</translation>
 <translation id="2919669478609886916">Trenutno dijelite ovaj uređaj s drugim korisnikom. Želite li nastaviti dijeliti?</translation>
+<translation id="2929683002824598593">Dijeli uređaj</translation>
 <translation id="2939145106548231838">Autentifikacija za host račnuar</translation>
 <translation id="3027681561976217984">Način rada dodirom</translation>
 <translation id="3106379468611574572">Udaljeni računar ne reagira na zahtjeve za povezivanje. Provjerite je li na mreži i pokušajte ponovo.</translation>
@@ -117,10 +118,12 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="6178645564515549384">Host računar za izvornu razmjenu poruka za udaljeni pristup</translation>
 <translation id="618120821413932081">Ažurirajte rezoluciju udaljenog računara da odgovara prozoru.</translation>
 <translation id="6223301979382383752">Otvorite postavke za Snimanje ekrana</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> traži pristup da vidi vaš ekran i upravlja vašom tastaturom i mišem. Želite li podijeliti uređaj?</translation>
 <translation id="6284412385303060032">Host računar koji je pokrenut na logičnom ekranu konzole isključio se kako bi podržao skriveni način rada prebacivanjem na host računar koji je pokrenut u sesiji specifičnoj za korisnika.</translation>
 <translation id="6542902059648396432">Prijava problema…</translation>
 <translation id="6583902294974160967">Podrška</translation>
 <translation id="6612717000975622067">Pošalji Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Ako ništa ne poduzmete, uređaj će automatski pokrenuti dijeljenje za # sekundu.}one{Ako ništa ne poduzmete, uređaj će automatski pokrenuti dijeljenje za # sekundu.}few{Ako ništa ne poduzmete, uređaj će automatski pokrenuti dijeljenje za # sekunde.}other{Ako ništa ne poduzmete, uređaj će automatski pokrenuti dijeljenje za # sekundi.}}</translation>
 <translation id="6654753848497929428">Dijeli</translation>
 <translation id="677755392401385740">Hostiranje je pokrenuto za korisnika: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Pomoćna aplikacija za otvaranje URL-a na klijentu proizvoda <ph name="PRODUCT_NAME" /></translation>

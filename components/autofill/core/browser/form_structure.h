@@ -110,12 +110,6 @@ class FormStructure {
   bool IsCompleteCreditCardForm(
       CreditCardFormCompleteness credit_card_form_completeness) const;
 
-  // Resets |autofill_count_| and counts the number of auto-fillable fields.
-  // This is used when we receive server data for form fields.  At that time,
-  // we may have more known fields than just the number of fields we matched
-  // heuristically.
-  void UpdateAutofillCount();
-
   // Returns true if this form matches the structural requirements for Autofill.
   [[nodiscard]] bool ShouldBeParsed(LogManager* log_manager = nullptr) const {
     return ShouldBeParsed({}, log_manager);
@@ -250,9 +244,6 @@ class FormStructure {
   // Returns the number of fields that are part of the form signature and that
   // are included in queries to the Autofill server.
   size_t active_field_count() const;
-
-  // Returns the number of fields that are able to be autofilled.
-  size_t autofill_count() const { return autofill_count_; }
 
   // Used for iterating over the fields.
   std::vector<std::unique_ptr<AutofillField>>::const_iterator begin() const {
@@ -462,9 +453,6 @@ class FormStructure {
   // main frame) of the form's frame tree as described by MPArch nested frame
   // trees. For details, see RenderFrameHost::GetMainFrame().
   url::Origin main_frame_origin_;
-
-  // The number of fields able to be auto-filled.
-  size_t autofill_count_ = 0;
 
   // A vector of all the input fields in the form.
   // See FormFieldData::fields.

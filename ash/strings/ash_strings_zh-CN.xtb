@@ -1013,6 +1013,7 @@
 <translation id="4351244548802238354">关闭对话框</translation>
 <translation id="4356872429719185452">显示热点详情。热点正在开启。</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  正在录制</translation>
+<translation id="4368227575116094370">创建 Google 表格</translation>
 <translation id="4371348193907997655">投放设置</translation>
 <translation id="4371834685492830207">PIN 码必须仅包含有效字符</translation>
 <translation id="4375482231364171368">在地址栏中搜索</translation>
@@ -1481,6 +1482,7 @@
 <translation id="5825969630400862129">设置已连接的设备</translation>
 <translation id="5830180081891717894">另外 <ph name="WINDOWS" /> 项</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="5840658767386246331">使用 Google 搜索</translation>
 <translation id="5841296711770970362">切换到下一首</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> 热点已开启，但尚未连接任何设备</translation>
 <translation id="584525477304726060">按住即可最大化</translation>

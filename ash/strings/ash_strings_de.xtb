@@ -149,6 +149,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1455242230282523554">Spracheinstellungen anzeigen</translation>
 <translation id="1459693405370120464">Wetter</translation>
 <translation id="1460620680449458626">Ton ist aus.</translation>
+<translation id="1462439140224375968">Google-Dokument erstellt</translation>
 <translation id="14648076227129703">Dies erlaubt den Kamerazugriff für <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> sowie alle Apps und Websites mit Kameraberechtigung</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="146902737843070955">Dein Administrator hat diese Änderung angefragt</translation>
@@ -593,6 +594,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="301584155502740476">Hotspot-Details anzeigen. Hotspot ist deaktiviert.</translation>
 <translation id="3017079585324758401">Hintergrund</translation>
 <translation id="3018135054368884502">Medien vorspulen</translation>
+<translation id="3026897869154397692">Zum Kalender hinzugefügt</translation>
 <translation id="3033545621352269033">An</translation>
 <translation id="3033912566804961911">Mit <ph name="DESK_NAME" /> zusammenführen</translation>
 <translation id="3036649622769666520">Dateien öffnen</translation>
@@ -1481,6 +1483,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5825969630400862129">Einstellungen für verbundene Geräte</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> weitere(s)</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /> beenden</translation>
+<translation id="5840658767386246331">Mit Google suchen</translation>
 <translation id="5841296711770970362">Zum nächsten Titel wechseln</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-Hotspot ist aktiviert, keine Geräte verbunden</translation>
 <translation id="584525477304726060">Zum Maximieren gedrückt halten</translation>
@@ -1894,6 +1897,7 @@ Neuinstallation</translation>
 <translation id="7228968829656641943">Auswählen, um meinen Bildschirm zu durchsuchen. Tabulatortaste und dann Leertaste drücken, um über die Tastatur zu navigieren.</translation>
 <translation id="7229029500464092426">Arbeitsspeicher <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> insgesamt</translation>
 <translation id="7239814253344511868">Beide Maustasten</translation>
+<translation id="7240636904654154599">Google-Tabelle erstellt</translation>
 <translation id="7244725679040769470">Der Akkustand beträgt noch <ph name="PERCENTAGE" /> %. Schließ dein Gerät an eine Steckdose an.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Dieses Chromebook muss zur Installation eines Updates neu gestartet werden. Dies kann bis zu einer Minute dauern.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8921624153894383499">Google Assistant spricht diese Sprache nicht.</translation>
 <translation id="8926951137623668982">Ablage immer ausgeblendet</translation>
 <translation id="8929566928381252430">Möchtest du die Feststelltaste verwenden? Verwenden</translation>
+<translation id="8929623844713377237">Kontakt erstellt</translation>
 <translation id="8934418770423095813">Google-Dokument erstellen</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 Datei}other{# Dateien}}</translation>
 <translation id="8936501819958976551">deaktiviert</translation>

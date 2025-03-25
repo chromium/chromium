@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">в воскресенье</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4251839292699800785">Стильный офис</translation>
+<translation id="4252261480746798874">Нажмите "Создать свои обои" для написания собственного запроса или "Выберите тему", чтобы использовать подчеркнутые слова для персонализации ИИ-обоев.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Нажмите "Случайные обои", чтобы получить больше уникальных и разнообразных изображений.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Когда вы создаете собственные обои, запрос отправляется на серверы ИИ от Google. Это позволяет генерировать изображения и улучшать продукт. На данные распространяются <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Условия использования и Политика конфиденциальности Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не указывайте персональные и конфиденциальные данные.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративный искусственный интеллект может допускать ошибки, в том числе в сведениях о людях, поэтому ответы лучше перепроверять. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Подробнее…<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Время ожидания HTTP</translation>
 <translation id="4266143281602681663">пряжа</translation>
 <translation id="4269815121975886860">Параметры запуска</translation>

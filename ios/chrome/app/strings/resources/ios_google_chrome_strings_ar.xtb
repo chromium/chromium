@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">‏سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google لعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">‏فتح علامة تبويب جديدة في Chrome</translation>
 <translation id="1166460004393506534">‏حذف بيانات التصفّح في Chrome</translation>
-<translation id="1171255741903316750">‏يجب تفعيل خيار "قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chrome"</translation>
 <translation id="1179527450541388808">‏يمكنك الوصول إلى Chrome بشكل أسرع من خلال شريط التطبيقات في الشاشة الرئيسية على جهاز iPad.</translation>
 <translation id="1180362651362502943">‏يمكنك مواصلة استخدام بيانات Chrome في حسابك على Google.</translation>
 <translation id="1200396280085622191">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في الرسائل والتطبيقات الأخرى.</translation>
@@ -178,6 +177,7 @@
 <translation id="5716154293141027663">‏سيتم فتح متصفّح Chrome في أي وقت تنقر فيه على روابط في التطبيقات الأخرى.</translation>
 <translation id="5752489513673657785">‏اطّلِع على خلاصة مخصَّصة لك من Google</translation>
 <translation id="5772407442571703917">‏يمكنك تنزيل Chrome من هنا.</translation>
+<translation id="5777468213129569553">‏افتح Chrome</translation>
 <translation id="5779767936254214055">‏يمكنك قفل علامات التبويب في وضع التصفُّح المتخفي عند مغادرة Chrome أو التبديل إلى تطبيق مختلف.</translation>
 <translation id="5808435672482059465">‏عرض سجلّ Chrome</translation>
 <translation id="5833027901704861726">‏لم يتم حفظ بعض بيانات Chrome في <ph name="EMAIL" /> إلى الآن.

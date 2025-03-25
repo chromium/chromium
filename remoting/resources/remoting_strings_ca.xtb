@@ -40,6 +40,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="2758123043070977469">S'ha produït un problema d'autenticació. Torna a iniciar la sessió.</translation>
 <translation id="2803375539583399270">Introdueix el PIN</translation>
 <translation id="2919669478609886916">Esteu compartint aquest ordinador amb un altre usuari. Voleu continuar compartint-lo?</translation>
+<translation id="2929683002824598593">Comparteix el dispositiu</translation>
 <translation id="2939145106548231838">Autenticació a l'amfitrió</translation>
 <translation id="3027681561976217984">Mode tàctil</translation>
 <translation id="3106379468611574572">L'ordinador remot no respon a les sol·licituds de connexió. Verifiqueu que estigui en línia i torneu-ho a provar.</translation>
@@ -117,10 +118,12 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="6178645564515549384">Amfitrió de missatgeria nativa per a l'assistència remota</translation>
 <translation id="618120821413932081">Actualitza la resolució remota perquè coincideixi amb la finestra</translation>
 <translation id="6223301979382383752">Obre el tauler de preferències Gravació de la pantalla</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ha sol·licitat accés per veure la teva pantalla i controlar el teclat i el ratolí. Vols compartir el dispositiu?</translation>
 <translation id="6284412385303060032">L'amfitrió que s'executa a la pantalla d'inici de la consola s'ha aturat per admetre el mode Curtain, i fa servir un amfitrió que s'executa en una sessió específica de l'usuari.</translation>
 <translation id="6542902059648396432">Informa d'un problema...</translation>
 <translation id="6583902294974160967">Assistència</translation>
 <translation id="6612717000975622067">Envia Ctrl-Alt-Supr</translation>
+<translation id="6625262630437221505">{0,plural, =1{Si no fas res, el dispositiu es començarà a compartir automàticament d'aquí a # segon.}other{Si no fas res, el dispositiu es començarà a compartir automàticament d'aquí a # segons.}}</translation>
 <translation id="6654753848497929428">Comparteix</translation>
 <translation id="677755392401385740">L'amfitrió ha començat per a l'usuari: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplicació d'ajuda per obrir un URL al client <ph name="PRODUCT_NAME" /></translation>

@@ -149,6 +149,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
 <translation id="1459693405370120464">Temps</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
+<translation id="1462439140224375968">S'ha creat un document de Google</translation>
 <translation id="14648076227129703">Permet l'accés a la càmera a <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="1467432559032391204">Esquerra</translation>
 <translation id="146902737843070955">El teu administrador ha sol·licitat aquest canvi</translation>
@@ -593,6 +594,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="301584155502740476">Mostra els detalls del punt d'accés Wi‐Fi. Està desactivat.</translation>
 <translation id="3017079585324758401">Fons</translation>
 <translation id="3018135054368884502">Avança ràpidament el contingut multimèdia</translation>
+<translation id="3026897869154397692">S'ha afegit al calendari</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combina amb l'escriptori <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Obre fitxers</translation>
@@ -1481,6 +1483,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5825969630400862129">Configuració dels dispositius connectats</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> més</translation>
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Cerca amb Google</translation>
 <translation id="5841296711770970362">Ves a la pista següent</translation>
 <translation id="5842553299352339114">El punt d'accés Wi-Fi de <ph name="DEVICE_NAME" /> està activat; no hi ha cap dispositiu connectat.</translation>
 <translation id="584525477304726060">Mantén premut per maximitzar</translation>
@@ -1894,6 +1897,7 @@ Instal·lació nova</translation>
 <translation id="7228968829656641943">Selecciona per cercar a la meva pantalla. Prem la tecla de tabulació i, després, la barra espaiadora per navegar amb el teclat.</translation>
 <translation id="7229029500464092426">Memòria: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Ambdós botons del ratolí</translation>
+<translation id="7240636904654154599">S'ha creat un full de càlcul de Google</translation>
 <translation id="7244725679040769470">Queda un <ph name="PERCENTAGE" /> % de bateria. Connecta el dispositiu a l'alimentació.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Aquest Chromebook s'ha de reiniciar perquè s'apliqui una actualització. Aquest procés pot tardar fins a 1 minut</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8921624153894383499">L'Assistent de Google no parla aquest idioma.</translation>
 <translation id="8926951137623668982">El prestatge està sempre amagat</translation>
 <translation id="8929566928381252430">Estàs provant d'utilitzar Bloq Maj? Utilitza:</translation>
+<translation id="8929623844713377237">S'ha creat un contacte</translation>
 <translation id="8934418770423095813">Crea un document de Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxer}other{# fitxers}}</translation>
 <translation id="8936501819958976551">desactivada</translation>

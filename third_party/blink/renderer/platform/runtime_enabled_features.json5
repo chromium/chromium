@@ -4291,10 +4291,6 @@
       public: true,
     },
     {
-      name: "StaticAnimationOptimization",
-      status: "stable",
-    },
-    {
       name: "StorageBuckets",
       status: "stable",
     },

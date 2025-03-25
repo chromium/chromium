@@ -125,15 +125,6 @@ class AuthenticationService : public KeyedService,
   virtual void SignIn(id<SystemIdentity> identity,
                       signin_metrics::AccessPoint access_point);
 
-  // Grants signin::ConsentLevel::kSync to `identity` and records the event at
-  // `access_point`. This starts setting up Sync-the-feature, but the setup will
-  // only complete once SyncUserSettings::SetInitialSyncFeatureSetupComplete()
-  // is called. This method is used for testing. Virtual for testing.
-  // TODO(crbug.com/40067025): Delete this method after Phase 2 on iOS is
-  // launched. See ConsentLevel::kSync documentation for details.
-  virtual void GrantSyncConsent(id<SystemIdentity> identity,
-                                signin_metrics::AccessPoint access_point);
-
   // Signs the authenticated user out of Chrome and clears the browsing
   // data if the account is managed.
   // Sync consent is automatically removed from all signed-out accounts.

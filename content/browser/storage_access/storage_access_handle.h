@@ -40,7 +40,7 @@ class StorageAccessHandle
   // additional checks once the StorageAccessHandle interface has been bound.
   // One important exception to this is the `DOMStorageContextWrapper`, which
   // is handled outside of this interface so does need to trigger this check.
-  static bool DoesFrameHaveStorageAccess(RenderFrameHost* host);
+  static bool DoesDocumentHaveStorageAccess(RenderFrameHost* host);
 
   StorageAccessHandle(const StorageAccessHandle&) = delete;
   StorageAccessHandle& operator=(const StorageAccessHandle&) = delete;

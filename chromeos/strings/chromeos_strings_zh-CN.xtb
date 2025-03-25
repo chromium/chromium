@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">在周日</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4251839292699800785">时尚办公室</translation>
+<translation id="4252261480746798874">如果选择“创建您自己的壁纸”，您可以撰写自定义提示。您还可以选择“选择主题”，然后选择带下划线的字词，打造个性化的 AI 壁纸。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          选择“给我灵感”，获得更多独特而多样的 AI 图片选项。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          当您创建自己的壁纸时，系统会将提示发送到 Google 服务器，以根据 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 的《服务条款》和《隐私权政策》<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />生成图片并改进产品。请勿包含任何个人、敏感或机密信息。
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          生成式 AI 的回答（包括与人有关的信息）未必正确无误，请务必核查。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />了解详情<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP 延迟时间</translation>
 <translation id="4266143281602681663">纱线</translation>
 <translation id="4269815121975886860">启动页使用偏好</translation>

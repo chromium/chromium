@@ -247,7 +247,10 @@ void FormStructureTest::CheckFormStructureTestData(
     }
     if (test_case.form_flags.autofill_count) {
       ASSERT_EQ(*test_case.form_flags.autofill_count,
-                static_cast<int>(form_structure->autofill_count()));
+                static_cast<int>(std::ranges::count_if(
+                    form_structure->fields(), [](const auto& field) {
+                      return field->IsFieldFillable();
+                    })));
     }
     if (test_case.form_flags.section_count) {
       std::set<Section> section_names;

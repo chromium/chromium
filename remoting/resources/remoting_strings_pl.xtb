@@ -40,6 +40,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="2758123043070977469">Podczas uwierzytelniania wystąpił problem. Zaloguj się ponownie.</translation>
 <translation id="2803375539583399270">Wpisz kod PIN</translation>
 <translation id="2919669478609886916">Obecnie udostępniasz ten komputer innemu użytkownikowi. Czy chcesz kontynuować udostępnianie?</translation>
+<translation id="2929683002824598593">Udostępnij urządzenie</translation>
 <translation id="2939145106548231838">Host wymaga uwierzytelnienia</translation>
 <translation id="3027681561976217984">Tryb dotykowy</translation>
 <translation id="3106379468611574572">Komputer zdalny nie odpowiada na żądania połączenia. Sprawdź, czy jest on podłączony do internetu i spróbuj ponownie.</translation>
@@ -117,10 +118,12 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="6178645564515549384">Host natywnego przesyłania komunikatów do pomocy zdalnej</translation>
 <translation id="618120821413932081">Zaktualizuj rozdzielczość pulpitu zdalnego, by pasowała do okna</translation>
 <translation id="6223301979382383752">Otwórz preferencje rejestrowania zawartości ekranu</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> prosi o dostęp umożliwiający wyświetlanie Twojego ekranu oraz sterowanie Twoją klawiaturą i myszą. Czy chcesz udostępnić swoje urządzenie?</translation>
 <translation id="6284412385303060032">Host uruchomiony na ekranie logowania konsoli został zamknięty, by umożliwić włączenie trybu kurtyny, przełączając się na hosta uruchomionego w sesji danego użytkownika.</translation>
 <translation id="6542902059648396432">Zgłoś problem…</translation>
 <translation id="6583902294974160967">Pomoc</translation>
 <translation id="6612717000975622067">Wyślij Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Jeśli nie podejmiesz żadnych działań, urządzenie zacznie automatycznie udostępniać dane za # sekundę.}few{Jeśli nie podejmiesz żadnych działań, urządzenie zacznie automatycznie udostępniać dane za # sekundy.}many{Jeśli nie podejmiesz żadnych działań, urządzenie zacznie automatycznie udostępniać dane za # sekund.}other{Jeśli nie podejmiesz żadnych działań, urządzenie zacznie automatycznie udostępniać dane za # sekundy.}}</translation>
 <translation id="6654753848497929428">Udostępnij</translation>
 <translation id="677755392401385740">Uruchomiono host dla użytkownika: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplikacja pomocnicza do otwierania adresów URL na kliencie <ph name="PRODUCT_NAME" /></translation>

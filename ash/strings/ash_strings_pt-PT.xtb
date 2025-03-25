@@ -149,6 +149,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1455242230282523554">Mostrar definições de idioma</translation>
 <translation id="1459693405370120464">Meteorologia</translation>
 <translation id="1460620680449458626">O volume está desativado.</translation>
+<translation id="1462439140224375968">Documento do Google Docs criado</translation>
 <translation id="14648076227129703">Isto permite o acesso à câmara para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e para todas as apps e Websites com a autorização da câmara</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="146902737843070955">O seu administrador pediu esta alteração</translation>
@@ -593,6 +594,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="301584155502740476">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi está desativada.</translation>
 <translation id="3017079585324758401">Fundo</translation>
 <translation id="3018135054368884502">Avançar o conteúdo multimédia</translation>
+<translation id="3026897869154397692">Adicionado ao Calendário</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3033912566804961911">Combinar com <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
@@ -1012,6 +1014,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4351244548802238354">Fechar caixa de diálogo</translation>
 <translation id="4356872429719185452">Veja os detalhes da zona Wi-Fi. A zona Wi-Fi está a ser ativada.</translation>
 <translation id="4364101114148522660">A gravar: <ph name="DURATION" /></translation>
+<translation id="4368227575116094370">Criar folha de cálculo do Google Sheets</translation>
 <translation id="4371348193907997655">Definições de transmissão</translation>
 <translation id="4371834685492830207">O PIN só pode conter carateres válidos</translation>
 <translation id="4375482231364171368">Pesquisar na barra de endereço</translation>
@@ -1481,6 +1484,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5825969630400862129">Definições de dispositivos associados</translation>
 <translation id="5830180081891717894">Mais <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Parar o <ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Pesquisar com o Google</translation>
 <translation id="5841296711770970362">Ir para a faixa seguinte</translation>
 <translation id="5842553299352339114">A zona Wi-Fi do dispositivo <ph name="DEVICE_NAME" /> está ativada, sem dispositivos ligados</translation>
 <translation id="584525477304726060">Toque sem soltar para maximizar</translation>
@@ -1894,6 +1898,7 @@ Nova instalação</translation>
 <translation id="7228968829656641943">Selecione para pesquisar no meu ecrã. Prima Tab e, em seguida, a tecla de espaço para abrir a navegação no teclado.</translation>
 <translation id="7229029500464092426">Memória: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> no total</translation>
 <translation id="7239814253344511868">Ambos os botões do rato</translation>
+<translation id="7240636904654154599">Folha de cálculo do Google Sheets criada</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% de bateria restante. Ligue o dispositivo à alimentação.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. É necessário reiniciar o Chromebook para aplicar uma atualização. Esta ação pode demorar até 1 minuto.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2409,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8921624153894383499">O Assistente Google não fala este idioma.</translation>
 <translation id="8926951137623668982">Prateleira sempre oculta</translation>
 <translation id="8929566928381252430">Está a tentar usar o Caps Lock? Use</translation>
+<translation id="8929623844713377237">Contacto criado</translation>
 <translation id="8934418770423095813">Criar Documento do Google Docs</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desativada</translation>

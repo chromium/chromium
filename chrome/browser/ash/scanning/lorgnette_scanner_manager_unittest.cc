@@ -281,8 +281,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(profile_manager_->SetUp());
     TestingProfile* testing_profile =
-        profile_manager_->CreateTestingProfile(kEmail,
-                                               /*is_main_profile=*/true);
+        profile_manager_->CreateTestingProfile(kEmail);
     fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, false, user_manager::UserType::kRegular, testing_profile);
     fake_user_manager->LoginUser(account_id);

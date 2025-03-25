@@ -248,7 +248,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
   EXPECT_FALSE([app_group::GetGroupUserDefaults()
       stringForKey:AppGroupUserDefaultsCredentialProviderUserID()]);
 
-  // Enable sync for managed account.
+  // Set managed account as the primary one.
   CoreAccountInfo core_account =
       identity_test_environment_.MakeAccountAvailable("foo@gmail.com");
   AccountInfo account;
@@ -259,7 +259,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
   ASSERT_TRUE(account.IsManaged());
   identity_test_environment_.UpdateAccountInfoForAccount(account);
   identity_test_environment_.SetPrimaryAccount("foo@gmail.com",
-                                               signin::ConsentLevel::kSync);
+                                               signin::ConsentLevel::kSignin);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NSEQ(
@@ -331,7 +331,7 @@ TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
   account.email = "foo@gmail.com";
   account.gaia = GaiaId("gaia");
   account.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account);
 
   CreateCredentialProviderService();
 

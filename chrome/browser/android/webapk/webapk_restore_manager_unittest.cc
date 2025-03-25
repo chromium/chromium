@@ -133,7 +133,7 @@ class WebApkRestoreManagerTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     profile_ = testing_profile_manager_.CreateTestingProfile(
-        TestingProfile::kDefaultProfileUserName, true);
+        TestingProfile::kDefaultProfileUserName);
   }
 
   TestingProfile* profile() { return profile_.get(); }

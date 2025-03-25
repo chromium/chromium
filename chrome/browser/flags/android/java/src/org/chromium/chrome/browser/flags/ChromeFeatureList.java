@@ -1097,6 +1097,13 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE, "use_schema_v1", false);
 
+    public static final BooleanCachedFeatureParam
+            sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck =
+                    newBooleanCachedFeatureParam(
+                            ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE,
+                            "multi_data_source_skip_device_check",
+                            false);
+
     public static final IntCachedFeatureParam sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs =
             newIntCachedFeatureParam(
                     CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS, "verification_timeout_ms", 10_000);
@@ -1401,6 +1408,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs,
                     sAndroidAppIntegrationWithFaviconSkipSchemaCheck,
                     sAndroidAppIntegrationMultiDataSourceUseSchemaV1,
+                    sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck,
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sCctAdaptiveButtonEnableOpenInBrowser,

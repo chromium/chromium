@@ -682,6 +682,7 @@ This collects each top-level device metric type. For example,
   <token key="Second">
     <variant name="" summary="5"/>
     <variant name=".10s" summary="10"/>
+    <variant name=".30s" summary="30"/>
   </token>
 </histogram>
 

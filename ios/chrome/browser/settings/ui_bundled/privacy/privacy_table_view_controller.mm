@@ -390,24 +390,15 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       SyncServiceFactory::GetForProfile(_profile);
 
   NSMutableArray* urls = [[NSMutableArray alloc] init];
-  // TODO(crbug.com/40066949): Remove IsSyncFeatureEnabled() usage after kSync
-  // users are migrated to kSignin in phase 3. See ConsentLevel::kSync for more
-  // details.
-  if (syncService->IsSyncFeatureEnabled()) {
-    privacyFooterText =
-        l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
+  if (!syncService->GetAccountInfo().IsEmpty()) {
+    // Footer for signed in users.
+    privacyFooterText = l10n_util::GetNSString(
+        IDS_IOS_PRIVACY_ACCOUNT_SETTINGS_AND_GOOGLE_SERVICES_FOOTER);
     [urls addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
   } else {
-    if (!syncService->GetAccountInfo().IsEmpty()) {
-      // Footer for signed in users.
-      privacyFooterText = l10n_util::GetNSString(
-          IDS_IOS_PRIVACY_ACCOUNT_SETTINGS_AND_GOOGLE_SERVICES_FOOTER);
-      [urls addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
-    } else {
-      // Footer for signed out users.
-      privacyFooterText =
-          l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER);
-    }
+    // Footer for signed out users.
+    privacyFooterText =
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER);
   }
   [urls
       addObject:[[CrURL alloc] initWithGURL:GURL(kGoogleServicesSettingsURL)]];

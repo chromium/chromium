@@ -36,6 +36,16 @@ function resolve_corner_style(style, w, h) {
     style[`border-${vSide}-width`] = vWidth;
     style[`border-${hSide}-color`] = style[`border-${hSide}-color`] || style[`border-color`];
     style[`border-${vSide}-color`] = style[`border-${vSide}-color`] || style[`border-color`];
+    if ('box-shadow' in style) {
+      const shadows = style['box-shadow'].split(",");
+      style.shadow = [];
+      const boxShadowRegex = /(?:(-?\d+(?:\.\d+)?)px)\s+(?:(-?\d+(?:\.\d+)?)px)\s+(?:(-?\d+(?:\.\d+)?)(?:px)?)?(?:\s+(?:(-?\d+(?:\.\d+)?)px))?\s+([^\$]*)/i;
+      for (const shadow of shadows.toReversed()) {
+        const parsed = shadow.match(boxShadowRegex)
+        if (parsed)
+          style.shadow.push({offset: [parseFloat(parsed[1]), parseFloat(parsed[2])], blur: parsed[3], spread: parsed[4], color: parsed[5] || "black" });
+      }
+    }
   }));
   return style;
 }

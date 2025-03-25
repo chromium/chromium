@@ -204,8 +204,8 @@ class DeveloperToolsPolicyHandlerWithProfileTest
     {
       constexpr char kPrimaryProfileName[] = "primary_profile";
       const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
-      primary_profile_ = profile_manager_.CreateTestingProfile(
-          kPrimaryProfileName, /* is_main_profile= */ true);
+      primary_profile_ =
+          profile_manager_.CreateTestingProfile(kPrimaryProfileName);
 
       user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id, /* is_affiliated= */ true,

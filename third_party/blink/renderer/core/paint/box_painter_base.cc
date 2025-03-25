@@ -77,7 +77,7 @@ namespace {
 
 // TODO(crbug.com/682173): We should pass sides_to_include here, and exclude
 // the sides that should not be included from the outset.
-void ApplySpreadToShadowShape(FloatRoundedRect& shadow_shape, float spread) {
+void ApplySpreadToShadowShape(ContouredRect& shadow_shape, float spread) {
   if (spread == 0)
     return;
 
@@ -322,9 +322,12 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
 
     if (has_border_radius) {
-      FloatRoundedRect rounded_fill_rect(fill_rect, border.GetRadii());
+      ContouredRect rounded_fill_rect(
+          FloatRoundedRect(fill_rect, border.GetRadii()),
+          border.GetCornerCurvature());
+      rounded_fill_rect.SetOriginRect(border.AsRoundedRect());
       ApplySpreadToShadowShape(rounded_fill_rect, shadow.Spread());
-      context.FillRoundedRect(
+      context.FillContouredRect(
           rounded_fill_rect, Color::kBlack,
           PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
     } else {
@@ -411,7 +414,8 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
 
     gfx::RectF inner_rect = bounds.Rect();
     AdjustRectForSideClipping(inner_rect, shadow, sides_to_include);
-    FloatRoundedRect inner_rounded_rect(inner_rect, bounds.GetRadii());
+    ContouredRect inner_rounded_rect(
+        FloatRoundedRect(inner_rect, bounds.GetRadii()));
     ApplySpreadToShadowShape(inner_rounded_rect, -shadow.Spread());
     if (inner_rounded_rect.IsEmpty()) {
       // |AutoDarkMode::Disabled()| is used because |shadow_color| has already
@@ -438,8 +442,9 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     gfx::RectF outer_rect = AreaCastingShadowInHole(bounds.Rect(), shadow);
     // |AutoDarkMode::Disabled()| is used because |fill_color(shadow_color)| has
     // already been adjusted for dark mode.
-    context.FillRectWithRoundedHole(outer_rect, inner_rounded_rect, fill_color,
-                                    AutoDarkMode::Disabled());
+    context.FillRectWithRoundedHole(outer_rect,
+                                    inner_rounded_rect.AsRoundedRect(),
+                                    fill_color, AutoDarkMode::Disabled());
   }
 }
 

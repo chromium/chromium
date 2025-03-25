@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Показване на езиковите настройки</translation>
 <translation id="1459693405370120464">Времето</translation>
 <translation id="1460620680449458626">Звукът е спрян.</translation>
+<translation id="1462439140224375968">Създаден е документ в Google Документи</translation>
 <translation id="14648076227129703">Това разрешава достъп до камерата за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и всички приложения и уебсайтове, които имат съответното разрешение</translation>
 <translation id="1467432559032391204">Наляво</translation>
 <translation id="146902737843070955">Администраторът ви заяви тази промяна</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">Показване на подробностите за точката за достъп. Тя е изключена.</translation>
 <translation id="3017079585324758401">Фон</translation>
 <translation id="3018135054368884502">Превъртане напред на мултимедия</translation>
+<translation id="3026897869154397692">Добавено към календара</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3033912566804961911">Комбиниране с(ъс) <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Отваряне на файлове</translation>
@@ -1012,6 +1014,7 @@
 <translation id="4351244548802238354">Затваряне на диалоговия прозорец</translation>
 <translation id="4356872429719185452">Показване на подробностите за точката за достъп. Точката за достъп се включва.</translation>
 <translation id="4364101114148522660">Запис: <ph name="DURATION" /></translation>
+<translation id="4368227575116094370">Създаване на таблица в Google Таблици</translation>
 <translation id="4371348193907997655">Настройки за предаване</translation>
 <translation id="4371834685492830207">ПИН кодът трябва да съдържа само валидни знаци</translation>
 <translation id="4375482231364171368">Търсене в адресната лента</translation>
@@ -1481,6 +1484,7 @@
 <translation id="5825969630400862129">Настройки за свързани устройства</translation>
 <translation id="5830180081891717894">Още <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>
+<translation id="5840658767386246331">Търсене с Google</translation>
 <translation id="5841296711770970362">Към следващия запис</translation>
 <translation id="5842553299352339114">Точката за достъп от <ph name="DEVICE_NAME" /> е включена – няма свързани устройства</translation>
 <translation id="584525477304726060">Задръжте за увеличаване</translation>
@@ -1894,6 +1898,7 @@
 <translation id="7228968829656641943">Изберете за търсене на екрана ми. Натиснете Tab и след това клавиша за интервал за навигиране с клавиатурата.</translation>
 <translation id="7229029500464092426">Използвана памет: <ph name="AVAILABLE_MEMORY" /> | общо: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">И двата бутона на мишката</translation>
+<translation id="7240636904654154599">Създадена е таблица в Google Таблици</translation>
 <translation id="7244725679040769470">Оставащият заряд на батерията е <ph name="PERCENTAGE" />%. Включете устройството си в захранването.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Този Chromebook трябва да бъде рестартиран, за да се приложи актуализация. Това може да отнеме до минута.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2409,7 @@
 <translation id="8921624153894383499">Google Асистент не поддържа този език.</translation>
 <translation id="8926951137623668982">Лавицата е винаги скрита</translation>
 <translation id="8929566928381252430">Опитвате се да използвате клавиша Caps Lock? Натиснете</translation>
+<translation id="8929623844713377237">Създаден е контакт</translation>
 <translation id="8934418770423095813">Създаване на документ в Google Документи</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файла}}</translation>
 <translation id="8936501819958976551">деактивирана</translation>

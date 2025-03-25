@@ -1014,6 +1014,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4351244548802238354">Đóng hộp thoại</translation>
 <translation id="4356872429719185452">Hiển thị thông tin chi tiết về điểm phát sóng. Điểm phát sóng sắp bật.</translation>
 <translation id="4364101114148522660">Đang ghi: <ph name="DURATION" /></translation>
+<translation id="4368227575116094370">Tạo Google Trang tính</translation>
 <translation id="4371348193907997655">Cài đặt phương thức truyền</translation>
 <translation id="4371834685492830207">Mã PIN chỉ được chứa các ký tự hợp lệ</translation>
 <translation id="4375482231364171368">Tìm kiếm trong thanh địa chỉ</translation>
@@ -1483,6 +1484,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5825969630400862129">Cài đặt thiết bị đã kết nối</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> cửa sổ khác</translation>
 <translation id="5837036133683224804">Dừng <ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Tìm kiếm bằng Google</translation>
 <translation id="5841296711770970362">Chuyển sang bản nhạc tiếp theo</translation>
 <translation id="5842553299352339114">Điểm phát sóng <ph name="DEVICE_NAME" /> đang bật, chưa có thiết bị nào kết nối</translation>
 <translation id="584525477304726060">Giữ để phóng to tối đa</translation>

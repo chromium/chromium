@@ -178,7 +178,11 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   if (!for_lens_overlay) {
     HistoryTabHelper::CreateForWebState(web_state);
+  } else if (base::FeatureList::IsEnabled(kLensOverlayNavigationHistory)) {
+    HistoryTabHelper::CreateForWebState(web_state);
+    HistoryTabHelper::FromWebState(web_state)->EnableLensURLProcessing();
   }
+
   LoadTimingTabHelper::CreateForWebState(web_state);
   OverscrollActionsTabHelper::CreateForWebState(web_state);
   IOSTaskTabHelper::CreateForWebState(web_state);

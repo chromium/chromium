@@ -122,9 +122,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, getter=isAutofillProfileEnabled)
     BOOL autofillProfileEnabled;
 
-// Default NO. YES, when the autofill syncing is enabled.
-@property(nonatomic, assign, getter=isSyncEnabled) BOOL syncEnabled;
-
 @end
 
 @implementation AutofillProfileTableViewController
@@ -296,9 +293,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (autofillProfile.IsAccountProfile()) {
     item.autofillProfileRecordType =
         AutofillAddressProfileRecordType::AutofillAccountProfile;
-  } else if (self.syncEnabled) {
-    item.autofillProfileRecordType =
-        AutofillAddressProfileRecordType::AutofillSyncableProfile;
   } else {
     item.autofillProfileRecordType = AutofillLocalProfile;
     if ([self shouldShowCloudOffIconForProfile:autofillProfile]) {
@@ -641,7 +635,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)determineUserEmail {
-  self.syncEnabled = NO;
   _userEmail = nil;
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
@@ -650,8 +643,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
     _userEmail = identity.userEmail;
-    self.syncEnabled = _personalDataManager->address_data_manager()
-                           .IsSyncFeatureEnabledForAutofill();
   }
 }
 
@@ -767,7 +758,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)showDeletionConfirmationForIndexPaths:
     (NSArray<NSIndexPath*>*)indexPaths {
   BOOL accountProfiles = NO;
-  BOOL syncProfiles = NO;
 
   int profileCount = 0;
 
@@ -783,9 +773,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       case AutofillAccountProfile:
         accountProfiles = YES;
         break;
-      case AutofillSyncableProfile:
-        syncProfiles = YES;
-        break;
       case AutofillLocalProfile:
         break;
     }
@@ -798,8 +785,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   NSString* deletionConfirmationString =
       [self getDeletionConfirmationStringUsingProfileCount:profileCount
-                                           accountProfiles:accountProfiles
-                                              syncProfiles:syncProfiles];
+                                           accountProfiles:accountProfiles];
   _deletionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser
@@ -837,12 +823,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Returns the deletion confirmation message string based on
-// `profileCount` and if it the source has any `accountProfiles` or
-// `syncProfiles`.
+// `profileCount` and if it the source has any `accountProfiles`.
 - (NSString*)getDeletionConfirmationStringUsingProfileCount:(int)profileCount
                                             accountProfiles:
-                                                (BOOL)accountProfiles
-                                               syncProfiles:(BOOL)syncProfiles {
+                                                (BOOL)accountProfiles {
   if (accountProfiles) {
     std::u16string pattern = l10n_util::GetStringUTF16(
         IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_CONFIRMATION_TITLE);
@@ -851,11 +835,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
             pattern, "email", base::SysNSStringToUTF16(_userEmail), "count",
             profileCount);
     return base::SysUTF16ToNSString(confirmationString);
-  }
-  if (syncProfiles) {
-    return l10n_util::GetPluralNSStringF(
-        IDS_IOS_SETTINGS_AUTOFILL_DELETE_SYNC_ADDRESS_CONFIRMATION_TITLE,
-        profileCount);
   }
   return l10n_util::GetPluralNSStringF(
       IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ADDRESS_CONFIRMATION_TITLE,

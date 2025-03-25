@@ -70,7 +70,6 @@
 <translation id="1042248468362992359">हटस्पट प्रयोग गर्न मोबाइल डेटामा कनेक्ट गर्नुहोस्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">कुनै समस्या आयो। Linux आंशिक रूपमा मात्र अपग्रेड गरिएको हुन सक्छ। तपाईं यस सम्बन्धमा थप जानकारी प्राप्त गर्न चाहनुहुन्छ भने लगहरू हेर्नुहोस्। लगहरू "फाइलहरू &gt; मेरा फाइलहरू &gt; <ph name="LOG_FILE" />" मा सेभ गरिएको छ</translation>
 <translation id="104385770822424034">कारबाही हाल्नुहोस्</translation>
-<translation id="104419033123549300">किम्यापको शैली</translation>
 <translation id="1045487161760507186">Google पासवर्ड म्यानेजरमा तपाईंको पासवर्ड सेभ हुने भएकाले तपाईंले आफ्नो पासवर्ड सम्झिराख्नु पर्दैन</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{यो डिभाइसमा भएको <ph name="BRAND" /> मा एउटा पासवर्ड इम्पोर्ट गरिएको छ}other{यो डिभाइसमा भएको <ph name="BRAND" /> मा {NUM_PASSWORDS} वटा पासवर्ड इम्पोर्ट गरिएका छन्}}</translation>
 <translation id="1046572983040892965">विन्डो सारेर माथितिर र बायाँतिर लगियो</translation>
@@ -300,7 +299,6 @@
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
 <translation id="11978075283960463">एपमा भण्डारण गरिएको डेटा: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">कमजोर दृष्टि भएका मान्छेहरूका लागि टेक्स्ट-टू-स्पिच टुलहरू</translation>
-<translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> ले ट्याब “<ph name="WEBSITE_TITLE" />” हटाउनुभयो</translation>
 <translation id="119944043368869598">सबै सफा गर्नुहोस्</translation>
 <translation id="1199814941632954229">प्रमाणपत्रका यी प्रोफाइलका हकमा प्रमाणपत्र प्रयोग गरिँदै छन्</translation>
 <translation id="120069043972472860">हेर्न नमिल्ने</translation>
@@ -707,7 +705,6 @@
 <translation id="1484176899013802755">घाँसे मैदानमा चम्किरहेको सुनौलो सूर्यको आकर्षक तैलचित्र।</translation>
 <translation id="1484979925941077974">साइटले ब्लुटुथ प्रयोग गर्दै छ</translation>
 <translation id="1485015260175968628">यसले अब गर्न सक्छ:</translation>
-<translation id="1485141095922496924">संस्करण <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 प्रयोग गर्दा फाइलहरू OneDrive मा सेभ हुने छन्। लोकल फाइलहरू OneDrive मा सेभ हुने छन् भने अन्य डिभाइसमा भएका फाइलहरूको कपी यहाँ सेभ हुने छ। तपाईंका फाइलहरू Files एपमा Microsoft OneDrive फोल्डरमा पाउन सकिन्छ।</translation>
 <translation id="1486012259353794050">तपाईंले प्रश्नहरू सोध्दा Google एसिस्टेन्टले तपाईंका स्क्रिनका आधारमा आवश्यकताअनुसारका जवाफहरू प्रदान गर्छ</translation>
 <translation id="1486096554574027028">खोज पासवर्डहरू</translation>
@@ -2702,7 +2699,6 @@
 <translation id="2849936225196189499">नाजुक</translation>
 <translation id="285033512555869047">बन्द छ</translation>
 <translation id="2850541429955027218">विषयवस्तु थप्नुहोस्</translation>
-<translation id="2850672011315104382">विराम चिन्हको शैली</translation>
 <translation id="285237063405807022">(लोड गरिँदै छ)</translation>
 <translation id="2853121255651601031">पासवर्ड सेभ गरियो</translation>
 <translation id="2855243985454069333">तपाईंले यो विकल्पमा चिन्ह लगाउनुभयो भने सिंक गरिएका सबै डिभाइसबाट ब्राउजिङ हिस्ट्री मेटिन्छ</translation>
@@ -4394,7 +4390,6 @@
 <translation id="404493185430269859">डिफल्ट सर्च इन्जिन</translation>
 <translation id="4044964245574571633">Microsoft OneDrive को भण्डारण प्रयोग गर्छ</translation>
 <translation id="4045196801416070837">डिभाइसका आवाजहरू</translation>
-<translation id="4045441967987592849">फेरि खोल्नुहोस्</translation>
 <translation id="4046013316139505482">यी एक्स्टेन्सनहरूले यो साइटमा भएको जानकारी हेर्नु र परिवर्तन गर्नु पर्दैन।</translation>
 <translation id="4046123991198612571">अर्को ट्र्याक</translation>
 <translation id="4046655456159965535">देखाइएको डेटा मेटाउने हो?</translation>
@@ -5027,7 +5022,6 @@
 <translation id="4515872537870654449">मर्मतका लागि Dell मा सम्पर्क गर्नुहोस्। पङ्खाले काम गरिरहेको छैन भने डक बन्द हुने छ।</translation>
 <translation id="4515942088136451195">तपाईंको सङ्गठनले तपाईंले सेभ गर्न पाउने कुराहरूको सीमा तोकेको छ</translation>
 <translation id="4516395361210407049">टुलबारका बटनहरू रिसेट गरिएका छन्</translation>
-<translation id="4518840066030486079">सिफ्ट की मोडको शैली</translation>
 <translation id="4519331665958994620">साइटहरूले तपाईंको क्यामेरा प्रयोग गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="4519605771716872386">फाइल सिंक गर्ने सुविधा अन गरिएको छ</translation>
 <translation id="4519935350946509010">जडानसम्बन्धी त्रुटि।</translation>
@@ -5227,6 +5221,7 @@
 <translation id="4653116291358041820">सानो छाया</translation>
 <translation id="4653405415038586100">Linux कन्फिगर गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="4654236001025007561">आफू वरपरका Chromebook तथा Android यन्त्रसँग फाइलहरू सेयर गर्नुहोस्</translation>
+<translation id="4657810666108475055">ट्याबको खोजी</translation>
 <translation id="4657914796247705218">TrackPoint को गति</translation>
 <translation id="4658285806588491142">आफ्नो डिभाइसको स्क्रिन गोप्य राख्नुहोस्</translation>
 <translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> एप इन्टरनेट नभएका बेला उपलब्ध हुँदैन।</translation>
@@ -5761,7 +5756,6 @@
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
 <translation id="504561833207953641">विद्यमान ब्राउजर सत्रमा खोल्दै।</translation>
 <translation id="504953514574706691">यो ट्याब सिफारिस गरिएको समूहबाट हटाइयो</translation>
-<translation id="5049614114599109018">यसअघि इनपुट गरिएका कुरा प्रयोग गर्नुहोस्</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051461727068120271">पुष्टि नगरिएको फाइल डाउनलोड गर्नुहोस्</translation>
 <translation id="5051836348807686060">तपाईंले चयन गर्नुभएको भाषामा हिज्जे परीक्षण गर्ने सुविधा प्रयोग गर्न मिल्दैन</translation>
@@ -6064,7 +6058,6 @@
 <translation id="5256174546894739043">कुनै साइटले मेरा हात ट्रयाक गर्ने अनुमति मागेका खण्डमा मलाई सोध्नुहोस्</translation>
 <translation id="52566111838498928">फन्टहरू लोड गरिँदै छ...</translation>
 <translation id="5256861893479663409">सबै साइटहरूमा</translation>
-<translation id="5258473597674772367">"<ph name="GROUP_NAME" />" ट्याब समूह उपलब्ध हुन छाडेको छ</translation>
 <translation id="5258992782919386492">यो डिभाइसमा स्थापना गर्नुहोस्</translation>
 <translation id="5260334392110301220">स्मार्ट उद्धरण चिन्ह</translation>
 <translation id="5260508466980570042">माफ गर्नुहोस्, तपाईंको इमेल वा पासवर्डलाई रूजू गर्न सकिएन। कृपया पुन: प्रयास गर्नुहोस्।</translation>
@@ -6683,7 +6676,6 @@
 <translation id="571222594670061844">साइटहरूले पहिचान सेवा प्रदायकहरूबाट प्राप्त साइन इन प्रम्प्टहरू देखाउन सक्छन्</translation>
 <translation id="5713033452812927234">तपाईंको यसअघिको डिभाइसमा खोलिएका विन्डो खोलिँदै छन्</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> मा कनेक्ट गरिएको छ</translation>
-<translation id="5713960379473463904">स्पेस इनपुट गर्ने शैली</translation>
 <translation id="5714100381896040477">स्क्रिनको प्रयोग कम गर्नुहोस्</translation>
 <translation id="5715711091495208045">प्लगइन ब्रोकर: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719854774000914513">साइटहरूले HID यन्त्रमा कनेक्ट गर्ने अनुमति माग्न सक्छन्</translation>
@@ -7774,7 +7766,6 @@
 <translation id="6519689855001245063">मापदण्ड पूरा हुन्छ कि हुँदैन भन्ने कुरा जाँच गरिँदै छ</translation>
 <translation id="6520087076882753524">तपाईं Google को पासवर्ड म्यानेजरमा गई सेभ गरिएका पासवर्डहरू हेर्न तथा व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="6520115099532274511"><ph name="SITE" /> ले तपाईंको पहिचान पुष्टि गर्न चाहन्छ। Google पासवर्ड म्यानेजर एक्सेस गर्न अङ्क र अक्षरमिश्रित आफ्नो PIN हाल्नुहोस्</translation>
-<translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" ट्याब समूहमा सामेल हुनुभयो</translation>
 <translation id="6520876759015997832">खोजको परिणाम <ph name="LIST_SIZE" /> मध्ये <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />। उक्त खण्डमा जान Enter थिच्नुहोस्।</translation>
 <translation id="6521214596282732365">तपाईं डिजाइन र ग्राफिक्ससम्बन्धी अनलाइन टुलहरू प्रयोग गरी उच्च गुणस्तरको सामग्री बनाउन सक्नुहोस् भन्नाका लागि साइटहरूले सामान्यतया तपाईंका फन्ट प्रयोग गर्छन्</translation>
 <translation id="6523574494641144162">Google पासवर्ड म्यानेजरले यी पासवर्डहरू तपाईंको Google खातामा सेभ गर्न सकेन। तपाईं यी पासवर्ड यो डिभाइसमा सेभ गर्न सक्नुहुन्छ।</translation>
@@ -7843,6 +7834,7 @@
 <translation id="6563055593659435495">तपाईंको फोनसँग कनेक्ट गरिराख्न सकिएन। तपाईंको फोन नजिकै हुनुका साथै अनलक गरिएको छ र त्यसमा ब्लुटुथ तथा Wi-Fi अन गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="6564860838537532172">तपाईंले ब्राउजिङ हिस्ट्री खोज्नुभयो भने खोजिएका हिस्ट्री, पेजमा भएका सबैभन्दा बढी मिल्दाजुल्दा सामग्री र सिर्जना गरिएका मोडेल आउटपुट Google मा पठाइन्छन्। साथै, यो सुविधाको गुणस्तर सुधार गर्ने प्रयोजनका लागि समीक्षकहरू तिनको समीक्षा गर्न सक्छन्।</translation>
 <translation id="6565144332292237355">साइटहरूले यो सुविधा प्रयोग गरी तपाईंको स्थानीय नेटवर्कमा भएका कुनै पनि डिभाइस खोज्न र त्यसमा कनेक्ट हुन सक्छन्</translation>
+<translation id="6568283005472142698">ट्याबमा खोज्ने सुविधा</translation>
 <translation id="6569931898053264308">मध्यम बचतहरू</translation>
 <translation id="6570622975915850879">अर्कै डिभाइस प्रयोग गर्नुहोस्</translation>
 <translation id="65711204837946324">डाउनलोड गर्ने अनुमति चाहिन्छ</translation>
@@ -8260,7 +8252,6 @@
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" <ph name="PRINTER_NAME" /> प्रयोग गरी <ph name="FILE_NAME" /> प्रिन्ट गर्न चाहन्छ।</translation>
 <translation id="6846843854964504403">सुरक्षाका निम्ति सेटिङ रिसेट गर्ने प्रक्रिया</translation>
 <translation id="6847125920277401289">जारी राख्न ठाउँ खाली गर्नुहोस्</translation>
-<translation id="6848388270925200958">यस बेला, तपाईंसँग यस यन्त्रमा मात्र प्रयोग गर्न मिल्ने केही कार्डहरू छन्</translation>
 <translation id="6848716236260083778">तपाईं आफ्ना बच्चाको फिंगरप्रिन्ट सेटअप गर्न चाहनुहुन्छ भने उनलाई फिंगरप्रिन्ट सेन्सरमा छुन लगाउनुहोस्। तपाईंका बच्चाको फिंगरप्रिन्ट डेटा सुरक्षित रूपमा भण्डारण गरिन्छ र यो डेटा कहिल्यै पनि यस <ph name="DEVICE_TYPE" /> बाट अन्यत्र पठाइँदैन।</translation>
 <translation id="6850286078059909152">पाठको रङ्ग</translation>
 <translation id="6850925512806464982">सबै जना तुरुन्तै यो ट्याब समूहको एक्सेस गुमाउने छन् र यो ट्याब समूह सबै डिभाइसबाट मेटाइने छ</translation>
@@ -8799,7 +8790,6 @@
 <translation id="7253521419891527137">&amp;थप सिक्नुहोस्</translation>
 <translation id="7254951428499890870">के तपाई निश्चित रूपमा निदानात्मक मोडमा "<ph name="APP_NAME" />" लाई लन्च गर्न चाहनुहुन्छ?</translation>
 <translation id="725497546968438223">बुकमार्क फोल्डर बटन</translation>
-<translation id="7255002516883565667">यस बेला, तपाईंसँग यस यन्त्रमा मात्र प्रयोग गर्न मिल्ने एउटा कार्ड छ</translation>
 <translation id="7255935316994522020">लागू गर्नुहोस्</translation>
 <translation id="7256069762010468647">साइटले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
 <translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>
@@ -9310,7 +9300,6 @@
 <translation id="7625025537587898155">नयाँ प्रोफाइल हाल्नुहोस्</translation>
 <translation id="7625568159987162309">विभिन्न साइटहरूमा भण्डारण गरिएका अनुमति र डेटा हेर्नुहोस्</translation>
 <translation id="7625823789272218216">नयाँ ट्याब बायाँतिर देखिन्छ</translation>
-<translation id="7628392600831846024">चिन्हको शैली</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ग्रेड <ph name="GRADE" /></translation>
 <translation id="762917478230183172">प्रत्येक कीका निम्ति एउटा कारबाही चयन गर्नुहोस्</translation>
 <translation id="7629206210984165492">शान्त</translation>
@@ -10329,6 +10318,7 @@
 <translation id="8309458809024885768">सर्टिफिकेट पहिले नै विद्यमान छ</translation>
 <translation id="8310409247509201074"><ph name="NUM" /> वटा ट्याब</translation>
 <translation id="831207808878314375">परिभाषा</translation>
+<translation id="8312841338723044391">लाइभ</translation>
 <translation id="8314089908545021657">नयाँ फोनसँग जोडा बनाउनुहोस्</translation>
 <translation id="8314381333424235892">छुटेको वा स्थापना रद्द गरिएको विस्तार</translation>
 <translation id="831440797644402910">यो फोल्डर खोल्न सकिएन</translation>
@@ -10625,7 +10615,6 @@
 <translation id="8523493869875972733">परिवर्तनहरू कायम राख्नुहोस्</translation>
 <translation id="8523849605371521713">नीतिद्वारा थपिएको</translation>
 <translation id="8524594273111932386">सर्च + डाउन एरो</translation>
-<translation id="8524783101666974011">आफ्नो Google खातामा कार्डहरू सेभ गर्नुहोस्</translation>
 <translation id="8524817717332153865">Mac को सिस्टम सेटिङमा क्यामेरा र माइक्रोफोन अफ गरिएका छन्</translation>
 <translation id="8524841856047224176">भिडियो कल र अन्य प्रयोजनका लागि आफ्नो क्यामेराको ब्याकग्राउन्ड पर्सनलाइज गर्नुहोस्</translation>
 <translation id="8525306231823319788">पूर्ण स्क्रीन</translation>
@@ -11101,7 +11090,6 @@
 <translation id="8850251000316748990">थप हेर्नुहोस्...</translation>
 <translation id="885246833287407341">API कार्यसम्बन्धी आर्गुमेन्टहरू</translation>
 <translation id="8853586775156634952">यस कार्डलाई यस यन्त्रमा मात्र सेभ गरिने छ</translation>
-<translation id="8854745870658584490">चयन गर्न प्रयोग गरिने सर्टकट</translation>
 <translation id="8855242995793521265">तपाईंको ब्राउजर वा डिभाइसलाई महसुस हुने गरी सुस्त बनाउँदैन।</translation>
 <translation id="8855977033756560989">यो Chromebook यन्त्र Chrome इन्टरप्राइजको स्तरवृद्धिको बन्डलसँगै उपलब्ध हुन्छ। इन्टरप्राइजका क्षेमताहरूको लाभ लिन Google प्रशासकको खातामार्फत यो डिभाइस दर्ता गर्नुहोस्।</translation>
 <translation id="8856028055086294840">एप र पेजहरू रिस्टोर गर्नुहोस्</translation>

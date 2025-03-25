@@ -18,8 +18,7 @@ namespace ash {
 class GlanceablesKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
  public:
   TestingProfile* CreateProfile(const std::string& profile_name) override {
-    return profile_manager()->CreateTestingProfile(profile_name,
-                                                   /*is_main_profile=*/true);
+    return profile_manager()->CreateTestingProfile(profile_name);
   }
 };
 
