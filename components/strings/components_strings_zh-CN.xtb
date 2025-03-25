@@ -901,6 +901,7 @@
 <translation id="2539524384386349900">检测</translation>
 <translation id="2541219929084442027">在您关闭所有无痕式标签页后，您在这些标签页中浏览的网页不会在浏览器历史记录、Cookie 存储区或搜索记录中留下任何痕迹。不过，您下载的所有文件或创建的书签均会保留下来。</translation>
 <translation id="2542106216580219892">冲浪</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> - 若要退出全屏模式，请按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">您的管理员重启了您的设备</translation>
 <translation id="2544644783021658368">单一文档</translation>
 <translation id="254524874071906077">将 Chrome 浏览器设为默认浏览器</translation>
@@ -1138,7 +1139,7 @@
 <translation id="3005723025932146533">显示已保存的版本</translation>
 <translation id="300580149047131921">最近使用过</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键浏览可执行的操作，然后按 Enter 键执行选定的操作。</translation>
-<translation id="3010991137650052245">若要在此网站上使用您的<ph name="PERMISSION" />，请授予 <ph name="SHORT_PRODUCT_NAME" /> 访问权限</translation>
+<translation id="3010991137650052245">如要在此网站上使用您的<ph name="PERMISSION" />，请授予 <ph name="SHORT_PRODUCT_NAME" /> 访问权限</translation>
 <translation id="3013711734159931232">家居用品</translation>
 <translation id="3014553260345122294">财经新闻</translation>
 <translation id="3014726756341138577">高级打印机功能</translation>
@@ -1786,7 +1787,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">政策范围不受支持。</translation>
-<translation id="411918202192379658">自动填充功能变得更好用了</translation>
+<translation id="411918202192379658">自动填充功能变得更智能了</translation>
 <translation id="4121428309786185360">截止日期</translation>
 <translation id="4123572138124678573">三孔（底部）</translation>
 <translation id="412601465078863288">上传超时</translation>
@@ -3928,6 +3929,7 @@
 <translation id="7887885240995164102">进入“画中画”模式</translation>
 <translation id="7888575728750733395">打印操作渲染方式</translation>
 <translation id="7890748547282909375">登录 Microsoft OneDrive 即可保存屏幕截图</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> - 若要显示光标，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">支付设置</translation>
 <translation id="7894280532028510793">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">7 x 9 英寸信封</translation>
@@ -4621,6 +4623,7 @@
 <translation id="9155646082713385498">杂志</translation>
 <translation id="9157595877708044936">正在设置...</translation>
 <translation id="9161794544616754735">{0,plural, =1{“<ph name="FILE_NAME" />”可能包含敏感内容}other{<ph name="FILE_COUNT" /> 个文件可能包含敏感内容}}</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> - 若要退出全屏模式，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">您访问的网站也可根据您在网站上的活动来判断您的喜好。例如，如果您访问一个销售长跑鞋的网站，该网站可能会推测您对跑马拉松感兴趣。</translation>
 <translation id="9166851138617700776">详细了解网站建议的广告和广告衡量功能</translation>
 <translation id="9167054383925257837">浏览器和设备操作系统信息（例如浏览器和操作系统版本）</translation>

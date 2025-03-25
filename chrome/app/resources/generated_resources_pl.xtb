@@ -6479,6 +6479,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5575528586625653441">Wystąpił problem z żądaniem zarejestrowania w trybie demonstracyjnym.</translation>
 <translation id="557722062034137776">Zresetowanie urządzenia nie będzie miało wpływu na Twoje konta Google ani żadne dane zsynchronizowane z tymi kontami. Wszystkie pliki zapisane lokalnie na urządzeniu zostaną jednak usunięte.</translation>
 <translation id="5578059481725149024">Automatyczne logowanie</translation>
+<translation id="5578387000057347457">Wpisz niestandardowy prompt lub zaznacz tekst, aby utworzyć obraz</translation>
 <translation id="5581134892342029705">Tłumaczenie na język <ph name="LANGUAGE" /> jest gotowe</translation>
 <translation id="558170650521898289">Weryfikacja sprzętowych sterowników systemu Microsoft Windows</translation>
 <translation id="5581972110672966454">Nie udało się dołączyć urządzenia do domeny. Spróbuj jeszcze raz albo skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
@@ -8625,6 +8626,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="713122686776214250">Dodaj &amp;stronę</translation>
 <translation id="7131431455372521159">Wszystkie TrackPointy zostały rozłączone</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, czekam</translation>
+<translation id="7132886488919643383">Korzystaj z AI od Google, aby ułatwić sobie czytanie, pisanie i tworzenie</translation>
 <translation id="7134098520442464001">Pomniejsz tekst</translation>
 <translation id="7134951043985383439">Pobrano niebezpieczny plik</translation>
 <translation id="7135729336746831607">Włączyć Bluetooth?</translation>
@@ -11648,6 +11650,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="953434574221655299">Mogą sprawdzać, kiedy używasz urządzenia</translation>
 <translation id="954705236478705408">Skonfiguruj nowy profil</translation>
 <translation id="954749761428814584">Język i metoda wprowadzania</translation>
+<translation id="956013912698841780">Kliknij prawym przyciskiem, aby podsumowywać treści, poznawać definicje, pisać z większą pewnością, tworzyć obrazy i korzystać z innych funkcji. Obecnie dostępność jest ograniczona.</translation>
 <translation id="956500788634395331">Masz ochronę przed potencjalnie niebezpiecznymi rozszerzeniami</translation>
 <translation id="957179356621191750">6-punktowa</translation>
 <translation id="957960681186851048">Ta strona próbowała pobrać automatycznie wiele plików</translation>

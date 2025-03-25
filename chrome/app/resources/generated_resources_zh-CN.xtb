@@ -403,6 +403,7 @@
 <translation id="1264956950255940376">眯左眼</translation>
 <translation id="1265094893042958831">正在为此页面生成建议…</translation>
 <translation id="1265279736024499987">您的应用和设置会在您使用自己的 Google 账号登录的所有 ChromeOS Flex 设备上保持同步。如需了解浏览器同步选项，请转到 <ph name="LINK_BEGIN" />Chrome 设置<ph name="LINK_END" />。</translation>
+<translation id="1267081565119405990">截屏或搜索屏幕后，系统会显示更多操作，例如添加到日历、创建 Google 文档等。</translation>
 <translation id="126710816202626562">翻译语言：</translation>
 <translation id="1267649802567297774">生成了第 <ph name="INDEX" /> 张<ph name="SUBJECT" />图片，样式是<ph name="STYLE" />，情感基调是<ph name="MOOD" />。</translation>
 <translation id="126768002343224824">16 倍</translation>
@@ -1560,6 +1561,7 @@
 <translation id="208547068587548667">登录 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">请重试</translation>
 <translation id="208634871997892083">始终开启的 VPN</translation>
+<translation id="208654914566977272">在搜索屏幕时显示操作建议</translation>
 <translation id="2087822576218954668">打印：<ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">安装 <ph name="DEVICE_OS" /> 后才能注册。</translation>
 <translation id="2088564884469682888">内置 TrackPoint</translation>
@@ -3673,7 +3675,7 @@
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3582299299336701326">将亮屏幕调暗，或将暗屏幕调亮。按搜索键 + Ctrl + H 即可开启和关闭颜色反转功能。</translation>
 <translation id="3584169441612580296">读取和更改您计算机上的照片、音乐和其他媒体</translation>
-<translation id="3586741240886978899">您在此网站上使用过</translation>
+<translation id="3586741240886978899">您曾通过该账号访问此网站</translation>
 <translation id="3586806079541226322">无法打开此文件</translation>
 <translation id="3586931643579894722">隐藏详细信息</translation>
 <translation id="3587279952965197737">不能超过 <ph name="MAX_CHARACTER_COUNT" /> 个字符</translation>

@@ -505,6 +505,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1846432862466000825">Plastik (materiały archiwalne)</translation>
 <translation id="1848640291751752317">pobranych plików</translation>
 <translation id="1848982255014129637">Zdjęcie (wysoki połysk)</translation>
+<translation id="1849438148665368129">Kwota zakupu musi być mniejsza niż <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Rejestracja karty wirtualnej została zamknięta</translation>
 <translation id="1854180393107901205">Zatrzymaj przesyłanie</translation>
 <translation id="1855370856221982654">Boks</translation>
@@ -2166,6 +2167,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4796594887379589189">Identyfikator konta zadania</translation>
 <translation id="4798269756263412078">Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert. Alerty będą wysyłane na Twój adres e-mail.</translation>
 <translation id="4800132727771399293">Sprawdź datę ważności i kod CVC, a potem spróbuj ponownie</translation>
+<translation id="4800546479758254481">Przyznano dostęp do rzeczywistości rozszerzonej</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Instrukcje od administratora urządzenia:</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>
@@ -3026,6 +3028,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6327065120806001832">dostęp przez sieć lokalną</translation>
 <translation id="6328639280570009161">Wyłącz przewidywanie działań sieciowych</translation>
 <translation id="6335029926534404762">Obuwie sportowe</translation>
+<translation id="6336948221660696475">Nie przyznano dostępu do rzeczywistości wirtualnej</translation>
 <translation id="6337133576188860026">Zwolni się mniej niż <ph name="SIZE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="6337534724793800597">Filtruj zasady według nazwy</translation>
 <translation id="633770708279464947">Wartość <ph name="SECURE_DNS_SALT" /> jest nieprawidłowa i nie zostanie użyta.</translation>
@@ -3069,6 +3072,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6391700400718590966">Arkusz dotyczący braku pasujących danych uwierzytelniających na potrzeby bezpiecznych płatności jest zamknięty</translation>
 <translation id="6392799395081100092">Papier (Vellum)</translation>
 <translation id="6393156038355142111">Zaproponuj silne hasło</translation>
+<translation id="6393310910507376797">Nieobsługiwane przez sprzedawcę</translation>
 <translation id="6393956493820063117">Zasady administratora uniemożliwiają wklejanie tu informacji z <ph name="ORIGIN_NAME" /></translation>
 <translation id="6394852772105848029">Ta strona chce otworzyć aplikację <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Skutery i motorowery</translation>
@@ -3222,6 +3226,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6668389483194953109">Znaleziono rozmiar papieru o nazwie „custom”, ale właściwość „custom_size” jest pusta lub nieprawidłowa.</translation>
 <translation id="6671169470640320959">Finansowanie samochodów</translation>
 <translation id="6671697161687535275">Usunąć tę podpowiedź do formularza z Chromium?</translation>
+<translation id="6675846980676550611">Nie przyznano dostępu do rzeczywistości rozszerzonej</translation>
 <translation id="6677351035258626477">Fast food</translation>
 <translation id="6679354743514146922">Przeglądarka Chrome próbuje uzupełnić hasło na stronie <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Kod CVC został zapisany</translation>
@@ -3709,6 +3714,7 @@ Dodatkowe informacje:
 <translation id="7512685745044087310">Te zasady nie mogą mieć wartości „Prawda”, a ich przestrzeganie nie może być obowiązkowe. Zmieniliśmy ich stan na zalecane.</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">Przyznano jednorazowy dostęp do rzeczywistości wirtualnej</translation>
 <translation id="7517201160922869406">Pojazdy terenowe</translation>
 <translation id="7517414872996418597">Koperta C10</translation>
 <translation id="7518003948725431193">Nie znaleziono strony internetowej pod adresem <ph name="URL" /></translation>
@@ -4606,6 +4612,7 @@ Dodatkowe informacje:
 <translation id="9139318394846604261">Zakupy</translation>
 <translation id="9140198744651252040">Przeglądarka Chrome chce używać odcisku palca do autouzupełniania haseł</translation>
 <translation id="9141013498910525015">Zarządzaj adresami</translation>
+<translation id="9141672681283222114">Przyznano jednorazowy dostęp do rzeczywistości rozszerzonej</translation>
 <translation id="9143898823728499852">Dane tej karty mogą być uzupełniane automatycznie, ponieważ Twoje konto <ph name="CARD_ISSUER_NAME" /> jest połączone z Google Pay</translation>
 <translation id="9144951720726881238">Data wygaśnięcia:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Zaloguj się<ph name="END_LINK" /> ponownie i wróć na tę kartę, aby uzyskać pomoc w pisaniu</translation>
@@ -4662,6 +4669,7 @@ Dodatkowe informacje:
 <translation id="922152298093051471">Dostosuj Chrome</translation>
 <translation id="9222403027701923763">Nauka w szkołach podstawowych i średnich</translation>
 <translation id="93020190163435405">Staże</translation>
+<translation id="931598121743515856">Kwota zakupu musi przekraczać <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Zezwolić aplikacji <ph name="APP_NAME" /> na konfigurowanie sieci Wi-Fi?</translation>
 <translation id="936602727769022409">Możesz stracić dostęp do swojego konta Google. Chromium zaleca natychmiastową zmianę hasła. Zobaczysz prośbę, by się zalogować.</translation>
@@ -4677,6 +4685,7 @@ Dodatkowe informacje:
 <translation id="949314938206378263">Prosisz o zgodę na odwiedzenie tej strony. Twój rodzic może odpowiedzieć w Family Link.</translation>
 <translation id="950736567201356821">Trzy otwory u góry</translation>
 <translation id="950926967802086924">Klucz dostępu • Menedżer haseł Google</translation>
+<translation id="955429569736351433">Przyznano dostęp do rzeczywistości wirtualnej</translation>
 <translation id="95721182352849470">Żółty 2</translation>
 <translation id="961663415146723894">Wiązanie na dole</translation>
 <translation id="961856697154696964">Usuń dane przeglądania</translation>

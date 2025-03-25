@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">sekmadienį</translation>
 <translation id="4250229828105606438">Ekrano kopija</translation>
 <translation id="4251839292699800785">Stilingas biuras</translation>
+<translation id="4252261480746798874">Jei pasirinkote „Sukurti savo“, galite parašyti tinkintą užklausą. Taip pat galite pasirinkti „Pasirinkti temą“, o tada pasirinkti temą ir pabrauktus žodžius, kad suasmenintumėte DI ekrano foną.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pasirinkite „Įkvėpk mane“, kad gautumėte unikalesnių ir įvairesnių DI vaizdų.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kai kuriate savo ekrano foną, užklausa siunčiama į „Google“ serverius, kad būtų galima generuoti vaizdus ir tobulinti produktą, vadovaujantis <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Google“ paslaugų teikimo sąlygomis ir privatumo politika<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Neįtraukite jokios asmens, neskelbtinos ar konfidencialios informacijos.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatyvinis DI gali klysti, įskaitant su žmonėmis susijusias klaidas, todėl patikrinkite dar kartą <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Sužinokite daugiau<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP delsa</translation>
 <translation id="4266143281602681663">siūlų</translation>
 <translation id="4269815121975886860">Paleidimo nuostatos</translation>

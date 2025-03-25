@@ -2016,6 +2016,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2373666622366160481">Igazítás a papírhoz</translation>
 <translation id="2375406435414127095">Kapcsolódjon telefonjához</translation>
 <translation id="2376056713414548745">Hangos felolvasás</translation>
+<translation id="2376122016044804363">Megerősítések vágólapra másolásról</translation>
 <translation id="2377667304966270281">Súlyos laphiba</translation>
 <translation id="237828693408258535">Szeretné kérni az oldal lefordítását?</translation>
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Előfordulhat, hogy ennek a bővítménynek a támogatása hamarosan megszűnik}other{Előfordulhat, hogy ezeknek a bővítményeknek a támogatása hamarosan megszűnik}}</translation>
@@ -3170,6 +3171,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3192586965067888278">Ismertesse részletesen a problémát. A visszajelzést a rendszer elküldi a Google-nak ember általi felülvizsgálatra, és felhasználhatjuk a Google termékeinek és szolgáltatásainak tökéletesítésére vagy fejlesztésére.</translation>
 <translation id="3192947282887913208">Audiofájlok</translation>
 <translation id="3193695589337931419">Rendszerjelek segédfolyamata</translation>
+<translation id="3194095220941877499">Megerősítést jelení meg, amikor Ön linkeket, képeket vagy videókat másol vágólapra</translation>
 <translation id="3196912927885212665">Az androidos telefonnal történő beállításhoz a Chromebook Bluetooth-jának bekapcsolva kell lennie</translation>
 <translation id="3197453258332670132">Jobb kattintással vagy nyomva tartással megjelenítheti a szövegkijelöléshez tartozó adatokat</translation>
 <translation id="3199127022143353223">Szerverek</translation>
@@ -6511,6 +6513,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5575528586625653441">Gond adódott a demó mód regisztrációs kérelmével.</translation>
 <translation id="557722062034137776">Az eszköz visszaállítása nincs hatással Google-fiókjaira vagy a fiókokkal szinkronizált adatokra. Az eszközön helyileg mentett fájlok azonban törlődni fognak.</translation>
 <translation id="5578059481725149024">Automatikus bejelentkezés</translation>
+<translation id="5578387000057347457">Írjon be egyéni utasítást, vagy jelöljön ki szöveget kép létrehozásához</translation>
 <translation id="5581134892342029705">Elkészült a következő nyelvre való fordítás: <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Microsoft Windows - hardver-illesztőprogram ellenőrzése</translation>
 <translation id="5581972110672966454">Nem sikerült csatlakoztatni az eszközt a domainhez. Próbálja újra, illetve forduljon az eszköz tulajdonosához vagy rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
@@ -8656,6 +8659,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="713122686776214250">Ol&amp;dal hozzáadása...</translation>
 <translation id="7131431455372521159">Az összes TrackPoint le lett választva</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, várakozás…</translation>
+<translation id="7132886488919643383">A Google AI-tól segítséget kaphat az olvasáshoz, az íráshoz és az alkotáshoz</translation>
 <translation id="7134098520442464001">Szöveg kicsinyítése</translation>
 <translation id="7134951043985383439">Veszélyes fájl letöltve</translation>
 <translation id="7135729336746831607">Bekapcsolja a Bluetooth-t?</translation>
@@ -11684,6 +11688,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="953434574221655299">Tudhatják, hogy Ön mikor használja aktívan az eszközt</translation>
 <translation id="954705236478705408">Új profil beállítása</translation>
 <translation id="954749761428814584">Nyelv és beviteli mód</translation>
+<translation id="956013912698841780">A jobb egérgombbal kattintva összefoglalót kérhet tartalmakról, definíciókat kaphat, magabiztosabban írhat, képeket készíthet, stb. Ez a funkció jelenleg csak korlátozottan áll rendelkezésre.</translation>
 <translation id="956500788634395331">Védelmet élvez a potenciálisan kártékony bővítményekkel szemben</translation>
 <translation id="957179356621191750">6 pontos</translation>
 <translation id="957960681186851048">Ez a webhely megpróbált automatikusan letölteni több fájlt</translation>

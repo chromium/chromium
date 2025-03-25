@@ -697,6 +697,15 @@
 <translation id="4249717042534905822">w niedzielę</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4251839292699800785">Stylowe biuro</translation>
+<translation id="4252261480746798874">Gdy wybierzesz „Utwórz własny”, możesz wpisać niestandardowy prompt. Możesz też kliknąć „Wybierz motyw”, a potem zaznaczyć podkreślone słowa, aby spersonalizować tapetę AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów wygenerowanych przez AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Gdy tworzysz własną tapetę, prompt jest wysyłany na serwery Google w celu wygenerowania obrazów oraz użycia go do ulepszania usługi, zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Warunkami korzystania z usług i Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generatywna AI może popełniać błędy, także dotyczące osób, dlatego sprawdzaj uzyskane odpowiedzi. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Więcej informacji<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Opóźnienie HTTP</translation>
 <translation id="4266143281602681663">włóczki</translation>
 <translation id="4269815121975886860">Ustawienia uruchamiania</translation>

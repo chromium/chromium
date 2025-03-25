@@ -11,6 +11,7 @@
 <translation id="102432830749687801">तुम्ही अ‍ॅक्सेस गमवण्यापूर्वी तुमच्या शाळेचा खाते डेटा तुमच्या वैयक्तिक खात्यामध्ये हलवण्यासाठी Google चे आशय ट्रान्सफर ॲप वापरण्याची खात्री करा.</translation>
 <translation id="1026212596705997935">शॉर्टकट हा "<ph name="CONFLICT_ACCEL_NAME" />" साठी वापरला जात आहे. नवीन शॉर्टकट प्रेस करा. विद्यमान शॉर्टकट बदलण्यासाठी, हा शॉर्टकट पुन्हा प्रेस करा.</translation>
 <translation id="1030856839388844477">डेटा वापर रीसेट करा</translation>
+<translation id="1047095725494118091">डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1049663189809099096">पेस्टल पिवळे</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">स्क्रीन सेव्हर डाउनलोड करत आहे</translation>
 <translation id="1094693127011229778">आयपी अ‍ॅड्रेस उपलब्ध नाही</translation>
 <translation id="1100902271996134409">इमेज तयार करत आहे...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> चा ऑडिओ</translation>
 <translation id="1116694919640316211">बद्दल</translation>
 <translation id="1118572504348554005">बग आणि तुम्ही आमच्याकडे तक्रार केलेल्या इतर समस्यांचे निराकरण करण्यासाठी या फॉर्मद्वारे सबमिट केलेला फीडबॅक आम्ही आमच्या भागीदारांसोबत शेअर करू शकतो. पासवर्डसारखी संवेदनशील माहिती समाविष्ट करू नका.</translation>
 <translation id="1119403468619527527">सोपे करण्यासाठी खूप कमी शब्द आहेत</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
 <translation id="2164131940279488868">ऑडिओ रेकॉर्ड करणे सुरू करण्यासाठी माइक कनेक्ट केला असल्याची खात्री करा</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="2180197493692062006">काहीतरी चूक झाली. अ‍ॅप पुन्हा उघडण्याचा प्रयत्न करा.</translation>
 <translation id="2189104374785738357">APN शी संबंधित तपशील संपादित करा</translation>
 <translation id="2195732836444333448">आता मर्यादा गाठली आहे. लवकरच परत या.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
 <translation id="3201315366910775591">शेअर केलेले अल्बम हे इतर लोकांद्वारे अपडेट केले जाऊ शकतात</translation>
 <translation id="3211671540163313381">कीमॅपिंग D-pad</translation>
+<translation id="3217462202230355157">तुमचा माइक कनेक्ट केलेला असल्याची खात्री करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करून पहा</translation>
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3226657629376379887">लेआउट अ‍ॅक्‍शन मेनू</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> ने <ph name="CATEGORY_TEXT" /> मूल्याचा भागाकार करा</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">विशिष्ट</translation>
 <translation id="3404249063913988450">स्क्रीन सेव्हर सुरू करा</translation>
 <translation id="3413935475507503304">अपडेटसह पुढे सुरू ठेवण्यासाठी, पुढील वर क्लिक करा.</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> चा सर्व ऑडिओ रेकॉर्ड करत आहे</translation>
 <translation id="3428551088151258685">आउटडोअर</translation>
 <translation id="3428971106895559033">पेस्टल</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">तुमच्या नेटवर्क किंवा थेट कनेक्शनद्वारे स्कॅनर सुरू आणि उपलब्ध असल्याची खात्री करा</translation>
 <translation id="4159238217853743776">आंशिक</translation>
 <translation id="4159784952369912983">जांभळा</translation>
+<translation id="416219735020840807">ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="4170180284036919717">फोटो काढा</translation>
 <translation id="4170700058716978431">करता आली नाही</translation>
 <translation id="4171077696775491955">ब्राइटनेस कमी करा</translation>
@@ -952,6 +958,7 @@
 <translation id="5344619683981067131">निवडलेल्या मजकुराच्या जागी सूचना वापरत आहे</translation>
 <translation id="5346687412805619883">स्थानिक नेटवर्क</translation>
 <translation id="5358174242040570474">काहीतरी चूक झाली. वॉलपेपर पुन्हा निवडण्याचा प्रयत्न करा किंवा अ‍ॅप पुन्हा उघडा.</translation>
+<translation id="5368228070728130240">सारांश आणि शीर्षक तयार करण्याचे मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="5372659122375744710">वायफाय नेटवर्क सुरक्षित नाही</translation>
 <translation id="5376354385557966694">ऑटोमॅटिक प्रकाश मोड</translation>
 <translation id="5378184552853359930">IP चा प्रकार</translation>
@@ -1257,6 +1264,7 @@
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
 <translation id="6786747875388722282">विस्तार</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> चा ऑडिओ सुरू असतो, तेव्हा Recorder या डिव्हाइसवर प्ले होणारे सर्व ऑडिओ कॅप्चर करते</translation>
 <translation id="6791471867139427246">कीबोर्डच्या लाइटचा रंग</translation>
 <translation id="6796229976413584781">शॉर्टकट हटवला आहे</translation>
 <translation id="6798678288485555829">मजकुरासंबंधी नेव्हिगेशन</translation>
@@ -1728,6 +1736,7 @@
 <translation id="8930622219860340959">बिनतारी</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> साठी <ph name="KEYS" /> की निवडलेली आहे. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">क्लायंटचा आयपी अ‍ॅड्रेस</translation>
+<translation id="8938606491880817721">डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट करा.</translation>
 <translation id="8944651180182756621">लाँचरचा रंग</translation>
 <translation id="8945308580158685341">मधमाश्या</translation>
 <translation id="894617464444543719">डिव्हाइस हे फोन आहे.</translation>

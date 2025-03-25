@@ -6509,6 +6509,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5575528586625653441">Esittelyn rekisteröintipyynnön kanssa tapahtui ongelma.</translation>
 <translation id="557722062034137776">Laitteen nollaus ei vaikuta Google-tileihisi tai mihinkään näihin tileihin synkronoituihin tietoihin. Kaikki paikallisesti laitteellesi tallennetut tiedostot kuitenkin poistetaan.</translation>
 <translation id="5578059481725149024">Automaattinen kirjautuminen</translation>
+<translation id="5578387000057347457">Lisää oma kehote tai korosta tekstiä luodaksesi kuvan</translation>
 <translation id="5581134892342029705">Käännös kieleen <ph name="LANGUAGE" /> valmistui</translation>
 <translation id="558170650521898289">Microsoft Windowsin laitteistoajurin varmenne</translation>
 <translation id="5581972110672966454">Laitetta ei voi liittää verkkotunnukseen. Yritä uudelleen tai ota yhteyttä laitteen omistajaan tai ylläpitäjään. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
@@ -8653,6 +8654,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="713122686776214250">Lisää sivu...</translation>
 <translation id="7131431455372521159">Kaikkien tappiohjainten yhteys on katkaistu</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, odottaa</translation>
+<translation id="7132886488919643383">Käytä Googlen tekoälyä saadaksesi apua lukemiseen, kirjoittamiseen ja luomiseen</translation>
 <translation id="7134098520442464001">Pienennä tekstiä</translation>
 <translation id="7134951043985383439">Vaarallinen tiedosto ladattu</translation>
 <translation id="7135729336746831607">Otetaanko Bluetooth käyttöön?</translation>
@@ -11681,6 +11683,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="953434574221655299">Laitteesi aktiivisen käytön havaitseminen sallittu</translation>
 <translation id="954705236478705408">Luo uusi profiili</translation>
 <translation id="954749761428814584">Kieli ja syöttötapa</translation>
+<translation id="956013912698841780">Klikkaa kakkospainikkeella, niin voit esimerkiksi luoda yhteenvetoja sisällöstä, hakea määritelmiä, kirjoittaa itsevarmemmin ja luoda kuvia. Saatavuus on tällä hetkellä rajoitettu.</translation>
 <translation id="956500788634395331">Sinut on suojattu mahdollisesti haitallisilta laajennuksilta</translation>
 <translation id="957179356621191750">6-pisteinen</translation>
 <translation id="957960681186851048">Tämä sivusto yrittää ladata useita tiedostoja automaattisesti</translation>

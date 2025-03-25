@@ -403,6 +403,7 @@
 <translation id="1264956950255940376">ഇടത് കണ്ണ് ഭാഗികമായി അടയ്ക്കുക</translation>
 <translation id="1265094893042958831">ഈ പേജിനുള്ള നിർദ്ദേശങ്ങൾ ജനറേറ്റ് ചെയ്യുന്നു…</translation>
 <translation id="1265279736024499987">നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന എല്ലാ ChromeOS Flex ഉപകരണങ്ങളിലും നിങ്ങളുടെ ആപ്പുകളും ക്രമീകരണവും സമന്വയിപ്പിക്കും. ബ്രൗസർ സമന്വയിപ്പിക്കൽ ഓപ്‌ഷനുകൾക്ക് <ph name="LINK_BEGIN" />Chrome ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
+<translation id="1267081565119405990">സ്‌ക്രീൻഷോട്ട് എടുത്ത ശേഷം അല്ലെങ്കിൽ സ്‌ക്രീൻ തിരഞ്ഞതിന് ശേഷം, Calendar-ലേക്ക് ചേർക്കുക, Google Docs സൃഷ്ടിക്കുക എന്നിവയും മറ്റും പോലുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ കാണിക്കുക.</translation>
 <translation id="126710816202626562">വിവർത്തന ഭാഷ:</translation>
 <translation id="1267649802567297774"><ph name="STYLE" /> സ്റ്റൈലിലും <ph name="MOOD" /> മൂഡിലും <ph name="SUBJECT" /> എന്ന വിഷയവുമായി ബന്ധപ്പെട്ട <ph name="INDEX" />-ാമത്തെ ചിത്രം സൃഷ്ടിച്ചു.</translation>
 <translation id="126768002343224824">16x</translation>
@@ -1564,6 +1565,7 @@
 <translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="208586643495776849">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="208634871997892083">എപ്പോഴും ഓണാക്കി വയ്‌ക്കുന്ന VPN</translation>
+<translation id="208654914566977272">നിങ്ങളുടെ സ്‌ക്രീൻ തിരയുമ്പോൾ നിർദ്ദേശിക്കുന്ന പ്രവർത്തനങ്ങൾ</translation>
 <translation id="2087822576218954668">പ്രിന്‍റ് ചെയ്യുക: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">നിങ്ങൾ <ph name="DEVICE_OS" /> ഇൻസ്റ്റാൾ ചെയ്ത ശേഷം മാത്രമേ എൻറോൾ ചെയ്യൽ പിന്തുണയ്ക്കൂ.</translation>
 <translation id="2088564884469682888">ബിൽറ്റ് ഇൻ TrackPoint</translation>

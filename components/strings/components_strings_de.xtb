@@ -505,6 +505,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1846432862466000825">Kunststoff (Archiv)</translation>
 <translation id="1848640291751752317">Downloads</translation>
 <translation id="1848982255014129637">Foto (hochglanz)</translation>
+<translation id="1849438148665368129">Der Kaufbetrag muss unter <ph name="CHECKOUT_AMOUNT_MAXIMUM" /> liegen</translation>
 <translation id="1853392626017747777">Registrierung der virtuellen Karte beendet</translation>
 <translation id="1854180393107901205">Übertragung beenden</translation>
 <translation id="1855370856221982654">Boxen</translation>
@@ -2164,6 +2165,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4796594887379589189">Konto-ID des Auftrags</translation>
 <translation id="4798269756263412078">Du wirst bei einem Preisnachlass auf einer beliebigen Website benachrichtigt. Die Benachrichtigungen werden an deine E-Mail-Adresse gesendet.</translation>
 <translation id="4800132727771399293">Prüfe das Ablaufdatum und deinen CVC und versuche es dann noch einmal.</translation>
+<translation id="4800546479758254481">AR-Berechtigung gewährt</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Anweisungen des Geräteadministrators:</translation>
 <translation id="4811450222531576619">Informationen zur Quelle und zum Thema</translation>
@@ -3024,6 +3026,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6327065120806001832">Zugriff auf lokales Netzwerk</translation>
 <translation id="6328639280570009161">Deaktiviere die Netzwerkvorhersage.</translation>
 <translation id="6335029926534404762">Sportschuhe</translation>
+<translation id="6336948221660696475">VR-Berechtigung nicht gewährt</translation>
 <translation id="6337133576188860026">Es werden weniger als <ph name="SIZE" /> Speicherplatz freigegeben. Manche Websites werden beim nächsten Öffnen eventuell langsamer geladen.</translation>
 <translation id="6337534724793800597">Richtlinien nach Name filtern</translation>
 <translation id="633770708279464947">Der <ph name="SECURE_DNS_SALT" />-Wert ist ungültig und wird nicht verwendet.</translation>
@@ -3067,6 +3070,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6391700400718590966">Sichere Anmeldedaten für Zahlungen – Tabellenblatt für nicht übereinstimmende sichere Anmeldedaten ist geschlossen</translation>
 <translation id="6392799395081100092">Papier (Pergament)</translation>
 <translation id="6393156038355142111">Starkes Passwort vorschlagen</translation>
+<translation id="6393310910507376797">Nicht vom Händler unterstützt</translation>
 <translation id="6393956493820063117">Die Administratorrichtlinie blockiert das Einfügen von Inhalten aus <ph name="ORIGIN_NAME" /> an dieser Stelle</translation>
 <translation id="6394852772105848029">Diese Website möchte die App <ph name="APP_NAME" /> öffnen</translation>
 <translation id="639673288733510393">Leichtkrafträder</translation>
@@ -3220,6 +3224,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6668389483194953109">Der Name der Papiergröße wurde als „Benutzerdefiniert“ angegeben, aber die Eigenschaft „custom_size“ ist leer oder ungültig.</translation>
 <translation id="6671169470640320959">Autofinanzierung</translation>
 <translation id="6671697161687535275">Vorschlag für das Formular aus Chromium entfernen?</translation>
+<translation id="6675846980676550611">AR-Berechtigung nicht gewährt</translation>
 <translation id="6677351035258626477">Fast-Food-Restaurant</translation>
 <translation id="6679354743514146922">Der Chrome-Browser versucht, dein Passwort auf <ph name="APP_NAME" /> auszufüllen.</translation>
 <translation id="6681790815630918386">CVC gespeichert</translation>
@@ -3707,6 +3712,7 @@ Weitere Details:
 <translation id="7512685745044087310">Diese Richtlinie kann nicht auf „Wahr“ eingestellt und gleichzeitig verbindlich sein. Deshalb wurde sie zu „Empfohlen“ geändert.</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">VR-Berechtigung einmalig gewährt</translation>
 <translation id="7517201160922869406">Geländegängige Fahrzeuge</translation>
 <translation id="7517414872996418597">Umschlag C10</translation>
 <translation id="7518003948725431193">Für folgende Webadresse wurde keine Webseite gefunden: <ph name="URL" />.</translation>
@@ -4606,6 +4612,7 @@ Weitere Details:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Der Chrome-Browser möchte den Fingerabdruck zum automatischen Ausfüllen von Passwörtern verwenden</translation>
 <translation id="9141013498910525015">Adressen verwalten</translation>
+<translation id="9141672681283222114">AR-Berechtigung einmalig gewährt</translation>
 <translation id="9143898823728499852">Du kannst diese Karte automatisch ausfüllen lassen, weil dein <ph name="CARD_ISSUER_NAME" />-Konto mit Google Pay verknüpft ist</translation>
 <translation id="9144951720726881238">Ablaufdatum:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Melde dich wieder an<ph name="END_LINK" /> und kehre dann zu diesem Tab zurück, um Hilfe beim Formulieren zu erhalten</translation>
@@ -4662,6 +4669,7 @@ Weitere Details:
 <translation id="922152298093051471">Chrome anpassen</translation>
 <translation id="9222403027701923763">Primäre und sekundäre Schulbildung</translation>
 <translation id="93020190163435405">Praktika</translation>
+<translation id="931598121743515856">Der Kaufbetrag muss über <ph name="CHECKOUT_AMOUNT_MINIMUM" /> liegen</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Der <ph name="APP_NAME" /> App erlauben, WLANs einzurichten?</translation>
 <translation id="936602727769022409">Du könntest den Zugriff auf dein Google-Konto verlieren. Chromium empfiehlt dir, dein Passwort jetzt zu ändern. Du wirst dazu aufgefordert, dich anzumelden.</translation>
@@ -4677,6 +4685,7 @@ Weitere Details:
 <translation id="949314938206378263">Deine Anfrage wurde gesendet. Dein Elternteil kann sie in Family Link prüfen.</translation>
 <translation id="950736567201356821">Dreifache Lochung oben</translation>
 <translation id="950926967802086924">Passkey • Google Passwortmanager</translation>
+<translation id="955429569736351433">VR-Berechtigung gewährt</translation>
 <translation id="95721182352849470">Gelb 2</translation>
 <translation id="961663415146723894">Bindung unten</translation>
 <translation id="961856697154696964">Browserdaten löschen</translation>

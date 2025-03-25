@@ -11,7 +11,7 @@
 <translation id="102432830749687801">Vodite računa da pomoću Googleove aplikacije Prenos sadržaja prenesete podatke školskog računa na lični račun prije nego što izgubite pristup.</translation>
 <translation id="1026212596705997935">Prečica se koristi za "<ph name="CONFLICT_ACCEL_NAME" />". Pritisnite novu prečicu. Ponovo pritisnite ovu prečicu da zamijenite postojeću prečicu.</translation>
 <translation id="1030856839388844477">Poništi prijenos podataka</translation>
-<translation id="1047095725494118091">Preuzimanje nije uspjelo. Pokušajte opet ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1047095725494118091">Nije moguće preuzeti. Ponovo pokušajte ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (Broj niti: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Dostupna je nova funkcija. Saznajte više tipkom strelice nagore.</translation>
 <translation id="1049663189809099096">pastelnožuta</translation>
@@ -27,7 +27,7 @@
 <translation id="1082009148392559545">Preuzimanje čuvara ekrana</translation>
 <translation id="1094693127011229778">IP adresa je nedostupna</translation>
 <translation id="1100902271996134409">Kreiranje slika…</translation>
-<translation id="1107856713690040084">Zvuk na uređaju <ph name="DEVICE_TYPE" /></translation>
+<translation id="1107856713690040084">Zvuk uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">O usluzi</translation>
 <translation id="1118572504348554005">S partnerima možemo dijeliti povratne informacije poslane putem ovog obrasca da riješimo greške i druge probleme koje nam prijavite. Nemojte uključivati osjetljive informacije kao što su lozinke.</translation>
 <translation id="1119403468619527527">Premalo je riječi za pojednostavljenje</translation>
@@ -294,7 +294,7 @@
 <translation id="2163937499206714165">Uključi tamni način rada</translation>
 <translation id="2164131940279488868">Da počnete snimati zvuk, provjerite je li mikrofon povezan</translation>
 <translation id="2173302385160625112">Provjerite internetsku vezu</translation>
-<translation id="2176909213844392588">Preuzimanje modela prijepisa za <ph name="LANGUAGE_NAME" /> nije uspjelo. Pokušajte opet ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
+<translation id="2176909213844392588">Nije moguće preuzeti model transkripcije za jezik <ph name="LANGUAGE_NAME" />. Ponovo pokušajte ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2180197493692062006">Nešto nije uredu. Pokušajte ponovo otvoriti aplikaciju.</translation>
 <translation id="2189104374785738357">Uredite detalje APN-a</translation>
 <translation id="2195732836444333448">Dostignut je maksimalni kapacitet. Vratite se uskoro.</translation>
@@ -519,7 +519,7 @@
 <translation id="3383623117265110236">Ekskluzivno</translation>
 <translation id="3404249063913988450">Omogućite čuvara ekrana</translation>
 <translation id="3413935475507503304">Da nastavite s ažuriranjem, kliknite na Naprijed.</translation>
-<translation id="3416709353545797224">Snimanje svih zvukova na uređaju <ph name="DEVICE_TYPE" /></translation>
+<translation id="3416709353545797224">Snimanje sveg zvuka uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">na otvorenom</translation>
 <translation id="3428971106895559033">pastelno</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -683,7 +683,7 @@
 <translation id="4155551848414053977">Provjerite je li skener uključen i dostupan putem mreže ili direktne veze</translation>
 <translation id="4159238217853743776">Djelimično</translation>
 <translation id="4159784952369912983">Ljubičasta</translation>
-<translation id="416219735020840807">Preuzimanje modela prijepisa nije uspjelo. Pokušajte opet ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
+<translation id="416219735020840807">Nije moguće preuzeti model transkripcije. Ponovo pokušajte ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4170180284036919717">Snimi fotografiju</translation>
 <translation id="4170700058716978431">NEUSPJEŠNO</translation>
 <translation id="4171077696775491955">smanjivanje osvjetljenja</translation>
@@ -958,7 +958,7 @@
 <translation id="5344619683981067131">Zamjena odabranog teksta prijedlogom</translation>
 <translation id="5346687412805619883">Lokalna mreža</translation>
 <translation id="5358174242040570474">Nešto nije uredu. Pokušajte ponovo odabrati pozadinsku sliku ili ponovo otvoriti aplikaciju.</translation>
-<translation id="5368228070728130240">Preuzimanje modela za izradu sažetaka i naslova nije uspjelo. Pokušajte opet ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
+<translation id="5368228070728130240">Nije moguće preuzeti model za kreiranje sažetaka i naslova. Ponovo pokušajte ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">WiFi mreža nije sigurna</translation>
 <translation id="5376354385557966694">Automatski svijetli način rada</translation>
 <translation id="5378184552853359930">Vrsta IP-a</translation>
@@ -1264,7 +1264,7 @@
 <translation id="6766275201586212568">DNS rezolucije nisu uspjele</translation>
 <translation id="6768237774506518020">Visoka stopa neuspjeha DNS rezolucije</translation>
 <translation id="6786747875388722282">Ekstenzije</translation>
-<translation id="6789891265243243337">Kad je zvuk uređaja <ph name="DEVICE_TYPE" /> uključen, Snimač bilježi sve zvukove koji se reproduciraju na tom uređaju</translation>
+<translation id="6789891265243243337">Kada je zvuk uređaja <ph name="DEVICE_TYPE" /> uključen, Diktafon snima sav zvuk koji se reproducira na uređaju</translation>
 <translation id="6791471867139427246">boja osvjetljenja tastature</translation>
 <translation id="6796229976413584781">Prečica je izbrisana</translation>
 <translation id="6798678288485555829">Kretanje kroz tekst</translation>
@@ -1736,7 +1736,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8930622219860340959">Bežično</translation>
 <translation id="8933650076320258356">Odabrana tipka je <ph name="KEYS" /> za <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">IP adresa klijenta</translation>
-<translation id="8938606491880817721">Preuzimanje nije uspjelo. Pokušajte opet ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8938606491880817721">Nije moguće preuzeti. Ponovo pokušajte ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8944651180182756621">Boja Pokretača</translation>
 <translation id="8945308580158685341">Pčele</translation>
 <translation id="894617464444543719">Uređaj je telefon.</translation>

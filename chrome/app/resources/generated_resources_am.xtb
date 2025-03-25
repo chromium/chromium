@@ -6507,6 +6507,7 @@
 <translation id="5575528586625653441">በቅንጭብ ማሳያ ሁነታ ምዝገባ ጥያቄ ላይ ችግር አጋጥሟል።</translation>
 <translation id="557722062034137776">የእርስዎን መሣሪያ ዳግም ማስጀመር በእርስዎ Google መለያዎች ወይም ከእነዚህ መለያዎች ጋር በተመሳሰሉ ማንኛውም ውሂብ ላይ ምንም ተጽዕኖ አይኖረውም። ይሁንና በመሣሪያዎ ላይ የተቀመጡ ፋይሎች ሁሉ ይሰረዛሉ።</translation>
 <translation id="5578059481725149024">በራስ-ግባ</translation>
+<translation id="5578387000057347457">ምስል ለመፍጠር ብጁ ጥያቄ ያስገቡ ወይም ጽሑፍ ያድምቁ</translation>
 <translation id="5581134892342029705">ወደ <ph name="LANGUAGE" /> የሚደረገው ትርጉም ተጠናቅቋል</translation>
 <translation id="558170650521898289">Microsoft Windows የሃርድዌር መሣሪያ ማረጋገጫ</translation>
 <translation id="5581972110672966454">መሣሪያውን ወደ ጎራው መቀላቀል አይቻልም። እባክዎ እንደገና ይሞክሩ ወይም የእርስዎን መሣሪያ ባለቤት ወይም አስተዳዳሪ ያነጋግሩ። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
@@ -8653,6 +8654,7 @@
 <translation id="713122686776214250">&amp;ገጽ አክል...</translation>
 <translation id="7131431455372521159">የሁሉም TrackPoints ግንኙነት ተቋርጧል</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />፣ በመጠበቅ ላይ…</translation>
+<translation id="7132886488919643383">ለማንበብ፣ ለመጻፍ እና ለመፍጠር እገዛን ለማግኘት Google ሰው ሠራሽ አስተውሎት ይጠቀሙ</translation>
 <translation id="7134098520442464001">ጽሁፍ አሳንስ</translation>
 <translation id="7134951043985383439">አደገኛ ፋይል ወርዷል</translation>
 <translation id="7135729336746831607">ብሉቱዝ ይብራ?</translation>
@@ -11688,6 +11690,7 @@ nil</translation>
 <translation id="953434574221655299">የእርስዎን መሣሪያ በንቃት በሚጠቀሙበት ጊዜ ለማወቅ ይፈቀዳል</translation>
 <translation id="954705236478705408">አዲስ መገለጫ ያዋቅሩ</translation>
 <translation id="954749761428814584">ቋንቋ እና የግቤት ስልት</translation>
+<translation id="956013912698841780">ይዘትን ለማጠቃለል፣ ፍቺዎችን ለማግኘት፣ በበለጠ በራስ መተማመን ለመጻፍ፣ ምስሎችን ለመፍጠር እና ሌሎችንም ለማድረግ የቀኝ ጠቅታ ያድርጉ። በአሁኑ ጊዜ የተገደበ ተገኝነት ነው ያለው።</translation>
 <translation id="956500788634395331">እርስዎ ጎጂ ሊሆኑ ከሚችሉ ቅጥያዎች ተጠብቀዋል</translation>
 <translation id="957179356621191750">6-ነጥብ</translation>
 <translation id="957960681186851048">ይህ ጣቢያ በርካታ ፋይሎችን በራስ-ሰር ለማውረድ ሞክሯል</translation>

@@ -505,6 +505,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1846432862466000825">Plastikas (archyvinis)</translation>
 <translation id="1848640291751752317">atsisiuntimus</translation>
 <translation id="1848982255014129637">Fotopopierius (itin blizgus)</translation>
+<translation id="1849438148665368129">Pirkinio vertė turi būti mažesnė nei <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Virtualiosios kortelės registracijos langas uždarytas</translation>
 <translation id="1854180393107901205">Sustabdyti perdavimą</translation>
 <translation id="1855370856221982654">Boksas</translation>
@@ -2167,6 +2168,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4796594887379589189">Užduoties paskyros ID</translation>
 <translation id="4798269756263412078">Gaukite įspėjimus, jei kaina bus sumažinta bet kurioje svetainėje. Įspėjimai bus siunčiami jūsų el. pašto adresu.</translation>
 <translation id="4800132727771399293">Patikrinkite kortelės galiojimo pabaigos datą bei saugos kodą (CVC) ir bandykite dar kart</translation>
+<translation id="4800546479758254481">AR leidžiama</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Įrenginio administratoriaus instrukcijos:</translation>
 <translation id="4811450222531576619">Sužinokite apie jo šaltinį ir temą</translation>
@@ -3027,6 +3029,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6327065120806001832">vietinio tinklo pasiekiamumas</translation>
 <translation id="6328639280570009161">Bandykite neleisti tinklo numatymo</translation>
 <translation id="6335029926534404762">Sportiniai bateliai</translation>
+<translation id="6336948221660696475">VR neleidžiama</translation>
 <translation id="6337133576188860026">Atlaisvina mažiau nei <ph name="SIZE" />. Per kitą jūsų apsilankymą kai kurios svetainės gali būti įkeliamos lėčiau.</translation>
 <translation id="6337534724793800597">Filtruoti politiką pagal pavadinimą</translation>
 <translation id="633770708279464947">„<ph name="SECURE_DNS_SALT" />“ vertė yra netinkama ir nebus naudojama.</translation>
@@ -3070,6 +3073,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6391700400718590966">Saugaus mokėjimo prisijungimo duomenų lapas, informuojantis, kad atitinkančių prisijungimo duomenų nerasta, uždarytas</translation>
 <translation id="6392799395081100092">Popierius („Vellum“)</translation>
 <translation id="6393156038355142111">Siūlyti sudėtingą slaptažodį</translation>
+<translation id="6393310910507376797">Nepalaiko prekybininkas</translation>
 <translation id="6393956493820063117">Pagal administratoriaus politiką galimybė įklijuoti iš <ph name="ORIGIN_NAME" /> į šią vietą blokuojama</translation>
 <translation id="6394852772105848029">Ši svetainė nori atidaryti programą „<ph name="APP_NAME" />“</translation>
 <translation id="639673288733510393">Motoroleriai ir mopedai</translation>
@@ -3223,6 +3227,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6668389483194953109">Rastas popieriaus dydžio pavadinimas „custom“, bet ypatybės „custom_size“ laukas tuščias arba netinkamas.</translation>
 <translation id="6671169470640320959">Lėšos automobiliams</translation>
 <translation id="6671697161687535275">Pašalinti formos pasiūlymą iš „Chromium“?</translation>
+<translation id="6675846980676550611">AR neleidžiama</translation>
 <translation id="6677351035258626477">Greitasis maistas</translation>
 <translation id="6679354743514146922">„Chrome“ naršyklė bando užpildyti jūsų slaptažodį programoje „<ph name="APP_NAME" />“.</translation>
 <translation id="6681790815630918386">CVC išsaugotas</translation>
@@ -3710,6 +3715,7 @@ Papildoma išsami informacija:
 <translation id="7512685745044087310">Šios politikos negalima nustatyti kaip „Tiesa“ ir ji negali būti privaloma, todėl ji pakeista į rekomenduojamą.</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">VR leidžiama šį kartą</translation>
 <translation id="7517201160922869406">Visureigiai</translation>
 <translation id="7517414872996418597">C10 vokas</translation>
 <translation id="7518003948725431193">Nerasta nė vieno tinklalapio šiuo žiniatinklio adresu: <ph name="URL" /></translation>
@@ -4608,6 +4614,7 @@ Papildoma išsami informacija:
 <translation id="9139318394846604261">Apsipirkimas</translation>
 <translation id="9140198744651252040">„Chrome“ naršyklė norėtų naudoti piršto atspaudą automatiškai užpildant slaptažodžius</translation>
 <translation id="9141013498910525015">Tvarkyti adresus</translation>
+<translation id="9141672681283222114">AR leidžiama šį kartą</translation>
 <translation id="9143898823728499852">Galite automatiškai užpildyti šią kortelę, nes „<ph name="CARD_ISSUER_NAME" />“ paskyra yra susieta su „Google Pay“</translation>
 <translation id="9144951720726881238">Galiojimo data:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Prisijunkite<ph name="END_LINK" /> 
@@ -4665,6 +4672,7 @@ Papildoma išsami informacija:
 <translation id="922152298093051471">Tinkinti „Chrome“</translation>
 <translation id="9222403027701923763">Pradinis ir vidurinis išsilavinimas (K-12)</translation>
 <translation id="93020190163435405">Stažuotės</translation>
+<translation id="931598121743515856">Pirkinio vertė turi būti didesnė nei <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Leisti programai „<ph name="APP_NAME" />“ nustatyti „Wi-Fi“ tinklus?</translation>
 <translation id="936602727769022409">Galite prarasti prieigą prie „Google“ paskyros. „Chromium“ rekomenduoja pakeisti slaptažodį dabar. Bus prašoma prisijungti.</translation>
@@ -4680,6 +4688,7 @@ Papildoma išsami informacija:
 <translation id="949314938206378263">Prašėte leidimo apsilankyti šioje svetainėje. Vienas iš tėvų gali atsakyti programoje „Family Link“.</translation>
 <translation id="950736567201356821">Trys skylės viršuje</translation>
 <translation id="950926967802086924">Prieigos raktas • „Google“ slaptažodžių tvarkyklė</translation>
+<translation id="955429569736351433">VR leidžiama</translation>
 <translation id="95721182352849470">2 geltona</translation>
 <translation id="961663415146723894">Įrišimas apačioje</translation>
 <translation id="961856697154696964">Ištrinti naršymo duomenis</translation>

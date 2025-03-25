@@ -407,6 +407,7 @@
 <translation id="1264956950255940376">تضييق العين اليسرى</translation>
 <translation id="1265094893042958831">جارٍ إنشاء اقتراحات لهذه الصفحة…</translation>
 <translation id="1265279736024499987">‏ستتم مزامنة التطبيقات والإعدادات على جميع أجهزة نظام التشغيل ChromeOS Flex التي سجّلت الدخول إليها باستخدام حسابك على Google. وللوصول إلى خيارات مزامنة المتصفّح، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات Chrome<ph name="LINK_END" />.</translation>
+<translation id="1267081565119405990">‏بعد أخذ لقطة شاشة أو البحث في محتوى الشاشة، يمكنك عرض المزيد من الإجراءات، مثل الإضافة إلى "تقويم Google" وإنشاء "مستندات Google" وغير ذلك.</translation>
 <translation id="126710816202626562">لغة الترجمة:</translation>
 <translation id="1267649802567297774">تم إنشاء الصورة رقم <ph name="INDEX" /> بالعنوان "<ph name="SUBJECT" />" والنمط "<ph name="STYLE" />" والحالة "<ph name="MOOD" />".</translation>
 <translation id="126768002343224824">16 ضعفًا</translation>
@@ -1572,6 +1573,7 @@
 <translation id="208547068587548667">تسجيل الدخول إلى <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="208586643495776849">يُرجى إعادة المحاولة</translation>
 <translation id="208634871997892083">‏شبكة VPN قيد التشغيل دائمًا</translation>
+<translation id="208654914566977272">الإجراءات المُقترَحة عند البحث في محتوى الشاشة</translation>
 <translation id="2087822576218954668">الطباعة: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">لن يُتاح التسجيل إلا بعد تثبيت نظام التشغيل <ph name="DEVICE_OS" />.</translation>
 <translation id="2088564884469682888">‏زر TrackPoint مُدمَج</translation>

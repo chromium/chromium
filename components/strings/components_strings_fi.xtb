@@ -505,6 +505,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1846432862466000825">Muovi (arkistointi)</translation>
 <translation id="1848640291751752317">lataukset</translation>
 <translation id="1848982255014129637">Valokuva (erittäin kiiltävä)</translation>
+<translation id="1849438148665368129">Ostoksen summan on oltava alle <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Virtuaalikortin rekisteröinti suljettu</translation>
 <translation id="1854180393107901205">Lopeta suoratoisto</translation>
 <translation id="1855370856221982654">Nyrkkeily</translation>
@@ -2167,6 +2168,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4796594887379589189">Työpaikan tilin tunnus</translation>
 <translation id="4798269756263412078">Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla. Ilmoitukset lähetetään sähköpostiisi.</translation>
 <translation id="4800132727771399293">Tarkista vanhenemispäivä ja CVC ja yritä uudelleen.</translation>
+<translation id="4800546479758254481">AR sallittu</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Ohjeet laitteen järjestelmänvalvojalta</translation>
 <translation id="4811450222531576619">Lisätietoa lähteestä ja aiheesta</translation>
@@ -3027,6 +3029,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6327065120806001832">pääsy lähiverkkoon</translation>
 <translation id="6328639280570009161">Kokeile verkon ennakoinnin poistamista käytöstä.</translation>
 <translation id="6335029926534404762">Urheilukengät</translation>
+<translation id="6336948221660696475">VR ei sallittu</translation>
 <translation id="6337133576188860026">Vapauttaa alle <ph name="SIZE" />. Jotkin sivustot saattavat latautua hitaammin seuraavalla käynnillä.</translation>
 <translation id="6337534724793800597">Suodata käytäntöjä nimen mukaan</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" />-arvo on virheellinen, eikä sitä käytetä.</translation>
@@ -3070,6 +3073,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6391700400718590966">Suojatun maksun kirjautumistiedot eivät täsmää ‑kirjautumistietotaulukko on suljettu</translation>
 <translation id="6392799395081100092">Paperi (veliini)</translation>
 <translation id="6393156038355142111">Ehdota vahvaa salasanaa</translation>
+<translation id="6393310910507376797">Kauppias ei tue tätä</translation>
 <translation id="6393956493820063117">Järjestelmänvalvojakäytäntö on estänyt tähän paikkaan liittämisen sivustolta<ph name="ORIGIN_NAME" /></translation>
 <translation id="6394852772105848029">Sivusto haluaa avata <ph name="APP_NAME" />-sovelluksen</translation>
 <translation id="639673288733510393">Skootterit ja mopot</translation>
@@ -3223,6 +3227,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6668389483194953109">Paperin kokoa kuvaava nimi "custom" löytyi, mutta "custom_size"-muuttuja on tyhjä tai virheellinen.</translation>
 <translation id="6671169470640320959">Autorahoitus</translation>
 <translation id="6671697161687535275">Poistetaanko lomake-ehdotus Chromiumista?</translation>
+<translation id="6675846980676550611">AR ei sallittu</translation>
 <translation id="6677351035258626477">Pikaruoka</translation>
 <translation id="6679354743514146922">Chrome-selain yrittää täyttää salasanasi: <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC tallennettu</translation>
@@ -3710,6 +3715,7 @@ Lisätietoja:
 <translation id="7512685745044087310">Käytännön tila ei voi olla "Tosi" ja pakollinen, joten se muutettiin suositelluksi.</translation>
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">VR sallittu tällä kertaa</translation>
 <translation id="7517201160922869406">Maastoajoneuvot</translation>
 <translation id="7517414872996418597">Kirjekuori C10</translation>
 <translation id="7518003948725431193">Verkkosivua ei löytynyt osoitteelle: <ph name="URL" /></translation>
@@ -4608,6 +4614,7 @@ Lisätietoja:
 <translation id="9139318394846604261">Ostokset</translation>
 <translation id="9140198744651252040">Chrome-selain haluaa käyttää sormenjälkeä salasanojen automaattiseen täyttöön</translation>
 <translation id="9141013498910525015">Ylläpidä osoitteita</translation>
+<translation id="9141672681283222114">AR sallittu tällä kertaa</translation>
 <translation id="9143898823728499852">Voit täyttää kortin automaattisesti, koska <ph name="CARD_ISSUER_NAME" />-tilisi on linkitetty Google Payhin</translation>
 <translation id="9144951720726881238">Vanhenemispäivämäärä:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Kirjaudu uudelleen sisään<ph name="END_LINK" />
@@ -4665,6 +4672,7 @@ Lisätietoja:
 <translation id="922152298093051471">Yksilöi Chromea</translation>
 <translation id="9222403027701923763">Ensimmäisen ja toisen asteen koulutus</translation>
 <translation id="93020190163435405">Harjoittelujaksot</translation>
+<translation id="931598121743515856">Ostoksen summan on oltava yli <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Saako sovellus (<ph name="APP_NAME" />) ottaa Wi-Fi-verkkoja käyttöön?</translation>
 <translation id="936602727769022409">Saatat menettää Google-tilisi käyttöoikeuden. Chromium suosittelee vaihtamaan salasanan nyt. Sinua pyydetään kirjautumaan sisään.</translation>
@@ -4680,6 +4688,7 @@ Lisätietoja:
 <translation id="949314938206378263">Pyysit pääsyä tälle sivustolle. Vanhempasi voi vastata Family Linkissä.</translation>
 <translation id="950736567201356821">Kolme reikää yläreunassa</translation>
 <translation id="950926967802086924">Avainkoodi • Google Salasanat</translation>
+<translation id="955429569736351433">VR sallittu</translation>
 <translation id="95721182352849470">Keltainen 2</translation>
 <translation id="961663415146723894">Alareuna sidottu</translation>
 <translation id="961856697154696964">Poista selausdata</translation>

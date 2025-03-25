@@ -505,6 +505,7 @@
 <translation id="1846432862466000825">پلاستیک (آرشیوی)</translation>
 <translation id="1848640291751752317">بارگیری‌ها</translation>
 <translation id="1848982255014129637">عکس (خیلی براق)</translation>
+<translation id="1849438148665368129">خرید باید کمتر از <ph name="CHECKOUT_AMOUNT_MAXIMUM" /> باشد</translation>
 <translation id="1853392626017747777">ثبت‌نام کارت مجازی بسته شده است</translation>
 <translation id="1854180393107901205">توقف فرستادن</translation>
 <translation id="1855370856221982654">بوکس</translation>
@@ -2166,6 +2167,7 @@
 <translation id="4796594887379589189">شناسه حساب کار</translation>
 <translation id="4798269756263412078">اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید. هشدارها به ایمیلتان ارسال خواهد شد.</translation>
 <translation id="4800132727771399293">‏تاریخ انقضا و CVC را بررسی کرده و دوباره امتحان کنید</translation>
+<translation id="4800546479758254481">«واقعیت افزوده» مجاز شد</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">دستورالعمل‌ها از سرپرست دستگاهتان:</translation>
 <translation id="4811450222531576619">با منبع و موضوعش آشنا شوید</translation>
@@ -3026,6 +3028,7 @@
 <translation id="6327065120806001832">دسترسی به شبکه محلی</translation>
 <translation id="6328639280570009161">غیرفعال کردن پیش‌بینی شبکه را امتحان کنید</translation>
 <translation id="6335029926534404762">کفش ورزشی</translation>
+<translation id="6336948221660696475">«واقعیت مجازی» مجاز نشد</translation>
 <translation id="6337133576188860026">کمتر از <ph name="SIZE" /> از فضا را آزاد می‌کند. ممکن است برخی از سایت‌ها در بازدیدهای بعدی کندتر بارگیری شوند.</translation>
 <translation id="6337534724793800597">فیلتر کردن خط‌مشی‌ها براساس نام</translation>
 <translation id="633770708279464947">مقدار <ph name="SECURE_DNS_SALT" /> نامعتبر است و استفاده نخواهد شد.</translation>
@@ -3069,6 +3072,7 @@
 <translation id="6391700400718590966">برگ «اطلاعات کاربری مطابقت ندارد» در روند وارد کردن اطلاعات کاربری پرداخت امن بسته شد</translation>
 <translation id="6392799395081100092">کاغذ (پوست حیوانی)</translation>
 <translation id="6393156038355142111">پیشنهاد گذرواژه قوی</translation>
+<translation id="6393310910507376797">فروشنده پشتیبانی نمی‌کند</translation>
 <translation id="6393956493820063117">براساس خط‌مشی سرپرست، جای‌گذاری از <ph name="ORIGIN_NAME" /> در این ناحیه مسدود شده است</translation>
 <translation id="6394852772105848029">این سایت می‌خواهد برنامه <ph name="APP_NAME" /> را باز کند</translation>
 <translation id="639673288733510393">اسکوتر و موتورسیکلت گازی</translation>
@@ -3222,6 +3226,7 @@
 <translation id="6668389483194953109">‏نام اندازه کاغذ «custom» پیدا شد، اما خصوصیت «custom_size» خالی یا نامعتبر است.</translation>
 <translation id="6671169470640320959">خودرو اقساطی</translation>
 <translation id="6671697161687535275">‏پیشنهاد فرم از Chromium پاک شود؟</translation>
+<translation id="6675846980676550611">«واقعیت افزوده» مجاز نشد</translation>
 <translation id="6677351035258626477">فست‌فود</translation>
 <translation id="6679354743514146922">‏مرورگر Chrome می‌خواهد گذرواژه‌تان را در <ph name="APP_NAME" /> پر کند.</translation>
 <translation id="6681790815630918386">کد تأیید کارت ذخیره شد</translation>
@@ -3709,6 +3714,7 @@
 <translation id="7512685745044087310">‏این خط‌مشی نمی‌تواند روی «True» تنظیم شود و اجباری باشد، بنابراین به توصیه‌شده تغییر کرد.</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">«واقعیت مجازی» این بار مجاز شد</translation>
 <translation id="7517201160922869406">وسایل نقلیه بیابان‌گردی</translation>
 <translation id="7517414872996418597">پاکت سی۱۰</translation>
 <translation id="7518003948725431193">صفحه وبی با این آدرس وب یافت نشد: <ph name="URL" /></translation>
@@ -4606,6 +4612,7 @@
 <translation id="9139318394846604261">خرید</translation>
 <translation id="9140198744651252040">‏مرورگر Chrome می‌خواهد از اثر انگشت برای تکمیل خودکار گذرواژه‌ها استفاده کند</translation>
 <translation id="9141013498910525015">مدیریت نشانی‌ها</translation>
+<translation id="9141672681283222114">«واقعیت افزوده» این بار مجاز شد</translation>
 <translation id="9143898823728499852">‏می‌توانید اطلاعات این کارت را به‌طور خودکار تکمیل کنید، زیرا حساب <ph name="CARD_ISSUER_NAME" /> شما به Google Pay پیوند شده است</translation>
 <translation id="9144951720726881238">تاریخ انقضا:</translation>
 <translation id="9145910032514306808">دوباره <ph name="BEGIN_LINK" />به سیستم وارد شوید<ph name="END_LINK" />
@@ -4663,6 +4670,7 @@
 <translation id="922152298093051471">‏سفارشی‌سازی Chrome</translation>
 <translation id="9222403027701923763">‏تحصیلات ابتدایی و متوسطه (K-12)</translation>
 <translation id="93020190163435405">کارآموزی</translation>
+<translation id="931598121743515856">خرید باید بیشتر از <ph name="CHECKOUT_AMOUNT_MINIMUM" /> باشد</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">‏به برنامه <ph name="APP_NAME" /> اجازه می‌دهید شبکه Wi-Fi راه‌اندازی کند؟</translation>
 <translation id="936602727769022409">‏ممکن است دسترسی به حساب Google را از دست بدهید. Chromium توصیه می‌کند اکنون گذرواژه‌تان را تغییر دهید. از شما خواسته می‌شود به سیستم وارد شوید.</translation>
@@ -4678,6 +4686,7 @@
 <translation id="949314938206378263">‏درخواست کرده‌اید از این سایت بازدید کنید. ولی‌تان می‌تواند در Family Link پاسخ دهد.</translation>
 <translation id="950736567201356821">سه سوراخ در بالا</translation>
 <translation id="950926967802086924">‏گذرکلید • مدیر گذرواژه Google</translation>
+<translation id="955429569736351433">«واقعیت مجازی» مجاز شد</translation>
 <translation id="95721182352849470">زرد ۲</translation>
 <translation id="961663415146723894">به‌هم چسباندن از پایین</translation>
 <translation id="961856697154696964">حذف کردن داده‌های مرور</translation>

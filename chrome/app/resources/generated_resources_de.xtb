@@ -6493,6 +6493,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5575528586625653441">Ein Problem mit der Demoregistrierungsanforderung ist aufgetreten.</translation>
 <translation id="557722062034137776">Beim Zurücksetzen deines Geräts bleiben deine Google-Konten sowie alle mit diesen Konten synchronisierten Daten unberührt. Es werden jedoch alle Dateien gelöscht, die du lokal auf dem Gerät gespeichert hast.</translation>
 <translation id="5578059481725149024">Automatisch anmelden</translation>
+<translation id="5578387000057347457">Gib einen benutzerdefinierten Prompt ein oder markiere Text, um ein Bild zu erstellen</translation>
 <translation id="5581134892342029705">Übersetzung in die Sprache <ph name="LANGUAGE" /> abgeschlossen</translation>
 <translation id="558170650521898289">Verifizierung von Microsoft Windows-Hardwaretreibern</translation>
 <translation id="5581972110672966454">Das Gerät konnte der Domain nicht beitreten. Bitte noch einmal versuchen oder an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
@@ -8634,6 +8635,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="713122686776214250">&amp;Seite hinzufügen...</translation>
 <translation id="7131431455372521159">Alle TrackPoints wurden getrennt</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, ausstehend</translation>
+<translation id="7132886488919643383">Mit Google AI Unterstützung beim Lesen, Schreiben und Erstellen erhalten</translation>
 <translation id="7134098520442464001">Schrift verkleinern</translation>
 <translation id="7134951043985383439">Gefährliche Datei heruntergeladen</translation>
 <translation id="7135729336746831607">Bluetooth aktivieren?</translation>
@@ -11663,6 +11665,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="953434574221655299">Darf Informationen zu deiner aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="954705236478705408">Neues Profil einrichten</translation>
 <translation id="954749761428814584">Sprache und Eingabemethode</translation>
+<translation id="956013912698841780">Klicke mit der rechten Maustaste, um Inhalte zusammenzufassen, Definitionen abzurufen, mit mehr Sicherheit zu schreiben, Bilder zu erstellen und mehr. Die Funktion ist derzeit nur eingeschränkt verfügbar.</translation>
 <translation id="956500788634395331">Du bist vor potenziell schädlichen Erweiterungen geschützt</translation>
 <translation id="957179356621191750">6-Punkt</translation>
 <translation id="957960681186851048">Diese Website hat versucht, automatisch mehrere Dateien herunterzuladen</translation>

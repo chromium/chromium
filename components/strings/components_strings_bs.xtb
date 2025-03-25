@@ -901,7 +901,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2539524384386349900">Otkrij</translation>
 <translation id="2541219929084442027">Stranice koje pregledate u anonimnim karticama neće ostati u historiji preglednika, pohrani kolačića ili historiji pretraživanja nakon što zatvorite sve anonimne kartice. Zadržat će se svi fajlovi koje preuzmete ili oznake koje kreirate.</translation>
 <translation id="2542106216580219892">Surfanje</translation>
-<translation id="2543236854123609690"><ph name="ORIGIN" /> – da biste zatvorili prikaz na cijelom zaslonu, pritisnite i zadržite |<ph name="ACCELERATOR" />|</translation>
+<translation id="2543236854123609690"><ph name="ORIGIN" /> – da zatvorite prikaz preko cijelog ekrana, pritisnite i zadržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="2544546346215446551">Vaš administrator je ponovo pokrenuo uređaj</translation>
 <translation id="2544644783021658368">Jedan dokument</translation>
 <translation id="254524874071906077">Postavite Chrome kao zadani preglednik</translation>
@@ -3934,7 +3934,7 @@ Dodatni detalji:
 <translation id="7887885240995164102">Pokreni način rada slika u slici</translation>
 <translation id="7888575728750733395">Štampanje namjere iscrtavanja</translation>
 <translation id="7890748547282909375">Prijavite se na Microsoft OneDrive da sačuvate snimak ekrana</translation>
-<translation id="7892431309448524994"><ph name="ORIGIN" /> – da bi se prikazao pokazivač, pritisnite |<ph name="ACCELERATOR" />|</translation>
+<translation id="7892431309448524994"><ph name="ORIGIN" /> – da omogućite prikaz kursora, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="7892865709991296481">postavke plaćanja</translation>
 <translation id="7894280532028510793">Ako nema greške u pravopisu, <ph name="BEGIN_LINK" />pokušajte pokrenuti Dijagnostiku mreže<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Koverta 7 x 9 in</translation>
@@ -4628,7 +4628,7 @@ Dodatni detalji:
 <translation id="9155646082713385498">Časopisi</translation>
 <translation id="9157595877708044936">Postavljanje...</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> može sadržavati osjetljiv sadržaj}one{<ph name="FILE_COUNT" /> fajl može sadržavati osjetljiv sadržaj}few{<ph name="FILE_COUNT" /> fajla mogu sadržavati osjetljiv sadržaj}other{<ph name="FILE_COUNT" /> fajlova može sadržavati osjetljiv sadržaj}}</translation>
-<translation id="9162097962559874470"><ph name="ORIGIN" /> – da biste zatvorili prikaz na cijelom zaslonu, pritisnite |<ph name="ACCELERATOR" />|</translation>
+<translation id="9162097962559874470"><ph name="ORIGIN" /> – da zatvorite prikaz preko cijelog ekrana, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9165305804774426672">Web lokacije koje posjetite također mogu utvrditi šta vam se sviđa na osnovu vaše aktivnosti na web lokaciji. Naprimjer, ako posjetite web lokaciju koja prodaje patike za trčanje na duge staze, web lokacija može zaključiti da vas zanima trčanje maratona.</translation>
 <translation id="9166851138617700776">Više o oglasima koje predlažu web lokacije i mjerenju oglasa</translation>
 <translation id="9167054383925257837">Informacije o pregledniku i OS-u uređaja (kao što su verzije preglednika i OS-a)</translation>

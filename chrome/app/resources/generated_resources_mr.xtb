@@ -403,6 +403,7 @@
 <translation id="1264956950255940376">डावा डोळा बारीक करा</translation>
 <translation id="1265094893042958831">या पेजसाठी सूचना जनरेट करत आहे…</translation>
 <translation id="1265279736024499987">तुमचे Google खाते वापरून तुम्ही साइन इन केलेल्या सर्व ChromeOS Flex डिव्हाइसवर तुमची अ‍ॅप्स आणि सेटिंग्ज सिंक होतील. ब्राउझर सिंक करण्याशी संबंधित पर्यायांसाठी, <ph name="LINK_BEGIN" />Chrome सेटिंग्ज<ph name="LINK_END" /> वर जा.</translation>
+<translation id="1267081565119405990">स्क्रीनशॉट घेतल्यानंतर किंवा तुमच्या स्क्रीनवर शोधल्यानंतर, आणखी कृती दाखवा, जसे की Calendar मध्ये जोडा, Google Docs तयार करा आणि आणखी बरेच काही करा.</translation>
 <translation id="126710816202626562">भाषांतर भाषा:</translation>
 <translation id="1267649802567297774"><ph name="STYLE" /> शैलीमध्ये, <ph name="MOOD" /> मूड असलेली <ph name="SUBJECT" /> पैकी <ph name="INDEX" /> जनरेट केलेली इमेज.</translation>
 <translation id="126768002343224824">१६x</translation>
@@ -1576,6 +1577,7 @@
 <translation id="208547068587548667"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
 <translation id="208586643495776849">कृपया पुन्हा प्रयत्न करा</translation>
 <translation id="208634871997892083">VPN नेहमी सुरू ठेवा</translation>
+<translation id="208654914566977272">तुमच्या स्क्रीनवर शोधत असताना सुचवलेल्या कृती</translation>
 <translation id="2087822576218954668">प्रिंट: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">तुम्ही <ph name="DEVICE_OS" /> इंस्टॉल केल्यानंतरच नोंदणीला सपोर्ट आहे.</translation>
 <translation id="2088564884469682888">बिल्ट-इन TrackPoint</translation>

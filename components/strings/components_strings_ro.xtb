@@ -505,6 +505,7 @@
 <translation id="1846432862466000825">Plastic (de arhivă)</translation>
 <translation id="1848640291751752317">descărcărilor</translation>
 <translation id="1848982255014129637">Foto (foarte lucios)</translation>
+<translation id="1849438148665368129">Achiziția trebuie să aibă o valoare sub <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Înscrierea cardului virtual s-a închis</translation>
 <translation id="1854180393107901205">Nu mai trimite</translation>
 <translation id="1855370856221982654">Box</translation>
@@ -2166,6 +2167,7 @@
 <translation id="4796594887379589189">Codul contului sarcinii</translation>
 <translation id="4798269756263412078">Primește alerte dacă prețul scade pe orice site. Alertele îți vor fi trimise prin e-mail.</translation>
 <translation id="4800132727771399293">Verifică data de expirare și codul CVC și încearcă din nou</translation>
+<translation id="4800546479758254481">RA permisă</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="4809079943450490359">Instrucțiuni de la administratorul dispozitivului:</translation>
 <translation id="4811450222531576619">Află despre sursă și subiect</translation>
@@ -3026,6 +3028,7 @@
 <translation id="6327065120806001832">accesul la rețeaua locală</translation>
 <translation id="6328639280570009161">Încercați să dezactivați anticiparea rețelei</translation>
 <translation id="6335029926534404762">Încălțăminte sport</translation>
+<translation id="6336948221660696475">RV nepermisă</translation>
 <translation id="6337133576188860026">Eliberează mai puțin de <ph name="SIZE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
 <translation id="6337534724793800597">Filtrați politicile după nume</translation>
 <translation id="633770708279464947">Valoarea <ph name="SECURE_DNS_SALT" /> este nevalidă și nu va fi folosită.</translation>
@@ -3069,6 +3072,7 @@
 <translation id="6391700400718590966">Foaia „Datele de conectare pentru plăți securizate nu corespund datelor de conectare” este închisă</translation>
 <translation id="6392799395081100092">Hârtie (Vellum)</translation>
 <translation id="6393156038355142111">Sugerează o parolă puternică</translation>
+<translation id="6393310910507376797">Nu este acceptat de comerciant</translation>
 <translation id="6393956493820063117">Inserarea de pe <ph name="ORIGIN_NAME" /> în această locație a fost blocată de politica implementată de administrator</translation>
 <translation id="6394852772105848029">Site-ul dorește să deschidă aplicația <ph name="APP_NAME" /></translation>
 <translation id="639673288733510393">Scutere și mopede</translation>
@@ -3222,6 +3226,7 @@
 <translation id="6668389483194953109">S-a găsit denumirea dimensiunii de hârtie „personalizată”, dar proprietatea „custom_size” este necompletată sau nevalidă.</translation>
 <translation id="6671169470640320959">Finanțare pentru automobile</translation>
 <translation id="6671697161687535275">Elimini sugestia pentru formular din Chromium?</translation>
+<translation id="6675846980676550611">RA nu este permisă</translation>
 <translation id="6677351035258626477">Fast food</translation>
 <translation id="6679354743514146922">Browserul Chrome încearcă să completeze parola în <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC a fost salvat</translation>
@@ -3709,6 +3714,7 @@ Detalii suplimentare:
 <translation id="7512685745044087310">Această politică nu poate să fie activată și obligatorie, prin urmare starea acesteia a fost setată la „Recomandată”.</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">RV este permisă de data aceasta</translation>
 <translation id="7517201160922869406">Vehicule de teren</translation>
 <translation id="7517414872996418597">Plic C10</translation>
 <translation id="7518003948725431193">Nu a fost găsită nicio pagină web pentru adresa: <ph name="URL" /></translation>
@@ -4607,6 +4613,7 @@ Detalii suplimentare:
 <translation id="9139318394846604261">Cumpărături</translation>
 <translation id="9140198744651252040">Browserul Chrome dorește să folosească amprenta pentru a completa automat parolele</translation>
 <translation id="9141013498910525015">Gestionează adresele</translation>
+<translation id="9141672681283222114">RA este permisă de data aceasta</translation>
 <translation id="9143898823728499852">Poți completa automat acest card deoarece contul <ph name="CARD_ISSUER_NAME" /> este conectat la Google Pay</translation>
 <translation id="9144951720726881238">Data expirării:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Conectează-te<ph name="END_LINK" />
@@ -4664,6 +4671,7 @@ Detalii suplimentare:
 <translation id="922152298093051471">Personalizează Chrome</translation>
 <translation id="9222403027701923763">Școală primară și secundară (grădiniță – clasa a 12-a)</translation>
 <translation id="93020190163435405">Stagii</translation>
+<translation id="931598121743515856">Achiziția trebuie să aibă o valoare de peste <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Permiți aplicației <ph name="APP_NAME" /> să configureze rețelele Wi-Fi?</translation>
 <translation id="936602727769022409">Este posibil să pierzi accesul la Contul Google. Chromium îți recomandă să îți schimbi parola acum. Ți se va cere să te conectezi.</translation>
@@ -4679,6 +4687,7 @@ Detalii suplimentare:
 <translation id="949314938206378263">Ai solicitat să accesezi acest site. Părintele tău poate să răspundă în Family Link.</translation>
 <translation id="950736567201356821">Perforare triplă în partea de sus</translation>
 <translation id="950926967802086924">Cheie de acces • Manager de parole Google</translation>
+<translation id="955429569736351433">RV permisă</translation>
 <translation id="95721182352849470">Galben 2</translation>
 <translation id="961663415146723894">Legare în partea de jos</translation>
 <translation id="961856697154696964">Șterge datele de navigare</translation>
