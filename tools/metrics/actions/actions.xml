@@ -48399,6 +48399,7 @@ should be able to be added at any place in this file.
 
 <action-suffix separator="." ordering="suffix">
   <suffix name="DownloadItem" label="Download a suggested item."/>
+  <suffix name="EditItem" label="Open a modal dialog to edit a custom item."/>
   <suffix name="LearnMore" label="Open the learn more link for product help."/>
   <suffix name="OpenItemInIncognitoTab"
       label="Open a suggested item in an incognito tab."/>
@@ -48407,8 +48408,10 @@ should be able to be added at any place in this file.
       label="Open a suggested item in a new tab in group."/>
   <suffix name="OpenItemInNewWindow"
       label="Open a suggested item in a new window."/>
+  <suffix name="PinItem" label="Convert a suggested item to a custom item."/>
   <suffix name="RemoveItem" label="Remove a suggested item."/>
   <suffix name="Shown" label="Context menu is opened."/>
+  <suffix name="UnpinItem" label="Remove a custom item."/>
   <affected-action name="ContextualSuggestions.ContextMenu"/>
   <affected-action name="ExploreSites.ContextMenu"/>
   <affected-action name="Suggestions.ContextMenu"/>
