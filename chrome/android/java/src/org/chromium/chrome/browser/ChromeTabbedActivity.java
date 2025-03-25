@@ -3254,6 +3254,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 getToolbarManager()
                         .setUrlBarFocus(true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
             }
+        } else if (id == R.id.focus_and_clear_url_bar) {
+            boolean isUrlBarVisible =
+                    !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
+            if (isUrlBarVisible) {
+                getToolbarManager()
+                        .setUrlBarFocusAndText(
+                                true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION, "");
+            }
         } else if (id == R.id.downloads_menu_id) {
             OtrProfileId otrProfileId = null;
             if (currentTab != null) {

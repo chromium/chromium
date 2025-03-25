@@ -65,7 +65,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_QUIT_CHROME,
         KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_JUMP_TO_SEARCH,
+        KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_DOWN,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_UP,
@@ -139,7 +139,7 @@ public class KeyboardShortcuts {
 
         // Navigation controls.
         int JUMP_TO_OMNIBOX = 16;
-        int NOT_IMPLEMENTED_JUMP_TO_SEARCH = 17;
+        int JUMP_TO_SEARCH = 17;
         int NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE = 18;
         int NOT_IMPLEMENTED_SCROLL_DOWN = 19;
         int NOT_IMPLEMENTED_SCROLL_UP = 20;
@@ -304,9 +304,7 @@ public class KeyboardShortcuts {
             case KeyEvent.KEYCODE_BUTTON_X:
                 return KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX;
             case CTRL | KeyEvent.KEYCODE_E:
-            case CTRL | KeyEvent.KEYCODE_K:
-                // TODO(crbug.com/402775002): Investigate supporting BROWSER_SEARCH button.
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_JUMP_TO_SEARCH;
+                return KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH;
             case CTRL | KeyEvent.KEYCODE_F6:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE;
             case KeyEvent.KEYCODE_SPACE:
@@ -841,6 +839,10 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.focus_url_bar, false);
+                    return true;
+                case KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH:
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.focus_and_clear_url_bar, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
