@@ -49,7 +49,9 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     private boolean mIsDebugging;
 
     /**
-     * Construct the coordinator used to handle padding and color for the Edge to edge layout.
+     * Construct the coordinator used to handle padding and color for the Edge to edge layout. If an
+     * {@link InsetObserver} is not passed, the coordinator will assume no inset coordination is
+     * needed, and start observing insets over the e2e layout directly.
      *
      * @param context The Activity context.
      * @param insetObserver The inset observer of current window, if exists.
