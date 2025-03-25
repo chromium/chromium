@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,7 +52,8 @@ TEST_F(ValuablesTableTest, GetLoyaltyCardById) {
   ASSERT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card2));
   EXPECT_EQ(valuables_table().GetLoyaltyCardById(card1.id()), card1);
   EXPECT_EQ(valuables_table().GetLoyaltyCardById(card2.id()), card2);
-  EXPECT_EQ(valuables_table().GetLoyaltyCardById("invalid_id"), std::nullopt);
+  EXPECT_EQ(valuables_table().GetLoyaltyCardById(ValuableId("invalid_id")),
+            std::nullopt);
 }
 
 TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard) {
@@ -89,7 +91,7 @@ TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_InvalidProgramLogoUrl) {
 
 TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_EmptyLoyaltyCardId) {
   LoyaltyCard card1 = test::CreateLoyaltyCard();
-  card1.set_id("");
+  card1.set_id(ValuableId(""));
 
   EXPECT_FALSE(valuables_table().AddOrUpdateLoyaltyCard(card1));
   EXPECT_THAT(valuables_table().GetLoyaltyCards(), IsEmpty());

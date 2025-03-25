@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLES_TABLE_H_
 
 #include <optional>
-#include <string_view>
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -62,11 +61,11 @@ class ValuablesTable : public WebDatabaseTable {
   // `loyalty_card_id` as a unique identifier. Returns `std::nullopt` if there's
   // no loyalty card with `loyalty_card_id` in the database.
   std::optional<LoyaltyCard> GetLoyaltyCardById(
-      std::string_view loyalty_card_id) const;
+      ValuableId loyalty_card_id) const;
 
   // Removes the loyalty card from the database using `loyalty_card_id` as a
   // unique identifier. Returns `true` if the operation succeeded.
-  bool RemoveLoyaltyCard(std::string_view loyalty_card_id);
+  bool RemoveLoyaltyCard(ValuableId loyalty_card_id);
 
   // Removes all loyalty cards stored in the database. Returns `true` if the
   // operation succeeded.

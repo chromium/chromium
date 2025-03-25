@@ -146,7 +146,7 @@ LoyaltyCardSyncBridge::ApplyIncrementalSyncChanges(
 std::unique_ptr<syncer::MutableDataBatch> LoyaltyCardSyncBridge::GetData() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const LoyaltyCard& card : GetValuablesTable()->GetLoyaltyCards()) {
-    const std::string& id = card.id();
+    const std::string& id = card.id().value();
     batch->Put(id, CreateEntityDataFromLoyaltyCard(card));
   }
   return batch;

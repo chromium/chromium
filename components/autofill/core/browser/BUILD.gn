@@ -192,6 +192,7 @@ static_library("browser") {
     "data_model/usage_history_information.h",
     "data_model/valuables/loyalty_card.cc",
     "data_model/valuables/loyalty_card.h",
+    "data_model/valuables/valuable_types.h",
     "data_quality/addresses/address_normalization_manager.cc",
     "data_quality/addresses/address_normalization_manager.h",
     "data_quality/addresses/address_normalizer.h",
