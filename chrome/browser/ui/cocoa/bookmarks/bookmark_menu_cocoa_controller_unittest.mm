@@ -11,10 +11,7 @@
 #include "base/containers/span.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/uuid.h"
-#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
-#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
@@ -79,22 +76,6 @@ class BookmarkMenuCocoaControllerTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(BookmarkMenuCocoaControllerTest, TestOpenItemAfterModelLoaded) {
-  // TODO(crbug.com/390398329): Update `TestOpenItemWhileModelLoading` so that
-  // `BookmarkMergedSurfaceService` can be created during initialization.
-  BookmarkMergedSurfaceServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(), base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-        auto model = std::make_unique<BookmarkMergedSurfaceService>(
-            BookmarkModelFactory::GetForBrowserContext(context),
-            ManagedBookmarkServiceFactory::GetForProfile(
-                Profile::FromBrowserContext(context)));
-        model->Load(context->GetPath());
-        return model;
-      }));
-
-  WaitForBookmarkMergedSurfaceServiceToLoad(
-      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile()));
-
   const GURL kUrl1("http://site1.com");
   const GURL kUrl2("http://site2.com");
 

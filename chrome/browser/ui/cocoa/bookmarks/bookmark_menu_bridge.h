@@ -10,11 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_model_observer.h"
 
-class BookmarkMergedSurfaceService;
-struct BookmarkParentFolder;
 class Profile;
 @class NSImage;
 @class NSMenu;
@@ -30,7 +28,7 @@ class BookmarkNode;
 // takes care of updating Cocoa bookmark menus.  This is not named
 // BookmarkMenuController to help avoid confusion between languages.
 // This class needs to be C++, not ObjC, since it derives from
-// BookmarkMergedSurfaceServiceObserver.
+// BookmarkModelObserver.
 //
 // Most Chromium Cocoa menu items are static from a nib (e.g. New
 // Tab), but may be enabled/disabled under certain circumstances
@@ -39,7 +37,7 @@ class BookmarkNode;
 // created dynamically.  They also have a target of
 // BookmarkMenuCocoaController instead of firstResponder.
 // See BookmarkMenuBridge::AddNodeToMenu()).
-class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
+class BookmarkMenuBridge : public bookmarks::BookmarkModelObserver {
  public:
   BookmarkMenuBridge(Profile* profile, NSMenu* menu_root);
 
@@ -48,33 +46,37 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
 
   ~BookmarkMenuBridge() override;
 
-  // BookmarkMergedSurfaceServiceObserver:
-  void BookmarkMergedSurfaceServiceLoaded() override;
-  void BookmarkMergedSurfaceServiceBeingDeleted() override;
-  void BookmarkNodeAdded(const BookmarkParentFolder& parent,
-                         size_t index) override;
-  void BookmarkNodesRemoved(
-      const BookmarkParentFolder& parent,
-      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override;
-  void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
+  // bookmarks::BookmarkModelObserver:
+  void BookmarkModelLoaded(bool ids_reassigned) override;
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
-                         const BookmarkParentFolder& new_parent,
+                         const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
+                         size_t index,
+                         bool added_by_user) override;
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
+                           size_t old_index,
+                           const bookmarks::BookmarkNode* node,
+                           const std::set<GURL>& removed_urls,
+                           const base::Location& location) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
-  void BookmarkParentFolderChildrenReordered(
-      const BookmarkParentFolder& folder) override;
-  void BookmarkAllUserNodesRemoved() override;
+  void BookmarkNodeChildrenReordered(
+      const bookmarks::BookmarkNode* node) override;
 
   // Rebuilds the main bookmark menu, if it has been marked invalid. Or builds
   // a bookmark folder submenu on demand. If |recurse| is true, also fills all
   // submenus recursively.
   void UpdateMenu(NSMenu* menu,
-                  std::optional<BookmarkParentFolder> folder,
+                  const bookmarks::BookmarkNode* node,
                   bool recurse);
 
   // I wish I had a "friend @class" construct.
-  bookmarks::BookmarkModel* GetBookmarkModelForTesting();
+  bookmarks::BookmarkModel* GetBookmarkModel();
   Profile* GetProfile();
   const base::FilePath& GetProfileDir() const;
 
@@ -103,32 +105,23 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
  private:
   friend class BookmarkMenuBridgeTest;
 
-  // Returns true if the parent folder has at least one child.
-  bool HasContent(const BookmarkParentFolder& folder);
-
   void BuildRootMenu(bool recurse);
 
-  // Marks the bookmark menu as being invalid.
-  void InvalidateMenu() { is_menu_valid_ = false; }
-  bool IsMenuValid() const { return is_menu_valid_; }
+  // Mark the bookmark menu as being invalid.
+  void InvalidateMenu() { menuIsValid_ = false; }
+  bool IsMenuValid() const { return menuIsValid_; }
 
-  // Adds a submenu representing |folder| to |menu|. Uses the title of
-  // |folder|'s underlying nodes as the submenu's title and the provided |image|
-  // as its icon. If |recurse| is true, recursively adds all child nodes of
-  // |node|.
-  void AddSubmenu(NSMenu* menu,
-                  const BookmarkParentFolder& folder,
-                  NSImage* image,
-                  bool recurse);
+  // Helper for adding the node as a submenu to the menu with the |node|'s title
+  // and the given |image| as its icon. If |recurse| is true, also fills all
+  // submenus recursively.
+  void AddNodeAsSubmenu(NSMenu* menu,
+                        const bookmarks::BookmarkNode* node,
+                        NSImage* image,
+                        bool recurse);
 
-  // Adds all child nodes of |folder| to |menu|. If |recurse| is true,
-  // recursively adds children of the child nodes.
-  void AddChildrenToMenu(const BookmarkParentFolder& folder,
-                         NSMenu* menu,
-                         bool recurse);
-
-  // Adds |node| as an item or a submenu to the bookmark menu. If |recurse| is
-  // true and |node| has children, recursively adds them.
+  // Helper for adding items to our bookmark menu. All children of |node| will
+  // be added to |menu|. If |recurse| is true, also fills all submenus
+  // recursively.
   //
   // TODO(jrg): add a counter to enforce maximum nodes added
   void AddNodeToMenu(const bookmarks::BookmarkNode* node,
@@ -157,13 +150,13 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
   // Returns the NSMenuItem for a given BookmarkNode.
   NSMenuItem* MenuItemForNode(const bookmarks::BookmarkNode* node);
 
-  // True iff the menu is up to date with the BookmarkMergedSurfaceService.
-  bool is_menu_valid_;
+  // Start watching the bookmarks for changes.
+  void ObserveBookmarkModel();
+
+  // True iff the menu is up to date with the actual BookmarkModel.
+  bool menuIsValid_;
 
   raw_ptr<Profile> profile_;  // weak
-  raw_ptr<BookmarkMergedSurfaceService>
-      bookmark_service_;  // owned by |profile_|.
-
   BookmarkMenuCocoaController* __strong controller_;
   NSMenu* __strong menu_root_;
 
@@ -180,9 +173,9 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
   // GUID. Instead, map the tags to the corresponding GUIDs.
   std::map<int64_t, base::Uuid> tag_to_guid_;
 
-  base::ScopedObservation<BookmarkMergedSurfaceService,
-                          BookmarkMergedSurfaceServiceObserver>
-      bookmark_service_observation_{this};
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      bookmark_model_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_BOOKMARKS_BOOKMARK_MENU_BRIDGE_H_

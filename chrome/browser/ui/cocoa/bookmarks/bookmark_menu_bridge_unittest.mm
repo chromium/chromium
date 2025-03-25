@@ -6,19 +6,13 @@
 
 #import <AppKit/AppKit.h>
 
-#import <optional>
 #import <string>
 
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "chrome/app/chrome_command_ids.h"
-#import "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
-#import "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #import "chrome/browser/bookmarks/bookmark_model_factory.h"
-#import "chrome/browser/bookmarks/bookmark_parent_folder.h"
-#import "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #import "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #import "chrome/test/base/browser_with_test_window_test.h"
@@ -26,7 +20,6 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -44,8 +37,9 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    WaitForBookmarkMergedSurfaceServiceToLoad(
-        BookmarkMergedSurfaceServiceFactory::GetForProfile(profile()));
+
+    bookmarks::test::WaitForBookmarkModelToLoad(
+        BookmarkModelFactory::GetForBrowserContext(profile()));
     menu_ = [[NSMenu alloc] initWithTitle:@"test"];
 
     bridge_ = std::make_unique<BookmarkMenuBridge>(profile(), menu_);
@@ -62,14 +56,11 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
                 BookmarkModelFactory::GetDefaultFactory()},
             TestingProfile::TestingFactory{
                 ManagedBookmarkServiceFactory::GetInstance(),
-                ManagedBookmarkServiceFactory::GetDefaultFactory()},
-            TestingProfile::TestingFactory{
-                BookmarkMergedSurfaceServiceFactory::GetInstance(),
-                BookmarkMergedSurfaceServiceFactory::GetDefaultFactory()}};
+                ManagedBookmarkServiceFactory::GetDefaultFactory()}};
   }
 
   void UpdateRootMenu() {
-    bridge_->UpdateMenu(menu_, std::nullopt, /*recurse=*/false);
+    bridge_->UpdateMenu(menu_, nullptr, /*recurse=*/false);
   }
 
   // We are a friend of BookmarkMenuBridge (and have access to
@@ -104,8 +95,6 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kSyncEnableBookmarksInTransportMode};
   NSMenu* __strong menu_;
   std::unique_ptr<BookmarkMenuBridge> bridge_;
 
@@ -114,8 +103,8 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
-  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
-  bridge_->BookmarkMergedSurfaceServiceLoaded();
+  BookmarkModel* model = bridge_->GetBookmarkModel();
+  bridge_->BookmarkModelLoaded(false);
   UpdateRootMenu();
   // The bare menu after loading used to have a separator and an
   // "Other Bookmarks" submenu, but we no longer show those items if the
@@ -158,13 +147,10 @@ TEST_F(BookmarkMenuBridgeTest, TestClearBookmarkMenu) {
 
 // Test invalidation
 TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
-  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
-  model->CreateAccountPermanentFolders();
+  BookmarkModel* model = bridge_->GetBookmarkModel();
   model->AddURL(model->bookmark_bar_node(), 0, u"Google",
                 GURL("https://google.com"));
-  model->AddURL(model->account_bookmark_bar_node(), 0, u"Google Maps",
-                GURL("https://google.com/map"));
-  bridge_->BookmarkMergedSurfaceServiceLoaded();
+  bridge_->BookmarkModelLoaded(false);
 
   EXPECT_FALSE(menu_is_valid());
   UpdateRootMenu();
@@ -179,14 +165,10 @@ TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
   UpdateRootMenu();
   EXPECT_TRUE(menu_is_valid());
 
-  model->AddURL(model->bookmark_bar_node(), 0, u"Bookmark",
-                GURL("http://www.zim-bop-a-dee.com/"));
-  EXPECT_FALSE(menu_is_valid());
-  UpdateRootMenu();
-  EXPECT_TRUE(menu_is_valid());
+  const BookmarkNode* parent = model->bookmark_bar_node();
+  const char* url = "http://www.zim-bop-a-dee.com/";
+  model->AddURL(parent, 0, u"Bookmark", GURL(url));
 
-  model->AddURL(model->account_bookmark_bar_node(), 0, u"Account Bookmark",
-                GURL("http://www.zim-bop-a-dee-account.com/"));
   EXPECT_FALSE(menu_is_valid());
   UpdateRootMenu();
   EXPECT_TRUE(menu_is_valid());
@@ -197,7 +179,7 @@ TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
 TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
   std::u16string empty;
 
-  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  BookmarkModel* model = bridge_->GetBookmarkModel();
   const BookmarkNode* root = model->bookmark_bar_node();
   EXPECT_TRUE(model && root);
 
@@ -216,7 +198,7 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
   node = model->AddFolder(root, 1, empty);
   model->AddURL(root, 2, ASCIIToUTF16(long_url), GURL(long_url));
 
-  // And the submenu for the middle one
+  // And the submenu fo the middle one
   model->AddURL(node, 0, empty, GURL("http://sub"));
   UpdateRootMenu();
 
@@ -270,14 +252,14 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
 // Makes sure our internal map of BookmarkNode to NSMenuItem works.
 TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   std::u16string empty;
-  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  BookmarkModel* model = bridge_->GetBookmarkModel();
   EXPECT_TRUE(model);
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
   UpdateRootMenu();
   EXPECT_EQ(0u, [menu_ numberOfItems]);
 
-  const BookmarkNode* node = model->AddFolder(bookmark_bar, 0, empty);
-  EXPECT_TRUE(node);
+  const BookmarkNode* folder = model->AddFolder(bookmark_bar, 0, empty);
+  EXPECT_TRUE(folder);
   UpdateRootMenu();
   EXPECT_EQ(2u, [menu_ numberOfItems]);
 
@@ -286,8 +268,6 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   EXPECT_TRUE([submenu delegate]);
   EXPECT_EQ(0u, [submenu numberOfItems]);
 
-  BookmarkParentFolder folder = BookmarkParentFolder::FromFolderNode(node);
-
   bridge_->UpdateMenu(submenu, folder, /*recurse=*/false);
   // Updating the menu clears the delegate to prevent further updates.
   EXPECT_FALSE([submenu delegate]);
@@ -295,15 +275,15 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   // Since the folder is currently empty, a single node is added saying (empty).
   EXPECT_NSEQ(@"(empty)", [[submenu itemAtIndex:0] title]);
 
-  model->AddURL(node, 0, u"Test Item", GURL("http://test"));
+  model->AddURL(folder, 0, u"Test Item", GURL("http://test"));
   UpdateRootMenu();
   // There will be a new submenu each time, Cocoa will update it if needed.
   bridge_->UpdateMenu([[menu_ itemAtIndex:1] submenu], folder,
                       /*recurse=*/false);
 
-  EXPECT_TRUE(MenuItemForNode(bridge_.get(), node->children().front().get()));
+  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children().front().get()));
 
-  model->AddURL(node, 1, u"Test 2", GURL("http://second-test"));
+  model->AddURL(folder, 1, u"Test 2", GURL("http://second-test"));
 
   UpdateRootMenu();
   NSMenu* old_menu = [[menu_ itemAtIndex:1] submenu];
@@ -318,14 +298,14 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
 
   bridge_->UpdateMenu([[menu_ itemAtIndex:1] submenu], folder,
                       /*recurse=*/false);
-  EXPECT_TRUE(MenuItemForNode(bridge_.get(), node->children()[0].get()));
-  EXPECT_TRUE(MenuItemForNode(bridge_.get(), node->children()[1].get()));
+  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children()[0].get()));
+  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children()[1].get()));
 
-  const BookmarkNode* removed_node = node->children()[0].get();
-  EXPECT_EQ(2u, node->children().size());
-  model->Remove(node->children()[0].get(),
+  const BookmarkNode* removed_node = folder->children()[0].get();
+  EXPECT_EQ(2u, folder->children().size());
+  model->Remove(folder->children()[0].get(),
                 bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
-  EXPECT_EQ(1u, node->children().size());
+  EXPECT_EQ(1u, folder->children().size());
 
   EXPECT_FALSE(menu_is_valid());
   UpdateRootMenu();
@@ -333,14 +313,14 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   // Initially both will be false, but the submenu corresponding to the folder
   // will have a delegate set again, allowing it to be updated on demand.
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), removed_node));
-  EXPECT_FALSE(MenuItemForNode(bridge_.get(), node->children()[0].get()));
+  EXPECT_FALSE(MenuItemForNode(bridge_.get(), folder->children()[0].get()));
 
   UpdateRootMenu();
   bridge_->UpdateMenu([[menu_ itemAtIndex:1] submenu], folder,
                       /*recurse=*/false);
 
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), removed_node));
-  EXPECT_TRUE(MenuItemForNode(bridge_.get(), node->children()[0].get()));
+  EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children()[0].get()));
 
   const BookmarkNode empty_node(/*id=*/0, base::Uuid::GenerateRandomV4(),
                                 GURL("http://no-where/"));
@@ -351,7 +331,7 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
 // Test that Loaded() adds both the bookmark bar nodes and the "other" nodes, as
 // lazily loadable submenus.
 TEST_F(BookmarkMenuBridgeTest, TestAddNodeToOther) {
-  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  BookmarkModel* model = bridge_->GetBookmarkModel();
   const BookmarkNode* other_root = model->other_node();
   EXPECT_TRUE(model && other_root);
 
@@ -366,7 +346,7 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToOther) {
 
   // The "other" submenu is loaded lazily.
   EXPECT_EQ(0u, [[other submenu] numberOfItems]);
-  bridge_->UpdateMenu([other submenu], BookmarkParentFolder::OtherFolder(),
+  bridge_->UpdateMenu([other submenu], model -> other_node(),
                       /*recurse=*/false);
 
   ASSERT_GT([[other submenu] numberOfItems], 0);
@@ -374,7 +354,7 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToOther) {
 }
 
 TEST_F(BookmarkMenuBridgeTest, TestFaviconLoading) {
-  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  BookmarkModel* model = bridge_->GetBookmarkModel();
   const BookmarkNode* root = model->bookmark_bar_node();
   EXPECT_TRUE(model && root);
 
@@ -389,7 +369,7 @@ TEST_F(BookmarkMenuBridgeTest, TestFaviconLoading) {
 }
 
 TEST_F(BookmarkMenuBridgeTest, TestChangeTitle) {
-  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  BookmarkModel* model = bridge_->GetBookmarkModel();
   const BookmarkNode* root = model->bookmark_bar_node();
   EXPECT_TRUE(model && root);
 
@@ -409,7 +389,7 @@ TEST_F(BookmarkMenuBridgeTest, TestChangeTitle) {
 }
 
 TEST_F(BookmarkMenuBridgeTest, BuildMenuRecursivelyBeforeProfileDestruction) {
-  BookmarkModel* model = bridge_->GetBookmarkModelForTesting();
+  BookmarkModel* model = bridge_->GetBookmarkModel();
   const BookmarkNode* root = model->bookmark_bar_node();
   EXPECT_TRUE(model && root);
 

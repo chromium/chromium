@@ -4,8 +4,6 @@
 
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
 
-#include <optional>
-
 #import "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -13,7 +11,6 @@
 #include "chrome/app/chrome_command_ids.h"  // IDC_BOOKMARK_MENU
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -22,9 +19,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/l10n_util.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_model_observer.h"
-#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
@@ -48,18 +42,6 @@ NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
     }
   }
   return nil;
-}
-
-const BookmarkNode* GetNodeByUuid(const BookmarkModel* model,
-                                  const base::Uuid& guid) {
-  CHECK(model);
-  const BookmarkNode* node = model->GetNodeByUuid(
-      guid, BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
-  if (!node) {
-    node = model->GetNodeByUuid(
-        guid, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
-  }
-  return node;
 }
 
 void DoOpenBookmark(Profile* profile,
@@ -157,7 +139,8 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
     return;
   }
 
-  const BookmarkNode* node = GetNodeByUuid(model, guid);
+  const BookmarkNode* node = model->GetNodeByUuid(
+      guid, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
   if (!node) {
     // Bookmark not known, ignore.
     return;
@@ -209,11 +192,9 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
   const BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   base::Uuid guid = _bridge->TagToGUID([item tag]);
-  const BookmarkNode* node = GetNodeByUuid(model, guid);
-  auto folder = node ? std::optional<BookmarkParentFolder>(
-                           BookmarkParentFolder::FromFolderNode(node))
-                     : std::nullopt;
-  _bridge->UpdateMenu(menu, folder, /*recurse=*/false);
+  const BookmarkNode* node = model->GetNodeByUuid(
+      guid, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
+  _bridge->UpdateMenu(menu, node, /*recurse=*/false);
 }
 
 - (BOOL)menuHasKeyEquivalent:(NSMenu*)menu

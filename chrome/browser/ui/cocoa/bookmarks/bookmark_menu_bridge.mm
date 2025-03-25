@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 
+#import <AppKit/AppKit.h>
+
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/app_controller_mac.h"
-#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
-#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
-#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
-#include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,7 +20,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -34,9 +33,9 @@ namespace {
 
 // Recursively clear any delegates from |menu| and its unbuilt submenus.
 void ClearDelegatesFromSubmenu(NSMenu* menu) {
-  CHECK(menu);
+  DCHECK(menu);
   // Either the delegate has been cleared, or items were never added.
-  CHECK(![menu delegate] || [menu numberOfItems] == 0);
+  DCHECK(![menu delegate] || [menu numberOfItems] == 0);
   [menu setDelegate:nil];
   NSArray* items = [menu itemArray];
   for (NSMenuItem* item in items) {
@@ -56,24 +55,13 @@ BookmarkMenuBridge::BookmarkMenuBridge(Profile* profile, NSMenu* menu_root)
     : profile_(profile),
       controller_([[BookmarkMenuCocoaController alloc] initWithBridge:this]),
       menu_root_(menu_root) {
-  CHECK(profile_);
+  DCHECK(profile_);
   profile_dir_ = profile->GetPath();
-  CHECK(menu_root_);
-  CHECK(![menu_root_ delegate]);
+  DCHECK(menu_root_);
+  DCHECK(![menu_root_ delegate]);
   [menu_root_ setDelegate:controller_];
 
-  bookmark_service_ =
-      BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_);
-
-  // The bookmark service is only availble for Regular and Guest profiles.
-  if (!bookmark_service_) {
-    return;
-  }
-
-  bookmark_service_observation_.Observe(bookmark_service_);
-  if (bookmark_service_->loaded()) {
-    BookmarkMergedSurfaceServiceLoaded();
-  }
+  ObserveBookmarkModel();
 }
 
 BookmarkMenuBridge::~BookmarkMenuBridge() {
@@ -81,16 +69,16 @@ BookmarkMenuBridge::~BookmarkMenuBridge() {
   [menu_root_ setDelegate:nil];
 }
 
-void BookmarkMenuBridge::BookmarkMergedSurfaceServiceLoaded() {
+void BookmarkMenuBridge::BookmarkModelLoaded(bool ids_reassigned) {
   InvalidateMenu();
 }
 
 void BookmarkMenuBridge::UpdateMenu(NSMenu* menu,
-                                    std::optional<BookmarkParentFolder> folder,
+                                    const BookmarkNode* node,
                                     bool recurse) {
-  CHECK(menu);
-  CHECK(controller_);
-  CHECK_EQ([menu delegate], controller_);
+  DCHECK(menu);
+  DCHECK(controller_);
+  DCHECK_EQ([menu delegate], controller_);
 
   if (menu == menu_root_) {
     if (!IsMenuValid()) {
@@ -99,21 +87,15 @@ void BookmarkMenuBridge::UpdateMenu(NSMenu* menu,
     return;
   }
 
-  CHECK(folder);
-  AddChildrenToMenu(folder.value(), menu, recurse);
-
+  DCHECK(node);
+  AddNodeToMenu(node, menu, recurse);
   // Clear the delegate to prevent further refreshes.
   [menu setDelegate:nil];
 }
 
-bool BookmarkMenuBridge::HasContent(const BookmarkParentFolder& folder) {
-  // TODO(crbug.com/390398329): Verify if this should be replaced with
-  // checking visibility of underlying nodes.
-  return bookmark_service_->GetChildrenCount(folder) > 0;
-}
-
 void BookmarkMenuBridge::BuildRootMenu(bool recurse) {
-  if (!bookmark_service_ || !bookmark_service_->loaded()) {
+  BookmarkModel* model = GetBookmarkModel();
+  if (!model || !model->loaded()) {
     return;
   }
 
@@ -125,67 +107,74 @@ void BookmarkMenuBridge::BuildRootMenu(bool recurse) {
 
   ClearBookmarkMenu();
 
-  BookmarkParentFolder bookmark_bar_folder =
-      BookmarkParentFolder::BookmarkBarFolder();
-  BookmarkParentFolder managed_folder = BookmarkParentFolder::ManagedFolder();
-
   // Add at most one separator for the bookmark bar and the managed bookmarks
   // folder.
-  if (HasContent(bookmark_bar_folder) || HasContent(managed_folder)) {
+  bookmarks::ManagedBookmarkService* managed =
+      ManagedBookmarkServiceFactory::GetForProfile(profile_);
+  const BookmarkNode* barNode = model->bookmark_bar_node();
+  const BookmarkNode* managedNode = managed->managed_node();
+  if (!barNode->children().empty() || !managedNode->children().empty()) {
     [menu_root_ addItem:[NSMenuItem separatorItem]];
   }
-
-  if (HasContent(managed_folder)) {
+  if (!managedNode->children().empty()) {
     // Most users never see this node, so the image is only loaded if needed.
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     NSImage* image =
         rb.GetNativeImageNamed(IDR_BOOKMARK_BAR_FOLDER_MANAGED).ToNSImage();
-    AddSubmenu(menu_root_, managed_folder, image, recurse);
+    AddNodeAsSubmenu(menu_root_, managedNode, image, recurse);
+  }
+  if (!barNode->children().empty()) {
+    AddNodeToMenu(barNode, menu_root_, recurse);
   }
 
-  // Add entries from the bookmark bar to the root menu.
-  for (const BookmarkNode* node :
-       bookmark_service_->GetChildren(bookmark_bar_folder)) {
-    AddNodeToMenu(node, menu_root_, recurse);
-  }
-
-  BookmarkParentFolder other_folder = BookmarkParentFolder::OtherFolder();
-  BookmarkParentFolder mobile_folder = BookmarkParentFolder::MobileFolder();
-
-  // Add at most one separator for the "Other Bookmarks" and "Mobile Bookmarks"
-  // folders.
-  if (HasContent(other_folder) || HasContent(mobile_folder)) {
+  // If the "Other Bookmarks" folder has any content, make a submenu for it and
+  // fill it in.
+  if (!model->other_node()->children().empty()) {
     [menu_root_ addItem:[NSMenuItem separatorItem]];
+    AddNodeAsSubmenu(menu_root_, model->other_node(), folder_image_, recurse);
   }
 
-  if (HasContent(other_folder)) {
-    AddSubmenu(menu_root_, other_folder, folder_image_, recurse);
-  }
-  if (HasContent(mobile_folder)) {
-    AddSubmenu(menu_root_, mobile_folder, folder_image_, recurse);
+  // If the "Mobile Bookmarks" folder has any content, make a submenu for it and
+  // fill it in.
+  if (!model->mobile_node()->children().empty()) {
+    // Add a separator if we did not already add one due to a non-empty
+    // "Other Bookmarks" folder.
+    if (model->other_node()->children().empty()) {
+      [menu_root_ addItem:[NSMenuItem separatorItem]];
+    }
+
+    AddNodeAsSubmenu(menu_root_, model->mobile_node(), folder_image_, recurse);
   }
 
-  is_menu_valid_ = true;
+  menuIsValid_ = true;
 }
 
-void BookmarkMenuBridge::BookmarkMergedSurfaceServiceBeingDeleted() {}
+void BookmarkMenuBridge::BookmarkModelBeingDeleted() {}
 
-void BookmarkMenuBridge::BookmarkNodeAdded(const BookmarkParentFolder& parent,
-                                           size_t index) {
+void BookmarkMenuBridge::BookmarkNodeMoved(const BookmarkNode* old_parent,
+                                           size_t old_index,
+                                           const BookmarkNode* new_parent,
+                                           size_t new_index) {
   InvalidateMenu();
 }
 
-void BookmarkMenuBridge::BookmarkNodesRemoved(
-    const BookmarkParentFolder& parent,
-    const base::flat_set<const bookmarks::BookmarkNode*>& nodes) {
+void BookmarkMenuBridge::BookmarkNodeAdded(const BookmarkNode* parent,
+                                           size_t index,
+                                           bool added_by_user) {
   InvalidateMenu();
 }
 
-void BookmarkMenuBridge::BookmarkNodeMoved(
-    const BookmarkParentFolder& old_parent,
-    size_t old_index,
-    const BookmarkParentFolder& new_parent,
-    size_t new_index) {
+void BookmarkMenuBridge::BookmarkNodeRemoved(const BookmarkNode* parent,
+                                             size_t old_index,
+                                             const BookmarkNode* node,
+                                             const std::set<GURL>& removed_urls,
+                                             const base::Location& location) {
+  InvalidateMenu();
+}
+
+void BookmarkMenuBridge::BookmarkAllUserNodesRemoved(
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   InvalidateMenu();
 }
 
@@ -203,18 +192,29 @@ void BookmarkMenuBridge::BookmarkNodeFaviconChanged(const BookmarkNode* node) {
   }
 }
 
-void BookmarkMenuBridge::BookmarkParentFolderChildrenReordered(
-    const BookmarkParentFolder& folder) {
+void BookmarkMenuBridge::BookmarkNodeChildrenReordered(
+    const BookmarkNode* node) {
   InvalidateMenu();
 }
 
-void BookmarkMenuBridge::BookmarkAllUserNodesRemoved() {
-  InvalidateMenu();
+// Watch for changes.
+void BookmarkMenuBridge::ObserveBookmarkModel() {
+  BookmarkModel* model = GetBookmarkModel();
+
+  // In Guest mode, there is no bookmark model.
+  if (!model) {
+    return;
+  }
+
+  bookmark_model_observation_.Observe(model);
+  if (model->loaded()) {
+    BookmarkModelLoaded(false);
+  }
 }
 
-BookmarkModel* BookmarkMenuBridge::GetBookmarkModelForTesting() {
-  CHECK(bookmark_service_);
-  return bookmark_service_->bookmark_model();
+BookmarkModel* BookmarkMenuBridge::GetBookmarkModel() {
+  DCHECK(profile_);
+  return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 
 Profile* BookmarkMenuBridge::GetProfile() {
@@ -258,15 +258,10 @@ void BookmarkMenuBridge::ClearBookmarkMenu() {
   }
 }
 
-void BookmarkMenuBridge::AddSubmenu(NSMenu* menu,
-                                    const BookmarkParentFolder& folder,
-                                    NSImage* image,
-                                    bool recurse) {
-  // For permanent folders containing multiple nodes, use the first node's title
-  // as the menu title.
-  auto nodes = bookmark_service_->GetUnderlyingNodes(folder);
-  CHECK(!nodes.empty());
-  const BookmarkNode* node = nodes[0];
+void BookmarkMenuBridge::AddNodeAsSubmenu(NSMenu* menu,
+                                          const BookmarkNode* node,
+                                          NSImage* image,
+                                          bool recurse) {
   NSString* title = MenuTitleForNode(node);
   NSMenuItem* items = [[NSMenuItem alloc] initWithTitle:title
                                                  action:nil
@@ -286,20 +281,15 @@ void BookmarkMenuBridge::AddSubmenu(NSMenu* menu,
   [menu addItem:items];
 
   if (recurse) {
-    AddChildrenToMenu(folder, submenu, recurse);
+    AddNodeToMenu(node, submenu, recurse);
   }
 }
 
-void BookmarkMenuBridge::AddChildrenToMenu(const BookmarkParentFolder& folder,
-                                           NSMenu* menu,
-                                           bool recurse) {
-  BookmarkParentFolderChildren children =
-      bookmark_service_->GetChildren(folder);
-  if (!children.size()) {
-    // Permanent folders with no children are not visible.
-    CHECK(folder.HoldsNonPermanentFolder());
-    // For empty non-permanent folder, show an unclickable entry with the text
-    // "(empty)".
+// TODO(jrg): limit the number of bookmarks in the menubar?
+void BookmarkMenuBridge::AddNodeToMenu(const BookmarkNode* node,
+                                       NSMenu* menu,
+                                       bool recurse) {
+  if (node->children().empty()) {
     NSString* empty_string = l10n_util::GetNSString(IDS_MENU_EMPTY_SUBMENU);
     NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:empty_string
                                                   action:nil
@@ -307,26 +297,20 @@ void BookmarkMenuBridge::AddChildrenToMenu(const BookmarkParentFolder& folder,
     [menu addItem:item];
     return;
   }
-  for (const BookmarkNode* child : children) {
-    AddNodeToMenu(child, menu, recurse);
-  }
-}
 
-void BookmarkMenuBridge::AddNodeToMenu(const BookmarkNode* node,
-                                       NSMenu* menu,
-                                       bool recurse) {
-  if (node->is_folder()) {
-    AddSubmenu(menu, BookmarkParentFolder::FromFolderNode(node), folder_image_,
-               recurse);
-  } else {
-    CHECK(node->is_url());
-    NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:MenuTitleForNode(node)
-                                                  action:nil
-                                           keyEquivalent:@""];
-    bookmark_nodes_[node] = item;
-    tag_to_guid_[node->id()] = node->uuid();
-    ConfigureMenuItem(node, item, false);
-    [menu addItem:item];
+  for (const auto& child : node->children()) {
+    if (child->is_folder()) {
+      AddNodeAsSubmenu(menu, child.get(), folder_image_, recurse);
+    } else {
+      NSMenuItem* item =
+          [[NSMenuItem alloc] initWithTitle:MenuTitleForNode(child.get())
+                                     action:nil
+                              keyEquivalent:@""];
+      bookmark_nodes_[child.get()] = item;
+      tag_to_guid_[child->id()] = child->uuid();
+      ConfigureMenuItem(child.get(), item, false);
+      [menu addItem:item];
+    }
   }
 }
 
@@ -345,7 +329,7 @@ void BookmarkMenuBridge::ConfigureMenuItem(const BookmarkNode* node,
   }
   // Check to see if we have a favicon.
   NSImage* favicon = nil;
-  BookmarkModel* model = bookmark_service_->bookmark_model();
+  BookmarkModel* model = GetBookmarkModel();
   if (model) {
     const gfx::Image& image = model->GetFavicon(node);
     if (!image.IsEmpty()) {
@@ -377,13 +361,9 @@ NSMenuItem* BookmarkMenuBridge::MenuItemForNodeForTest(
 }
 
 void BookmarkMenuBridge::OnProfileWillBeDestroyed() {
-  // Recursively populate the menu before the bookmark service is destroyed.
   BuildRootMenu(/*recurse=*/true);
-
-  bookmark_service_observation_.Reset();
-  bookmark_service_ = nullptr;
   profile_ = nullptr;
-
+  bookmark_model_observation_.Reset();
   // |bookmark_nodes_| stores the nodes by pointer, so it would be unsafe to
   // keep them.
   bookmark_nodes_.clear();
