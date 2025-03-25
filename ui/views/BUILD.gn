@@ -889,9 +889,12 @@ component("views") {
           "widget/desktop_aura/desktop_native_cursor_manager_win.h",
           "widget/desktop_aura/desktop_screen_win.cc",
           "widget/desktop_aura/desktop_screen_win.h",
+          "widget/desktop_aura/desktop_screen_win_headless.cc",
+          "widget/desktop_aura/desktop_screen_win_headless.h",
           "widget/desktop_aura/desktop_window_tree_host_win.cc",
         ]
         deps += [
+          "//components/headless/screen_info",
           "//ui/events:dom_keyboard_layout",
           "//ui/events:keyboard_hook",
         ]

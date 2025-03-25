@@ -94,6 +94,8 @@ component("display") {
       "win/screen_win.h",
       "win/screen_win_display.cc",
       "win/screen_win_display.h",
+      "win/screen_win_headless.cc",
+      "win/screen_win_headless.h",
       "win/uwp_text_scale_factor.cc",
       "win/uwp_text_scale_factor.h",
     ]
@@ -132,7 +134,10 @@ component("display") {
   if (is_win) {
     # Don't conflict with Windows' "display.dll".
     output_name = "ui_display"
-    deps += [ "//ui/gfx/mojom:dxgi_info" ]
+    deps += [
+      "//components/headless/screen_info",
+      "//ui/gfx/mojom:dxgi_info",
+    ]
     libs = [ "shcore.lib" ]
     ldflags = [ "/DELAYLOAD:shcore.dll" ]
   }
@@ -285,6 +290,7 @@ test("display_unittests") {
   if (is_win) {
     sources += [
       "win/scaling_util_unittest.cc",
+      "win/screen_win_headless_unittest.cc",
       "win/screen_win_unittest.cc",
     ]
   }
@@ -312,6 +318,10 @@ test("display_unittests") {
     # Do not run display_change_notifier_unittest.cc on Android because it
     # does not compile display_observer.cc
     sources += [ "display_change_notifier_unittest.cc" ]
+  }
+
+  if (is_win) {
+    deps += [ "//components/headless/screen_info" ]
   }
 
   if (is_chromeos) {

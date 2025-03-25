@@ -11,7 +11,6 @@ source_set("screen_info") {
   deps = [
     "//base",
     "//third_party/re2",
-    "//ui/display",
     "//ui/gfx/geometry/",
   ]
 }

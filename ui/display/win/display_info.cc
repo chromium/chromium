@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/display/win/display_config_helper.h"
+#include "ui/display/win/screen_win_headless.h"
 
 namespace display::win::internal {
 
@@ -49,19 +50,31 @@ DisplayInfo::DisplayInfo(
       label_(label),
       device_name_(FixedArrayToStringView(monitor_info.szDevice)) {}
 
-DisplayInfo::DisplayInfo(const DisplayInfo& other) {
-  id_ = other.id_;
-  screen_rect_ = other.screen_rect_;
-  screen_work_rect_ = other.screen_work_rect_;
-  device_scale_factor_ = other.device_scale_factor_;
-  sdr_white_level_ = other.sdr_white_level_;
-  rotation_ = other.rotation_;
-  display_frequency_ = other.display_frequency_;
-  pixels_per_inch_ = other.pixels_per_inch_;
-  output_technology_ = other.output_technology_;
-  label_ = other.label_;
-  device_name_ = other.device_name_;
+DisplayInfo::DisplayInfo(
+    int64_t id,
+    const MONITORINFOEX& monitor_info,
+    float device_scale_factor,
+    float sdr_white_level,
+    Display::Rotation rotation,
+    float display_frequency,
+    const gfx::Vector2dF& pixels_per_inch,
+    DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology,
+    const std::string& label)
+    : id_(id),
+      screen_rect_(monitor_info.rcMonitor),
+      screen_work_rect_(monitor_info.rcWork),
+      device_scale_factor_(device_scale_factor),
+      sdr_white_level_(sdr_white_level),
+      rotation_(rotation),
+      display_frequency_(display_frequency),
+      pixels_per_inch_(pixels_per_inch),
+      output_technology_(output_technology),
+      label_(label),
+      device_name_(FixedArrayToStringView(monitor_info.szDevice)) {
+  CHECK(VerifyHeadlessDisplayDeviceName(id, monitor_info));
 }
+
+DisplayInfo::DisplayInfo(const DisplayInfo& other) = default;
 
 DisplayInfo::~DisplayInfo() = default;
 

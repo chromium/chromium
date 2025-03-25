@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "ui/display/display.h"
 
 using re2::RE2;
 
@@ -68,6 +67,13 @@ std::optional<bool> GetBooleanParam(std::string_view value) {
   }
 
   return std::nullopt;
+}
+
+// This is the same as display::Display::IsValidRotation(). It is replicated
+// here to prevent dependency on //ui/display/ which is undesired because this
+// file is intended to be included from there.
+bool IsValidRotation(int degrees) {
+  return degrees == 0 || degrees == 90 || degrees == 180 || degrees == 270;
 }
 
 // Parse screen info parameter key value pair returning an error message or
@@ -161,8 +167,7 @@ std::string ParseScreenInfoParameter(std::string_view key,
   // rotation=0|90|180|270
   if (key == kRotation) {
     int rotation;
-    if (!base::StringToInt(value, &rotation) ||
-        !display::Display::IsValidRotation(rotation)) {
+    if (!base::StringToInt(value, &rotation) || !IsValidRotation(rotation)) {
       return kInvalidRotation + std::string(value);
     }
 
