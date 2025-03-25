@@ -2257,55 +2257,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Suggestion Selected"/>
 </enum>
 
-<enum name="AutofillLocalCardMigrationBubbleOffer">
-  <int value="0" label="Show requested"/>
-  <int value="1" label="Shown"/>
-</enum>
-
-<enum name="AutofillLocalCardMigrationBubbleResult">
-  <int value="0" label="User explicitly accepted the bubble"/>
-  <int value="1" label="User explicitly closed the the bubble"/>
-  <int value="2" label="User did not interact with the bubble"/>
-  <int value="3" label="Bubble lost focus and was deactivated"/>
-  <int value="4" label="Bubble result unknown"/>
-</enum>
-
-<enum name="AutofillLocalCardMigrationBubbleUserInteraction">
-  <int value="0" label="User explicitly accepted bubble"/>
-  <int value="1" label="User explicitly denied bubble"/>
-  <int value="2" label="User navigated away from page while bubble showing"/>
-  <int value="3" label="User navigated away from page while bubble hidden"/>
-</enum>
-
-<enum name="AutofillLocalCardMigrationDecisionMetric">
-  <int value="0" label="Migration offered"/>
-  <int value="1" label="User used new card"/>
-  <int value="2" label="Failed migration prerequisites"/>
-  <int value="3" label="Reached max strikes"/>
-  <int value="4" label="No migratable cards"/>
-  <int value="5" label="Get upload details RPC failed"/>
-  <int value="6" label="All cards are unsupported"/>
-  <int value="7" label="Single local card"/>
-  <int value="8" label="User used unsupported local card"/>
-  <int value="9" label="Invalid legal message detected"/>
-</enum>
-
-<enum name="AutofillLocalCardMigrationDialogOffer">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Not shown due to legal message being invalid"/>
-  <int value="2" label="Feedback dialog shown"/>
-  <int value="3" label="Feedback server error dialog shown"/>
-</enum>
-
-<enum name="AutofillLocalCardMigrationDialogUserInteraction">
-  <int value="0" label="User explicitly accepted dialog"/>
-  <int value="1" label="User explicitly denied dialog"/>
-  <int value="2" label="User clicked legal message link"/>
-  <int value="3" label="User clicked view card button"/>
-  <int value="4" label="User clicked done button"/>
-  <int value="5" label="User clicked delete card icon"/>
-</enum>
-
 <enum name="AutofillManageCardsPrompt">
   <int value="0" label="Shown"/>
   <int value="1" label="Done button pressed"/>
@@ -3675,13 +3626,6 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//components/autofill/ios/browser/autofill_util.h:InvalidSubmittedFormReasonIOS) -->
-
-<enum name="LocalCardMigrationPrompt">
-  <int value="0" label="Intermediate bubble shown"/>
-  <int value="1" label="Intermediate bubble accepted"/>
-  <int value="2" label="Main dialog shown"/>
-  <int value="3" label="Main dialog accepted"/>
-</enum>
 
 <enum name="MandatoryReauthAuthEvent">
   <int value="0" label="Unknown"/>

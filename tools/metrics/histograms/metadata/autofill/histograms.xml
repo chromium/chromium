@@ -3781,116 +3781,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.LocalCardMigrationBubbleOffer.{ShowType}"
-    enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2025-08-31">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>
-    Record events related to bubble showing. Logged when bubble is requested or
-    is actually shown to users.
-  </summary>
-  <token key="ShowType" variants="FirstShowOrReshow"/>
-</histogram>
-
-<histogram name="Autofill.LocalCardMigrationBubbleResult.{ShowType}"
-    enum="AutofillLocalCardMigrationBubbleResult" expires_after="2025-08-31">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>
-    Records whether and how the local card migration bubble was accepted or
-    closed.
-  </summary>
-  <token key="ShowType" variants="FirstShowOrReshow"/>
-</histogram>
-
-<histogram name="Autofill.LocalCardMigrationBubbleUserInteraction"
-    enum="AutofillLocalCardMigrationBubbleUserInteraction"
-    expires_after="2025-07-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>Record how bubble is closed by different user interactions.</summary>
-</histogram>
-
-<histogram name="Autofill.LocalCardMigrationDecision"
-    enum="AutofillLocalCardMigrationDecisionMetric" expires_after="2025-08-31">
-  <owner>sujiezhu@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>
-    Record the decisions made when determining if local card migration should be
-    offered.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.LocalCardMigrationDialogActiveDuration{AutofillLocalCardMigrationDialogDurationWithCloseEvent}"
-    units="ms" expires_after="2025-08-31">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>
-    Record duration of the local card migration dialog being visible to users.
-    {AutofillLocalCardMigrationDialogDurationWithCloseEvent}
-  </summary>
-  <token key="AutofillLocalCardMigrationDialogDurationWithCloseEvent">
-    <variant name=""/>
-    <variant name=".Accepted"
-        summary="The dialog was closed due to the user clicking the save
-                 button."/>
-    <variant name=".Closed"
-        summary="The dialog was closed due to the user clicking the view
-                 cards or done button."/>
-    <variant name=".Denied"
-        summary="The dialog was closed due to the user clicking the cancel
-                 button."/>
-  </token>
-</histogram>
-
-<histogram name="Autofill.LocalCardMigrationDialogOffer"
-    enum="AutofillLocalCardMigrationDialogOffer" expires_after="2025-08-31">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>
-    Record events related to showing the local card migration dialog.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.LocalCardMigrationDialogUserInteraction"
-    enum="AutofillLocalCardMigrationDialogUserInteraction"
-    expires_after="2025-08-31">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>
-    Record user interactions related to local card migration dialog.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.LocalCardMigrationDialogUserSelectionPercentage"
-    units="%" expires_after="2025-08-31">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>
-    Record the percentage of cards selected by the user in the migration dialog.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.LocalCardMigrationOrigin.{AutofillLocalCardMigrationOrigin}"
-    enum="LocalCardMigrationPrompt" expires_after="2025-08-31">
-  <owner>siyua@chromium.org</owner>
-  <owner>jsaul@google.com</owner>
-  <summary>
-    Records when local card migration prompts are shown and/or accepted, after
-    being triggered from {AutofillLocalCardMigrationOrigin}.
-  </summary>
-  <token key="AutofillLocalCardMigrationOrigin">
-    <variant name="SettingsPage" summary="the settings page"/>
-    <variant name="UseOfLocalCard"
-        summary="submitting a form with a local card"/>
-    <variant name="UseOfServerCard"
-        summary="submitting a form with a server card"/>
-  </token>
-</histogram>
-
 <histogram name="Autofill.LocalHeuristics.MatchedAttribute"
     enum="AutofillMatchAttribute" expires_after="2025-08-03">
   <owner>fleimgruber@google.com</owner>
@@ -6013,17 +5903,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Records when IBAN save prompt is not offered due to the candidate IBAN
     having too many strikes. It is recorded when offering IBAN save to user and
     detects the max strikes has been reached.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.StrikeDatabase.LocalCardMigrationNotOfferedDueToMaxStrikes"
-    enum="AutofillSaveType" expires_after="2025-08-31">
-  <owner>jsaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records when local card migration is not offered due to the candidate's
-    LocalCardMigration strike count reaching maximum strikes.
   </summary>
 </histogram>
 

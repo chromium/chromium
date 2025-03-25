@@ -399,8 +399,6 @@ static_library("browser") {
     "metrics/payments/filled_card_information_bubble_metrics.h",
     "metrics/payments/iban_metrics.cc",
     "metrics/payments/iban_metrics.h",
-    "metrics/payments/local_card_migration_metrics.cc",
-    "metrics/payments/local_card_migration_metrics.h",
     "metrics/payments/manage_cards_prompt_metrics.cc",
     "metrics/payments/manage_cards_prompt_metrics.h",
     "metrics/payments/mandatory_reauth_metrics.cc",
