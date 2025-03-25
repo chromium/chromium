@@ -5729,7 +5729,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5142" label="V8AILanguageModel_Destroy_Method"/>
   <int value="5143" label="V8AILanguageModel_Prompt_Method"/>
   <int value="5144" label="V8AILanguageModel_PromptStreaming_Method"/>
-  <int value="5145" label="V8AILanguageModel_CountPromptTokens_Method"/>
+  <int value="5145"
+      label="OBSOLETE_V8AILanguageModel_CountPromptTokens_Method"/>
   <int value="5146"
       label="V8AILanguageModelCapabilities_LanguageAvailable_Method"/>
   <int value="5147"
@@ -5742,9 +5743,12 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8AILanguageModelCapabilities_DefaultTemperature_AttributeGetter"/>
   <int value="5151" label="V8AILanguageModelFactory_Capabilities_Method"/>
   <int value="5152" label="V8AILanguageModelFactory_Create_Method"/>
-  <int value="5153" label="V8AILanguageModel_MaxTokens_AttributeGetter"/>
-  <int value="5154" label="V8AILanguageModel_TokensSoFar_AttributeGetter"/>
-  <int value="5155" label="V8AILanguageModel_TokensLeft_AttributeGetter"/>
+  <int value="5153"
+      label="OBSOLETE_V8AILanguageModel_MaxTokens_AttributeGetter"/>
+  <int value="5154"
+      label="OBSOLETE_V8AILanguageModel_TokensSoFar_AttributeGetter"/>
+  <int value="5155"
+      label="OBSOLETE_V8AILanguageModel_TokensLeft_AttributeGetter"/>
   <int value="5156" label="SvgContextFillOrStroke"/>
   <int value="5157" label="ARIAActionsAttribute"/>
   <int value="5158" label="OBSOLETE_ResolveToConfigValueCoercedToTrue"/>
@@ -5989,6 +5993,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5383" label="AriaNotify"/>
   <int value="5384" label="LanguageDetector_MeasureInputUsage"/>
   <int value="5385" label="LanguageDetector_InputQuota"/>
+  <int value="5386" label="V8AILanguageModel_InputUsage_AttributeGetter"/>
+  <int value="5387" label="V8AILanguageModel_InputQuota_AttributeGetter"/>
+  <int value="5388" label="V8AILanguageModel_MeasureInputUsage_Method"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

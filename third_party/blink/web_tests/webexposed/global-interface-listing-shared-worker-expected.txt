@@ -32,16 +32,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AILanguageModel : EventTarget
 [Worker]     attribute @@toStringTag
-[Worker]     getter maxTokens
+[Worker]     getter inputQuota
+[Worker]     getter inputUsage
 [Worker]     getter oncontextoverflow
 [Worker]     getter temperature
-[Worker]     getter tokensLeft
-[Worker]     getter tokensSoFar
 [Worker]     getter topK
 [Worker]     method clone
 [Worker]     method constructor
-[Worker]     method countPromptTokens
 [Worker]     method destroy
+[Worker]     method measureInputUsage
 [Worker]     method prompt
 [Worker]     method promptStreaming
 [Worker]     setter oncontextoverflow

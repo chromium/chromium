@@ -42,17 +42,15 @@ interface AILanguageModel : EventTarget {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<unsigned long long> countPromptTokens(
-    DOMString input,
+  Promise<double> measureInputUsage(
+    AILanguageModelPromptInput input,
     optional AILanguageModelPromptOptions options = {}
   );
 
   [Measure]
-  readonly attribute unsigned long long maxTokens;
+  readonly attribute double inputUsage;
   [Measure]
-  readonly attribute unsigned long long tokensSoFar;
-  [Measure]
-  readonly attribute unsigned long long tokensLeft;
+  readonly attribute unrestricted double inputQuota;
 
   [Measure]
   readonly attribute unsigned long topK;

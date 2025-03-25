@@ -171,9 +171,9 @@ class AILanguageModel : public AIContextBoundObject,
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           client) override;
   void Destroy() override;
-  void CountPromptTokens(
+  void MeasureInputUsage(
       const std::string& input,
-      mojo::PendingRemote<blink::mojom::AILanguageModelCountPromptTokensClient>
+      mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
           client) override;
 
   // Format the initial prompts, gets the token count, updates the session,

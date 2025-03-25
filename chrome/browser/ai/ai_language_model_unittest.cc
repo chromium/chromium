@@ -413,12 +413,12 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                             language_model,
                         blink::mojom::AILanguageModelInstanceInfoPtr info) {
             EXPECT_TRUE(language_model);
-            EXPECT_EQ(info->max_tokens,
+            EXPECT_EQ(info->input_quota,
                       AITestUtils::GetFakeTokenLimits().max_context_tokens);
             if (is_initial_prompts_or_system_prompt_set) {
-              EXPECT_GT(info->current_tokens, 0ul);
+              EXPECT_GT(info->input_usage, 0ul);
             } else {
-              EXPECT_EQ(info->current_tokens, 0ul);
+              EXPECT_EQ(info->input_usage, 0ul);
             }
             mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
                 std::move(language_model));

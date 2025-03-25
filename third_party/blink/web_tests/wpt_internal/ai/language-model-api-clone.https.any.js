@@ -13,16 +13,12 @@ promise_test(async () => {
   // Clone a session and test it.
   const cloned_session = await session.clone();
   assert_equals(
-    cloned_session.maxTokens, session.maxTokens,
-    'cloned session should have the same maxTokens as the original session.'
+    cloned_session.inputQuota, session.inputQuota,
+    'cloned session should have the same inputQuota as the original session.'
   );
   assert_equals(
-    cloned_session.tokensSoFar, session.tokensSoFar,
-    'cloned session should have the same tokensSoFar as the original session.'
-  );
-  assert_equals(
-    cloned_session.tokensLeft, session.tokensLeft,
-    'cloned session should have the same tokensLeft as the original session.'
+    cloned_session.inputUsage, session.inputUsage,
+    'cloned session should have the same inputUsage as the original session.'
   );
   assert_equals(
     cloned_session.topK, session.topK,

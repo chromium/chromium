@@ -663,9 +663,9 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
           session_sampling_params.top_k, session_sampling_params.temperature));
 }
 
-void AILanguageModel::CountPromptTokens(
+void AILanguageModel::MeasureInputUsage(
     const std::string& input,
-    mojo::PendingRemote<blink::mojom::AILanguageModelCountPromptTokensClient>
+    mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
         client) {
   Context::ContextItem item;
   item.prompts.emplace_back(
@@ -677,7 +677,7 @@ void AILanguageModel::CountPromptTokens(
   session_->GetExecutionInputSizeInTokens(
       request.read(),
       base::BindOnce(
-          [](mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>
+          [](mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient>
                  client_remote,
              std::optional<uint32_t> result) {
             // TODO(crbug.com/351935691): Explicitly return an error. Consider
@@ -685,7 +685,7 @@ void AILanguageModel::CountPromptTokens(
             // for Writing Assistance APIs.
             client_remote->OnResult(result.value_or(0));
           },
-          mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>(
+          mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient>(
               std::move(client))));
 }
 

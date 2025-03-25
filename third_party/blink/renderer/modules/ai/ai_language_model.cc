@@ -115,30 +115,30 @@ class CloneLanguageModelClient
       receiver_;
 };
 
-class CountPromptTokensClient
-    : public GarbageCollected<CountPromptTokensClient>,
-      public mojom::blink::AILanguageModelCountPromptTokensClient,
-      public AIContextObserver<IDLUnsignedLongLong> {
+class MeasureInputUsageClient
+    : public GarbageCollected<MeasureInputUsageClient>,
+      public mojom::blink::AILanguageModelMeasureInputUsageClient,
+      public AIContextObserver<IDLDouble> {
  public:
-  CountPromptTokensClient(ScriptState* script_state,
+  MeasureInputUsageClient(ScriptState* script_state,
                           AILanguageModel* language_model,
-                          ScriptPromiseResolver<IDLUnsignedLongLong>* resolver,
+                          ScriptPromiseResolver<IDLDouble>* resolver,
                           AbortSignal* signal,
                           const WTF::String& input)
       : AIContextObserver(script_state, language_model, resolver, signal),
         language_model_(language_model),
         receiver_(this, language_model->GetExecutionContext()) {
-    mojo::PendingRemote<mojom::blink::AILanguageModelCountPromptTokensClient>
+    mojo::PendingRemote<mojom::blink::AILanguageModelMeasureInputUsageClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    language_model->GetTaskRunner());
-    language_model_->GetAILanguageModelRemote()->CountPromptTokens(
+    language_model_->GetAILanguageModelRemote()->MeasureInputUsage(
         input, std::move(client_remote));
   }
-  ~CountPromptTokensClient() override = default;
+  ~MeasureInputUsageClient() override = default;
 
-  CountPromptTokensClient(const CountPromptTokensClient&) = delete;
-  CountPromptTokensClient& operator=(const CountPromptTokensClient&) = delete;
+  MeasureInputUsageClient(const MeasureInputUsageClient&) = delete;
+  MeasureInputUsageClient& operator=(const MeasureInputUsageClient&) = delete;
 
   void Trace(Visitor* visitor) const override {
     AIContextObserver::Trace(visitor);
@@ -146,7 +146,7 @@ class CountPromptTokensClient
     visitor->Trace(receiver_);
   }
 
-  // mojom::blink::AILanguageModelCountPromptTokensClient implementation.
+  // mojom::blink::AILanguageModelMeasureInputUsageClient implementation.
   void OnResult(uint32_t number_of_tokens) override {
     if (!GetResolver()) {
       return;
@@ -161,8 +161,8 @@ class CountPromptTokensClient
 
  private:
   Member<AILanguageModel> language_model_;
-  HeapMojoReceiver<mojom::blink::AILanguageModelCountPromptTokensClient,
-                   CountPromptTokensClient>
+  HeapMojoReceiver<mojom::blink::AILanguageModelMeasureInputUsageClient,
+                   MeasureInputUsageClient>
       receiver_;
 };
 
@@ -374,8 +374,8 @@ AILanguageModel::AILanguageModel(
       language_model_remote_(execution_context) {
   language_model_remote_.Bind(std::move(pending_remote), task_runner);
   if (info) {
-    max_tokens_ = info->max_tokens;
-    current_tokens_ = info->current_tokens;
+    input_quota_ = info->input_quota;
+    input_usage_ = info->input_usage;
     top_k_ = info->sampling_params->top_k;
     temperature_ = info->sampling_params->temperature;
   }
@@ -556,23 +556,28 @@ ScriptPromise<AILanguageModel> AILanguageModel::clone(
   return promise;
 }
 
-ScriptPromise<IDLUnsignedLongLong> AILanguageModel::countPromptTokens(
+ScriptPromise<IDLDouble> AILanguageModel::measureInputUsage(
     ScriptState* script_state,
-    const WTF::String& input,
+    const V8AILanguageModelPromptInput* input,
     const AILanguageModelPromptOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<IDLUnsignedLongLong>();
+    return ScriptPromise<IDLDouble>();
+  }
+
+  // The API impl only accepts a string by default for now, more to come soon!
+  if (!input->IsString()) {
+    exception_state.ThrowTypeError("Input type not supported");
+    return ScriptPromise<IDLDouble>();
   }
 
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kSessionCountPromptTokens);
 
-  ScriptPromiseResolver<IDLUnsignedLongLong>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUnsignedLongLong>>(
-          script_state);
+  ScriptPromiseResolver<IDLDouble>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
   auto promise = resolver->Promise();
 
   if (!language_model_remote_) {
@@ -586,8 +591,8 @@ ScriptPromise<IDLUnsignedLongLong> AILanguageModel::countPromptTokens(
     return promise;
   }
 
-  MakeGarbageCollected<CountPromptTokensClient>(script_state, this, resolver,
-                                                signal, input);
+  MakeGarbageCollected<MeasureInputUsageClient>(script_state, this, resolver,
+                                                signal, input->GetAsString());
 
   return promise;
 }
@@ -613,7 +618,7 @@ void AILanguageModel::destroy(ScriptState* script_state,
 void AILanguageModel::OnResponseComplete(
     mojom::blink::ModelExecutionContextInfoPtr context_info) {
   if (context_info) {
-    current_tokens_ = context_info->current_tokens;
+    input_usage_ = context_info->current_tokens;
   }
 }
 
@@ -624,10 +629,6 @@ AILanguageModel::GetAILanguageModelRemote() {
 
 scoped_refptr<base::SequencedTaskRunner> AILanguageModel::GetTaskRunner() {
   return task_runner_;
-}
-
-uint64_t AILanguageModel::GetCurrentTokens() {
-  return current_tokens_;
 }
 
 void AILanguageModel::OnContextOverflow() {

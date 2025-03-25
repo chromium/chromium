@@ -27,16 +27,15 @@ interface AILanguageDetectorFactory
     method create
 interface AILanguageModel : EventTarget
     attribute @@toStringTag
-    getter maxTokens
+    getter inputQuota
+    getter inputUsage
     getter oncontextoverflow
     getter temperature
-    getter tokensLeft
-    getter tokensSoFar
     getter topK
     method clone
     method constructor
-    method countPromptTokens
     method destroy
+    method measureInputUsage
     method prompt
     method promptStreaming
     setter oncontextoverflow

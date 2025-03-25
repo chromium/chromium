@@ -7,10 +7,10 @@ promise_test(async t => {
 
   // Start a new session to get the max tokens.
   const session = await ai.languageModel.create();
-  const maxTokens = session.maxTokens;
+  const inputQuota = session.inputQuota;
   // Keep doubling the system prompt until it exceeds the maxTokens.
   let systemPrompt = "hello ";
-  while (await session.countPromptTokens(systemPrompt) <= maxTokens) {
+  while (await session.measureInputUsage(systemPrompt) <= inputQuota) {
     systemPrompt += systemPrompt;
   }
 

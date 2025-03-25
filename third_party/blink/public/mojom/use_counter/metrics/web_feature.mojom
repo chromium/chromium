@@ -4526,7 +4526,7 @@ enum WebFeature {
   kV8AILanguageModel_Destroy_Method = 5142,
   kV8AILanguageModel_Prompt_Method = 5143,
   kV8AILanguageModel_PromptStreaming_Method = 5144,
-  kV8AILanguageModel_CountPromptTokens_Method = 5145,
+  kOBSOLETE_V8AILanguageModel_CountPromptTokens_Method = 5145,
   kV8AILanguageModelCapabilities_LanguageAvailable_Method = 5146,
   kV8AILanguageModelCapabilities_Available_AttributeGetter = 5147,
   kV8AILanguageModelCapabilities_DefaultTopK_AttributeGetter = 5148,
@@ -4534,9 +4534,9 @@ enum WebFeature {
   kV8AILanguageModelCapabilities_DefaultTemperature_AttributeGetter = 5150,
   kV8AILanguageModelFactory_Capabilities_Method = 5151,
   kV8AILanguageModelFactory_Create_Method = 5152,
-  kV8AILanguageModel_MaxTokens_AttributeGetter = 5153,
-  kV8AILanguageModel_TokensSoFar_AttributeGetter = 5154,
-  kV8AILanguageModel_TokensLeft_AttributeGetter = 5155,
+  kOBSOLETE_V8AILanguageModel_MaxTokens_AttributeGetter = 5153,
+  kOBSOLETE_V8AILanguageModel_TokensSoFar_AttributeGetter = 5154,
+  kOBSOLETE_V8AILanguageModel_TokensLeft_AttributeGetter = 5155,
   kSvgContextFillOrStroke = 5156,
   kARIAActionsAttribute = 5157,
   kOBSOLETE_ResolveToConfigValueCoercedToTrue = 5158,
@@ -4769,6 +4769,9 @@ enum WebFeature {
   kAriaNotify = 5383,
   kLanguageDetector_MeasureInputUsage = 5384,
   kLanguageDetector_InputQuota = 5385,
+  kV8AILanguageModel_InputUsage_AttributeGetter = 5386,
+  kV8AILanguageModel_InputQuota_AttributeGetter = 5387,
+  kV8AILanguageModel_MeasureInputUsage_Method = 5388,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

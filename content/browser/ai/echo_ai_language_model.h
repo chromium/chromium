@@ -31,9 +31,9 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           client) override;
   void Destroy() override;
-  void CountPromptTokens(
+  void MeasureInputUsage(
       const std::string& input,
-      mojo::PendingRemote<blink::mojom::AILanguageModelCountPromptTokensClient>
+      mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
           client) override;
 
  private:

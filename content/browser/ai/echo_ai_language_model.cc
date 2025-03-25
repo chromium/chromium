@@ -120,11 +120,11 @@ void EchoAILanguageModel::Destroy() {
   responder_set_.Clear();
 }
 
-void EchoAILanguageModel::CountPromptTokens(
+void EchoAILanguageModel::MeasureInputUsage(
     const std::string& input,
-    mojo::PendingRemote<blink::mojom::AILanguageModelCountPromptTokensClient>
+    mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
         client) {
-  mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>(
+  mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient>(
       std::move(client))
       ->OnResult(input.size());
 }
