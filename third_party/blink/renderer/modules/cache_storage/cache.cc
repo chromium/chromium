@@ -461,7 +461,7 @@ class Cache::BarrierCallbackForPutComplete final
                                       method_name_ + " was aborted");
   }
 
-  virtual void Trace(Visitor* visitor) const {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(cache_);
     visitor->Trace(resolver_);
   }

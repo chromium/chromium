@@ -741,7 +741,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     ax::mojom::blink::Action event_from_action;
     BlinkAXEventIntentsSet event_intents;
 
-    virtual ~TreeUpdateParams() = default;
+    ~TreeUpdateParams() = default;
     void Trace(Visitor* visitor) const { visitor->Trace(node); }
     std::string ToString();
   };

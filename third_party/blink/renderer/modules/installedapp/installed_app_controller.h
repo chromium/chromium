@@ -29,7 +29,7 @@ class MODULES_EXPORT InstalledAppController final
   InstalledAppController(const InstalledAppController&) = delete;
   InstalledAppController& operator=(const InstalledAppController&) = delete;
 
-  virtual ~InstalledAppController();
+  ~InstalledAppController();
 
   // Gets a list of related apps from the current page's manifest that belong
   // to the current underlying platform, and are installed.

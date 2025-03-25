@@ -42,7 +42,7 @@ class BackgroundFetchBridge final
   BackgroundFetchBridge(const BackgroundFetchBridge&) = delete;
   BackgroundFetchBridge& operator=(const BackgroundFetchBridge&) = delete;
 
-  virtual ~BackgroundFetchBridge();
+  ~BackgroundFetchBridge();
   void Trace(Visitor* visitor) const override;
 
   // Creates a new Background Fetch registration identified by |developer_id|

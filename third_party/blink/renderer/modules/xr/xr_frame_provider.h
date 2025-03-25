@@ -83,7 +83,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   bool DrawingIntoSharedBuffer() const;
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
 
  private:
   enum class ScheduledFrameType {

@@ -31,7 +31,7 @@ class MODULES_EXPORT MediaStreamSet final
                  const MediaStreamDescriptorVector& stream_descriptors,
                  UserMediaRequestType request_type,
                  MediaStreamSetInitializedCallback callback);
-  virtual ~MediaStreamSet() = default;
+  ~MediaStreamSet() = default;
 
   void Trace(Visitor*) const override;
 
