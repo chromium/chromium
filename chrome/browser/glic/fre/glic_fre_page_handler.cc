@@ -40,6 +40,12 @@ void GlicFrePageHandler::DismissFre() {
   GetGlicService()->window_controller().fre_controller()->OnNoThanksClicked();
 }
 
+void GlicFrePageHandler::PrepareForClient(
+    base::OnceCallback<void(bool)> callback) {
+  GetGlicService()->window_controller().fre_controller()->PrepareForClient(
+      std::move(callback));
+}
+
 void GlicFrePageHandler::ValidateAndOpenLinkInNewTab(const GURL& url) {
   if (url.DomainIs("google.com")) {
     GetGlicService()->CreateTab(url, /*open_in_background=*/true, std::nullopt,

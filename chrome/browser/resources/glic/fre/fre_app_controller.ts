@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {FrePageHandlerFactory, FrePageHandlerRemote, FreWebUiState} from './glic_fre.mojom-webui.js';
 
@@ -10,6 +12,16 @@ interface StateDescriptor {
   onEnter?: () => void;
   onExit?: () => void;
 }
+
+interface PageElementTypes {
+  webviewContainer: HTMLDivElement;
+}
+
+const $: PageElementTypes = new Proxy({}, {
+  get(_target: any, prop: string) {
+    return getRequiredElement(prop);
+  },
+});
 
 type PanelId = 'guestPanel'|'offlinePanel'|'errorPanel';
 
@@ -26,15 +38,22 @@ export class FreAppController {
 
   // Created from constructor and never null since the destructor replaces it
   // with an empty <webview>.
-  webview: chrome.webviewTag.WebView;
+  private webview: chrome.webviewTag.WebView;
+  private webviewEventTracker = new EventTracker();
 
   constructor() {
     this.onLoadCommit = this.onLoadCommit.bind(this);
-    this.contentLoaded = this.contentLoaded.bind(this);
+    this.onContentLoad = this.onContentLoad.bind(this);
     this.onNewWindow = this.onNewWindow.bind(this);
 
-    this.webview = this.createWebView();
+    this.webview = this.createWebview();
 
+    window.addEventListener('online', () => {
+      this.online();
+    });
+    window.addEventListener('offline', () => {
+      this.offline();
+    });
     window.addEventListener('load', () => {
       // Allow WebUI close button to close the window. This close button is
       // present on all UI states except for `FreWebUiState.kReady`.
@@ -43,17 +62,11 @@ export class FreAppController {
       });
     });
 
-    this.setState(FreWebUiState.kBeginLoading);
-  }
-
-  createWebView(): chrome.webviewTag.WebView {
-    const webview =
-        document.getElementById('fre-guest-frame') as chrome.webviewTag.WebView;
-    webview.addEventListener('loadcommit', this.onLoadCommit);
-    webview.addEventListener('contentload', this.contentLoaded);
-    webview.addEventListener('newwindow', this.onNewWindow);
-
-    return webview;
+    if (navigator.onLine) {
+      this.setState(FreWebUiState.kBeginLoading);
+    } else {
+      this.setState(FreWebUiState.kOffline);
+    }
   }
 
   onLoadCommit(e: any) {
@@ -74,7 +87,7 @@ export class FreAppController {
     }
   }
 
-  contentLoaded() {
+  onContentLoad() {
     this.setState(FreWebUiState.kReady);
   }
 
@@ -84,6 +97,25 @@ export class FreAppController {
       url: e.targetUrl,
     });
     e.stopPropagation();
+  }
+
+  online(): void {
+    if (this.state !== FreWebUiState.kOffline) {
+      return;
+    }
+    this.setState(FreWebUiState.kBeginLoading);
+  }
+
+  offline(): void {
+    const allowedStates = [
+      FreWebUiState.kBeginLoading,
+      FreWebUiState.kShowLoading,
+      FreWebUiState.kFinishLoading,
+      FreWebUiState.kReady,
+    ];
+    if (allowedStates.includes(this.state)) {
+      this.setState(FreWebUiState.kOffline);
+    }
   }
 
   private showPanel(id: PanelId): void {
@@ -157,12 +189,38 @@ export class FreAppController {
     }
   }
 
-  beginLoading(): void {
-    // TODO crbug.com/393417356. Check cookies and load the web client after
-    // cookie sync. Set up the timer to transition to show loading after a
-    // determined prehold loading time.
+  async beginLoading(): Promise<void> {
+    // Attempt to re-sync cookies before continuing.
+    const {success} = await freHandler.prepareForClient();
+    if (!success) {
+      this.setState(FreWebUiState.kError);
+      return;
+    }
+
+    // Load the web client now that cookie sync is complete.
+    this.destroyWebview();
+
+    // TODO(crbug.com/393417356): Set up a timer to transition to showLoading
+    // state after a determined prehold loading time.
     this.webview.src = loadTimeData.getString('glicFreURL');
     this.setState(FreWebUiState.kShowLoading);
+  }
+
+  private createWebview(): chrome.webviewTag.WebView {
+    const webview =
+        document.createElement('webview') as chrome.webviewTag.WebView;
+    webview.id = 'freGuestFrame';
+    webview.setAttribute('partition', 'glicfrepart');
+    $.webviewContainer.appendChild(webview);
+
+    this.webviewEventTracker.add(
+        webview, 'loadcommit', this.onLoadCommit.bind(this));
+    this.webviewEventTracker.add(
+        webview, 'contentload', this.onContentLoad.bind(this));
+    this.webviewEventTracker.add(
+        webview, 'newwindow', this.onNewWindow.bind(this));
+
+    return webview;
   }
 
   showLoading(): void {
@@ -184,7 +242,7 @@ export class FreAppController {
   finishLoading(): void {
     // The web client is not yet ready, so wait for the remainder of
     // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
-    // by `contentLoaded`.
+    // by `onContentLoad`.
     this.loadingTimer = setTimeout(() => {
       this.setState(FreWebUiState.kError);
     }, kMaxWaitTimeMs);
@@ -193,10 +251,10 @@ export class FreAppController {
   // Destroy the current webview and create a new one. This is necessary because
   // webview does not support unloading content by setting src=""
   destroyWebview(): void {
-    this.webview.removeEventListener('loadcommit', this.onLoadCommit);
-    this.webview.removeEventListener('contentload', this.contentLoaded);
-    this.webview.removeEventListener('newwindow', this.onNewWindow);
+    this.webviewEventTracker.removeAll();
 
-    this.webview = this.createWebView();
+    $.webviewContainer.removeChild(this.webview);
+
+    this.webview = this.createWebview();
   }
 }

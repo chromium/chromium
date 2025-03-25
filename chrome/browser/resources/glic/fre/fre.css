@@ -77,6 +77,11 @@ p {
   border: 0;
 }
 
+#webviewContainer {
+  width: 100%;
+  height: 100%;
+}
+
 .tonal-button {
   margin-top: 8px;
   background-color: var(--cr-fallback-color-tonal-container);
