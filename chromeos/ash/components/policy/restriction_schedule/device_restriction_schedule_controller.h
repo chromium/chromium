@@ -6,34 +6,26 @@
 #define CHROMEOS_ASH_COMPONENTS_POLICY_RESTRICTION_SCHEDULE_DEVICE_RESTRICTION_SCHEDULE_CONTROLLER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
-#include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ref.h"
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observation.h"
-#include "base/time/clock.h"
-#include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "base/timer/wall_clock_timer.h"
-#include "base/values.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
-#include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace policy {
+namespace base {
+class Clock;
+class WallClockTimer;
+}  // namespace base
 
-class WeeklyTimeIntervalChecked;
+namespace policy {
 
 // This class observes the pref `kDeviceRestrictionSchedule`, and handles
 // restricting the device access when the schedule is active.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
-    DeviceRestrictionScheduleController : public ash::LoginState::Observer {
+    DeviceRestrictionScheduleController {
  public:
   class Delegate {
    public:
@@ -59,65 +51,24 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
     virtual void OnRestrictionScheduleMessageChanged() = 0;
   };
 
-  DeviceRestrictionScheduleController(Delegate& delegate,
-                                      PrefService& local_state);
-  ~DeviceRestrictionScheduleController() override;
-
-  DeviceRestrictionScheduleController(
-      const DeviceRestrictionScheduleController&) = delete;
-  DeviceRestrictionScheduleController& operator=(
-      const DeviceRestrictionScheduleController&) = delete;
+  static std::unique_ptr<DeviceRestrictionScheduleController> Create(
+      Delegate& delegate,
+      PrefService& local_state);
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  bool RestrictionScheduleEnabled() const;
-  std::u16string RestrictionScheduleEndDay() const;
-  std::u16string RestrictionScheduleEndTime() const;
+  virtual ~DeviceRestrictionScheduleController() = default;
 
-  void SetClockForTesting(const base::Clock& clock);
-  void SetMessageUpdateTimerForTesting(
-      std::unique_ptr<base::WallClockTimer> timer);
+  virtual bool RestrictionScheduleEnabled() const = 0;
+  virtual std::u16string RestrictionScheduleEndDay() const = 0;
+  virtual std::u16string RestrictionScheduleEndTime() const = 0;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  virtual void SetClockForTesting(const base::Clock& clock) = 0;
+  virtual void SetMessageUpdateTimerForTesting(
+      std::unique_ptr<base::WallClockTimer> timer) = 0;
 
- private:
-  enum class State { kRegular, kRestricted };
-
-  // ash::LoginState::Observer:
-  void LoggedInStateChanged() override;
-
-  void OnPolicyUpdated();
-  void Run();
-
-  void MaybeShowUpcomingLogoutNotification(base::Time logout_time);
-  void MaybeShowPostLogoutNotification();
-  void RestrictionScheduleMessageChanged();
-
-  std::optional<base::Time> GetNextRunTime(base::Time current_time) const;
-  State GetCurrentState(base::Time current_time) const;
-  bool UpdateIntervalsIfChanged(const base::Value::List& policy_value);
-
-  void StartNotificationTimer(base::Time current_time, base::Time logout_time);
-  void StartRunTimer(base::Time next_run_time);
-  void StartMessageUpdateTimer(base::Time current_time);
-
-  // `delegate_` has to outlive `DeviceRestrictionScheduleController`.
-  const raw_ref<Delegate> delegate_;
-  PrefChangeRegistrar registrar_;
-  base::ObserverList<Observer> observers_;
-  raw_ref<const base::Clock> clock_{*base::DefaultClock::GetInstance()};
-  base::ScopedObservation<ash::LoginState, ash::LoginState::Observer>
-      login_state_observation_{this};
-
-  std::vector<WeeklyTimeIntervalChecked> intervals_;
-  State state_ = State::kRegular;
-  std::optional<base::Time> next_run_time_;
-
-  base::WallClockTimer run_timer_;
-  base::WallClockTimer notification_timer_;
-  std::unique_ptr<base::WallClockTimer> message_update_timer_ =
-      std::make_unique<base::WallClockTimer>();
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 }  // namespace policy
