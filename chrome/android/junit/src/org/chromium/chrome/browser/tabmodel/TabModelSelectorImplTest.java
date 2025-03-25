@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -305,7 +304,7 @@ public class TabModelSelectorImplTest {
                 .addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         tab.updateAttachment(null, null);
 
-        Assert.assertEquals(
+        assertEquals(
                 "detaching a tab should result in it being removed from the model",
                 0,
                 mTabModelSelector.getModel(false).getCount());
@@ -323,7 +322,7 @@ public class TabModelSelectorImplTest {
         doReturn(new ObservableSupplierImpl<>(false)).when(window).getOcclusionSupplier();
         tab.updateAttachment(window, mTabDelegateFactory);
 
-        Assert.assertEquals(
+        assertEquals(
                 "moving a tab between windows shouldn't remove it from the model",
                 1,
                 mTabModelSelector.getModel(false).getCount());
@@ -339,7 +338,7 @@ public class TabModelSelectorImplTest {
         mTabModelSelector.enterReparentingMode();
         tab.updateAttachment(null, null);
 
-        Assert.assertEquals(
+        assertEquals(
                 "tab shouldn't be removed while reparenting is in progress",
                 1,
                 mTabModelSelector.getModel(false).getCount());
@@ -494,6 +493,21 @@ public class TabModelSelectorImplTest {
 
         // Should be called exactly once.
         verify(regularModel).broadcastSessionRestoreComplete();
+    }
+
+    @Test
+    public void testTabObserverRemoved() {
+        MockTab normalTab = new MockTab(1, mProfile);
+        mTabModelSelector
+                .getModel(false)
+                .addTab(
+                        normalTab,
+                        0,
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND);
+        int observerCount = normalTab.getObservers().size();
+        mTabModelSelector.destroy();
+        assertEquals(observerCount - 1, normalTab.getObservers().size());
     }
 
     private boolean currentTabModelSupplierHasObservers() {
