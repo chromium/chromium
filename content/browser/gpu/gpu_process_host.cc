@@ -1418,7 +1418,7 @@ void GpuProcessHost::RecordProcessCrash() {
   if (recent_crash_count_ >= GetFallbackCrashLimit() && !disable_crash_limit) {
     base::UmaHistogramEnumeration(kFallbackEventCause,
                                   GPUFallbackEventCauseType::kCrashLimit);
-    GpuDataManagerImpl::GetInstance()->FallBackToNextGpuMode();
+    GpuDataManagerImpl::GetInstance()->FallBackToNextGpuModeDueToCrash();
   }
 }
 
