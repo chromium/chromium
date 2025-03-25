@@ -9,6 +9,7 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/pref_types.h"
+#include "ui/base/clipboard/file_info.h"
 
 class Profile;
 
@@ -54,12 +55,12 @@ class DeveloperPrivateAPI : public BrowserContextKeyedAPI,
   base::FilePath GetUnpackedPath(content::WebContents* web_contents,
                                  const UnpackedRetryId& id) const;
 
-  // Sets the dragged path for the given |web_contents|.
-  void SetDraggedPath(content::WebContents* web_contents,
-                      const base::FilePath& path);
+  // Sets the dragged file for the given |web_contents|.
+  void SetDraggedFile(content::WebContents* web_contents,
+                      const ui::FileInfo& file);
 
-  // Returns the dragged path for the given |web_contents|, if one exists.
-  base::FilePath GetDraggedPath(content::WebContents* web_contents) const;
+  // Returns the dragged file for the given |web_contents|, if one exists.
+  ui::FileInfo GetDraggedFile(content::WebContents* web_contents) const;
 
   // KeyedService implementation
   void Shutdown() override;
@@ -100,8 +101,8 @@ class DeveloperPrivateAPI : public BrowserContextKeyedAPI,
     // WebContents B.
     IdToPathMap allowed_unpacked_paths;
 
-    // The last dragged path for the WebContents.
-    base::FilePath dragged_path;
+    // The last dragged file for the WebContents.
+    ui::FileInfo dragged_file;
   };
 
   friend class BrowserContextKeyedAPIFactory<DeveloperPrivateAPI>;

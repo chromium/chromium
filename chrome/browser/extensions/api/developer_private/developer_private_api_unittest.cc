@@ -1333,8 +1333,9 @@ TEST_F(DeveloperPrivateApiUnitTest,
            "manifest_version": 2
          })");
   base::FilePath path = dir.UnpackedPath();
+  ui::FileInfo file(path, path.BaseName());
   api::DeveloperPrivateNotifyDragInstallInProgressFunction::
-      SetDropPathForTesting(&path);
+      SetDropFileForTesting(&file);
 
   {
     auto function = base::MakeRefCounted<
@@ -1371,8 +1372,9 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // was not a directory. In theory, this shouldn't happen (the JS validates the
   // file), but it could in the case of a compromised renderer, JS bug, etc.
   base::FilePath invalid_path = path.AppendASCII("manifest.json");
+  ui::FileInfo invalid_file(invalid_path, invalid_path.BaseName());
   api::DeveloperPrivateNotifyDragInstallInProgressFunction::
-      SetDropPathForTesting(&invalid_path);
+      SetDropFileForTesting(&invalid_file);
   {
     auto function = base::MakeRefCounted<
         api::DeveloperPrivateNotifyDragInstallInProgressFunction>();
@@ -1403,7 +1405,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   // Cleanup.
   api::DeveloperPrivateNotifyDragInstallInProgressFunction::
-      SetDropPathForTesting(nullptr);
+      SetDropFileForTesting(nullptr);
 }
 
 // Test developerPrivate.requestFileSource.
@@ -1733,8 +1735,8 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileCrx) {
 
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-  DeveloperPrivateAPI::Get(profile())->SetDraggedPath(web_contents.get(),
-                                                      crx_path);
+  DeveloperPrivateAPI::Get(profile())->SetDraggedFile(
+      web_contents.get(), ui::FileInfo(crx_path, crx_path.BaseName()));
 
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateInstallDroppedFileFunction>();
@@ -1758,8 +1760,8 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileUserScript) {
 
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-  DeveloperPrivateAPI::Get(profile())->SetDraggedPath(web_contents.get(),
-                                                      script_path);
+  DeveloperPrivateAPI::Get(profile())->SetDraggedFile(
+      web_contents.get(), ui::FileInfo(script_path, script_path.BaseName()));
 
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateInstallDroppedFileFunction>();
@@ -2224,8 +2226,8 @@ TEST_F(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
 
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-  DeveloperPrivateAPI::Get(profile())->SetDraggedPath(web_contents.get(),
-                                                      zip_path);
+  DeveloperPrivateAPI::Get(profile())->SetDraggedFile(
+      web_contents.get(), ui::FileInfo(zip_path, zip_path.BaseName()));
 
   auto function =
       base::MakeRefCounted<api::DeveloperPrivateInstallDroppedFileFunction>();

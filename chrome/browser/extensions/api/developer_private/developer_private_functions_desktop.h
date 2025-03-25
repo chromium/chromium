@@ -220,7 +220,7 @@ class DeveloperPrivateNotifyDragInstallInProgressFunction
 
   ResponseAction Run() override;
 
-  static void SetDropPathForTesting(base::FilePath* file_path);
+  static void SetDropFileForTesting(ui::FileInfo* file_info);
 
  private:
   ~DeveloperPrivateNotifyDragInstallInProgressFunction() override;
