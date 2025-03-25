@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/trees/layer_tree_host.h"
-
 #include "base/time/time.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/property_tree_test_utils.h"
+#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 
 namespace cc {
@@ -63,12 +63,10 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOrigin
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
-                                   DrawResult draw_result) override {
-    EXPECT_EQ(3u, frame_data->render_passes.size());
-    viz::CompositorRenderPass* root_pass =
-        frame_data->render_passes.back().get();
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    EXPECT_EQ(3u, frame.render_pass_list.size());
+    viz::CompositorRenderPass* root_pass = frame.render_pass_list.back().get();
     EXPECT_EQ(2u, root_pass->quad_list.size());
 
     // There's a solid color quad under everything.
@@ -87,16 +85,19 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOrigin
 
     // We use kDstIn blend mode instead of the mask feature of RenderPass.
     EXPECT_EQ(gfx::RectF(), render_pass_quad->mask_uv_rect);
-    viz::CompositorRenderPass* mask_pass = frame_data->render_passes[1].get();
+    viz::CompositorRenderPass* mask_pass = frame.render_pass_list[1].get();
     EXPECT_EQ(SkBlendMode::kDstIn,
               mask_pass->quad_list.front()->shared_quad_state->blend_mode);
     EndTest();
-    return draw_result;
+    ++display_count_;
   }
+
+  void AfterTest() override { EXPECT_EQ(1, display_count_); }
 
   int mask_layer_id_;
   FakeContentLayerClient client_;
   FakeContentLayerClient mask_client_;
+  int display_count_ = 0;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
@@ -141,11 +142,10 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOriginWithLayerList
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
-                                   DrawResult draw_result) override {
-    EXPECT_EQ(1u, frame_data->render_passes.size());
-    viz::CompositorRenderPass* pass = frame_data->render_passes.back().get();
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    EXPECT_EQ(1u, frame.render_pass_list.size());
+    viz::CompositorRenderPass* pass = frame.render_pass_list.back().get();
     EXPECT_EQ(3u, pass->quad_list.size());
 
     // There's a solid color quad under everything.
@@ -164,11 +164,14 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOriginWithLayerList
     // We use kDstIn blend mode for mask.
     EXPECT_EQ(SkBlendMode::kDstIn, mask_quad->shared_quad_state->blend_mode);
     EndTest();
-    return draw_result;
+    ++display_count_;
   }
+
+  void AfterTest() override { EXPECT_EQ(1, display_count_); }
 
   int mask_layer_id_;
   FakeContentLayerClient client_;
+  int display_count_ = 0;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
@@ -228,12 +231,10 @@ class LayerTreeTestMaskLayerForSurfaceWithClippedLayer : public LayerTreeTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
-                                   DrawResult draw_result) override {
-    EXPECT_EQ(3u, frame_data->render_passes.size());
-    viz::CompositorRenderPass* root_pass =
-        frame_data->render_passes.back().get();
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    EXPECT_EQ(3u, frame.render_pass_list.size());
+    viz::CompositorRenderPass* root_pass = frame.render_pass_list.back().get();
     EXPECT_EQ(2u, root_pass->quad_list.size());
 
     // There's a solid color quad under everything.
@@ -254,16 +255,19 @@ class LayerTreeTestMaskLayerForSurfaceWithClippedLayer : public LayerTreeTest {
 
     // We use kDstIn blend mode instead of the mask feature of RenderPass.
     EXPECT_EQ(gfx::RectF(), render_pass_quad->mask_uv_rect);
-    viz::CompositorRenderPass* mask_pass = frame_data->render_passes[1].get();
+    viz::CompositorRenderPass* mask_pass = frame.render_pass_list[1].get();
     EXPECT_EQ(SkBlendMode::kDstIn,
               mask_pass->quad_list.front()->shared_quad_state->blend_mode);
     EndTest();
-    return draw_result;
+    ++display_count_;
   }
+
+  void AfterTest() override { EXPECT_EQ(1, display_count_); }
 
   int mask_layer_id_;
   FakeContentLayerClient client_;
   FakeContentLayerClient mask_client_;
+  int display_count_ = 0;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
@@ -328,12 +332,10 @@ class LayerTreeTestMaskLayerForSurfaceWithDifferentScale
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
-                                   DrawResult draw_result) override {
-    EXPECT_EQ(3u, frame_data->render_passes.size());
-    viz::CompositorRenderPass* root_pass =
-        frame_data->render_passes.back().get();
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    EXPECT_EQ(3u, frame.render_pass_list.size());
+    viz::CompositorRenderPass* root_pass = frame.render_pass_list.back().get();
     EXPECT_EQ(2u, root_pass->quad_list.size());
 
     // There's a solid color quad under everything.
@@ -360,16 +362,19 @@ class LayerTreeTestMaskLayerForSurfaceWithDifferentScale
 
     // We use kDstIn blend mode instead of the mask feature of RenderPass.
     EXPECT_EQ(gfx::RectF(), render_pass_quad->mask_uv_rect);
-    viz::CompositorRenderPass* mask_pass = frame_data->render_passes[1].get();
+    viz::CompositorRenderPass* mask_pass = frame.render_pass_list[1].get();
     EXPECT_EQ(SkBlendMode::kDstIn,
               mask_pass->quad_list.front()->shared_quad_state->blend_mode);
     EndTest();
-    return draw_result;
+    ++display_count_;
   }
+
+  void AfterTest() override { EXPECT_EQ(1, display_count_); }
 
   int mask_layer_id_;
   FakeContentLayerClient client_;
   FakeContentLayerClient mask_client_;
+  int display_count_ = 0;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(
@@ -418,12 +423,10 @@ class LayerTreeTestMaskLayerWithScaling : public LayerTreeTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
-                                   DrawResult draw_result) override {
-    EXPECT_EQ(3u, frame_data->render_passes.size());
-    viz::CompositorRenderPass* root_pass =
-        frame_data->render_passes.back().get();
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    EXPECT_EQ(3u, frame.render_pass_list.size());
+    viz::CompositorRenderPass* root_pass = frame.render_pass_list.back().get();
     EXPECT_EQ(2u, root_pass->quad_list.size());
 
     // There's a solid color quad under everything.
@@ -441,11 +444,11 @@ class LayerTreeTestMaskLayerWithScaling : public LayerTreeTest {
 
     // We use kDstIn blend mode instead of the mask feature of RenderPass.
     EXPECT_EQ(gfx::RectF(), render_pass_quad->mask_uv_rect);
-    viz::CompositorRenderPass* mask_pass = frame_data->render_passes[1].get();
+    viz::CompositorRenderPass* mask_pass = frame.render_pass_list[1].get();
     EXPECT_EQ(SkBlendMode::kDstIn,
               mask_pass->quad_list.front()->shared_quad_state->blend_mode);
 
-    switch (host_impl->active_tree()->source_frame_number()) {
+    switch (display_count_) {
       case 0:
         // Check that the tree scaling is correctly taken into account for the
         // mask, that should fully map onto the quad.
@@ -460,22 +463,30 @@ class LayerTreeTestMaskLayerWithScaling : public LayerTreeTest {
         EndTest();
         break;
     }
-    return draw_result;
+    ++display_count_;
   }
 
   void DidCommit() override {
-    switch (layer_tree_host()->SourceFrameNumber()) {
-      case 1:
+    switch (commit_count_) {
+      case 0:
         gfx::Size double_root_size(200, 200);
         GenerateNewLocalSurfaceId();
         layer_tree_host()->SetViewportRectAndScale(
             gfx::Rect(double_root_size), 2.f, GetCurrentLocalSurfaceId());
         break;
     }
+    ++commit_count_;
+  }
+
+  void AfterTest() override {
+    EXPECT_EQ(2, commit_count_);
+    EXPECT_EQ(2, display_count_);
   }
 
   FakeContentLayerClient client_;
   FakeContentLayerClient mask_client_;
+  int commit_count_ = 0;
+  int display_count_ = 0;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeTestMaskLayerWithScaling);
@@ -514,12 +525,10 @@ class LayerTreeTestMaskWithNonExactTextureSize : public LayerTreeTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
-                                   DrawResult draw_result) override {
-    EXPECT_EQ(3u, frame_data->render_passes.size());
-    viz::CompositorRenderPass* root_pass =
-        frame_data->render_passes.back().get();
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    EXPECT_EQ(3u, frame.render_pass_list.size());
+    viz::CompositorRenderPass* root_pass = frame.render_pass_list.back().get();
     EXPECT_EQ(2u, root_pass->quad_list.size());
 
     // There's a solid color quad under everything.
@@ -537,16 +546,19 @@ class LayerTreeTestMaskWithNonExactTextureSize : public LayerTreeTest {
 
     // We use kDstIn blend mode instead of the mask feature of RenderPass.
     EXPECT_EQ(gfx::RectF(), render_pass_quad->mask_uv_rect);
-    viz::CompositorRenderPass* mask_pass = frame_data->render_passes[1].get();
+    viz::CompositorRenderPass* mask_pass = frame.render_pass_list[1].get();
     EXPECT_EQ(SkBlendMode::kDstIn,
               mask_pass->quad_list.front()->shared_quad_state->blend_mode);
     EndTest();
-    return draw_result;
+    ++display_count_;
   }
+
+  void AfterTest() override { EXPECT_EQ(1, display_count_); }
 
   int mask_layer_id_;
   FakeContentLayerClient client_;
   FakeContentLayerClient mask_client_;
+  int display_count_ = 0;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeTestMaskWithNonExactTextureSize);
