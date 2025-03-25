@@ -32,6 +32,7 @@ message FormsClassificationsLoggingData {
   ModelExecutionInfo model_execution_info = 4;
 }
 
+// Next ID: 6
 message AutofillAiTypeRequest {
   // The context of the page that the form is on.
   PageContext page_context = 1;
@@ -46,7 +47,11 @@ message AutofillAiTypeRequest {
 
   // The page content extracted from the page, including form and field names,
   // types, surrounding text, and other relevant information.
-  PageContent page_content = 4;
+  // TODO(crbug.com/405474316): Remove this once the MES config no longer references it.
+  PageContent page_content = 4 [deprecated = true];
+
+  // The annotated page content of the page that the form is on.
+  AnnotatedPageContent annotated_page_content = 5;
 }
 
 message FormMedia {
@@ -55,6 +60,7 @@ message FormMedia {
 }
 
 // Next ID: 4
+// TODO(crbug.com/405474316): Remove this once the MES config no longer references it.
 message PageContent {
   // The form data extracted from the page, including form and field names,
   // types, and other relevant information.
@@ -73,12 +79,14 @@ message AutofillAiTypeResponse {
   repeated FieldTypeResponse field_responses = 1;
 }
 
+// Next ID: 6
 message FieldTypeResponse {
-  // A globally unique identifier for the form field, passed from the client.
-  // Used to match the request field with the corresponding response field.
-  // This value is provided by the client and should remain consistent between
-  // request and response.
-  string field_global_id = 1;
+  // Do not use - use field_index instead.
+  string field_global_id = 1 [deprecated = true];
+
+  // The (zero-based) index of the field among those passed in the request that
+  // this prediction refers to.
+  int32 field_index = 5;
 
   // The predicted type for the field.
   int32 field_type = 2;
