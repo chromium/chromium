@@ -4038,7 +4038,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.AssistContent.IsEnterpriseInfoCached"
-    enum="Boolean" expires_after="2025-05-04">
+    enum="Boolean" expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4048,7 +4048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.AssistContent.IsWorkProfile" enum="Boolean"
-    expires_after="2025-05-04">
+    expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
