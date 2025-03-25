@@ -177,6 +177,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".NearOomReduction"/>
   <variant name=".NotificationBlocked"/>
   <variant name=".OfferNotification"/>
+  <variant name=".OsAdvancedProtectionSettingChangedMessage"/>
   <variant name=".PermissionBlocked"/>
   <variant name=".PermissionUpdate"/>
   <variant name=".PopupBlocked"/>
