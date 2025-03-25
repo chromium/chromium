@@ -1098,11 +1098,12 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 relatedSitesHeader.addPreference(relatedSitesText);
                 for (WebsiteEntry entry : rwsInfo.getMembersGroupedByDomain()) {
                     WebsiteRowPreference preference =
-                            new RwsRowPreference(
+                            new WebsiteRowPreference(
                                     relatedSitesHeader.getContext(),
                                     getSiteSettingsDelegate(),
                                     entry,
-                                    getActivity().getLayoutInflater());
+                                    getActivity().getLayoutInflater(),
+                                    /* showRwsMembershipLabels= */ false);
                     preference.setOnDeleteCallback(
                             () -> {
                                 relatedSitesHeader.removePreference(preference);

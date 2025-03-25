@@ -349,11 +349,12 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                 relatedSitesHeader.addPreference(relatedSitesText);
                 for (WebsiteEntry entry : rwsInfo.getMembersGroupedByDomain()) {
                     WebsiteRowPreference preference =
-                            new RwsRowPreference(
+                            new WebsiteRowPreference(
                                     relatedSitesHeader.getContext(),
                                     getSiteSettingsDelegate(),
                                     entry,
-                                    getActivity().getLayoutInflater());
+                                    getActivity().getLayoutInflater(),
+                                    /* showRwsMembershipLabels= */ false);
                     // Remove preference upon single site deletion
                     preference.setOnDeleteCallback(
                             () -> {
