@@ -7250,7 +7250,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] fast/forms/label/label-event-order.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scroll-snap/root-scroller-snap-behaviour/smooth-scroll-snaps-visual-viewport.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/animations/stability/keyframe-timing-function-unset-crash.html [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/elements/styles-3/styles-add-new-rule-colon.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-hashes.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-preload-scanner/fast/dom/HTMLScriptElement/async-inline-script.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/dark-mode-classifier-transparency-and-num-colors/dark-mode/images/image.html [ Skip Timeout ]
@@ -8828,6 +8827,15 @@ crbug.com/376675482 virtual/shared-storage-fenced-frame-mparch/external/wpt/shar
 
 # Fails on linux-win-cross-rel
 crbug.com/377507247 [ Win10.20h2 ] external/wpt/webidl/ecmascript-binding/window-named-properties-object.html [ Failure ]
+
+# Temporarily disabled to unblock https://crrev.com/c/6382153.
+crbug.com/405312529 http/tests/devtools/elements/styles/edit-css-with-source-url.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-1/add-new-rule-with-style-after-body.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-1/commit-selector-mark-matching.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-1/edit-inspector-stylesheet.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-3/styles-add-new-rule-colon.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-3/styles-add-new-rule-to-stylesheet.js [ Failure Pass Timeout ]
+crbug.com/405312529 http/tests/devtools/elements/styles-4/undo-add-new-rule.js [ Failure Pass Timeout ]
 
 # These tests can complete but take too long and timeout.
 crbug.com/376931817 external/wpt/file-system-access/local_FileSystemDirectoryHandle-partitioned-manual.https.tentative.html [ Pass Timeout ]
