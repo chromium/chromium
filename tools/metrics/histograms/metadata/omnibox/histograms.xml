@@ -157,6 +157,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <variant name="ZeroSuggest"/>
 </variants>
 
+<variants name="OmniboxSummarizedResultType">
+  <variant name="OTHER" summary="other result type (neither Search nor URL)"/>
+  <variant name="SEARCH" summary="search result type"/>
+  <variant name="URL" summary="URL result type"/>
+</variants>
+
 <variants name="OmniboxZeroPrefixState">
   <variant name="TypedSuggest" summary="typed suggest"/>
   <variant name="ZeroSuggest" summary="zero-prefix suggest"/>
@@ -1111,6 +1117,148 @@ Keep consistent with active providers. Doesn't need to include every provider in
     To know how common this last condition is, compare the total count of this
     histogram to the total number of omnibox events.
   </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.FocusToOpenTimeAnyPopupState3.ByPageContext.{OmniboxPageContext}"
+    units="ms" expires_after="2025-06-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused on the omnibox and opened an
+    omnibox match (which could be what they typed or a suggestion). Sliced by
+    page context. This is recorded regardless of whether the omnibox dropdown
+    (a.k.a. popup) is open. It is not recorded if a match is opened without
+    triggering a focus event, e.g., when a user drags a URL to the omnibox to
+    navigate.
+
+    To know how common this last condition is, compare the total count of this
+    histogram to the total number of omnibox events.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram
+    name="Omnibox.FocusToOpenTimeAnyPopupState3.BySummarizedResultType.{OmniboxSummarizedResultType}"
+    units="ms" expires_after="2025-06-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused on the omnibox and opened an
+    omnibox match (which could be what they typed or a suggestion). Sliced by
+    summarized result type (SEARCH, URL, OTHER). This is recorded regardless of
+    whether the omnibox dropdown (a.k.a. popup) is open. It is not recorded if a
+    match is opened without triggering a focus event, e.g., when a user drags a
+    URL to the omnibox to navigate.
+
+    To know how common this last condition is, compare the total count of this
+    histogram to the total number of omnibox events.
+  </summary>
+  <token key="OmniboxSummarizedResultType"
+      variants="OmniboxSummarizedResultType"/>
+</histogram>
+
+<histogram
+    name="Omnibox.FocusToOpenTimeAnyPopupState3.BySummarizedResultType.{OmniboxSummarizedResultType}.ByPageContext.{OmniboxPageContext}"
+    units="ms" expires_after="2025-06-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused on the omnibox and opened an
+    omnibox match (which could be what they typed or a suggestion). Sliced by
+    summarized result type (SEARCH, URL, OTHER) and page context. This is
+    recorded regardless of whether the omnibox dropdown (a.k.a. popup) is open.
+    It is not recorded if a match is opened without triggering a focus event,
+    e.g., when a user drags a URL to the omnibox to navigate.
+
+    To know how common this last condition is, compare the total count of this
+    histogram to the total number of omnibox events.
+  </summary>
+  <token key="OmniboxSummarizedResultType"
+      variants="OmniboxSummarizedResultType"/>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram
+    name="Omnibox.FocusToOpenTimeAnyPopupState3.{OmniboxZeroPrefixState}"
+    units="ms" expires_after="2025-06-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused on the omnibox and opened an
+    omnibox match (which could be what they typed or a suggestion). Sliced by
+    zero-prefix state. This is recorded regardless of whether the omnibox
+    dropdown (a.k.a. popup) is open. It is not recorded if a match is opened
+    without triggering a focus event, e.g., when a user drags a URL to the
+    omnibox to navigate.
+
+    To know how common this last condition is, compare the total count of this
+    histogram to the total number of omnibox events.
+  </summary>
+  <token key="OmniboxZeroPrefixState" variants="OmniboxZeroPrefixState"/>
+</histogram>
+
+<histogram
+    name="Omnibox.FocusToOpenTimeAnyPopupState3.{OmniboxZeroPrefixState}.ByPageContext.{OmniboxPageContext}"
+    units="ms" expires_after="2025-06-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused on the omnibox and opened an
+    omnibox match (which could be what they typed or a suggestion). Sliced by
+    zero-prefix state and page context. This is recorded regardless of whether
+    the omnibox dropdown (a.k.a. popup) is open. It is not recorded if a match
+    is opened without triggering a focus event, e.g., when a user drags a URL to
+    the omnibox to navigate.
+
+    To know how common this last condition is, compare the total count of this
+    histogram to the total number of omnibox events.
+  </summary>
+  <token key="OmniboxZeroPrefixState" variants="OmniboxZeroPrefixState"/>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram
+    name="Omnibox.FocusToOpenTimeAnyPopupState3.{OmniboxZeroPrefixState}.BySummarizedResultType.{OmniboxSummarizedResultType}"
+    units="ms" expires_after="2025-06-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused on the omnibox and opened an
+    omnibox match (which could be what they typed or a suggestion). Sliced by
+    zero-prefix state and summarized result type (SEARCH, URL, OTHER). This is
+    recorded regardless of whether the omnibox dropdown (a.k.a. popup) is open.
+    It is not recorded if a match is opened without triggering a focus event,
+    e.g., when a user drags a URL to the omnibox to navigate.
+
+    To know how common this last condition is, compare the total count of this
+    histogram to the total number of omnibox events.
+  </summary>
+  <token key="OmniboxZeroPrefixState" variants="OmniboxZeroPrefixState"/>
+  <token key="OmniboxSummarizedResultType"
+      variants="OmniboxSummarizedResultType"/>
+</histogram>
+
+<histogram
+    name="Omnibox.FocusToOpenTimeAnyPopupState3.{OmniboxZeroPrefixState}.BySummarizedResultType.{OmniboxSummarizedResultType}.ByPageContext.{OmniboxPageContext}"
+    units="ms" expires_after="2025-06-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused on the omnibox and opened an
+    omnibox match (which could be what they typed or a suggestion). Sliced by
+    zero-prefix state, summarized result type (SEARCH, URL, OTHER), and page
+    context. This is recorded regardless of whether the omnibox dropdown (a.k.a.
+    popup) is open. It is not recorded if a match is opened without triggering a
+    focus event, e.g., when a user drags a URL to the omnibox to navigate.
+
+    To know how common this last condition is, compare the total count of this
+    histogram to the total number of omnibox events.
+  </summary>
+  <token key="OmniboxZeroPrefixState" variants="OmniboxZeroPrefixState"/>
+  <token key="OmniboxSummarizedResultType"
+      variants="OmniboxSummarizedResultType"/>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
 </histogram>
 
 <histogram name="Omnibox.GroupId.ToggledOff" enum="GroupId"
