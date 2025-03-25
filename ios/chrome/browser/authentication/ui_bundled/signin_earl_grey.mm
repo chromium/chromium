@@ -227,9 +227,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
        expecteds.signinSigninCompletedAccessPointNewAccountExistingAccount},
 
       {@"Signin.SignIn.Started", expecteds.signinSignInStarted},
-      {@"Signin.SyncOptIn.Started", expecteds.signinSyncOptInStarted},
-      {@"Signin.SyncOptIn.OpenedSyncSettings",
-       expecteds.signinSyncOptInOpenedSyncSettings},
   };
   signin_metrics::AccessPoint accessPoint = expecteds.accessPoint;
   for (const std::pair<NSString*, int>& expected : array) {
