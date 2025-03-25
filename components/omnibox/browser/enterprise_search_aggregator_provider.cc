@@ -75,6 +75,8 @@ size_t kMaxUnscopedMatchesShownPerType() {
 //   won't.
 // - Weak matches are input words shorter than 3 chars or that match elsewhere
 //   in the match fields.
+// TODO(manukh): For consistency, rename "Text" to "Word" when finch params are
+//   expired.
 size_t kMinCharForStrongTextMatch() {
   return omnibox_feature_configs::SearchAggregatorProvider::Get()
       .scoring_min_char_for_strong_text_match;
@@ -262,28 +264,28 @@ std::set<std::u16string> GetWords(std::vector<std::string> strings) {
 }
 
 // Whether `word` matches any of `potential_match_words`.
-enum class MatchType {
+enum class WordMatchType {
   NONE = 0,
   PREFIX,  // E.g. 'goo' prefixes 'goo' and 'google'.
   EXACT,   // E.g. 'goo' exactly matches 'goo' but not 'google'.
 };
-MatchType GetWordMatchType(std::u16string word,
-                           std::set<std::u16string> potential_match_words) {
+WordMatchType GetWordMatchType(std::u16string word,
+                               std::set<std::u16string> potential_match_words) {
   auto it = potential_match_words.lower_bound(word);
   if (it == potential_match_words.end()) {
-    return MatchType::NONE;
+    return WordMatchType::NONE;
   }
   if (word == *it) {
-    return MatchType::EXACT;
+    return WordMatchType::EXACT;
   }
   if (base::StartsWith(*it, word, base::CompareCase::SENSITIVE)) {
-    return MatchType::PREFIX;
+    return WordMatchType::PREFIX;
   }
-  return MatchType::NONE;
+  return WordMatchType::NONE;
 }
 
 // Returns 0 if the match should be filtered out.
-int CalculateRelevance(
+EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
     std::set<std::u16string> input_words,
     bool in_keyword_mode,
     AutocompleteMatch::EnterpriseSearchAggregatorType suggestion_type,
@@ -298,51 +300,53 @@ int CalculateRelevance(
 
   // Compute text similarity of the input and match fields. See comment for
   // `kMinCharForStrongTextMatch`.
-  size_t strong_matches = 0;
-  size_t weak_matches = 0;
+  size_t strong_word_matches = 0;
+  size_t weak_word_matches = 0;
   for (const auto& input_word : input_words) {
-    MatchType strong_match_type =
+    WordMatchType strong_match_type =
         GetWordMatchType(input_word, strong_scoring_words);
-    if (strong_match_type == MatchType::EXACT &&
+    if (strong_match_type == WordMatchType::EXACT &&
         suggestion_type ==
             AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
-      strong_matches++;
-    } else if (strong_match_type != MatchType::NONE) {
+      strong_word_matches++;
+    } else if (strong_match_type != WordMatchType::NONE) {
       if (input_word.size() >= kMinCharForStrongTextMatch()) {
-        strong_matches++;
+        strong_word_matches++;
       } else {
-        weak_matches++;
+        weak_word_matches++;
       }
     } else if (GetWordMatchType(input_word, weak_scoring_words) !=
-               MatchType::NONE) {
-      weak_matches++;
+               WordMatchType::NONE) {
+      weak_word_matches++;
     }
   }
 
   // Skip if there aren't at least 1 strong match or 2 weak matches.
-  if (!in_keyword_mode && strong_matches == 0 && weak_matches < 2) {
-    return 0;
+  if (!in_keyword_mode && strong_word_matches == 0 && weak_word_matches < 2) {
+    return {0, strong_word_matches, weak_word_matches,
+            "less than 1 strong or 2 weak word matches"};
   }
 
   // Skip when less than half the input words had matches. The backend
   // prioritizes high recall, whereas most omnibox suggestions require every
   // input word to match.
-  if ((strong_matches + weak_matches) * 2 < input_words.size()) {
-    return 0;
+  if ((strong_word_matches + weak_word_matches) * 2 < input_words.size()) {
+    return {0, strong_word_matches, weak_word_matches,
+            "less than half the input words matched"};
   }
 
   // Compute `relevance` using text similarity. See comments for
   // `kMinWordsForFullTextMatchBoost` & `kScorePerStrongTextMatch`.
   CHECK_LE(kMaxTextScore(), kFullTextMatchScore());
   int relevance = 0;
-  if (strong_matches == input_words.size() &&
-      strong_matches >= kMinWordsForFullTextMatchBoost()) {
+  if (strong_word_matches == input_words.size() &&
+      strong_word_matches >= kMinWordsForFullTextMatchBoost()) {
     relevance = kFullTextMatchScore();
   } else {
-    relevance =
-        std::min(static_cast<int>(strong_matches) * kScorePerStrongTextMatch() +
-                     static_cast<int>(weak_matches) * kScorePerWeakTextMatch(),
-                 kMaxTextScore());
+    relevance = std::min(
+        static_cast<int>(strong_word_matches) * kScorePerStrongTextMatch() +
+            static_cast<int>(weak_word_matches) * kScorePerWeakTextMatch(),
+        kMaxTextScore());
   }
 
   // People suggestions must match every input word. Otherwise, they feel bad;
@@ -351,8 +355,9 @@ int CalculateRelevance(
   // matches within their contents.
   if (suggestion_type ==
       AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
-    if (strong_matches + weak_matches < input_words.size()) {
-      return 0;
+    if (strong_word_matches + weak_word_matches < input_words.size()) {
+      return {0, strong_word_matches, weak_word_matches,
+              "unmatched input word for PEOPLE type"};
     } else {
       // See comment for `kPeopleScoreBoost`.
       relevance += kPeopleScoreBoost();
@@ -363,10 +368,12 @@ int CalculateRelevance(
   if (suggestion_type ==
           AutocompleteMatch::EnterpriseSearchAggregatorType::CONTENT &&
       kPreferContentsOverQueries()) {
-    relevance += 1;
+    // 10 is small enough to not cause showing a worse CONTENT match over a
+    // better non-CONTENT match.
+    relevance += 10;
   }
 
-  return relevance;
+  return {relevance, strong_word_matches, weak_word_matches, "scored"};
 }
 
 }  // namespace
@@ -669,11 +676,14 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 
     auto additional_scoring_fields =
         GetAdditionalScoringFields(result, suggestion_type);
-    int relevance = CalculateRelevance(
+    auto relevance_data = CalculateRelevanceData(
         input_words, adjusted_input_.InKeywordMode(), suggestion_type,
         description, contents, additional_scoring_fields);
-    if (!relevance) {
-      continue;
+    if (relevance_data.relevance) {
+      // Decrement scores to keep sorting stable. Add 10 to avoid going below
+      // "weak" threshold or change the hundred's digit; e.g. a score of
+      // 600 v 599 could drastically affect the match's omnibox ranking.
+      relevance_data.relevance += 10 - matches.size();
     }
 
     std::u16string fill_into_edit;
@@ -682,8 +692,8 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
     }
     fill_into_edit.append(base::UTF8ToUTF16(is_navigation ? url : contents));
 
-    matches.push_back(CreateMatch(suggestion_type, is_navigation, relevance,
-                                  url, image_url, icon_url,
+    matches.push_back(CreateMatch(suggestion_type, is_navigation,
+                                  relevance_data, url, image_url, icon_url,
                                   base::UTF8ToUTF16(description),
                                   base::UTF8ToUTF16(contents), fill_into_edit));
   }
@@ -803,7 +813,7 @@ EnterpriseSearchAggregatorProvider::GetAdditionalScoringFields(
 AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
     SuggestionType suggestion_type,
     bool is_navigation,
-    int relevance,
+    RelevanceData relevance_data,
     const std::string& url,
     const std::string& image_url,
     const std::string& icon_url,
@@ -812,7 +822,7 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
     const std::u16string& fill_into_edit) {
   auto type = is_navigation ? AutocompleteMatchType::NAVSUGGEST
                             : AutocompleteMatchType::SEARCH_SUGGEST;
-  AutocompleteMatch match(this, relevance, false, type);
+  AutocompleteMatch match(this, relevance_data.relevance, false, type);
 
   match.destination_url = GURL(url);
 
@@ -831,7 +841,7 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
   // `NAVSUGGEST` is displayed "<description> - <contents>" and
   // `SEARCH_SUGGEST` is displayed "<contents> - <description>".
   // The below code formats `description` and `contents` accordingly.
-  auto primary_text_class = [this](auto text) {
+  auto primary_text_class = [&](auto text) {
     return ClassifyTermMatches(FindTermMatches(adjusted_input_.text(), text),
                                text.size(), ACMatchClassification::MATCH,
                                ACMatchClassification::NONE);
@@ -858,6 +868,13 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
 
   match.RecordAdditionalInfo("aggregator type",
                              static_cast<int>(suggestion_type));
+  match.RecordAdditionalInfo(
+      "relevance strong word matches",
+      static_cast<int>(relevance_data.strong_word_matches));
+  match.RecordAdditionalInfo(
+      "relevance weak word matches",
+      static_cast<int>(relevance_data.weak_word_matches));
+  match.RecordAdditionalInfo("relevance rule", relevance_data.rule);
 
   return match;
 }
