@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_UNZIP_UNZIPPER_IMPL_H_
 
 #include "base/files/file.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -50,10 +49,6 @@ class UnzipperImpl : public mojom::Unzipper {
 
   void GetExtractedInfo(base::File zip_file,
                         GetExtractedInfoCallback callback) override;
-
-  void DecodeXz(base::File in_file,
-                base::File out_file,
-                base::OnceCallback<void(bool)> callback) override;
 
   // Disconnect handler for the receiver.
   void OnReceiverDisconnect();
