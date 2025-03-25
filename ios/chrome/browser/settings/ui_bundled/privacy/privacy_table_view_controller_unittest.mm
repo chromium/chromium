@@ -283,29 +283,6 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
                      /* section= */ expectedNumberOfSections - 1);
 }
 
-// Tests PrivacyTableViewController sets the correct privacy footer for a
-// syncing user.
-TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
-  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(Return(true));
-  ON_CALL(*mock_sync_service(), HasSyncConsent()).WillByDefault(Return(true));
-
-  CreateController();
-  CheckController();
-
-  int expectedNumberOfSections = 7;
-
-  // IncognitoInterstitial section.
-  expectedNumberOfSections++;
-  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
-
-  // Testing section index and text of the privacy footer.
-  CheckSectionFooter(
-      l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER),
-      /* section= */ expectedNumberOfSections - 1);
-}
-
 // Tests that the Enhanced Safe Browsing Inline Promo is triggered when a
 // Privacy & Security Setting is changed.
 TEST_P(PrivacyTableViewControllerTest,

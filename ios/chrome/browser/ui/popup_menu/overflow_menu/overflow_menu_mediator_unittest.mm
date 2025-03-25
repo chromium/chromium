@@ -112,21 +112,6 @@ namespace {
 
 const int kNumberOfWebStates = 3;
 
-// Turns on Sync.
-// TODO(crbug.com/40066949): Remove Sync-the-feature related helper, and update
-// or remove related tests.
-void SetupSyncServiceEnabledExpectations(
-    syncer::MockSyncService* sync_service) {
-  ON_CALL(*sync_service, GetTransportState())
-      .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
-  ON_CALL(*sync_service->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(Return(true));
-  ON_CALL(*sync_service->GetMockUserSettings(), GetSelectedTypes())
-      .WillByDefault(Return(syncer::UserSelectableTypeSet::All()));
-  ON_CALL(*sync_service, HasSyncConsent()).WillByDefault(Return(true));
-}
-
 // Sync Service error that is eligble to be indicated as an Identity error when
 // Sync is turned OFF.
 constexpr syncer::SyncService::UserActionableError
@@ -894,14 +879,13 @@ TEST_F(OverflowMenuMediatorTest, TestSyncError) {
 }
 
 // Tests that there is no error cue (red dot) displayed on the Settings
-// destination when there is no error in both Sync and Identity levels.
-TEST_F(OverflowMenuMediatorTest, TestNoSyncError) {
+// destination when there is no identity error.
+TEST_F(OverflowMenuMediatorTest, TestNoIdentityError) {
   CreateMediator(/*is_incognito=*/NO);
 
   syncer::MockSyncService syncService;
   ON_CALL(syncService, GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
-  SetupSyncServiceEnabledExpectations(&syncService);
   mediator_.syncService = &syncService;
   mediator_.model = model_;
 
@@ -948,14 +932,13 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
 }
 
 // Tests that there is blue dot displayed on the Settings destination when there
-// is no sync error.
+// is no identity error.
 TEST_F(OverflowMenuMediatorTest, TestSettingsBlueDotBadge) {
   CreateMediator(/*is_incognito=*/NO);
 
   syncer::MockSyncService syncService;
   ON_CALL(syncService, GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
-  SetupSyncServiceEnabledExpectations(&syncService);
   mediator_.syncService = &syncService;
   mediator_.hasSettingsBlueDot = YES;
   mediator_.model = model_;

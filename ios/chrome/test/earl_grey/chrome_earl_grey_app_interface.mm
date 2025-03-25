@@ -947,24 +947,6 @@ NSString* SerializedValue(const base::Value* value) {
       base::SysNSStringToUTF8(GUID));
 }
 
-+ (NSError*)waitForSyncFeatureEnabled:(BOOL)isEnabled
-                          syncTimeout:(base::TimeDelta)timeout {
-  bool success = WaitUntilConditionOrTimeout(timeout, ^{
-    ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-    DCHECK(profile);
-    syncer::SyncService* syncService =
-        SyncServiceFactory::GetForProfile(profile);
-    return syncService->IsSyncFeatureEnabled() == isEnabled;
-  });
-  if (!success) {
-    NSString* errorDescription =
-        [NSString stringWithFormat:@"Sync feature must be enabled: %@",
-                                   isEnabled ? @"YES" : @"NO"];
-    return testing::NSErrorWithLocalizedDescription(errorDescription);
-  }
-  return nil;
-}
-
 + (NSError*)waitForSyncTransportStateActiveWithTimeout:
     (base::TimeDelta)timeout {
   bool success = WaitUntilConditionOrTimeout(timeout, ^{
