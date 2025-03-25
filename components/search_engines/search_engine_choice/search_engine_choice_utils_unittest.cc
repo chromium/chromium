@@ -33,9 +33,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
+using ::country_codes::CountryId;
+
 namespace search_engines {
 
-const int kFranceCountryId = country_codes::CountryStringToCountryID("FR");
+const CountryId kFranceCountryId = CountryId("FR");
 
 class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
@@ -64,7 +66,7 @@ TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_ToDict) {
       *dict.FindList("search_engines"),
       testing::ElementsAre(SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
                            SEARCH_ENGINE_GOOGLE));
-  EXPECT_EQ(dict.FindInt("country_id"), kFranceCountryId);
+  EXPECT_EQ(dict.FindInt("country_id"), kFranceCountryId.Serialize());
   EXPECT_EQ(dict.FindBool("list_is_modified_by_current_default"), std::nullopt);
   EXPECT_EQ(dict.FindInt("selected_engine_index"), 1);
 }
@@ -81,14 +83,14 @@ TEST_F(SearchEngineChoiceUtilsTest,
       *dict.FindList("search_engines"),
       testing::ElementsAre(SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
                            SEARCH_ENGINE_GOOGLE));
-  EXPECT_EQ(dict.FindInt("country_id"), kFranceCountryId);
+  EXPECT_EQ(dict.FindInt("country_id"), kFranceCountryId.Serialize());
   EXPECT_EQ(dict.FindBool("list_is_modified_by_current_default"), std::nullopt);
   EXPECT_FALSE(dict.contains("selected_engine_index"));
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_FromDict) {
   base::Value::Dict dict;
-  dict.Set("country_id", kFranceCountryId);
+  dict.Set("country_id", kFranceCountryId.Serialize());
   dict.Set("selected_engine_index", 0);
   auto* search_engines = dict.EnsureList("search_engines");
   search_engines->Append(SEARCH_ENGINE_DUCKDUCKGO);
@@ -110,7 +112,7 @@ TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_FromDict_Errors) {
   base::Value::Dict dict;
   EXPECT_FALSE(ChoiceScreenDisplayState::FromDict(dict).has_value());
 
-  dict.Set("country_id", kFranceCountryId);
+  dict.Set("country_id", kFranceCountryId.Serialize());
   EXPECT_FALSE(ChoiceScreenDisplayState::FromDict(dict).has_value());
 
   auto* search_engines = dict.EnsureList("search_engines");

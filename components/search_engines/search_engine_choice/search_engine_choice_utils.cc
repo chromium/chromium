@@ -40,6 +40,8 @@
 #include "ui/resources/grit/ui_resources.h"               // nogncheck
 #endif
 
+using ::country_codes::CountryId;
+
 namespace search_engines {
 
 namespace {
@@ -57,7 +59,7 @@ constexpr char kDisplayStateSelectedEngineIndexKey[] = "selected_engine_index";
 
 ChoiceScreenDisplayState::ChoiceScreenDisplayState(
     std::vector<SearchEngineType> search_engines,
-    int country_id,
+    CountryId country_id,
     std::optional<int> selected_engine_index)
     : search_engines(std::move(search_engines)),
       selected_engine_index(selected_engine_index),
@@ -71,7 +73,7 @@ ChoiceScreenDisplayState::~ChoiceScreenDisplayState() = default;
 base::Value::Dict ChoiceScreenDisplayState::ToDict() const {
   auto dict = base::Value::Dict();
 
-  dict.Set(kDisplayStateCountryIdKey, country_id);
+  dict.Set(kDisplayStateCountryIdKey, country_id.Serialize());
 
   base::Value::List* search_engines_array =
       dict.EnsureList(kDisplayStateSearchEnginesKey);
@@ -90,8 +92,12 @@ base::Value::Dict ChoiceScreenDisplayState::ToDict() const {
 // static
 std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
     const base::Value::Dict& dict) {
-  std::optional<int> parsed_country_id =
+  std::optional<int> parsed_country_code =
       dict.FindInt(kDisplayStateCountryIdKey);
+  std::optional<CountryId> parsed_country_id;
+  if (parsed_country_code.has_value()) {
+    parsed_country_id = CountryId::Deserialize(parsed_country_code.value());
+  }
   const base::Value::List* parsed_search_engines =
       dict.FindList(kDisplayStateSearchEnginesKey);
   std::optional<int> parsed_selected_engine_index =
@@ -125,7 +131,7 @@ std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
 
 ChoiceScreenData::ChoiceScreenData(
     TemplateURL::OwnedTemplateURLVector owned_template_urls,
-    int country_id,
+    CountryId country_id,
     const SearchTermsData& search_terms_data)
     : search_engines_(std::move(owned_template_urls)),
       display_state_(ChoiceScreenDisplayState(

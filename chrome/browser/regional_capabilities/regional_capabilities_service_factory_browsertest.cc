@@ -16,10 +16,12 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::country_codes::CountryId;
+
 namespace regional_capabilities {
 namespace {
 
-constexpr int kUsaCountryId = country_codes::CountryCharsToCountryID('U', 'S');
+constexpr CountryId kUsaCountryId("US");
 
 }  // namespace
 class RegionalCapabilitiesServiceFactoryBrowserTest
@@ -28,7 +30,7 @@ class RegionalCapabilitiesServiceFactoryBrowserTest
 struct VariationsCountryTestParam {
   std::string test_suffix;
   std::string variations_country_code;
-  std::optional<int> expected_country_id;
+  std::optional<CountryId> expected_country_id;
 };
 
 class RegionalCapabilitiesServiceFactoryBrowserTestForVariationsCountry
@@ -45,7 +47,7 @@ class RegionalCapabilitiesServiceFactoryBrowserTestForVariationsCountry
     return GetParam().variations_country_code;
   }
 
-  int GetExpectedCountryId() const {
+  CountryId GetExpectedCountryId() const {
     return GetParam().expected_country_id.value_or(kUsaCountryId);
   }
 };
@@ -56,7 +58,7 @@ const VariationsCountryTestParam kTestParams[] = {
     {.test_suffix = "FR",
      .variations_country_code = "fr",
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-     .expected_country_id = country_codes::CountryCharsToCountryID('F', 'R')
+     .expected_country_id = CountryId("FR")
 #else
      .expected_country_id = kUsaCountryId
 #endif

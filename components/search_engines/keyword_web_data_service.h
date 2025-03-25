@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
+#include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_id.h"
@@ -38,7 +39,7 @@ struct WDKeywordsResult {
     int builtin_keyword_data_version = 0;
 
     // Country associated with the keywords data, stored as a country ID,
-    // see `country_codes::CountryStringToCountryID()`.
+    // see `country_codes::CountryId()`.
     std::optional<regional_capabilities::CountryIdHolder>
         builtin_keyword_country;
 
@@ -120,7 +121,7 @@ class KeywordWebDataService : public WebDataServiceBase {
   void ClearBuiltinKeywordMilestone();
 
   // Sets the country ID associated with the builtin keyword data.
-  void SetBuiltinKeywordCountry(int country_id);
+  void SetBuiltinKeywordCountry(country_codes::CountryId country_id);
 
   // Sets the version of the starter pack keywords.
   void SetStarterPackKeywordVersion(int version);
