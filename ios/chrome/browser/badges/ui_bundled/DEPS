@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/overlays/model/public",
-  "+ios/chrome/browser/ui/popup_menu/public",
+  "+ios/chrome/browser/popup_menu/ui_bundled/public",
   "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h",
 ]
