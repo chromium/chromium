@@ -2194,9 +2194,12 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
 
   layer_impl->NotifyTileStateChanged(tile);
 
-  if (settings_.UseLayerContextForDisplay() && !is_pending_tree) {
-    // Pending tree tile updates are pushed to the display tree after
-    // activation. For active tree tile updates we push immediately.
+  if (settings_.UseLayerContextForDisplay() && !is_pending_tree &&
+      !CommitsToActiveTree()) {
+    // Tiles for the tree currently being committed to (Pending or Active)
+    // are pushed to the display during UpdateDisplayTree. For active tree,
+    // if we're not committing to Active, tiles are pushed immediately via
+    // UpdateDisplayTile.
     layer_context_->UpdateDisplayTile(
         static_cast<PictureLayerImpl&>(*layer_impl), *tile,
         *resource_provider(), *layer_tree_frame_sink_->context_provider());
