@@ -11,6 +11,7 @@ import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabContextMenuData;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -58,6 +61,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.sensitive_content.SensitiveContentClient;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -258,7 +262,19 @@ public class NewTabAnimationLayout extends Layout {
                     (oldTab.getUrl() != null)
                             && UrlUtilities.isNtpUrl(oldTab.getUrl())
                             && !oldTab.isIncognitoBranded();
-            tabCreatedInBackground(isRegularNtp, oldTab.isIncognitoBranded());
+            @Nullable TabContextMenuData data = TabContextMenuData.getForTab(oldTab);
+            @Nullable Point point = data == null ? null : data.getLastTriggeringTouchPositionDp();
+            final @Px int x;
+            final @Px int y;
+            if (point != null) {
+                Context context = getContext();
+                x = ViewUtils.dpToPx(context, point.x);
+                y = ViewUtils.dpToPx(context, point.y);
+            } else {
+                x = Math.round(originX);
+                y = Math.round(originY);
+            }
+            tabCreatedInBackground(isRegularNtp, oldTab.isIncognitoBranded(), x, y);
         } else {
             tabCreatedInForeground(
                     id, sourceId, newIsIncognito, getForegroundRectStart(oldTab, newTab));
@@ -579,8 +595,11 @@ public class NewTabAnimationLayout extends Layout {
      *
      * @param isRegularNtp true if the old tab is regular NTP.
      * @param isIncognito true if the old tab is an incognito tab.
+     * @param x the x coordinate of the originating touch input in px.
+     * @param y the y coordinate of the originating touch input in px.
      */
-    private void tabCreatedInBackground(boolean isRegularNtp, boolean isIncognito) {
+    private void tabCreatedInBackground(
+            boolean isRegularNtp, boolean isIncognito, @Px int x, @Px int y) {
         // TODO(crbug.com/40282469): Investigate why NTP presents lower quality during the
         // animation and how to stop forcing browser controls in the NTP.
         assert mLayoutTabs.length == 1;
@@ -612,9 +631,16 @@ public class NewTabAnimationLayout extends Layout {
                 isIncognito,
                 mBrowserControlsManager.getTopControlsMinHeight());
 
-        // TODO(crbug.com/40282469): Remove once originX and originY properly work.
-        float originX = mAnimationHostView.getWidth() / 2f;
-        float originY = mAnimationHostView.getHeight() / 2f;
+        // TODO(crbug.com/40282469): Get correct x and y for the NTP.
+        final int originX;
+        final int originY;
+        if (isRegularNtp && x == 0 && y == 0) {
+            originX = Math.round(mAnimationHostView.getWidth() / 2f);
+            originY = Math.round(mAnimationHostView.getHeight() / 2f);
+        } else {
+            originX = x;
+            originY = y;
+        }
         mAnimationHostView.addView(mBackgroundHostView);
 
         // This ensures the view to be properly laid out in order to do calculations within the
