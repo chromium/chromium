@@ -152,6 +152,10 @@ class PLATFORM_EXPORT AudioDestination final
     return fifo_->GetStateForTest();
   }
 
+  MediaMultiChannelResampler* GetResamplerForTesting() {
+    return resampler_.get();
+  }
+
  private:
   explicit AudioDestination(AudioIOCallback&,
                             const WebAudioSinkDescriptor& sink_descriptor,

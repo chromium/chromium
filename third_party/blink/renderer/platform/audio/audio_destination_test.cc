@@ -7,6 +7,7 @@
 #include <array>
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "media/base/audio_glitch_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,9 +26,19 @@ namespace blink {
 namespace {
 
 using ::testing::_;
-using ::testing::InSequence;
 
 const LocalFrameToken kFrameToken;
+
+constexpr float kDefaultHardwareSampleRate = 44100;
+constexpr int kDefaultHardwareBufferSize = 512;
+constexpr int kDefaultHardwareOutputChannelNumber = 2;
+constexpr int kWebAudioRenderQuantum = 128;
+
+int RoundUpToRenderQuantum(int requested_frames) {
+  return std::ceil(requested_frames /
+                   static_cast<double>(kWebAudioRenderQuantum)) *
+         kWebAudioRenderQuantum;
+}
 
 class MockWebAudioDevice : public WebAudioDevice {
  public:
@@ -54,15 +65,19 @@ class MockWebAudioDevice : public WebAudioDevice {
 
 class TestPlatform : public TestingPlatformSupport {
  public:
-  TestPlatform() {
-    webaudio_device_ = std::make_unique<MockWebAudioDevice>(
-        AudioHardwareSampleRate(), AudioHardwareBufferSize());
+  TestPlatform() = default;
+  ~TestPlatform() override = default;
+
+  void CreateMockWebAudioDevice(float context_sample_rate, int buffer_size) {
+    webaudio_device_ =
+        std::make_unique<MockWebAudioDevice>(context_sample_rate, buffer_size);
   }
 
   std::unique_ptr<WebAudioDevice> CreateAudioDevice(
       const WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
+      std::optional<float> context_sample_rate,
       media::AudioRendererSink::RenderCallback*) override {
     CHECK(webaudio_device_ != nullptr)
         << "Calling CreateAudioDevice (via AudioDestination::Create) multiple "
@@ -70,9 +85,15 @@ class TestPlatform : public TestingPlatformSupport {
     return std::move(webaudio_device_);
   }
 
-  double AudioHardwareSampleRate() override { return 44100; }
-  size_t AudioHardwareBufferSize() override { return 512; }
-  unsigned AudioHardwareOutputChannels() override { return 2; }
+  double AudioHardwareSampleRate() override {
+    return kDefaultHardwareSampleRate;
+  }
+  size_t AudioHardwareBufferSize() override {
+    return kDefaultHardwareBufferSize;
+  }
+  unsigned AudioHardwareOutputChannels() override {
+    return kDefaultHardwareOutputChannelNumber;
+  }
 
   const MockWebAudioDevice& web_audio_device() {
     CHECK(webaudio_device_ != nullptr)
@@ -109,69 +130,82 @@ class AudioCallback : public AudioIOCallback {
 class AudioDestinationTest
     : public ::testing::TestWithParam<std::optional<float>> {
  public:
-  void CountWASamplesProcessedForRate(std::optional<float> sample_rate) {
-    WebAudioLatencyHint latency_hint(WebAudioLatencyHint::kCategoryInteractive);
-
-    const int channel_count =
-        Platform::Current()->AudioHardwareOutputChannels();
-    const size_t request_frames =
-        Platform::Current()->AudioHardwareBufferSize();
-
+  scoped_refptr<AudioDestination> CreateAudioDestination(
+      std::optional<float> context_sample_rate,
+      WebAudioLatencyHint latency_hint) {
     // Assume the default audio device. (i.e. the empty string)
     WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""),
                                            kFrameToken);
+    const int channel_count =
+        Platform::Current()->AudioHardwareOutputChannels();
 
-    // TODO(https://crbug.com/988121) Replace 128 with the appropriate
-    // AudioContextRenderSizeHintCategory.
-    constexpr int render_quantum_frames = 128;
-    scoped_refptr<AudioDestination> destination = AudioDestination::Create(
-        callback_, sink_descriptor, channel_count, latency_hint, sample_rate,
-        render_quantum_frames);
-    destination->Start();
-
-    destination->Render(
-        base::TimeDelta::Min(), base::TimeTicks::Now(), {},
-        media::AudioBus::Create(channel_count, request_frames).get());
-
-    // Calculate the expected number of frames to be consumed to produce
-    // |request_frames| frames.
-    int exact_frames_required = request_frames;
-    if (destination->SampleRate() !=
-        Platform::Current()->AudioHardwareSampleRate()) {
-      exact_frames_required =
-          std::ceil(request_frames * destination->SampleRate() /
-                    Platform::Current()->AudioHardwareSampleRate());
-      // The internal resampler requires media::SincResampler::KernelSize() / 2
-      // more frames to flush the output. See sinc_resampler.cc for details.
-      exact_frames_required +=
-          media::SincResampler::KernelSizeFromRequestFrames(request_frames) / 2;
-    }
-    const int expected_frames_processed =
-        std::ceil(exact_frames_required /
-                  static_cast<double>(render_quantum_frames)) *
-        render_quantum_frames;
-
-    EXPECT_EQ(expected_frames_processed, callback_.frames_processed_);
+    return AudioDestination::Create(callback_, sink_descriptor, channel_count,
+                                    latency_hint, context_sample_rate,
+                                    kWebAudioRenderQuantum);
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   AudioCallback callback_;
 };
 
+// This test verifies that resampling occurs correctly when the AudioContext's
+// sample rate differs from the hardware's sample rate. We explicitly disable
+// kWebAudioRemoveAudioDestinationResampler to ensure the resampler can be
+// created.
 TEST_P(AudioDestinationTest, ResamplingTest) {
 #if defined(MEMORY_SANITIZER)
   // TODO(crbug.com/342415791): Fix and re-enable tests with MSan.
   GTEST_SKIP();
 #else
+  feature_list_.InitAndDisableFeature(
+      blink::features::kWebAudioRemoveAudioDestinationResampler);
   ScopedTestingPlatformSupport<TestPlatform> platform;
-  {
-    InSequence s;
+  platform->CreateMockWebAudioDevice(kDefaultHardwareSampleRate,
+                                     kDefaultHardwareBufferSize);
+  EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
+  EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);
 
-    EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
-    EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);
+  scoped_refptr<AudioDestination> audio_destination = CreateAudioDestination(
+      GetParam(),
+      WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive));
+
+  const int requested_frames = audio_destination->FramesPerBuffer();
+
+  audio_destination->Start();
+  audio_destination->Render(
+      base::TimeDelta::Min(), base::TimeTicks::Now(), {},
+      media::AudioBus::Create(kDefaultHardwareOutputChannelNumber,
+                              requested_frames)
+          .get());
+
+  int scaled_requested_frames = requested_frames;
+
+  // Check if resampling was performed and calculate the expected frame count.
+  if (audio_destination->SampleRate() !=
+      Platform::Current()->AudioHardwareSampleRate()) {
+    // Resampler should be created when sample rates differ.
+    EXPECT_NE(audio_destination->GetResamplerForTesting(), nullptr);
+
+    // Calculate the scaled frame count based on the sample rate difference.
+    scaled_requested_frames =
+        std::ceil(requested_frames * audio_destination->SampleRate() /
+                  Platform::Current()->AudioHardwareSampleRate());
+
+    // The internal resampler requires media::SincResampler::KernelSize() / 2
+    // more frames to flush the output. See sinc_resampler.cc for details.
+    scaled_requested_frames +=
+        media::SincResampler::KernelSizeFromRequestFrames(requested_frames) / 2;
+  } else {
+    // No resampler should be created when sample rates are the same.
+    EXPECT_EQ(audio_destination->GetResamplerForTesting(), nullptr);
   }
 
-  CountWASamplesProcessedForRate(GetParam());
+  // Verify that the number of frames processed matches the expected count,
+  // rounded up to the render quantum.
+  const int expected_processed_frames =
+      RoundUpToRenderQuantum(scaled_requested_frames);
+  EXPECT_EQ(expected_processed_frames, callback_.frames_processed_);
 #endif
 }
 
@@ -180,26 +214,19 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
   // TODO(crbug.com/342415791): Fix and re-enable tests with MSan.
   GTEST_SKIP();
 #else
+  feature_list_.InitAndDisableFeature(
+      blink::features::kWebAudioRemoveAudioDestinationResampler);
   ScopedTestingPlatformSupport<TestPlatform> platform;
-  {
-    InSequence s;
-    EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
-    EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);
-  }
+  platform->CreateMockWebAudioDevice(kDefaultHardwareSampleRate,
+                                     kDefaultHardwareBufferSize);
 
-  std::optional<float> sample_rate = GetParam();
-  WebAudioLatencyHint latency_hint(WebAudioLatencyHint::kCategoryInteractive);
+  EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
+  EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);
 
-  const int channel_count = Platform::Current()->AudioHardwareOutputChannels();
-  const size_t request_frames = Platform::Current()->AudioHardwareBufferSize();
-
-  // Assume the default audio device. (i.e. the empty string)
-  WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""), kFrameToken);
-
-  int render_quantum_frames = 128;
-  scoped_refptr<AudioDestination> destination = AudioDestination::Create(
-      callback_, sink_descriptor, channel_count, latency_hint, sample_rate,
-      render_quantum_frames);
+  scoped_refptr<AudioDestination> audio_destination = CreateAudioDestination(
+      GetParam(),
+      WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive));
+  const int requested_frames = audio_destination->FramesPerBuffer();
 
   const int kRenderCount = 3;
 
@@ -218,23 +245,22 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
   // When creating the AudioDestination, some silence is added to the fifo to
   // prevent an underrun on the first callback. This contributes a constant
   // delay.
-  int priming_frames =
-      ceil(request_frames / static_cast<float>(render_quantum_frames)) *
-      render_quantum_frames;
+  const int priming_frames = RoundUpToRenderQuantum(requested_frames);
   base::TimeDelta priming_delay = audio_utilities::FramesToTime(
       priming_frames, Platform::Current()->AudioHardwareSampleRate());
 
-  auto audio_bus = media::AudioBus::Create(channel_count, request_frames);
+  auto audio_bus = media::AudioBus::Create(kDefaultHardwareOutputChannelNumber,
+                                           requested_frames);
 
-  destination->Start();
+  audio_destination->Start();
 
   for (int i = 0; i < kRenderCount; ++i) {
-    destination->Render(delays[i], base::TimeTicks::Now(), glitches[i],
-                        audio_bus.get());
+    audio_destination->Render(delays[i], base::TimeTicks::Now(), glitches[i],
+                              audio_bus.get());
 
     EXPECT_EQ(callback_.glitch_accumulator_.GetAndReset(), glitches[i]);
 
-    if (destination->SampleRate() !=
+    if (audio_destination->SampleRate() !=
         Platform::Current()->AudioHardwareSampleRate()) {
       // Resampler kernel adds a bit of a delay.
       EXPECT_GE(callback_.last_latency_, delays[i] + priming_delay);
@@ -245,8 +271,62 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
     }
   }
 
-  destination->Stop();
+  audio_destination->Stop();
 #endif
+}
+
+// This test verifies that the AudioDestination resampler is correctly removed
+// when the kWebAudioRemoveAudioDestinationResampler feature is enabled
+// and WebAudioBypassOutputBuffering is also enabled.
+TEST_P(AudioDestinationTest, ResamplerIsRemoved) {
+  feature_list_.InitAndEnableFeature(
+      blink::features::kWebAudioRemoveAudioDestinationResampler);
+
+  // Ideally we should have two separate test for WebAudioBypassOutputBuffering
+  // enabled and disabled. The difference here is the
+  // `expected_processed_frames` will be different. In FIFO non-bypass case the
+  // buffer is primed so expected processed frames will need to account for
+  // that. But considering that `WebAudioBypassOutputBuffering` is soon to be
+  // default, we only add the bypass buffer enabled test here.
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "WebAudioBypassOutputBuffering", true);
+
+  float context_sample_rate = GetParam().value_or(kDefaultHardwareSampleRate);
+
+  // Use a non-default buffer size (kFakeScaledSinkBufferSize) to confirm it's
+  // correctly applied in AudioDestination. The specific value of
+  // kFakeScaledSinkBufferSize is unimportant, as the scaling calculations are
+  // verified in RendererWebAudioDeviceImplBufferSizeTest. This test
+  // focuses on ensuring the resampler is not created, allowing us to use the
+  // original request frames (kFakeScaledSinkBufferSize) when calculating
+  // expected_processed_frames.
+  constexpr int kFakeScaledSinkBufferSize = 399;
+
+  ScopedTestingPlatformSupport<TestPlatform> platform;
+  platform->CreateMockWebAudioDevice(context_sample_rate,
+                                     kFakeScaledSinkBufferSize);
+  EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
+  EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);
+
+  scoped_refptr<AudioDestination> audio_destination = CreateAudioDestination(
+      GetParam(),
+      WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive));
+
+  EXPECT_EQ(nullptr, audio_destination->GetResamplerForTesting());
+
+  audio_destination->Start();
+  audio_destination->Render(
+      base::TimeDelta::Min(), base::TimeTicks::Now(), {},
+      media::AudioBus::Create(
+          Platform::Current()->AudioHardwareOutputChannels(),
+          kFakeScaledSinkBufferSize)
+          .get());
+
+  // Calculate the expected number of processed frames, rounded up to the render
+  // quantum.
+  int expected_processed_frames =
+      RoundUpToRenderQuantum(audio_destination->FramesPerBuffer());
+  EXPECT_EQ(callback_.frames_processed_, expected_processed_frames);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,
@@ -264,32 +344,28 @@ TEST_F(AudioDestinationTest, NoUnderrunsWithOutputBufferBypass) {
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "WebAudioBypassOutputBuffering", true);
   ScopedTestingPlatformSupport<TestPlatform> platform;
+  platform->CreateMockWebAudioDevice(kDefaultHardwareSampleRate,
+                                     kDefaultHardwareBufferSize);
 
-  const std::optional<float> sample_rate = 44100;
-  const WebAudioLatencyHint latency_hint(
-      WebAudioLatencyHint::kCategoryInteractive);
-  const int channel_count = Platform::Current()->AudioHardwareOutputChannels();
-  const size_t request_frames = Platform::Current()->AudioHardwareBufferSize();
-  const WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""),
-                                               kFrameToken);
-  const int render_quantum_frames = 128;
+  const std::optional<float> context_sample_rate = 44100;
+  scoped_refptr<AudioDestination> audio_destination = CreateAudioDestination(
+      context_sample_rate,
+      WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive));
 
-  scoped_refptr<AudioDestination> destination = AudioDestination::Create(
-      callback_, sink_descriptor, channel_count, latency_hint, sample_rate,
-      render_quantum_frames);
+  auto audio_bus = media::AudioBus::Create(
+      Platform::Current()->AudioHardwareOutputChannels(),
+      audio_destination->FramesPerBuffer());
 
-  auto audio_bus = media::AudioBus::Create(channel_count, request_frames);
+  audio_destination->Start();
+  audio_destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
+                            media::AudioGlitchInfo(), audio_bus.get());
+  audio_destination->Stop();
+  audio_destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
+                            media::AudioGlitchInfo(), audio_bus.get());
 
-  destination->Start();
-  destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
-                      media::AudioGlitchInfo(), audio_bus.get());
-  destination->Stop();
-  destination->Render(base::Milliseconds(90), base::TimeTicks::Now(),
-                      media::AudioGlitchInfo(), audio_bus.get());
-
-  EXPECT_EQ((destination->GetPushPullFIFOStateForTest()).overflow_count,
+  EXPECT_EQ((audio_destination->GetPushPullFIFOStateForTest()).overflow_count,
             unsigned{0});
-  EXPECT_EQ((destination->GetPushPullFIFOStateForTest()).underflow_count,
+  EXPECT_EQ((audio_destination->GetPushPullFIFOStateForTest()).underflow_count,
             unsigned{0});
 }
 

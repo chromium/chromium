@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -52,6 +53,9 @@ namespace content {
 
 namespace {
 
+using ::media::limits::kMaxWebAudioBufferSize;
+using ::media::limits::kMinWebAudioBufferSize;
+
 blink::WebAudioDeviceSourceType GetLatencyHintSourceType(
     WebAudioLatencyHint::AudioContextLatencyCategory latency_category) {
   switch (latency_category) {
@@ -69,35 +73,6 @@ blink::WebAudioDeviceSourceType GetLatencyHintSourceType(
   NOTREACHED();
 }
 
-int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
-                        const media::AudioParameters& hardware_params) {
-  const media::AudioParameters::HardwareCapabilities hardware_capabilities =
-      hardware_params.hardware_capabilities().value_or(
-          media::AudioParameters::HardwareCapabilities());
-
-  // Adjust output buffer size according to the latency requirement.
-  switch (latency_hint.Category()) {
-    case WebAudioLatencyHint::kCategoryInteractive:
-      return media::AudioLatency::GetInteractiveBufferSize(
-          hardware_params.frames_per_buffer());
-    case WebAudioLatencyHint::kCategoryBalanced:
-      return media::AudioLatency::GetRtcBufferSize(
-          hardware_params.sample_rate(), hardware_params.frames_per_buffer());
-    case WebAudioLatencyHint::kCategoryPlayback:
-      return media::AudioLatency::GetHighLatencyBufferSize(
-          hardware_params.sample_rate(), hardware_params.frames_per_buffer());
-    case WebAudioLatencyHint::kCategoryExact:
-      return media::AudioLatency::GetExactBufferSize(
-          base::Seconds(latency_hint.Seconds()), hardware_params.sample_rate(),
-          hardware_params.frames_per_buffer(),
-          hardware_capabilities.min_frames_per_buffer,
-          hardware_capabilities.max_frames_per_buffer,
-          media::limits::kMaxWebAudioBufferSize);
-    case WebAudioLatencyHint::kLastValue:
-      NOTREACHED();
-  }
-  NOTREACHED();
-}
 
 media::AudioParameters GetOutputDeviceParameters(
     const blink::LocalFrameToken& frame_token,
@@ -119,6 +94,7 @@ std::unique_ptr<RendererWebAudioDeviceImpl> RendererWebAudioDeviceImpl::Create(
     const WebAudioSinkDescriptor& sink_descriptor,
     int number_of_output_channels,
     const blink::WebAudioLatencyHint& latency_hint,
+    std::optional<float> context_sample_rate,
     media::AudioRendererSink::RenderCallback* callback) {
   // The `number_of_output_channels` does not manifest the actual channel
   // layout of the audio output device. We use the best guess to the channel
@@ -134,14 +110,85 @@ std::unique_ptr<RendererWebAudioDeviceImpl> RendererWebAudioDeviceImpl::Create(
   return std::unique_ptr<RendererWebAudioDeviceImpl>(
       new RendererWebAudioDeviceImpl(
           sink_descriptor, {layout, number_of_output_channels}, latency_hint,
-          callback, base::BindOnce(&GetOutputDeviceParameters),
+          context_sample_rate, callback,
+          base::BindOnce(&GetOutputDeviceParameters),
           base::BindRepeating(&GetNullAudioSink)));
+}
+
+int RendererWebAudioDeviceImpl::GetOutputBufferSize(
+    const blink::WebAudioLatencyHint& latency_hint,
+    int resolved_context_sample_rate,
+    const media::AudioParameters& hardware_params) {
+  const media::AudioParameters::HardwareCapabilities hardware_capabilities =
+      hardware_params.hardware_capabilities().value_or(
+          media::AudioParameters::HardwareCapabilities());
+
+  const float scale_factor = static_cast<float>(resolved_context_sample_rate) /
+                             hardware_params.sample_rate();
+
+  int min_hardware_buffer_size = hardware_capabilities.min_frames_per_buffer;
+  int max_hardware_buffer_size = hardware_capabilities.max_frames_per_buffer;
+
+  // The hardware may not provide explicit buffer size limits. In such cases,
+  // we fall back to predefined minimum and maximum buffer sizes. Additionally,
+  // hardware-provided limits are defined at the hardware's default sample rate.
+  // We must scale these limits to the context's sample rate, as subsequent
+  // buffer size calculations rely on the context sample rate.
+  int min_buffer_size = kMinWebAudioBufferSize;
+  if (min_hardware_buffer_size != 0) {
+    min_buffer_size = std::max(
+        kMinWebAudioBufferSize,
+        static_cast<int>(std::ceil(min_hardware_buffer_size * scale_factor)));
+  }
+
+  int max_buffer_size = kMaxWebAudioBufferSize;
+  if (max_hardware_buffer_size != 0) {
+    max_buffer_size = std::min(
+        kMaxWebAudioBufferSize,
+        static_cast<int>(std::ceil(max_hardware_buffer_size * scale_factor)));
+  }
+  // Ensure that the `min_buffer_size` does not exceed `max_buffer_size`.
+  // This can occur when a small scale_factor leads to inverted limits after
+  // scaling and clamping.
+  max_buffer_size = std::max(min_buffer_size, max_buffer_size);
+
+  // Scale default buffer size to context rate. buffer size calculations for
+  // each latency hint now use the context rate (instead of hardware rate).
+  // Scaling ensures the calculated buffer size corresponds to the desired
+  // callback interval at the context rate.
+  int scaled_default_buffer_size = static_cast<int>(
+      std::ceil(hardware_params.frames_per_buffer() * scale_factor));
+
+  // Clamp the scaled default buffer size to the valid range.
+  scaled_default_buffer_size =
+      std::clamp(scaled_default_buffer_size, min_buffer_size, max_buffer_size);
+
+  switch (latency_hint.Category()) {
+    case WebAudioLatencyHint::kCategoryInteractive:
+      return media::AudioLatency::GetInteractiveBufferSize(
+          scaled_default_buffer_size);
+    case WebAudioLatencyHint::kCategoryBalanced:
+      return media::AudioLatency::GetRtcBufferSize(resolved_context_sample_rate,
+                                                   scaled_default_buffer_size);
+    case WebAudioLatencyHint::kCategoryPlayback:
+      return media::AudioLatency::GetHighLatencyBufferSize(
+          resolved_context_sample_rate, scaled_default_buffer_size);
+    case WebAudioLatencyHint::kCategoryExact:
+      return media::AudioLatency::GetExactBufferSize(
+          base::Seconds(latency_hint.Seconds()), resolved_context_sample_rate,
+          scaled_default_buffer_size, min_buffer_size, max_buffer_size,
+          kMaxWebAudioBufferSize);
+    case WebAudioLatencyHint::kLastValue:
+      NOTREACHED();
+  }
+  NOTREACHED();
 }
 
 RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     const WebAudioSinkDescriptor& sink_descriptor,
     media::ChannelLayoutConfig layout_config,
     const blink::WebAudioLatencyHint& latency_hint,
+    std::optional<float> context_sample_rate,
     media::AudioRendererSink::RenderCallback* callback,
     OutputDeviceParamsCallback device_params_cb,
     CreateSilentSinkCallback create_silent_sink_cb)
@@ -196,13 +243,26 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
       "%s => (hardware_params=[%s])", __func__,
       original_sink_params_.AsHumanReadableString().c_str()));
 
-  const int output_buffer_size =
-      GetOutputBufferSize(latency_hint_, original_sink_params_);
+  // If the 'WebAudioRemoveAudioDestinationResampler' feature is enabled and
+  // a context sample rate is provided, use the provided context sample rate.
+  // Otherwise, fall back to the use default hardware sample rate to create
+  // sink.
+  int resolved_context_sample_rate;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAudioRemoveAudioDestinationResampler) &&
+      context_sample_rate.has_value()) {
+    resolved_context_sample_rate = *context_sample_rate;
+  } else {
+    resolved_context_sample_rate = original_sink_params_.sample_rate();
+  }
+
+  const int output_buffer_size = GetOutputBufferSize(
+      latency_hint_, resolved_context_sample_rate, original_sink_params_);
+
   DCHECK_NE(0, output_buffer_size);
 
   current_sink_params_.Reset(original_sink_params_.format(), layout_config,
-                             original_sink_params_.sample_rate(),
-                             output_buffer_size);
+                             resolved_context_sample_rate, output_buffer_size);
 
   // Specify the latency info to be passed to the browser side.
   current_sink_params_.set_latency_tag(AudioDeviceFactory::GetSourceLatencyType(

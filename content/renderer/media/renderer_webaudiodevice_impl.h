@@ -49,7 +49,11 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       const blink::WebAudioSinkDescriptor& sink_descriptor,
       int number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
+      std::optional<float> context_sample_rate,
       media::AudioRendererSink::RenderCallback* webaudio_callback);
+  static int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
+                                 int resolved_context_sample_rate,
+                                 const media::AudioParameters& hardware_params);
 
   // blink::WebAudioDevice implementation.
   void Start() override;
@@ -104,6 +108,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       const blink::WebAudioSinkDescriptor& sink_descriptor,
       media::ChannelLayoutConfig layout_config,
       const blink::WebAudioLatencyHint& latency_hint,
+      std::optional<float> context_sample_rate,
       media::AudioRendererSink::RenderCallback* webaudio_callback,
       OutputDeviceParamsCallback device_params_cb,
       CreateSilentSinkCallback create_silent_sink_cb);

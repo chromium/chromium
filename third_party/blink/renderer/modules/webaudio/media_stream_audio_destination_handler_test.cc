@@ -69,6 +69,7 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
       const WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
+      std::optional<float> context_sample_rate,
       media::AudioRendererSink::RenderCallback*) override {
     return std::make_unique<MockWebAudioDevice>(
         AudioHardwareSampleRate(), AudioHardwareBufferSize());

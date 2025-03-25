@@ -417,6 +417,7 @@ AudioDestination::AudioDestination(
           Platform::Current()->CreateAudioDevice(sink_descriptor,
                                                  number_of_output_channels,
                                                  latency_hint,
+                                                 context_sample_rate,
                                                  this)),
       callback_buffer_size_(
           web_audio_device_ ? web_audio_device_->FramesPerBuffer() : 0),
@@ -479,7 +480,9 @@ AudioDestination::AudioDestination(
 
   double scale_factor = 1.0;
 
-  if (context_sample_rate_ != web_audio_device_->SampleRate()) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebAudioRemoveAudioDestinationResampler) &&
+      context_sample_rate_ != web_audio_device_->SampleRate()) {
     scale_factor = context_sample_rate_ / web_audio_device_->SampleRate();
     SendLogMessage(__func__,
                    String::Format("=> (resampling from %0.f Hz to %0.f Hz)",
