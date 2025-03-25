@@ -27,6 +27,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -137,6 +138,52 @@ public class PasswordManagerUnavailableDialogTest {
                                 .NO_GMS_NO_PASSWORDS_DIALOG_SHOWN_HISTOGRAM,
                         true);
         mCoordinator.showDialog(mActivity, mModalDialogManager, null);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void recordsOldGmsDialogAccepted() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PwmDeprecationDialogsMetricsRecorder
+                                .OLD_GMS_NO_PASSWORDS_DIALOG_DISMISSAL_REASON_HISTOGRAM,
+                        true);
+        mCoordinator.showDialog(mActivity, mModalDialogManager, mLaunchGmsCoreUpdate);
+        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(mDialogModel);
+
+        mModalDialogManager.clickPositiveButton();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void recordsOldGmsDialogRejectedIfNegativeButtonClicked() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PwmDeprecationDialogsMetricsRecorder
+                                .OLD_GMS_NO_PASSWORDS_DIALOG_DISMISSAL_REASON_HISTOGRAM,
+                        false);
+        mCoordinator.showDialog(mActivity, mModalDialogManager, mLaunchGmsCoreUpdate);
+        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(mDialogModel);
+
+        mModalDialogManager.clickNegativeButton();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void recordsOldGmsDialogRejectedIfDialogDismissedWithNoButtonClick() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        PwmDeprecationDialogsMetricsRecorder
+                                .OLD_GMS_NO_PASSWORDS_DIALOG_DISMISSAL_REASON_HISTOGRAM,
+                        false);
+        mCoordinator.showDialog(mActivity, mModalDialogManager, mLaunchGmsCoreUpdate);
+        PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
+        assertNotNull(mDialogModel);
+
+        mModalDialogManager.dismissDialog(
+                mDialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         histogramWatcher.assertExpected();
     }
 }

@@ -52,5 +52,11 @@ class PasswordManagerUnavailableDialogMediator implements ModalDialogProperties.
     }
 
     @Override
-    public void onDismiss(PropertyModel model, int dismissalCause) {}
+    public void onDismiss(PropertyModel model, int dismissalCause) {
+        if (!mIsUpdateDialog) {
+            return;
+        }
+        PwmDeprecationDialogsMetricsRecorder.recordOldGmsNoPasswordsDialogDismissalReason(
+                dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+    }
 }

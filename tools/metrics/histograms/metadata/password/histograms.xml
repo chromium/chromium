@@ -4536,6 +4536,20 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UPM.OldGmsNoPasswordsDialogDismisalReason"
+    enum="BooleanAccepted" expires_after="2025-07-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the reason why the dialog shown to users with an old version of
+    Google Play Services was dismissed. The old version of Google Play Services
+    in this case, is a version without full UPM support. This dialog is only
+    shown if the user has already downlaoded or doesn't have passwords left over
+    in Chrome. Acceptance of the dialog leads the user to Google Play Store to
+    update Google Play Services. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UPMUpdateSignInCredentialsSucces"
     enum="Boolean" expires_after="2025-08-24">
   <owner>izuzic@google.com</owner>

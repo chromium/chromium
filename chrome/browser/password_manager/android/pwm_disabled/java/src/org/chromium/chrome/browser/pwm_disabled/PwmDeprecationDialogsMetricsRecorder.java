@@ -14,7 +14,15 @@ class PwmDeprecationDialogsMetricsRecorder {
     static final String NO_GMS_NO_PASSWORDS_DIALOG_SHOWN_HISTOGRAM =
             "PasswordManager.UPM.NoGmsNoPasswordsDialogShown";
 
+    static final String OLD_GMS_NO_PASSWORDS_DIALOG_DISMISSAL_REASON_HISTOGRAM =
+            "PasswordManager.UPM.OldGmsNoPasswordsDialogDismissalReason";
+
     static void recordNoGmsNoPasswordsDialogShown() {
         RecordHistogram.recordBooleanHistogram(NO_GMS_NO_PASSWORDS_DIALOG_SHOWN_HISTOGRAM, true);
+    }
+
+    static void recordOldGmsNoPasswordsDialogDismissalReason(boolean accepted) {
+        RecordHistogram.recordBooleanHistogram(
+                OLD_GMS_NO_PASSWORDS_DIALOG_DISMISSAL_REASON_HISTOGRAM, accepted);
     }
 }
