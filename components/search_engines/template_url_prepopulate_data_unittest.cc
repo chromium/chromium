@@ -734,10 +734,8 @@ TEST_F(TemplateURLPrepopulateDataTest, GeneratedDataAgreesWithExistingData) {
             TemplateURLPrepopulateData::kRegionalSettings.size());
 
   for (CountryId country_code : kAllCountryIds) {
-    std::string country = country_codes::CountryIDToCountryString(country_code);
-
     const auto new_settings_iter =
-        TemplateURLPrepopulateData::kRegionalSettings.find(country);
+        TemplateURLPrepopulateData::kRegionalSettings.find(country_code);
     ASSERT_NE(new_settings_iter,
               TemplateURLPrepopulateData::kRegionalSettings.end());
 
