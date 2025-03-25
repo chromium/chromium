@@ -29,10 +29,8 @@ namespace {
 class BitmapRasterBufferImpl : public RasterBuffer {
  public:
   BitmapRasterBufferImpl(ResourcePool::Backing* backing,
-                         uint64_t resource_content_id,
-                         uint64_t previous_content_id)
-      : resource_has_previous_content_(
-            resource_content_id && resource_content_id == previous_content_id),
+                         bool resource_has_previous_content)
+      : resource_has_previous_content_(resource_has_previous_content),
         backing_(backing) {}
   BitmapRasterBufferImpl(const BitmapRasterBufferImpl&) = delete;
   BitmapRasterBufferImpl& operator=(const BitmapRasterBufferImpl&) = delete;
@@ -101,8 +99,10 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
   }
   ResourcePool::Backing* backing = resource.backing();
 
-  return std::make_unique<BitmapRasterBufferImpl>(backing, resource_content_id,
-                                                  previous_content_id);
+  bool resource_has_previous_content =
+      resource_content_id && resource_content_id == previous_content_id;
+  return std::make_unique<BitmapRasterBufferImpl>(
+      backing, resource_has_previous_content);
 }
 
 void BitmapRasterBufferProvider::Flush() {}
