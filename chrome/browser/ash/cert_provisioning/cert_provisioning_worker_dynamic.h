@@ -134,11 +134,14 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // require an invalidation to continue.
   void ScheduleNextStep(base::TimeDelta delay,
                         bool try_provisioning_on_timeout);
+  // Same as ScheduleNextStep, but also calls `state_change_callback` given
+  // in the constructor.
+  void ScheduleNextStepAndNotifyStateChange(base::TimeDelta delay,
+                                            bool try_provisioning_on_timeout);
   void CancelScheduledTasks();
 
   enum class ContinueReason {
     kTimeout,
-    kSubscribedToInvalidation,
     kInvalidationReceived
   };
   void OnShouldContinue(ContinueReason reason);
