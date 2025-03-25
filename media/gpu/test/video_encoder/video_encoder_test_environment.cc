@@ -294,11 +294,6 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
       media::kVaapiEnforceVideoMinMaxResolution);
 #endif
 
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
-  // TODO(b/378401081): remove once enabled by default.
-  combined_enabled_features.push_back(media::kVaapiAV1TemporalLayerHWEncoding);
-#endif
-
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_VAAPI)
   combined_enabled_features.push_back(media::kAcceleratedVideoEncodeLinux);
 #endif
