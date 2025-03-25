@@ -122,7 +122,7 @@ struct WTF_EXPORT HashTableStats {
   // method within a mutex.
   int maxCollisions;
   int numCollisions;
-  int collisionGraph[4096];
+  std::array<int, 4096> collisionGraph;
 
   void copy(const HashTableStats* other);
   void recordCollisionAtCount(int count);
