@@ -18680,21 +18680,6 @@
             ]
         }
     ],
-    "ProjectorUseDVSPlaybackEndpoint": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ProjectorUseDVSPlaybackEndpoint"
-                    ]
-                }
-            ]
-        }
-    ],
     "PropagateWebViewNetworkingSignals": [
         {
             "platforms": [
