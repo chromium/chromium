@@ -2039,8 +2039,6 @@ void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
       ReadOnlySlotSpanMetadata::FromAddr(address);
   PA_CHECK(PartitionRoot::FromSlotSpanMetadata(slot_span) == root);
 
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    PA_BUILDFLAG(USE_PARTITION_COOKIE)
   uintptr_t slot_span_start =
       ReadOnlySlotSpanMetadata::ToSlotSpanStart(slot_span);
   size_t offset_in_slot_span = address - slot_span_start;
@@ -2049,8 +2047,6 @@ void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
   uintptr_t untagged_slot_start =
       slot_span_start +
       bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span);
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (root->brp_enabled()) {
