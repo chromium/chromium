@@ -176,13 +176,6 @@ void AccessibilityLabelsService::Init() {
 
   // This ensures prefs refresh the label images AXMode on startup.
   OnImageLabelsEnabledChanged();
-
-  // Log whether the feature is enabled after startup. This must be run on the
-  // UI thread because it accesses prefs.
-  content::BrowserAccessibilityState::GetInstance()
-      ->AddUIThreadHistogramCallback(base::BindOnce(
-          &AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms,
-          weak_factory_.GetWeakPtr()));
 }
 
 bool AccessibilityLabelsService::IsEnabled() {
@@ -254,13 +247,11 @@ void AccessibilityLabelsService::OnImageLabelsEnabledChanged() {
             ->CreateScopedModeForBrowserContext(profile_,
                                                 ui::AXMode::kLabelImages);
   }
+
+  UpdateAccessibilityLabelsHistograms();
 }
 
 void AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms() {
-  if (!profile_ || !profile_->GetPrefs()) {
-    return;
-  }
-
   base::UmaHistogramBoolean("Accessibility.ImageLabels2",
                             profile_->GetPrefs()->GetBoolean(
                                 prefs::kAccessibilityImageLabelsEnabled));

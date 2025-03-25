@@ -58,15 +58,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // time.
   static std::unique_ptr<BrowserAccessibilityStateImpl> Create();
 
-  // This needs to be called explicitly by content::BrowserMainLoop during
-  // initialization, in order to schedule tasks that need to be done, but
-  // don't need to block the main thread.
-  //
-  // This is called explicitly and not automatically just by
-  // instantiating this class so that tests can use
-  // BrowserAccessibilityState without worrying about threading.
-  virtual void InitBackgroundTasks();
-
   // BrowserAccessibilityState implementation.
   void EnableProcessAccessibility() override;
   void DisableProcessAccessibility() override;
@@ -88,8 +79,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // being auto-disabled.
   ui::AssistiveTech ActiveAssistiveTech() const override;
   bool IsAccessibleBrowser() override;
-  void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
-  void UpdateHistogramsForTesting() override;
   void SetPerformanceFilteringAllowed(bool enabled) override;
   bool IsPerformanceFilteringAllowed() override;
   base::CallbackListSubscription RegisterFocusChangedCallback(
@@ -121,10 +110,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // API usage, we automatically disable accessibility.
   void OnUserInputEvent();
 
-  // Calls InitBackgroundTasks with short delays for scheduled tasks,
-  // and then calls the given completion callback when done.
-  void CallInitBackgroundTasksForTesting(base::RepeatingClosure done_callback);
-
   // Notifies listeners that the focused element changed inside a WebContents.
   void OnFocusChangedInPage(const FocusedNodeDetails& details);
 
@@ -133,12 +118,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
  protected:
   BrowserAccessibilityStateImpl();
-
-  // Called a short while after startup to allow time for the accessibility
-  // state to be determined. Updates histograms with the current state.
-  // Two variants - one for things that must be run on the UI thread, and
-  // another that can be run on another thread.
-  virtual void UpdateHistogramsOnUIThread();
 
   // Notifies the instance that `assistive_tech` is the most significant of any
   // assistive technologies discovered. AXPlatform observers are notified if
@@ -175,14 +154,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // The process's single AXPlatform instance.
   ui::AXPlatform ax_platform_;
-
-  base::TimeDelta histogram_delay_;
-
-  std::vector<base::OnceClosure> ui_thread_histogram_callbacks_;
-
-  bool ui_thread_done_ = false;
-
-  base::RepeatingClosure background_thread_done_callback_;
 
   // Whether there is a pending task to run UpdateAccessibilityActivityTask.
   bool accessibility_update_task_pending_ = false;

@@ -2019,8 +2019,15 @@ INSTANTIATE_TEST_SUITE_P(UserTypeInstantiation,
 IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   if (GetParam() == user_manager::UserType::kChild) {
     logged_in_user_mixin_->LogInUser();
+    histogram_tester_.ExpectBucketCount("Accessibility.CrosSpokenFeedback",
+                                        /*sample=*/false, 2);
+  } else {
+    histogram_tester_.ExpectBucketCount("Accessibility.CrosSpokenFeedback",
+                                        /*sample=*/false, 1);
   }
 
+  histogram_tester_.ExpectBucketCount("Accessibility.CrosSpokenFeedback",
+                                      /*sample=*/true, 0);
   histogram_tester_.ExpectBucketCount(
       "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
       "ConnectionChanged",

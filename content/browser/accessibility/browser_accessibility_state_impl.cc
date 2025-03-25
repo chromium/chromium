@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -57,9 +56,6 @@ const char kAXModeBundleBasic[] = "basic";
 // Used for validating the 'form-controls' bundle parameter for
 // --force-renderer-accessibility.
 const char kAXModeBundleFormControls[] = "form-controls";
-
-// Update the accessibility histogram 45 seconds after initialization.
-static const int ACCESSIBILITY_HISTOGRAM_DELAY_SECS = 45;
 
 // A holder of a ScopedModeCollection targeting a specific BrowserContext or
 // WebContents. The collection is bound to the lifetime of the target.
@@ -195,7 +191,6 @@ BrowserAccessibilityStateImpl::Create() {
 BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     : BrowserAccessibilityState(),
       ax_platform_(*this),
-      histogram_delay_(base::Seconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS)),
       scoped_modes_for_process_(base::BindRepeating(
           &BrowserAccessibilityStateImpl::OnModeChangedForProcess,
           base::Unretained(this))),
@@ -247,21 +242,6 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   SetAXModeChangeAllowed(!disallow_changes);
 }
 
-void BrowserAccessibilityStateImpl::InitBackgroundTasks() {
-  // Schedule calls to update histograms after a delay.
-  //
-  // The delay is necessary because assistive technology sometimes isn't
-  // detected until after the user interacts in some way, so a reasonable delay
-  // gives us better numbers.
-
-  // Other things must be done on the UI thread (e.g. to access PrefService).
-  GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread,
-                     base::Unretained(this)),
-      histogram_delay_);
-}
-
 BrowserAccessibilityStateImpl::~BrowserAccessibilityStateImpl() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
@@ -298,15 +278,6 @@ bool BrowserAccessibilityStateImpl::IsAccessibleBrowser() {
   return GetAccessibilityMode() == ui::kAXModeComplete;
 }
 
-void BrowserAccessibilityStateImpl::AddUIThreadHistogramCallback(
-    base::OnceClosure callback) {
-  ui_thread_histogram_callbacks_.push_back(std::move(callback));
-}
-
-void BrowserAccessibilityStateImpl::UpdateHistogramsForTesting() {
-  UpdateHistogramsOnUIThread();
-}
-
 void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
     bool allowed) {
   performance_filtering_allowed_ = allowed;
@@ -314,18 +285,6 @@ void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
 
 bool BrowserAccessibilityStateImpl::IsPerformanceFilteringAllowed() {
   return performance_filtering_allowed_;
-}
-
-void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
-  for (auto& callback : ui_thread_histogram_callbacks_) {
-    std::move(callback).Run();
-  }
-  ui_thread_histogram_callbacks_.clear();
-
-  ui_thread_done_ = true;
-  if (background_thread_done_callback_) {
-    std::move(background_thread_done_callback_).Run();
-  }
 }
 
 void BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask() {
@@ -660,15 +619,6 @@ void BrowserAccessibilityStateImpl::OnModeChangedForWebContents(
           ModeCollectionForTarget::GetAccessibilityMode(
               web_contents->GetBrowserContext()) |
           new_mode));
-}
-
-void BrowserAccessibilityStateImpl::CallInitBackgroundTasksForTesting(
-    base::RepeatingClosure done_callback) {
-  // Set the delay to 1 second, that ensures that we actually test having
-  // a nonzero delay but the test still runs quickly.
-  histogram_delay_ = base::Seconds(1);
-  background_thread_done_callback_ = done_callback;
-  InitBackgroundTasks();
 }
 
 void BrowserAccessibilityStateImpl::OnFocusChangedInPage(
