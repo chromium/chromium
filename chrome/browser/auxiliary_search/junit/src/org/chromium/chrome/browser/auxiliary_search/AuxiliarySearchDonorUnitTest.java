@@ -48,7 +48,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.auxiliary_search.schema.CustomTabWebPage;
-import org.chromium.chrome.browser.auxiliary_search.schema.TabWebPage;
 import org.chromium.chrome.browser.auxiliary_search.schema.TopSiteWebPage;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -518,7 +517,7 @@ public class AuxiliarySearchDonorUnitTest {
         createAndInitAuxiliarySearchDonor();
         list = mAuxiliarySearchDonor.getSupportedDocumentClasses();
         assertEquals(3, list.size());
-        assertTrue(list.contains(TabWebPage.class));
+        assertTrue(list.contains(WebPage.class));
         assertTrue(list.contains(CustomTabWebPage.class));
         assertTrue(list.contains(TopSiteWebPage.class));
     }
