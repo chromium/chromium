@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
+#include "content/public/common/content_features.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/http/http_status_code.h"
@@ -737,6 +738,108 @@ TEST_F(FederatedProviderFetcherTest,
   EXPECT_TRUE(result.error);
   // EXPECT_EQ(result.error->result, blink::mojom::FederatedAuthRequestResult::
   //                                     kConfigInvalidResponse);
+}
+
+TEST_F(FederatedProviderFetcherTest,
+       SuccessResultEvenWithEmptyAccountsEndpointWithLightweightFedCm) {
+  // Validate that when LightweightFedCM is enabled, it's permissible to have an
+  // empty accounts_endpoint set.
+  feature_list_.InitAndEnableFeature(features::kFedCmLightweightMode);
+  FederatedProviderFetcher::FetchResult result;
+  IdentityProviderMetadata metadata;
+  metadata.idp_login_url = GURL("https://idp.example/sign-in");
+  result.metadata = metadata;
+  result.endpoints.accounts = GURL();
+  result.endpoints.token = GURL("https://idp.example/token");
+  result.wellknown.login_url = GURL("https://idp.example/sign-in");
+  result.wellknown.accounts = GURL();
+
+  result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
+  result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
+  auto network_manager =
+      std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
+  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+
+  fetcher.ValidateAndMaybeSetError(result);
+
+  EXPECT_FALSE(result.error);
+}
+
+TEST_F(FederatedProviderFetcherTest,
+       ProvidersUrlsCanbeEmptyWhenAuthZAndLightweightAreEnabled) {
+  // Validate that when LightweightFedCM and FedCmAuthz are enabled,
+  // it's permissible to have an empty accounts_endpoint set and
+  // no provider_config_urls, so long as the accounts url is empty in both the
+  // wellknown and config.
+  feature_list_.InitWithFeatures(
+      {features::kFedCmLightweightMode, features::kFedCmAuthz}, {});
+  FederatedProviderFetcher::FetchResult result;
+  IdentityProviderMetadata metadata;
+  metadata.idp_login_url = GURL("https://idp.example/sign-in");
+  result.metadata = metadata;
+  result.endpoints.accounts = GURL();
+  result.endpoints.token = GURL("https://idp.example/token");
+  result.wellknown.login_url = GURL("https://idp.example/sign-in");
+  result.wellknown.accounts = GURL();
+
+  result.wellknown.provider_urls = {};
+  result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
+  auto network_manager =
+      std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
+  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+
+  fetcher.ValidateAndMaybeSetError(result);
+
+  EXPECT_FALSE(result.error);
+}
+
+TEST_F(FederatedProviderFetcherTest,
+       FailureResultWithMismatchingAccountsEndpointWithLightweightFedCm) {
+  // Validate that when LightweightFedCM is enabled, it's still an error to have
+  // a non-same-origin accounts endpoint.
+  feature_list_.InitAndEnableFeature(features::kFedCmLightweightMode);
+  FederatedProviderFetcher::FetchResult result;
+  IdentityProviderMetadata metadata;
+  metadata.idp_login_url = GURL("https://idp.example/sign-in");
+  result.metadata = metadata;
+  result.endpoints.accounts = GURL("https://not-the-idp.example/accounts");
+  result.endpoints.token = GURL("https://idp.example/token");
+  result.wellknown.login_url = GURL();
+  result.wellknown.accounts = GURL();
+
+  result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
+  result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
+  auto network_manager =
+      std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
+  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+
+  fetcher.ValidateAndMaybeSetError(result);
+
+  EXPECT_TRUE(result.error);
+}
+
+TEST_F(FederatedProviderFetcherTest,
+       FailureResultWithEmptyAccountsEndpointWithoutLightweightFedCm) {
+  // Validate that when LightweightFedCM is disabled, it's still an error to not
+  // define an accounts endpoint.
+  FederatedProviderFetcher::FetchResult result;
+  IdentityProviderMetadata metadata;
+  metadata.idp_login_url = GURL("https://idp.example/sign-in");
+  result.metadata = metadata;
+  result.endpoints.accounts = GURL();
+  result.endpoints.token = GURL("https://idp.example/token");
+  result.wellknown.login_url = GURL();
+  result.wellknown.accounts = GURL();
+
+  result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
+  result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
+  auto network_manager =
+      std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
+  FederatedProviderFetcher fetcher(*main_rfh(), network_manager.get());
+
+  fetcher.ValidateAndMaybeSetError(result);
+
+  EXPECT_TRUE(result.error);
 }
 
 TEST_F(FederatedProviderFetcherTest, InvalidEmptyConfig) {
