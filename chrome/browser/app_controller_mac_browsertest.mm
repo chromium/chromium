@@ -1206,9 +1206,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 
   // Switch to profile 1, create bookmark 1 and force the menu to build.
   [app_controller setLastProfile:profile1];
-  [app_controller bookmarkMenuBridge]->GetBookmarkModel()
-      -> AddURL([app_controller bookmarkMenuBridge]->GetBookmarkModel()
-                    -> bookmark_bar_node(),
+  [app_controller bookmarkMenuBridge]->GetBookmarkModelForTesting()
+      -> AddURL([app_controller bookmarkMenuBridge]
+                    ->GetBookmarkModelForTesting() -> bookmark_bar_node(),
                 0, title1, url1);
   NSMenu* profile1_submenu =
       [app_controller bookmarkMenuBridge]->BookmarkMenu();
@@ -1216,9 +1216,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 
   // Switch to profile 2, create bookmark 2 and force the menu to build.
   [app_controller setLastProfile:profile2_ptr];
-  [app_controller bookmarkMenuBridge]->GetBookmarkModel()
-      -> AddURL([app_controller bookmarkMenuBridge]->GetBookmarkModel()
-                    -> bookmark_bar_node(),
+  [app_controller bookmarkMenuBridge]->GetBookmarkModelForTesting()
+      -> AddURL([app_controller bookmarkMenuBridge]
+                    ->GetBookmarkModelForTesting() -> bookmark_bar_node(),
                 0, title2, url2);
   NSMenu* profile2_submenu =
       [app_controller bookmarkMenuBridge]->BookmarkMenu();
