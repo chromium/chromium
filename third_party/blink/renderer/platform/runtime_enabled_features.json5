@@ -765,7 +765,7 @@
     {
       name: "CapturedSurfaceControl",
       origin_trial_feature_name: "CapturedSurfaceControl",
-      status: {"Android": "", "default": "experimental"},
+      status: {"Android": "", "default": "stable"}
     },
     {
       name: "CapturedSurfaceResolution",
