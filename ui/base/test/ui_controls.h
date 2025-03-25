@@ -111,6 +111,12 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
 // appropriate window on platforms where mouse events must be explicitly
 // targeted.
 //
+// NOTE: On Mac, hover events are not delivered reliably to windows. To combat
+// this, if you specify a window hint for a move with no buttons down, the hover
+// events will be sent directly to the window. This may, unfortunately, bypass
+// other observers, so if you are expecting an event observer to pick up the
+// move rather than a window, do not specify a hint.
+//
 // Returns false on Windows if the desired position is not over a window
 // belonging to the current process.
 bool SendMouseMove(int screen_x,
