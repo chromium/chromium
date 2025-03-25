@@ -10,20 +10,17 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
-#import "components/password_manager/core/browser/password_requirements_service.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/credential_details.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item_delegate.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -54,7 +51,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeWebsite = kItemTypeEnumZero,
   ItemTypeUsername,
   ItemTypePassword,
-  ItemTypeSuggestPassword,
   ItemTypeFooter,
   ItemTypeNote,
   ItemTypeDuplicateCredentialButton,
@@ -82,9 +78,6 @@ const int kMinNoteCharAmountForWarning = 901;
 
 // The text item related to the password value.
 @property(nonatomic, strong) TableViewTextEditItem* passwordTextItem;
-
-// The text item related to the suggest strong password value.
-@property(nonatomic, strong) TableViewTextItem* suggestPasswordTextItem;
 
 // The text item related to the password note value.
 @property(nonatomic, strong) TableViewMultiLineTextEditItem* noteTextItem;
@@ -206,15 +199,6 @@ const int kMinNoteCharAmountForWarning = 901;
   [model addItem:self.passwordTextItem
       toSectionWithIdentifier:SectionIdentifierPassword];
 
-  if (password_manager::features::
-          IsSuggestStrongPasswordInAddPasswordEnabled()) {
-    if ([self.delegate shouldShowSuggestPasswordItem]) {
-      self.suggestPasswordTextItem = [self suggestPasswordItem];
-      [model addItem:self.suggestPasswordTextItem
-          toSectionWithIdentifier:SectionIdentifierPassword];
-    }
-  }
-
   self.noteTextItem = [self noteItem];
   [model addItem:self.noteTextItem
       toSectionWithIdentifier:SectionIdentifierPassword];
@@ -290,17 +274,6 @@ const int kMinNoteCharAmountForWarning = 901;
         [self isPasswordShown] ? IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON
                                : IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);
   }
-  return item;
-}
-
-- (TableViewTextItem*)suggestPasswordItem {
-  // `TableViewTextItem` was chosen instead of `TableViewTextButtonItem` to
-  // avoid unwanted padding introduced by UIStackView.
-  TableViewTextItem* item =
-      [[TableViewTextItem alloc] initWithType:ItemTypeSuggestPassword];
-  item.textColor = [UIColor colorNamed:kBlueColor];
-  item.text = l10n_util::GetNSString(
-      IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_SUGGEST_STRONG_PASSWORD);
   return item;
 }
 
@@ -495,14 +468,6 @@ const int kMinNoteCharAmountForWarning = 901;
     }
     case ItemTypeNote: {
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
-      break;
-    }
-    case ItemTypeSuggestPassword: {
-      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(didTapSuggestStrongPassword:)];
-      [cell addGestureRecognizer:tapRecognizer];
-      cell.accessibilityTraits |= UIAccessibilityTraitButton;
       break;
     }
     case ItemTypeDuplicateCredentialMessage:
@@ -725,10 +690,6 @@ const int kMinNoteCharAmountForWarning = 901;
                                   password:self.passwordTextItem.textFieldValue
                                       note:self.noteTextItem.text];
 }
-- (void)didTapSuggestStrongPassword:(UIButton*)sender {
-  self.passwordTextItem.textFieldSecureTextEntry = NO;
-  [self.passwordTextItem updateTextFieldValue:[self.delegate generatePassword]];
-}
 
 #pragma mark - SettingsRootTableViewController
 
@@ -749,7 +710,6 @@ const int kMinNoteCharAmountForWarning = 901;
     case ItemTypeDuplicateCredentialButton:
     case ItemTypeFooter:
     case ItemTypeNote:
-    case ItemTypeSuggestPassword:
       return NO;
   };
 }

@@ -87,9 +87,6 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 // Whether the aspect of the cell should mark the text as valid.
 - (void)setHasValidText:(BOOL)hasValidText;
 
-// Updates the text field value and refreshes the cell.
-- (void)updateTextFieldValue:(NSString*)textFieldValue;
-
 @end
 
 // TableViewTextEditCell implements an TableViewCell subclass containing a label
