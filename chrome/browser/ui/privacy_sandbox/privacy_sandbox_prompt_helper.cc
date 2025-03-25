@@ -109,8 +109,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1315580, crbug.com/1315579): When navigating to a NTP that
   // isn't Chrome-controlled on ChromeOS, open an about blank tab to display the
-  // prompt. On other platforms, it's being handled during the startup. This
-  // logic can be removed when Lacros is ready.
+  // prompt. On other platforms, it's being handled during the startup.
   if (web_contents()->GetLastCommittedURL() == chrome::kChromeUINewTabURL) {
     const bool has_extention_override =
         HasExtensionNtpOverride(extensions::ExtensionRegistry::Get(profile()));
