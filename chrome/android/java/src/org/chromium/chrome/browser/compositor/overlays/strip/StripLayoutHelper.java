@@ -2105,7 +2105,8 @@ public class StripLayoutHelper
                                 },
                                 mTabGroupModelFilter,
                                 mBottomSheetController,
-                                /* showNewGroupRow= */ true);
+                                /* showNewGroupRow= */ true,
+                                /* destroyOnHide= */ true);
             }
             mTabContextMenuCoordinator =
                     TabContextMenuCoordinator.createContextMenuCoordinator(
