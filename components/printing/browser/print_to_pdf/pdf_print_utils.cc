@@ -138,16 +138,16 @@ GetPrintPagesParams(const GURL& page_url,
   if (margin_bottom_in_inches < 0)
     return "bottom margin is negative";
 
-  printing::PageMargins margins_in_microns;
-  margins_in_microns.left =
-      base::ClampFloor(margin_left_in_inches * printing::kMicronsPerInch);
-  margins_in_microns.right =
-      base::ClampFloor(margin_right_in_inches * printing::kMicronsPerInch);
-  margins_in_microns.top =
-      base::ClampFloor(margin_top_in_inches * printing::kMicronsPerInch);
-  margins_in_microns.bottom =
-      base::ClampFloor(margin_bottom_in_inches * printing::kMicronsPerInch);
-  print_settings.SetCustomMargins(margins_in_microns);
+  printing::PageMargins margins_in_points;
+  margins_in_points.left =
+      base::ClampFloor(margin_left_in_inches * printing::kPointsPerInch);
+  margins_in_points.right =
+      base::ClampFloor(margin_right_in_inches * printing::kPointsPerInch);
+  margins_in_points.top =
+      base::ClampFloor(margin_top_in_inches * printing::kPointsPerInch);
+  margins_in_points.bottom =
+      base::ClampFloor(margin_bottom_in_inches * printing::kPointsPerInch);
+  print_settings.SetCustomMargins(margins_in_points);
 
   double paper_width_in_inches =
       paper_width.value_or(printing::kLetterWidthInch);
