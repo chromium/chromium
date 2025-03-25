@@ -36,11 +36,17 @@
         color: var(--cr-secondary-text-color);
         font-size: 11px;
         font-weight: 400;
+        text-wrap: pretty;
       }
 
       #historyEmbeddingsDisclaimer[narrow] {
         padding-inline: 24px;
         max-width: none;
+      }
+
+      #historyEmbeddingsDisclaimer:not([narrow])
+          #historyEmbeddingsDisclaimerContent {
+        max-width: 680px;
       }
 
       cr-history-embeddings-filter-chips {
@@ -158,14 +164,16 @@
           <div id="historyEmbeddingsDisclaimer" class="history-cards"
               hidden$="[[!enableHistoryEmbeddings_]]"
               narrow$="[[hasDrawer_]]">
-            $i18n{historyEmbeddingsDisclaimer}
-            <a id="historyEmbeddingsDisclaimerLink"
-                href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank"
-                aria-describedby="historyEmbeddingsDisclaimer"
-                on-click="onHistoryEmbeddingsDisclaimerLinkClick_"
-                on-auxclick="onHistoryEmbeddingsDisclaimerLinkClick_">
-              $i18n{learnMore}
-            </a>
+            <div id="historyEmbeddingsDisclaimerContent">
+              $i18n{historyEmbeddingsDisclaimer}
+              <a id="historyEmbeddingsDisclaimerLink"
+                  href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank"
+                  aria-describedby="historyEmbeddingsDisclaimer"
+                  on-click="onHistoryEmbeddingsDisclaimerLinkClick_"
+                  on-auxclick="onHistoryEmbeddingsDisclaimerLinkClick_">
+                $i18n{learnMore}
+              </a>
+            </div>
           </div>
           <template is="dom-if" if="[[showTabs_]]">
             <div id="tabs">
