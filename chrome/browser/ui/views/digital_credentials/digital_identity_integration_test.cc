@@ -98,26 +98,23 @@ class TestBrowserClient : public ChromeContentBrowserClient {
 
 }  // anonymous namespace
 
-// Tests for DigitalIdentitySafetyInterstitialControllerDesktop.
-//
-// A bunch of logic for showing the interstitial is shared between the desktop
-// and Android implementations. For the sake of not duplicating integration
-// tests for shared code for both desktop and Android, integration tests for
-// shared logic are intentionally Android-only.
-class DigitalIdentitySafetyInterstitialIntegrationTest
-    : public InProcessBrowserTest {
+// This covers the integration test for digital identity flows including a bunch
+// of logic for showing the interstitial. The logic is shared between the
+// desktop and Android implementations. For the sake of not duplicating
+// integration tests for shared code for both desktop and Android, integration
+// tests for shared logic are intentionally Android-only.
+class DigitalIdentityIntegrationTest : public InProcessBrowserTest {
  public:
-  DigitalIdentitySafetyInterstitialIntegrationTest() {
+  DigitalIdentityIntegrationTest() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kWebIdentityDigitalCredentials);
   }
-  ~DigitalIdentitySafetyInterstitialIntegrationTest() override = default;
+  ~DigitalIdentityIntegrationTest() override = default;
 
   void SetUpOnMainThread() override {
-    client_ = std::make_unique<TestBrowserClient>(
-        base::BindOnce(&DigitalIdentitySafetyInterstitialIntegrationTest::
-                           OnDigitalCredentialRequested,
-                       weak_ptr_factory_.GetWeakPtr()));
+    client_ = std::make_unique<TestBrowserClient>(base::BindOnce(
+        &DigitalIdentityIntegrationTest::OnDigitalCredentialRequested,
+        weak_ptr_factory_.GetWeakPtr()));
     original_client_ = content::SetBrowserClientForTesting(client_.get());
 
     InProcessBrowserTest::SetUpOnMainThread();
@@ -155,15 +152,14 @@ class DigitalIdentitySafetyInterstitialIntegrationTest
   bool did_request_credential_ = false;
   base::OnceClosure credential_request_observer_;
 
-  base::WeakPtrFactory<DigitalIdentitySafetyInterstitialIntegrationTest>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<DigitalIdentityIntegrationTest> weak_ptr_factory_{this};
 };
 
 /**
  * Test that an interstitial is shown if the page requests more than just the
  * age.
  */
-IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
+IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest,
                        InterstitialShownMoreThanJustAge) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -192,8 +188,7 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
 /**
  * Test that an interstitial is not shown if the page only requests the age.
  */
-IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
-                       InterstitialNotShown) {
+IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest, InterstitialNotShown) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
