@@ -81,7 +81,7 @@ public class OptionalButtonCoordinatorTest {
         mOptionalButtonCoordinator =
                 new OptionalButtonCoordinator(
                         mMockOptionalButtonView,
-                        mMockUserEducationHelper,
+                        () -> mMockUserEducationHelper,
                         mMockRootView,
                         mMockIsAnimationAllowedDelegate,
                         () -> mMockTracker);
