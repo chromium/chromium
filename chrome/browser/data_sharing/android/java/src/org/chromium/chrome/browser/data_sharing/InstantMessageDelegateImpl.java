@@ -62,16 +62,19 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         public final TabGroupModelFilter tabGroupModelFilter;
         public final DataSharingNotificationManager dataSharingNotificationManager;
         public final DataSharingTabManager dataSharingTabManager;
+        public final Supplier<Boolean> isActiveWindowSupplier;
 
         public AttachedWindowInfo(
                 WindowAndroid windowAndroid,
                 TabGroupModelFilter tabGroupModelFilter,
                 DataSharingNotificationManager dataSharingNotificationManager,
-                DataSharingTabManager dataSharingTabManager) {
+                DataSharingTabManager dataSharingTabManager,
+                Supplier<Boolean> isActiveWindowSupplier) {
             this.windowAndroid = windowAndroid;
             this.tabGroupModelFilter = tabGroupModelFilter;
             this.dataSharingNotificationManager = dataSharingNotificationManager;
             this.dataSharingTabManager = dataSharingTabManager;
+            this.isActiveWindowSupplier = isActiveWindowSupplier;
         }
     }
 
@@ -119,12 +122,14 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
      * @param tabGroupModelFilter The tab model and group filter for the given window.
      * @param dataSharingNotificationManager Used to send notifications for a particular window.
      * @param dataSharingTabManager Used to display share UI.
+     * @param isActiveWindowSupplier Used to find out the last focused window as a fallback option.
      */
     public void attachWindow(
             @NonNull WindowAndroid windowAndroid,
             @NonNull TabGroupModelFilter tabGroupModelFilter,
             @NonNull DataSharingNotificationManager dataSharingNotificationManager,
-            @NonNull DataSharingTabManager dataSharingTabManager) {
+            @NonNull DataSharingTabManager dataSharingTabManager,
+            @NonNull Supplier<Boolean> isActiveWindowSupplier) {
         assert windowAndroid != null;
         assert tabGroupModelFilter != null;
         assert !tabGroupModelFilter.getTabModel().isIncognito();
@@ -135,7 +140,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         windowAndroid,
                         tabGroupModelFilter,
                         dataSharingNotificationManager,
-                        dataSharingTabManager));
+                        dataSharingTabManager,
+                        isActiveWindowSupplier));
     }
 
     /**
@@ -149,7 +155,13 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     @Override
     public void displayInstantaneousMessage(
             InstantMessage message, Callback<Boolean> successCallback) {
-        @Nullable AttachedWindowInfo attachedWindowInfo = getAttachedWindowInfo(message);
+        // For TAB_GROUP_REMOVED messages, the group is gone and there is no attached window info.
+        // Hence using the last focused window is our best bet.
+        boolean fallbackToLastFocusedWindow =
+                message.collaborationEvent == CollaborationEvent.TAB_GROUP_REMOVED;
+        @Nullable
+        AttachedWindowInfo attachedWindowInfo =
+                getAttachedWindowInfo(message, fallbackToLastFocusedWindow);
         if (attachedWindowInfo == null) {
             successCallback.onResult(false);
             return;
@@ -202,7 +214,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         }
     }
 
-    private AttachedWindowInfo getAttachedWindowInfo(InstantMessage message) {
+    private AttachedWindowInfo getAttachedWindowInfo(
+            InstantMessage message, boolean fallbackToLastFocusedWindow) {
         if (mAttachList.size() == 0) {
             return null;
         }
@@ -218,6 +231,14 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             if (!tabGroupModelFilter.tabGroupExists(tabGroupId)) continue;
 
             return info;
+        }
+
+        if (fallbackToLastFocusedWindow) {
+            for (AttachedWindowInfo info : mAttachList) {
+                if (info.isActiveWindowSupplier.get()) {
+                    return info;
+                }
+            }
         }
 
         // Tab group was deleted or window not active.

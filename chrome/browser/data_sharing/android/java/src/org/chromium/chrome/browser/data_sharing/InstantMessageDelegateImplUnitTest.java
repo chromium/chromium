@@ -105,6 +105,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Mock private Callback<Boolean> mSuccessCallback;
     @Mock private DataSharingNotificationManager mDataSharingNotificationManager;
     @Mock private DataSharingTabManager mDataSharingTabManager;
+    @Mock private Supplier<Boolean> mIsActiveWindowSupplier;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Bitmap mAvatarBitmap;
     @Mock private Tab mTab1;
@@ -139,6 +140,7 @@ public class InstantMessageDelegateImplUnitTest {
         when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        when(mIsActiveWindowSupplier.get()).thenReturn(false);
 
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
         SavedTabGroup group = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, TAB_GROUP_ID);
@@ -152,7 +154,8 @@ public class InstantMessageDelegateImplUnitTest {
                 mWindowAndroid,
                 mTabGroupModelFilter,
                 mDataSharingNotificationManager,
-                mDataSharingTabManager);
+                mDataSharingTabManager,
+                mIsActiveWindowSupplier);
     }
 
     private InstantMessage newInstantMessage(@CollaborationEvent int collaborationEvent) {
@@ -324,6 +327,33 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationRemoved() {
+        mDelegate.displayInstantaneousMessage(
+                newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED), mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+        @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
+        assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
+        assertEquals(MESSAGE_CONTENT_1, propertyModel.get(TITLE));
+
+        propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
+        verify(mSuccessCallback).onResult(true);
+    }
+
+    @Test
+    public void testCollaborationRemoved_NoLastFocusedWindow() {
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        mDelegate.displayInstantaneousMessage(
+                newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED), mSuccessCallback);
+
+        verify(mManagedMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+    }
+
+    @Test
+    public void testCollaborationRemoved_LastFocusedWindow() {
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mIsActiveWindowSupplier.get()).thenReturn(true);
         mDelegate.displayInstantaneousMessage(
                 newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED), mSuccessCallback);
 
