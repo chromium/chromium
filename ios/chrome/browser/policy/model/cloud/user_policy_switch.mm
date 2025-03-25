@@ -4,23 +4,20 @@
 
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 
-#import "base/feature_list.h"
-#import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
-
 namespace policy {
 
+// TODO(crbug.com/320509638): Remove all of these, and the entire file.
+
 bool IsUserPolicyEnabledForSigninOrSyncConsentLevel() {
-  return base::FeatureList::IsEnabled(kUserPolicyForSigninOrSyncConsentLevel);
+  return false;
 }
 
 bool IsUserPolicyEnabledForSigninAndNoSyncConsentLevel() {
-  return base::FeatureList::IsEnabled(
-      kUserPolicyForSigninAndNoSyncConsentLevel);
+  return true;
 }
 
 bool IsAnyUserPolicyFeatureEnabled() {
-  return IsUserPolicyEnabledForSigninOrSyncConsentLevel() ||
-         IsUserPolicyEnabledForSigninAndNoSyncConsentLevel();
+  return true;
 }
 
 }  // namespace policy
