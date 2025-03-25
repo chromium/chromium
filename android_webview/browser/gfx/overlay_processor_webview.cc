@@ -962,8 +962,7 @@ bool OverlayProcessorWebView::ProcessForFrameSinkId(
     const auto& frame = surface->GetActiveFrame();
     auto* quad = frame.render_pass_list.back()->quad_list.front();
 
-    if (gfx::SurfaceControl::SupportsSetFrameRate() &&
-        base::FeatureList::IsEnabled(features::kWebViewFrameRateHints)) {
+    if (gfx::SurfaceControl::SupportsSetFrameRate()) {
       float frame_rate = 0.f;
       const viz::FrameIntervalInputs& frame_interval_inputs =
           frame.metadata.frame_interval_inputs;

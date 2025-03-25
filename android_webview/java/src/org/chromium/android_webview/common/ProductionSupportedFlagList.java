@@ -182,9 +182,6 @@ public final class ProductionSupportedFlagList {
                 VizFeatures.WEBVIEW_ENABLE_ADPF_RENDERER_MAIN,
                 "Include Renderer Main into ADPF session"),
         Flag.baseFeature(
-                VizFeatures.WEBVIEW_FRAME_RATE_HINTS,
-                "Provide frame rate hints to View system if supported by OS"),
-        Flag.baseFeature(
                 VizFeatures.ALLOW_UNDAMAGED_NONROOT_RENDER_PASS_TO_SKIP,
                 "Enable optimization for skipping undamaged nonroot render passes."),
         Flag.baseFeature(
