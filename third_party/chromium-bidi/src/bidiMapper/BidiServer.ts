@@ -196,6 +196,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     const [{browserContextIds}, {targetInfos}] = await Promise.all([
       browserCdpClient.sendCommand('Target.getBrowserContexts'),
       browserCdpClient.sendCommand('Target.getTargets'),
+      // Required for `Browser.downloadWillBegin` events.
+      browserCdpClient.sendCommand('Browser.setDownloadBehavior', {
+        behavior: 'default',
+        eventsEnabled: true,
+      }),
     ]);
     let defaultUserContextId = 'default';
     for (const info of targetInfos) {

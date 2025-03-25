@@ -500,6 +500,20 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
 
 
 @pytest.fixture
+def url_download(local_server_http):
+    """Return a URL that triggers a download."""
+    def url_download(file_name="file-name.txt", content="download content"):
+        return local_server_http.url_200(
+            content,
+            content_type="text/html",
+            headers={
+                "Content-Disposition": f"attachment;  filename=\"{file_name}\""
+            })
+
+    return url_download
+
+
+@pytest.fixture
 def html(local_server_http, local_server_http_another_host):
     """Return a factory for URL with the given content."""
     def html(content="", same_origin=True):

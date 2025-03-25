@@ -183,7 +183,10 @@ class LocalHttpServer:
         """
         return self.__http_server.url_for(self.__path_base)
 
-    def url_200(self, content=None, content_type="text/html") -> str:
+    def url_200(self,
+                content=None,
+                content_type="text/html",
+                headers={}) -> str:
         """Returns the url for the 200 page with the `default_200_page_content`.
         """
         if content is not None:
@@ -194,7 +197,7 @@ class LocalHttpServer:
                 .expect_request(path) \
                 .respond_with_data(
                     content,
-                    headers={"Content-Type": content_type})
+                    headers={"Content-Type": content_type} | headers)
 
             return self.__http_server.url_for(path)
 
