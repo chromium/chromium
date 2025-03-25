@@ -42,11 +42,6 @@ public class DataSharingManageUiConfig {
 
         default void onMemberBlocked(GroupMember member) {}
 
-        default void onMemberRemovedAndStopSharingInitiated(
-                GroupMember member, GroupData groupData, Callback<Boolean> readyToStop) {}
-
-        default void onMemberBlockedAndLeaveGroup(GroupMember member, GroupData groupData) {}
-
         default void onLeaveGroup() {}
 
         default void getDataSharingUrl(GroupToken groupToken, Callback<String> url) {}
