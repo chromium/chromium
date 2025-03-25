@@ -357,6 +357,31 @@ BASE_FEATURE(kOmniboxShortcutsAndroid, "OmniboxShortcutsAndroid", ENABLED);
 // When enabled, it increases ipad's zps matches limit on web,srp and ntp.
 BASE_FEATURE(kIpadZeroSuggestMatches, "IpadZeroSuggestMatches", DISABLED);
 
+// The features below allow tuning number of suggestions offered to users in
+// specific contexts. These features are default enabled and are used to control
+// related fieldtrial parameters.
+BASE_FEATURE(kNumNtpZpsRecentSearches,
+             "OmniboxNumNtpZpsRecentSearches",
+             ENABLED);
+BASE_FEATURE(kNumNtpZpsTrendingSearches,
+             "OmniboxNumNtpZpsTrendingSearches",
+             ENABLED);
+BASE_FEATURE(kNumWebZpsRecentSearches,
+             "OmniboxNumWebZpsRecentSearches",
+             ENABLED);
+BASE_FEATURE(kNumWebZpsRelatedSearches,
+             "OmniboxNumWebZpsRelatedSearches",
+             ENABLED);
+BASE_FEATURE(kNumWebZpsMostVisitedUrls,
+             "OmniboxNumWebZpsMostVisitedUrls",
+             ENABLED);
+BASE_FEATURE(kNumSrpZpsRecentSearches,
+             "OmniboxNumSrpZpsRecentSearches",
+             ENABLED);
+BASE_FEATURE(kNumSrpZpsRelatedSearches,
+             "OmniboxNumSrpZpsRelatedSearches",
+             ENABLED);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enable the Elegant Text Height attribute on the UrlBar.
 // This attribute increases line height by up to 60% to accommodate certain

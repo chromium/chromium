@@ -6711,6 +6711,41 @@
     "expiry_milestone": 140
   },
   {
+    "name": "omnibox-num-ntp-zps-recent-searches",
+    "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 300
+  },
+  {
+    "name": "omnibox-num-ntp-zps-trending-searches",
+    "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 300
+  },
+  {
+    "name": "omnibox-num-srp-zps-recent-searches",
+    "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 300
+  },
+  {
+    "name": "omnibox-num-srp-zps-related-searches",
+    "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 300
+  },
+  {
+    "name": "omnibox-num-web-zps-most-visited-urls",
+    "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 300
+  },
+  {
+    "name": "omnibox-num-web-zps-recent-searches",
+    "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 300
+  },
+  {
+    "name": "omnibox-num-web-zps-related-searches",
+    "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 300
+  },
+  {
     "name": "omnibox-on-clobber-focus-type-on-ios",
     "owners": [ "ananyaseelam@google.com", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 140
