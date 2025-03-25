@@ -60,7 +60,25 @@ class PixManager {
  private:
   friend class PixManagerTest;
   friend class PixManagerTestForUiScreens;
+  friend class PixManagerPaymentsNetworkInterfaceTest;
   // Keep all entries in alphabetical order!
+  FRIEND_TEST_ALL_PREFIXES(PixManagerPaymentsNetworkInterfaceTest,
+                           OnInitiatePaymentResponseReceived_FailureResponse);
+  FRIEND_TEST_ALL_PREFIXES(PixManagerPaymentsNetworkInterfaceTest,
+                           SendInitiatePaymentRequest);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerPaymentsNetworkInterfaceTest,
+      OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerPaymentsNetworkInterfaceTest,
+      OnInitiatePaymentResponseReceived_LoggedOutProfile_ErrorScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerPaymentsNetworkInterfaceTest,
+      OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerPaymentsNetworkInterfaceTest,
+      OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(PixManagerPaymentsNetworkInterfaceTest, Reset);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, ApiClientInitializedLazily);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest,
                            ApiClientTriggeredAfterPixCodeValidation);
@@ -89,20 +107,6 @@ class PixManager {
                            NoPixPaymentPromptWhenApiClientNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest,
                            OnGetClientToken_ClientTokenEmpty_ErrorScreenShown);
-  FRIEND_TEST_ALL_PREFIXES(PixManagerTest,
-                           OnInitiatePaymentResponseReceived_FailureResponse);
-  FRIEND_TEST_ALL_PREFIXES(
-      PixManagerTest,
-      OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered);
-  FRIEND_TEST_ALL_PREFIXES(
-      PixManagerTest,
-      OnInitiatePaymentResponseReceived_LoggedOutProfile_ErrorScreenShown);
-  FRIEND_TEST_ALL_PREFIXES(
-      PixManagerTest,
-      OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown);
-  FRIEND_TEST_ALL_PREFIXES(
-      PixManagerTest,
-      OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, OnPixAccountSelected);
   FRIEND_TEST_ALL_PREFIXES(
       PixManagerTest,
@@ -143,7 +147,6 @@ class PixManager {
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest,
                            RiskDataNotEmpty_GetClientTokenCalled);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, RiskDataNotEmpty_HistogramsLogged);
-  FRIEND_TEST_ALL_PREFIXES(PixManagerTest, SendInitiatePaymentRequest);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, ShowErrorScreen);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, ShowPixPaymentPrompt);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, ShowProgressScreen);
