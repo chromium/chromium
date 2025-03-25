@@ -1610,6 +1610,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
 // is successfully downloaded.
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, FaceGazeAssetsSucceeded) {
   AccessibilityManager::Get()->EnableFaceGaze(true);
+  // Turning on FaceGaze will add a pinned notification to the message center,
+  // so clear it for the purposes of this test.
+  ClearMessageCenter();
   InstallFaceGazeAssetsAndWait();
 
   message_center::NotificationList::Notifications notifications =
@@ -1625,6 +1628,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, FaceGazeAssetsSucceeded) {
 // fails to download.
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, FaceGazeAssetsFailed) {
   AccessibilityManager::Get()->EnableFaceGaze(true);
+  // Turning on FaceGaze will add a pinned notification to the message center,
+  // so clear it for the purposes of this test.
+  ClearMessageCenter();
   OnFaceGazeAssetsFailed();
 
   message_center::NotificationList::Notifications notifications =
