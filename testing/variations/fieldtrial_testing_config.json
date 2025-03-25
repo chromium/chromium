@@ -19618,6 +19618,25 @@
             ]
         }
     ],
+    "ReduceAcceptLanguageHTTP": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReduceAcceptLanguageHTTP"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReduceCpuUtilization2": [
         {
             "platforms": [

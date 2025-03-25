@@ -265,7 +265,8 @@ class SignedExchangeRequestHandlerBrowserTest
     // TODO(crbug.com/334954143) Fix the AcceptLanguage tests when turning on
     // the ReduceAcceptLanguage feature.
     scoped_feature_list_.InitWithFeatures(
-        {}, {network::features::kReduceAcceptLanguage});
+        {}, {network::features::kReduceAcceptLanguage,
+             network::features::kReduceAcceptLanguageHTTP});
     use_prefetch_ = GetParam();
   }
 
