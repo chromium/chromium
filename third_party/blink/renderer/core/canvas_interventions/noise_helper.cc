@@ -122,7 +122,7 @@ void NoisePixels(const NoiseHash& token_hash,
   // row in the range [0, x-2] and the previous row in the range [x-1, width-1]
   // at the beginning of the loop.
   std::vector<uint32_t> unnoised_previous_pixels;
-  uint32_t unnoised_left_pixel;
+  uint32_t unnoised_prev_pixel;
   unnoised_previous_pixels.resize(width);
 
   for (int y = 0; y < height; ++y) {
@@ -148,14 +148,16 @@ void NoisePixels(const NoiseHash& token_hash,
         CopyPixelValue(GetPixelAt(x + 1, y - 1, width, pixels), cur_pixel);
         copied_prev_pixel = true;
         // left
-      } else if (x > 0 && unnoised_left_pixel == cur_pixel_val) {
+      } else if (x > 0 && unnoised_prev_pixel == cur_pixel_val) {
         CopyPixelValue(GetPixelAt(x - 1, y, width, pixels), cur_pixel);
         copied_prev_pixel = true;
       }
       if (x > 0) {
-        unnoised_previous_pixels[x - 1] = unnoised_left_pixel;
+        unnoised_previous_pixels[x - 1] = unnoised_prev_pixel;
+      } else if (y > 0) {
+        unnoised_previous_pixels[width - 1] = unnoised_prev_pixel;
       }
-      unnoised_left_pixel = cur_pixel_val;
+      unnoised_prev_pixel = cur_pixel_val;
       if (copied_prev_pixel) {
         continue;
       }
