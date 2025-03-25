@@ -20,6 +20,7 @@ import org.robolectric.util.TempDirectory;
 
 import org.chromium.base.PathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.download.DownloadDirectoryProvider.SecondaryStorageInfo;
 import org.chromium.chrome.browser.download.DownloadDirectoryProviderUnitTest.ShadowPathUtils;
 
 import java.nio.file.Path;
@@ -101,23 +102,19 @@ public class DownloadDirectoryProviderUnitTest {
                 new String[] {
                     mPrimaryDir.toFile().getAbsolutePath(), mSecondaryDir.toFile().getAbsolutePath()
                 });
-        Assert.assertEquals(
-                1,
-                DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories()
-                        .directoriesPreR
-                        .size());
+        SecondaryStorageInfo secondaryStorageInfo =
+                DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories();
+        Assert.assertEquals(1, secondaryStorageInfo.directoriesPreR.size());
         Assert.assertNull(
-                "Pre R the new SD card directory should be null",
-                DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories().directories);
+                "Pre R the new SD card directory should be null", secondaryStorageInfo.directories);
+        Assert.assertFalse(secondaryStorageInfo.isEmpty());
 
         // Simulate no SD card on the device.
         ShadowPathUtils.setAllPrivateDownloadsDirectories(
                 new String[] {mPrimaryDir.toFile().getAbsolutePath()});
-        Assert.assertEquals(
-                0,
-                DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories()
-                        .directoriesPreR
-                        .size());
+        secondaryStorageInfo = DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories();
+        Assert.assertEquals(0, secondaryStorageInfo.directoriesPreR.size());
+        Assert.assertTrue(secondaryStorageInfo.isEmpty());
     }
 
     @Test
