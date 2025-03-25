@@ -2556,6 +2556,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSOneTapMiniMapRemoveSectionBreaksDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSOneTapMiniMapRemoveSectionsBreaks)},
+    {"autofill-enable-support-for-home-and-work",
+     flag_descriptions::kAutofillEnableSupportForHomeAndWorkName,
+     flag_descriptions::kAutofillEnableSupportForHomeAndWorkDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableSupportForHomeAndWork)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

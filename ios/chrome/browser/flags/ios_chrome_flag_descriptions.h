@@ -75,6 +75,9 @@ extern const char kAutofillEnableRankingFormulaAddressProfilesDescription[];
 extern const char kAutofillEnableRankingFormulaCreditCardsName[];
 extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 
+extern const char kAutofillEnableSupportForHomeAndWorkName[];
+extern const char kAutofillEnableSupportForHomeAndWorkDescription[];
+
 extern const char kAutofillEnableVerveCardSupportName[];
 extern const char kAutofillEnableVerveCardSupportDescription[];
 

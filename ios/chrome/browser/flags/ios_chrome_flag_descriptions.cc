@@ -114,6 +114,11 @@ const char kAutofillEnableRankingFormulaCreditCardsDescription[] =
     "When enabled, Autofill will use a new ranking formula to rank Autofill "
     "data model credit card suggestions.";
 
+const char kAutofillEnableSupportForHomeAndWorkName[] =
+    "Enable support for home and work addresses";
+const char kAutofillEnableSupportForHomeAndWorkDescription[] =
+    "When enabled, chrome will support home and work addresses from account.";
+
 const char kAutofillEnableVerveCardSupportName[] =
     "Enable autofill support for Verve cards";
 const char kAutofillEnableVerveCardSupportDescription[] =
