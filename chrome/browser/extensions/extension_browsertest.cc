@@ -269,12 +269,6 @@ const Extension* ExtensionBrowserTest::LoadExtension(
   return extension.get();
 }
 
-void ExtensionBrowserTest::DisableExtension(
-    const ExtensionId& extension_id,
-    const DisableReasonSet& disable_reasons) {
-  extension_service()->DisableExtension(extension_id, disable_reasons);
-}
-
 const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
     const base::FilePath& path,
     const base::FilePath::CharType* manifest_relative_path) {
@@ -540,12 +534,6 @@ void ExtensionBrowserTest::UninstallExtension(
     const extensions::ExtensionId& extension_id) {
   extension_service()->UninstallExtension(
       extension_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
-}
-
-void ExtensionBrowserTest::DisableExtension(
-    const extensions::ExtensionId& extension_id) {
-  extension_service()->DisableExtension(extension_id,
-                                        disable_reason::DISABLE_USER_ACTION);
 }
 
 void ExtensionBrowserTest::EnableExtension(
