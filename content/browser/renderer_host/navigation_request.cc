@@ -6888,6 +6888,14 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
       domain_lookup_delay;
   navigation_handle_timing_.final_request_connect_delay = connect_delay;
   navigation_handle_timing_.final_request_ssl_delay = ssl_delay;
+
+  if (response_head_->load_timing_internal_info) {
+    navigation_handle_timing_.initialize_stream_delay =
+        response_head_->load_timing_internal_info->initialize_stream_delay;
+    // Reset `load_timing_internal_info` to make sure that isn't exposed.
+    response_head_->load_timing_internal_info.reset();
+  }
+
   final_receive_headers_end_time_ =
       response_head_->load_timing.receive_headers_end;
 

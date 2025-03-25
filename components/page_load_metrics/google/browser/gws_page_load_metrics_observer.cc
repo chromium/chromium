@@ -55,6 +55,8 @@ const char kHistogramGWSNavigationStartToFirstLoaderCallback[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstLoaderCallback";
 const char kHistogramGWSNavigationStartToOnComplete[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToOnComplete";
+const char kHistogramGWSInitializeStreamDelay[] =
+    HISTOGRAM_PREFIX "NavigationTiming.InitializeStreamDelay";
 
 const char kHistogramGWSConnectTimingFirstRequestDomainLookupDelay[] =
     HISTOGRAM_PREFIX "ConnectTiming.FirstRequestDomainLookupDelay";
@@ -599,6 +601,8 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   PAGE_LOAD_SHORT_HISTOGRAM(
       internal::kHistogramGWSConnectTimingFinalRequestSslDelay,
       timing.final_request_ssl_delay);
+  PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSInitializeStreamDelay,
+                            timing.initialize_stream_delay);
 
   // Record latency trace events.
   RecordLatencyHitograms(timing.non_redirect_response_start_time);

@@ -79,6 +79,12 @@ class GWSPageLoadMetricsObserverTest
 TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
+
+  // TODO(crbug.com/393980912): Add a test for the histogram related to
+  // LoadTimingInternalInfo. To do this, we need to add it to PageLoadTiming for
+  // testing purposes. However, we shouldn't expose LoadTimingInternalInfo to
+  // untrustworthy processes.
+
   timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(1);
   timing.connect_start = base::Milliseconds(1);

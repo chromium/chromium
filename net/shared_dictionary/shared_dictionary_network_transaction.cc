@@ -433,6 +433,12 @@ bool SharedDictionaryNetworkTransaction::GetLoadTimingInfo(
   return network_transaction_->GetLoadTimingInfo(load_timing_info);
 }
 
+void SharedDictionaryNetworkTransaction::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  network_transaction_->PopulateLoadTimingInternalInfo(
+      load_timing_internal_info);
+}
+
 bool SharedDictionaryNetworkTransaction::GetRemoteEndpoint(
     IPEndPoint* endpoint) const {
   return network_transaction_->GetRemoteEndpoint(endpoint);

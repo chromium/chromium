@@ -85,6 +85,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   LoadState GetLoadState() const override;
   void SetQuicServerInfo(QuicServerInfo* quic_server_info) override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
+  void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const override;
   bool GetRemoteEndpoint(IPEndPoint* endpoint) const override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;
   void SetPriority(RequestPriority priority) override;
@@ -522,6 +524,10 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // using DNS times coming from the established stream.
   base::TimeTicks dns_resolution_start_time_override_;
   base::TimeTicks dns_resolution_end_time_override_;
+
+  // The time at which initialize stream started / ended.
+  base::TimeTicks initialize_stream_start_time_;
+  base::TimeTicks initialize_stream_end_time_;
 
   base::TimeTicks blocked_initialize_stream_start_time_;
   base::TimeTicks blocked_generate_proxy_auth_token_start_time_;

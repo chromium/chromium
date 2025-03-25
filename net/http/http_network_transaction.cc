@@ -31,6 +31,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -560,6 +561,16 @@ bool HttpNetworkTransaction::GetLoadTimingInfo(
   return true;
 }
 
+void HttpNetworkTransaction::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  if (!initialize_stream_start_time_.is_null() &&
+      !initialize_stream_end_time_.is_null()) {
+    CHECK_LE(initialize_stream_start_time_, initialize_stream_end_time_);
+    load_timing_internal_info->initialize_stream_delay =
+        initialize_stream_end_time_ - initialize_stream_start_time_;
+  }
+}
+
 bool HttpNetworkTransaction::GetRemoteEndpoint(IPEndPoint* endpoint) const {
   if (remote_endpoint_.address().empty())
     return false;
@@ -1009,7 +1020,7 @@ int HttpNetworkTransaction::DoInitStream() {
               NetLogWithSourceToFlow(net_log_));
   next_state_ = STATE_INIT_STREAM_COMPLETE;
 
-  base::TimeTicks now = base::TimeTicks::Now();
+  initialize_stream_start_time_ = base::TimeTicks::Now();
   int rv = stream_->InitializeStream(can_send_early_data_, priority_, net_log_,
                                      io_callback_);
 
@@ -1017,7 +1028,7 @@ int HttpNetworkTransaction::DoInitStream() {
   // completes.
   bool blocked = rv == ERR_IO_PENDING;
   if (blocked) {
-    blocked_initialize_stream_start_time_ = now;
+    blocked_initialize_stream_start_time_ = initialize_stream_start_time_;
   }
   base::UmaHistogramBoolean(
       base::StrCat({"Net.NetworkTransaction.InitializeStreamBlocked",
@@ -1030,6 +1041,8 @@ int HttpNetworkTransaction::DoInitStream() {
 int HttpNetworkTransaction::DoInitStreamComplete(int result) {
   TRACE_EVENT("net", "HttpNetworkTransaction::InitStreamComplete",
               NetLogWithSourceToFlow(net_log_), "result", result);
+  initialize_stream_end_time_ = base::TimeTicks::Now();
+
   // TODO(crbug.com/359404121): Remove this histogram after the investigation
   // completes.
   if (!blocked_initialize_stream_start_time_.is_null()) {
@@ -1038,7 +1051,7 @@ int HttpNetworkTransaction::DoInitStreamComplete(int result) {
             {"Net.NetworkTransaction.InitializeStreamBlockTime",
              IsGoogleHostWithAlpnH3(url_.host()) ? "GoogleHost." : ".",
              NegotiatedProtocolToHistogramSuffix(negotiated_protocol_)}),
-        base::TimeTicks::Now() - blocked_initialize_stream_start_time_);
+        initialize_stream_end_time_ - blocked_initialize_stream_start_time_);
   }
 
   if (result != OK) {

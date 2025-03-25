@@ -46,6 +46,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
@@ -734,6 +735,8 @@ URLLoader::URLLoader(
       include_request_cookies_with_response_(
           request.trusted_params &&
           request.trusted_params->include_request_cookies_with_response),
+      include_load_timing_internal_info_with_response_(
+          request.trusted_params.has_value()),
       provide_data_use_updates_(context.DataUseUpdatesEnabled()),
       partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff) {
   DCHECK(delete_callback_);
@@ -1689,6 +1692,13 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
 
   if (is_load_timing_enabled_)
     url_request_->GetLoadTimingInfo(&response->load_timing);
+
+  if (include_load_timing_internal_info_with_response_) {
+    response->load_timing_internal_info =
+        url_request_->GetLoadTimingInternalInfo();
+  }
+  CHECK(include_load_timing_internal_info_with_response_ ||
+        !response->load_timing_internal_info);
 
   if (url_request_->ssl_info().cert.get()) {
     response->cert_status = url_request_->ssl_info().cert_status;

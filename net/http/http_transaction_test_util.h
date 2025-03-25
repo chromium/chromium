@@ -227,6 +227,9 @@ class MockNetworkTransaction final : public HttpTransaction {
 
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
 
+  void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const override;
+
   bool GetRemoteEndpoint(IPEndPoint* endpoint) const override;
 
   void SetPriority(RequestPriority priority) override;

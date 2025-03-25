@@ -565,6 +565,14 @@ bool HttpCache::Transaction::GetLoadTimingInfo(
   return true;
 }
 
+void HttpCache::Transaction::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  const HttpTransaction* transaction = GetOwnedOrMovedNetworkTransaction();
+  if (transaction) {
+    transaction->PopulateLoadTimingInternalInfo(load_timing_internal_info);
+  }
+}
+
 bool HttpCache::Transaction::GetRemoteEndpoint(IPEndPoint* endpoint) const {
   const HttpTransaction* transaction = GetOwnedOrMovedNetworkTransaction();
   if (transaction) {

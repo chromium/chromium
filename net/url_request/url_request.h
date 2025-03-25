@@ -29,6 +29,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -556,6 +557,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // LoadTimingInfo only contains ConnectTiming information and socket IDs for
   // non-cached HTTP responses.
   void GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
+
+  // Gets load timing internal information. Events that have not yet
+  // occurred are left uninitialized.
+  LoadTimingInternalInfo GetLoadTimingInternalInfo() const;
 
   // Gets the networkd error details of the most recent origin that the network
   // stack makes the request to.
@@ -1164,6 +1169,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Timing information for the most recent request.  Its start times are
   // populated during Start(), and the rest are populated in OnResponseReceived.
   LoadTimingInfo load_timing_info_;
+
+  // Internal load timing information that is not exposed to the web.
+  LoadTimingInternalInfo load_timing_internal_info_;
 
   // The proxy chain used for this request, if any.
   ProxyChain proxy_chain_;

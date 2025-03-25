@@ -417,6 +417,10 @@ void URLRequest::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   *load_timing_info = load_timing_info_;
 }
 
+LoadTimingInternalInfo URLRequest::GetLoadTimingInternalInfo() const {
+  return load_timing_internal_info_;
+}
+
 void URLRequest::PopulateNetErrorDetails(NetErrorDetails* details) const {
   if (!job_)
     return;
@@ -1023,6 +1027,8 @@ void URLRequest::PrepareToRestart() {
   load_timing_info_.request_start_time = response_info_.request_time;
   load_timing_info_.request_start = base::TimeTicks::Now();
 
+  load_timing_internal_info_ = LoadTimingInternalInfo();
+
   status_ = OK;
   is_pending_ = false;
   proxy_chain_ = ProxyChain();
@@ -1254,6 +1260,8 @@ void URLRequest::OnHeadersComplete() {
     load_timing_info_.request_start_time = request_start_time;
 
     ConvertRealLoadTimesToBlockingTimes(&load_timing_info_);
+
+    job_->PopulateLoadTimingInternalInfo(&load_timing_internal_info_);
   }
 }
 
