@@ -288,7 +288,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       }
     }
 
-    if (tab()->split()) {
+    if (tab()->split().has_value()) {
       if (IsStartSplitTab(tab())) {
         top_right_corner_radius = 0;
         bottom_right_corner_radius = 0;
@@ -347,7 +347,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   float tab_left = left + extension;
   float tab_right = right - extension;
 
-  if (tab()->split()) {
+  if (tab()->split().has_value()) {
     if (IsStartSplitTab(tab())) {
       tab_right = tab_right + extension;
     } else if (IsEndSplitTab(tab())) {
@@ -719,7 +719,8 @@ float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
   const Tab* const right_tab = leading ? tab() : adjacent_tab;
 
   // Separator should never be shown between split tabs.
-  if (right_tab && right_tab->split() && left_tab && left_tab->split()) {
+  if (right_tab && right_tab->split().has_value() && left_tab &&
+      right_tab->split().value() == left_tab->split().value()) {
     return 0.0f;
   }
 

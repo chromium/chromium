@@ -810,8 +810,8 @@ TabSlotView::ViewType Tab::GetTabSlotViewType() const {
 TabSizeInfo Tab::GetTabSizeInfo() const {
   return {tab_style()->GetPinnedWidth(), tab_style()->GetMinimumActiveWidth(),
           tab_style()->GetMinimumInactiveWidth(),
-          split() ? tab_style()->GetStandardSplitWidth()
-                  : tab_style()->GetStandardWidth()};
+          split().has_value() ? tab_style()->GetStandardSplitWidth()
+                              : tab_style()->GetStandardWidth()};
 }
 
 void Tab::SetClosing(bool closing) {
