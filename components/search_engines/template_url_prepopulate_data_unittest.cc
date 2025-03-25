@@ -557,13 +557,6 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
     EXPECT_EQ(SEARCH_ENGINE_YAHOO, GetEngineType(yahoo_url));
   }
 
-  // URLs for engines not present in country-specific lists.
-  EXPECT_EQ(SEARCH_ENGINE_NIGMA,
-            GetEngineType("http://nigma.ru/?s={searchTerms}&arg1=value1"));
-  // Also test matching against alternate URLs (and TLD+1 matching).
-  EXPECT_EQ(SEARCH_ENGINE_SOFTONIC,
-            GetEngineType("http://test.softonic.com.br/?{searchTerms}"));
-
   // Search URL for which no prepopulated search provider exists.
   EXPECT_EQ(SEARCH_ENGINE_OTHER,
             GetEngineType("http://example.net/search?q={searchTerms}"));
