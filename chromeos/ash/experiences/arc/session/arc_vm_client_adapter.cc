@@ -23,6 +23,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1376,10 +1377,11 @@ void SetArcVmBootNotificationServerAddressForTesting(
   DCHECK_GE(sizeof(address->sun_path), new_address.size());
   DCHECK_GT(connect_timeout_limit, connect_sleep_duration_initial);
 
-  memset(address->sun_path, 0, sizeof(address->sun_path));
+  UNSAFE_TODO(memset(address->sun_path, 0, sizeof(address->sun_path)));
   // |new_address| may contain '\0' if it is an abstract socket address, so use
   // memcpy instead of strcpy.
-  memcpy(address->sun_path, new_address.data(), new_address.size());
+  UNSAFE_TODO(
+      memcpy(address->sun_path, new_address.data(), new_address.size()));
 
   g_connect_timeout_limit_for_testing = connect_timeout_limit;
   g_connect_sleep_duration_initial_for_testing = connect_sleep_duration_initial;

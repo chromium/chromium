@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -108,8 +109,8 @@ void ExtractVersionNumbers(const std::string& version,
                            int32_t* bugfix_version) {
   *major_version = *minor_version = *bugfix_version = 0;
   // Parse out the version numbers from the string.
-  sscanf(version.c_str(), "%d.%d.%d", major_version, minor_version,
-         bugfix_version);
+  UNSAFE_TODO(sscanf(version.c_str(), "%d.%d.%d", major_version, minor_version,
+                     bugfix_version));
 }
 
 // Returns if a micro-architecture supports the cycles:ppp event.

@@ -294,7 +294,8 @@ base::ScopedFD ArcSessionDelegateImpl::CreateSocketInternal() {
                        sizeof(buf), &arc_bridge_group_res);
     } while (ret == EINTR);
     if (ret != 0) {
-      LOG(ERROR) << "getgrnam_r: " << strerror_r(ret, buf, sizeof(buf));
+      LOG(ERROR) << "getgrnam_r: "
+                 << UNSAFE_TODO(strerror_r(ret, buf, sizeof(buf)));
       return base::ScopedFD();
     }
 
