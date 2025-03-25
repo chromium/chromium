@@ -1005,7 +1005,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotStart {
   }
 
   template <bool enforce = PA_CONFIG(ENFORCE_SLOT_STARTS)>
-  PA_ALWAYS_INLINE static SlotStart FromObject(const void* tagged_object) {
+  PA_ALWAYS_INLINE static SlotStart FromObject(void* tagged_object) {
     uintptr_t untagged_slot_start =
         internal::UntagAddr(reinterpret_cast<uintptr_t>(tagged_object));
     return SlotStart::FromUntaggedAddr<enforce>(untagged_slot_start);
