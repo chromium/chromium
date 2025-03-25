@@ -1033,7 +1033,8 @@ public class TabGridDialogMediator
                             () -> mCurrentTabGroupModelFilterSupplier.get().getTabModel(),
                             tabGroupIdSupplier,
                             mTabGroupSyncService,
-                            mCollaborationService);
+                            mCollaborationService,
+                            mActivity);
         }
 
         return mTabGridDialogMenuCoordinator.getOnClickListener();

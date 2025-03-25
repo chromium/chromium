@@ -284,7 +284,12 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuWidth() {
-        assertEquals(R.dimen.tab_switcher_context_menu_max_width, mCoordinator.getMenuWidth());
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_switcher_context_menu_max_width),
+                // Provide an arbitrary value for anchorViewWidthPx for the test.
+                mCoordinator.getMenuWidth(/* anchorViewWidthPx= */ 0));
     }
 
     @Test
