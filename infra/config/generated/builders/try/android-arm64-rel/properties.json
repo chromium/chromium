@@ -30,6 +30,7 @@
                 ],
                 "build_config": "Release",
                 "config": "main_builder",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -61,6 +62,7 @@
                 ],
                 "build_config": "Release",
                 "config": "main_builder",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
               },
@@ -92,6 +94,7 @@
                 ],
                 "build_config": "Release",
                 "config": "main_builder",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "android"
               },
