@@ -300,9 +300,8 @@ void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {
     UserLevelMemoryPressureSignalGenerator::Initialize(platform,
                                                        main_thread_task_runner);
   }
-
-  MemorySaverController::Initialize();
 #endif
+  MemorySaverController::Initialize();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
