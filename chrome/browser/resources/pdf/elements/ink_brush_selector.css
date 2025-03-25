@@ -7,18 +7,14 @@
  * #css_wrapper_metadata_end */
 
 :host,
-div {
+cr-radio-group {
+  /* Gap instead of padding to have 0 extra padding on top/bottom. */
+  --cr-radio-group-item-padding: 0;
   display: flex;
   gap: var(--ink-brush-button-gap, 16px);
   justify-content: center;
 }
 
-cr-icon-button {
-  --cr-icon-button-fill-color: var(--viewer-icon-ink-fill-color);
-  --cr-icon-button-size: var(--ink-brush-button-size, 48px);
-}
-
-cr-icon-button[data-selected="true"] {
-  --cr-icon-button-fill-color: var(--viewer-icon-ink-selected-fill-color);
-  background-color: var(--viewer-icon-ink-selected-background-color);
+selectable-icon-button {
+  --selectable-icon-button-size: var(--ink-brush-button-size, 48px);
 }
