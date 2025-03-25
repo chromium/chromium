@@ -232,8 +232,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 
       authentication_service->SignIn(
           identity, signin_metrics::AccessPoint::kResigninInfobar);
-      authentication_service->GrantSyncConsent(
-          identity, signin_metrics::AccessPoint::kResigninInfobar);
     }
 
     ON_CALL(*session_sync_service, GetOpenTabsUIDelegate())
