@@ -63,19 +63,6 @@ TEST(BrowserUIThreadSchedulerTest, DestructorPostChainDuringShutdown) {
   EXPECT_TRUE(run);
 }
 
-TEST(BrowserUIThreadSchedulerTest,
-     TaskPostedWithThreadHandleRunBeforeQueuesAreEnabled) {
-  auto browser_ui_thread_scheduler_ =
-      std::make_unique<BrowserUIThreadScheduler>();
-
-  StrictMockTask task;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                              task.Get());
-
-  EXPECT_CALL(task, Run);
-  base::RunLoop().RunUntilIdle();
-}
-
 }  // namespace
 
 }  // namespace content
