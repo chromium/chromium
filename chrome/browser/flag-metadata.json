@@ -3292,8 +3292,12 @@
   },
   {
     "name": "enable-identity-in-auth-error",
-    "owners": [ "jlebel@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 135
+    "owners": [
+      "bsazonov@chromium.org",
+      "jlebel@chromium.org",
+      "chrome-signin-team@google.com"
+    ],
+    "expiry_milestone": 138
   },
   {
     "name": "enable-immersive-fullscreen-toolbar",
