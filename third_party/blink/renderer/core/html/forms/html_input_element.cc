@@ -1839,6 +1839,16 @@ HTMLElement* HTMLInputElement::listForBinding() const {
     return nullptr;
   }
 
+  if (RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetExecutionContext())) {
+    if (IsA<HTMLDataListElement>(GetElementAttributeResolvingReferenceTarget(
+            html_names::kListAttr))) {
+      // Return the host to avoid exposing the shadow dom.
+      return DynamicTo<HTMLElement>(GetElementAttribute(html_names::kListAttr));
+    }
+    return nullptr;
+  }
+
   return DynamicTo<HTMLDataListElement>(
       GetElementAttribute(html_names::kListAttr));
 }

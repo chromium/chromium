@@ -62,6 +62,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   void DetachLayoutTree(bool performing_reattach) override;
 
   HTMLFormElement* formOwner() const final;
+  HTMLElement* formForBinding() const final;
 
   bool IsDisabledFormControl() const override;
 

@@ -23,7 +23,9 @@
     HTMLConstructor
 ] interface HTMLFieldSetElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean disabled;
-    [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
+    // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
+    // https://github.com/whatwg/html/pull/10995
+    [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
     [CEReactions, Reflect] attribute DOMString name;
 
     readonly attribute DOMString type;

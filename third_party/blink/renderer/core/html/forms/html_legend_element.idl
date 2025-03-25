@@ -23,7 +23,9 @@
     Exposed=Window,
     HTMLConstructor
 ] interface HTMLLegendElement : HTMLElement {
-    readonly attribute HTMLFormElement? form;
+    // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
+    // https://github.com/whatwg/html/pull/10995
+    [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLLegendElement-partial

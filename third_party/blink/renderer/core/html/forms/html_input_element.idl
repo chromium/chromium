@@ -35,7 +35,9 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [ImplementedAs=checkedForBinding] attribute boolean checked;
     [CEReactions, Reflect] attribute DOMString dirName;
     [CEReactions, Reflect] attribute boolean disabled;
-    [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
+    // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
+    // https://github.com/whatwg/html/pull/10995
+    [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
     // The 'files' attribute is intentionally not readonly.
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=22682
     attribute FileList? files;
