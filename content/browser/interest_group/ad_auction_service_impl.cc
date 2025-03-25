@@ -769,8 +769,8 @@ void AdAuctionServiceImpl::GetTrustedKeyValueServerKey(
     base::OnceCallback<void(
         base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
   GetInterestGroupManager().GetTrustedServerKey(
-      TrustedServerAPIType::kTrustedKeyValue, scope_origin, coordinator,
-      std::move(callback));
+      InterestGroupManager::TrustedServerAPIType::kTrustedKeyValue,
+      scope_origin, coordinator, std::move(callback));
 }
 
 AdAuctionServiceImpl::AdAuctionServiceImpl(
@@ -1181,7 +1181,8 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
       // GetBiddingAndAuctionServerKey can call its callback synchronously, and
       // during the last loop iteration the callback may invalidate `state`.
       GetInterestGroupManager().GetTrustedServerKey(
-          TrustedServerAPIType::kBiddingAndAuction, seller, coordinator,
+          InterestGroupManager::TrustedServerAPIType::kBiddingAndAuction,
+          seller, coordinator,
           base::BindOnce(
               &AdAuctionServiceImpl::OnGotOneBiddingAndAuctionServerKey,
               weak_ptr_factory_.GetWeakPtr(), state.request_id, seller));

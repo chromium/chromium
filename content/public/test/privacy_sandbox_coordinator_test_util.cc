@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/interest_group/privacy_sandbox_coordinator_test_util.h"
+#include "content/public/test/privacy_sandbox_coordinator_test_util.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -21,7 +21,7 @@
 #include "base/values.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_auction.h"
-#include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/public/browser/interest_group_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
@@ -54,13 +54,13 @@ std::string CreatePrivacySandboxCoordinatorSerializedPublicKeys(
 }
 
 void ConfigureTestPrivacySandboxCoordinatorKeys(
-    InterestGroupManagerImpl* interest_group_manager,
-    TrustedServerAPIType api_type,
+    InterestGroupManager* interest_group_manager,
+    InterestGroupManager::TrustedServerAPIType api_type,
     const url::Origin& coordinator,
     base::span<const url::Origin> origins) {
   base::test::TestFuture<std::optional<std::string>> future;
   interest_group_manager->AddTrustedServerKeysDebugOverride(
-      TrustedServerAPIType::kTrustedKeyValue, coordinator,
+      api_type, coordinator,
       CreatePrivacySandboxCoordinatorSerializedPublicKeys(coordinator,
                                                           {origins}),
       future.GetCallback());

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INTEREST_GROUP_PRIVACY_SANDBOX_COORDINATOR_TEST_UTIL_H_
-#define CONTENT_BROWSER_INTEREST_GROUP_PRIVACY_SANDBOX_COORDINATOR_TEST_UTIL_H_
+#ifndef CONTENT_PUBLIC_TEST_PRIVACY_SANDBOX_COORDINATOR_TEST_UTIL_H_
+#define CONTENT_PUBLIC_TEST_PRIVACY_SANDBOX_COORDINATOR_TEST_UTIL_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -14,12 +14,10 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/public/browser/interest_group_manager.h"
 #include "url/origin.h"
 
 namespace content {
-
-class InterestGroupManagerImpl;
 
 // These keys were randomly generated as follows:
 // EVP_HPKE_KEY keys;
@@ -61,8 +59,8 @@ std::string CreateTestPrivacySandboxCoordinatorSerializedPublicKeys(
 // be applied. May only be called once per `coordinator` in a test, since it
 // sets up a single mock response for the coordinator.
 void ConfigureTestPrivacySandboxCoordinatorKeys(
-    InterestGroupManagerImpl* interest_group_manager,
-    TrustedServerAPIType api_type,
+    InterestGroupManager* interest_group_manager,
+    InterestGroupManager::TrustedServerAPIType api_type,
     const url::Origin& coordinator,
     base::span<const url::Origin> origins);
 
@@ -72,4 +70,4 @@ std::string GetTestPrivacySandboxCoordinatorPrivateKey();
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INTEREST_GROUP_PRIVACY_SANDBOX_COORDINATOR_TEST_UTIL_H_
+#endif  // CONTENT_PUBLIC_TEST_PRIVACY_SANDBOX_COORDINATOR_TEST_UTIL_H_
