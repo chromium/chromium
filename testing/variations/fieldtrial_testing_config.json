@@ -6297,7 +6297,7 @@
                 {
                     "name": "Enabled_InnerHtml",
                     "params": {
-                        "file-upload-limit-bytes": "200000000",
+                        "auto-focus-searchbox": "false",
                         "send-page-url-for-contextualization": "true",
                         "show-contextual-searchbox-ghost-loader-loading-state": "true",
                         "use-inner-html-as-context": "true",
