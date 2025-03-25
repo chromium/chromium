@@ -67,7 +67,8 @@ class ReportingEventRouterTest : public testing::Test {
         profile_)
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
 
-    reporting_event_router_ = std::make_unique<ReportingEventRouter>(profile_);
+    reporting_event_router_ = std::make_unique<ReportingEventRouter>(
+        RealtimeReportingClientFactory::GetForProfile(profile_));
 
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         profile_)
