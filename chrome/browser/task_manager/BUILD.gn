@@ -58,6 +58,7 @@ source_set("task_manager") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/task_manager/common:common",
     "//components/favicon/core",
     "//components/nacl/common:buildflags",
     "//components/sessions:session_id",
