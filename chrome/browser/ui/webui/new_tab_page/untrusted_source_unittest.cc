@@ -26,9 +26,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,8 +56,7 @@ class FakeOneGoogleBarService : public OneGoogleBarService {
 class UntrustedSourceTest : public testing::Test {
  public:
   void SetUp() override {
-    profile_ =
-        MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper());
+    profile_ = MakeTestingProfile();
     untrusted_source_ = std::make_unique<UntrustedSource>(profile_.get());
     test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
@@ -73,13 +69,11 @@ class UntrustedSourceTest : public testing::Test {
     test_web_contents_.reset();
     test_web_contents_getter_ = content::WebContents::Getter();
     profile_.reset();
-    test_url_loader_factory_.ClearResponses();
   }
 
-  UntrustedSourceTest() : identity_env_(&test_url_loader_factory_) {}
+  UntrustedSourceTest() : identity_env_(nullptr) {}
 
-  std::unique_ptr<TestingProfile> MakeTestingProfile(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  std::unique_ptr<TestingProfile> MakeTestingProfile() {
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         OneGoogleBarServiceFactory::GetInstance(),
@@ -91,12 +85,7 @@ class UntrustedSourceTest : public testing::Test {
                   identity_manager);
             },
             identity_env_.identity_manager()));
-    profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
     auto profile = profile_builder.Build();
-    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile.get(),
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
-
     return profile;
   }
 
@@ -109,7 +98,6 @@ class UntrustedSourceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   signin::IdentityTestEnvironment identity_env_;
   std::unique_ptr<UntrustedSource> untrusted_source_;
