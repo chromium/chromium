@@ -86,7 +86,7 @@ void DrawWatermarkBlock(
   base::ReadOnlySharedMemoryMapping mapping =
       watermark_block->serialized_skpicture.Map();
   if (!mapping.IsValid()) {
-    DLOG(ERROR)
+    LOG(ERROR)
         << "Error serializing the watermark block received from the browser";
     return;
   }
@@ -380,7 +380,7 @@ void PrintCompositorImpl::HandleCompositionRequest(
     CompositePagesCallback callback) {
   base::ReadOnlySharedMemoryMapping mapping = serialized_content.Map();
   if (!mapping.IsValid()) {
-    DLOG(ERROR) << "HandleCompositionRequest: Cannot map input.";
+    LOG(ERROR) << "HandleCompositionRequest: Cannot map input.";
     std::move(callback).Run(mojom::PrintCompositor::Status::kHandleMapError,
                             base::ReadOnlySharedMemoryRegion());
     return;
@@ -435,7 +435,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
   SkMemoryStream stream(serialized_content.data(), serialized_content.size());
   int page_count = SkMultiPictureDocument::ReadPageCount(&stream);
   if (!page_count) {
-    DLOG(ERROR) << "CompositePages: No page is read.";
+    LOG(ERROR) << "CompositePages: No page is read.";
     return mojom::PrintCompositor::Status::kContentFormatError;
   }
 
@@ -444,7 +444,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
       DeserializationProcs(&subframes, &typefaces_, &images_);
   if (!SkMultiPictureDocument::Read(&stream, pages.data(), page_count,
                                     &procs)) {
-    DLOG(ERROR) << "CompositePages: Page reading failed.";
+    LOG(ERROR) << "CompositePages: Page reading failed.";
     return mojom::PrintCompositor::Status::kContentFormatError;
   }
 
@@ -481,7 +481,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
   base::MappedReadOnlyRegion region_mapping =
       base::ReadOnlySharedMemoryRegion::Create(wstream.bytesWritten());
   if (!region_mapping.IsValid()) {
-    DLOG(ERROR) << "CompositePages: Cannot create new shared memory region.";
+    LOG(ERROR) << "CompositePages: Cannot create new shared memory region.";
     return mojom::PrintCompositor::Status::kHandleMapError;
   }
 
@@ -561,8 +561,8 @@ void PrintCompositorImpl::FinishDocumentRequest(
     region = std::move(region_mapping.region);
     status = mojom::PrintCompositor::Status::kSuccess;
   } else {
-    DLOG(ERROR) << "FinishDocumentRequest: "
-                << "Cannot create new shared memory region.";
+    LOG(ERROR) << "FinishDocumentRequest: "
+               << "Cannot create new shared memory region.";
     status = mojom::PrintCompositor::Status::kHandleMapError;
   }
 
