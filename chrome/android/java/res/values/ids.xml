@@ -42,6 +42,9 @@ found in the LICENSE file.
     <item type="id" name="password_infobar_accounts_spinner" />
 
     <!-- Context Menu Ids -->
+    <!-- Page Group -->
+    <item type="id" name="contextmenu_save_page" />
+
     <!-- Custom Tab Group -->
     <item type="id" name="contextmenu_open_in_new_chrome_tab" />
     <item type="id" name="contextmenu_open_in_chrome_incognito_tab" />
