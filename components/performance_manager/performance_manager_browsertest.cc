@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -123,6 +124,59 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, UsesWebRTC) {
 
   EXPECT_TRUE(page->UsesWebRTC());
   EXPECT_TRUE(page->GetMainFrameNode()->UsesWebRTC());
+
+  graph->RemovePageNodeObserver(&waiter);
+}
+
+namespace {
+
+class FreezingOriginTrialOptOutWaiter : public PageNodeObserver {
+ public:
+  FreezingOriginTrialOptOutWaiter() = default;
+
+  void WaitForFreezingOriginTrialOptOut() { run_loop_.Run(); }
+
+  // PageNodeObserver:
+  void OnPageHasFreezingOriginTrialOptOutChanged(
+      const PageNode* page_node) override {
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
+// Integration test for freezing origin trial opt-out tracking on PageNode and
+// FrameNode.
+//
+// This test uses `content::URLLoaderInterceptor` instead of
+// `net::test::EmbeddedTestServer` to control the port on which the test data is
+// served, which is required because an Origin Trial token is tied to a specific
+// origin (including port).
+IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
+                       HasFreezingOriginTrialOptOut) {
+  Graph* graph = PerformanceManager::GetGraph();
+
+  FreezingOriginTrialOptOutWaiter waiter;
+  graph->AddPageNodeObserver(&waiter);
+
+  const GURL kHost("https://example.test");
+  auto interceptor =
+      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+          "components/test/data/performance_manager",
+          GURL("https://example.test"));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), kHost.Resolve("page_freeze_ot_opt_out.html")));
+
+  auto* contents = shell()->web_contents();
+  auto page = PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
+
+  waiter.WaitForFreezingOriginTrialOptOut();
+
+  EXPECT_TRUE(page->HasFreezingOriginTrialOptOut());
+  EXPECT_TRUE(page->GetMainFrameNode()->HasFreezingOriginTrialOptOut());
 
   graph->RemovePageNodeObserver(&waiter);
 }
