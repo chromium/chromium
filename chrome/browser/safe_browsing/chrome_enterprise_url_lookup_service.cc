@@ -11,7 +11,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -66,7 +65,6 @@ ChromeEnterpriseRealTimeUrlLookupService::
     ChromeEnterpriseRealTimeUrlLookupService(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         VerdictCacheManager* cache_manager,
-        Profile* profile,
         base::RepeatingCallback<ChromeUserPopulation()>
             get_user_population_callback,
         std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
@@ -86,7 +84,6 @@ ChromeEnterpriseRealTimeUrlLookupService::
           referrer_chain_provider,
           pref_service,
           /*webui_delegate=*/WebUIInfoSingleton::GetInstance()),
-      profile_(profile),
       connectors_service_(connectors_service),
       token_fetcher_(std::move(token_fetcher)),
       pref_service_(pref_service),

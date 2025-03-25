@@ -89,7 +89,7 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
           profile->GetURLLoaderFactory());
   return std::make_unique<ChromeEnterpriseRealTimeUrlLookupService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
-      VerdictCacheManagerFactory::GetForProfile(profile), profile,
+      VerdictCacheManagerFactory::GetForProfile(profile),
       base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),

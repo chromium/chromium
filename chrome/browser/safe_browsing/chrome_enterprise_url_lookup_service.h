@@ -35,7 +35,6 @@ class ManagementService;
 }
 
 class PrefService;
-class Profile;
 
 namespace safe_browsing {
 
@@ -50,7 +49,6 @@ class ChromeEnterpriseRealTimeUrlLookupService
   ChromeEnterpriseRealTimeUrlLookupService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
-      Profile* profile,
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
@@ -114,9 +112,6 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool ShouldIncludeCredentials() const override;
   std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const override;
-
-  // Unowned object used for checking profile based settings.
-  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Unowned pointer to ConnectorsService, used to get a DM token.
   raw_ptr<enterprise_connectors::ConnectorsService, DanglingUntriaged>

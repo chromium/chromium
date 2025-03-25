@@ -159,7 +159,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
 
     auto enterprise_rt_service = std::make_unique<
         ChromeEnterpriseRealTimeUrlLookupService>(
-        test_shared_loader_factory_, cache_manager_.get(), profile,
+        test_shared_loader_factory_, cache_manager_.get(),
         base::BindRepeating(
             [](Profile* profile, syncer::TestSyncService* test_sync_service) {
               ChromeUserPopulation population =
