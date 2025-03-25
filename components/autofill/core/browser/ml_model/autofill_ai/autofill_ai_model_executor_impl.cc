@@ -4,11 +4,13 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
@@ -117,29 +119,49 @@ void AutofillAiModelExecutorImpl::OnModelExecuted(
     return;
   }
 
-  // TODO(crbug.com/389631477): Validate parsing assumptions with server team.
-  // For now, we assume that we should receive as many fields in the response as
-  // we sent in the request. If that is not the case, we treat it as an invalid
-  // response.
-  if (static_cast<size_t>(response->field_responses_size()) !=
-      form_data.fields().size()) {
+  const size_t response_size = response->field_responses_size();
+  if (response_size == 0) {
     model_cache_->Update(form_signature, {}, {});
     return;
   }
 
+  // Perform sanity checks: Every field index must occur only once and they
+  // must all lie in the interval [0, form_data_fields().size() - 1].
+  using optimization_guide::proto::FieldTypeResponse;
+  std::vector<int> indices = base::ToVector(response->field_responses(),
+                                            &FieldTypeResponse::field_index);
+  std::ranges::sort(indices);
+  auto repeated = std::ranges::unique(indices);
+  indices.erase(repeated.begin(), repeated.end());
+  if (indices.size() != response_size || indices.front() < 0 ||
+      indices.back() >= static_cast<int>(form_data.fields().size())) {
+    model_cache_->Update(form_signature, {}, {});
+    return;
+  }
+
+  // First compute all field identifiers because we cannot assume that
+  // `field_index` in the response is monotonically increasing.
   std::map<FieldSignature, size_t> field_ranks_in_signature_group;
-  std::vector<AutofillAiModelCache::FieldIdentifier> field_identifiers;
-  field_identifiers.reserve(form_data.fields().size());
+  std::vector<AutofillAiModelCache::FieldIdentifier> all_field_identifiers;
+  all_field_identifiers.reserve(form_data.fields().size());
   for (const FormFieldData& field : form_data.fields()) {
     const FieldSignature field_signature =
         CalculateFieldSignatureForField(field);
-    field_identifiers.push_back(
+    all_field_identifiers.push_back(
         {.signature = field_signature,
          .rank_in_signature_group =
              field_ranks_in_signature_group[field_signature]++});
   }
+
+  // Now select the identifiers corresponding to fields in the response.
+  std::vector<AutofillAiModelCache::FieldIdentifier>
+      relevant_field_identifiers = base::ToVector(
+          response->field_responses(),
+          [&all_field_identifiers](const FieldTypeResponse& field_response) {
+            return all_field_identifiers[field_response.field_index()];
+          });
   model_cache_->Update(form_signature, *std::move(response),
-                       std::move(field_identifiers));
+                       std::move(relevant_field_identifiers));
 }
 
 }  // namespace autofill
