@@ -4726,6 +4726,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         On this device
       </message>
 
+      <!-- Bookmark widget strings -->
+      <message name="IDS_BOOKMARK_WIDGET_EMPTY_MSG" desc="Message displayed in the bookmark widget when the current folder contains no bookmarks.">
+        Nothing to show yet
+      </message>
+
       <!-- Read later strings -->
       <message name="IDS_READING_LIST_READ" desc="The header for the read section in the reading list UI.">
         Read
