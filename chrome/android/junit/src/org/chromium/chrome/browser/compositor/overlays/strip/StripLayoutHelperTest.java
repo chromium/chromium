@@ -137,6 +137,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.RectProvider;
 
 import java.lang.ref.WeakReference;
@@ -1991,9 +1992,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
-    })
     public void testOnLongPress_OnTab() {
         onLongPress_OnTab();
         // Verify we directly enter reorder mode.
@@ -2150,7 +2148,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     public void testOnLongPress_OffTab() {
         onLongPress_OffTab();
     }
@@ -2280,8 +2277,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabOutline_ForegroundedTabInGroup_TabDroppedOntoDestinationStrip_Show() {
+        XrUtils.setXrDeviceForTesting(true);
         // Setup with 3 tabs and select the first tab.
         initializeTest(false, false, 0, 3);
         mStripLayoutHelper.onSizeChanged(
@@ -2308,6 +2305,7 @@ public class StripLayoutHelperTest {
                 "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[1]));
         assertFalse(
                 "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[2]));
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
@@ -2849,8 +2847,8 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testBottomIndicatorWidth_TabHoveredOntoTabGroup() {
+        XrUtils.setXrDeviceForTesting(true);
         // Arrange
         int tabCount = 6;
         initializeTest(false, false, 0, tabCount);
@@ -2889,6 +2887,7 @@ public class StripLayoutHelperTest {
                 expectedEndWidth,
                 groupTitle.getBottomIndicatorWidth(),
                 0.5f);
+        XrUtils.resetXrDeviceForTesting();
     }
 
     private float calculateExpectedBottomIndicatorWidth(
@@ -4552,9 +4551,9 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_sendMoveWindowBroadcast_success() {
+        XrUtils.setXrDeviceForTesting(true);
         // Setup with tabs and select first tab.
         setTabDragSourceMock();
         when(mToolbarContainerView.getContext()).thenReturn(mActivity);
@@ -4563,6 +4562,7 @@ public class StripLayoutHelperTest {
         // Act and verify the broadcast is sent.
         onLongPress_OffTab();
         verify(mWindowAndroid, times(1)).sendBroadcast(any());
+        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
