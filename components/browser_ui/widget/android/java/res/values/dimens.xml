@@ -204,7 +204,6 @@ found in the LICENSE file.
     <!-- New Tab Page -->
     <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_2</dimen>
     <item name="home_surface_search_box_background_alpha" format="float" type="dimen">0.15</item>
-    <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_0</dimen>
     <dimen name="home_surface_ui_background_radius">24dp</dimen>
     <dimen name="home_surface_search_box_background_radius">100dp</dimen>
 
