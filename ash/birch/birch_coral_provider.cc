@@ -880,6 +880,10 @@ void BirchCoralProvider::CacheTabEmbedding(TabClusterUIItem* tab_item) {
       coral::mojom::Entity::NewTab(std::move(tab_mojom)));
   CoralRequest request;
   request.set_content(std::move(active_tab_app_data));
+  if (!system_language_.has_value()) {
+    GetAndCheckLanguageAvailability();
+  }
+  request.set_language(*system_language_);
   Shell::Get()->coral_controller()->CacheEmbeddings(std::move(request));
 }
 

@@ -105,10 +105,10 @@ class ASH_EXPORT CoralController {
   ~CoralController();
 
   // Claims necessary resources (dlc download / model loading) for processing
-  // `GenerateContentGroups` and `CacheEmbeddings` requests. It is not necessary
-  // to call `Initialize` before calling other methods, but in that case
-  // the first method request might take longer to run.
-  void Initialize();
+  // `GenerateContentGroups` and `CacheEmbeddings` requests. This should be
+  // run before other methods to ensure models are ready, and set up the
+  // language.
+  void Initialize(std::string language);
 
   // GenerateContentGroups clusters the input ContentItems (which includes web
   // tabs, apps, etc.) into suitable groups based on their topics, and gives
@@ -147,7 +147,7 @@ class ASH_EXPORT CoralController {
 
   // Requests coral processor from service manager and returns the pointer of
   // the processor instance.
-  CoralProcessor* EnsureCoralProcessor();
+  CoralProcessor* EnsureCoralProcessor(std::string language);
 
   // Used as the callback of mojom::CoralProcessor::Group.
   void HandleGroupResult(CoralSource source,
