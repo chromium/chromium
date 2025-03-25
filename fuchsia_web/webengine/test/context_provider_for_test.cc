@@ -50,7 +50,7 @@ namespace {
                ::component_testing::Protocol{"fuchsia.hwinfo.Product"},
                ::component_testing::Protocol{"fuchsia.intl.PropertyProvider"},
                ::component_testing::Protocol{"fuchsia.kernel.VmexResource"},
-               ::component_testing::Protocol{"fuchsia.logger.LogSink"},
+               ::component_testing::Dictionary{"diagnostics"},
                ::component_testing::Protocol{"fuchsia.memorypressure.Provider"},
                ::component_testing::Protocol{"fuchsia.process.Launcher"},
                ::component_testing::Protocol{"fuchsia.sysmem.Allocator"},
