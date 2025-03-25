@@ -1489,6 +1489,9 @@ extern const char kNewEtc1EncoderName[];
 extern const char kNewEtc1EncoderDescription[];
 #endif
 
+extern const char kNotebookLmAppPreinstallName[];
+extern const char kNotebookLmAppPreinstallDescription[];
+
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];
 

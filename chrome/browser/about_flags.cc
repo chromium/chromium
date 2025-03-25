@@ -11926,6 +11926,15 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROME_OS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"notebook-lm-app-preinstall",
+     flag_descriptions::kNotebookLmAppPreinstallName,
+     flag_descriptions::kNotebookLmAppPreinstallDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kNotebookLmAppPreinstall)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    // Add new entries above this line.
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

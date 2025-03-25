@@ -2593,6 +2593,10 @@ const char kNewEtc1EncoderDescription[] =
     "thumbnails.";
 #endif
 
+const char kNotebookLmAppPreinstallName[] = "NotebookLM app preload";
+const char kNotebookLmAppPreinstallDescription[] =
+    "Preloads the NotebookLM app.";
+
 const char kNotificationSchedulerName[] = "Notification scheduler";
 const char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";

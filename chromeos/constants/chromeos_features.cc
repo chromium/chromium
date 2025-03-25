@@ -160,6 +160,11 @@ BASE_FEATURE(kMahiSummarizeSelected,
              "MahiSummarizeSelected",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether NotebookLM is preinstalled.
+BASE_FEATURE(kNotebookLmAppPreinstall,
+             "NotebookLmAppPreinstall",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch to disable the new guest profile implementation on CrOS that is
 // consistent with desktop chrome.
 // TODO(crbug.com/40233408): Remove if the change is fully launched.

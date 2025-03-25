@@ -105,7 +105,7 @@ for WebView flags.
 
 You have to modify these five files in total.
 
-* [chrome/browser/about_flags.cc](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc) (Add your changes at the bottom of the list)
+* [chrome/browser/about_flags.cc](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc) (Add your changes at the bottom of the list, search for "Add new entries above this line.")
 * [chrome/browser/flag_descriptions.cc](https://cs.chromium.org/chromium/src/chrome/browser/flag_descriptions.cc) (Features should be alphabetically sorted)
 * [chrome/browser/flag_descriptions.h](https://cs.chromium.org/chromium/src/chrome/browser/flag_descriptions.h) (Features should be alphabetically sorted)
 * [tools/metrics/histograms/enums.xml](https://cs.chromium.org/chromium/src/tools/metrics/histograms/enums.xml)

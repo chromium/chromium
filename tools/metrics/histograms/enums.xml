@@ -12133,6 +12133,7 @@ from previous Chrome versions.
   <int value="-792079435" label="EnableAppsGridGapFeature:disabled"/>
   <int value="-791916053" label="FriendlierErrorDialog:disabled"/>
   <int value="-791778534" label="LauncherQueryHighlighting:enabled"/>
+  <int value="-791730714" label="NotebookLmAppPreinstall:disabled"/>
   <int value="-791590673" label="bookmarks-tree-view:enabled"/>
   <int value="-790900615" label="NtpShoppingTasksModule:disabled"/>
   <int value="-790544721"
@@ -14370,6 +14371,7 @@ from previous Chrome versions.
   <int value="86582659" label="enable-extension-ai-data-collection"/>
   <int value="86900696" label="SanitizerAPIv0:enabled"/>
   <int value="87306743" label="VariationsFakeCrashAfterStartup:disabled"/>
+  <int value="88127181" label="NotebookLmAppPreinstall:enabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
   <int value="88863813" label="DesktopPWAsDetailedInstallDialog:enabled"/>
   <int value="89036875" label="DeferRendererTasksAfterInput:disabled"/>
