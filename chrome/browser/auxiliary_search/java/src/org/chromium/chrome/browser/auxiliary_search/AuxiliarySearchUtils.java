@@ -47,6 +47,10 @@ public class AuxiliarySearchUtils {
     static final BooleanCachedFeatureParam USE_SCHEMA_V1 =
             ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceUseSchemaV1;
 
+    @VisibleForTesting
+    static final BooleanCachedFeatureParam MULTI_DATA_SOURCE_SKIP_DEVICE_CHECK =
+            ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck;
+
     /** Convert a Bitmap instance to a byte array. */
     @Nullable
     public static byte[] bitmapToBytes(Bitmap bitmap) {

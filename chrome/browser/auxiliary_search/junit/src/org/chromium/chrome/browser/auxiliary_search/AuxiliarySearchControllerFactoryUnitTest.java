@@ -97,6 +97,16 @@ public class AuxiliarySearchControllerFactoryUnitTest {
 
     @Test
     @SmallTest
+    public void testIsMultiDataTypeEnabledOnDevice() {
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(false);
+        assertFalse(mFactory.isMultiDataTypeEnabledOnDevice());
+
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
+        assertTrue(mFactory.isMultiDataTypeEnabledOnDevice());
+    }
+
+    @Test
+    @SmallTest
     public void testIsSettingDefaultEnabledByOs() {
         when(mHooks.isEnabled()).thenReturn(false);
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
