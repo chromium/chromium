@@ -127,7 +127,7 @@ BASE_FEATURE(kScrimForBrowserWindowModal,
 // area. This gives user a visual cue that the content area is not interactable.
 BASE_FEATURE(KScrimForTabModal,
              "ScrimForTabModal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSideBySide, "SideBySide", base::FEATURE_DISABLED_BY_DEFAULT);
 
