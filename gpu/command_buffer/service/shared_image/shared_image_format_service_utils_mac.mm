@@ -86,6 +86,8 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
       mtl_pixel_format = MTLPixelFormatRGBA8Unorm;
     } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
       mtl_pixel_format = MTLPixelFormatBGRA8Unorm;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+      mtl_pixel_format = MTLPixelFormatRGBA16Float;
     } else {
       DLOG(ERROR) << "Invalid Metal pixel format:" << format.ToString();
     }
