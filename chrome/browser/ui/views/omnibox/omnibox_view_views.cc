@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -159,6 +160,48 @@ OmniboxState::~OmniboxState() = default;
 bool IsClipboardDataMarkedAsConfidential() {
   return ui::Clipboard::GetForCurrentThread()
       ->IsMarkedByOriginatorAsConfidential();
+}
+
+// This function provides a logging implementation that aligns with the original
+// definition of the `DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES()` macro, which is
+// currently being used to log the `FocusToOpenTimeAnyPopupState3` Omnibox
+// metric.
+void LogHistogramMediumTimes(const std::string& histogram_name,
+                             base::TimeDelta elapsed) {
+  base::UmaHistogramCustomTimes(histogram_name, elapsed, base::Milliseconds(10),
+                                base::Minutes(3), 50);
+}
+
+void LogOmniboxFocusToCutOrCopyAllTextTime(
+    base::TimeDelta elapsed,
+    bool is_zero_prefix,
+    PageClassification page_classification) {
+  LogHistogramMediumTimes("Omnibox.FocusToCutOrCopyAllTextTime", elapsed);
+
+  const std::string page_context =
+      OmniboxEventProto::PageClassification_Name(page_classification);
+  LogHistogramMediumTimes(
+      base::StrCat(
+          {"Omnibox.FocusToCutOrCopyAllTextTime.ByPageContext.", page_context}),
+      elapsed);
+
+  if (is_zero_prefix) {
+    LogHistogramMediumTimes("Omnibox.FocusToCutOrCopyAllTextTime.ZeroSuggest",
+                            elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat(
+            {"Omnibox.FocusToCutOrCopyAllTextTime.ZeroSuggest.ByPageContext.",
+             page_context}),
+        elapsed);
+  } else {
+    LogHistogramMediumTimes("Omnibox.FocusToCutOrCopyAllTextTime.TypedSuggest",
+                            elapsed);
+    LogHistogramMediumTimes(
+        base::StrCat(
+            {"Omnibox.FocusToCutOrCopyAllTextTime.TypedSuggest.ByPageContext.",
+             page_context}),
+        elapsed);
+  }
 }
 
 }  // namespace
@@ -1827,6 +1870,7 @@ void OmniboxViewViews::OnAfterUserAction(views::Textfield* sender) {
 }
 
 void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
+  const base::TimeTicks now(base::TimeTicks::Now());
   const ui::Clipboard* cb = ui::Clipboard::GetForCurrentThread();
   std::u16string selected_text;
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
@@ -1838,6 +1882,14 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
                              &write_url);
   if (IsSelectAll()) {
     UMA_HISTOGRAM_COUNTS_1M(OmniboxEditModel::kCutOrCopyAllTextHistogram, 1);
+
+    const auto last_omnibox_focus = model()->last_omnibox_focus();
+    if (!last_omnibox_focus.is_null()) {
+      LogOmniboxFocusToCutOrCopyAllTextTime(
+          now - last_omnibox_focus,
+          controller()->autocomplete_controller()->input().IsZeroSuggest(),
+          model()->GetPageClassification());
+    }
 
     if (clipboard_buffer != ui::ClipboardBuffer::kSelection &&
         location_bar_view_) {

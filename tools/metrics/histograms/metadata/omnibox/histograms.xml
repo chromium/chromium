@@ -67,6 +67,65 @@ chromium-metrics-reviews@google.com.
                input."/>
 </variants>
 
+<!--
+  IMPORTANT
+  This list MUST be kept consistent with the list of active page classifications in OmniboxEventProto.
+  IMPORTANT
+-->
+
+<variants name="OmniboxPageContext">
+  <variant name="ANDROID_HUB" summary="Searchbox in the Android Hub"/>
+  <variant name="ANDROID_SEARCH_WIDGET" summary="Android search widget"/>
+  <variant name="ANDROID_SHORTCUTS_WIDGET" summary="Android Shortcuts widget"/>
+  <variant name="APP_HOME" summary="home screen"/>
+  <variant name="APP_MAPS" summary="maps app"/>
+  <variant name="APP_SEARCH" summary="search app"/>
+  <variant name="BLANK" summary="about:blank"/>
+  <variant name="CHROMEOS_APP_LIST" summary="ChromeOS app list"/>
+  <variant name="CONTEXTUAL_SEARCHBOX" summary="Contextual searchbox"/>
+  <variant name="HOME_PAGE" summary="the user's home page"/>
+  <variant name="INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS"
+      summary="new tab page with omnibox as starting focus"/>
+  <variant name="INVALID_SPEC" summary="invalid spec; shouldn't happen"/>
+  <variant name="JOURNEYS"
+      summary="Journeys landing page, side Panel or the NTP"/>
+  <variant name="LENS_SIDE_PANEL_SEARCHBOX"
+      summary="Lens side panel searchbox"/>
+  <variant name="NTP"
+      summary="extension-replaced new tab page OR obsolete new tab page"/>
+  <variant name="NTP_REALBOX"
+      summary="New Tab Page with realbox as starting focus"/>
+  <variant name="NTP_ZPS_PREFETCH"
+      summary="new tab page zero-prefix suggestion prefetch"/>
+  <variant name="OBSOLETE_INSTANT_NTP"
+      summary="obsolete: instant new tab page"/>
+  <variant name="OBSOLETE_INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS"
+      summary="new tab page with fakebox as starting focus, replaced with
+               NTP_REALBOX on desktop starting in Aug 2020, replaced with
+               INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS on Android starting
+               in Aug 2024. Shouldn't be reported on any platform as of M129."/>
+  <variant name="OBSOLETE_SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT"
+      summary="obsolete: search results page with search term replacement"/>
+  <variant name="OTHER"
+      summary="other (typically an arbitrary URL, not a search results page,
+               new tab page, etc.)"/>
+  <variant name="OTHER_ON_CCT"
+      summary="other (typically an arbitrary URL, not a search results page,
+               new tab page, etc.) on CCT"/>
+  <variant name="OTHER_ZPS_PREFETCH"
+      summary="non-NTP and non-SRP zero-prefix suggestion prefetch"/>
+  <variant name="SEARCH_BUTTON_AS_STARTING_FOCUS"
+      summary="interaction starting with the search button"/>
+  <variant name="SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT"
+      summary="search results page without search term replacement"/>
+  <variant name="SEARCH_RESULT_PAGE_ON_CCT"
+      summary="search results page on CCT"/>
+  <variant name="SEARCH_SIDE_PANEL_SEARCHBOX"
+      summary="Search side panel searchbox"/>
+  <variant name="SRP_ZPS_PREFETCH"
+      summary="Search Results Page zero-prefix suggestion prefetch"/>
+</variants>
+
 <variants name="OmniboxProviders">
 <!--
 Keep consistent with active providers. Doesn't need to include every provider in
@@ -96,6 +155,11 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <variant name="VerbatimMatch"/>
   <variant name="VoiceSuggest"/>
   <variant name="ZeroSuggest"/>
+</variants>
+
+<variants name="OmniboxZeroPrefixState">
+  <variant name="TypedSuggest" summary="typed suggest"/>
+  <variant name="ZeroSuggest" summary="zero-prefix suggest"/>
 </variants>
 
 <!-- LINT.IfChange(RemoteRequestSuccess) -->
@@ -951,6 +1015,85 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     Recorded every time the Omnibox focus is cleared.
   </summary>
+</histogram>
+
+<histogram name="Omnibox.FocusToCutOrCopyAllTextTime" units="ms"
+    expires_after="2025-09-17">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused the Omnibox and issued a
+    cut/copy command.
+
+    Recorded when the user cuts/copies all text in the Omnibox (e.g. select-all,
+    followed by cut/copy). If the user deletes all text (a.k.a. clobber) or only
+    cuts/copies part of the text in the Omnibox, then this metric will NOT be
+    recorded. Also, if focus-related timing info is not available (which should
+    be rare), then this metric will NOT be recorded.
+
+    Collected on desktop platforms (Win, Mac, Linux, Chrome OS).
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.FocusToCutOrCopyAllTextTime.ByPageContext.{OmniboxPageContext}"
+    units="ms" expires_after="2025-09-17">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused the Omnibox and issued a
+    cut/copy command. Sliced by page context (a.k.a. page classification).
+
+    Recorded when the user cuts/copies all text in the Omnibox (e.g. select-all,
+    followed by cut/copy). If the user deletes all text (a.k.a. clobber) or only
+    cuts/copies part of the text in the Omnibox, then this metric will NOT be
+    recorded. Also, if focus-related timing info is not available (which should
+    be rare), then this metric will NOT be recorded.
+
+    Collected on desktop platforms (Win, Mac, Linux, Chrome OS).
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram name="Omnibox.FocusToCutOrCopyAllTextTime.{OmniboxZeroPrefixState}"
+    units="ms" expires_after="2025-09-17">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused the Omnibox and issued a
+    cut/copy command. Sliced by zero-prefix state.
+
+    Recorded when the user cuts/copies all text in the Omnibox (e.g. select-all,
+    followed by cut/copy). If the user deletes all text (a.k.a. clobber) or only
+    cuts/copies part of the text in the Omnibox, then this metric will NOT be
+    recorded. Also, if focus-related timing info is not available (which should
+    be rare), then this metric will NOT be recorded.
+
+    Collected on desktop platforms (Win, Mac, Linux, Chrome OS).
+  </summary>
+  <token key="OmniboxZeroPrefixState" variants="OmniboxZeroPrefixState"/>
+</histogram>
+
+<histogram
+    name="Omnibox.FocusToCutOrCopyAllTextTime.{OmniboxZeroPrefixState}.ByPageContext.{OmniboxPageContext}"
+    units="ms" expires_after="2025-09-17">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The length of time between when a user focused the Omnibox and issued a
+    cut/copy command. Sliced by zero-prefix state and page context (a.k.a. page
+    classification).
+
+    Recorded when the user cuts/copies all text in the Omnibox (e.g. select-all,
+    followed by cut/copy). If the user deletes all text (a.k.a. clobber) or only
+    cuts/copies part of the text in the Omnibox, then this metric will NOT be
+    recorded. Also, if focus-related timing info is not available (which should
+    be rare), then this metric will NOT be recorded.
+
+    Collected on desktop platforms (Win, Mac, Linux, Chrome OS).
+  </summary>
+  <token key="OmniboxZeroPrefixState" variants="OmniboxZeroPrefixState"/>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
 </histogram>
 
 <histogram name="Omnibox.FocusToOpenTimeAnyPopupState3" units="ms"
