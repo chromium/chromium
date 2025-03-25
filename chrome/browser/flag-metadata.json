@@ -6805,7 +6805,7 @@
   {
     "name": "omnibox-zero-suggest-prefetching",
     "owners": [ "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-zero-suggest-prefetching-on-srp",
@@ -6815,7 +6815,7 @@
   {
     "name": "omnibox-zero-suggest-prefetching-on-web",
     "owners": [ "khalidpeer@chromium.org", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 140
   },
   {
     "name": "on-device-app-controls",
