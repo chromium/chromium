@@ -9,6 +9,9 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -19,6 +22,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Fragment containing standard protection settings. */
+@NullMarked
 public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFragmentBase
         implements Preference.OnPreferenceChangeListener {
     @VisibleForTesting static final String PREF_SUBTITLE = "subtitle";
@@ -31,8 +35,9 @@ public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFrag
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private PrefService mPrefService;
 
+    @Initializer
     @Override
-    protected void onCreatePreferencesInternal(Bundle bundle, String rootKey) {
+    protected void onCreatePreferencesInternal(@Nullable Bundle bundle, @Nullable String rootKey) {
         mManagedPreferenceDelegate = createManagedPreferenceDelegate();
         mPrefService = UserPrefs.get(getProfile());
 
