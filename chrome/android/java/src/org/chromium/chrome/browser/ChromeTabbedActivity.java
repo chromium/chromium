@@ -1843,12 +1843,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             mInactivityTracker.register(this.getLifecycleDispatcher());
             boolean isIntentWithEffect = false;
             boolean isMainIntentFromLauncher = false;
-            boolean isLaunchingDraggedTab = false;
+            boolean isLaunchingDraggedTabOrGroup = false;
             if (getSavedInstanceState() == null && intent != null) {
                 if (!shouldIgnoreIntent()) {
-                    isLaunchingDraggedTab = maybeLaunchDraggedTabInWindow(intent);
-                    // If launching tab drag was successful, ignore handling url intent.
-                    isIntentWithEffect = isLaunchingDraggedTab || maybeHandleUrlIntent(intent);
+                    isLaunchingDraggedTabOrGroup = maybeLaunchDraggedTabOrGroupInWindow(intent);
+                    // If launching tab or group drag was successful, ignore handling url intent
+                    isIntentWithEffect =
+                            isLaunchingDraggedTabOrGroup || maybeHandleUrlIntent(intent);
                 }
 
                 if (IntentUtils.isMainIntentFromLauncher(intent)) {
@@ -1869,7 +1870,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             boolean hasTabWaitingForReparenting =
                     (AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()
                                     && getSavedInstanceState() == null)
-                            || isLaunchingDraggedTab;
+                            || isLaunchingDraggedTabOrGroup;
             mCreatedTabOnStartup =
                     getCurrentTabModel().getCount() > 0
                             || mTabModelOrchestrator.getRestoredTabCount() > 0
@@ -2332,8 +2333,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                         });
     }
 
-    private boolean maybeLaunchDraggedTabInWindow(Intent intent) {
+    private boolean maybeLaunchDraggedTabOrGroupInWindow(Intent intent) {
         if (!TabUiFeatureUtilities.isTabDragToCreateInstanceSupported()) return false;
+        @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
+        return tabGroupMetadata != null
+                ? maybeLaunchDraggedTabGroupInWindow(tabGroupMetadata)
+                : maybeLaunchDraggedTabInWindow(intent);
+    }
+
+    private boolean maybeLaunchDraggedTabInWindow(Intent intent) {
         int draggedTabId =
                 IntentUtils.safeGetIntExtra(
                         intent, IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID);
@@ -2358,6 +2366,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
                 AppHeaderUtils.isAppInDesktopWindow(
                         mRootUiCoordinator.getDesktopWindowStateManager()));
+        return true;
+    }
+
+    // TODO(crbug.com/384979079): record metrics for tab group drop.
+    private boolean maybeLaunchDraggedTabGroupInWindow(@NonNull TabGroupMetadata tabGroupMetadata) {
+        if (mMultiInstanceManager == null) return false;
+
+        mMultiInstanceManager.moveTabGroupToWindow(this, tabGroupMetadata, 0);
         return true;
     }
 
