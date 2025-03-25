@@ -2604,6 +2604,13 @@
        {}
       ]
      ],
+     "mixed-containing-blocks-crash.html": [
+      "f8a38e057d32e8bb8d7e143d867ca6364210ba38",
+      [
+       null,
+       {}
+      ]
+     ],
      "negative-available-size-crash.html": [
       "837fdaeba9ef8baeb4f2bad281bb13551d6d8ff9",
       [
@@ -85473,7 +85480,7 @@
       },
       "corner-shape": {
        "corner-shape-any.html": [
-        "43b14e4109b6b473f77bb64db692aa0f256e192d",
+        "638d34b7bc2ef48fb17137b0b72dae37b2f5a189",
         [
          "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
          [
@@ -85661,6 +85668,58 @@
          [
           [
            "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&border-width=20px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              600
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              600
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black,-20px 5px 0 20px yellow",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black,-20px 5px 0 20px yellow",
            "=="
           ]
          ],
@@ -85895,6 +85954,32 @@
          [
           [
            "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(5.2)&border-radius=40%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              600
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=superellipse(8)&border-radius=10px&box-shadow=10px 10px 0 10px black",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(8)&border-radius=10px&box-shadow=10px 10px 0 10px black",
            "=="
           ]
          ],
@@ -86337,7 +86422,7 @@
         ]
        ],
        "corner-shape-bevel-overflow.html": [
-        "df604db8d13888a2c59488e374ee27ebe6878001",
+        "5a18e11af61b9aa9176802dac24d7064a4aab58d",
         [
          null,
          [
@@ -86357,7 +86442,7 @@
              ],
              [
               0,
-              32
+              256
              ]
             ]
            ]
@@ -86366,7 +86451,7 @@
         ]
        ],
        "corner-shape-fill.html": [
-        "6e5df8364c5fa57398644a72d40ca0e3dc8b2b65",
+        "b8c8bc0ad2e3d9a6eb18422925660b79de9d2a9b",
         [
          null,
          [
@@ -86386,7 +86471,7 @@
              ],
              [
               0,
-              32
+              256
              ]
             ]
            ]
@@ -145848,6 +145933,90 @@
             [
              0,
              15000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-powerless-hue-hsl.html": [
+       "7b37596bfacada02dbf7c8ffa5e2fe74a2a74d1c",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-powerless-hue-hsl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "gradient-powerless-hue-hwb.html": [
+       "e04e5f1bffcae04cbb7ae49e718633dc1e9b123f",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-powerless-hue-hwb-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "gradient-powerless-hue-lch.html": [
+       "b0485869d1d1e5e3e84c0399b27bf86359630388",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-powerless-hue-lch-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             1
+            ],
+            [
+             0,
+             1500
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-powerless-hue-oklch.html": [
+       "68c4e120279b3190b281aae548df0209a3ec8908",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-powerless-hue-oklch-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             1
+            ],
+            [
+             0,
+             500
             ]
            ]
           ]
@@ -328564,10 +328733,6 @@
       "b41d2110e5079c847378f41b1a95e1485028a091",
       []
      ],
-     "property-interpolations-expected.txt": [
-      "db037f69d5716d4dd20a66209e27c659d6d0b1ca",
-      []
-     ],
      "reference": {
       "anchor-in-css-min-max-function-ref.html": [
        "781a8ae6a2ccc838a9728005cde92111c9fe0039",
@@ -331048,7 +331213,7 @@
        ],
        "resources": {
         "corner-shape.js": [
-         "af749cd66cb4e99c669d3ffea0ef5c7a7690b2e1",
+         "de471f95dfc4de0d58f8a0c63b510da92d90f476",
          []
         ],
         "corner-utils.js": [
@@ -331056,7 +331221,7 @@
          []
         ],
         "resolve-corner-style.js": [
-         "0c41d9d08f03e96f3cf57f45286c9e2295765a7f",
+         "93e5112ea40cfd43ae2c19dbf8cfdf38e06c4c4e",
          []
         ]
        }
@@ -348069,6 +348234,22 @@
       ],
       "gradient-none-interpolation-ref.html": [
        "154112fe612979103ad5f7c3c8fa528c1d434a5b",
+       []
+      ],
+      "gradient-powerless-hue-hsl-ref.html": [
+       "b6ce2a32d1d39b76c9e8279e491b29ebbc1d215e",
+       []
+      ],
+      "gradient-powerless-hue-hwb-ref.html": [
+       "6bb79ddf4199c482b3ea253ac7db621de6918ce5",
+       []
+      ],
+      "gradient-powerless-hue-lch-ref.html": [
+       "ca383a9857d9e853a15ee545779566ed7ffd3a69",
+       []
+      ],
+      "gradient-powerless-hue-oklch-ref.html": [
+       "4e25773f280b8d3fb61a370c32d056ff25356c72",
        []
       ],
       "gradient-single-stop-longer-hue-hsl-002-ref.html": [
@@ -382445,6 +382626,10 @@
       }
      },
      "zstd": {
+      "WEB_FEATURES.yml": [
+       "b5d970fdb14ac3fd01ac25c0f9c809460e5e561f",
+       []
+      ],
       "resources": {
        "bad-zstd-body.py": [
         "496f26881dc9574f8e8f3fcc04c49fa4145c8a20",
@@ -396976,6 +397161,10 @@
        ],
        "lists-styles-expected.txt": [
         "9a780da06876980ba4a0459fac13086c402b94aa",
+        []
+       ],
+       "lists-styles-quirks-expected.txt": [
+        "194e9df222a7b40a93b3cd7f8840da993b4e3265",
         []
        ],
        "ol-display-contents-ref.html": [
@@ -524133,6 +524322,13 @@
         {}
        ]
       ],
+      "zoom-iframe-dynamic.html": [
+       "cea38d8254039d08fb78bf55f8d8d9d3cc77e747",
+       [
+        null,
+        {}
+       ]
+      ],
       "zoom-with-sign-function.html": [
        "d3df186199bc8b4e28f7becdad555210d063a225",
        [
@@ -527475,7 +527671,7 @@
        ]
       ],
       "flood-opacity-computed.svg": [
-       "a395eda22e377757afc1583016e8d14da13268cc",
+       "9024aaa4f3f2ba3b08d4eb65933553db44e5ed3f",
        [
         null,
         {}
@@ -527489,7 +527685,7 @@
        ]
       ],
       "flood-opacity-valid.svg": [
-       "67eb37fad5ec15e01f9f54ea016e74606dec9f03",
+       "7c11b26bc9226c2a9ba83d50fe488a9642f72974",
        [
         null,
         {}
@@ -633591,8 +633787,15 @@
          {}
         ]
        ],
+       "lists-styles-quirks.html": [
+        "ba3d8241f0f309aafe0805dc370747db6d3e5816",
+        [
+         null,
+         {}
+        ]
+       ],
        "lists-styles.html": [
-        "a5f011cecc1dbd6d199d4af5e0cd09113ca90735",
+        "6c2500b7eeda6d182977701771d7ca2405877416",
         [
          null,
          {}

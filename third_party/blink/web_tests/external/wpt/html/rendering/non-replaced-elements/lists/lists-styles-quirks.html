@@ -1,5 +1,9 @@
-<!doctype html>
-<title>default styles and preshints for ol, ul, menu, li, dir, dl, dt, dd</title>
+<!-- This file is the same as lists-styles.html except:
+- no doctype
+- different title
+- added quirks mode styles
+-->
+<title>quirks mode - default styles and preshints for ol, ul, menu, li, dir, dl, dt, dd</title>
 <meta name="viewport" content="width=device-width">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -53,6 +57,11 @@ ol[reversed][start="20"], ol[reversed][start="20xyz"], ol[reversed][start="20e10
 /* dir="" */
 [dir=ltr] { direction: ltr; }
 [dir=rtl] { direction: rtl; }
+
+/* quirks mode styles */
+li { list-style-position: inside; }
+li :is(dir, menu, ol, ul) { list-style-position: outside; }
+:is(dir, menu, ol, ul) :is(dir, menu, ol, ul, li) { list-style-position: unset; }
 </style>
 
 <div id="log"></div>
