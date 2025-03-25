@@ -88,6 +88,7 @@ const char kVariationsName[] = "variations_name";
 const char kVariationsSeed[] = "variations_seed";
 const char kVariationsSeedName[] = "variations_seed_name";
 const char kVersion[] = "version";
+const char kVersionSuffix[] = "version_suffix";
 const char kVersionModifier[] = "version_modifier";
 const char kVersionProcessorVariation[] = "version_processor_variation";
 

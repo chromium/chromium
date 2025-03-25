@@ -90,6 +90,7 @@ extern const char kVariationsName[];
 extern const char kVariationsSeed[];
 extern const char kVariationsSeedName[];
 extern const char kVersion[];
+extern const char kVersionSuffix[];
 extern const char kVersionModifier[];
 extern const char kVersionProcessorVariation[];
 

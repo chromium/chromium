@@ -49,6 +49,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "build/util/LASTCHANGE_commit_position.h"
 #include "chrome/browser/ui/webui/version/version_handler_chromeos.h"
 #endif
 
@@ -126,6 +127,16 @@ std::string GetProductModifier() {
   modifier_parts.emplace_back("dcheck");
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   return base::JoinString(modifier_parts, "-");
+}
+
+std::string GetVersionInformationalSuffix() {
+#if BUILDFLAG(IS_CHROMEOS) && CHROMIUM_COMMIT_POSITION_IS_MAIN
+  // Adds the revision number as a suffix to the version number if the chrome
+  // is built from the main branch.
+  return "-r" CHROMIUM_COMMIT_POSITION_NUMBER;
+#else
+  return "";
+#endif
 }
 
 }  // namespace
@@ -211,6 +222,8 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   // Data strings.
   html_source->AddString(version_ui::kVersion,
                          version_info::GetVersionNumber());
+  html_source->AddString(version_ui::kVersionSuffix,
+                         GetVersionInformationalSuffix());
 
   html_source->AddString(version_ui::kVersionModifier, GetProductModifier());
 
@@ -299,6 +312,7 @@ std::u16string VersionUI::GetAnnotatedVersionStringForUi() {
   return l10n_util::GetStringFUTF16(
       IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION,
       base::UTF8ToUTF16(version_info::GetVersionNumber()),
+      base::UTF8ToUTF16(GetVersionInformationalSuffix()),
       l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
                                     ? IDS_VERSION_UI_OFFICIAL
                                     : IDS_VERSION_UI_UNOFFICIAL),
