@@ -591,7 +591,8 @@ bool SharedImageFactory::CreateSharedImage(
   } else {
     backing = factory->CreateSharedImage(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        std::move(debug_label), std::move(buffer_handle));
+        std::move(debug_label), /*is_thread_safe=*/false,
+        std::move(buffer_handle));
   }
 
   if (backing) {

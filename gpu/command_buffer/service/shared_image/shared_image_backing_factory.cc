@@ -57,6 +57,7 @@ SharedImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   NOTREACHED();
 }
