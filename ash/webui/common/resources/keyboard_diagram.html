@@ -97,6 +97,7 @@
     grid-column: span 4;
   }
 
+  [data-bottom-left-layout='3keys'] #leftAltKey,
   [data-bottom-left-layout='4keys'] #leftAltKey {
     grid-column: span 2;
   }
@@ -203,12 +204,20 @@
     grid-column: span 6;
   }
 
+  [data-mech-layout='jis'][data-bottom-right-layout='4keys'] #spacebar {
+    grid-column: span 4;
+  }
+
   [data-mech-layout='jis'] #rightShiftKey {
     grid-column: span 3;
   }
 
-  [data-mech-layout='jis'] #arrowKeyCluster {
+  [data-mech-layout='jis'][data-bottom-right-layout='2keys'] #arrowKeyCluster {
     grid-column: span 7;
+  }
+
+  [data-mech-layout='jis'] #arrowKeyCluster {
+    grid-column: span 5;
   }
 
   /* Modifications for Dell Enterprise keyboards */
