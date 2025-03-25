@@ -483,6 +483,8 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
 
   using InlineEdge = LogicalStaticPosition::InlineEdge;
   using BlockEdge = LogicalStaticPosition::BlockEdge;
+  using LogicalAlignmentDirection =
+      LogicalStaticPosition::LogicalAlignmentDirection;
 
   BoxStrut border_scrollbar_padding = BorderScrollbarPadding();
   border_scrollbar_padding.block_start =
@@ -545,8 +547,12 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
     // Make the child offset relative to our fragment.
     offset.block_offset -= previous_consumed_block_size;
 
-    container_builder_.AddOutOfFlowChildCandidate(child, offset, inline_edge,
-                                                  block_edge);
+    LogicalAlignmentDirection align_self_direction =
+        is_column_ ? LogicalAlignmentDirection::kInline
+                   : LogicalAlignmentDirection::kBlock;
+
+    container_builder_.AddOutOfFlowChildCandidate(
+        child, offset, inline_edge, block_edge, align_self_direction);
   }
 }
 
