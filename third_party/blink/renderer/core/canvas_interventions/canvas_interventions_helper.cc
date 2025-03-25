@@ -92,12 +92,14 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
     return false;
   }
 
-  auto original_info = SkImageInfo::Make(
+  // Use kUnpremul_SkAlphaType as alpha type as we are changing the pixel values
+  // of all channels, including the alpha channel.
+  auto info = SkImageInfo::Make(
       snapshot->GetSize().width(), snapshot->GetSize().height(),
-      snapshot->GetSkColorType(), snapshot->GetAlphaType(),
+      snapshot->GetSkColorType(), kUnpremul_SkAlphaType,
       snapshot->GetSkColorSpace());
   SkBitmap bm;
-  if (!bm.tryAllocPixels(original_info)) {
+  if (!bm.tryAllocPixels(info)) {
     return false;
   }
 
@@ -106,8 +108,8 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   // fail because of memory allocation.
   auto pixmap_to_noise = bm.pixmap();
   PaintImage paint_image = snapshot->PaintImageForCurrentFrame();
-  if (!paint_image.readPixels(original_info, pixmap_to_noise.writable_addr(),
-                              original_info.minRowBytes(), 0, 0)) {
+  if (!paint_image.readPixels(bm.info(), pixmap_to_noise.writable_addr(),
+                              bm.rowBytes(), 0, 0)) {
     return false;
   }
 
