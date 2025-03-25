@@ -54,10 +54,10 @@ namespace {
 
 bool PathQuadIntersection(const SkPath& path, const gfx::QuadF& quad) {
   SkPath quad_path, intersection;
-  quad_path.moveTo(FloatPointToSkPoint(quad.p1()))
-      .lineTo(FloatPointToSkPoint(quad.p2()))
-      .lineTo(FloatPointToSkPoint(quad.p3()))
-      .lineTo(FloatPointToSkPoint(quad.p4()))
+  quad_path.moveTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p1())))
+      .lineTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p2())))
+      .lineTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p3())))
+      .lineTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p4())))
       .close();
   if (!Op(path, quad_path, kIntersect_SkPathOp, &intersection)) {
     return false;
@@ -277,7 +277,7 @@ PointAndTangent Path::PointAndNormalAtLength(float length) const {
   SkPathMeasure measure(path_, false);
   float start = 0;
   if (std::optional<PointAndTangent> result = CalculatePointAndNormalOnPath(
-          measure, start, WebCoreFloatToSkScalar(length))) {
+          measure, start, ClampNonFiniteToZero(length))) {
     return *result;
   }
   return {gfx::SkPointToPointF(path_.getPoint(0)), 0};
@@ -289,7 +289,7 @@ Path::PositionCalculator::PositionCalculator(const Path& path)
       accumulated_length_(0) {}
 
 PointAndTangent Path::PositionCalculator::PointAndNormalAtLength(float length) {
-  length = WebCoreFloatToSkScalar(length);
+  length = ClampNonFiniteToZero(length);
   if (length >= 0) {
     if (length < accumulated_length_) {
       // Reset path measurer to rewind (and restart from 0).

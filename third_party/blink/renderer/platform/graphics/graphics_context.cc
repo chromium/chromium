@@ -1029,12 +1029,12 @@ void GraphicsContext::Translate(float x, float y) {
   if (!x && !y)
     return;
 
-  canvas_->translate(WebCoreFloatToSkScalar(x), WebCoreFloatToSkScalar(y));
+  canvas_->translate(ClampNonFiniteToZero(x), ClampNonFiniteToZero(y));
 }
 
 void GraphicsContext::Scale(float x, float y) {
   DCHECK(canvas_);
-  canvas_->scale(WebCoreFloatToSkScalar(x), WebCoreFloatToSkScalar(y));
+  canvas_->scale(ClampNonFiniteToZero(x), ClampNonFiniteToZero(y));
 }
 
 void GraphicsContext::SetURLForRect(const KURL& link,
