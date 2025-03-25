@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/web_contents_accessibility.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -42,6 +43,7 @@ class BrowserAccessibilityAndroid;
 class BrowserAccessibilityManagerAndroid;
 class WebContents;
 class WebContentsImpl;
+class ScopedAccessibilityMode;
 
 // Bridges BrowserAccessibilityManagerAndroid and Java WebContentsAccessibility.
 // A RenderWidgetHostConnector runs behind to manage the connection. Referenced
@@ -131,6 +133,13 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void ReEnableRendererAccessibility(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jweb_contents);
+
+  // This method turns on the renderer-side accessibility engine for this
+  // web contents.
+  void SetBrowserAXMode(JNIEnv* env,
+                        jboolean needs_full_engine,
+                        jboolean form_controls_mode,
+                        jboolean is_screen_reader_running);
 
   base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);
@@ -454,6 +463,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // This isn't associated with a real WebContents and is only populated when
   // this class is constructed with a ui::AXTreeUpdate.
   std::unique_ptr<BrowserAccessibilityManagerAndroid> snapshot_root_manager_;
+
+  std::unique_ptr<ScopedAccessibilityMode> scoped_accessibility_mode_;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
 };
