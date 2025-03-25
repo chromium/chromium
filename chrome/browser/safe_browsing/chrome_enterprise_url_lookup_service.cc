@@ -80,7 +80,8 @@ ChromeEnterpriseRealTimeUrlLookupService::
         signin::IdentityManager* identity_manager,
         policy::ManagementService* management_service,
         bool is_off_the_record,
-        bool is_guest_session)
+        bool is_guest_session,
+        base::RepeatingCallback<std::string()> get_profile_email_callback)
     : RealTimeUrlLookupServiceBase(
           url_loader_factory,
           cache_manager,
@@ -95,7 +96,8 @@ ChromeEnterpriseRealTimeUrlLookupService::
       identity_manager_(identity_manager),
       management_service_(management_service),
       is_off_the_record_(is_off_the_record),
-      is_guest_session_(is_guest_session) {}
+      is_guest_session_(is_guest_session),
+      get_profile_email_callback_(get_profile_email_callback) {}
 
 ChromeEnterpriseRealTimeUrlLookupService::
     ~ChromeEnterpriseRealTimeUrlLookupService() = default;
@@ -270,7 +272,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {
 }
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetUserEmail() const {
-  return enterprise_connectors::GetProfileEmail(profile_);
+  return get_profile_email_callback_.Run();
 }
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetBrowserDMTokenString()

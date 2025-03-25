@@ -60,7 +60,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
       signin::IdentityManager* identity_manager,
       policy::ManagementService* management_service,
       bool is_off_the_record,
-      bool is_guest_session);
+      bool is_guest_session,
+      base::RepeatingCallback<std::string()> get_profile_email_callback);
 
   ChromeEnterpriseRealTimeUrlLookupService(
       const ChromeEnterpriseRealTimeUrlLookupService&) = delete;
@@ -137,6 +138,9 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   // Indicates if the service is bound to a guest browsing session.
   bool is_guest_session_;
+
+  // Callback for accessing the profile's email.
+  base::RepeatingCallback<std::string()> get_profile_email_callback_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 
