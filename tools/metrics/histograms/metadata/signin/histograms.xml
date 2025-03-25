@@ -1770,6 +1770,18 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram name="Signin.IOSAccountSwitchType" enum="IOSAccountSwitchType"
+    expires_after="2026-03-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    When switching accounts, records whether the old and/or the new account were
+    managed. Recorded independently of whether the account switch involved a
+    profile switch.
+  </summary>
+</histogram>
+
 <histogram name="Signin.IOSDeviceRestoreIdentityCountAfter" units="identities"
     expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>
