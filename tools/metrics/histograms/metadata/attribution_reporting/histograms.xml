@@ -161,6 +161,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSendExceeds30Days"
+    enum="Boolean" expires_after="2025-07-13">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether the &quot;extra&quot; non-scheduled time it took to confirm
+    the aggregatable attribution report was sent exceeds 30 days. This is
+    primarily due to a report's scheduled report time taking place while the
+    browser is closed. Recorded when an aggregatable report is successfully
+    sent.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableReport.FilteredTriggerDataPercentage"
     units="%" expires_after="2025-06-22">
   <owner>linnan@chromium.org</owner>
@@ -606,6 +620,18 @@ chromium-metrics-reviews@google.com.
     particular attribution report was sent. This is primarily due to a report's
     scheduled report time taking place while the browser is closed. Recorded
     when an attribution report is successfully sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ExtraReportDelayForSuccessfulSendExceeds30Days"
+    enum="Boolean" expires_after="2025-07-13">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether the &quot;extra&quot; non-scheduled time it took to confirm
+    the particular attribution report was sent exceeds 30 days. This is
+    primarily due to a report's scheduled report time taking place while the
+    browser is closed. Recorded when an attribution report is successfully sent.
   </summary>
 </histogram>
 
