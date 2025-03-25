@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -1168,6 +1169,15 @@ BrowserView::~BrowserView() {
   // other cleanups that destroy views referenced in the layout manager.
   SetLayoutManager(nullptr);
 
+  auto* tab_search_toolbar_button_controller =
+      browser_->GetFeatures().tab_search_toolbar_button_controller();
+  if (tab_search_toolbar_button_controller) {
+    tab_search_bubble_host_->RemoveObserver(
+        tab_search_toolbar_button_controller);
+  }
+
+  tab_search_bubble_host_.reset();
+
   // Destroy the top controls slide controller first as it depends on the
   // tabstrip model and the browser frame.
   top_controls_slide_controller_.reset();
@@ -1337,10 +1347,7 @@ bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
 #endif
 
 TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
-  if (auto* tab_search_button = tab_strip_region_view_->GetTabSearchButton()) {
-    return tab_search_button->tab_search_bubble_host();
-  }
-  return nullptr;
+  return tab_search_bubble_host_.get();
 }
 
 bool BrowserView::GetTabStripVisible() const {
@@ -5027,6 +5034,20 @@ void BrowserView::AddedToWidget() {
 #endif
 
   toolbar_->Init();
+
+  if (GetIsNormalType()) {
+    if (features::HasTabSearchToolbarButton()) {
+      tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
+          toolbar_->tab_search_button(), browser_.get(),
+          tabstrip_->AsWeakPtr());
+      tab_search_bubble_host_->AddObserver(
+          browser_->GetFeatures().tab_search_toolbar_button_controller());
+    } else {
+      tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
+          tab_strip_region_view_->GetTabSearchButton(), browser_.get(),
+          tabstrip_->AsWeakPtr());
+    }
+  }
 
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems

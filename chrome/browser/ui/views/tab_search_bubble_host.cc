@@ -65,12 +65,11 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 TabSearchBubbleHost::TabSearchBubbleHost(
     views::Button* button,
     BrowserWindowInterface* browser_window_interface,
-    views::View* anchor_view,
     base::WeakPtr<TabStrip> tab_strip)
     : button_(button),
       profile_(browser_window_interface->GetProfile()),
       webui_bubble_manager_(WebUIBubbleManager::Create<TabSearchUI>(
-          anchor_view,
+          button,
           browser_window_interface,
           GURL(chrome::kChromeUITabSearchURL),
           IDS_ACCNAME_TAB_SEARCH)),
@@ -172,6 +171,10 @@ void TabSearchBubbleHost::OnWidgetDestroying(views::Widget* widget) {
       webui_bubble_manager_->GetBubbleWidget()));
   bubble_widget_observation_.Reset();
   pressed_lock_.reset();
+
+  for (auto& observer : observers_) {
+    observer.OnBubbleDestroying();
+  }
 }
 
 void TabSearchBubbleHost::OnOrganizationAccepted(const Browser* browser) {
@@ -216,6 +219,14 @@ void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
           base::TimeTicks::Now()));
 }
 
+void TabSearchBubbleHost::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabSearchBubbleHost::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool TabSearchBubbleHost::ShowTabSearchBubble(
     bool triggered_by_keyboard_shortcut,
     tab_search::mojom::TabSearchSection section,
@@ -238,6 +249,10 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
 
   if (webui_bubble_manager_->GetBubbleWidget()) {
     return false;
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnBubbleInitializing();
   }
 
   // Close the Tab Search IPH if it is showing.
