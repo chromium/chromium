@@ -9,24 +9,32 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_event_router.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
+#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "content/public/common/drop_data.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "net/base/filename_util.h"
+#include "ui/base/clipboard/file_info.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/chrome_zipfile_installer.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/ui_util.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -37,6 +45,8 @@ namespace developer = api::developer_private;
 namespace {
 const char kCannotUpdateChildAccountProfileSettingsError[] =
     "Cannot change settings for a child account profile.";
+
+ui::FileInfo* g_drop_file_for_testing = nullptr;
 
 std::optional<URLPattern> ParseRuntimePermissionsPattern(
     const std::string& pattern_str) {
@@ -193,6 +203,45 @@ void UpdateSiteGroupCountsForExtensionHosts(
       entry.second.num_extensions++;
     }
   }
+}
+
+// Sets the dropped path to DeveloperPrivateAPI.
+base::expected<void, std::string> SetDroppedPath(
+    content::WebContents* web_contents,
+    content::BrowserContext* context) {
+  const ui::FileInfo* file_info = nullptr;
+  if (g_drop_file_for_testing) {
+    file_info = g_drop_file_for_testing;
+  } else {
+    content::DropData* drop_data = web_contents->GetDropData();
+    if (!drop_data) {
+      return base::unexpected{"No current drop data."};
+    }
+
+    if (drop_data->filenames.empty()) {
+      return base::unexpected{"No files being dropped."};
+    }
+
+    file_info = &drop_data->filenames.front();
+  }
+
+  DCHECK(file_info);
+  // Note(devlin): we don't do further validation that the file is a directory
+  // here. This is validated in the JS, but if that fails, then trying to load
+  // the file as an unpacked extension will also fail (reasonably gracefully).
+
+  DeveloperPrivateAPI::Get(context)->SetDraggedFile(web_contents, *file_info);
+  return base::ok();
+}
+
+// Returns whether the filename perceived to the user ends with the extension.
+// Just using `path` is not enough because it might be a content URI that
+// doesn't have the `display_name` as a suffix.
+bool MatchesExtension(ui::FileInfo& file_info,
+                      base::FilePath::StringViewType extension) {
+  return file_info.display_name.empty()
+             ? file_info.path.MatchesExtension(extension)
+             : file_info.display_name.MatchesExtension(extension);
 }
 
 }  // namespace
@@ -439,6 +488,99 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   return RespondNow(NoArguments());
+}
+
+DeveloperPrivateInstallDroppedFileFunction::
+    DeveloperPrivateInstallDroppedFileFunction() = default;
+DeveloperPrivateInstallDroppedFileFunction::
+    ~DeveloperPrivateInstallDroppedFileFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateInstallDroppedFileFunction::Run() {
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotFindWebContentsError));
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  base::expected<void, std::string> result =
+      SetDroppedPath(web_contents, browser_context());
+  if (!result.has_value()) {
+    return RespondNow(Error(result.error()));
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  DeveloperPrivateAPI* api = DeveloperPrivateAPI::Get(browser_context());
+  ui::FileInfo file = api->GetDraggedFile(web_contents);
+  if (file.path.empty()) {
+    return RespondNow(Error("No dragged path"));
+  }
+
+  if (MatchesExtension(file, FILE_PATH_LITERAL(".zip"))) {
+#if BUILDFLAG(IS_ANDROID)
+    return RespondNow(Error("zip file is not yet supported on android"));
+#else
+    ExtensionService* service =
+        ExtensionSystem::Get(browser_context())->extension_service();
+    ExtensionRegistrar* registrar = ExtensionRegistrar::Get(browser_context());
+    ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
+                             MakeRegisterInExtensionServiceCallback(service))
+        ->InstallZipFileToUnpackedExtensionsDir(
+            file.path, registrar->unpacked_install_directory());
+#endif  // BUILDFLAG(IS_ANDROID)
+  } else {
+    auto prompt = std::make_unique<ExtensionInstallPrompt>(web_contents);
+    scoped_refptr<CrxInstaller> crx_installer =
+        CrxInstaller::Create(browser_context(), std::move(prompt));
+    crx_installer->set_error_on_unsupported_requirements(true);
+    crx_installer->set_off_store_install_allow_reason(
+        CrxInstaller::OffStoreInstallAllowedFromSettingsPage);
+    crx_installer->set_install_immediately(true);
+
+    if (MatchesExtension(file, FILE_PATH_LITERAL(".user.js"))) {
+      crx_installer->InstallUserScript(file.path,
+                                       net::FilePathToFileURL(file.path));
+    } else if (MatchesExtension(file, FILE_PATH_LITERAL(".crx"))) {
+      crx_installer->InstallCrx(file.path);
+    } else {
+      EXTENSION_FUNCTION_VALIDATE(false);
+    }
+  }
+
+  // TODO(devlin): We could optionally wait to return until we validate whether
+  // the load succeeded or failed. For now, that's unnecessary, and just adds
+  // complexity.
+  return RespondNow(NoArguments());
+}
+
+DeveloperPrivateNotifyDragInstallInProgressFunction::
+    DeveloperPrivateNotifyDragInstallInProgressFunction() = default;
+DeveloperPrivateNotifyDragInstallInProgressFunction::
+    ~DeveloperPrivateNotifyDragInstallInProgressFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateNotifyDragInstallInProgressFunction::Run() {
+// Drop data is available only on drop on android.
+#if !BUILDFLAG(IS_ANDROID)
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotFindWebContentsError));
+  }
+
+  const base::expected<void, std::string> result =
+      SetDroppedPath(web_contents, browser_context());
+  if (!result.has_value()) {
+    return RespondNow(Error(result.error()));
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  return RespondNow(NoArguments());
+}
+
+// static
+void DeveloperPrivateNotifyDragInstallInProgressFunction::SetDropFileForTesting(
+    ui::FileInfo* file_info) {
+  g_drop_file_for_testing = file_info;
 }
 
 DeveloperPrivateDeleteExtensionErrorsFunction::

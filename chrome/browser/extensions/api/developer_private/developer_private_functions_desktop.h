@@ -186,46 +186,6 @@ class DeveloperPrivateLoadUnpackedFunction
   std::optional<ui::SelectedFileInfo> selected_file_for_testing_;
 };
 
-class DeveloperPrivateInstallDroppedFileFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.installDroppedFile",
-                             DEVELOPERPRIVATE_INSTALLDROPPEDFILE)
-  DeveloperPrivateInstallDroppedFileFunction();
-
-  DeveloperPrivateInstallDroppedFileFunction(
-      const DeveloperPrivateInstallDroppedFileFunction&) = delete;
-  DeveloperPrivateInstallDroppedFileFunction& operator=(
-      const DeveloperPrivateInstallDroppedFileFunction&) = delete;
-
- private:
-  ~DeveloperPrivateInstallDroppedFileFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-};
-
-class DeveloperPrivateNotifyDragInstallInProgressFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.notifyDragInstallInProgress",
-                             DEVELOPERPRIVATE_NOTIFYDRAGINSTALLINPROGRESS)
-
-  DeveloperPrivateNotifyDragInstallInProgressFunction();
-
-  DeveloperPrivateNotifyDragInstallInProgressFunction(
-      const DeveloperPrivateNotifyDragInstallInProgressFunction&) = delete;
-  DeveloperPrivateNotifyDragInstallInProgressFunction& operator=(
-      const DeveloperPrivateNotifyDragInstallInProgressFunction&) = delete;
-
-  ResponseAction Run() override;
-
-  static void SetDropFileForTesting(ui::FileInfo* file_info);
-
- private:
-  ~DeveloperPrivateNotifyDragInstallInProgressFunction() override;
-};
-
 class DeveloperPrivateChoosePathFunction
     : public DeveloperPrivateAPIFunction,
       public ui::SelectFileDialog::Listener {

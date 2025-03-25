@@ -113,7 +113,11 @@ void ManagedUIHandler::RemoveObservers() {
 
 base::Value::Dict ManagedUIHandler::GetDataSourceUpdate() const {
   base::Value::Dict update;
-#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/394876083): Enable the management policy on android and
+  // remove the if-def.
+#if BUILDFLAG(IS_ANDROID)
+  update.Set("managedByIcon", "");
+#else
   update.Set("managedByIcon", GetManagedUiWebUIIcon(profile_));
   update.Set("managementPageUrl", GetManagedUiUrl(profile_).spec());
   update.Set("browserManagedByOrg", GetManagedUiWebUILabel(profile_));

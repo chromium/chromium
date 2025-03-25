@@ -126,14 +126,8 @@ namespace developer = api::developer_private;
 namespace {
 constexpr char kUnpackedAppsFolder[] = "apps_target";
 
-ui::FileInfo* g_drop_file_for_testing = nullptr;
-
 ExtensionService* GetExtensionService(content::BrowserContext* context) {
   return ExtensionSystem::Get(context)->extension_service();
-}
-
-ExtensionRegistrar* GetExtensionRegistrar(content::BrowserContext* context) {
-  return ExtensionRegistrar::Get(context);
 }
 
 std::string ReadFileToString(const base::FilePath& path) {
@@ -196,16 +190,6 @@ developer::LoadError CreateLoadError(
   response.source->after_highlight = highlighter.GetAfterFeature();
 
   return response;
-}
-
-// Returns whether the filename perceived to the user ends with the extension.
-// Just using `path` is not enough because it might be a content URI that
-// doesn't have the `display_name` as a suffix.
-bool MatchesExtension(ui::FileInfo& file_info,
-                      base::FilePath::StringViewType extension) {
-  return file_info.display_name.empty()
-             ? file_info.path.MatchesExtension(extension)
-             : file_info.display_name.MatchesExtension(extension);
 }
 
 }  // namespace
@@ -540,99 +524,6 @@ void DeveloperPrivateLoadUnpackedFunction::Finish(
     ResponseValue response_value) {
   Respond(std::move(response_value));
   Release();  // Balanced in Run().
-}
-
-DeveloperPrivateInstallDroppedFileFunction::
-    DeveloperPrivateInstallDroppedFileFunction() = default;
-DeveloperPrivateInstallDroppedFileFunction::
-    ~DeveloperPrivateInstallDroppedFileFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateInstallDroppedFileFunction::Run() {
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents) {
-    return RespondNow(Error(kCouldNotFindWebContentsError));
-  }
-
-  DeveloperPrivateAPI* api = DeveloperPrivateAPI::Get(browser_context());
-  ui::FileInfo file = api->GetDraggedFile(web_contents);
-  if (file.path.empty()) {
-    return RespondNow(Error("No dragged path"));
-  }
-
-  if (MatchesExtension(file, FILE_PATH_LITERAL(".zip"))) {
-    ExtensionService* service = GetExtensionService(browser_context());
-    ExtensionRegistrar* registrar = GetExtensionRegistrar(browser_context());
-    ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
-                             MakeRegisterInExtensionServiceCallback(service))
-        ->InstallZipFileToUnpackedExtensionsDir(
-            file.path, registrar->unpacked_install_directory());
-  } else {
-    auto prompt = std::make_unique<ExtensionInstallPrompt>(web_contents);
-    scoped_refptr<CrxInstaller> crx_installer =
-        CrxInstaller::Create(browser_context(), std::move(prompt));
-    crx_installer->set_error_on_unsupported_requirements(true);
-    crx_installer->set_off_store_install_allow_reason(
-        CrxInstaller::OffStoreInstallAllowedFromSettingsPage);
-    crx_installer->set_install_immediately(true);
-
-    if (MatchesExtension(file, FILE_PATH_LITERAL(".user.js"))) {
-      crx_installer->InstallUserScript(file.path,
-                                       net::FilePathToFileURL(file.path));
-    } else if (MatchesExtension(file, FILE_PATH_LITERAL(".crx"))) {
-      crx_installer->InstallCrx(file.path);
-    } else {
-      EXTENSION_FUNCTION_VALIDATE(false);
-    }
-  }
-
-  // TODO(devlin): We could optionally wait to return until we validate whether
-  // the load succeeded or failed. For now, that's unnecessary, and just adds
-  // complexity.
-  return RespondNow(NoArguments());
-}
-
-DeveloperPrivateNotifyDragInstallInProgressFunction::
-    DeveloperPrivateNotifyDragInstallInProgressFunction() = default;
-DeveloperPrivateNotifyDragInstallInProgressFunction::
-    ~DeveloperPrivateNotifyDragInstallInProgressFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateNotifyDragInstallInProgressFunction::Run() {
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents) {
-    return RespondNow(Error(kCouldNotFindWebContentsError));
-  }
-
-  const ui::FileInfo* file_info = nullptr;
-  if (g_drop_file_for_testing) {
-    file_info = g_drop_file_for_testing;
-  } else {
-    content::DropData* drop_data = web_contents->GetDropData();
-    if (!drop_data) {
-      return RespondNow(Error("No current drop data."));
-    }
-
-    if (drop_data->filenames.empty()) {
-      return RespondNow(Error("No files being dragged."));
-    }
-
-    file_info = &drop_data->filenames.front();
-  }
-
-  DCHECK(file_info);
-  // Note(devlin): we don't do further validation that the file is a directory
-  // here. This is validated in the JS, but if that fails, then trying to load
-  // the file as an unpacked extension will also fail (reasonably gracefully).
-  DeveloperPrivateAPI::Get(browser_context())
-      ->SetDraggedFile(web_contents, *file_info);
-  return RespondNow(NoArguments());
-}
-
-// static
-void DeveloperPrivateNotifyDragInstallInProgressFunction::SetDropFileForTesting(
-    ui::FileInfo* file_info) {
-  g_drop_file_for_testing = file_info;
 }
 
 void DeveloperPrivatePackDirectoryFunction::OnPackSuccess(
