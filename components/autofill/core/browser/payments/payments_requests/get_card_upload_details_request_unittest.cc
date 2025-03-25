@@ -172,32 +172,6 @@ TEST(GetCardUploadDetailsRequestTest,
               std::string::npos);
 }
 
-TEST(
-    GetCardUploadDetailsRequestTest,
-    GetDetailsIncludesLocalCardMigrationCheckoutFlowUploadCardSourceInRequest) {
-  std::unique_ptr<GetCardUploadDetailsRequest> request =
-      CreateGetCardUploadDetailsRequest(
-          GetCardUploadDetailsOptions().with_upload_card_source(
-              UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW));
-
-  // Verify that the correct upload card source was included in the request.
-  EXPECT_TRUE(request->GetRequestContent().find(
-                  "LOCAL_CARD_MIGRATION_CHECKOUT_FLOW") != std::string::npos);
-}
-
-TEST(
-    GetCardUploadDetailsRequestTest,
-    GetDetailsIncludesLocalCardMigrationSettingsPageUploadCardSourceInRequest) {
-  std::unique_ptr<GetCardUploadDetailsRequest> request =
-      CreateGetCardUploadDetailsRequest(
-          GetCardUploadDetailsOptions().with_upload_card_source(
-              UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE));
-
-  // Verify that the correct upload card source was included in the request.
-  EXPECT_TRUE(request->GetRequestContent().find(
-                  "LOCAL_CARD_MIGRATION_SETTINGS_PAGE") != std::string::npos);
-}
-
 TEST(GetCardUploadDetailsRequestTest,
      GetDetailsIncludesUnknownUploadCardSourceInRequest) {
   std::unique_ptr<GetCardUploadDetailsRequest> request =

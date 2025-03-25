@@ -345,12 +345,6 @@ enum UploadCardSource {
   UPSTREAM_SETTINGS_PAGE,
   // Single card is being uploaded after being scanned by OCR.
   UPSTREAM_CARD_OCR,
-  // 1+ cards are being uploaded from a migration request that started during
-  // a checkout flow.
-  LOCAL_CARD_MIGRATION_CHECKOUT_FLOW,
-  // 1+ cards are being uploaded from a migration request that was initiated
-  // from chrome://settings/payments.
-  LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
 };
 
 // A collection of information received in the response for an

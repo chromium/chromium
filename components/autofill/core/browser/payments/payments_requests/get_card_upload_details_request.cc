@@ -98,14 +98,6 @@ std::string GetCardUploadDetailsRequest::GetRequestContent() {
     case UploadCardSource::UPSTREAM_CARD_OCR:
       request_dict.Set("upload_card_source", "UPSTREAM_CARD_OCR");
       break;
-    case UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW:
-      request_dict.Set("upload_card_source",
-                       "LOCAL_CARD_MIGRATION_CHECKOUT_FLOW");
-      break;
-    case UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE:
-      request_dict.Set("upload_card_source",
-                       "LOCAL_CARD_MIGRATION_SETTINGS_PAGE");
-      break;
     default:
       NOTREACHED();
   }
