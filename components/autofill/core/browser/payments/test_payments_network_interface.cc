@@ -93,16 +93,6 @@ void TestPaymentsNetworkInterface::UploadCard(
                           upload_card_response_details_);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-void TestPaymentsNetworkInterface::MigrateCards(
-    const MigrationRequestDetails& details,
-    const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    MigrateCardsCallback callback) {
-  std::move(callback).Run(PaymentsRpcResult::kSuccess, std::move(save_result_),
-                          "this is display text");
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 void TestPaymentsNetworkInterface::SelectChallengeOption(
     const SelectChallengeOptionRequestDetails& details,
     base::OnceCallback<void(PaymentsRpcResult, const std::string&)> callback) {
@@ -189,11 +179,6 @@ void TestPaymentsNetworkInterface::SetFidoRequestOptionsInUnmaskDetails(
 void TestPaymentsNetworkInterface::SetUploadCardResponseDetailsForUploadCard(
     const UploadCardResponseDetails& upload_card_response_details) {
   upload_card_response_details_ = upload_card_response_details;
-}
-
-void TestPaymentsNetworkInterface::SetSaveResultForCardsMigration(
-    std::unique_ptr<std::unordered_map<std::string, std::string>> save_result) {
-  save_result_ = std::move(save_result);
 }
 
 void TestPaymentsNetworkInterface::SetSupportedBINRanges(

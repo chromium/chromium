@@ -161,6 +161,9 @@ struct WebClientInitialState {
   bool panel_is_active;
   WebClientSizingMode sizing_mode;
   bool browser_is_open;
+  // Whether to enable the OpenOsPermissionSettingsMenu API for the client.
+  // Depends on platform. Currently only allowed for Mac.
+  bool open_os_settings_api_is_allowed;
 };
 
 // Options for getting tab context.

@@ -29,10 +29,8 @@ namespace {
 class BitmapRasterBufferImpl : public RasterBuffer {
  public:
   BitmapRasterBufferImpl(ResourcePool::Backing* backing,
-                         uint64_t resource_content_id,
-                         uint64_t previous_content_id)
-      : resource_has_previous_content_(
-            resource_content_id && resource_content_id == previous_content_id),
+                         bool resource_has_previous_content)
+      : resource_has_previous_content_(resource_has_previous_content),
         backing_(backing) {}
   BitmapRasterBufferImpl(const BitmapRasterBufferImpl&) = delete;
   BitmapRasterBufferImpl& operator=(const BitmapRasterBufferImpl&) = delete;
@@ -54,11 +52,11 @@ class BitmapRasterBufferImpl : public RasterBuffer {
         << "Why are we rastering a tile that's not dirty?";
 
     size_t stride = 0u;
-    viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
     auto mapping = backing_->shared_image()->Map();
     void* memory = mapping->GetMemoryForPlane(0).data();
     RasterBufferProvider::PlaybackToMemory(
-        memory, format, backing_->shared_image()->size(), stride, raster_source,
+        memory, backing_->shared_image()->format(),
+        backing_->shared_image()->size(), stride, raster_source,
         raster_full_rect, playback_rect, transform,
         backing_->shared_image()->color_space(), playback_settings);
   }
@@ -92,8 +90,6 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  DCHECK_EQ(resource.format(), viz::SinglePlaneFormat::kBGRA_8888);
-
   if (!resource.backing()) {
     resource.InstallSoftwareBacking(shared_image_interface_,
                                     "BitmapRasterBufferProvider");
@@ -103,8 +99,10 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
   }
   ResourcePool::Backing* backing = resource.backing();
 
-  return std::make_unique<BitmapRasterBufferImpl>(backing, resource_content_id,
-                                                  previous_content_id);
+  bool resource_has_previous_content =
+      resource_content_id && resource_content_id == previous_content_id;
+  return std::make_unique<BitmapRasterBufferImpl>(
+      backing, resource_has_previous_content);
 }
 
 void BitmapRasterBufferProvider::Flush() {}

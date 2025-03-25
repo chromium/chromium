@@ -141,6 +141,9 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   base::TimeDelta final_request_domain_lookup_delay;
   base::TimeDelta final_request_connect_delay;
   base::TimeDelta final_request_ssl_delay;
+
+  // InitializeStream related delay information.
+  base::TimeDelta initialize_stream_delay;
 };
 
 }  // namespace content

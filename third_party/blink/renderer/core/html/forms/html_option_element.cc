@@ -453,9 +453,9 @@ String HTMLOptionElement::CollectOptionInnerText() const {
   return text.ToString();
 }
 
-HTMLFormElement* HTMLOptionElement::form() const {
+HTMLElement* HTMLOptionElement::formForBinding() const {
   if (HTMLSelectElement* select_element = OwnerSelectElement())
-    return select_element->formOwner();
+    return select_element->formForBinding();
 
   return nullptr;
 }

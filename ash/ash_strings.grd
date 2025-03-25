@@ -4480,9 +4480,8 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Label for accelerator action - Take window screenshot or screen recording.">
         Take window screenshot or screen recording
       </message>
-      <!-- TODO: crbug.com/375967525 - Mark this string as translateable once it is confirmed. -->
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION" desc="Label for accelerator action - Search my screen." translateable="false">
-        Search my screen
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION" desc="Label for accelerator action - Search my screen with Google Lens.">
+        Search my screen with Google Lens
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TILING_WINDOW_RESIZE_LEFT" desc="Label for accelerator action - Tiled resize window toward the left.">
         Tiled resize window toward the left

@@ -482,13 +482,10 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, LeaveGroupPressed) {
       HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
       WaitForShow(kTabGroupEditorBubbleId),
       PressButton(kTabGroupEditorBubbleLeaveGroupButtonId),
-      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
-        // Close the dialog before the callback runs out of scope.
-        auto* controller =
-            DataSharingBubbleController::GetOrCreateForBrowser(browser());
-        controller->Close();
-      }),
-      FinishTabstripAnimations());
+      WaitForHide(kTabGroupEditorBubbleLeaveGroupButtonId),
+      WaitForShow(kDeletionDialogCancelButtonId),
+      PressButton(kDeletionDialogCancelButtonId),
+      WaitForHide(kDeletionDialogCancelButtonId), FinishTabstripAnimations());
 }
 
 // Verify members see the leave group button instead of the delete button in the
@@ -507,13 +504,9 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       SelectMenuItem(STGEverythingMenu::kTabGroup),
       EnsurePresent(STGTabsMenuModel::kLeaveGroupMenuItem),
       SelectMenuItem(STGTabsMenuModel::kLeaveGroupMenuItem),
-      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
-        // Close the dialog before the callback runs out of scope.
-        auto* controller =
-            DataSharingBubbleController::GetOrCreateForBrowser(browser());
-        controller->Close();
-      }),
-      FinishTabstripAnimations());
+      WaitForShow(kDeletionDialogCancelButtonId),
+      PressButton(kDeletionDialogCancelButtonId), FinishTabstripAnimations(),
+      WaitForHide(kDeletionDialogCancelButtonId));
 }
 
 // Verify members see the recent activity button when activity exists.

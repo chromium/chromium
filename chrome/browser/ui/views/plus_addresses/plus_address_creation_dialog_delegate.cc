@@ -170,7 +170,8 @@ std::unique_ptr<views::View> CreateTitle(bool show_notice) {
 
 std::unique_ptr<views::View> CreateDescription(
     bool show_notice,
-    std::string_view primary_email_address) {
+    std::string_view primary_email_address,
+    const std::u16string& domain) {
   return views::Builder<views::StyledLabel>()
       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
       .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
@@ -182,11 +183,12 @@ std::unique_ptr<views::View> CreateDescription(
           gfx::Insets::TLBR(views::LayoutProvider::Get()->GetDistanceMetric(
                                 views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
                             0, 0, 0))
-      .SetText(show_notice ? l10n_util::GetStringUTF16(
-                                 IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE)
-                           : l10n_util::GetStringFUTF16(
-                                 IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
-                                 {base::UTF8ToUTF16(primary_email_address)}))
+      .SetText(show_notice
+                   ? l10n_util::GetStringFUTF16(
+                         IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE, domain)
+                   : l10n_util::GetStringFUTF16(
+                         IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
+                         {base::UTF8ToUTF16(primary_email_address)}))
       .Build();
 }
 
@@ -435,6 +437,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     base::WeakPtr<PlusAddressCreationController> controller,
     content::WebContents* web_contents,
     const std::string& primary_email_address,
+    const std::u16string& domain,
     bool show_notice)
     : views::BubbleDialogDelegate(/*anchor_view=*/nullptr,
                                   views::BubbleBorder::Arrow::NONE,
@@ -477,7 +480,7 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   primary_view->AddChildView(CreateLogo());
   primary_view->AddChildView(CreateTitle(show_notice));
   primary_view->AddChildView(
-      CreateDescription(show_notice, primary_email_address));
+      CreateDescription(show_notice, primary_email_address, domain));
 
   // The container that contains the suggested plus address (or a loading
   // message) and the refresh button.

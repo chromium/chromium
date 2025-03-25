@@ -256,7 +256,6 @@ declare global {
       export function getCreditCardList(): Promise<CreditCardEntry[]>;
       export function getIbanList(): Promise<IbanEntry[]>;
       export function isValidIban(ibanValue: string): Promise<boolean>;
-      export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
       export function logServerIbanLinkClicked(): void;
       export function addVirtualCard(cardId: string): void;

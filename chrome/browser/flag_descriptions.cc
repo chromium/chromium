@@ -591,12 +591,6 @@ const char kAutofillDeprecateAccessibilityApiDescription[] =
     " other Autofill services, enable #enable-autofill-virtual-view-structure.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kAutofillDisableLocalCardMigrationName[] =
-    "Disable bulk local credit card migration flows";
-const char kAutofillDisableLocalCardMigrationDescription[] =
-    "When enabled, local credit card migration flows will not be offered, both "
-    "from checkout flows and from the payment methods settings page.";
-
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[] =
     "Enable allowlist for showing category benefits for BMO cards";
 const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =
@@ -703,12 +697,6 @@ const char kAutofillEnableCardInfoRuntimeRetrievalName[] =
 const char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
     "When enabled, runtime retrieval of CVC along with card number and expiry "
     "from issuer for enrolled cards will be enabled during form fill.";
-
-const char kAutofillEnableCardProductNameName[] =
-    "Enable showing card product name";
-const char kAutofillEnableCardProductNameDescription[] =
-    "When enabled, card product name (instead of issuer network) will be shown "
-    "in Payments Autofill UI.";
 
 const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[] =
     "Enable logging form events to all parsed form on a web page.";
@@ -2598,6 +2586,10 @@ const char kNewEtc1EncoderDescription[] =
     "Enables the new ETC1 encoder implementation for tab and back/forward "
     "thumbnails.";
 #endif
+
+const char kNotebookLmAppPreinstallName[] = "NotebookLM app preload";
+const char kNotebookLmAppPreinstallDescription[] =
+    "Preloads the NotebookLM app.";
 
 const char kNotificationSchedulerName[] = "Notification scheduler";
 const char kNotificationSchedulerDescription[] =

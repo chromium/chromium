@@ -8,6 +8,7 @@
 #include <new>
 #include <type_traits>
 
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "partition_alloc/buildflags.h"
@@ -52,10 +53,12 @@
 //   }
 //   ```
 
+namespace base {
+
 // We cannot hide things behind anonymous namespace because they are referenced
 // via macro, which can be defined anywhere.
 // To avoid tainting ::base namespace, define things inside this namespace.
-namespace base::internal {
+namespace internal {
 
 enum class MemorySafetyCheck : uint32_t {
   kNone = 0,
@@ -194,7 +197,7 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
   ::operator delete(ptr, alignment);
 }
 
-}  // namespace base::internal
+}  // namespace internal
 
 // Macros to annotate class/struct's default memory safety check.
 // ADVANCED_MEMORY_SAFETY_CHECKS(): Enable Check |kAdvancedChecks| for this
@@ -303,5 +306,13 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 #define DEFAULT_MEMORY_SAFETY_CHECKS(...) \
   MEMORY_SAFETY_CHECKS_INTERNAL(          \
       ALWAYS_INLINE, kNone __VA_OPT__(, ) __VA_ARGS__, kNone, kNone)
+
+// Utility function to detect Double-Free or Out-of-Bounds writes.
+// This function can be called to memory assumed to be valid.
+// If not, this may crash (not guaranteed).
+// This is useful if you want to investigate crashes at `free()`,
+// to know which point at execution it goes wrong.
+BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
+}  // namespace base
 
 #endif  // BASE_MEMORY_SAFETY_CHECKS_H_

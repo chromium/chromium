@@ -130,8 +130,8 @@ class LocalFileSyncService final : public RemoteChangeProcessor,
   void PromoteDemotedChanges(base::RepeatingClosure callback);
 
   // Returns the metadata of a remote file pointed by |url|.
-  virtual void GetLocalFileMetadata(const storage::FileSystemURL& url,
-                                    SyncFileMetadataCallback callback);
+  void GetLocalFileMetadata(const storage::FileSystemURL& url,
+                            SyncFileMetadataCallback callback);
 
   // RemoteChangeProcessor overrides.
   void PrepareForProcessRemoteChange(const storage::FileSystemURL& url,

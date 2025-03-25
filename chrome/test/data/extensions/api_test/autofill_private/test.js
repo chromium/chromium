@@ -857,12 +857,6 @@ var availableTests = [
     chrome.test.succeed();
   },
 
-  function migrateCreditCards() {
-    chrome.autofillPrivate.migrateCreditCards();
-    chrome.test.assertNoLastError();
-    chrome.test.succeed();
-  },
-
   function logServerCardLinkClicked() {
     chrome.autofillPrivate.logServerCardLinkClicked();
     chrome.test.assertNoLastError();
@@ -1074,7 +1068,6 @@ var TESTS_FOR_CONFIG = {
       ['isUserEligibleForAutofillImprovements'],
   'predictionImprovementsIphFeatureUsed':
       ['predictionImprovementsIphFeatureUsed'],
-  'migrateCreditCards': ['migrateCreditCards'],
   'logServerCardLinkClicked': ['logServerCardLinkClicked'],
   'addVirtualCard': ['addVirtualCard'],
   'removeVirtualCard': ['removeVirtualCard'],

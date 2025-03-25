@@ -199,6 +199,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private isPointerDown: boolean = false;
   // Whether the button containers should be faded out.
   private shouldFadeOutButtons: boolean = false;
+  private darkMode: boolean;
   // The overlay theme.
   private theme: OverlayTheme;
   // Whether the contextual searchbox feature is enabled.

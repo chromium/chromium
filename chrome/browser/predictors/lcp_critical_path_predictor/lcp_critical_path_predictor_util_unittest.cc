@@ -23,7 +23,9 @@
 using testing::StrictMock;
 
 namespace predictors {
+
 namespace {
+
 class Updater {
  public:
   Updater(size_t sliding_window_size, size_t max_histogram_buckets)
@@ -150,6 +152,19 @@ void InitializeSubresourceUrlDestinationsBucket(
         ->mutable_fetched_subresource_url_destination()
         ->insert({url.first, url.second});
   }
+}
+
+LcpElementLocatorStat CreateLcpElementLocatorStat(
+    std::vector<std::pair<std::string, double>> lcp_element_locator_buckets,
+    double other_bucket_frequency) {
+  LcpElementLocatorStat lcp_element_locator_stat;
+  for (auto [lcp_element_locator, frequency] : lcp_element_locator_buckets) {
+    auto* bucket = lcp_element_locator_stat.add_lcp_element_locator_buckets();
+    bucket->set_lcp_element_locator(lcp_element_locator);
+    bucket->set_frequency(frequency);
+  }
+  lcp_element_locator_stat.set_other_bucket_frequency(other_bucket_frequency);
+  return lcp_element_locator_stat;
 }
 
 }  // namespace
@@ -1262,6 +1277,26 @@ TEST(LcppMultipleKeyTest, GetFirstLevelPath) {
     EXPECT_TRUE(IsURLValidForLcpp(url)) << url_key.first;
     EXPECT_EQ(GetFirstLevelPath(url), url_key.second) << url_key.first;
   }
+}
+
+TEST(RecordLcpElementLocatorHistogramTest, ReduceSlidingWindowSize) {
+  LcppStat lcpp_stat;
+  *lcpp_stat.mutable_lcp_element_locator_stat() =
+      CreateLcpElementLocatorStat({{"#a", 3.0}, {"#b", 2.0}, {"#c", 1.0}}, 4.0);
+
+  // Reduce sliding_window_size from 10 to 5.
+  RecordLcpElementLocatorHistogramForTesting(
+      /*sliding_window_size=*/5, /*max_histogram_buckets=*/3, "#d", lcpp_stat);
+  EXPECT_EQ(lcpp_stat.lcp_element_locator_stat(),
+            CreateLcpElementLocatorStat({{"#a", 1.2}, {"#b", 0.8}, {"#d", 1.0}},
+                                        /*other_bucket_frequency=*/2.0));
+
+  // Reduce sliding_window_size from 5 to 1.
+  RecordLcpElementLocatorHistogramForTesting(
+      /*sliding_window_size=*/1, /*max_histogram_buckets=*/3, "#e", lcpp_stat);
+  EXPECT_EQ(lcpp_stat.lcp_element_locator_stat(),
+            CreateLcpElementLocatorStat({{"#e", 1.0}},
+                                        /*other_bucket_frequency=*/0.0));
 }
 
 class LcppDataMapTest : public testing::Test {

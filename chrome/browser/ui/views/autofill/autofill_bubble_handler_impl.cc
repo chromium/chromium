@@ -22,8 +22,6 @@
 #include "chrome/browser/ui/views/autofill/autofill_ai/save_or_update_autofill_ai_data_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
-#include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
@@ -164,18 +162,6 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
       break;
   }
   NOTREACHED();
-}
-
-AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(
-    content::WebContents* web_contents,
-    LocalCardMigrationBubbleController* controller,
-    bool is_user_gesture) {
-  // TODO(crbug.com/376284016): An action ID should be created and used here
-  // when Local Card Migration is migrated to the new page actions framework.
-  return ShowBubble<LocalCardMigrationBubbleViews>(
-      toolbar_button_provider_, std::nullopt,
-      PageActionIconType::kLocalCardMigration, is_user_gesture, web_contents,
-      controller);
 }
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowOfferNotificationBubble(

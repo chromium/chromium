@@ -57,10 +57,10 @@ export class AppElement extends AppElementBase {
     };
   }
 
-  protected app_: App = createDummyApp();
-  protected apps_: AppMap = {};
-  protected iconUrl_: string = '';
-  protected showSearch_: boolean = false;
+  protected accessor app_: App = createDummyApp();
+  protected accessor apps_: AppMap = {};
+  protected accessor iconUrl_: string = '';
+  protected accessor showSearch_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

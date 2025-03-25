@@ -118,8 +118,8 @@ class DeviceRestrictionScheduleControllerTest : public testing::Test {
 
   void SetUp() override {
     ash::LoginState::Initialize();
-    controller_ = std::make_unique<DeviceRestrictionScheduleController>(
-        delegate_, local_state_);
+    controller_ =
+        DeviceRestrictionScheduleController::Create(delegate_, local_state_);
     controller_->AddObserver(&observer_);
   }
 

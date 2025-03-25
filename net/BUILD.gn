@@ -214,6 +214,8 @@ component("net") {
     "base/load_states_list.h",
     "base/load_timing_info.cc",
     "base/load_timing_info.h",
+    "base/load_timing_internal_info.cc",
+    "base/load_timing_internal_info.h",
     "base/logging_network_change_observer.cc",
     "base/logging_network_change_observer.h",
     "base/lookup_string_in_fixed_set.cc",

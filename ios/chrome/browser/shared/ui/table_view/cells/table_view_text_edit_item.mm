@@ -151,7 +151,8 @@ const CGFloat kSymbolSize = 15;
 #pragma mark Actions
 
 - (void)textFieldChanged:(UITextField*)textField {
-  [self updateTextFieldValue:textField.text];
+  self.textFieldValue = textField.text;
+  [self.delegate tableViewItemDidChange:self];
 }
 
 - (void)textFieldBeginEditing:(UITextField*)textField {
@@ -169,11 +170,6 @@ const CGFloat kSymbolSize = 15;
     return;
   }
   _hasValidText = hasValidText;
-}
-
-- (void)updateTextFieldValue:(NSString*)textFieldValue {
-  _textFieldValue = textFieldValue;
-  [self.delegate tableViewItemDidChange:self];
 }
 
 @end

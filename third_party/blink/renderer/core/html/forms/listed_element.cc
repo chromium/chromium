@@ -292,6 +292,20 @@ void ListedElement::FieldSetAncestorsSetNeedsValidityCheck(
       (field_set = Traversal<HTMLFieldSetElement>::FirstAncestor(*field_set)));
 }
 
+HTMLElement* ListedElement::RetargetedForm() const {
+  auto* form = Form();
+  if (!form) {
+    return nullptr;
+  }
+  const HTMLElement& element = ToHTMLElement();
+  if (RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          element.GetDocument().GetExecutionContext())) {
+    // Retarget to avoid exposing reference target elements.
+    return DynamicTo<HTMLElement>(&element.GetTreeScope().Retarget(*form));
+  }
+  return form;
+}
+
 // https://html.spec.whatwg.org/multipage/C#reset-the-form-owner
 void ListedElement::ResetFormOwner() {
   // 1. Unset element's parser inserted flag.
@@ -321,6 +335,14 @@ void ListedElement::ResetFormOwner() {
     Element* new_form_candidate =
         element.GetTreeScope().getElementById(form_id);
     new_form = DynamicTo<HTMLFormElement>(new_form_candidate);
+
+    if (RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+            element.GetDocument().GetExecutionContext()) &&
+        new_form_candidate) {
+      new_form = DynamicTo<HTMLFormElement>(
+          new_form_candidate->GetShadowReferenceTargetOrSelf(
+              html_names::kFormAttr));
+    }
   } else {
     // 5. Otherwise, if element has an ancestor form element, then associate
     //    element with the nearest such ancestor form element.

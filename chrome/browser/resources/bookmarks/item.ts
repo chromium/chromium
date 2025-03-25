@@ -58,13 +58,13 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     };
   }
 
-  itemId: string = '';
-  ironListTabIndex?: number;
-  protected item_?: BookmarkNode;
-  private isSelectedItem_: boolean = false;
-  private isMultiSelect_: boolean = false;
-  private isFolder_: boolean = false;
-  private lastTouchPoints_: number = -1;
+  accessor itemId: string = '';
+  accessor ironListTabIndex: number|undefined;
+  protected accessor item_: BookmarkNode|undefined;
+  private accessor isSelectedItem_: boolean = false;
+  private accessor isMultiSelect_: boolean = false;
+  private accessor isFolder_: boolean = false;
+  private accessor lastTouchPoints_: number = -1;
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);

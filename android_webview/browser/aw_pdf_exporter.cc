@@ -86,10 +86,18 @@ void AwPdfExporter::ExportToPdf(JNIEnv* env,
 }
 
 namespace {
+
 // Converts from 1/1000 of inches to device units using DPI.
 int MilsToDots(int val, int dpi) {
-  return static_cast<int>(printing::ConvertUnitFloat(val, 1000, dpi));
+  return static_cast<int>(
+      printing::ConvertUnitFloat(val, printing::kMilsPerInch, dpi));
 }
+
+int MilsToDeviceMicrons(int val, int dpi) {
+  return printing::ConvertUnit(MilsToDots(val, dpi), printing::kPointsPerInch,
+                               printing::kMicronsPerInch);
+}
+
 }  // namespace
 
 std::unique_ptr<printing::PrintSettings> AwPdfExporter::CreatePdfSettings(
@@ -99,11 +107,14 @@ std::unique_ptr<printing::PrintSettings> AwPdfExporter::CreatePdfSettings(
   auto settings = std::make_unique<printing::PrintSettings>();
   int dpi = Java_AwPdfExporter_getDpi(env, obj);
   printing::PageMargins margins;
-  margins.left = MilsToDots(Java_AwPdfExporter_getLeftMargin(env, obj), dpi);
-  margins.right = MilsToDots(Java_AwPdfExporter_getRightMargin(env, obj), dpi);
-  margins.top = MilsToDots(Java_AwPdfExporter_getTopMargin(env, obj), dpi);
+  margins.left =
+      MilsToDeviceMicrons(Java_AwPdfExporter_getLeftMargin(env, obj), dpi);
+  margins.right =
+      MilsToDeviceMicrons(Java_AwPdfExporter_getRightMargin(env, obj), dpi);
+  margins.top =
+      MilsToDeviceMicrons(Java_AwPdfExporter_getTopMargin(env, obj), dpi);
   margins.bottom =
-      MilsToDots(Java_AwPdfExporter_getBottomMargin(env, obj), dpi);
+      MilsToDeviceMicrons(Java_AwPdfExporter_getBottomMargin(env, obj), dpi);
   settings->SetCustomMargins(margins);
 
   int width = Java_AwPdfExporter_getPageWidth(env, obj);

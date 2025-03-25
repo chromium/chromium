@@ -2414,7 +2414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Viz.StateProcessingResult"
-    enum="InputOnVizStateProcessingResult" expires_after="2025-06-30">
+    enum="InputOnVizStateProcessingResult" expires_after="2025-09-21">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -2710,7 +2710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.Hidden" enum="MessageIdentifier"
-    expires_after="2025-06-22">
+    expires_after="2025-09-21">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2897,7 +2897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.IsSingleInstancePerTaskConfigured"
-    enum="Boolean" expires_after="2025-07-07">
+    enum="Boolean" expires_after="2025-09-21">
   <owner>nafisabedin@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

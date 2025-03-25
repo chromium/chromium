@@ -172,7 +172,7 @@ void BrowserProcessPlatformPart::
   device_restriction_schedule_controller_delegate_impl_ = std::make_unique<
       policy::DeviceRestrictionScheduleControllerDelegateImpl>();
   device_restriction_schedule_controller_ =
-      std::make_unique<policy::DeviceRestrictionScheduleController>(
+      policy::DeviceRestrictionScheduleController::Create(
           *device_restriction_schedule_controller_delegate_impl_,
           CHECK_DEREF(g_browser_process->local_state()));
 }

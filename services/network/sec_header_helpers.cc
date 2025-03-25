@@ -137,8 +137,7 @@ char const* GetSecFetchStorageAccessHeaderValue(
 net::cookie_util::SecFetchStorageAccessOutcome
 ComputeSecFetchStorageAccessOutcome(const net::URLRequest& request,
                                     mojom::CredentialsMode credentials_mode) {
-  if (request.storage_access_status().IsSet() &&
-      !request.storage_access_status().GetStatusForThirdPartyContext()) {
+  if (!request.storage_access_status().GetStatusForThirdPartyContext()) {
     return net::cookie_util::SecFetchStorageAccessOutcome::
         kOmittedStatusMissing;
   }
@@ -146,7 +145,6 @@ ComputeSecFetchStorageAccessOutcome(const net::URLRequest& request,
     return net::cookie_util::SecFetchStorageAccessOutcome::
         kOmittedRequestOmitsCredentials;
   }
-  CHECK(request.storage_access_status().IsSet());
   switch (
       request.storage_access_status().GetStatusForThirdPartyContext().value()) {
     case net::cookie_util::StorageAccessStatus::kInactive:
@@ -207,8 +205,7 @@ void SetSecFetchStorageAccessHeader(net::URLRequest& request,
       ComputeSecFetchStorageAccessOutcome(request, credentials_mode));
 
   if (credentials_mode != mojom::CredentialsMode::kInclude ||
-      (request.storage_access_status().IsSet() &&
-       !request.storage_access_status().GetStatusForThirdPartyContext())) {
+      !request.storage_access_status().GetStatusForThirdPartyContext()) {
     // A credentials mode of "same-origin" or "omit" prevents including cookies
     // on the request in the first place, so we don't bother to include the
     // `Sec-Fetch-Storage-Access` header in that case.
@@ -219,7 +216,6 @@ void SetSecFetchStorageAccessHeader(net::URLRequest& request,
     request.RemoveRequestHeaderByName(kSecFetchStorageAccess);
     return;
   }
-  CHECK(request.storage_access_status().IsSet());
   request.SetExtraRequestHeaderByName(
       kSecFetchStorageAccess,
       GetSecFetchStorageAccessHeaderValue(request.storage_access_status()

@@ -28,7 +28,7 @@ export class ProductSpecificationsTableListElement extends CrLitElement {
     };
   }
 
-  protected sets_: ProductSpecificationsSet[] = [];
+  protected accessor sets_: ProductSpecificationsSet[] = [];
 
   private commerceInternalsApi_: CommerceInternalsApiProxy =
       CommerceInternalsApiProxy.getInstance();

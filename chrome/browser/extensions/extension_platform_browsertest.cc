@@ -13,8 +13,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -41,7 +44,6 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_test_utils.h"
 #endif
 
 namespace extensions {
@@ -208,16 +210,35 @@ void ExtensionPlatformBrowserTest::SetUp() {
   PlatformBrowserTest::SetUp();
 }
 
+void ExtensionPlatformBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  PlatformBrowserTest::SetUpCommandLine(command_line);
+
+  // On Android, these are handled in SetUpOnMainThread().
+#if !BUILDFLAG(IS_ANDROID)
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
+  test_data_dir_ = test_data_dir_.AppendASCII("extensions");
+#endif
+}
+
 void ExtensionPlatformBrowserTest::SetUpOnMainThread() {
   PlatformBrowserTest::SetUpOnMainThread();
 
+  // On non-Android, these are handled in SetUpCommandLine().
+#if BUILDFLAG(IS_ANDROID)
   RegisterPathProvider();
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
   test_data_dir_ = test_data_dir_.AppendASCII("extensions");
+#endif
 
   SetUpTestProtocolHandler();
-
-  web_contents_ = GetActiveWebContents()->GetWeakPtr();
+  registry_observation_.Observe(ExtensionRegistry::Get(profile()));
+  content::WebContents* web_contents = GetActiveWebContents();
+  // `web_contents` may be null if the test doesn't open an immediate browser
+  // window.
+  if (web_contents) {
+    web_contents_ = web_contents->GetWeakPtr();
+  }
 }
 
 void ExtensionPlatformBrowserTest::TearDown() {
@@ -227,13 +248,27 @@ void ExtensionPlatformBrowserTest::TearDown() {
 
 void ExtensionPlatformBrowserTest::TearDownOnMainThread() {
   TearDownTestProtocolHandler();
+
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   if (tab_model_) {
     TabModelList::RemoveTabModel(tab_model_.get());
     tab_model_.reset();
   }
 #endif
+
+  registry_observation_.Reset();
   PlatformBrowserTest::TearDownOnMainThread();
+}
+
+void ExtensionPlatformBrowserTest::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  last_loaded_extension_id_ = extension->id();
+  VLOG(1) << "Got EXTENSION_LOADED notification.";
+}
+
+void ExtensionPlatformBrowserTest::OnShutdown(ExtensionRegistry* registry) {
+  registry_observation_.Reset();
 }
 
 ExtensionRegistry* ExtensionPlatformBrowserTest::extension_registry() {
@@ -324,6 +359,12 @@ void ExtensionPlatformBrowserTest::DisableExtension(
 
 content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents()
     const {
+#if !BUILDFLAG(IS_ANDROID)
+  // Some tests may not immediately open a browser. Handle this gracefully.
+  if (!browser()) {
+    return nullptr;
+  }
+#endif
   return chrome_test_utils::GetActiveWebContents(this);
 }
 
@@ -340,6 +381,66 @@ Profile* ExtensionPlatformBrowserTest::GetOrCreateIncognitoProfile() {
 #endif
 
   return incognito_profile;
+}
+
+base::FilePath ExtensionPlatformBrowserTest::PackExtension(
+    const base::FilePath& dir_path,
+    int extra_run_flags) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath crx_path = temp_dir_.GetPath().AppendASCII("temp.crx");
+  if (!base::DeleteFile(crx_path)) {
+    ADD_FAILURE() << "Failed to delete crx: " << crx_path.value();
+    return base::FilePath();
+  }
+
+  // Look for PEM files with the same name as the directory.
+  base::FilePath pem_path =
+      dir_path.ReplaceExtension(FILE_PATH_LITERAL(".pem"));
+  base::FilePath pem_path_out;
+
+  if (!base::PathExists(pem_path)) {
+    pem_path = base::FilePath();
+    pem_path_out = crx_path.DirName().AppendASCII("temp.pem");
+    if (!base::DeleteFile(pem_path_out)) {
+      ADD_FAILURE() << "Failed to delete pem: " << pem_path_out.value();
+      return base::FilePath();
+    }
+  }
+
+  return PackExtensionWithOptions(dir_path, crx_path, pem_path, pem_path_out,
+                                  extra_run_flags);
+}
+
+base::FilePath ExtensionPlatformBrowserTest::PackExtensionWithOptions(
+    const base::FilePath& dir_path,
+    const base::FilePath& crx_path,
+    const base::FilePath& pem_path,
+    const base::FilePath& pem_out_path,
+    int extra_run_flags) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  if (!base::PathExists(dir_path)) {
+    ADD_FAILURE() << "Extension dir not found: " << dir_path.value();
+    return base::FilePath();
+  }
+
+  if (!base::PathExists(pem_path) && pem_out_path.empty()) {
+    ADD_FAILURE() << "Must specify a PEM file or PEM output path";
+    return base::FilePath();
+  }
+
+  ExtensionCreator creator;
+  if (!creator.Run(dir_path, crx_path, pem_path, pem_out_path,
+                   extra_run_flags | ExtensionCreator::kOverwriteCRX)) {
+    ADD_FAILURE() << "ExtensionCreator::Run() failed: "
+                  << creator.error_message();
+    return base::FilePath();
+  }
+
+  if (!base::PathExists(crx_path)) {
+    ADD_FAILURE() << crx_path.value() << " was not created.";
+    return base::FilePath();
+  }
+  return crx_path;
 }
 
 content::WebContents* ExtensionPlatformBrowserTest::PlatformOpenURLOffTheRecord(
@@ -383,6 +484,83 @@ content::RenderFrameHost* ExtensionPlatformBrowserTest::NavigateToURLInNewTab(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 #endif
+}
+
+void ExtensionPlatformBrowserTest::OpenWindow(
+    content::WebContents* contents,
+    const GURL& url,
+    bool newtab_process_should_equal_opener,
+    bool should_succeed,
+    content::WebContents** newtab_result) {
+  content::WebContentsAddedObserver tab_added_observer;
+  ASSERT_TRUE(content::ExecJs(contents, "window.open('" + url.spec() + "');"));
+  content::WebContents* newtab = tab_added_observer.GetWebContents();
+  ASSERT_TRUE(newtab);
+  WaitForLoadStop(newtab);
+
+  if (should_succeed) {
+    EXPECT_EQ(url, newtab->GetLastCommittedURL());
+    EXPECT_EQ(content::PAGE_TYPE_NORMAL,
+              newtab->GetController().GetLastCommittedEntry()->GetPageType());
+  } else {
+    // "Failure" comes in two forms: redirecting to about:blank or showing an
+    // error page. At least one should be true.
+    EXPECT_TRUE(
+        newtab->GetLastCommittedURL() == GURL(url::kAboutBlankURL) ||
+        newtab->GetController().GetLastCommittedEntry()->GetPageType() ==
+            content::PAGE_TYPE_ERROR);
+  }
+
+  if (newtab_process_should_equal_opener) {
+    EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance(),
+              newtab->GetPrimaryMainFrame()->GetSiteInstance());
+  } else {
+    EXPECT_NE(contents->GetPrimaryMainFrame()->GetSiteInstance(),
+              newtab->GetPrimaryMainFrame()->GetSiteInstance());
+  }
+
+  if (newtab_result) {
+    *newtab_result = newtab;
+  }
+}
+
+bool ExtensionPlatformBrowserTest::NavigateInRenderer(
+    content::WebContents* contents,
+    const GURL& url) {
+  EXPECT_TRUE(
+      content::ExecJs(contents, "window.location = '" + url.spec() + "';"));
+  bool result = content::WaitForLoadStop(contents);
+  EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
+  return result;
+}
+
+ExtensionHost* ExtensionPlatformBrowserTest::FindHostWithPath(
+    ProcessManager* manager,
+    const std::string& path,
+    int expected_hosts) {
+  ExtensionHost* result_host = nullptr;
+  int num_hosts = 0;
+  for (ExtensionHost* host : manager->background_hosts()) {
+    if (host->GetLastCommittedURL().path() == path) {
+      EXPECT_FALSE(result_host);
+      result_host = host;
+    }
+    num_hosts++;
+  }
+  EXPECT_EQ(expected_hosts, num_hosts);
+  return result_host;
+}
+
+content::ServiceWorkerContext*
+ExtensionPlatformBrowserTest::GetServiceWorkerContext() {
+  return GetServiceWorkerContext(profile());
+}
+
+// static
+content::ServiceWorkerContext*
+ExtensionPlatformBrowserTest::GetServiceWorkerContext(
+    content::BrowserContext* browser_context) {
+  return service_worker_test_utils::GetServiceWorkerContext(browser_context);
 }
 
 int ExtensionPlatformBrowserTest::GetTabCount() {

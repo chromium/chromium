@@ -14172,24 +14172,6 @@
             ]
         }
     ],
-    "MacPlatformLocationProvider": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "LocationProviderManagerMode": "HybridPlatform"
-                    },
-                    "enable_features": [
-                        "LocationProviderManager"
-                    ]
-                }
-            ]
-        }
-    ],
     "MagicStackGradientView": [
         {
             "platforms": [
@@ -17303,6 +17285,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootMigrateToModernPin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PinweaverPasswords": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootPinweaverForPassword"
                     ]
                 }
             ]

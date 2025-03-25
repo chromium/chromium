@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -94,7 +95,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
                  .signature = CalculateFieldSignatureForField(form.fields()[0]),
                  .rank_in_signature_group = 0})));
 
-  engine()->GetPredictions(form);
+  engine()->GetPredictions(form, std::nullopt);
 }
 
 // Tests that if there is an ongoing request with the same form signature, then
@@ -141,14 +142,14 @@ TEST_F(AutofillAiModelExecutorImplTest, OngoingRequestWithSameSignature) {
               .signature = CalculateFieldSignatureForField(form1.fields()[0]),
               .rank_in_signature_group = 0})));
 
-  engine()->GetPredictions(form1);
+  engine()->GetPredictions(form1, std::nullopt);
 
   // We expect this call not to trigger a run.
-  engine()->GetPredictions(form1);
+  engine()->GetPredictions(form1, std::nullopt);
 
   // The simulated model call for a different form runs immediately and
   // completes successfully.
-  engine()->GetPredictions(form2);
+  engine()->GetPredictions(form2, std::nullopt);
   ASSERT_TRUE(model_callback2);
   std::move(model_callback2)
       .Run(OptimizationGuideModelExecutionResult(
@@ -186,7 +187,7 @@ TEST_F(AutofillAiModelExecutorImplTest, ModelError) {
       Update(CalculateFormSignature(form),
              base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
 
-  engine()->GetPredictions(form);
+  engine()->GetPredictions(form, std::nullopt);
 }
 
 // Tests that wrongly typed model responses are handled by writing an empty
@@ -207,7 +208,7 @@ TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
       Update(CalculateFormSignature(form),
              base::test::EqualsProto(AutofillAiTypeResponse()), IsEmpty()));
 
-  engine()->GetPredictions(form);
+  engine()->GetPredictions(form, std::nullopt);
 }
 
 }  // namespace

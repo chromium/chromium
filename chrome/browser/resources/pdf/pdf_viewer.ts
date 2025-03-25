@@ -606,7 +606,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_ink">
   /** Exits annotation mode if active. */
   private async exitAnnotationMode_(): Promise<void> {
-    if (!this.$.toolbar.annotationMode) {
+    if (this.$.toolbar.annotationMode === AnnotationMode.NONE) {
       return;
     }
     this.$.toolbar.setAnnotationMode(AnnotationMode.NONE);

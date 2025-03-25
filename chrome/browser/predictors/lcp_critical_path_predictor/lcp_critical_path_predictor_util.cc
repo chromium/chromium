@@ -317,19 +317,25 @@ class LcppFrequencyStatDataUpdater {
     // If there is no room to add a `new_entry` (the capacity is
     // the same as the sliding window size), create a room by discounting the
     // existing histogram frequency.
-    if (1 + SumOfFrequency(histogram_, other_bucket_frequency_) >
-        sliding_window_size_) {
-      double discount = 1.0 / sliding_window_size_;
-      for (auto it = histogram_.begin(); it != histogram_.end();) {
-        it->second -= it->second * discount;
-        // Remove item that has too small frequency.
-        if (it->second < 1e-7) {
-          it = histogram_.erase(it);
-        } else {
-          ++it;
+    {
+      double sum_of_frequency =
+          SumOfFrequency(histogram_, other_bucket_frequency_);
+      if (1.0 + sum_of_frequency > sliding_window_size_) {
+        // The following `discount` has to be a value such that:
+        // 1 + sum_of_frequency == sliding_window_size_.
+        double discount =
+            (1.0 + sum_of_frequency - sliding_window_size_) / sum_of_frequency;
+        for (auto it = histogram_.begin(); it != histogram_.end();) {
+          it->second -= it->second * discount;
+          // Remove item that has too small frequency.
+          if (it->second < 1e-7) {
+            it = histogram_.erase(it);
+          } else {
+            ++it;
+          }
         }
+        other_bucket_frequency_ -= other_bucket_frequency_ * discount;
       }
-      other_bucket_frequency_ -= other_bucket_frequency_ * discount;
     }
 
     // Now we have one free space to store a new lcp_script_url.
@@ -767,6 +773,15 @@ std::vector<GURL> PredictFetchedSubresourceUrlsInternal(
 }
 
 }  // namespace
+
+bool RecordLcpElementLocatorHistogramForTesting(  // IN-TEST
+    int sliding_window_size,
+    int max_histogram_buckets,
+    const std::string& lcp_element_locator,
+    LcppStat& stat) {
+  return RecordLcpElementLocatorHistogram(
+      sliding_window_size, max_histogram_buckets, lcp_element_locator, stat);
+}
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
 ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(

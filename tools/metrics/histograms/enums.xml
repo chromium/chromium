@@ -2742,6 +2742,7 @@ Called by update_net_error_codes.py.-->
   <int value="38" label="Learn more about the shared highlighting feature"/>
   <int value="39" label="Open in new tab in group"/>
   <int value="40" label="Open in new window"/>
+  <int value="41" label="Save page"/>
 </enum>
 
 <!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
@@ -12132,6 +12133,7 @@ from previous Chrome versions.
   <int value="-792079435" label="EnableAppsGridGapFeature:disabled"/>
   <int value="-791916053" label="FriendlierErrorDialog:disabled"/>
   <int value="-791778534" label="LauncherQueryHighlighting:enabled"/>
+  <int value="-791730714" label="NotebookLmAppPreinstall:disabled"/>
   <int value="-791590673" label="bookmarks-tree-view:enabled"/>
   <int value="-790900615" label="NtpShoppingTasksModule:disabled"/>
   <int value="-790544721"
@@ -14369,6 +14371,7 @@ from previous Chrome versions.
   <int value="86582659" label="enable-extension-ai-data-collection"/>
   <int value="86900696" label="SanitizerAPIv0:enabled"/>
   <int value="87306743" label="VariationsFakeCrashAfterStartup:disabled"/>
+  <int value="88127181" label="NotebookLmAppPreinstall:enabled"/>
   <int value="88437020" label="FeaturePolicy:enabled"/>
   <int value="88863813" label="DesktopPWAsDetailedInstallDialog:enabled"/>
   <int value="89036875" label="DeferRendererTasksAfterInput:disabled"/>
@@ -21032,6 +21035,8 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
+<!-- LINT.IfChange(OmniboxSearchEngineType) -->
+
 <enum name="OmniboxSearchEngineType">
   <int value="0" label="Other"/>
   <int value="1" label="AOL"/>
@@ -21112,6 +21117,8 @@ Called by update_net_error_codes.py.-->
   <int value="76" label="StarterPackPage"/>
   <int value="77" label="McAfee"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/search_engines/search_engine_type.h:SearchEngineType) -->
 
 <!-- LINT.IfChange(OnboardingUserActionMetric) -->
 

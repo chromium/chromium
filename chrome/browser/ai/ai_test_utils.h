@@ -50,7 +50,7 @@ class AITestUtils {
                 OnCompletion,
                 (blink::mojom::ModelExecutionContextInfoPtr context_info),
                 (override));
-    MOCK_METHOD(void, OnContextOverflow, (), (override));
+    MOCK_METHOD(void, OnQuotaOverflow, (), (override));
 
    private:
     mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};

@@ -43,8 +43,6 @@ enum class AccessPoint : int;
     int signinSigninCompletedAccessPointNewAccountExistingAccount;
 
 @property(nonatomic, assign) int signinSignInStarted;
-@property(nonatomic, assign) int signinSyncOptInStarted;
-@property(nonatomic, assign) int signinSyncOptInOpenedSyncSettings;
 
 - (instancetype)init NS_UNAVAILABLE;
 

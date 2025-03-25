@@ -381,9 +381,11 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
                     ? H264LevelIDCToD3D12VideoEncoderLevelsH264(
                           config.h264_output_level.value())
                     : suggested_level;
-  if (h264_level_ >= D3D12_VIDEO_ENCODER_LEVELS_H264_3 &&
-      config_support_h264.SupportFlags &
-          D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_ADAPTIVE_8x8_TRANSFORM_ENCODING_SUPPORT) {
+  // According to H.264 spec Annex A.2, only for high profile and above, that we
+  // can support adaptive 8x8 transform.
+  if (h264_profile_ >= D3D12_VIDEO_ENCODER_PROFILE_H264_HIGH &&
+      (config_support_h264.SupportFlags &
+       D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_ADAPTIVE_8x8_TRANSFORM_ENCODING_SUPPORT)) {
     codec_config_h264_.ConfigurationFlags |=
         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_USE_ADAPTIVE_8x8_TRANSFORM;
   }
@@ -470,10 +472,11 @@ H264SPS D3D12VideoEncodeH264Delegate::ToSPS() const {
   sps.pic_height_in_map_units_minus1 =
       (input_size_.Height + kMbSize - 1) / kMbSize - 1;
   sps.frame_mbs_only_flag = true;
-  sps.direct_8x8_inference_flag = static_cast<bool>(
-      codec_config_h264_.ConfigurationFlags &
-      D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_USE_ADAPTIVE_8x8_TRANSFORM);
-  CHECK(sps.frame_mbs_only_flag || sps.direct_8x8_inference_flag);
+  // According to H.264 spec Table A-4, for level 3.0 and higher,
+  // direct_8x8_inference_flag should be equal to 1 for profiles that allow
+  // B-Frame.
+  sps.direct_8x8_inference_flag =
+      h264_level_ >= D3D12_VIDEO_ENCODER_LEVELS_H264_3;
   if (input_size_.Width % kMbSize != 0 || input_size_.Height % kMbSize != 0) {
     // Spec 7.4.2.1.1. Crop is in crop units, which is 2 pixels for 4:2:0.
     const int kCropUnitX = 2;
@@ -504,7 +507,9 @@ H264PPS D3D12VideoEncodeH264Delegate::ToPPS(const H264SPS& sps) const {
   // We don't use
   // D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_USE_CONSTRAINED_INTRAPREDICTION
   // yet. So let constrained_intra_pred_flag be false by default.
-  pps.transform_8x8_mode_flag = sps.direct_8x8_inference_flag;
+  pps.transform_8x8_mode_flag = static_cast<bool>(
+      codec_config_h264_.ConfigurationFlags &
+      D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_USE_ADAPTIVE_8x8_TRANSFORM);
   return pps;
 }
 

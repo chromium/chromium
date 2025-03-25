@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -24,16 +25,13 @@
 
 namespace web_app {
 
-IsolatedWebAppValidator::IsolatedWebAppValidator() = default;
+namespace {
 
-IsolatedWebAppValidator::~IsolatedWebAppValidator() = default;
-
-base::expected<void, std::string>
-IsolatedWebAppValidator::ValidateIntegrityBlock(
+base::expected<void, std::string> ValidateIntegrityBlockImpl(
+    Profile& profile,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-    bool dev_mode,
-    const IsolatedWebAppTrustChecker& trust_checker) {
+    bool dev_mode) {
   if (expected_web_bundle_id.is_for_proxy_mode()) {
     return base::unexpected(
         "Web Bundle IDs of type ProxyMode are not supported.");
@@ -54,7 +52,8 @@ IsolatedWebAppValidator::ValidateIntegrityBlock(
           integrity_block.signature_stack().public_keys()));
 
   IsolatedWebAppTrustChecker::Result result =
-      trust_checker.IsTrusted(expected_web_bundle_id, dev_mode);
+      IsolatedWebAppTrustChecker::IsTrusted(profile, expected_web_bundle_id,
+                                            dev_mode);
   if (result.status != IsolatedWebAppTrustChecker::Result::Status::kTrusted) {
     return base::unexpected(result.message);
   }
@@ -62,55 +61,78 @@ IsolatedWebAppValidator::ValidateIntegrityBlock(
   return base::ok();
 }
 
+base::expected<void, std::string> ValidateMetadataImpl(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::optional<GURL>& primary_url,
+    const std::vector<GURL>& entries) {
+  // Verify that the Signed Web Bundle does not have a primary URL set.
+  // Primary URLs make no sense for Isolated Web Apps - the "primary URL"
+  // should be retrieved from the web app manifest's `start_url` field.
+  if (primary_url.has_value()) {
+    return base::unexpected("Primary URL must not be present, but was " +
+                            primary_url->possibly_invalid_spec());
+  }
+
+  // Verify that the bundle only contains isolated-app:// URLs using the
+  // Signed Web Bundle ID as their host.
+  for (const GURL& entry : entries) {
+    ASSIGN_OR_RETURN(
+        IsolatedWebAppUrlInfo url_info, IsolatedWebAppUrlInfo::Create(entry),
+        [](std::string error) {
+          return "The URL of an exchange is invalid: " + std::move(error);
+        });
+
+    const web_package::SignedWebBundleId& entry_web_bundle_id =
+        url_info.web_bundle_id();
+    if (entry_web_bundle_id != web_bundle_id) {
+      return base::unexpected(
+          "The URL of an exchange contains the wrong Signed Web Bundle ID: " +
+          entry_web_bundle_id.id());
+    }
+    if (entry.has_ref()) {
+      return base::unexpected(
+          "The URL of an exchange is invalid: URLs must not have a fragment "
+          "part.");
+    }
+    if (entry.has_query()) {
+      return base::unexpected(
+          "The URL of an exchange is invalid: URLs must not have a query "
+          "part.");
+    }
+  }
+
+  return base::ok();
+}
+
+}  // namespace
+
+// static
+base::expected<void, UnusableSwbnFileError>
+IsolatedWebAppValidator::ValidateIntegrityBlock(
+    Profile& profile,
+    const web_package::SignedWebBundleId& expected_web_bundle_id,
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+    bool dev_mode) {
+  return ValidateIntegrityBlockImpl(profile, expected_web_bundle_id,
+                                    integrity_block, dev_mode)
+      .transform_error([](const auto& error) {
+        return UnusableSwbnFileError(
+            UnusableSwbnFileError::Error::kIntegrityBlockValidationError,
+            error);
+      });
+}
+
+// static
 base::expected<void, UnusableSwbnFileError>
 IsolatedWebAppValidator::ValidateMetadata(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<GURL>& primary_url,
     const std::vector<GURL>& entries) {
-  const auto validate = [&]() -> base::expected<void, std::string> {
-    // Verify that the Signed Web Bundle does not have a primary URL set.
-    // Primary URLs make no sense for Isolated Web Apps - the "primary URL"
-    // should be retrieved from the web app manifest's `start_url` field.
-    if (primary_url.has_value()) {
-      return base::unexpected("Primary URL must not be present, but was " +
-                              primary_url->possibly_invalid_spec());
-    }
-
-    // Verify that the bundle only contains isolated-app:// URLs using the
-    // Signed Web Bundle ID as their host.
-    for (const GURL& entry : entries) {
-      ASSIGN_OR_RETURN(
-          IsolatedWebAppUrlInfo url_info, IsolatedWebAppUrlInfo::Create(entry),
-          [](std::string error) {
-            return "The URL of an exchange is invalid: " + std::move(error);
-          });
-
-      const web_package::SignedWebBundleId& entry_web_bundle_id =
-          url_info.web_bundle_id();
-      if (entry_web_bundle_id != web_bundle_id) {
-        return base::unexpected(
-            "The URL of an exchange contains the wrong Signed Web Bundle ID: " +
-            entry_web_bundle_id.id());
-      }
-      if (entry.has_ref()) {
-        return base::unexpected(
-            "The URL of an exchange is invalid: URLs must not have a fragment "
-            "part.");
-      }
-      if (entry.has_query()) {
-        return base::unexpected(
-            "The URL of an exchange is invalid: URLs must not have a query "
-            "part.");
-      }
-    }
-
-    return base::ok();
-  };
-  return validate().transform_error([](std::string error) {
-    return UnusableSwbnFileError(
-        UnusableSwbnFileError::Error::kMetadataValidationError,
-        std::move(error));
-  });
+  return ValidateMetadataImpl(web_bundle_id, primary_url, entries)
+      .transform_error([](const auto& error) {
+        return UnusableSwbnFileError(
+            UnusableSwbnFileError::Error::kMetadataValidationError, error);
+      });
 }
 
 }  // namespace web_app

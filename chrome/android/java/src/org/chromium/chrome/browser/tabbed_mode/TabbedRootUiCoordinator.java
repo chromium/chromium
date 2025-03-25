@@ -1377,7 +1377,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     mWindowAndroid,
                                     tabGroupModelFilter,
                                     dataSharingNotificationManager,
-                                    mDataSharingTabManager);
+                                    mDataSharingTabManager,
+                                    () -> {
+                                        return MultiWindowUtils.getInstanceCount() <= 1
+                                                || ApplicationStatus.getLastTrackedFocusedActivity()
+                                                        == mActivity;
+                                    });
                         });
     }
 

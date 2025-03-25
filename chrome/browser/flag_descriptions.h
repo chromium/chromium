@@ -368,9 +368,6 @@ extern const char kAutofillDeprecateAccessibilityApiName[];
 extern const char kAutofillDeprecateAccessibilityApiDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
-extern const char kAutofillDisableLocalCardMigrationName[];
-extern const char kAutofillDisableLocalCardMigrationDescription[];
-
 extern const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[];
 extern const char
     kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[];
@@ -426,9 +423,6 @@ extern const char kAutofillEnableCardBenefitsSyncDescription[];
 
 extern const char kAutofillEnableCardInfoRuntimeRetrievalName[];
 extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
-
-extern const char kAutofillEnableCardProductNameName[];
-extern const char kAutofillEnableCardProductNameDescription[];
 
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
@@ -1491,6 +1485,9 @@ extern const char kWebNNDirectMLDescription[];
 extern const char kNewEtc1EncoderName[];
 extern const char kNewEtc1EncoderDescription[];
 #endif
+
+extern const char kNotebookLmAppPreinstallName[];
+extern const char kNotebookLmAppPreinstallDescription[];
 
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];

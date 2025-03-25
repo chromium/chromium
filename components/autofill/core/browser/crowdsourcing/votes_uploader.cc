@@ -239,9 +239,6 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // Annotate the form with the source language of the page.
   form->set_current_page_language(current_page_language);
 
-  // Attach the Randomized Encoder.
-  form->set_randomized_encoder(RandomizedEncoder::Create(client_->GetPrefs()));
-
   // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
   // |form| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
@@ -254,7 +251,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              const std::vector<CreditCard>& credit_cards,
              const std::u16string& last_unlocked_credit_card_cvc,
              const std::string& app_locale, bool observed_submission,
-             std::unique_ptr<FormStructure> form) {
+             std::unique_ptr<FormStructure> form,
+             std::unique_ptr<RandomizedEncoder> randomized_encoder) {
             DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
                                                  last_unlocked_credit_card_cvc,
                                                  app_locale, *form);
@@ -274,7 +272,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
 
             std::vector<AutofillUploadContents> upload_contents =
                 EncodeUploadRequest(
-                    *form,
+                    *form, randomized_encoder.get(),
                     DeterminePossibleFormatStringsForUpload(form->fields()),
                     non_empty_types,
                     /*login_form_signature=*/std::nullopt, observed_submission);
@@ -282,7 +280,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
           },
           std::move(copied_profiles), std::move(copied_credit_cards),
           last_unlocked_credit_card_cvc, client_->GetAppLocale(),
-          observed_submission, std::move(form)),
+          observed_submission, std::move(form),
+          RandomizedEncoder::Create(client_->GetPrefs())),
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),

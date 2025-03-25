@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.edge_to_edge.layout;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -21,6 +22,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,7 +42,8 @@ import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 @NullMarked
 public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         implements WindowInsetsConsumer {
-    private final Activity mActivity;
+    private static final String TAG = "E2E_Layout";
+    private final Context mContext;
     private final @Nullable InsetObserver mInsetObserver;
     private @Nullable EdgeToEdgeBaseLayout mView;
     private boolean mIsDebugging;
@@ -47,11 +51,11 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     /**
      * Construct the coordinator used to handle padding and color for the Edge to edge layout.
      *
-     * @param activity The base activity.
+     * @param context The Activity context.
      * @param insetObserver The inset observer of current window, if exists.
      */
-    public EdgeToEdgeLayoutCoordinator(Activity activity, @Nullable InsetObserver insetObserver) {
-        mActivity = activity;
+    public EdgeToEdgeLayoutCoordinator(Context context, @Nullable InsetObserver insetObserver) {
+        mContext = context;
         mInsetObserver = insetObserver;
     }
 
@@ -130,7 +134,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         mView.setCaptionBarInsets(captionBarInsets);
 
         int paddingInsetTypes = Type.systemBars() + Type.ime();
-        if (shouldPadDisplayCutout(windowInsets, mActivity)) {
+        if (shouldPadDisplayCutout(windowInsets, mContext)) {
             paddingInsetTypes += Type.displayCutout();
             // Color display cutout padding to keep behaviour for Android 15-.
             mView.setDisplayCutoutTop(cutout.top > 0 ? cutout : Insets.NONE);
@@ -163,7 +167,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
 
         mView =
                 (EdgeToEdgeBaseLayout)
-                        LayoutInflater.from(mActivity)
+                        LayoutInflater.from(mContext)
                                 .inflate(R.layout.edge_to_edge_base_layout, null, false);
         if (mInsetObserver != null) {
             mInsetObserver.addInsetsConsumer(
@@ -182,8 +186,14 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     // Determine if padding is necessary according to WindowManager.LayoutParams. This is intended
     // to keep the behavior for Android 15-.
     // Ref: https://developer.android.com/develop/ui/views/layout/display-cutout
-    private static boolean shouldPadDisplayCutout(WindowInsetsCompat insets, Activity activity) {
+    private static boolean shouldPadDisplayCutout(WindowInsetsCompat insets, Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P || insets == null) return true;
+
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity == null) {
+            Log.w(TAG, "should not receive window insets in non-activity context.");
+            return false;
+        }
 
         DisplayCutoutCompat cutout = insets.getDisplayCutout();
         if (cutout == null) return false;

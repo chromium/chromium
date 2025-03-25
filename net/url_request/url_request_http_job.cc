@@ -1478,6 +1478,13 @@ void URLRequestHttpJob::GetLoadTimingInfo(
     load_timing_info->receive_headers_end = receive_headers_end_;
 }
 
+void URLRequestHttpJob::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  if (transaction_) {
+    transaction_->PopulateLoadTimingInternalInfo(load_timing_internal_info);
+  }
+}
+
 bool URLRequestHttpJob::GetTransactionRemoteEndpoint(
     IPEndPoint* endpoint) const {
   if (!transaction_)

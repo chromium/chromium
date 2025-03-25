@@ -196,24 +196,6 @@ class AutofillPrivateGetCreditCardListFunction
   ResponseAction Run() override;
 };
 
-class AutofillPrivateMigrateCreditCardsFunction
-    : public AutofillPrivateExtensionFunction {
- public:
-  AutofillPrivateMigrateCreditCardsFunction() = default;
-  AutofillPrivateMigrateCreditCardsFunction(
-      const AutofillPrivateMigrateCreditCardsFunction&) = delete;
-  AutofillPrivateMigrateCreditCardsFunction& operator=(
-      const AutofillPrivateMigrateCreditCardsFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION("autofillPrivate.migrateCreditCards",
-                             AUTOFILLPRIVATE_MIGRATECREDITCARDS)
-
- protected:
-  ~AutofillPrivateMigrateCreditCardsFunction() override = default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class AutofillPrivateLogServerCardLinkClickedFunction
     : public AutofillPrivateExtensionFunction {
  public:

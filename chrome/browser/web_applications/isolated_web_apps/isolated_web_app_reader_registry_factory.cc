@@ -46,9 +46,8 @@ IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
 
-  auto validator = std::make_unique<IsolatedWebAppValidator>();
-  auto reader_factory = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      profile, std::move(validator));
+  auto reader_factory =
+      std::make_unique<IsolatedWebAppResponseReaderFactory>(profile);
   return std::make_unique<IsolatedWebAppReaderRegistry>(
       profile, std::move(reader_factory));
 }

@@ -407,7 +407,8 @@ export declare interface GlicBrowserHost {
 
   /**
    * Opens the OS permission settings menu for the given permission type.
-   * Supports `media` for microphone ad `geolocation` for location.
+   * Supports `media` for microphone ad `geolocation` for location. This
+   * function is available when running on Mac.
    */
   openOsPermissionSettingsMenu?(permission: string): void;
 

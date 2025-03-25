@@ -38,7 +38,6 @@
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/mock_autocomplete_history_manager.h"
@@ -649,8 +648,6 @@ class TestAutofillClientTemplate : public T {
 
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;
-
-  std::vector<std::string> migration_card_selection_;
 
   std::vector<Suggestion> suggestions_;
 

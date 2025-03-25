@@ -24,6 +24,7 @@ testing::Message DescribeFormData(const FormData& form_data) {
 
 FormFieldData CreateFieldByRole(FieldType role) {
   FormFieldData field;
+  // TODO(crbug.com/406073718): Add the missing roles and/or fail loudly.
   switch (role) {
     case FieldType::USERNAME:
       field.set_label(u"Username");
@@ -82,7 +83,10 @@ FormFieldData CreateFieldByRole(FieldType role) {
       field.set_name(u"password");
       break;
     case FieldType::EMPTY_TYPE:
+      break;
     default:
+      LOG(ERROR) << __func__ << "() does not know the role "
+                 << FieldTypeToStringView(role) << "!";
       break;
   }
   return field;

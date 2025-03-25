@@ -661,9 +661,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_AUTOFILL_MANDATORY_REAUTH:
       ShowMandatoryReauthOptInPrompt(browser_);
       break;
-    case IDC_MIGRATE_LOCAL_CREDIT_CARD_FOR_PAGE:
-      MigrateLocalCards(browser_);
-      break;
     case IDC_SAVE_AUTOFILL_ADDRESS:
       SaveAutofillAddress(browser_);
       break;

@@ -659,7 +659,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AddCredentialFromSettings.UserAction2"
-    enum="AddCredentialFromSettingsUserInteractions" expires_after="2025-07-13">
+    enum="AddCredentialFromSettingsUserInteractions" expires_after="2025-09-21">
   <owner>vidhanj@google.com</owner>
   <summary>
     Records the user actions performed when a new credential is added from
@@ -1701,7 +1701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FirstWaitForUsernameReason"
-    enum="PasswordManagerFirstWaitForUsernameReason" expires_after="2025-06-22">
+    enum="PasswordManagerFirstWaitForUsernameReason" expires_after="2025-09-21">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -3680,7 +3680,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram
     name="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
     enum="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
-    expires_after="2025-07-13">
+    expires_after="2025-09-21">
   <owner>mamir@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>1457410</component>
@@ -4521,6 +4521,32 @@ useful for Chirp alerts (go/crca-alerts). -->
     deprecation on Android. The export is performed on start-up, for clients who
     didn't migrate to UPM. Recorded when the export completes, or before it
     starts if there has been an issue fetching passwords. Android only.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UPM.NoGmsNoPasswordsDialogShown"
+    enum="BooleanShown" expires_after="2025-07-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records true whenever the dialog explaining why the password manager is no
+    longer available is shown to users on devices without Google Play Services.
+    This dialog is only shown if the users have already downloaded or don't have
+    passwords left over in Chrome. Android only.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UPM.OldGmsNoPasswordsDialogDismisalReason"
+    enum="BooleanAccepted" expires_after="2025-07-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the reason why the dialog shown to users with an old version of
+    Google Play Services was dismissed. The old version of Google Play Services
+    in this case, is a version without full UPM support. This dialog is only
+    shown if the user has already downlaoded or doesn't have passwords left over
+    in Chrome. Acceptance of the dialog leads the user to Google Play Store to
+    update Google Play Services. Android only.
   </summary>
 </histogram>
 

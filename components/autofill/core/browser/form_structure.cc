@@ -40,7 +40,6 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
@@ -893,11 +892,6 @@ DenseSet<FormType> FormStructure::GetFormTypes() const {
     }
   }
   return form_types;
-}
-
-void FormStructure::set_randomized_encoder(
-    std::unique_ptr<RandomizedEncoder> encoder) {
-  randomized_encoder_ = std::move(encoder);
 }
 
 void FormStructure::RationalizePhoneNumberFieldsForFilling() {

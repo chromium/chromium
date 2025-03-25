@@ -2659,6 +2659,7 @@ TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree) {
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
+  EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(ptr), "");
 }
 
 // As above, but when this isn't the only slot in the span.
@@ -2669,6 +2670,7 @@ TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree2ndSlot) {
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
+  EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(ptr), "");
   allocator.root()->Free(ptr0);
 }
 
@@ -2828,6 +2830,8 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionByCookie) {
   // Crash at `free()`, either by cookie check failure or InSlotMetadata
   // corruption.
   EXPECT_DEATH(allocator.root()->Free(array), "");
+  // It should also crash with `CheckMetadataIntegrity()`.
+  EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(array), "");
   // Restore integrity, otherwise the process will crash in TearDown().
   array[usable_size] = previous_value;
   allocator.root()->Free(array);
@@ -2852,6 +2856,8 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionByCookieWithRealisticData) {
   // Crash at `free()`, either by cookie check failure or InSlotMetadata
   // corruption.
   EXPECT_DEATH(allocator.root()->Free(array), "");
+  // It should also crash with `CheckMetadataIntegrity()`.
+  EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(array), "");
   // Restore integrity, otherwise the process will crash in TearDown().
   array[usable_size] = previous_value;
   allocator.root()->Free(array);

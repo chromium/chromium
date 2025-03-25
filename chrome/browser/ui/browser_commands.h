@@ -171,7 +171,6 @@ void ShowOffersAndRewardsForPage(Browser* browser);
 void SaveCreditCard(Browser* browser);
 void SaveIban(Browser* browser);
 void ShowMandatoryReauthOptInPrompt(Browser* browser);
-void MigrateLocalCards(Browser* browser);
 void SaveAutofillAddress(Browser* browser);
 void ShowFilledCardInformationBubble(Browser* browser);
 void ShowVirtualCardEnrollBubble(Browser* browser);

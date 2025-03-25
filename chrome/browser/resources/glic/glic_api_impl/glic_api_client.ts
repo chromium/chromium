@@ -246,6 +246,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.dragResizeEnabled) {
       (this as GlicBrowserHost).enableDragResize = undefined;
     }
+
+    if (!state.openOsSettingsApiIsAllowed) {
+      (this as GlicBrowserHost).openOsPermissionSettingsMenu = undefined;
+    }
   }
 
   webClientInitialized(

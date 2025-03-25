@@ -29,7 +29,7 @@ class MediaKeyStatusMap::MapEntry final
   MapEntry(WebData key_id, const V8MediaKeyStatus& status)
       : key_id_(DOMArrayBuffer::Create(scoped_refptr<SharedBuffer>(key_id))),
         status_(status) {}
-  virtual ~MapEntry() = default;
+  ~MapEntry() = default;
 
   DOMArrayBuffer* KeyId() const { return key_id_.Get(); }
 
@@ -62,7 +62,7 @@ class MediaKeyStatusMap::MapEntry final
     return a->KeyId()->ByteLength() < b->KeyId()->ByteLength();
   }
 
-  virtual void Trace(Visitor* visitor) const { visitor->Trace(key_id_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(key_id_); }
 
  private:
   const Member<DOMArrayBuffer> key_id_;

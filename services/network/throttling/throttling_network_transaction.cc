@@ -258,6 +258,12 @@ bool ThrottlingNetworkTransaction::GetLoadTimingInfo(
   return network_transaction_->GetLoadTimingInfo(load_timing_info);
 }
 
+void ThrottlingNetworkTransaction::PopulateLoadTimingInternalInfo(
+    net::LoadTimingInternalInfo* load_timing_internal_info) const {
+  network_transaction_->PopulateLoadTimingInternalInfo(
+      load_timing_internal_info);
+}
+
 bool ThrottlingNetworkTransaction::GetRemoteEndpoint(
     net::IPEndPoint* endpoint) const {
   return network_transaction_->GetRemoteEndpoint(endpoint);

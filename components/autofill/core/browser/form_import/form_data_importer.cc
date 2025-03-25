@@ -52,7 +52,6 @@
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
-#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -240,10 +239,6 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 #if !BUILDFLAG(IS_IOS)
       iban_save_manager_(std::make_unique<IbanSaveManager>(client)),
 #endif  // !BUILDFLAG(IS_IOS)
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      local_card_migration_manager_(
-          std::make_unique<LocalCardMigrationManager>(client)),
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       multistep_importer_(client_->GetAppLocale(),
                           client_->GetVariationConfigCountryCode()) {
   address_data_manager_observation_.Observe(&address_data_manager());
@@ -859,19 +854,6 @@ bool FormDataImporter::ProcessExtractedCreditCard(
                                 VirtualCardEnrollmentSource::kDownstream);
     return true;
   }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // A credit card was successfully extracted, but it's possible it is already a
-  // local or server card. First, check to see if we should offer local card
-  // migration in this case, as local cards could go either way.
-  if (local_card_migration_manager_ &&
-      local_card_migration_manager_->ShouldOfferLocalCardMigration(
-          extracted_credit_card, credit_card_import_type_)) {
-    local_card_migration_manager_->AttemptToOfferLocalCardMigration(
-        /*is_from_settings_page=*/false);
-    return true;
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Proceed with card or CVC saving if applicable.
   return extracted_credit_card &&

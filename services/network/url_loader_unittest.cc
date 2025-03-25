@@ -8125,6 +8125,49 @@ TEST_P(ParameterizedURLLoaderTest, ReadAndDiscardBody) {
   delete_run_loop.Run();
 }
 
+// These tests verify that LoadTimingInternalInfo is only set for trustworthy
+// loaders.
+
+TEST_P(ParameterizedURLLoaderTest, SetLoadTimingInternalInfoForTrustedLoaders) {
+  GURL url = test_server()->GetURL("/hello.html");
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  ASSERT_TRUE(request.trusted_params);
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilResponseBodyArrived();
+  EXPECT_TRUE(client()->response_head()->load_timing_internal_info);
+}
+
+TEST_P(ParameterizedURLLoaderTest,
+       DoNotSetLoadTimingInternalInfoForUntrustedLoaders) {
+  GURL url = test_server()->GetURL("/hello.html");
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  // Clear trusted_params.
+  request.trusted_params = std::nullopt;
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilResponseBodyArrived();
+  EXPECT_FALSE(client()->response_head()->load_timing_internal_info);
+}
+
 class SharedStorageRequestHelperURLLoaderTest : public URLLoaderTest {
  public:
   void RegisterAdditionalHandlers() override {

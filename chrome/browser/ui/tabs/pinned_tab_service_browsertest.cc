@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, Popup) {
   EXPECT_TRUE(PinnedTabServiceFactory::GetForProfile(profile));
   EXPECT_TRUE(profile->GetPrefs());
 
-  GURL url("http://www.google.com");
+  GURL url("https://www.google.com");
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   ui_test_utils::NavigateToURL(&params);
 

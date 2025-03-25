@@ -72,7 +72,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       gpu::ExportedSharedImage exported_shared_image,
       const gpu::SyncToken& sync_token,
       const gfx::Size& size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);

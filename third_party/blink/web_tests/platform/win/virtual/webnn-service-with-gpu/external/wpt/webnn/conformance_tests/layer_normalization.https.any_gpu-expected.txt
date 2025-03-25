@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
 [FAIL] layerNormalization float32 0D tensor default options
-  assert_array_approx_equals: test layerNormalization float32 property 0, expected 0 +/- 0.0009765625, expected 0 but got NaN
+  assert_true: assert_array_approx_equals_ulp: test layerNormalization float32 actual NaN should be close enough to expected 0 by the acceptable 14 ULP distance, but they have 2143289344 ULP distance expected true got false
 [FAIL] layerNormalization float32 2D tensor axes=[] and options.bias
-  assert_array_approx_equals: test layerNormalization float32 property 0, expected 7.862982749938965 +/- 0.0009765625, expected 7.862982749938965 but got NaN
+  assert_true: assert_array_approx_equals_ulp: test layerNormalization float32 actual NaN should be close enough to expected 7.862982749938965 by the acceptable 14 ULP distance, but they have 1053057650 ULP distance expected true got false
 [FAIL] layerNormalization float32 2D tensor axes=[]
-  assert_array_approx_equals: test layerNormalization float32 property 0, expected 0 +/- 0.0009765625, expected 0 but got NaN
+  assert_true: assert_array_approx_equals_ulp: test layerNormalization float32 actual NaN should be close enough to expected 0 by the acceptable 14 ULP distance, but they have 2143289344 ULP distance expected true got false
 Harness: the test ran to completion.
 

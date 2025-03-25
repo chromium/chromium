@@ -638,16 +638,9 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoHidden) {
 
   ASSERT_FALSE(HasEnterpriseInfoItem());
 }
-// Tests that the "Managed by..." item is shown for user level policies when
-// the UserPolicy features is enabled and the browser is signed in with a
-// managed account.
+// Tests that the "Managed by..." item is shown for user level policies when the
+// browser is signed in with a managed account.
 TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
-  // Enable the UserPolicy feature.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{policy::kUserPolicyForSigninOrSyncConsentLevel},
-      {});
-
   // Add managed account to sign in with.
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];

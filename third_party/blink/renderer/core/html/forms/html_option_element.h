@@ -100,7 +100,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // Update 'dirtiness'.
   void SetDirty(bool);
 
-  HTMLFormElement* form() const;
+  HTMLElement* formForBinding() const override;
   bool SpatialNavigationFocused() const;
 
   bool IsDisplayNone(bool ensure_style);

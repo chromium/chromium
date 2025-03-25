@@ -531,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.DetectedMissingCallbacks"
-    enum="BooleanMissingCallbacks" expires_after="2025-07-21">
+    enum="BooleanMissingCallbacks" expires_after="2025-09-21">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -689,7 +689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.SCK.ContentEnumerationTimedOut"
-    enum="Boolean" expires_after="2025-07-11">
+    enum="Boolean" expires_after="2025-09-21">
   <owner>mfoltz@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -701,7 +701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.SCK.ContentEnumerationTimeMs" units="ms"
-    expires_after="2025-07-11">
+    expires_after="2025-09-21">
   <owner>mfoltz@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -6171,7 +6171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Mac.Device.ReactionEffectsGesturesState"
-    enum="ReactionEffectsGesturesState" expires_after="2025-07-22">
+    enum="ReactionEffectsGesturesState" expires_after="2025-09-21">
   <owner>guidou@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>

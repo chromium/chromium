@@ -40,6 +40,7 @@ class HttpTransaction;
 class HttpUserAgentSettings;
 class SSLPrivateKey;
 struct TransportInfo;
+struct LoadTimingInternalInfo;
 class UploadDataStream;
 
 // A URLRequestJob subclass that is built on top of HttpTransaction. It
@@ -173,6 +174,8 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   bool GetCharset(std::string* charset) override;
   void GetResponseInfo(HttpResponseInfo* info) override;
   void GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
+  void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const override;
   bool GetTransactionRemoteEndpoint(IPEndPoint* endpoint) const override;
   int GetResponseCode() const override;
   void PopulateNetErrorDetails(NetErrorDetails* details) const override;

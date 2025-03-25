@@ -122,6 +122,32 @@ found in the LICENSE file.
     overflow-y: scroll;
     flex-grow: 1;
   }
+
+  /* Dark Mode Styles */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #121212;
+      color: #eee;
+    }
+
+    .section {
+      background-color: #2a2a2a;
+      box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
+      border: 1px solid #444;
+    }
+
+    a {
+      color: #99ccff;
+    }
+
+    a:hover {
+      color: #66b3ff;
+    }
+
+    a:visited{
+      color: #c8a2c8;
+    }
+  }
 </style>
 <div id="pageHeader">
   <h1>Test Web Client</h1>

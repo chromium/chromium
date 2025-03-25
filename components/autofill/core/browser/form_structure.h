@@ -54,8 +54,6 @@ using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 class FormData;
 struct FormDataPredictions;
 
-class RandomizedEncoder;
-
 // FormStructure stores a single HTML form together with the values entered
 // in the fields along with additional information needed by Autofill.
 class FormStructure {
@@ -340,12 +338,6 @@ class FormStructure {
     return developer_engagement_metrics_;
   }
 
-  void set_randomized_encoder(std::unique_ptr<RandomizedEncoder> encoder);
-
-  base::optional_ref<const RandomizedEncoder> randomized_encoder() const {
-    return randomized_encoder_.get();
-  }
-
   const LanguageCode& current_page_language() const {
     return current_page_language_;
   }
@@ -508,10 +500,6 @@ class FormStructure {
   int developer_engagement_metrics_ = 0;
 
   mojom::SubmissionSource submission_source_ = mojom::SubmissionSource::NONE;
-
-  // The randomized encoder to use to encode form metadata during upload.
-  // If this is nullptr, no randomized metadata will be sent.
-  std::unique_ptr<RandomizedEncoder> randomized_encoder_;
 
   // True iff queries encoded from this form structure should include rich
   // form/field metadata.

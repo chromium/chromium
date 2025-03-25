@@ -37,10 +37,10 @@ struct AILanguageModelInstanceInfo {
   // The maximum number of tokens that the AILanguageModel can hold in the
   // context. When the new prompt or response is being stored in the context,
   // the AILanguageModel will ensure the context stores no more than
-  // `max_tokens`, by optionally evicting some oldest entries.
-  uint64 max_tokens;
+  // `input_quota`, by optionally evicting some oldest entries.
+  uint64 input_quota;
   // The number of tokens that are already in the context.
-  uint64 current_tokens;
+  uint64 input_usage;
 
   // The sampling params provided by the caller when creating the instance.
   AILanguageModelSamplingParams sampling_params;
@@ -111,11 +111,11 @@ interface AIManagerCreateLanguageModelClient {
   OnError(AIManagerCreateClientError error);
 };
 
-// The client interface that receives the number of tokens counted by the
+// The client interface that receives the number of tokens measured by the
 // AIManager.
-interface AILanguageModelCountPromptTokensClient {
+interface AILanguageModelMeasureInputUsageClient {
   // Called with a created language model's mojo interface as a result for the
-  // CountPromptTokens() method of the AIManager.
+  // MeasureInputUsage() method of the AIManager.
   OnResult(uint32 number_of_tokens);
 };
 
@@ -141,8 +141,8 @@ interface AILanguageModel {
   Destroy();
   // Counts the number of token in the given prompt text `input` which can
   // be an arbitrary string from the JavaScript API.
-  CountPromptTokens(
+  MeasureInputUsage(
     string input,
-    pending_remote<AILanguageModelCountPromptTokensClient> client
+    pending_remote<AILanguageModelMeasureInputUsageClient> client
   );
 };

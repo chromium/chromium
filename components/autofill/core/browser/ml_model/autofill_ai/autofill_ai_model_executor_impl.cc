@@ -43,7 +43,10 @@ AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
 
 AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 
-void AutofillAiModelExecutorImpl::GetPredictions(FormData form_data) {
+void AutofillAiModelExecutorImpl::GetPredictions(
+    FormData form_data,
+    std::optional<optimization_guide::proto::AnnotatedPageContent>
+        annotated_page_content) {
   // If there is already an ongoing request for the same form signature, then
   // do not start a new one.
   if (!ongoing_queries_.insert(CalculateFormSignature(form_data)).second) {
@@ -59,9 +62,13 @@ void AutofillAiModelExecutorImpl::GetPredictions(FormData form_data) {
   } else {
     page_context->set_url(form_data.main_frame_origin().Serialize());
   }
-
   *request.mutable_form_data() =
       ToFormDataProto(form_data, FormDataProtoConversionReason::kModelRequest);
+
+  if (annotated_page_content) {
+    *request.mutable_annotated_page_content() =
+        *std::move(annotated_page_content);
+  }
 
   optimization_guide::ModelExecutionCallbackWithLogging<
       optimization_guide::proto::FormsClassificationsLoggingData>
@@ -73,6 +80,11 @@ void AutofillAiModelExecutorImpl::GetPredictions(FormData form_data) {
       optimization_guide::ModelBasedCapabilityKey::kFormsClassifications,
       request, features::kAutofillAiServerModelExecutionTimeout.Get(),
       std::move(wrapper_callback));
+}
+
+base::WeakPtr<AutofillAiModelExecutor>
+AutofillAiModelExecutorImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void AutofillAiModelExecutorImpl::OnModelExecuted(

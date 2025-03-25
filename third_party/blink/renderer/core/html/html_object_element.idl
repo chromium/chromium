@@ -31,7 +31,9 @@
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect] attribute DOMString useMap;
-    [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
+    // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
+    // https://github.com/whatwg/html/pull/10995
+    [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
     [CEReactions, Reflect] attribute DOMString width;
     [CEReactions, Reflect] attribute DOMString height;
     [CheckSecurity=ReturnValue] readonly attribute Document? contentDocument;

@@ -5,6 +5,8 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=./shared_vars.css.js
+ * #import=./pdf_shared.css.js
+ * #include=pdf-shared
  * #css_wrapper_metadata_end */
 
 cr-icon-button {

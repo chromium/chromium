@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
@@ -49,6 +50,7 @@ namespace autofill {
 // form signatures of forms 1 and 2.
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
+    base::optional_ref<RandomizedEncoder> encoder,
     const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
         format_strings,
     const FieldTypeSet& available_field_types,

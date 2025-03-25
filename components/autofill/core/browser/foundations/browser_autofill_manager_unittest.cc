@@ -61,6 +61,7 @@
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -180,8 +181,6 @@ using upload_contents_matchers::FieldsAre;
 using upload_contents_matchers::FormSignatureIs;
 using upload_contents_matchers::ObservedSubmissionIs;
 
-const std::string kArbitraryNickname = "Grocery Card";
-const std::u16string kArbitraryNickname16 = u"Grocery Card";
 constexpr Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
 
@@ -202,11 +201,7 @@ gfx::Rect GetFakeCaretBounds(const FormFieldData& focused_field) {
 bool ShouldSplitCardNameAndLastFourDigitsForMetadata() {
   // Splitting card name and last four logic does not apply to iOS because iOS
   // doesn't currently support it.
-#if BUILDFLAG(IS_IOS)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
-#endif
+  return !BUILDFLAG(IS_IOS);
 }
 
 // The number of obfuscation dots we use as a prefix when showing a credit
@@ -760,6 +755,7 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
   ~MockAutofillClient() override = default;
 
+  MOCK_METHOD(void, GetAiPageContent, (GetAiPageContentCallback), (override));
   MOCK_METHOD(AutofillAiModelCache*, GetAutofillAiModelCache, (), (override));
   MOCK_METHOD(AutofillAiModelExecutor*,
               GetAutofillAiModelExecutor,
@@ -1450,41 +1446,6 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutofillDriver> driver_;
 };
 
-class SuggestionMatchingTest : public BrowserAutofillManagerTest,
-                               public testing::WithParamInterface<bool> {
- protected:
-  void SetUp() override {
-    BrowserAutofillManagerTest::SetUp();
-    InitializeFeatures();
-  }
-  bool IsMetadataEnabled() const { return GetParam(); }
-  void InitializeFeatures();
-
-  base::test::ScopedFeatureList features_;
-};
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-void SuggestionMatchingTest::InitializeFeatures() {}
-#else
-void SuggestionMatchingTest::InitializeFeatures() {
-  features_.InitWithFeatureStates(
-      {{features::kAutofillEnableCardProductName, IsMetadataEnabled()}});
-}
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-// Credit card suggestion tests related with keyboard accessory.
-class CreditCardSuggestionTest : public BrowserAutofillManagerTest {
- protected:
-  void SetUp() override {
-    BrowserAutofillManagerTest::SetUp();
-    feature_list_card_metadata_and_product_name_.InitAndDisableFeature(
-        features::kAutofillEnableCardProductName);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_card_metadata_and_product_name_;
-};
-
 // Test that calling OnFormsSeen consecutively with a different set of forms
 // will query for each separately.
 TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
@@ -1777,7 +1738,7 @@ TEST_F(BrowserAutofillManagerTest,
 
 // Test that we return all address profile suggestions when all form fields
 // are empty.
-TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {
+TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_EmptyValue) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -1795,7 +1756,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {
 
 // Test that we return only matching address profile suggestions when the
 // selected form field has been partially filled out.
-TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
+TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_MatchCharacter) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormFieldData& firstname_field = test_api(form).field(0);
@@ -1814,7 +1775,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
 
 // Tests that we return address profile suggestions values when the section
 // is already autofilled, and that we merge identical values.
-TEST_P(SuggestionMatchingTest,
+TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_AlreadyAutofilledMergeValues) {
   personal_data().test_address_data_manager().ClearProfiles();
   // Set up our form data.
@@ -1865,7 +1826,7 @@ TEST_P(SuggestionMatchingTest,
 
 // Tests that we return address field swapping suggestions when the field
 // is already autofilled.
-TEST_P(SuggestionMatchingTest,
+TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_AlreadyAutofilledNoLabels) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -1929,7 +1890,7 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
 }
 
 // Test that we call duplicate profile suggestions.
-TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
+TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_WithDuplicates) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -2017,15 +1978,7 @@ class BrowserAutofillManagerTestForMetadataCardSuggestions
     : public BrowserAutofillManagerTest,
       public testing::WithParamInterface<bool> {
  public:
-  BrowserAutofillManagerTestForMetadataCardSuggestions() {
-    card_metadata_flags_.InitWithFeatureState(
-        features::kAutofillEnableCardProductName, IsMetadataEnabled());
-  }
-
-  bool IsMetadataEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList card_metadata_flags_;
+  BrowserAutofillManagerTestForMetadataCardSuggestions()  = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -2161,106 +2114,6 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       cc_number_field.global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       CreateSeparator(),
-       CreateManageCreditCardsSuggestion(
-           /*with_gpay_logo=*/false)});
-}
-
-// Test that we return credit card profile suggestions when the selected form
-// field is the credit card number field.
-TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
-  // Set nickname with the corresponding guid of the Mastercard 8765.
-  personal_data().test_payments_data_manager().SetNicknameForCardWithGUID(
-      MakeGuid(5), kArbitraryNickname);
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  FormsSeen({form});
-
-  const FormFieldData& credit_card_number_field = form.fields()[1];
-  OnAskForValuesToFill(form, credit_card_number_field);
-  const std::string visa_value =
-      std::string("Visa  ") +
-      test::ObfuscatedCardDigitsAsUTF8(
-          "3456", ObfuscationLengthForCreditCardLastFourDigits());
-  // Mastercard has a valid nickname. Display nickname + last four in the
-  // suggestion title.
-  const std::string master_card_value =
-      kArbitraryNickname + "  " +
-      test::ObfuscatedCardDigitsAsUTF8(
-          "8765", ObfuscationLengthForCreditCardLastFourDigits());
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  const std::string visa_label = std::string("04/99");
-  const std::string master_card_label = std::string("10/98");
-#else
-  const std::string visa_label = std::string("Expires on 04/99");
-  const std::string master_card_label = std::string("Expires on 10/98");
-#endif
-
-  // Test that we sent the right values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      credit_card_number_field.global_id(),
-      {Suggestion(visa_value, visa_label, Suggestion::Icon::kCardVisa,
-                  SuggestionType::kCreditCardEntry),
-       Suggestion(master_card_value, master_card_label,
-                  Suggestion::Icon::kCardMasterCard,
-                  SuggestionType::kCreditCardEntry),
-       CreateSeparator(),
-       CreateManageCreditCardsSuggestion(
-           /*with_gpay_logo=*/false)});
-}
-
-// Test that we return credit card profile suggestions when the selected form
-// field is not the credit card number field.
-TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
-  // Set nickname with the corresponding guid of the Mastercard 8765.
-  personal_data().test_payments_data_manager().SetNicknameForCardWithGUID(
-      MakeGuid(5), kArbitraryNickname);
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  FormsSeen({form});
-
-  const FormFieldData& cardholder_name_field = form.fields()[0];
-  OnAskForValuesToFill(form, cardholder_name_field);
-
-  const std::string obfuscated_last_four_digits1 =
-      test::ObfuscatedCardDigitsAsUTF8(
-          "3456", ObfuscationLengthForCreditCardLastFourDigits());
-  const std::string obfuscated_last_four_digits2 =
-      test::ObfuscatedCardDigitsAsUTF8(
-          "8765", ObfuscationLengthForCreditCardLastFourDigits());
-
-#if BUILDFLAG(IS_ANDROID)
-  // For Android always show obfuscated last four.
-  const std::string visa_label = obfuscated_last_four_digits1;
-  // Mastercard has a valid nickname.
-  const std::string master_card_label = obfuscated_last_four_digits2;
-
-#elif BUILDFLAG(IS_IOS)
-  const std::string visa_label = obfuscated_last_four_digits1;
-  const std::string master_card_label = obfuscated_last_four_digits2;
-
-#else
-  // If no nickname available, we will show network.
-  const std::string visa_label = base::JoinString(
-      {"Visa  ", obfuscated_last_four_digits1, ", expires on 04/99"}, "");
-  // When nickname is available, show nickname. Otherwise, show network.
-  const std::string master_card_label =
-      base::JoinString({kArbitraryNickname + "  ", obfuscated_last_four_digits2,
-                        ", expires on 10/98"},
-                       "");
-#endif
-
-  // Test that we sent the right values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      cardholder_name_field.global_id(),
-      {Suggestion("Elvis Presley", visa_label, Suggestion::Icon::kCardVisa,
-                  SuggestionType::kCreditCardEntry),
-       Suggestion("Buddy Holly", master_card_label,
-                  Suggestion::Icon::kCardMasterCard,
-                  SuggestionType::kCreditCardEntry),
        CreateSeparator(),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/false)});
@@ -2569,7 +2422,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 }
 
 // Test that we return profile and credit card suggestions for combined forms.
-TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
+TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestions) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   const size_t first_credit_card_field = form.fields().size();
@@ -3143,7 +2996,7 @@ TEST_F(BrowserAutofillManagerTest,
 
 // Test that we return normal Autofill suggestions when trying to autofill
 // already filled forms.
-TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
+TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWhenFormIsAutofilled) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -3167,7 +3020,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
 #if !BUILDFLAG(IS_ANDROID)
 // Test that we do not return duplicate values drawn from multiple profiles when
 // filling an already filled field.
-TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
+TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -5644,8 +5497,6 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
 TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_VirtualCard_MetadataEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardProductName);
   personal_data().test_payments_data_manager().ClearCreditCards();
   CreditCard masked_server_card(CreditCard::RecordType::kMaskedServerCard,
                                 /*server_id=*/"a123");
@@ -7055,15 +6906,33 @@ class BrowserAutofillManagerWithAiModelTest
   base::test::ScopedFeatureList feature_list_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
-  MockAutofillAiModelCache cache_;
-  MockAutofillAiModelExecutor executor_;
+  NiceMock<MockAutofillAiModelCache> cache_;
+  NiceMock<MockAutofillAiModelExecutor> executor_;
 };
 
 // Tests that the Autofill AI server model is run if cache and model are
 // available and the form is not contained in the cache.
 TEST_F(BrowserAutofillManagerWithAiModelTest, AutofillAiServerModelRun) {
   ON_CALL(cache(), Contains).WillByDefault(Return(false));
+  EXPECT_CALL(client(), GetAiPageContent).Times(0);
   EXPECT_CALL(executor(), GetPredictions);
+  SeeForm(/*may_run_model=*/true);
+}
+
+// Tests that BAM requests annotated page content and passes it on to the
+// model executor if kAutofillAiServerModelSendPageContent is true.
+TEST_F(BrowserAutofillManagerWithAiModelTest,
+       AutofillAiServerModelReceivesAnnotatedPageContent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiServerModel,
+      {{"autofill_ai_model_send_apc", "true"}});
+
+  ON_CALL(cache(), Contains).WillByDefault(Return(false));
+  EXPECT_CALL(client(), GetAiPageContent)
+      .WillOnce(RunOnceCallback<0>(
+          optimization_guide::proto::AnnotatedPageContent()));
+  EXPECT_CALL(executor(), GetPredictions(_, Not(Eq(std::nullopt))));
   SeeForm(/*may_run_model=*/true);
 }
 
@@ -7288,25 +7157,18 @@ TEST_P(OnFocusOnFormFieldTest, FocusReporting) {
 
 INSTANTIATE_TEST_SUITE_P(All, OnFocusOnFormFieldTest, testing::Bool());
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(, SuggestionMatchingTest, testing::Values(false));
-#else
-INSTANTIATE_TEST_SUITE_P(All, SuggestionMatchingTest, testing::Bool());
-#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-
 struct ShareNicknameTestParam {
   std::string local_nickname;
   std::string server_nickname;
   std::string expected_nickname;
-  bool metadata_enabled;
 };
 
 const ShareNicknameTestParam kShareNicknameTestParam[] = {
-    {"", "", "", false},
-    {"", "server nickname", "server nickname", false},
-    {"local nickname", "", "local nickname", false},
-    {"local nickname", "server nickname", "local nickname", false},
-    {"local nickname", "server nickname", "local nickname", true},
+    {"", "", ""},
+    {"", "server nickname", "server nickname"},
+    {"local nickname", "", "local nickname"},
+    {"local nickname", "server nickname", "local nickname"},
+    {"local nickname", "server nickname", "local nickname"},
 };
 
 class BrowserAutofillManagerTestForSharingNickname
@@ -7316,10 +7178,7 @@ class BrowserAutofillManagerTestForSharingNickname
   BrowserAutofillManagerTestForSharingNickname()
       : local_nickname_(GetParam().local_nickname),
         server_nickname_(GetParam().server_nickname),
-        expected_nickname_(GetParam().expected_nickname) {
-    card_metadata_flags_.InitWithFeatureState(
-        features::kAutofillEnableCardProductName, GetParam().metadata_enabled);
-  }
+        expected_nickname_(GetParam().expected_nickname) {}
 
   CreditCard GetLocalCard() {
     CreditCard local_card("287151C8-6AB1-487C-9095-28E80BE5DA15",

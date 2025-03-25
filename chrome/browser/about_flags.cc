@@ -8338,11 +8338,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kUseWallpaperStagingUrl)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"autofill-enable-card-product-name",
-     flag_descriptions::kAutofillEnableCardProductNameName,
-     flag_descriptions::kAutofillEnableCardProductNameDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardProductName)},
-
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW) && BUILDFLAG(IS_ANDROID)
     {"paint-preview-demo", flag_descriptions::kPaintPreviewDemoName,
      flag_descriptions::kPaintPreviewDemoDescription, kOsAndroid,
@@ -11352,12 +11347,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)},
 
-    {"autofill-disable-local-card-migration",
-     flag_descriptions::kAutofillDisableLocalCardMigrationName,
-     flag_descriptions::kAutofillDisableLocalCardMigrationDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillDisableLocalCardMigration)},
     {"predictable-reported-quota",
      flag_descriptions::kPredictableReportedQuotaName,
      flag_descriptions::kPredictableReportedQuotaDescription, kOsAll,
@@ -11931,6 +11920,15 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROME_OS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"notebook-lm-app-preinstall",
+     flag_descriptions::kNotebookLmAppPreinstallName,
+     flag_descriptions::kNotebookLmAppPreinstallDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kNotebookLmAppPreinstall)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

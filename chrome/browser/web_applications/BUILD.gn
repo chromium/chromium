@@ -586,6 +586,8 @@ source_set("web_applications") {
         "preinstalled_web_apps/google_meet.h",
         "preinstalled_web_apps/messages_dogfood.cc",
         "preinstalled_web_apps/messages_dogfood.h",
+        "preinstalled_web_apps/notebook_lm.cc",
+        "preinstalled_web_apps/notebook_lm.h",
       ]
     }
 

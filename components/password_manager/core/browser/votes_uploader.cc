@@ -895,13 +895,12 @@ VotesUploader::EncodeUploadRequest(
     bool should_set_passwords_were_revealed) {
   // Annotate the form with the source language of the page.
   form.set_current_page_language(client_->GetPageLanguage());
-  // Attach the Randomized Encoder.
-  form.set_randomized_encoder(RandomizedEncoder::Create(client_->GetPrefs()));
 
   std::vector<AutofillUploadContents> upload_contents =
-      autofill::EncodeUploadRequest(form, /*format_strings=*/{},
-                                    available_field_types, login_form_signature,
-                                    /*observed_submission=*/true);
+      autofill::EncodeUploadRequest(
+          form, RandomizedEncoder::Create(client_->GetPrefs()).get(),
+          /*format_strings=*/{}, available_field_types, login_form_signature,
+          /*observed_submission=*/true);
   CHECK(!upload_contents.empty());
 
   upload_contents[0].set_passwords_revealed(

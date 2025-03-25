@@ -295,10 +295,6 @@ TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {
 // nickname and product description are unavailable.
 TEST(CreditCardTest,
      CardIdentifierStringsForAutofillDisplay_NoNicknameNoProductDescription) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardProductName);
-
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
@@ -315,10 +311,6 @@ TEST(CreditCardTest,
 TEST(
     CreditCardTest,
     CardIdentifierStringsForAutofillDisplay_InvalidNicknameNoProductDescription) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardProductName);
-
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                          "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
@@ -335,10 +327,6 @@ TEST(
 // nickname is unavailable.
 TEST(CreditCardTest,
      CardIdentifierStringsForAutofillDisplay_NoNicknameWithProductDescription) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardProductName);
-
   std::u16string product_description = u"ABC bank XYZ card";
 
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -359,10 +347,6 @@ TEST(CreditCardTest,
 TEST(
     CreditCardTest,
     CardIdentifierStringsForAutofillDisplay_InvalidNicknameWithProductDescription) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardProductName);
-
   std::u16string product_description = u"ABC bank XYZ card";
 
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -382,10 +366,6 @@ TEST(
 // Test that card identifier string shows nickname when it is valid.
 TEST(CreditCardTest,
      CardIdentifierStringsForAutofillDisplay_WithValidNickname) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardProductName);
-
   std::u16string valid_nickname = u"My Visa Card";
 
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -405,10 +385,6 @@ TEST(CreditCardTest,
 // Test that customized nickname takes precedence over credit card's nickname.
 TEST(CreditCardTest,
      CardIdentifierStringsForAutofillDisplay_WithCustomizedNickname) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardProductName);
-
   std::u16string customized_nickname = u"My grocery shopping Visa card";
 
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -503,10 +479,6 @@ TEST(CreditCardTest,
 // Test that the card number is formatted as per the obfuscation length.
 TEST(CreditCardTest,
      CardIdentifierStringsForAutofillDisplay_WithObfuscationLength) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardProductName);
-
   int obfuscation_length = 2;
 
   CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
