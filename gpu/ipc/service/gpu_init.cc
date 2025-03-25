@@ -39,6 +39,7 @@
 #include "gpu/config/gpu_switching.h"
 #include "gpu/config/gpu_util.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
+#include "services/webnn/buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
@@ -95,6 +96,10 @@
 
 #if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
 #include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
+#endif
+
+#if BUILDFLAG(WEBNN_USE_ORT)
+#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
 #endif
 
 namespace gpu {
@@ -316,6 +321,84 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
   return;
 }
 #endif  // IS_WIN || IS_MAC
+
+#if BUILDFLAG(WEBNN_USE_ORT)
+// Preload redistributable ONNX Runtime and OpenVINO execution provider
+// DLLs that allows testing WebNN against newer release of ONNX Runtime
+// before it is integrated into Windows OS. Don't handle errors as failure
+// here is non-fatal.
+void PreloadOrtDlls(const base::FilePath& module_path) {
+  // Use `base::NativeLibrary` to avoid unloading onnxruntime.dll before
+  // entering sandbox.
+  base::NativeLibrary ort_library;
+  {
+    GPU_STARTUP_TRACE_EVENT("Load onnxruntime.dll");
+    ort_library = base::LoadNativeLibrary(
+        module_path.Append(L"onnxruntime.dll"), nullptr);
+    if (!ort_library) {
+      return;
+    }
+  }
+
+  // Try to preload OpenVINO execution provider DLLs, including
+  // onnxruntime_providers_openvino.dll and its dependency
+  // onnxruntime_providers_shared.dll, that can only be loaded by
+  // ORT API `SessionOptionsAppendExecutionProvider_OpenVINO_V2()`. This
+  // method will also load other OpenVINO DLLs, include openvino.dll,
+  // tbb12.dll (dependency of openvino.dll),
+  // openvino_intel_cpu_plugin.dll (for CPU inference),
+  // openvino_intel_gpu_plugin.dll (for GPU inference), and
+  // openvino_intel_npu_plugin.dll (for NPU inference).
+  using OrtGetApiBaseProc = decltype(OrtGetApiBase)*;
+  OrtGetApiBaseProc ort_get_api_base_proc = reinterpret_cast<OrtGetApiBaseProc>(
+      base::GetFunctionPointerFromNativeLibrary(ort_library, "OrtGetApiBase"));
+  if (!ort_get_api_base_proc) {
+    return;
+  }
+
+  const OrtApi* ort_api = ort_get_api_base_proc()->GetApi(ORT_API_VERSION);
+  if (!ort_api) {
+    return;
+  }
+
+  OrtEnv* env;
+  OrtStatus* status =
+      ort_api->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "WebNN", &env);
+  if (status != nullptr) {
+    ort_api->ReleaseStatus(status);
+    return;
+  }
+
+  OrtSessionOptions* options;
+  status = ort_api->CreateSessionOptions(&options);
+  if (status != nullptr) {
+    ort_api->ReleaseStatus(status);
+    return;
+  }
+
+  {
+    GPU_STARTUP_TRACE_EVENT("Load OpenVINO execution provider DLLs");
+    status = ort_api->SessionOptionsAppendExecutionProvider_OpenVINO_V2(
+        options, /*provider_options_keys*/ nullptr,
+        /*provider_options_values*/ nullptr, /*num_keys*/ 0);
+    if (status != nullptr) {
+      ort_api->ReleaseStatus(status);
+      return;
+    }
+  }
+
+  {
+    GPU_STARTUP_TRACE_EVENT("Load openvino_onnx_frontend.dll");
+    // Preload additional OpenVINO ONNX frontend DLL which is
+    // usually loaded during model conversion after entering sandbox.
+    base::LoadNativeLibrary(module_path.Append(L"openvino_onnx_frontend.dll"),
+                            nullptr);
+  }
+
+  // Don't release session options and env to avoid unloading OpenVINO execution
+  // provider DLLs.
+}
+#endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 }  // namespace
 
@@ -679,11 +762,11 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         base::LoadNativeLibrary(module_path.Append(L"directml.dll"), nullptr);
       }
 
+#if BUILDFLAG(WEBNN_USE_ORT)
       if (command_line->HasSwitch(switches::kUseRedistributableONNXRuntime)) {
-        GPU_STARTUP_TRACE_EVENT("Load onnxruntime.dll");
-        base::LoadNativeLibrary(module_path.Append(L"onnxruntime.dll"),
-                                nullptr);
+        PreloadOrtDlls(module_path);
       }
+#endif
     }
 
     ResumeGpuWatchdog(watchdog_thread_.get());
