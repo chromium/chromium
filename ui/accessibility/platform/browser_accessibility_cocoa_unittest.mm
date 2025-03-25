@@ -129,6 +129,7 @@ TEST_P(BrowserAccessibilityCocoaTest, TestHasDefaultAction) {
   ASSERT_EQ(accessibility->node()->data().GetCheckedState(),
             ax::mojom::CheckedState::kFalse);
 
+// TODO(https://crbug.com/406190900): Remove this deprecation pragma.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [node accessibilityPerformAction:NSAccessibilityPressAction];
@@ -171,6 +172,7 @@ TEST_P(BrowserAccessibilityCocoaTest, TestNoDefaultAction) {
   ASSERT_EQ(accessibility->node()->data().GetCheckedState(),
             ax::mojom::CheckedState::kFalse);
 
+// TODO(https://crbug.com/406190900): Remove this deprecation pragma.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [node accessibilityPerformAction:NSAccessibilityPressAction];
@@ -213,6 +215,7 @@ TEST_P(BrowserAccessibilityCocoaTest, TestNoNodeForDefaultAction) {
   EXPECT_CALL(*mock_manager, DoDefaultAction(::testing::Ref(*accessibility)))
       .Times(0);
 
+// TODO(https://crbug.com/406190900): Remove this deprecation pragma.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [node accessibilityPerformAction:NSAccessibilityPressAction];
