@@ -1614,12 +1614,27 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void propagateOmniboxSessionStateChange_hubSearchContainerVisible() {
-        mMediator
-                .getAutocompleteInputForTesting()
-                .setPageClassification(PageClassification.ANDROID_HUB_VALUE);
+        GURL url = new GURL("https://www.google.com");
+        String title = "title";
+        int pageClassification = PageClassification.ANDROID_HUB_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
 
         mMediator.propagateOmniboxSessionStateChange(true);
         assertTrue(mListModel.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_hubSearchContainerVisible() {
+        GURL url = new GURL("https://www.google.com");
+        String title = "title";
+        int pageClassification = PageClassification.ANDROID_HUB_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+
+        // Ensure that the ACTIVITY_WINDOW_FOCUSED property always remains true.
+        mMediator.onTopResumedActivityChanged(true);
+        assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
+        mMediator.onTopResumedActivityChanged(false);
+        assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
     }
 
     @Test

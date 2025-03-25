@@ -439,13 +439,8 @@ class AutocompleteMediator
 
             mNewOmniboxEditSessionTimestamp = -1;
             // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
-            // a consequence the omnibox is unfocused), unless it is for hub search.
-            // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
-            // exiting hub search that dismisses the URL bar and suggestions list together.
-            if (mDataProvider.getPageClassification(/* isPrefetch= */ false)
-                    != PageClassification.ANDROID_HUB_VALUE) {
-                clearSuggestions();
-            }
+            // a consequence the omnibox is unfocused).
+            clearSuggestions();
         }
     }
 
@@ -1107,7 +1102,7 @@ class AutocompleteMediator
         if (isActive) {
             mListPropertyModel.set(
                     SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE,
-                    mAutocompleteInput.getPageClassification()
+                    mDataProvider.getPageClassification(/* isPrefetch= */ false)
                             == PageClassification.ANDROID_HUB_VALUE);
         }
 
@@ -1412,8 +1407,16 @@ class AutocompleteMediator
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         mActivityWindowFocused = isTopResumedActivity;
+        // Always set the window activity focused property to true for hub search so that the
+        // dropdown container persists when search activity is dismissed.
+        // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
+        // exiting hub search that dismisses the URL bar and suggestions list together.
         mListPropertyModel.set(
-                SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, isTopResumedActivity);
+                SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED,
+                mDataProvider.getPageClassification(/* isPrefetch= */ false)
+                                == PageClassification.ANDROID_HUB_VALUE
+                        ? true
+                        : isTopResumedActivity);
         if (isActive()) {
             onTextChanged(
                     mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
