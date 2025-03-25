@@ -4,6 +4,11 @@
 # found in the LICENSE file.
 '''Builds the cargo-vet tool.'''
 
+# TODO(https://crbug.com/405980483): Evaluate whether to keep supporting
+# `tools/crates/run_cargo_vet.py` (and therefore whether to keep building
+# `cargo-vet` binary).  Note that we have removed `cargo vet` presubmits (as
+# tracked in https://crbug.com/405980483).
+
 import argparse
 import os
 import sys
