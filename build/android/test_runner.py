@@ -361,10 +361,10 @@ def AddDeviceOptions(parser):
       'secondary user, e.g. Android Automotive OS.')
 
   parser.add_argument(
-      '--connect-over-ethernet',
+      '--connect-over-network',
       action='store_true',
-      help='Connect to devices over the network using "adb connect". Only '
-      'supported when running on chromeos-swarming')
+      help='Connect to devices over the network using "adb connect". Must '
+      'specify device hostnames/IPs via "-d"/"--device" args.')
 
 
 def AddEmulatorOptions(parser):
@@ -1523,6 +1523,11 @@ def main():
   if (getattr(args, 'debug_socket', None)
       or getattr(args, 'wait_for_java_debugger', None)):
     args.num_retries = 0
+
+  if (getattr(args, 'connect_over_network', False)
+      and len(getattr(args, 'test_devices', [])) != 1):
+    parser.error('Need to specify a single device (via "--device") when using '
+                 '--connect-over-network.')
 
   # Result-sink may not exist in the environment if rdb stream is not enabled.
   result_sink_client = result_sink.TryInitClient()
