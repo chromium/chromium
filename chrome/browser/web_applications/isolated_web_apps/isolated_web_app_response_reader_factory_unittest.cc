@@ -23,9 +23,11 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -64,24 +66,6 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
-
-class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
- public:
-  explicit FakeIsolatedWebAppValidator(
-      base::expected<void, std::string> integrity_block_validation_result)
-      : integrity_block_validation_result_(integrity_block_validation_result) {}
-
-  base::expected<void, std::string> ValidateIntegrityBlock(
-      const web_package::SignedWebBundleId& web_bundle_id,
-      const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-      bool dev_mode,
-      const IsolatedWebAppTrustChecker& trust_checker) override {
-    return integrity_block_validation_result_;
-  }
-
- private:
-  base::expected<void, std::string> integrity_block_validation_result_;
-};
 
 class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
  public:
@@ -136,8 +120,8 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
     integrity_block_->attributes =
         web_package::test::GetAttributesForSignedWebBundleId(kWebBundleId.id());
 
-    factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-        *profile(), std::make_unique<FakeIsolatedWebAppValidator>(base::ok()));
+    factory_ =
+        std::make_unique<IsolatedWebAppResponseReaderFactory>(*profile());
 
     CHECK(temp_dir_.CreateUniqueTempDir());
     CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path_));
@@ -147,6 +131,8 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
         base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
+
+    AddTrustedWebBundleIdForTesting(kWebBundleId);
   }
 
   void TearDown() override {
@@ -248,20 +234,23 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
       .WillOnce(RunOnceCallback<2>(base::ok()));
   base::HistogramTester histogram_tester;
 
-  factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      *profile(), std::make_unique<FakeIsolatedWebAppValidator>(
-                      base::unexpected("test error")));
-
   base::test::TestFuture<ReaderResult> reader_future;
   factory_->CreateResponseReader(web_bundle_path_, kWebBundleId,
                                  /*flags=*/{}, reader_future.GetCallback());
 
-  FulfillIntegrityBlock();
+  auto integrity_block = integrity_block_->Clone();
+  // Simulate a failed validation by returning a different ID.
+  integrity_block->attributes =
+      web_package::test::GetAttributesForSignedWebBundleId(
+          test::GetDefaultEcdsaP256WebBundleId().id());
+  parser_factory_->RunIntegrityBlockCallback(std::move(integrity_block));
   FulfillMetadata();
 
   ASSERT_THAT(
       reader_future.Take(),
-      ErrorIs(Property(&UnusableSwbnFileError::message, Eq("test error"))));
+      ErrorIs(Property(
+          &UnusableSwbnFileError::value,
+          UnusableSwbnFileError::Error::kIntegrityBlockValidationError)));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -285,9 +274,6 @@ class IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest
 TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
        SignatureVerificationError) {
   base::HistogramTester histogram_tester;
-
-  factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      *profile(), std::make_unique<FakeIsolatedWebAppValidator>(base::ok()));
 
   IsolatedWebAppResponseReaderFactory::Flags flags;
   if (skip_signature_verification_) {

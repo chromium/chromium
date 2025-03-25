@@ -52,22 +52,31 @@ bool IsTrustedAsKiosk(const web_package::SignedWebBundleId& web_bundle_id) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+bool IsTrustedViaPolicy(Profile& profile,
+                        const web_package::SignedWebBundleId& web_bundle_id) {
+  return std::ranges::any_of(
+      profile.GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList),
+      [&web_bundle_id](const base::Value& force_install_entry) {
+        auto options =
+            IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
+                force_install_entry);
+        return options.has_value() && options->web_bundle_id() == web_bundle_id;
+      });
+}
+
 }  // namespace
 
-IsolatedWebAppTrustChecker::IsolatedWebAppTrustChecker(Profile& profile)
-    : profile_(profile) {}
-
-IsolatedWebAppTrustChecker::~IsolatedWebAppTrustChecker() = default;
-
+// static
 IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
+    Profile& profile,
     const web_package::SignedWebBundleId& web_bundle_id,
-    bool is_dev_mode_bundle) const {
+    bool is_dev_mode_bundle) {
   if (web_bundle_id.is_for_proxy_mode()) {
     return {.status = Result::Status::kErrorUnsupportedWebBundleIdType,
             .message = "Web Bundle IDs of type ProxyMode are not supported."};
   }
 
-  if (IsTrustedViaPolicy(web_bundle_id)) {
+  if (IsTrustedViaPolicy(profile, web_bundle_id)) {
     return {.status = Result::Status::kTrusted};
   }
 
@@ -76,13 +85,13 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
     return {.status = Result::Status::kTrusted};
   }
 
-  if (ash::IsShimlessRmaAppBrowserContext(&*profile_) &&
+  if (ash::IsShimlessRmaAppBrowserContext(&profile) &&
       chromeos::Is3pDiagnosticsIwaId(web_bundle_id)) {
     return {.status = Result::Status::kTrusted};
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (is_dev_mode_bundle && IsIwaDevModeEnabled(&*profile_)) {
+  if (is_dev_mode_bundle && IsIwaDevModeEnabled(&profile)) {
     return {.status = Result::Status::kTrusted};
   }
 
@@ -93,24 +102,6 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
 
   return {.status = Result::Status::kErrorPublicKeysNotTrusted,
           .message = "The public key(s) are not trusted."};
-}
-
-bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
-    const web_package::SignedWebBundleId& web_bundle_id) const {
-  const PrefService::Preference* pref = profile_->GetPrefs()->FindPreference(
-      prefs::kIsolatedWebAppInstallForceList);
-  if (!pref) {
-    NOTREACHED();
-  }
-
-  return std::ranges::any_of(
-      pref->GetValue()->GetList(),
-      [&web_bundle_id](const base::Value& force_install_entry) {
-        auto options =
-            IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
-                force_install_entry);
-        return options.has_value() && options->web_bundle_id() == web_bundle_id;
-      });
 }
 
 void SetTrustedWebBundleIdsForTesting(  // IN-TEST
