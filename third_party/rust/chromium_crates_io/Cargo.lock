@@ -46,15 +46,6 @@ version = "2.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "bstr"
-version = "1.11.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "memchr",
- "serde",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -110,7 +101,6 @@ version = "0.1.0"
 dependencies = [
  "base64",
  "bitflags",
- "bstr",
  "bytemuck",
  "bytes",
  "cfg-if",

@@ -41,12 +41,6 @@ small_ctor = "0.1"
 static_assertions = "1"
 temporal_capi = "0.0.6"
 
-[dependencies.bstr]
-version = "1"
-# Disables the 'unicode' feature. See https://crrev.com/c/5925797
-default-features = false
-features = ["serde", "std"]
-
 [dependencies.crc32fast]
 version = "1.4.2"
 features = ["nightly"]  # For optimized aarch64 implementation.
