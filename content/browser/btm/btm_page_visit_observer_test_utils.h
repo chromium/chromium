@@ -50,8 +50,7 @@ class BtmPageVisitRecorder {
 
   // Called by `observer_` on each page visit; appends to `visits_`.
   void OnVisit(const BtmPageVisitInfo& prev_page,
-               const BtmNavigationInfo& navigation,
-               const GURL& url);
+               const BtmNavigationInfo& navigation);
 
   std::vector<VisitTuple> visits_;
   // Populated only during a call to `WaitForSize()`. Mostly a `RunLoop` wrapped
@@ -60,8 +59,8 @@ class BtmPageVisitRecorder {
   BtmPageVisitObserver observer_;
 };
 
-// Matches the `url` property of `VisitTuple`, `BtmPageVisitInfo`, or
-// `BtmServerRedirectInfo`.
+// Matches the `url` property of `BtmPageVisitInfo`,
+// `BtmNavigationInfo::destination`, or `BtmServerRedirectInfo`.
 MATCHER_P(HasUrl,
           matcher,
           "has url that " + testing::DescribeMatcher<GURL>(matcher, negation)) {
