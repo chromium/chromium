@@ -325,4 +325,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
       ::features::kDrawImmediatelyWhenInteractive);
   aw_feature_overrides.DisableFeature(
       ::features::kAckOnSurfaceActivationWhenInteractive);
+
+  // Partitioned :visited links history is not supported on WebView.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
 }
