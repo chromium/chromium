@@ -192,16 +192,7 @@ bool bookmarkSavedIntoAccount(
     BookmarkStorageType bookmarkStorageType,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService) {
-  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
-  // deleted from the codebase. See ConsentLevel::kSync documentation for
-  // details.
-  BOOL hasSyncConsent =
-      authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  BOOL savedIntoAccount =
-      (bookmarkStorageType == BookmarkStorageType::kAccount) ||
-      (hasSyncConsent && syncService->GetUserSettings()->GetSelectedTypes().Has(
-                             syncer::UserSelectableType::kBookmarks));
-  return savedIntoAccount;
+  return bookmarkStorageType == BookmarkStorageType::kAccount;
 }
 
 NSString* messageForAddingBookmarksInFolder(
@@ -241,9 +232,8 @@ NSString* messageForAddingBookmarksInFolder(
     }
   }
 
-  // The user is signed in and bookmark sync is on (either account bookmarks or
-  // the legacy sync-the-feature). It is still possible that the folder saving
-  // into is a local-only folder.
+  // The user is signed in and account bookmarks are on. It is still possible
+  // that the folder saving into is a local-only folder.
   if (model->IsLocalOnlyNode(*folder)) {
     std::u16string title = base::SysNSStringToUTF16(folderTitle);
     std::u16string pattern = l10n_util::GetStringUTF16(

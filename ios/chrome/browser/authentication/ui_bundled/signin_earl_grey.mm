@@ -95,12 +95,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 }
 
-- (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity {
-  [SigninEarlGreyAppInterface signinAndEnableLegacySyncFeature:identity];
-  [self verifyPrimaryAccountWithEmail:identity.userEmail
-                              consent:signin::ConsentLevel::kSync];
-}
-
 - (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface
       signInWithoutHistorySyncWithFakeIdentity:identity];

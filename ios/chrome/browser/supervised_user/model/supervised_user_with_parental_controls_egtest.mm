@@ -922,24 +922,6 @@ static const char* kInterstitialDetails = "Details";
 
 #pragma mark - Clear Content Behaviour
 
-// Tests that a user in the legacy "syncing" state remains signed in after
-// clearing the browsing data (Cookies and BrowsingHistory).
-// TODO(crbug.com/40066949): Delete this test after the syncing state is gone.
-- (void)testSupervisedUserWithLegacySyncStaysSignedInAfterClearingBrowsingData {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity
-                 withCapabilities:@{
-                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
-                 }];
-  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-
-  [self clearBrowsingData];
-
-  // The user should be still signed in.
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-}
-
 // Tests that a signed in user remains signed in after clearing the browsing
 // data (Cookies and BrowsingHistory).
 - (void)testSupervisedUserStaysSignedInAfterClearingBrowsingData {

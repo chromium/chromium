@@ -49,16 +49,6 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace {
-
-// Killswitch, can be removed around December 2023. If enabled,
-// IsAuthenticated() will only return true for Sync-consented accounts.
-BASE_FEATURE(kIosAutocompleteProviderRequireSync,
-             "IosAutocompleteProviderRequireSync",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace
-
 AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
     ProfileIOS* profile)
     : profile_(profile),
@@ -257,11 +247,8 @@ bool AutocompleteProviderClientImpl::IsUrlDataCollectionActive() const {
 bool AutocompleteProviderClientImpl::IsAuthenticated() const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  signin::ConsentLevel level =
-      base::FeatureList::IsEnabled(kIosAutocompleteProviderRequireSync)
-          ? signin::ConsentLevel::kSync
-          : signin::ConsentLevel::kSignin;
-  return identity_manager && identity_manager->HasPrimaryAccount(level);
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 bool AutocompleteProviderClientImpl::IsSyncActive() const {
