@@ -497,4 +497,8 @@ struct WebPreferences {
   // browser controls shown ratio. This value is used in web settings only
   // when feature DynamicSafeAreaInsets is enabled.
   bool dynamic_safe_area_insets_enabled = false;
+
+  // Whether PaymentRequest is enabled. Controlled by WebView settings on
+  // WebView and by `kWebPayments` feature flag everywhere.
+  bool payment_request_enabled = false;
 };

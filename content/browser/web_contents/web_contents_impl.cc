@@ -3622,6 +3622,10 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
   if (command_line.HasSwitch(switches::kHideScrollbars)) {
     prefs.hide_scrollbars = true;
   }
+
+  prefs.payment_request_enabled =
+      base::FeatureList::IsEnabled(features::kWebPayments);
+
   GetContentClient()->browser()->OverrideWebPreferences(
       this, *main_frame->GetSiteInstance(), &prefs);
   return prefs;
