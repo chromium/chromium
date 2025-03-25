@@ -813,7 +813,7 @@
 <translation id="4769095993849849966">ชื่อไฟล์ใหม่</translation>
 <translation id="4769632191812288342">คุณกำลังได้รับการปกป้องแบบมาตรฐาน</translation>
 <translation id="4773122030389014189">แชร์กลุ่มแท็บ "<ph name="GROUP_NAME" />"</translation>
-<translation id="4775646243557794597">ลบ <ph name="TIME_PERIOD" /> แล้ว</translation>
+<translation id="4775646243557794597">ลบข้อมูลการท่องเว็บ "<ph name="TIME_PERIOD" />" เรียบร้อยแล้ว</translation>
 <translation id="4777866634702576038">ลบกลุ่มแท็บใช่ไหม</translation>
 <translation id="4778653490315793244">ยังไม่มีรายการให้แสดง</translation>
 <translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> เป็นเครื่องมือค้นหาเริ่มต้นของคุณ</translation>
@@ -998,7 +998,7 @@
 <translation id="5628604359369369630">ยังไม่อ่าน - อ่านขณะออฟไลน์ได้</translation>
 <translation id="5631483240431073854">จัดการแท็บที่เปิดอยู่</translation>
 <translation id="5641456720590409793">ระบบอาจบันทึก<ph name="BEGIN_LINK1" />ประวัติการค้นหา<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />กิจกรรมรูปแบบอื่น<ph name="END_LINK2" />ในบัญชี Google</translation>
-<translation id="5648166631817621825">7 วันที่แล้ว</translation>
+<translation id="5648166631817621825">7 วันที่ผ่านมา</translation>
 <translation id="5655963694829536461">ค้นหาการดาวน์โหลด</translation>
 <translation id="5657871969392618475">ข้อมูลของคุณได้รับการปกป้องด้วยการล็อกโปรไฟล์</translation>
 <translation id="5659593005791499971">อีเมล</translation>
