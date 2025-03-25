@@ -369,6 +369,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/commerce/price_insights/android:java",
       "//chrome/browser/commerce/price_tracking/android:java",
       "//chrome/browser/commerce/price_tracking/android:price_tracking_bottom_sheet_java",
+      "//chrome/browser/commerce/price_tracking/android:price_tracking_state_java",
       "//chrome/browser/commerce/price_tracking/proto:proto_java",
       "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
       "//chrome/browser/consent_auditor/android:java",
