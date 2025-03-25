@@ -74,7 +74,7 @@ export class ExperimentElement extends CrLitElement {
     };
   }
 
-  protected feature_: Feature = {
+  protected accessor feature_: Feature = {
     internal_name: '',
     name: '',
     description: '',
@@ -84,21 +84,21 @@ export class ExperimentElement extends CrLitElement {
   };
 
   // Whether the controls to change the experiment state should be hidden.
-  unsupported: boolean = false;
+  accessor unsupported: boolean = false;
 
   // Whether the currently selected value is the default value.
-  protected isDefault_: boolean = false;
+  protected accessor isDefault_: boolean = false;
 
   // Whether the description text is expanded. Only has an effect on narrow
   // widths (max-width: 480px).
-  protected expanded_: boolean = false;
+  protected accessor expanded_: boolean = false;
 
   // Whether search hits are currently displayed. When true, some DOM nodes are
   // replaced with cloned nodes whose textContent is not rendered by Lit, so
   // that the highlight algorithm can freely modify them. Lit does not play
   // nicely with manual DOM modifications and throws internal errors in
   // subsequent renders.
-  protected showingSearchHit_: boolean = false;
+  protected accessor showingSearchHit_: boolean = false;
 
   getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
       HTMLElementTagNameMap[K];

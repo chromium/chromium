@@ -28,7 +28,7 @@ export class SubscriptionListElement extends CrLitElement {
     };
   }
 
-  protected subscriptions_: Subscription[] = [];
+  protected accessor subscriptions_: Subscription[] = [];
 
   private commerceInternalsApi_: CommerceInternalsApiProxy =
       CommerceInternalsApiProxy.getInstance();

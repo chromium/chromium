@@ -36,9 +36,9 @@ export class EligibilityListElement extends CrLitElement {
     };
   }
 
-  protected country_: string = '';
-  protected details_: EligibilityDetail[] = [];
-  protected locale_: string = '';
+  protected accessor country_: string = '';
+  protected accessor details_: EligibilityDetail[] = [];
+  protected accessor locale_: string = '';
 
   private commerceInternalsApi_: CommerceInternalsApiProxy =
       CommerceInternalsApiProxy.getInstance();

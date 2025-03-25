@@ -49,8 +49,8 @@ export class TraceReportAppElement extends CrLitElement {
       path: 'scenarios',
     },
   ];
-  protected selected_: number = 0;
-  protected tabNames_: string[] = this.tabs.map(tab => tab.name);
+  protected accessor selected_: number = 0;
+  protected accessor tabNames_: string[] = this.tabs.map(tab => tab.name);
 
   override firstUpdated() {
     const router = CrRouter.getInstance();

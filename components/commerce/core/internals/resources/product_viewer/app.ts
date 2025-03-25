@@ -35,7 +35,7 @@ export class ProductViewerAppElement extends CrLitElement {
     };
   }
 
-  protected product_: ProductInfo|null = null;
+  protected accessor product_: ProductInfo|null = null;
 
   private commerceInternalsApi_: CommerceInternalsApiProxy =
       CommerceInternalsApiProxy.getInstance();

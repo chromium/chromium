@@ -67,8 +67,8 @@ export class TraceReportListElement extends CrLitElement {
 
   private traceReportProxy_: TraceReportBrowserProxy =
       TraceReportBrowserProxy.getInstance();
-  protected traces_: ClientTraceReport[] = [];
-  protected isLoading_: boolean = false;
+  protected accessor traces_: ClientTraceReport[] = [];
+  protected accessor isLoading_: boolean = false;
   protected notification_?: Readonly<Notification>;
 
   override connectedCallback(): void {
