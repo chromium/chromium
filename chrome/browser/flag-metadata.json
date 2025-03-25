@@ -4565,6 +4565,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "fedcm-alternative-identifiers",
+    "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "fedcm-authz",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 137

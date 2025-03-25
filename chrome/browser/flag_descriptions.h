@@ -1115,6 +1115,9 @@ extern const char kExtensionsOnChromeUrlsDescription[];
 extern const char kFractionalScrollOffsetsName[];
 extern const char kFractionalScrollOffsetsDescription[];
 
+extern const char kFedCmAlternativeIdentifiersName[];
+extern const char kFedCmAlternativeIdentifiersDescription[];
+
 extern const char kFedCmAuthzName[];
 extern const char kFedCmAuthzDescription[];
 

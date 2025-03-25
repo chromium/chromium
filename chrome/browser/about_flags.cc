@@ -8985,6 +8985,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(optimization_guide::features::kPushNotifications)},
 #endif
 
+    {"fedcm-alternative-identifiers",
+     flag_descriptions::kFedCmAlternativeIdentifiersName,
+     flag_descriptions::kFedCmAlternativeIdentifiersDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmAlternativeIdentifiers)},
+
     {"fedcm-authz", flag_descriptions::kFedCmAuthzName,
      flag_descriptions::kFedCmAuthzDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
