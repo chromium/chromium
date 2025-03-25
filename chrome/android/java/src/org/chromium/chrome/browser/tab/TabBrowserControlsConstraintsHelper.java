@@ -178,6 +178,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     public void destroy() {
         if (mVisibilityDelegate != null) {
             mVisibilityDelegate.removeObserver(mConstraintsChangedCallback);
+            mVisibilityDelegate.destroy();
             mVisibilityDelegate = null;
         }
 
@@ -192,6 +193,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     private void updateVisibilityDelegate() {
         if (mVisibilityDelegate != null) {
             mVisibilityDelegate.removeObserver(mConstraintsChangedCallback);
+            mVisibilityDelegate.destroy();
         }
         mVisibilityDelegate =
                 mTab.getDelegateFactory().createBrowserControlsVisibilityDelegate(mTab);
