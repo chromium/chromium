@@ -2131,6 +2131,7 @@ if (!is_android) {
       "//chrome/browser/data_saver",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/enterprise/incognito",
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//chrome/browser/error_reporting:test_support",
       "//chrome/browser/favicon",
@@ -2721,7 +2722,6 @@ if (!is_android) {
         "//chrome/browser/chromeos:browser_tests",
         "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/chromeos/arc",
-        "//chrome/browser/chromeos/enterprise",
         "//chrome/browser/chromeos/enterprise/cloud_storage",
         "//chrome/browser/chromeos/network",
         "//chrome/browser/chromeos/platform_keys",
@@ -2953,6 +2953,7 @@ if (!is_android) {
       "../browser/engagement/site_engagement_helper_browsertest.cc",
       "../browser/enterprise/browser_management/management_service_browsertest.cc",
       "../browser/enterprise/connectors/reporting/crash_reporting_context_browsertest.cc",
+      "../browser/enterprise/incognito/incognito_navigation_throttle_browsertest.cc",
       "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
       "../browser/enterprise/watermark/watermark_browsertest.cc",
       "../browser/error_reporting/crash_client_upload_info_browsertest.cc",
@@ -3820,7 +3821,6 @@ if (!is_android) {
       ]
       sources += [
         "../browser/browser_process_platform_part_chromeos_browsertest.cc",
-        "../browser/chromeos/enterprise/incognito_navigation_throttle_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_cros_browsertest.cc",
         "../browser/net/network_annotation_monitor_browsertest.cc",
