@@ -35,6 +35,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
       base::WeakPtr<PlusAddressCreationController> controller,
       content::WebContents* web_contents,
       const std::string& primary_email_address,
+      const std::u16string& domain,
       bool show_notice);
   PlusAddressCreationDialogDelegate(const PlusAddressCreationDialogDelegate&) =
       delete;
