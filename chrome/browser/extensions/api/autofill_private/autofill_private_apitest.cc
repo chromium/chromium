@@ -392,10 +392,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, MigrateCreditCards) {
-  EXPECT_TRUE(RunAutofillSubtest("migrateCreditCards")) << message_;
-}
-
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddVirtualCard) {
   autofill::TestPersonalDataManager& personal_data_manager =
       autofill_client()->GetPersonalDataManager();

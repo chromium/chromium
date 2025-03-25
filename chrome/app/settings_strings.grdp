@@ -482,15 +482,6 @@
   <message name="IDS_SETTINGS_ADD_CREDIT_CARD_TITLE" desc="The title for the dialog that's shown when entering the information for a new card. This can be either credit, debit, or prepaid card.">
     Add card
   </message>
-  <message name="IDS_SETTINGS_MIGRATABLE_CARDS_LABEL" desc="Label for the field to migrate the locally cached credit card to Google Payments. Clicking this will upload migratable credit cards to Google Payments.">
-    Save cards in your Google Account
-  </message>
-  <message name="IDS_SETTINGS_SINGLE_MIGRATABLE_CARD_INFO" desc="Display text under the save cards to Google Pay label. This text indicates one of local cards can only be used on this device.">
-    Right now, you have one card that can only be used on this device
-  </message>
-  <message name="IDS_SETTINGS_MULTIPLE_MIGRATABLE_CARDS_INFO" desc="Display text under the save cards to Google Pay label. This text indicates user has multiple migratable cards on this device.">
-    Right now, you have some cards that can only be used on this device
-  </message>
   <message name="IDS_SETTINGS_REMOTE_PAYMENT_METHODS_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in chrome://settings/payments that opens the payment methods settings on https://pay.google.com. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
     Your payment methods in Google Pay
   </message>

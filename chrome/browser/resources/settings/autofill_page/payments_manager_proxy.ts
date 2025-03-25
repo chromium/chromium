@@ -49,11 +49,6 @@ export interface PaymentsManagerProxy {
   saveIban(iban: chrome.autofillPrivate.IbanEntry): void;
 
   /**
-   * Migrate the local credit cards.
-   */
-  migrateCreditCards(): void;
-
-  /**
    * Logs that the server cards edit link was clicked.
    */
   logServerCardLinkClicked(): void;
@@ -152,10 +147,6 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   removeIban(guid: string) {
     chrome.autofillPrivate.removePaymentsEntity(guid);
-  }
-
-  migrateCreditCards() {
-    chrome.autofillPrivate.migrateCreditCards();
   }
 
   logServerCardLinkClicked() {
