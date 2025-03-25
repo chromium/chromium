@@ -22570,6 +22570,24 @@
             ]
         }
     ],
+    "ShopCardIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250321",
+                    "params": {
+                        "ShopCardVariant": "arm_3"
+                    },
+                    "enable_features": [
+                        "ShopCard"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShortCircuitUnfocusAnimation": [
         {
             "platforms": [
