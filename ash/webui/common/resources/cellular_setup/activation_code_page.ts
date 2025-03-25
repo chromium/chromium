@@ -115,7 +115,7 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
        * A UiElement is passed between html and JS for
        * certain UI elements to determine their state.
        */
-      UiElement: {
+      uiElementEnum_: {
         type: Object,
         value: UiElement,
       },
