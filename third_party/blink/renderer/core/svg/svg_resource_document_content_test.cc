@@ -103,6 +103,47 @@ TEST_F(SVGResourceDocumentContentSimTest, LoadCompleteAfterDispose) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
+TEST_F(SVGResourceDocumentContentSimTest, AsyncLoadCompleteCallbackRace) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  SimSubresourceRequest svg_resource("https://example.com/resource.svg#root",
+                                     "application/xml");
+  // Write the full page resource, but don't signal it as being complete. This
+  // is to avoid flushing layout changes before the external resource has
+  // loaded.
+  main_resource.Write(
+      "<!doctype html><svg><use href='resource.svg#root'/></svg>");
+
+  svg_resource.Start();
+  svg_resource.Complete(R"SVG(
+    <svg id="root" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" fill="url(#p)"/>
+      <defs>
+        <pattern id="p" width="100" height="100">
+          <use href="#i"/>
+        </pattern>
+        <image id="i" href="data:image/gif;base64,R0lGODdhCQAJAKEAAO6C7v8A/6Ag8AAAACwAAAAACQAJAAACFISPaWLhLhh4UNIQG81zswiGIlgAADs="/>
+      </defs>
+    </svg>)SVG");
+
+  // Flush tasks on the "internal loading" task queue. IsolatedSVGDocumentHost
+  // will post/run the async-loading-complete callback on this task queue.
+  base::RunLoop run_loop;
+  GetDocument()
+      .GetTaskRunner(TaskType::kInternalLoading)
+      ->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Update layout and paint. This will rebuild the instance tree for the
+  // <use>. The rebuilding should not succeed (find the referenced target)
+  // because the external resource is not considered fully loaded yet. If it
+  // succeeds we may paint with a dirty tree.
+  Compositor().BeginFrame();
+
+  main_resource.Complete();
+}
+
 class SVGResourceDocumentContentTest : public PageTestBase {
  public:
   SVGResourceDocumentContentTest()
