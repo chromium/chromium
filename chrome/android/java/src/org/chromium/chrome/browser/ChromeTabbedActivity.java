@@ -744,7 +744,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                             mTabModelSelector
                                     .getTabGroupModelFilterProvider()
                                     .getTabGroupModelFilter(false));
-            mHistoricalTabModelObserver.addSecodaryTabModelSupplier(
+            mHistoricalTabModelObserver.addSecondaryTabModelSupplier(
                     ArchivedTabModelOrchestrator.getForProfile(profile)::getTabModel);
 
             // Defer creation of this helper so it triggers after TabGroupModelFilter observers.

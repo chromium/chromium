@@ -75,12 +75,12 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     }
 
     @Override
-    public void addSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+    public void addSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
         mSecondaryTabModelSuppliers.add(tabModelSupplier);
     }
 
     @Override
-    public void removeSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+    public void removeSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
         mSecondaryTabModelSuppliers.remove(tabModelSupplier);
     }
 
