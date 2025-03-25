@@ -1466,8 +1466,9 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessCurrentSlice() {
   } while (0)
 
 void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
-  const uint8_t* ptr = decoder_buffer.data();
-  const size_t size = decoder_buffer.size();
+  auto decoder_buffer_span = base::span(decoder_buffer);
+  const uint8_t* ptr = decoder_buffer_span.data();
+  const size_t size = decoder_buffer_span.size();
   const DecryptConfig* decrypt_config = decoder_buffer.decrypt_config();
 
   DCHECK(ptr);

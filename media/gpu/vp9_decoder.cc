@@ -119,8 +119,9 @@ VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
 VP9Decoder::~VP9Decoder() = default;
 
 void VP9Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
-  const uint8_t* ptr = decoder_buffer.data();
-  const size_t size = decoder_buffer.size();
+  auto decoder_buffer_span = base::span(decoder_buffer);
+  const uint8_t* ptr = decoder_buffer_span.data();
+  const size_t size = decoder_buffer_span.size();
   const DecryptConfig* decrypt_config = decoder_buffer.decrypt_config();
 
   DCHECK(ptr);
