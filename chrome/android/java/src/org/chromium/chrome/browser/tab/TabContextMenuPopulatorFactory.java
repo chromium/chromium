@@ -45,7 +45,6 @@ class TabContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
             Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
         return new TabContextMenuPopulator(
                 mPopulatorFactory.createContextMenuPopulator(context, params, nativeDelegate),
-                params,
                 mTab);
     }
 }

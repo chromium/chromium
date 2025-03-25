@@ -40,7 +40,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -108,7 +107,6 @@ public class NewTabAnimationLayoutUnitTest {
     private NewTabAnimationLayout mNewTabAnimationLayout;
     private FrameLayout mContentContainer;
     private FrameLayout mAnimationHostView;
-    private UserDataHost mUserDataHost;
 
     @Before
     public void setUp() {
@@ -143,8 +141,6 @@ public class NewTabAnimationLayoutUnitTest {
         when(mTabModel.getTabById(CURRENT_TAB_ID)).thenReturn(mCurrentTab);
         when(mTabModel.getTabById(NEW_TAB_ID)).thenReturn(mNewTab);
         when(mCurrentTab.getId()).thenReturn(CURRENT_TAB_ID);
-        mUserDataHost = new UserDataHost();
-        when(mCurrentTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mNewTab.getId()).thenReturn(NEW_TAB_ID);
         when(mCompositorViewHolderSupplier.get()).thenReturn(mCompositorViewHolder);
         when(mLayoutTab.isInitFromHostNeeded()).thenReturn(true);
