@@ -154,7 +154,7 @@ class NET_EXPORT_PRIVATE EntryImpl
 
   // Set the access times for this entry. This method provides support for
   // the upgrade tool.
-  void SetTimes(base::Time last_used, base::Time last_modified);
+  void SetTimes(base::Time last_used);
 
   // Logs a begin event and enables logging for the EntryImpl.  Will also cause
   // an end event to be logged on destruction.  The EntryImpl must have its key
@@ -172,7 +172,6 @@ class NET_EXPORT_PRIVATE EntryImpl
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
-  base::Time GetLastModified() const override;
   int32_t GetDataSize(int index) const override;
   int ReadData(int index,
                int offset,
