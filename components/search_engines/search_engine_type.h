@@ -13,6 +13,7 @@
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.search_engines
+// LINT.IfChange(SearchEngineType)
 enum SearchEngineType {
   // Prepopulated engines.
   SEARCH_ENGINE_UNKNOWN = -1,
@@ -97,6 +98,7 @@ enum SearchEngineType {
 
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:OmniboxSearchEngineType)
 
 // Enum to record the type of search engine a user used in keyword mode. This
 // should be kept aligned with the `OmniboxBuiltinEngineType` enum in enums.xml.
