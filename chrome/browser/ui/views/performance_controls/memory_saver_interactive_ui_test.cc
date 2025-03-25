@@ -288,6 +288,8 @@ class MemorySaverChipInteractiveTest
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
+    CHECK_EQ(IsPageActionMigrationEnabled(),
+             GetParam().page_actions_migration_enabled);
   }
 
   ~MemorySaverChipInteractiveTest() override = default;
