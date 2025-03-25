@@ -2814,8 +2814,15 @@ Called by update_net_trust_anchors.py.-->
 <enum name="StorageAccessNetRequestKind">
   <int value="0" label="Same-origin request with storage access override"/>
   <int value="1"
-      label="Cross-origin, same-site request with storage access override"/>
+      label="Deprecated: Cross-origin, same-site request with storage access
+             override"/>
   <int value="2" label="Cross-site request with storage access override"/>
+  <int value="3"
+      label="Cross-origin, same-site request with storage access override
+             with credentials mode == 'include'"/>
+  <int value="4"
+      label="Cross-origin, same-site request with storage access override
+             with credentials mode != 'include'"/>
 </enum>
 
 <enum name="StorageAccessRedirectKind">
