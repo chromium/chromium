@@ -1922,6 +1922,51 @@ TEST_F(MessagingBackendServiceImplTest,
   task_environment_.FastForwardBy(base::Seconds(10));
 }
 
+TEST_F(MessagingBackendServiceImplTest,
+       TestUnshareDoesNotResultInNotifications) {
+  CreateAndInitializeService();
+  SetupInstantMessageDelegate();
+
+  // Set up a collaboration as owner.
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@foo.com", signin::ConsentLevel::kSync);
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  data_sharing::GroupData group_data;
+  group_data.group_token.group_id = collaboration_group_id;
+  data_sharing::GroupMember member1;
+  member1.gaia_id = account_info.gaia;
+  member1.display_name = account_info.full_name;
+  member1.given_name = account_info.given_name;
+  member1.role = data_sharing::MemberRole::kOwner;
+  group_data.members.emplace_back(member1);
+  EXPECT_CALL(*mock_data_sharing_service_,
+              GetPossiblyRemovedGroup(Eq(collaboration_group_id)))
+      .WillRepeatedly(Return(group_data));
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
+  // Save the last invocation of calls to the InstantMessageDelegate.
+  EXPECT_CALL(*mock_instant_message_delegate_, DisplayInstantaneousMessage)
+      .Times(0);
+  EXPECT_CALL(mock_persistent_message_observer_, DisplayPersistentMessage)
+      .Times(0);
+  EXPECT_FALSE(HasLastMessageFromDB());
+
+  // Removing the tab group should inform the delegate.
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group,
+                                           tab_groups::TriggerSource::REMOTE);
+  task_environment_.FastForwardBy(base::Seconds(10));
+}
+
 TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
   CreateAndInitializeService();
   SetupInstantMessageDelegate();

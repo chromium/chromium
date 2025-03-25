@@ -427,6 +427,17 @@ bool IsMemberSelfOrOwner(const signin::IdentityManager* identity_manager,
          IsMemberOwner(group_data, member_gaia_id);
 }
 
+bool IsCurrentUserOwner(const signin::IdentityManager* identity_manager,
+                        const data_sharing::GroupData& group_data) {
+  CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.IsEmpty()) {
+    return false;
+  }
+
+  return IsMemberOwner(group_data, account.gaia);
+}
+
 }  // namespace
 
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
@@ -713,10 +724,24 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
   // If the user themselves are trying to leave or delete the group, they don't
   // need to be notified of anything. Note that although real event source is
   // local, it appears to be a remote event since the leave / delete attempt and
-  // tab group removal
-  //  is processed only after a commit happens to the server side.
+  // tab group removal is processed only after a commit happens to the server
+  // side.
   if (data_sharing_service_->IsLeavingOrDeletingGroup(
           *collaboration_group_id)) {
+    return;
+  }
+
+  // If the current user is the owner of the group, they might be unsharing the
+  // group. Ignore the message.
+  std::optional<data_sharing::GroupData> group_data =
+      data_sharing_service_->ReadGroup(*collaboration_group_id);
+  if (!group_data) {
+    group_data =
+        data_sharing_service_->GetPossiblyRemovedGroup(*collaboration_group_id);
+  }
+
+  if (group_data.has_value() &&
+      IsCurrentUserOwner(identity_manager_, *group_data)) {
     return;
   }
 
