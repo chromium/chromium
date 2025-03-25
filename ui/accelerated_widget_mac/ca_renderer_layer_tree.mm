@@ -271,8 +271,9 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
     IOSurfaceLock(io_surface.get(), /*options=*/0, /*seed=*/nullptr);
     char* base_address =
         reinterpret_cast<char*>(IOSurfaceGetBaseAddress(io_surface.get()));
-    SkImageInfo info = SkImageInfo::Make(size.width(), size.height(),
-                                         color_type, kPremul_SkAlphaType);
+    SkImageInfo info =
+        SkImageInfo::Make(size.width(), size.height(), color_type,
+                          kPremul_SkAlphaType, color_space.ToSkColorSpace());
     auto canvas = SkCanvas::MakeRasterDirect(info, base_address, bytes_per_row);
     DCHECK(canvas);
     canvas->clear(color);
