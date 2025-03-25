@@ -2368,8 +2368,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       password_manager::ManagePasswordsReferrer::kChromeMenuItem);
   [self dismissMenu];
   [self.settingsHandler
-      showSavedPasswordsSettingsFromViewController:self.baseViewController
-                                  showCancelButton:NO];
+      showSavedPasswordsSettingsFromViewController:self.baseViewController];
 }
 
 // Dismisses the menu and opens price notifications list.
