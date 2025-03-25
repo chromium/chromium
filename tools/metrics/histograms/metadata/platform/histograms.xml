@@ -691,7 +691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DeviceManagement.InstallAttributesStatus"
-    enum="InstallAttributesStatus" expires_after="2025-07-20">
+    enum="InstallAttributesStatus" expires_after="2025-09-21">
   <owner>sadmansakib@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>

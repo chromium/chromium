@@ -233,7 +233,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.ClearBrowsingData.OpenMyActivity"
-    enum="ClearBrowsingDataMyActivityNavigation" expires_after="2025-07-20">
+    enum="ClearBrowsingDataMyActivityNavigation" expires_after="2025-09-21">
   <owner>andzaytsev@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
