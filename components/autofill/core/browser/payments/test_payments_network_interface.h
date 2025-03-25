@@ -67,13 +67,6 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
                               const UploadCardResponseDetails&)> callback)
       override;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void MigrateCards(
-      const MigrationRequestDetails& details,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      MigrateCardsCallback callback) override;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
   void SelectChallengeOption(
       const SelectChallengeOptionRequestDetails& details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
@@ -107,10 +100,6 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
 
   void SetUploadCardResponseDetailsForUploadCard(
       const UploadCardResponseDetails& upload_card_response_details);
-
-  void SetSaveResultForCardsMigration(
-      std::unique_ptr<std::unordered_map<std::string, std::string>>
-          save_result);
 
   void SetSupportedBINRanges(std::vector<std::pair<int, int>> bin_ranges);
 
@@ -187,7 +176,6 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
   int billable_service_number_;
   int64_t billing_customer_number_;
   UploadCardSource upload_card_source_;
-  std::unique_ptr<std::unordered_map<std::string, std::string>> save_result_;
   bool use_invalid_legal_message_ = false;
   bool use_legal_message_with_multiple_lines_ = false;
   std::unique_ptr<base::Value::Dict> LegalMessage();

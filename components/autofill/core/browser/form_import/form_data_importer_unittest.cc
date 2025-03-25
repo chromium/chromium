@@ -3782,11 +3782,6 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_EmptyCreditCard) {
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kLocalCard);
 
-  // We need a sync service so that
-  // LocalCardMigrationManager::ShouldOfferLocalCardMigration() does not crash.
-  syncer::TestSyncService sync_service;
-  personal_data_manager().SetSyncServiceForTest(&sync_service);
-
   EXPECT_FALSE(
       test_api(form_data_importer())
           .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
@@ -3809,12 +3804,6 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kServerCard);
   form_data_importer().SetFetchedCardInstrumentId(2222);
-
-  // We need a sync service so that
-  // LocalCardMigrationManager::ShouldOfferLocalCardMigration() does not
-  // crash.
-  syncer::TestSyncService sync_service;
-  personal_data_manager().SetSyncServiceForTest(&sync_service);
 
   EXPECT_CALL(virtual_card_enrollment_manager(),
               InitVirtualCardEnroll(_, VirtualCardEnrollmentSource::kDownstream,

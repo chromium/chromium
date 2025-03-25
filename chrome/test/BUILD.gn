@@ -10766,7 +10766,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/thumbnails/thumbnail_tab_helper_interactive_uitest.cc",
       "../browser/ui/views/autofill/payments/bnpl_tos_view_desktop_interactive_uitest.cc",
       "../browser/ui/views/autofill/payments/iban_bubble_view_uitest.cc",
-      "../browser/ui/views/autofill/payments/local_card_migration_uitest.cc",
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
       "../browser/ui/views/extensions/dialogs/mv2_deprecation_keep_dialog_interactive_uitest.cc",

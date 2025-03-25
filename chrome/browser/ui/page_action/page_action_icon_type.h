@@ -18,7 +18,7 @@ enum class PageActionIconType {
   kFind = 4,
   kMemorySaver = 5,
   kIntentPicker = 6,
-  kLocalCardMigration = 7,
+  // DEPRECATED: kLocalCardMigration = 7,
   kManagePasswords = 8,
   kPaymentsOfferNotification = 9,
   kPriceTracking = 10,
@@ -55,7 +55,6 @@ static_assert(static_cast<int>(PageActionIconType::kFileSystemAccess) == 3);
 static_assert(static_cast<int>(PageActionIconType::kFind) == 4);
 static_assert(static_cast<int>(PageActionIconType::kMemorySaver) == 5);
 static_assert(static_cast<int>(PageActionIconType::kIntentPicker) == 6);
-static_assert(static_cast<int>(PageActionIconType::kLocalCardMigration) == 7);
 static_assert(static_cast<int>(PageActionIconType::kManagePasswords) == 8);
 static_assert(
     static_cast<int>(PageActionIconType::kPaymentsOfferNotification) == 9);

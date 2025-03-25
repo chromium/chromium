@@ -911,13 +911,7 @@ static_library("browser") {
     sources += [
       "crowdsourcing/server_prediction_overrides.cc",
       "crowdsourcing/server_prediction_overrides.h",
-      "payments/local_card_migration_manager.cc",
-      "payments/local_card_migration_manager.h",
-      "payments/payments_requests/migrate_cards_request.cc",
-      "payments/payments_requests/migrate_cards_request.h",
       "strike_databases/payments/local_card_migration_strike_database.h",
-      "ui/payments/local_card_migration_bubble_controller.h",
-      "ui/payments/local_card_migration_dialog_controller.h",
     ]
     deps += [
       "//ui/native_theme",
@@ -1179,13 +1173,6 @@ static_library("test_support") {
     deps += [
       "//components/webauthn/core/browser",
       "//third_party/blink/public/common",
-    ]
-  }
-
-  if (!is_ios && !is_android) {
-    sources += [
-      "payments/test_local_card_migration_manager.cc",
-      "payments/test_local_card_migration_manager.h",
     ]
   }
 }
@@ -1492,11 +1479,7 @@ source_set("unit_tests") {
   }
 
   if (!is_ios && !is_android) {
-    sources += [
-      "crowdsourcing/server_prediction_overrides_unittest.cc",
-      "payments/local_card_migration_manager_unittest.cc",
-      "payments/payments_requests/migrate_cards_request_unittest.cc",
-    ]
+    sources += [ "crowdsourcing/server_prediction_overrides_unittest.cc" ]
   }
 
   if (build_with_tflite_lib) {

@@ -32,7 +32,6 @@ class AddressProfileSaveManager;
 class AutofillClient;
 class CreditCardSaveManager;
 class IbanSaveManager;
-class LocalCardMigrationManager;
 class PaymentsDataManager;
 enum class NonInteractivePaymentMethodType;
 
@@ -98,12 +97,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // Cache the last four of the fetched virtual card so we don't offer saving
   // them.
   void CacheFetchedVirtualCard(const std::u16string& last_four);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  LocalCardMigrationManager* local_card_migration_manager() {
-    return local_card_migration_manager_.get();
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   CreditCardSaveManager* GetCreditCardSaveManager() {
     return credit_card_save_manager_.get();
@@ -332,11 +325,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // Responsible for managing IBAN save flows. It is guaranteed to be non-null.
   std::unique_ptr<IbanSaveManager> iban_save_manager_;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Responsible for migrating locally saved credit cards to Google Pay.
-  std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager_;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
 
@@ -344,9 +332,9 @@ class FormDataImporter : public AddressDataManager::Observer,
       address_data_manager_observation_{this};
 
   // Represents the type of the credit card import candidate from the submitted
-  // form. It will be used to determine whether to offer upload save or card
-  // migration. Will be passed to `credit_card_save_manager_` for metrics. If no
-  // credit card was found in the form, the type will be `kNoCard`.
+  // form. It will be used to determine whether to offer upload save or not.
+  // Will be passed to `credit_card_save_manager_` for metrics. If no credit
+  // card was found in the form, the type will be `kNoCard`.
   CreditCardImportType credit_card_import_type_ = CreditCardImportType::kNoCard;
 
   // Used to store the last four digits of the fetched virtual cards.
