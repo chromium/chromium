@@ -31,7 +31,20 @@ namespace scheduler {
 class PLATFORM_EXPORT WidgetScheduler
     : public ThreadSafeRefCounted<WidgetScheduler> {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Controls whether or not BeginMainFrameNotExpected messages are sent from
+    // the compositor to the `WidgetScheduler`.
+    virtual void RequestBeginMainFrameNotExpected(bool new_state) = 0;
+  };
+
   virtual ~WidgetScheduler() = default;
+
+  // Must be called prior to `Shutdown` on the main thread. The associated
+  // `Delegate` must be kept alive until this is called.
+  virtual void WillShutdown() = 0;
 
   // Shutdown the WidgetScheduler on the main thread.
   virtual void Shutdown() = 0;
