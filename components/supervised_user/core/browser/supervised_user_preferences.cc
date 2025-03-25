@@ -106,9 +106,11 @@ void ClearCustodianPrefs(PrefService& pref_service,
   pref_service.ClearPref(custodian.profile_image_url);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void SetIsChildAccountStatusKnown(PrefService& pref_service) {
   pref_service.SetBoolean(prefs::kChildAccountStatusKnown, true);
 }
+#endif
 
 }  // namespace
 
@@ -157,19 +159,25 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void EnableParentalControls(PrefService& pref_service) {
   pref_service.SetString(prefs::kSupervisedUserId,
                          supervised_user::kChildAccountSUID);
+#if BUILDFLAG(IS_CHROMEOS)
   SetIsChildAccountStatusKnown(pref_service);
+#endif
 }
 
 void DisableParentalControls(PrefService& pref_service) {
   pref_service.ClearPref(prefs::kSupervisedUserId);
   ClearCustodianPrefs(pref_service, first_custodian);
   ClearCustodianPrefs(pref_service, second_custodian);
+#if BUILDFLAG(IS_CHROMEOS)
   SetIsChildAccountStatusKnown(pref_service);
+#endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsChildAccountStatusKnown(const PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kChildAccountStatusKnown);
 }
+#endif
 
 bool IsSafeSitesEnabled(const PrefService& pref_service) {
   return supervised_user::IsSubjectToParentalControls(pref_service) &&

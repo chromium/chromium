@@ -103,7 +103,7 @@ class MockAggregatableReportSender : public AggregatableReportSender {
 
   MOCK_METHOD(void,
               SendReport,
-              (const GURL& url,
+              (GURL url,
                const base::Value& contents,
                std::optional<AggregatableReportRequest::DelayType> delay_type,
                ReportSentCallback callback),

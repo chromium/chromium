@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/profiler/thread_group_profiler.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/task_environment.h"
 #include "base/types/pass_key.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
@@ -124,6 +125,7 @@ void ChromeOSTestLauncherDelegate::OnDoneRunningTests() {}
 int LaunchChromeOSTests(content::TestLauncherDelegate* delegate,
                         int argc,
                         char** argv) {
+  base::test::AllowCheckIsTestForTesting();
   ChromeCrashReporterClient::Create();
   // Setup a working test environment for the network service in case it's used.
   // Only create this object in the utility process, so that its members don't

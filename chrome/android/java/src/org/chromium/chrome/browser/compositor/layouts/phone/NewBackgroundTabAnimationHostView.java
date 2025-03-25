@@ -79,15 +79,16 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
      *
      * @param originX x-coordinate for the start point.
      * @param originY y-coordinate for the start point.
+     * @param statusBarHeight The status bar height (px), if needed for y-offset.
      */
-    /* package */ AnimatorSet getAnimatorSet(float originX, float originY) {
+    /* package */ AnimatorSet getAnimatorSet(float originX, float originY, int statusBarHeight) {
         // TODO(crbug.com/40282469): Implement animation for NTP partial and full scroll version.
         // Also, make animation compatible with bottom toolbar.
-        AnimatorSet backgroundAnimation = new AnimatorSet();
         assert mAnimationType != AnimationType.UNINITIALIZED;
+        AnimatorSet backgroundAnimation = new AnimatorSet();
 
         if (mAnimationType == AnimationType.DEFAULT) {
-            mFakeTabSwitcherButton.getButtonLocation(mTargetLocation, mYOffset);
+            mFakeTabSwitcherButton.getButtonLocation(mTargetLocation, mYOffset + statusBarHeight);
             int endX = mTargetLocation[0] - mLinkIcon.getWidth() / 2;
             int endY = mTargetLocation[1];
 
@@ -107,8 +108,7 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
      * @param tabCount The tab count to display.
      * @param backgroundColor The current color of the toolbar.
      * @param isIncognito true if the current tab is an incognito tab.
-     * @param yOffset y-offset to account for the status bar or status indicator (ex: no internet
-     *     connection).
+     * @param yOffset y-offset to account for the status indicator (ex: no internet connection).
      */
     /* package */ void updateFakeTabSwitcherButton(
             ToggleTabStackButton tabSwitcherButton,

@@ -410,20 +410,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.DATA_SHARING})
-    public void testOpenInvitationModal() {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
-
-        DialogController controller = showTabGridDialogWithTabs();
-
-        assertTrue(controller.isVisible());
-
-        mCoordinator.openInvitationModal("");
-        assertFalse(controller.isVisible());
-    }
-
-    @Test
     @EnableFeatures({
         ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
         ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN

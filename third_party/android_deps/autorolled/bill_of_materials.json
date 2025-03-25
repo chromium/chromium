@@ -210,6 +210,16 @@
         "version": "1.9.0-SNAPSHOT"
     },
     {
+        "name": "runtime-annotation",
+        "group": "androidx.compose.runtime",
+        "version": "1.9.0-SNAPSHOT"
+    },
+    {
+        "name": "runtime-annotation-android",
+        "group": "androidx.compose.runtime",
+        "version": "1.9.0-SNAPSHOT"
+    },
+    {
         "name": "runtime-saveable",
         "group": "androidx.compose.runtime",
         "version": "1.9.0-SNAPSHOT"

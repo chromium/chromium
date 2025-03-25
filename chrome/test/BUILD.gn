@@ -5827,6 +5827,14 @@ if (!is_android) {
   }
 }
 
+if (is_linux) {
+  script_test("run_crossbench_tests") {
+    script = "//third_party/crossbench/cb.py"
+
+    data_deps = [ "//testing:run_perf_test" ]
+  }
+}
+
 # Generate performance_test_suite_${board} targets.
 # These set --board to ${board} instead of deriving it from the target.
 # This is useful for Lacros, where the generic build is deployed to
@@ -7852,6 +7860,7 @@ test("unit_tests") {
       "../browser/ui/webui/metrics_reporter/mock_metrics_reporter.cc",
       "../browser/ui/webui/metrics_reporter/mock_metrics_reporter.h",
       "../browser/ui/webui/new_tab_page/new_tab_page_handler_unittest.cc",
+      "../browser/ui/webui/new_tab_page/untrusted_source_unittest.cc",
       "../browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_page_handler_unittest.cc",
       "../browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle_unittest.cc",
       "../browser/ui/webui/password_manager/promo_cards_handler_unittest.cc",

@@ -98,6 +98,7 @@ enum class Member {
   kUsableVirtual,
   kUnusableVirtual,
   kGooglePasswordManagerPIN,
+  kUnusableGooglePasswordManagerPIN,
   kICloudKeychain,
   kInvalidICloudKeychain,
 };
@@ -160,7 +161,7 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
         member->set_member_type(trusted_vault_pb::SecurityDomainMember::
                                     MEMBER_TYPE_ICLOUD_KEYCHAIN);
         break;
-      case Member::kGooglePasswordManagerPIN:
+      case Member::kGooglePasswordManagerPIN: {
         member->set_member_type(trusted_vault_pb::SecurityDomainMember::
                                     MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN);
         member->mutable_member_metadata()->set_usable_for_retrieval(true);
@@ -170,6 +171,12 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
         gpm_metadata->mutable_expiration_time()->set_seconds(
             kTestGPMExpirySeconds);
         gpm_metadata->set_encrypted_pin_hash(kTestSerializedWrappedPIN);
+        break;
+      }
+      case Member::kUnusableGooglePasswordManagerPIN:
+        member->set_member_type(trusted_vault_pb::SecurityDomainMember::
+                                    MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN);
+        member->mutable_member_metadata()->set_usable_for_retrieval(false);
         break;
     }
   }
@@ -525,7 +532,9 @@ TEST_P(TrustedVaultConnectionImplTest,
           GetTrustedVaultKeysWithVersions(kTrustedVaultKeys,
                                           /*last_key_version=*/1234),
           key_pair->public_key(),
-          GpmPinMetadata(old_public_key, metadata, /*expiry=*/base::Time()),
+          GpmPinMetadata(old_public_key,
+                         UsableRecoveryPinMetadata(metadata,
+                                                   /*expiry=*/base::Time())),
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
 
@@ -1112,8 +1121,9 @@ MATCHER_P2(
   if (!arg.gpm_pin_metadata) {
     return false;
   }
-  return testing::ExplainMatchResult(*arg.gpm_pin_metadata,
-                                     GpmPinMetadata(public_key, wrapped_pin));
+  return testing::ExplainMatchResult(
+      *arg.gpm_pin_metadata,
+      UsableRecoveryPinMetadata(public_key, wrapped_pin));
 }
 
 TEST_P(TrustedVaultConnectionImplTest,
@@ -1150,8 +1160,12 @@ TEST_P(TrustedVaultConnectionImplTest,
   std::string member_public_key_bytes;
   base::HexStringToString(kTestMemberPublicKey, &member_public_key_bytes);
   const GpmPinMetadata gpm_pin_metadata(
-      std::move(member_public_key_bytes), kTestSerializedWrappedPIN,
-      /*expiry=*/base::Time::FromTimeT(kTestGPMExpirySeconds));
+      member_public_key_bytes,
+      UsableRecoveryPinMetadata(
+          kTestSerializedWrappedPIN,
+          /*expiry=*/base::Time::FromTimeT(kTestGPMExpirySeconds)));
+  const GpmPinMetadata unusable_gpm_pin_metadata(
+      std::move(member_public_key_bytes), /*pin_metadata=*/std::nullopt);
   const base::Time lskf_expiry = base::Time::FromTimeT(kTestLSKFExpirySeconds);
   const struct TestCase {
     // responses contains the set of security domain members included in each
@@ -1246,6 +1260,13 @@ TEST_P(TrustedVaultConnectionImplTest,
           State::kRecoverable,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/gpm_pin_metadata,
+          /*expected_lskf_expiries=*/{},
+      },
+      {
+          {{Member::kUnusableGooglePasswordManagerPIN}},
+          State::kIrrecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_gpm_pin_metadata=*/unusable_gpm_pin_metadata,
           /*expected_lskf_expiries=*/{},
       },
       {

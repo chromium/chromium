@@ -14,6 +14,7 @@
 #include "base/android/jni_string.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -189,8 +190,8 @@ std::string CompressAndSaveBitmap(const std::string& dir,
     return std::string();
   }
   unsigned int bytes_written =
-      fwrite(reinterpret_cast<const char*>(data->data()), 1, data->size(),
-             out_file.get());
+      UNSAFE_TODO(fwrite(reinterpret_cast<const char*>(data->data()), 1,
+                         data->size(), out_file.get()));
   out_file.reset();  // Explicitly close before a possible Delete below.
 
   // If there were errors, don't leave a partial file around.

@@ -404,8 +404,6 @@ class FormStructure {
 
   // Sets each field's `html_type` and `html_mode` based on the field's
   // `parsed_autocomplete` member.
-  // Sets `has_author_specified_types_` to `true` iff the `parsed_autocomplete`
-  // is available for at least one field.
   void SetFieldTypesFromAutocompleteAttribute();
 
   // Production code only uses the default parameters.
@@ -483,9 +481,6 @@ class FormStructure {
   // The number of fields that are part of the form signature and that are
   // included in queries to the Autofill server.
   size_t active_field_count_ = 0;
-
-  // True if the form contains at least one password field.
-  bool has_password_field_ = false;
 
   // Indicates whether the client may run the AutofillAI model for this form.
   bool may_run_autofill_ai_model_ = false;

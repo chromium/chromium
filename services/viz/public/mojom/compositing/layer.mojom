@@ -9,6 +9,7 @@ import "cc/mojom/layer_type.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/rrect_f.mojom";
 import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
@@ -179,6 +180,8 @@ struct TransformNode {
   // Actual transformation parameters for this node. See cc::TransformNode.
   gfx.mojom.Transform local;
   gfx.mojom.Point3F origin;
+  gfx.mojom.Vector2dF post_translation;
+  gfx.mojom.Transform to_parent;
   gfx.mojom.PointF scroll_offset;
   gfx.mojom.Vector2dF snap_amount;
 
@@ -283,9 +286,13 @@ struct EffectNode {
   // be a valid index in the same effect tree.
   int32 target_id;
 
-  cc.mojom.ElementId? backdrop_mask_element_id;
-
   FilterOperations backdrop_filters;
+  gfx.mojom.RRectF? backdrop_filter_bounds;
+  float backdrop_filter_quality;
+
+  // The element id corresponding to the mask to apply to the filtered backdrop
+  // image.
+  cc.mojom.ElementId? backdrop_mask_element_id;
 
   // The CopyOutputRequests that have been made for this node.
   array<CopyOutputRequest> copy_output_requests;

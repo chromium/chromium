@@ -4647,6 +4647,8 @@ static_library("ui") {
       "views/tabs/compound_tab_container.h",
       "views/tabs/dragging/drag_session_data.cc",
       "views/tabs/dragging/drag_session_data.h",
+      "views/tabs/dragging/dragging_tabs_session.cc",
+      "views/tabs/dragging/dragging_tabs_session.h",
       "views/tabs/dragging/tab_drag_context.cc",
       "views/tabs/dragging/tab_drag_context.h",
       "views/tabs/dragging/tab_drag_controller.cc",

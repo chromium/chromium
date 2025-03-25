@@ -30,8 +30,9 @@ class FakeOneGoogleBarLoader : public OneGoogleBarLoader {
 
   GURL GetLoadURLForTesting() const override { return GURL(); }
 
-  bool SetAdditionalQueryParams(const std::string& value) override {
-    return false;
+  void SetAdditionalQueryParams(
+      const std::map<std::string, std::string>& params) override {
+    // Do nothing.
   }
 
   size_t GetCallbackCount() const { return callbacks_.size(); }

@@ -125,14 +125,14 @@ TYPED_TEST(ReadStreamTest, Read) {
     EXPECT_TRUE(stream->Read(base::span(buf).first(4u), &bytes_read));
     EXPECT_EQ(4u, bytes_read);
     uint8_t expected[] = { 0, 1, 2, 3, 0, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(expected, buf, sizeof(expected))));
   }
 
   {
     EXPECT_TRUE(stream->Read(base::span(buf).first(9u), &bytes_read));
     EXPECT_EQ(9u, bytes_read);
     uint8_t expected[] = { 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(expected, buf, sizeof(expected))));
   }
 }
 
@@ -181,7 +181,7 @@ TYPED_TEST(ReadStreamTest, SeekSet) {
     EXPECT_TRUE(stream->Read(buf, &bytes_read));
     EXPECT_EQ(5u, bytes_read);
     uint8_t expected[] = { 250, 251, 252, 253, 254, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(expected, buf, sizeof(expected))));
   }
 
   {
@@ -189,7 +189,7 @@ TYPED_TEST(ReadStreamTest, SeekSet) {
     EXPECT_TRUE(stream->Read(base::span(buf).first(3u), &bytes_read));
     EXPECT_EQ(3u, bytes_read);
     uint8_t expected[] = { 5, 6, 7, 253, 254, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(expected, buf, sizeof(expected))));
   }
 }
 
@@ -210,7 +210,7 @@ TYPED_TEST(ReadStreamTest, SeekEnd) {
     EXPECT_TRUE(stream->Read(buf, &bytes_read));
     EXPECT_EQ(4u, bytes_read);
     uint8_t expected[] = { 28, 29, 30, 31, 0, 0, 0 };
-    EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(expected, buf, sizeof(expected))));
   }
 }
 

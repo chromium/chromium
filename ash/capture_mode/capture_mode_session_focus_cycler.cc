@@ -89,7 +89,7 @@ constexpr int kWindowOfInterestInset = 1;
 
 // In addition to the default size of the spoken feedback orange highlight, add
 // this amount when focusing the affordance circle with spoken feedback.
-constexpr float kSpokenFeedbackAffordanceExtraOutset = 12.f;
+constexpr int kSpokenFeedbackAffordanceExtraOutset = 12;
 
 std::vector<raw_ptr<aura::Window, VectorExperimental>>
 GetWindowListIgnoreModalForActiveDesk() {
@@ -674,32 +674,36 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
       CHECK_EQ(ax_virtual_children.size(), 1u);
       ax_virtual_children[0]->AddChildView(std::move(ax_virtual_view));
     }
-
-    if (views::AXVirtualView* affordance_ax_virtual_view =
-            ax_virtual_views_[fine_tune_position]) {
-      // Adjust the bounds and then fire an a11y event.
-      gfx::RectF a11y_rect_in_root;
-      if (fine_tune_position == FineTunePosition::kCenter) {
-        a11y_rect_in_root = gfx::RectF(user_region);
-        a11y_rect_in_root.Outset(kSpokenFeedbackAffordanceExtraOutset);
-      } else {
-        const float rect_size = kSpokenFeedbackAffordanceExtraOutset;
-        const gfx::PointF center_point(
-            capture_mode_util::GetLocationForFineTunePosition(
-                user_region, fine_tune_position));
-        a11y_rect_in_root = gfx::RectF(
-            center_point - gfx::Vector2dF(rect_size / 2.f, rect_size / 2.f),
-            gfx::SizeF(rect_size, rect_size));
-      }
-
-      scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
-          ax_widget_->GetNativeWindow());
-      affordance_ax_virtual_view->SetBounds(a11y_rect_in_root);
-      affordance_ax_virtual_view->NotifyEvent(ax::mojom::Event::kSelection,
-                                              true);
-    }
+    OnFineTunePositionUpdated(/*notify_selection_event=*/true);
 
     return;
+  }
+}
+
+void CaptureModeSessionFocusCycler::OnFineTunePositionUpdated(
+    bool notify_selection_event) {
+  const FineTunePosition fine_tune_position = GetFocusedFineTunePosition();
+  views::AXVirtualView* affordance_ax_virtual_view =
+      ax_virtual_views_[fine_tune_position];
+  if (!affordance_ax_virtual_view) {
+    return;
+  }
+
+  const gfx::Rect user_region =
+      CaptureModeController::Get()->user_capture_region();
+  gfx::Rect a11y_rect_in_root =
+      fine_tune_position == FineTunePosition::kCenter
+          ? user_region
+          : gfx::Rect(capture_mode_util::GetLocationForFineTunePosition(
+                          user_region, fine_tune_position),
+                      gfx::Size());
+  a11y_rect_in_root.Outset(kSpokenFeedbackAffordanceExtraOutset);
+
+  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+      ax_widget_->GetNativeWindow());
+  affordance_ax_virtual_view->SetBounds(gfx::RectF(a11y_rect_in_root));
+  if (notify_selection_event) {
+    affordance_ax_virtual_view->NotifyEvent(ax::mojom::Event::kSelection, true);
   }
 }
 

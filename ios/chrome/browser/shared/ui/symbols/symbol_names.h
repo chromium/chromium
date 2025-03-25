@@ -271,6 +271,7 @@ extern NSString* const kArrowUTurnForwardCircleFillSymbol;
 extern NSString* const kIPhoneAndArrowForwardSymbol;
 extern NSString* const kPersonPlusSymbol;
 extern NSString* const kArrowUpTrashSymbol;
+extern NSString* const kRectangleGroupBubble;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

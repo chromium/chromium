@@ -31,6 +31,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
+#include "base/android/scoped_hardware_buffer_handle.h"
 #endif
 
 namespace viz {
@@ -92,10 +93,20 @@ class TestGpuService : public mojom::GpuService {
     auto& req = allocation_requests_[index];
 
     gfx::GpuMemoryBufferHandle handle;
-    handle.id = req.id;
 
     if (emulate_native_handle) {
+#if BUILDFLAG(IS_OZONE)
       handle.type = gfx::NATIVE_PIXMAP;
+#elif BUILDFLAG(IS_ANDROID)
+      handle = gfx::GpuMemoryBufferHandle(
+          base::android::ScopedHardwareBufferHandle());
+#elif BUILDFLAG(IS_APPLE)
+      handle.type = gfx::IO_SURFACE_BUFFER;
+#elif BUILDFLAG(IS_WIN)
+      handle.type = gfx::DXGI_SHARED_HANDLE;
+#else
+      FAIL() << "gfx::NATIVE_PIXMAP is not supported on this platform!";
+#endif
     } else {
       // In the context of these tests, HostGpuMemoryBufferManager will create
       // shared-memory GMBs from these handles, and creation of those GMBs will
@@ -111,6 +122,7 @@ class TestGpuService : public mojom::GpuService {
       handle.set_region(
           base::UnsafeSharedMemoryRegion::Create(kBufferSizeBytes));
     }
+    handle.id = req.id;
     handle.stride = 64;
 
     DCHECK(req.callback);
@@ -318,7 +330,7 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
 
   // Not all platforms support native configurations (currently only Windows,
   // Mac and some Ozone platforms). Abort the test in those platforms.
-  bool IsNativePixmapConfigSupported() {
+  bool IsNativeHandleSupported() {
     bool native_pixmap_supported = false;
 #if BUILDFLAG(IS_OZONE)
     native_pixmap_supported =
@@ -399,8 +411,9 @@ TEST_F(HostGpuMemoryBufferManagerTest,
 // Tests that if an allocated buffer is received after the gpu service issuing
 // it has died, HGMBManager retries the allocation request properly.
 TEST_F(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
-  if (!IsNativePixmapConfigSupported())
+  if (!IsNativeHandleSupported()) {
     return;
+  }
 
   // Request allocation. No allocation should happen yet.
   gfx::GpuMemoryBufferHandle allocated_handle;

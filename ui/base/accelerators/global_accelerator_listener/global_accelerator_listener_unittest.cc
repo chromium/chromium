@@ -52,7 +52,7 @@ class BaseGlobalAcceleratorListenerForTesting final
 
 class TestObserver final : public GlobalAcceleratorListener::Observer {
  public:
-  virtual ~TestObserver() = default;
+  ~TestObserver() = default;
 
   void OnKeyPressed(const ui::Accelerator& accelerator) override {}
 

@@ -100,7 +100,8 @@ class MostVisitedSites :
       std::unique_ptr<PopularSites> popular_sites,
       std::unique_ptr<CustomLinksManager> custom_links,
       std::unique_ptr<IconCacher> icon_cacher,
-      bool is_default_chrome_app_migrated);
+      bool is_default_chrome_app_migrated,
+      bool is_custom_links_mixable);
 
   MostVisitedSites(const MostVisitedSites&) = delete;
   MostVisitedSites& operator=(const MostVisitedSites&) = delete;
@@ -149,22 +150,32 @@ class MostVisitedSites :
   // will return only custom links. If the Most Visited tiles have not been
   // loaded yet, does nothing. Custom links must be enabled.
   void InitializeCustomLinks();
+
   // Uninitializes custom links and reverts back to regular MV tiles. The
   // current custom links will be deleted. Custom links must be enabled.
   void UninitializeCustomLinks();
+
   // Returns true if custom links has been initialized and not disabled, false
   // otherwise.
   bool IsCustomLinksInitialized();
+
+  // Returns whether custom links should be the only data source.
+  bool IsExclusivelyCustomLinks();
+
   // Enables or disables custom links, but does not (un)initialize them. Called
   // when the user switches between custom links and Most Visited sites on the
   // 1P Desktop NTP.
   void EnableCustomLinks(bool enable);
+
   // Returns whether custom links are enabled.
   bool IsCustomLinksEnabled() const;
+
   // Sets the visibility of the NTP tiles.
   void SetShortcutsVisible(bool visible);
+
   // Returns whether NTP tiles should be shown.
   bool IsShortcutsVisible() const;
+
   // Adds a custom link. If the number of current links is maxed, returns false
   // and does nothing. Will initialize custom links if they have not been
   // initialized yet, unless the action fails. Custom links must be enabled.
@@ -177,16 +188,19 @@ class MostVisitedSites :
   bool UpdateCustomLink(const GURL& url,
                         const GURL& new_url,
                         const std::u16string& new_title);
+
   // Moves the custom link specified by |url| to the index |new_pos|. If |url|
   // does not exist, or |new_pos| is invalid, returns false and does nothing.
   // Will initialize custom links if they have not been initialized yet, unless
   // the action fails. Custom links must be enabled.
   bool ReorderCustomLink(const GURL& url, size_t new_pos);
+
   // Deletes the custom link with the specified |url|. If |url| does not exist
   // in the custom link list, returns false and does nothing. Will initialize
   // custom links if they have not been initialized yet, unless the action
   // fails. Custom links must be enabled.
   bool DeleteCustomLink(const GURL& url);
+
   // Restores the previous state of custom links before the last action that
   // modified them. If there was no action, does nothing. If this is undoing the
   // first action after initialization, uninitializes the links. Custom links
@@ -334,6 +348,7 @@ class MostVisitedSites :
   std::unique_ptr<IconCacher> const icon_cacher_;
   std::unique_ptr<HomepageClient> homepage_client_;
   bool is_default_chrome_app_migrated_;
+  bool is_custom_links_mixable_;
 
   base::ObserverList<Observer> observers_;
 
@@ -352,9 +367,6 @@ class MostVisitedSites :
       top_sites_observation_{this};
 
   base::CallbackListSubscription custom_links_subscription_;
-
-  // The main source of personal tiles - either TOP_SITES or CUSTOM_LINKS.
-  TileSource mv_source_;
 
   // Current set of tiles. Optional so that the observer can be notified
   // whenever it changes, including possibily an initial change from

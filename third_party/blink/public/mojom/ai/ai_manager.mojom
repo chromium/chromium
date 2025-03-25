@@ -104,15 +104,10 @@ interface AIManagerCreateSummarizerClient {
 // The manager that could create a new session for the model.
 interface AIManager {
   // Returns language model availability info from the underlying service.
-  CanCreateLanguageModel(
-    array<AILanguageCode>? expected_input_languages
-  ) => (ModelAvailabilityCheckResult result);
-  // Creates a new language model.
-  // Note that this could return nullptr even if the previous
-  // `CanCreateLanguageModel()` returns `kReadily`, because some errors can only
-  // occur when we actually create the language model.
-  // See the explainer (https://github.com/explainers-by-googlers/prompt-api)
-  // for more information about the meaning of each parameter.
+  CanCreateLanguageModel(AILanguageModelCreateOptions options) =>
+      (ModelAvailabilityCheckResult result);
+  // Creates a language model, passing the result or error to the client.
+  // Creation will be aborted if the client is disconnected.
   CreateLanguageModel(
     pending_remote<AIManagerCreateLanguageModelClient> client,
     AILanguageModelCreateOptions options
@@ -123,7 +118,8 @@ interface AIManager {
   // `capabilities()` is removed.
   CanCreateSummarizer(AISummarizerCreateOptions? options) =>
     (ModelAvailabilityCheckResult result);
-  // Creates a summarizer.
+  // Creates a summarizer, passing the result or error to the client.
+  // Creation will be aborted if the client is disconnected.
   CreateSummarizer(
     pending_remote<AIManagerCreateSummarizerClient> client,
     AISummarizerCreateOptions options);
@@ -134,8 +130,8 @@ interface AIManager {
   // Returns writer model availability info from the underlying service.
   CanCreateWriter(AIWriterCreateOptions options) =>
       (ModelAvailabilityCheckResult result);
-  // Creates a new AIWriter, and returns it through the passed client. When
-  // the passed client is disconnected, the creation process will be aborted.
+  // Creates a new writer, passing the result or error to the client.
+  // Creation will be aborted if the client is disconnected.
   // `shared_context` in `options` is a string that is set in the
   // AIWriterCreateOptions when the JS API `ai.writer.create()` is called.
   CreateWriter(pending_remote<AIManagerCreateWriterClient> client,
@@ -143,9 +139,8 @@ interface AIManager {
   // Returns rewriter model availability info from the underlying service.
   CanCreateRewriter(AIRewriterCreateOptions options) =>
       (ModelAvailabilityCheckResult result);
-  // Creates a new AIRewriter, and returns it through the passed client.
-  // When the passed client is disconnected, the creation process will be
-  // aborted.
+  // Creates a new rewriter, passing the result or error to the client.
+  // Creation will be aborted if the client is disconnected.
   // `shared_context`, `tone` and `length` in `options` are set in the
   // AIRewriterCreateOptions when the JS API `ai.rewriter.create()` is called.
   CreateRewriter(pending_remote<AIManagerCreateRewriterClient> client,

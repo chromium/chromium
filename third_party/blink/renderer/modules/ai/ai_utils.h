@@ -24,10 +24,6 @@ static constexpr uint64_t kNormalizedDownloadProgressMax = 0x10000;
 Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
     const Vector<String>& language_codes);
 
-// Converts AILanguageCode mojo struct to string language codes.
-Vector<String> ToStringLanguageCodes(
-    const Vector<mojom::blink::AILanguageCodePtr>& language_codes);
-
 enum class SamplingParamsOptionError {
   kOnlyOneOfTopKAndTemperatureIsProvided,
   kInvalidTopK,

@@ -5095,6 +5095,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordProtection.SkipProfilePickerPasswordHashSaveAttempt"
+    enum="BooleanProfilePicker" expires_after="2026-03-25">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The decision of whether to skip trying to save a password hash happens when
+    the profile picker runs.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.SuccessfulPhishingDetectionWithinTimeout"
     enum="BooleanSuccess" expires_after="2026-02-10">
   <owner>andysjlim@chromium.org</owner>

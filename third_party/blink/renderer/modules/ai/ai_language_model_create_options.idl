@@ -38,8 +38,8 @@ dictionary AILanguageModelCreateCoreOptions {
   unrestricted double topK;
   unrestricted double temperature;
 
-  sequence<DOMString> expectedInputLanguages;
-  sequence<AILanguageModelPromptType> expectedInputTypes;
+  // The expected input types and languages for the session.
+  sequence<AILanguageModelExpectedInput> expectedInputs;
 };
 
 dictionary AILanguageModelCreateOptions : AILanguageModelCreateCoreOptions {
@@ -47,4 +47,9 @@ dictionary AILanguageModelCreateOptions : AILanguageModelCreateCoreOptions {
   AICreateMonitorCallback monitor;
   DOMString systemPrompt;
   sequence<AILanguageModelPrompt> initialPrompts;
+};
+
+dictionary AILanguageModelExpectedInput {
+  required AILanguageModelPromptType type;
+  sequence<DOMString> languages;
 };

@@ -12,6 +12,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -94,6 +96,11 @@ public class HubPaneHostView extends FrameLayout {
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
                         mPaneFrame::setBackgroundColor));
+        mixer.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getHairlineColor(context, colorScheme),
+                        this::setHairlineColor));
     }
 
     void setHairlineVisibility(boolean visible) {
@@ -112,5 +119,9 @@ public class HubPaneHostView extends FrameLayout {
             }
             mPaneFrame.addView(rootView);
         }
+    }
+
+    void setHairlineColor(@ColorInt int hairlineColor) {
+        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
     }
 }

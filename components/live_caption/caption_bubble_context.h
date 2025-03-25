@@ -17,6 +17,7 @@ class WebContents;
 }
 
 namespace captions {
+class CaptionBubble;
 
 using OpenCaptionSettingsCallback = base::RepeatingCallback<void()>;
 
@@ -76,6 +77,14 @@ class CaptionBubbleContext {
   // //components/live_caption:live_caption can't directly use the WebContents
   // to trigger a navigation due to dependency restrictions.
   virtual OpenCaptionSettingsCallback GetOpenCaptionSettingsCallback() = 0;
+
+  // Sets the caption bubble observer that will be notified when the
+  // activatability of the context changes.
+  virtual void SetContextActivatabilityObserver(CaptionBubble* caption_bubble) {
+  }
+
+  // Clears the caption bubble observer.
+  virtual void RemoveContextActivatabilityObserver() {}
 };
 
 }  // namespace captions

@@ -94,9 +94,6 @@ void SVGTextPathElement::SvgAttributeChanged(
     return;
   }
 
-  if (attr_name == svg_names::kStartOffsetAttr)
-    UpdateRelativeLengthsInformation();
-
   if (attr_name == svg_names::kStartOffsetAttr ||
       attr_name == svg_names::kMethodAttr ||
       attr_name == svg_names::kSpacingAttr) {

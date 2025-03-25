@@ -74,10 +74,6 @@ class CORE_EXPORT SVGElement : public Element {
   }
 
   String title() const override;
-  bool HasRelativeLengths() const {
-    DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
-    return !elements_with_relative_lengths_.empty();
-  }
   static bool IsAnimatableCSSProperty(const QualifiedName&);
 
   bool HasMotionTransform() const { return HasSVGRareData(); }
@@ -186,8 +182,6 @@ class CORE_EXPORT SVGElement : public Element {
   virtual void BuildPendingResource() {}
   virtual bool HaveLoadedRequiredResources();
 
-  void InvalidateRelativeLengthClients();
-
   SVGAnimatedString* className() { return class_name_.Get(); }
 
   bool InUseShadowTree() const;
@@ -258,13 +252,6 @@ class CORE_EXPORT SVGElement : public Element {
 
   static CSSPropertyID CssPropertyIdForSVGAttributeName(const ExecutionContext*,
                                                         const QualifiedName&);
-  void UpdateRelativeLengthsInformation() {
-    if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
-      return;
-    }
-    UpdateRelativeLengthsInformation(SelfHasRelativeLengths(), this);
-  }
-  void UpdateRelativeLengthsInformation(bool has_relative_lengths, SVGElement*);
   static void MarkForLayoutAndParentResourceInvalidation(LayoutObject&);
   void NotifyResourceClients() const;
 
@@ -308,12 +295,6 @@ class CORE_EXPORT SVGElement : public Element {
       const SVGAnimatedPropertyBase&);
 
   SMILTimeContainer* GetTimeContainer() const;
-
-  HeapHashSet<WeakMember<SVGElement>> elements_with_relative_lengths_;
-
-#if DCHECK_IS_ON()
-  bool in_relative_length_clients_invalidation_ = false;
-#endif
 
   Member<SVGElementRareData> svg_rare_data_;
   Member<SVGAnimatedString> class_name_;

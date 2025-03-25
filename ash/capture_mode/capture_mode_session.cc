@@ -3023,6 +3023,7 @@ void CaptureModeSession::UpdateCaptureRegion(
   ClearActionContainer();
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  focus_cycler_->OnFineTunePositionUpdated(/*notify_selection_event=*/false);
 
   // Start a timer to request default actions or perform search after a delay.
   // This is to prevent too many requests if the user needs to repeatedly adjust

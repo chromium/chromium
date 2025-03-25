@@ -63,10 +63,6 @@ class CORE_EXPORT SVGDocumentExtensions final
 
   void DispatchSVGLoadEventToOutermostSVGElements();
 
-  void AddSVGRootWithRelativeLengthDescendents(SVGSVGElement*);
-  void RemoveSVGRootWithRelativeLengthDescendents(SVGSVGElement*);
-  void InvalidateSVGRootsWithRelativeLengthDescendents();
-
   bool ZoomAndPanEnabled() const;
 
   void StartPan(const gfx::PointF& start);
@@ -81,12 +77,7 @@ class CORE_EXPORT SVGDocumentExtensions final
   HeapHashSet<Member<SVGSVGElement>> time_containers_;
   using SVGElementSet = HeapHashSet<Member<SVGElement>>;
   SVGElementSet web_animations_pending_svg_elements_;
-  // Root SVG elements with relative length descendants.
-  HeapHashSet<Member<SVGSVGElement>> relative_length_svg_roots_;
   gfx::Vector2dF translate_;
-#if DCHECK_IS_ON()
-  bool in_relative_length_svg_roots_invalidation_ = false;
-#endif
 };
 
 }  // namespace blink

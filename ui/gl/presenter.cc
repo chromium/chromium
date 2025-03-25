@@ -44,9 +44,16 @@ bool Presenter::ScheduleCALayer(const ui::CARendererLayerParams& params) {
   return false;
 }
 
+#if BUILDFLAG(IS_WIN)
 void Presenter::ScheduleDCLayers(std::vector<DCLayerOverlayParams> overlays) {
   NOTIMPLEMENTED();
 }
+
+bool Presenter::DestroyDCLayerTree() {
+  NOTIMPLEMENTED();
+  return false;
+}
+#endif
 
 bool Presenter::Resize(const gfx::Size& size,
                        float scale_factor,

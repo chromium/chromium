@@ -1747,8 +1747,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     // exist anymore. The mediator should not be removed each time the section
     // is removed since the section is replaced at each reload.
     // Metrics would be recorded too often.
-    // The other device section can be present even without the sync promo. This
-    // happens when sync is disabled.
+    // The other device section can be present even without the promo.
     [self.signinPromoViewMediator disconnect];
     self.signinPromoViewMediator = nil;
     return;

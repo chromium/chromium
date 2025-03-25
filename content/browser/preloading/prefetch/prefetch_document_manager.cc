@@ -63,14 +63,9 @@ SpeculationCandidateToPrefetchUrlParams(
     prefetch_type.SetProxyBypassedForTest();  // IN-TEST
   }
 
-  std::vector<std::optional<std::string>> tags;
-  for (auto& tag : candidate->tags) {
-    tags.push_back(tag);
-  }
-
   return std::make_tuple(prefetch_url, prefetch_type, *candidate->referrer,
                          candidate->no_vary_search_hint.Clone(),
-                         SpeculationRulesTags(std::move(tags)));
+                         SpeculationRulesTags(candidate->tags));
 }
 
 }  // namespace

@@ -17,7 +17,7 @@
 
 @implementation NonModalSignInPromoCoordinator {
   NonModalSignInPromoMediator* _mediator;
-  SignInPromoType* _promoType;
+  SignInPromoType _promoType;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -48,14 +48,14 @@
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
-  _promoType = nil;
 }
 
 #pragma mark - NonModalSignInPromoMediatorDelegate
 
-- (bool)nonModalSignInPromoMediatorTimerExipred:
+- (bool)nonModalSignInPromoMediatorTimerExpired:
     (NonModalSignInPromoMediator*)mediator {
   // TODO(crbug.com/404844914): Implement Non modal sign in coordinator.
+  return false;
 }
 
 @end

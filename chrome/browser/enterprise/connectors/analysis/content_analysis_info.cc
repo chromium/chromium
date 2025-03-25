@@ -17,12 +17,9 @@ void ContentAnalysisInfo::InitializeRequest(
       request->set_device_token(settings().cloud_or_local_settings.dm_token());
     }
 
-    // Include tab page title, user action id, and count of requests per user
-    // action in local content analysis requests.
+    // Include tab page title in local content analysis requests.
     if (settings().cloud_or_local_settings.is_local_analysis()) {
-      request->set_user_action_requests_count(user_action_requests_count());
       request->set_tab_title(tab_title());
-      request->set_user_action_id(user_action_id());
     }
 
     if (settings().client_metadata) {
@@ -36,6 +33,8 @@ void ContentAnalysisInfo::InitializeRequest(
     }
   }
 
+  request->set_user_action_requests_count(user_action_requests_count());
+  request->set_user_action_id(user_action_id());
   request->set_email(email());
   request->set_url(url());
   request->set_tab_url(tab_url());

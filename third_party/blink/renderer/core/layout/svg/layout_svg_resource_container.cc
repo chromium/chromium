@@ -85,8 +85,7 @@ SVGLayoutResult LayoutSVGResourceContainer::UpdateSVGLayout(
   // Another object may reference this resource (e.g. a <rect> referencing a
   // clip-path), ensure that these clients have paint-invalidation issued if we
   // re-layout due to a viewport dependence.
-  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled() &&
-      layout_info.viewport_changed && result.has_viewport_dependence) {
+  if (layout_info.viewport_changed && result.has_viewport_dependence) {
     RemoveAllClientsFromCache();
   }
 

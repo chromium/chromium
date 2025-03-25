@@ -8,17 +8,21 @@
 #include <variant>
 
 #include "base/feature_list.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -738,12 +742,47 @@ void CheckOutput(
           GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
       auto reporting_origin = GetItemValueForKey<url::Origin>(
           InputKey::kAdMeasurementReportingOrigin, input);
+
+      base::test::ScopedFeatureList scoped_feature_list_{
+          metrics::dwa::kDwaFeature};
+
+      // Ensures that metrics are only counted for this call.
+      // TODO(crbug.com/403946431): Consider implementing a scoped object to
+      // improve ergonomics.
+      metrics::dwa::DwaRecorder::Get()->EnableRecording();
+      metrics::dwa::DwaRecorder::Get()->Purge();
+      ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+                  testing::IsEmpty());
+
       std::ignore = privacy_sandbox_settings->IsPrivateAggregationAllowed(
           top_frame_origin, reporting_origin,
           /*out_block_is_site_setting_specific=*/nullptr);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
           "PrivacySandbox.IsPrivateAggregationAllowed", histogram_value, 1);
+
+      ASSERT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
+                  testing::SizeIs(1));
+      EXPECT_THAT(
+          metrics::dwa::DwaRecorder::Get()
+              ->GetEntriesForTesting()[0]
+              ->event_hash,
+          base::HashMetricName("PrivacySandbox.IsPrivateAggregationAllowed"));
+
+      // DWA content sanitization extracts the eTLD+1 from the provided
+      // reporting origin.
+      EXPECT_THAT(
+          metrics::dwa::DwaRecorder::Get()
+              ->GetEntriesForTesting()[0]
+              ->content_hash,
+          base::HashMetricName(
+              net::registry_controlled_domains::GetDomainAndRegistry(
+                  reporting_origin.GetURL(), net::registry_controlled_domains::
+                                                 INCLUDE_PRIVATE_REGISTRIES)));
+      EXPECT_THAT(
+          metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting()[0]->metrics,
+          testing::UnorderedElementsAre(
+              testing::Pair(base::HashMetricName("Status"), histogram_value)));
       return;
     }
     case (OutputKey::kTopicsConsentGiven): {

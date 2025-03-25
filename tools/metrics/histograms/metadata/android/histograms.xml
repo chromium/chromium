@@ -4138,6 +4138,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.DownloadTime.Transient" units="ms"
+    expires_after="2025-09-14">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the pdf download time for transient downloads, i.e. download pdf to
+    open in Chrome. Recorded when the pdf download is complete and before pdf
+    view is rendered. Used to assess the prioritization of a refined user
+    experience for downloading.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.DownloadUrlDecoded" enum="Boolean"
     expires_after="2025-09-07">
   <owner>shuyng@google.com</owner>

@@ -378,10 +378,6 @@ AILanguageModel::AILanguageModel(
     current_tokens_ = info->current_tokens;
     top_k_ = info->sampling_params->top_k;
     temperature_ = info->sampling_params->temperature;
-    if (info->expected_input_languages.has_value()) {
-      expected_input_languages_ =
-          ToStringLanguageCodes(info->expected_input_languages.value());
-    }
   }
 }
 

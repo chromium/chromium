@@ -161,7 +161,7 @@ export class CrLitElement extends LitElement {
           }
           this.dispatchEvent(new CustomEvent(
               `${toDashCase(key.toString())}-changed`,
-              {composed: true, detail: {value: indexableThis[key]}}));
+              {detail: {value: indexableThis[key]}}));
         }
       }
     }

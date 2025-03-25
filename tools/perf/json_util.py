@@ -62,10 +62,8 @@ def gcs_buckets_from_builder_name(
   for _, value in json_constants.REPOSITORY_PROPERTY_MAP.items():
     if master_name in value["masters"]:
       if is_public:
-        return [value["public_bucket_name"]]
-      if value["internal_bucket_name"]:
         return [value["public_bucket_name"], value["internal_bucket_name"]]
-      return [value["public_bucket_name"]]
+      return [value["internal_bucket_name"]]
   return []
 
 

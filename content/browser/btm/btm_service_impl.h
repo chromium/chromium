@@ -147,6 +147,8 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
       base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback);
 
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
+  scoped_refptr<base::SequencedTaskRunner> CreateTaskRunnerForResource(
+      const base::FilePath& path);
 
   void OnTimerFired();
   void DeleteBtmEligibleState(DeletedSitesCallback callback,

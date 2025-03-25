@@ -28,27 +28,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace {
-// A WebContentsObserver that allows waiting for some media to start or stop
-// playing fullscreen.
-class FullscreenEventsWaiter : public content::WebContentsObserver {
- public:
-  explicit FullscreenEventsWaiter(content::WebContents* web_contents);
-  FullscreenEventsWaiter(const FullscreenEventsWaiter& rhs) = delete;
-  FullscreenEventsWaiter& operator=(const FullscreenEventsWaiter& rhs) = delete;
-  ~FullscreenEventsWaiter() override;
-
-  void MediaEffectivelyFullscreenChanged(bool value) override;
-
-  // Wait for the current media playing fullscreen mode to be equal to
-  // |expected_media_fullscreen_mode|.
-  void Wait();
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
-}  // namespace
-
 namespace captions {
 
 class MockLiveTranslateController : public LiveTranslateController {

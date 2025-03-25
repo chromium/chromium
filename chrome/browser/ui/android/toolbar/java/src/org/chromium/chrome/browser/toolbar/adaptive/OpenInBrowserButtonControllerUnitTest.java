@@ -60,7 +60,6 @@ public final class OpenInBrowserButtonControllerUnitTest {
         doReturn(mContext).when(mTab).getContext();
 
         doReturn(mTab).when(mTabSupplier).get();
-        AdaptiveToolbarFeatures.clearParsedParamsForTesting();
 
         mOpenInBrowserButtonController =
                 new OpenInBrowserButtonController(

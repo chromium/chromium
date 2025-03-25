@@ -8,6 +8,7 @@
 #include <list>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -59,7 +60,7 @@ class CONTENT_EXPORT AggregatableReportSender {
   // generate a secure POST request with no-credentials. The `delay_type`
   // parameter is only used to select histogram names.
   virtual void SendReport(
-      const GURL& url,
+      GURL url,
       const base::Value& contents,
       std::optional<AggregatableReportRequest::DelayType> delay_type,
       ReportSentCallback callback);
@@ -86,6 +87,7 @@ class CONTENT_EXPORT AggregatableReportSender {
       UrlLoaderList::iterator it,
       ReportSentCallback callback,
       std::optional<AggregatableReportRequest::DelayType> delay_type,
+      std::string serialized_url,
       scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Reports that are actively being sent.

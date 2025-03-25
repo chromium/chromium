@@ -127,6 +127,16 @@ class DesktopProduct(Product):
             # Disable overlay scrollbar fadeout for consistent screenshots.
             '--disable-features=ScrollbarAnimations',
         ]
+        fs = self._host.filesystem
+        if (self._options.wrapper
+                and fs.basename(self._options.wrapper[0]) == 'rr'):
+            debug_args = [
+                '--no-sandbox',
+                '--disable-hang-monitor',
+            ]
+            args.extend(debug_args)
+            _log.info(f'Running {self.name!r} with {" ".join(debug_args)!r} '
+                      'because of debugging option `--wrapper=rr`')
         if self._options.wrapper and self._host.platform.is_win():
             # The adapter will generate a batch file wrapping the browser
             # command. Because `cmd.exe` doesn't have an equivalent of Unix's
@@ -147,8 +157,6 @@ class HeadlessShell(DesktopProduct):
     name = 'headless_shell'
 
     def additional_binary_args(self):
-        # TODO(crbug.com/40887057): Support `--enable-leak-detection` and plumb
-        # the flag here.
         rv = [
             *super().additional_binary_args(),
             "--canvas-2d-layers",

@@ -83,7 +83,7 @@ protocol::Session* WebrtcConnectionToClient::session() {
 void WebrtcConnectionToClient::Disconnect(
     ErrorCode error,
     std::string_view error_details,
-    const base::Location& error_location) {
+    const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This should trigger OnConnectionClosed() event and this object

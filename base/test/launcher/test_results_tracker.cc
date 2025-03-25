@@ -222,6 +222,9 @@ Value::Dict CreateSubTestResultValue(const TestResult& primary_test_result,
   // Partially copy the primary TestResult.
   TestResult test_result;
   test_result.elapsed_time = primary_test_result.elapsed_time;
+  test_result.links = primary_test_result.links;
+  test_result.properties = primary_test_result.properties;
+  test_result.tags = primary_test_result.tags;
   test_result.thread_id = primary_test_result.thread_id;
   test_result.timestamp = primary_test_result.timestamp;
   if (sub_test_result.failure_message) {

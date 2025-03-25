@@ -459,9 +459,10 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
       WaitForShow(kTabGroupEditorBubbleId),
       PressButton(kTabGroupEditorBubbleDeleteGroupButtonId),
-      WaitForShow(kDeletionDialogCancelButtonId),
-      PressButton(kDeletionDialogCancelButtonId),
-      WaitForHide(kDeletionDialogCancelButtonId), FinishTabstripAnimations());
+      WaitForShow(kDataSharingSigninPromptDialogCancelButtonElementId),
+      PressButton(kDataSharingSigninPromptDialogCancelButtonElementId),
+      WaitForHide(kDataSharingSigninPromptDialogCancelButtonElementId),
+      FinishTabstripAnimations());
 
   histogram_tester.ExpectUniqueSample(
       kManageHistogram,
@@ -481,10 +482,13 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest, LeaveGroupPressed) {
       HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
       WaitForShow(kTabGroupEditorBubbleId),
       PressButton(kTabGroupEditorBubbleLeaveGroupButtonId),
-      WaitForHide(kTabGroupEditorBubbleLeaveGroupButtonId),
-      WaitForShow(kDeletionDialogCancelButtonId),
-      PressButton(kDeletionDialogCancelButtonId),
-      WaitForHide(kDeletionDialogCancelButtonId), FinishTabstripAnimations());
+      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
+        // Close the dialog before the callback runs out of scope.
+        auto* controller =
+            DataSharingBubbleController::GetOrCreateForBrowser(browser());
+        controller->Close();
+      }),
+      FinishTabstripAnimations());
 }
 
 // Verify members see the leave group button instead of the delete button in the
@@ -503,9 +507,13 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
       SelectMenuItem(STGEverythingMenu::kTabGroup),
       EnsurePresent(STGTabsMenuModel::kLeaveGroupMenuItem),
       SelectMenuItem(STGTabsMenuModel::kLeaveGroupMenuItem),
-      WaitForShow(kDeletionDialogCancelButtonId),
-      PressButton(kDeletionDialogCancelButtonId), FinishTabstripAnimations(),
-      WaitForHide(kDeletionDialogCancelButtonId));
+      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
+        // Close the dialog before the callback runs out of scope.
+        auto* controller =
+            DataSharingBubbleController::GetOrCreateForBrowser(browser());
+        controller->Close();
+      }),
+      FinishTabstripAnimations());
 }
 
 // Verify members see the recent activity button when activity exists.

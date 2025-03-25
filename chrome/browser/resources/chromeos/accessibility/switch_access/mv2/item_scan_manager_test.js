@@ -5,7 +5,7 @@
 GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 
 /** Test fixture for the item scan manager. */
-SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
+SwitchAccessMV2ItemScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -36,7 +36,7 @@ function currentNode() {
   return Navigator.byItem.node_;
 }
 
-AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveTo', async function() {
+AX_TEST_F('SwitchAccessMV2ItemScanManagerTest', 'MoveTo', async function() {
   const website = `<div id="outerGroup">
                      <div id="group">
                        <input type="text">
@@ -100,7 +100,7 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveTo', async function() {
       'Did not find the right group');
 });
 
-AX_TEST_F('SwitchAccessItemScanManagerTest', 'JumpTo', async function() {
+AX_TEST_F('SwitchAccessMV2ItemScanManagerTest', 'JumpTo', async function() {
   const website = `<div id="group1">
                      <input id="testinput" type="text">
                      <button></button>
@@ -138,8 +138,10 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'JumpTo', async function() {
       'Did not jump back to the right group.');
 });
 
-AX_TEST_F('SwitchAccessItemScanManagerTest', 'SelectButton', async function() {
-  const website = `<button id="test" aria-pressed=false>First Button</button>
+AX_TEST_F(
+    'SwitchAccessMV2ItemScanManagerTest', 'SelectButton', async function() {
+      const website =
+          `<button id="test" aria-pressed=false>First Button</button>
       <button>Second Button</button>
       <script>
         let state = false;
@@ -150,25 +152,25 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'SelectButton', async function() {
         };
       </script>`;
 
-  const pageContents = await this.runWithLoadedTree(website);
-  this.moveToPageContents(pageContents);
+      const pageContents = await this.runWithLoadedTree(website);
+      this.moveToPageContents(pageContents);
 
-  const node = currentNode().automationNode;
-  assertNotNullNorUndefined(node, 'Node is invalid');
-  assertEquals(node.name, 'First Button', 'Did not find the right node');
+      const node = currentNode().automationNode;
+      assertNotNullNorUndefined(node, 'Node is invalid');
+      assertEquals(node.name, 'First Button', 'Did not find the right node');
 
-  node.addEventListener(
-      chrome.automation.EventType.CHECKED_STATE_CHANGED,
-      this.newCallback(event => {
-        assertEquals(
-            node.name, event.target.name,
-            'Checked state changed on unexpected node');
-      }));
+      node.addEventListener(
+          chrome.automation.EventType.CHECKED_STATE_CHANGED,
+          this.newCallback(event => {
+            assertEquals(
+                node.name, event.target.name,
+                'Checked state changed on unexpected node');
+          }));
 
-  Navigator.byItem.node_.performAction('select');
-});
+      Navigator.byItem.node_.performAction('select');
+    });
 
-AX_TEST_F('SwitchAccessItemScanManagerTest', 'EnterGroup', async function() {
+AX_TEST_F('SwitchAccessMV2ItemScanManagerTest', 'EnterGroup', async function() {
   const website = `<div id="group">
                      <button></button>
                      <button></button>
@@ -197,109 +199,117 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'EnterGroup', async function() {
       'Did not move back to the original group');
 });
 
-AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveForward', async function() {
-  const website = `<div>
+AX_TEST_F(
+    'SwitchAccessMV2ItemScanManagerTest', 'MoveForward', async function() {
+      const website = `<div>
                      <button id="button1"></button>
                      <button id="button2"></button>
                      <button id="button3"></button>
                    </div>`;
-  const rootWebArea = await this.runWithLoadedTree(website);
-  Navigator.byItem.moveTo_(this.findNodeById('button1'));
-  const button1 = Navigator.byItem.node_;
-  assertFalse(
-      button1 instanceof BackButtonNode,
-      'button1 should not be a BackButtonNode');
-  assertEquals(
-      'button1', button1.automationNode.htmlId, 'Current node is not button1');
+      const rootWebArea = await this.runWithLoadedTree(website);
+      Navigator.byItem.moveTo_(this.findNodeById('button1'));
+      const button1 = Navigator.byItem.node_;
+      assertFalse(
+          button1 instanceof BackButtonNode,
+          'button1 should not be a BackButtonNode');
+      assertEquals(
+          'button1', button1.automationNode.htmlId,
+          'Current node is not button1');
 
-  Navigator.byItem.moveForward();
-  assertFalse(
-      button1.equals(Navigator.byItem.node_),
-      'Still on button1 after moveForward()');
-  const button2 = Navigator.byItem.node_;
-  assertFalse(
-      button2 instanceof BackButtonNode,
-      'button2 should not be a BackButtonNode');
-  assertEquals(
-      'button2', button2.automationNode.htmlId, 'Current node is not button2');
+      Navigator.byItem.moveForward();
+      assertFalse(
+          button1.equals(Navigator.byItem.node_),
+          'Still on button1 after moveForward()');
+      const button2 = Navigator.byItem.node_;
+      assertFalse(
+          button2 instanceof BackButtonNode,
+          'button2 should not be a BackButtonNode');
+      assertEquals(
+          'button2', button2.automationNode.htmlId,
+          'Current node is not button2');
 
-  Navigator.byItem.moveForward();
-  assertFalse(
-      button1.equals(Navigator.byItem.node_),
-      'Unexpected navigation to button1');
-  assertFalse(
-      button2.equals(Navigator.byItem.node_),
-      'Still on button2 after moveForward()');
-  const button3 = Navigator.byItem.node_;
-  assertFalse(
-      button3 instanceof BackButtonNode,
-      'button3 should not be a BackButtonNode');
-  assertEquals(
-      'button3', button3.automationNode.htmlId, 'Current node is not button3');
+      Navigator.byItem.moveForward();
+      assertFalse(
+          button1.equals(Navigator.byItem.node_),
+          'Unexpected navigation to button1');
+      assertFalse(
+          button2.equals(Navigator.byItem.node_),
+          'Still on button2 after moveForward()');
+      const button3 = Navigator.byItem.node_;
+      assertFalse(
+          button3 instanceof BackButtonNode,
+          'button3 should not be a BackButtonNode');
+      assertEquals(
+          'button3', button3.automationNode.htmlId,
+          'Current node is not button3');
 
-  Navigator.byItem.moveForward();
-  assertTrue(
-      Navigator.byItem.node_ instanceof BackButtonNode,
-      'BackButtonNode should come after button3');
+      Navigator.byItem.moveForward();
+      assertTrue(
+          Navigator.byItem.node_ instanceof BackButtonNode,
+          'BackButtonNode should come after button3');
 
-  Navigator.byItem.moveForward();
-  assertTrue(
-      button1.equals(Navigator.byItem.node_),
-      'button1 should come after the BackButtonNode');
-});
-
-AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveBackward', async function() {
-  const website = `<div>
-                     <button id="button1"></button>
-                     <button id="button2"></button>
-                     <button id="button3"></button>
-                   </div>`;
-  const rootWebArea = await this.runWithLoadedTree(website);
-  Navigator.byItem.moveTo_(this.findNodeById('button1'));
-  const button1 = Navigator.byItem.node_;
-  assertFalse(
-      button1 instanceof BackButtonNode,
-      'button1 should not be a BackButtonNode');
-  assertEquals(
-      'button1', button1.automationNode.htmlId, 'Current node is not button1');
-
-  Navigator.byItem.moveBackward();
-  assertTrue(
-      Navigator.byItem.node_ instanceof BackButtonNode,
-      'BackButtonNode should come before button1');
-
-  Navigator.byItem.moveBackward();
-  assertFalse(
-      button1.equals(Navigator.byItem.node_),
-      'Unexpected navigation to button1');
-  const button3 = Navigator.byItem.node_;
-  assertFalse(
-      button3 instanceof BackButtonNode,
-      'button3 should not be a BackButtonNode');
-  assertEquals(
-      'button3', button3.automationNode.htmlId, 'Current node is not button3');
-
-  Navigator.byItem.moveBackward();
-  assertFalse(
-      button3.equals(Navigator.byItem.node_),
-      'Still on button3 after moveBackward()');
-  assertFalse(button1.equals(Navigator.byItem.node_), 'Skipped button2');
-  const button2 = Navigator.byItem.node_;
-  assertFalse(
-      button2 instanceof BackButtonNode,
-      'button2 should not be a BackButtonNode');
-  assertEquals(
-      'button2', button2.automationNode.htmlId, 'Current node is not button2');
-
-  Navigator.byItem.moveBackward();
-  assertTrue(
-      button1.equals(Navigator.byItem.node_),
-      'button1 should come before button2');
-});
+      Navigator.byItem.moveForward();
+      assertTrue(
+          button1.equals(Navigator.byItem.node_),
+          'button1 should come after the BackButtonNode');
+    });
 
 AX_TEST_F(
-    'SwitchAccessItemScanManagerTest', 'NodeUndefinedBeforeTreeChangeRemoved',
-    async function() {
+    'SwitchAccessMV2ItemScanManagerTest', 'MoveBackward', async function() {
+      const website = `<div>
+                     <button id="button1"></button>
+                     <button id="button2"></button>
+                     <button id="button3"></button>
+                   </div>`;
+      const rootWebArea = await this.runWithLoadedTree(website);
+      Navigator.byItem.moveTo_(this.findNodeById('button1'));
+      const button1 = Navigator.byItem.node_;
+      assertFalse(
+          button1 instanceof BackButtonNode,
+          'button1 should not be a BackButtonNode');
+      assertEquals(
+          'button1', button1.automationNode.htmlId,
+          'Current node is not button1');
+
+      Navigator.byItem.moveBackward();
+      assertTrue(
+          Navigator.byItem.node_ instanceof BackButtonNode,
+          'BackButtonNode should come before button1');
+
+      Navigator.byItem.moveBackward();
+      assertFalse(
+          button1.equals(Navigator.byItem.node_),
+          'Unexpected navigation to button1');
+      const button3 = Navigator.byItem.node_;
+      assertFalse(
+          button3 instanceof BackButtonNode,
+          'button3 should not be a BackButtonNode');
+      assertEquals(
+          'button3', button3.automationNode.htmlId,
+          'Current node is not button3');
+
+      Navigator.byItem.moveBackward();
+      assertFalse(
+          button3.equals(Navigator.byItem.node_),
+          'Still on button3 after moveBackward()');
+      assertFalse(button1.equals(Navigator.byItem.node_), 'Skipped button2');
+      const button2 = Navigator.byItem.node_;
+      assertFalse(
+          button2 instanceof BackButtonNode,
+          'button2 should not be a BackButtonNode');
+      assertEquals(
+          'button2', button2.automationNode.htmlId,
+          'Current node is not button2');
+
+      Navigator.byItem.moveBackward();
+      assertTrue(
+          button1.equals(Navigator.byItem.node_),
+          'button1 should come before button2');
+    });
+
+AX_TEST_F(
+    'SwitchAccessMV2ItemScanManagerTest',
+    'NodeUndefinedBeforeTreeChangeRemoved', async function() {
       const website = `<div>
                      <button id="button1"></button>
                    </div>`;
@@ -327,7 +337,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/336827654): Investigate failures.
 AX_TEST_F(
-    'SwitchAccessItemScanManagerTest', 'DISABLED_ScanAndTypeVirtualKeyboard',
+    'SwitchAccessMV2ItemScanManagerTest', 'DISABLED_ScanAndTypeVirtualKeyboard',
     async function() {
       const website = `<input type="text" id="testinput"></input>`;
       const rootWebArea = await this.runWithLoadedTree(website);
@@ -363,7 +373,7 @@ AX_TEST_F(
 
 // TODO(crbug.com/40946640): Test is flaky.
 AX_TEST_F(
-    'SwitchAccessItemScanManagerTest', 'DISABLED_DismissVirtualKeyboard',
+    'SwitchAccessMV2ItemScanManagerTest', 'DISABLED_DismissVirtualKeyboard',
     async function() {
       const website =
           `<input type="text" id="testinput"></input><button>ok</button>`;
@@ -411,8 +421,8 @@ AX_TEST_F(
 
 // TODO(crbug.com/1260231): Test is flaky.
 AX_TEST_F(
-    'SwitchAccessItemScanManagerTest', 'DISABLED_ChildrenChangedDoesNotRefresh',
-    async function() {
+    'SwitchAccessMV2ItemScanManagerTest',
+    'DISABLED_ChildrenChangedDoesNotRefresh', async function() {
       const website = `
     <div id="slider" role="slider">
       <div role="group"><div></div></div>
@@ -459,29 +469,30 @@ AX_TEST_F(
       assertEquals(slider, Navigator.byItem.node_);
     });
 
-AX_TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', async function() {
-  const website = `<input></input><button autofocus></button>`;
-  const rootWebArea = await this.runWithLoadedTree(website);
-  // The button should have initial focus. This ensures we move past the
-  // focus event below.
-  const button =
-      await this.untilFocusIs({role: chrome.automation.RoleType.BUTTON});
+AX_TEST_F(
+    'SwitchAccessMV2ItemScanManagerTest', 'InitialFocus', async function() {
+      const website = `<input></input><button autofocus></button>`;
+      const rootWebArea = await this.runWithLoadedTree(website);
+      // The button should have initial focus. This ensures we move past the
+      // focus event below.
+      const button =
+          await this.untilFocusIs({role: chrome.automation.RoleType.BUTTON});
 
-  // Build a new ItemScanManager to see what it sets as the initial node.
-  const desktop = rootWebArea.parent.root;
-  assertEquals(
-      chrome.automation.RoleType.DESKTOP, desktop.role,
-      `Unexpected desktop ${desktop.toString()}`);
-  const manager = new ItemScanManager(desktop);
-  manager.start();
-  assertEquals(
-      button.automationNode, manager.node_.automationNode,
-      `Unexpected focus ${manager.node_.debugString()}`);
-});
+      // Build a new ItemScanManager to see what it sets as the initial node.
+      const desktop = rootWebArea.parent.root;
+      assertEquals(
+          chrome.automation.RoleType.DESKTOP, desktop.role,
+          `Unexpected desktop ${desktop.toString()}`);
+      const manager = new ItemScanManager(desktop);
+      manager.start();
+      assertEquals(
+          button.automationNode, manager.node_.automationNode,
+          `Unexpected focus ${manager.node_.debugString()}`);
+    });
 
 
 AX_TEST_F(
-    'SwitchAccessItemScanManagerTest', 'SyncFocusToNewWindow',
+    'SwitchAccessMV2ItemScanManagerTest', 'SyncFocusToNewWindow',
     async function() {
       const website1 = `<button autofocus>one</button>`;
       const website2 = `<button autofocus>two</button>`;
@@ -552,8 +563,8 @@ AX_TEST_F(
 
 // TODO(crbug.com/1219067): Unflake.
 AX_TEST_F(
-    'SwitchAccessItemScanManagerTest', 'DISABLED_LockScreenBlocksUserSession',
-    async function() {
+    'SwitchAccessMV2ItemScanManagerTest',
+    'DISABLED_LockScreenBlocksUserSession', async function() {
       const website = `<button autofocus>kitties!</button>`;
       await this.runWithLoadedTree(website);
       let button =

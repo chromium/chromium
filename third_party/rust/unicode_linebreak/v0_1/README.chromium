@@ -1,9 +1,0 @@
-Name: unicode-linebreak
-URL: https://crates.io/crates/unicode-linebreak
-Version: 0.1.5
-License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/unicode-linebreak-0.1.5/LICENSE
-Shipped: yes
-Security Critical: yes
-
-Description: Implementation of the Unicode Line Breaking Algorithm

@@ -353,6 +353,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kLocalFonts:
       message_id = IDS_FONT_ACCESS_PERMISSION_FRAGMENT;
       break;
+    case RequestType::kLocalNetworkAccess:
+      message_id = IDS_LOCAL_NETWORK_ACCESS_PERMISSION_FRAGMENT;
+      break;
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT;
       break;

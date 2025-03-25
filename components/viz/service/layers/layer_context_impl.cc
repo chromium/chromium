@@ -103,6 +103,8 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.local = wire.local;
   node.origin = wire.origin;
+  node.post_translation = wire.post_translation;
+  node.set_to_parent(wire.to_parent);
   node.SetScrollOffset(wire.scroll_offset, cc::DamageReason::kUntracked);
   node.snap_amount = wire.snap_amount;
 
@@ -199,8 +201,10 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   }
   node.blend_mode = static_cast<SkBlendMode>(wire.blend_mode);
   node.target_id = wire.target_id;
-  node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
   node.backdrop_filters = wire.backdrop_filters;
+  node.backdrop_filter_bounds = wire.backdrop_filter_bounds;
+  node.backdrop_filter_quality = wire.backdrop_filter_quality;
+  node.backdrop_mask_element_id = wire.backdrop_mask_element_id;
 
   return base::ok();
 }

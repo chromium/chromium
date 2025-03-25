@@ -32,6 +32,7 @@ WebMessagePayload DecodeWithV8(const TransferableMessage& message) {
       v8::ArrayBuffer::Allocator::NewDefaultAllocator();
   v8::Isolate* isolate = v8::Isolate::New(params);
   {
+    v8::Isolate::Scope isolate_scope(isolate);
     v8::HandleScope scope(isolate);
     v8::TryCatch try_catch(isolate);
 
@@ -91,6 +92,7 @@ TransferableMessage EncodeWithV8(const WebMessagePayload& message,
       v8::ArrayBuffer::Allocator::NewDefaultAllocator();
   v8::Isolate* isolate = v8::Isolate::New(params);
   {
+    v8::Isolate::Scope isolate_scope(isolate);
     v8::HandleScope scope(isolate);
     v8::TryCatch try_catch(isolate);
 

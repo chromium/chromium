@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -58,7 +59,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
   protected pdfCr23Enabled: boolean = false;
   protected pdfOopifEnabled: boolean = false;
   showErrorDialog: boolean = false;
-  protected strings?: {[key: string]: string};
+  protected strings?: LoadTimeDataRaw;
   protected tracker: EventTracker = new EventTracker();
   private delayedScriptingMessages_: MessageEvent[] = [];
   private initialLoadComplete_: boolean = false;
@@ -427,7 +428,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
    * chrome.resourcesPrivate.
    * @param strings Dictionary of translated strings
    */
-  protected handleStrings(strings?: {[key: string]: string}) {
+  protected handleStrings(strings?: LoadTimeDataRaw) {
     if (!strings) {
       return;
     }

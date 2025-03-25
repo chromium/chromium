@@ -19,7 +19,10 @@ chrome.test.runTests([
   function testAnnotationsEnabled() {
     chrome.test.assertTrue(loadTimeData.getBoolean('pdfAnnotationsEnabled'));
     chrome.test.assertTrue(loadTimeData.getBoolean('pdfInk2Enabled'));
-    chrome.test.assertTrue(viewerToolbar.pdfAnnotationsEnabled);
+    // When ink2 and annotations are enabled in loadTimeData, the ink2
+    // button section displays.
+    chrome.test.assertTrue(
+        !!viewerToolbar.shadowRoot.querySelector('#annotate-controls'));
     chrome.test.succeed();
   },
 

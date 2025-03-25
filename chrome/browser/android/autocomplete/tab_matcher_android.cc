@@ -74,7 +74,8 @@ TAB_ANDROID_USER_DATA_KEY_IMPL(AutocompleteClientTabAndroidUserData)
 }  // namespace
 
 bool TabMatcherAndroid::IsTabOpenWithURL(const GURL& url,
-                                         const AutocompleteInput* input) const {
+                                         const AutocompleteInput* input,
+                                         bool unused_exclude_active_tab) const {
   DCHECK(input);
   const AutocompleteInput empty_input;
   if (!input)

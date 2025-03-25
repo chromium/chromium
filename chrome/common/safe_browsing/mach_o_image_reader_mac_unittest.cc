@@ -14,6 +14,7 @@
 #include <string.h>
 #include <uuid/uuid.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/path_service.h"
@@ -458,7 +459,7 @@ TEST_F(MachOImageReaderTest, CmdsizeSmallerThanLoadCommand) {
 
   test_image.page_zero.cmd = LC_SEGMENT;
   test_image.page_zero.cmdsize = sizeof(test_image.page_zero);
-  strcpy(test_image.page_zero.segname, SEG_PAGEZERO);
+  UNSAFE_TODO(strcpy(test_image.page_zero.segname, SEG_PAGEZERO));
   test_image.page_zero.vmsize = PAGE_SIZE;
 
   test_image.small_sized.cmd = LC_SYMSEG;
@@ -466,7 +467,7 @@ TEST_F(MachOImageReaderTest, CmdsizeSmallerThanLoadCommand) {
 
   test_image.fake_code.cmd = LC_SEGMENT;
   test_image.fake_code.cmdsize = sizeof(test_image.fake_code);
-  strcpy(test_image.fake_code.segname, SEG_TEXT);
+  UNSAFE_TODO(strcpy(test_image.fake_code.segname, SEG_TEXT));
 
   MachOImageReader reader;
   EXPECT_TRUE(reader.Initialize(reinterpret_cast<const uint8_t*>(&test_image),

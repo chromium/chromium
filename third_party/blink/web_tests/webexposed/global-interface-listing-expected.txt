@@ -19,9 +19,11 @@ interface AICreateMonitor : EventTarget
     setter ondownloadprogress
 interface AILanguageDetector
     attribute @@toStringTag
+    getter inputQuota
     method constructor
     method destroy
     method detect
+    method measureInputUsage
 interface AILanguageDetectorFactory
     attribute @@toStringTag
     method availability
@@ -29,7 +31,6 @@ interface AILanguageDetectorFactory
     method create
 interface AILanguageModel : EventTarget
     attribute @@toStringTag
-    getter expectedInputLanguages
     getter maxTokens
     getter oncontextoverflow
     getter temperature

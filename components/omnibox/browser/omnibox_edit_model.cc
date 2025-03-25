@@ -354,8 +354,8 @@ void OmniboxEditModel::RestoreState(const State* state) {
     if ((!state->user_text.empty() || !state->keyword.empty()) && view_) {
       view_->SetUserText(state->user_text, false);
     }
-    keyword_ = state->keyword;
-    keyword_placeholder_ = state->keyword_placeholder;
+    SetKeyword(state->keyword);
+    SetKeywordPlaceholder(state->keyword_placeholder);
     is_keyword_hint_ = state->is_keyword_hint;
     keyword_mode_entry_method_ = state->keyword_mode_entry_method;
     if (view_) {
@@ -787,20 +787,14 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
             match_selection_timestamp);
 }
 
-void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
-    OmniboxEventProto::KeywordModeEntryMethod entry_method) {
-  if (!controller_->client()->IsDefaultSearchProviderEnabled()) {
-    return;
-  }
-
+void OmniboxEditModel::EnterKeywordMode(
+    OmniboxEventProto::KeywordModeEntryMethod entry_method,
+    const TemplateURL* template_url) {
+  DCHECK(template_url);
   controller_->StopAutocomplete(/*clear_result=*/false);
 
-  const TemplateURL* default_search_provider = controller_->client()
-                                                   ->GetTemplateURLService()
-                                                   ->GetDefaultSearchProvider();
-  DCHECK(default_search_provider);
-  keyword_ = default_search_provider->keyword();
-  keyword_placeholder_ = u"";
+  SetKeyword(template_url->keyword());
+  SetKeywordPlaceholder(u"");
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = entry_method;
   if (view_) {
@@ -823,7 +817,17 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
     }
   }
 
-  EmitEnteredKeywordModeHistogram(entry_method, default_search_provider);
+  EmitEnteredKeywordModeHistogram(entry_method, template_url);
+}
+
+void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
+    OmniboxEventProto::KeywordModeEntryMethod entry_method) {
+  if (!controller_->client()->IsDefaultSearchProviderEnabled()) {
+    return;
+  }
+  EnterKeywordMode(entry_method, controller_->client()
+                                     ->GetTemplateURLService()
+                                     ->GetDefaultSearchProvider());
 }
 
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
@@ -932,13 +936,6 @@ bool OmniboxEditModel::AcceptKeyword(
       controller_->client()->GetTemplateURLService()->GetTemplateURLForKeyword(
           keyword_);
   EmitEnteredKeywordModeHistogram(entry_method, turl);
-
-  if (turl && turl->starter_pack_id() > 0) {
-    controller_->OnStarterPackKeywordModeEntered(
-        static_cast<TemplateURLStarterPackData::StarterPackID>(
-            turl->starter_pack_id()));
-  }
-
   return true;
 }
 
@@ -1360,8 +1357,8 @@ void OmniboxEditModel::OnPopupDataChanged(
       ((is_keyword_hint_ != is_keyword_hint) && !keyword.empty());
   if (keyword_state_changed) {
     bool keyword_was_selected = is_keyword_selected();
-    keyword_ = keyword;
-    keyword_placeholder_ = keyword_placeholder;
+    SetKeyword(keyword);
+    SetKeywordPlaceholder(keyword_placeholder);
     is_keyword_hint_ = is_keyword_hint;
     if (!keyword_was_selected && is_keyword_selected()) {
       // Since we entered keyword mode, record the reason. Note that we
@@ -2728,6 +2725,28 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                        controller_->client()->AsWeakPtr()),
         match_selection_timestamp, disposition);
     action->Execute(context);
+
+    // Actions aren't generally able to change omnibox state, but it may be
+    // worth considering an extension to OmniboxAction::ExecutionContext
+    // if more action types want to enter keyword modes, close the popup, etc.
+    if (action->ActionId() ==
+            OmniboxActionId::CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE ||
+        action->ActionId() ==
+            OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION) {
+      if (const TemplateURL* page_turl =
+              controller_->client()
+                  ->GetTemplateURLService()
+                  ->FindStarterPackTemplateURL(
+                      TemplateURLStarterPackData::kPage)) {
+        EnterKeywordMode(OmniboxEventProto::SELECT_SUGGESTION, page_turl);
+        if (action->ActionId() ==
+                OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION &&
+            view_) {
+          view_->CloseOmniboxPopup();
+        }
+        return;
+      }
+    }
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
@@ -2930,4 +2949,13 @@ std::u16string OmniboxEditModel::GetText() const {
   } else {
     NOTREACHED();
   }
+}
+
+void OmniboxEditModel::SetKeyword(const std::u16string& keyword) {
+  keyword_ = keyword;
+}
+
+void OmniboxEditModel::SetKeywordPlaceholder(
+    const std::u16string& keyword_placeholder) {
+  keyword_placeholder_ = keyword_placeholder;
 }

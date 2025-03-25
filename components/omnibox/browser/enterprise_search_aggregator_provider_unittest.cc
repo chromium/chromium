@@ -220,6 +220,95 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
         ]
         })");
 
+const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
+    R"({
+      "querySuggestions": [],
+      "peopleSuggestions": [
+        {
+          "suggestion": "john@example.com",
+          "document": {
+            "name": "sundar",
+            "derivedStructData": {
+              "name": {
+                "display_name_lower": "john doe",
+                "familyName": "Doe",
+                "givenName": "John",
+                "given_name_lower": "john",
+                "family_name_lower": "doe",
+                "displayName": "John Doe",
+                "userName": "john"
+              },
+              "emails": [
+                {
+                  "type": "primary",
+                  "value": "john@example.com"
+                }
+              ],
+              "displayPhoto": {
+                "url": "https://example.com/image.png"
+              }
+            }
+          },
+          "dataStore": "project 1"
+        },
+        {
+          "suggestion": "john2@example.com",
+          "document": {
+            "name": "sundar2",
+            "derivedStructData": {
+              "name": {
+                "display_name_lower": "john doe2",
+                "familyName": "Doe2",
+                "givenName": "John",
+                "given_name_lower": "john",
+                "family_name_lower": "doe2",
+                "displayName": "John Doe2",
+                "userName": "john2"
+              },
+              "emails": [
+                {
+                  "type": "primary",
+                  "value": "john2@example.com"
+                }
+              ],
+              "displayPhoto": {
+                "url": "https://lh3.googleusercontent.com/some/path"
+              }
+            }
+          },
+          "dataStore": "project 1"
+        },
+        {
+          "suggestion": "john3@example.com",
+          "document": {
+            "name": "sundar3",
+            "derivedStructData": {
+              "name": {
+                "display_name_lower": "john doe3",
+                "familyName": "Doe3",
+                "givenName": "John",
+                "given_name_lower": "john",
+                "family_name_lower": "doe3",
+                "displayName": "John Doe3",
+                "userName": "john3"
+              },
+              "emails": [
+                {
+                  "type": "primary",
+                  "value": "john3@example.com"
+                }
+              ],
+              "displayPhoto": {
+                "url": "https://lh3.googleusercontent.com/some/path=s100"
+              }
+            }
+          },
+          "dataStore": "project 1"
+        }
+      ],
+      "contentSuggestions": []
+    })");
+
 const std::string kNonDictJsonResponse =
     base::StringPrintf(R"(["test","result1","result2"])");
 
@@ -612,6 +701,29 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_TRUE(PageTransitionCoreTypeIs(matches[2].transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
   EXPECT_EQ(matches[2].fill_into_edit, u"keyword John's Document 1");
+}
+
+// Test response is parsed accurately and image_url is adjusted appropriately.
+TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndModifyImageUrls) {
+  provider_->adjusted_input_ = CreateInput(u"john d", true);
+  ParseResponse(kGoodJsonResponseImageUrls);
+
+  ACMatches matches = provider_->matches_;
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"john@example.com");
+  EXPECT_EQ(matches[0].description, u"John Doe");
+  EXPECT_EQ(matches[0].image_url, GURL("https://example.com/image.png"));
+
+  EXPECT_EQ(matches[1].contents, u"john2@example.com");
+  EXPECT_EQ(matches[1].description, u"John Doe2");
+  EXPECT_EQ(matches[1].image_url,
+            GURL("https://lh3.googleusercontent.com/some/path=s64"));
+
+  EXPECT_EQ(matches[2].contents, u"john3@example.com");
+  EXPECT_EQ(matches[2].description, u"John Doe3");
+  EXPECT_EQ(matches[2].image_url,
+            GURL("https://lh3.googleusercontent.com/some/path=s100"));
 }
 
 // Test results with missing expected fields are skipped.

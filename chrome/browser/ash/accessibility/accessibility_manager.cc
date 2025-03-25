@@ -582,12 +582,16 @@ AccessibilityManager::AccessibilityManager() {
       base::BindRepeating(&AccessibilityManager::PostUnloadSelectToSpeak,
                           weak_ptr_factory_.GetWeakPtr())));
 
+  const bool enable_switch_access_v3_manifest =
+      ::features::IsAccessibilityManifestV3EnabledForSwitchAccess();
   const base::FilePath::CharType* switch_access_manifest_filename =
-      enable_v3_manifest ? extension_misc::kSwitchAccessManifestV3Filename
-                         : extension_misc::kSwitchAccessManifestFilename;
+      enable_v3_manifest || enable_switch_access_v3_manifest
+          ? extension_misc::kSwitchAccessManifestV3Filename
+          : extension_misc::kSwitchAccessManifestFilename;
   const base::FilePath::CharType* switch_access_guest_manifest_filename =
-      enable_v3_manifest ? extension_misc::kSwitchAccessGuestManifestV3Filename
-                         : extension_misc::kSwitchAccessGuestManifestFilename;
+      enable_v3_manifest || enable_switch_access_v3_manifest
+          ? extension_misc::kSwitchAccessGuestManifestV3Filename
+          : extension_misc::kSwitchAccessGuestManifestFilename;
 
   switch_access_loader_ = base::WrapUnique(new AccessibilityExtensionLoader(
       extension_misc::kSwitchAccessExtensionId,

@@ -53,4 +53,8 @@ found in the LICENSE file.
 
     <!-- Colors used in Google Pay icon -->
     <color name="google_pay_icon_grey_dark">#3C4043</color>
+
+    <!-- Colors used in New Tab Page. -->
+    <color name="custom_tile_background_color_placeholder">#28E84800</color>
+
 </resources>

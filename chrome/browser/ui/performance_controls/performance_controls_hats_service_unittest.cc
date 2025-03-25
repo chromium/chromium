@@ -27,6 +27,8 @@
 #include "ash/constants/ash_features.h"
 #endif
 
+using performance_manager::features::kPerformanceControlsPPMSurveyMaxDelay;
+using performance_manager::features::kPerformanceControlsPPMSurveyMinDelay;
 using ::testing::_;
 
 class PerformanceControlsHatsServiceTest : public testing::Test {
@@ -86,6 +88,8 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
   TestingPrefServiceSimple* local_state() { return &local_state_; }
 
+  content::BrowserTaskEnvironment& task_env() { return task_environment_; }
+
  protected:
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       environment_;
@@ -98,7 +102,8 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -177,8 +182,9 @@ TEST_F(PerformanceControlsHatsServiceTest, LaunchesPerformanceSurvey) {
   const bool battery_saver_mode = true;
 #endif
 
-  SurveyBitsData expected_bits = {{"high_efficiency_mode", false},
-                                  {"battery_saver_mode", battery_saver_mode}};
+  SurveyBitsData expected_bits = {
+      {"Memory Saver Mode Enabled", false},
+      {"Battery Saver Mode Enabled", battery_saver_mode}};
   SurveyStringData expected_strings = {};
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPerformance, _,
@@ -217,6 +223,66 @@ TEST_F(PerformanceControlsHatsServiceMemorySaverOptOutTest,
       LaunchDelayedSurvey(
           kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut, 10000, _, _));
   SetMemorySaverEnabled(false);
+}
+
+class PerformanceControlsHatsServicePPMTest
+    : public PerformanceControlsHatsServiceTest {
+ protected:
+  void SetUp() override {
+    PerformanceControlsHatsServiceTest::SetUp();
+    // Override the random delay.
+    performance_controls_hats_service()->SetDelayBeforePPMSurveyForTesting(
+        (kPerformanceControlsPPMSurveyMinDelay.Get() +
+         kPerformanceControlsPPMSurveyMaxDelay.Get()) /
+        2);
+  }
+
+  const std::vector<base::test::FeatureRefAndParams> GetFeatures() override {
+    return {
+        {performance_manager::features::kPerformanceControlsPPMSurvey, {}},
+    };
+  }
+};
+
+TEST_F(PerformanceControlsHatsServicePPMTest, NoPPMSurveyBeforeDelay) {
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _, _))
+      .Times(0);
+  performance_controls_hats_service()->OpenedNewTabPage();
+}
+
+TEST_F(PerformanceControlsHatsServicePPMTest, LaunchesPPMSurveyAfterDelay) {
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _, _));
+  task_env().FastForwardBy(
+      performance_controls_hats_service()->delay_before_ppm_survey());
+  performance_controls_hats_service()->OpenedNewTabPage();
+}
+
+TEST_F(PerformanceControlsHatsServicePPMTest, NoPPMSurveyAfterMaxTimeout) {
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _, _))
+      .Times(0);
+  task_env().FastForwardBy(kPerformanceControlsPPMSurveyMaxDelay.Get() +
+                           base::Seconds(1));
+  performance_controls_hats_service()->OpenedNewTabPage();
+}
+
+// Make sure there's a grace period if the PPM survey delay randomly lands at
+// the max timeout.
+TEST_F(PerformanceControlsHatsServicePPMTest,
+       LaunchesPPMSurveyWithDelayAtMaxTimeout) {
+  performance_controls_hats_service()->SetDelayBeforePPMSurveyForTesting(
+      kPerformanceControlsPPMSurveyMaxDelay.Get());
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPPM, _, _, _, _));
+  task_env().FastForwardBy(kPerformanceControlsPPMSurveyMaxDelay.Get() +
+                           base::Seconds(1));
+  performance_controls_hats_service()->OpenedNewTabPage();
 }
 
 class PerformanceControlsHatsServiceDestructorTest : public testing::Test {

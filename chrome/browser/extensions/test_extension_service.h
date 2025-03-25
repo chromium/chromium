@@ -13,7 +13,6 @@
 
 namespace extensions {
 class CWSInfoServiceInterface;
-class CrxInstaller;
 class Extension;
 }  // namespace extensions
 
@@ -26,9 +25,6 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
   ~TestExtensionService() override;
 
   // ExtensionServiceInterface implementation.
-  scoped_refptr<extensions::CrxInstaller> CreateUpdateInstaller(
-      const extensions::CRXFileInfo& file,
-      bool file_ownership_passed) override;
   const extensions::Extension* GetPendingExtensionUpdate(
       const std::string& extension_id) const override;
   bool FinishDelayedInstallationIfReady(const std::string& extension_id,

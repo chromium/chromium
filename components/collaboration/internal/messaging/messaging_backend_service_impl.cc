@@ -278,6 +278,68 @@ std::optional<tab_groups::SavedTabGroupTab> GetTabFromGroup(
   return std::nullopt;
 }
 
+std::u16string GetTitleForTabRemovedMessage(const InstantMessage& message) {
+  const auto& attribution = message.attributions[0];
+  std::optional<data_sharing::GroupMember> user = attribution.triggering_user;
+  std::optional<TabMessageMetadata> tab_metadata = attribution.tab_metadata;
+  const bool has_title =
+      tab_metadata.has_value() && tab_metadata->last_known_title.has_value();
+  if (!user.has_value() || !has_title) {
+    return std::u16string();
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_DATA_SHARING_TOAST_TAB_REMOVED, base::UTF8ToUTF16(user->given_name),
+      base::UTF8ToUTF16(tab_metadata->last_known_title.value()));
+}
+
+std::u16string GetTitleForTabUpdatedMessage(const InstantMessage& message) {
+  const auto& attribution = message.attributions[0];
+  std::optional<data_sharing::GroupMember> user = attribution.triggering_user;
+  std::optional<TabMessageMetadata> tab_metadata = attribution.tab_metadata;
+  const bool has_title =
+      tab_metadata.has_value() && tab_metadata->last_known_title.has_value();
+  if (!user.has_value() || !has_title) {
+    return std::u16string();
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_DATA_SHARING_TOAST_TAB_UPDATED, base::UTF8ToUTF16(user->given_name),
+      base::UTF8ToUTF16(tab_metadata->last_known_title.value()));
+}
+
+std::u16string GetTitleForMemberAddedMessage(const InstantMessage& message) {
+  const auto& attribution = message.attributions[0];
+  std::optional<data_sharing::GroupMember> user = attribution.affected_user;
+  std::optional<TabGroupMessageMetadata> tab_group_metadata =
+      attribution.tab_group_metadata;
+  const bool has_group_title = tab_group_metadata.has_value() &&
+                               tab_group_metadata->last_known_title.has_value();
+  if (!user.has_value() || !has_group_title) {
+    return std::u16string();
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_DATA_SHARING_TOAST_NEW_MEMBER, base::UTF8ToUTF16(user->given_name),
+      base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()));
+}
+
+std::u16string GetTitleForTabGroupRemovedMessage(
+    const InstantMessage& message) {
+  const auto& attribution = message.attributions[0];
+  std::optional<TabGroupMessageMetadata> tab_group_metadata =
+      attribution.tab_group_metadata;
+  const bool has_group_title = tab_group_metadata.has_value() &&
+                               tab_group_metadata->last_known_title.has_value();
+  if (!has_group_title) {
+    return std::u16string();
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_DATA_SHARING_TOAST_BLOCK_LEAVE,
+      base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()));
+}
+
 DirtyType GetDirtyTypeFromPersistentNotificationTypeForQuery(
     std::optional<PersistentNotificationType> type) {
   if (!type) {
@@ -290,6 +352,8 @@ DirtyType GetDirtyTypeFromPersistentNotificationTypeForQuery(
     return DirtyType::kChip;
   } else if (*type == PersistentNotificationType::TOMBSTONED) {
     return DirtyType::kTombstoned;
+  } else if (*type == PersistentNotificationType::INSTANT_MESSAGE) {
+    return DirtyType::kMessageOnly;
   } else {
     // Ask for all dirty messages.
     return DirtyType::kAll;
@@ -365,6 +429,7 @@ MessagingBackendServiceImpl::MessagingBackendServiceImpl(
     std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
     std::unique_ptr<DataSharingChangeNotifier> data_sharing_change_notifier,
     std::unique_ptr<MessagingBackendStore> messaging_backend_store,
+    std::unique_ptr<InstantMessageProcessor> instant_message_processor,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     data_sharing::DataSharingService* data_sharing_service,
     signin::IdentityManager* identity_manager)
@@ -372,9 +437,11 @@ MessagingBackendServiceImpl::MessagingBackendServiceImpl(
       tab_group_change_notifier_(std::move(tab_group_change_notifier)),
       data_sharing_change_notifier_(std::move(data_sharing_change_notifier)),
       store_(std::move(messaging_backend_store)),
+      instant_message_processor_(std::move(instant_message_processor)),
       tab_group_sync_service_(tab_group_sync_service),
       data_sharing_service_(data_sharing_service),
       identity_manager_(identity_manager) {
+  instant_message_processor_->SetMessagingBackendService(this);
   store_->Initialize(
       base::BindOnce(&MessagingBackendServiceImpl::OnStoreInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -384,13 +451,8 @@ MessagingBackendServiceImpl::~MessagingBackendServiceImpl() = default;
 
 void MessagingBackendServiceImpl::SetInstantMessageDelegate(
     InstantMessageDelegate* instant_message_delegate) {
-  // We must be either setting a delegate where there was none before or
-  // we should be resetting a non-null delegate.
-  CHECK((instant_message_delegate_ == nullptr &&
-         instant_message_delegate != nullptr) ||
-        (instant_message_delegate_ != nullptr &&
-         instant_message_delegate == nullptr));
-  instant_message_delegate_ = instant_message_delegate;
+  instant_message_processor_->SetInstantMessageDelegate(
+      instant_message_delegate);
 }
 
 void MessagingBackendServiceImpl::AddPersistentMessageObserver(
@@ -667,10 +729,12 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
   NotifyDisplayPersistentMessagesForTypes(
       persistent_message, {PersistentNotificationType::TOMBSTONED});
 
-  if (instant_message_delegate_) {
+  if (instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message =
         CreateInstantMessage(message, removed_group, /*tab=*/std::nullopt);
     instant_message.type = InstantNotificationType::UNDEFINED;
+    instant_message.localized_message =
+        GetTitleForTabGroupRemovedMessage(instant_message);
     DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
                           instant_message, {InstantNotificationLevel::BROWSER});
   }
@@ -784,10 +848,12 @@ void MessagingBackendServiceImpl::OnTabRemoved(
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            removed_tab.saved_group_guid());
 
-  if (!is_local && is_selected && instant_message_delegate_) {
+  if (!is_local && is_selected && instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message =
         CreateInstantMessage(message, /*tab_group=*/std::nullopt, removed_tab);
     instant_message.type = InstantNotificationType::CONFLICT_TAB_REMOVED;
+    instant_message.localized_message =
+        GetTitleForTabRemovedMessage(instant_message);
 
     // TODO(crbug.com/390794240): Remove the id argument to
     // DisplayInstantMessage as it's now contained inside the
@@ -845,14 +911,17 @@ void MessagingBackendServiceImpl::OnTabUpdated(
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            updated_tab.saved_group_guid());
 
-  if (!is_local && is_selected && instant_message_delegate_) {
+  if (!is_local && is_selected && instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message_base;
-    instant_message_base.attribution = CreateMessageAttributionForTabUpdates(
-        message, std::nullopt, updated_tab);
+    instant_message_base.attributions.emplace_back(
+        CreateMessageAttributionForTabUpdates(message, std::nullopt,
+                                              updated_tab));
     instant_message_base.collaboration_event = CollaborationEvent::TAB_UPDATED;
     // TODO(crbug.com/391941212): CONFLICT_TAB_REMOVED and UNDEFINED don't seem
     // to be used. In that case, remove them.
     instant_message_base.type = InstantNotificationType::UNDEFINED;
+    instant_message_base.localized_message =
+        GetTitleForTabUpdatedMessage(instant_message_base);
 
     DisplayInstantMessage(base::Uuid::ParseLowercase(message.uuid()),
                           instant_message_base,
@@ -1011,9 +1080,11 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
   message.set_affected_user_gaia_id(member_gaia_id.ToString());
   store_->AddMessage(message);
 
-  if (instant_message_delegate_) {
+  if (instant_message_processor_->IsEnabled()) {
     InstantMessage instant_message =
         CreateInstantMessage(message, tab_group, /*tab=*/std::nullopt);
+    instant_message.localized_message =
+        GetTitleForMemberAddedMessage(instant_message);
     DisplayInstantMessage(
         base::Uuid::ParseLowercase(message.uuid()), instant_message,
         {InstantNotificationLevel::SYSTEM, InstantNotificationLevel::BROWSER});
@@ -1449,8 +1520,8 @@ InstantMessage MessagingBackendServiceImpl::CreateInstantMessage(
   InstantMessage instant_message;
   instant_message.collaboration_event =
       ToCollaborationEvent(message.event_type());
-  instant_message.attribution =
-      CreateMessageAttributionForTabUpdates(message, tab_group, tab);
+  instant_message.attributions.emplace_back(
+      CreateMessageAttributionForTabUpdates(message, tab_group, tab));
   return instant_message;
 }
 
@@ -1584,14 +1655,10 @@ void MessagingBackendServiceImpl::DisplayInstantMessage(
     const base::Uuid& db_message_uuid,
     const InstantMessage& base_message,
     const std::vector<InstantNotificationLevel>& levels) {
-  CHECK(instant_message_delegate_);
   for (InstantNotificationLevel level : levels) {
     InstantMessage instant_message = base_message;
     instant_message.level = level;
-    instant_message_delegate_->DisplayInstantaneousMessage(
-        instant_message,
-        base::BindOnce(&MessagingBackendServiceImpl::ClearMessageDirtyBit,
-                       weak_ptr_factory_.GetWeakPtr(), db_message_uuid));
+    instant_message_processor_->DisplayInstantMessage(instant_message);
   }
 }
 

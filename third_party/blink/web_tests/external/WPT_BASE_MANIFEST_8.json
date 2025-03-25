@@ -6749,6 +6749,13 @@
        {}
       ]
      ],
+     "inserthorizontalrule-to-replace-selection-containing-comment.html": [
+      "5db139351cd1908e0483059f476717af11571edf",
+      [
+       null,
+       {}
+      ]
+     ],
      "inserthorizontalrule-with-2-selection-ranges-and-one-is-outside-body.html": [
       "d248c333d940fff01e2c2f183f5717970a89b61e",
       [
@@ -85466,7 +85473,7 @@
       },
       "corner-shape": {
        "corner-shape-any.html": [
-        "5b197317eb182639168b21a8ad522c081aba6f26",
+        "6d4f03c6b68cbe6c3e3f82e2b845e5538df6e0fc",
         [
          "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
          [
@@ -85482,11 +85489,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85508,11 +85515,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85534,11 +85541,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85560,11 +85567,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85586,11 +85593,63 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=scoop&border-radius=20%&border-width=20px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=scoop&border-radius=20%&border-width=20px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              600
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=scoop&border-radius=20%&border-width=20px&border-top-color=rebeccapurple&border-bottom-color=blue",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=scoop&border-radius=20%&border-width=20px&border-top-color=rebeccapurple&border-bottom-color=blue",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              600
              ]
             ]
            ]
@@ -85612,11 +85671,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85638,11 +85697,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85664,11 +85723,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85690,11 +85749,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85716,11 +85775,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85728,10 +85787,10 @@
          }
         ],
         [
-         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=straight&border-bottom-leftradius=5px",
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=straight&border-bottom-left-radius=5px",
          [
           [
-           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=straight&border-bottom-leftradius=5px",
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=straight&border-bottom-left-radius=5px",
            "=="
           ]
          ],
@@ -85742,11 +85801,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85768,11 +85827,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85794,11 +85853,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85820,11 +85879,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85846,11 +85905,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85872,11 +85931,37 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=notch&border-radius=40px&border-width=10px&border-color=blue&border-left-color=yellow",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=notch&border-radius=40px&border-width=10px&border-color=blue&border-left-color=yellow",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              600
              ]
             ]
            ]
@@ -85898,11 +85983,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85924,11 +86009,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85950,11 +86035,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -85976,11 +86061,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -86002,11 +86087,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -86028,11 +86113,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -86054,11 +86139,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -86080,11 +86165,37 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              200
+             ],
+             [
+              0,
+              600
              ]
             ]
            ]
@@ -86106,11 +86217,11 @@
             [
              [
               0,
-              180
+              200
              ],
              [
               0,
-              520
+              600
              ]
             ]
            ]
@@ -164478,6 +164589,19 @@
        {}
       ]
      ],
+     "column-height-009.html": [
+      "1e08242e0f9c9dc415854af29ce04a6e7ee2ef9e",
+      [
+       null,
+       [
+        [
+         "/css/css-multicol/column-height-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "column-pseudo-background-color.html": [
       "f321b1076eb58fcc00add55ab9f7dacd9daa2fba",
       [
@@ -170291,6 +170415,32 @@
          ],
          [
           "/css/css-overflow/line-clamp/reference/block-ellipsis-010-alt-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-011.tentative.html": [
+       "9ee252082399c2967cb70c4dbf0ca7fdd9a28028",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-ellipsis-012.tentative.html": [
+       "54dd4df51417f31e68dbfa956aa8024a75df49a2",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/block-ellipsis-012-ref.html",
           "=="
          ]
         ],
@@ -295216,6 +295366,19 @@
         {}
        ]
       ],
+      "text-control-flow-root.html": [
+       "54f7612da34262e9f804d5fcc6af0e71dafd3af8",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/text-control-flow-root-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "the-select-element": {
        "option-add-label-quirks.html": [
         "2c3c8093e253250f11a7e84a7ba89f3535d2eb20",
@@ -330764,7 +330927,7 @@
        ],
        "resources": {
         "corner-shape.js": [
-         "6de6c9a5d7ef206f8f6bebae651a0e93b55cec77",
+         "af749cd66cb4e99c669d3ffea0ef5c7a7690b2e1",
          []
         ],
         "corner-utils.js": [
@@ -330772,7 +330935,7 @@
          []
         ],
         "resolve-corner-style.js": [
-         "b584994b4ea52295381f4c79b34fa63a78afec7a",
+         "0c41d9d08f03e96f3cf57f45286c9e2295765a7f",
          []
         ]
        }
@@ -351182,6 +351345,10 @@
       "f0ee4df8c9de3a77fb39b40942dbf0743312494f",
       []
      ],
+     "column-height-009-ref.html": [
+      "034440ebd5c81be43f0d871d3adb276b2a735768",
+      []
+     ],
      "column-pseudo-background-color-ref.html": [
       "8a6d741542939fda5e165f56129a44fdd2e950a9",
       []
@@ -352376,6 +352543,14 @@
        ],
        "block-ellipsis-010-ref.html": [
         "b5f15ca3dcdf00d68fd2c11611aa69853cc07414",
+        []
+       ],
+       "block-ellipsis-011-ref.html": [
+        "379cf974f649e4a7e96e19289509982a0ac5c514",
+        []
+       ],
+       "block-ellipsis-012-ref.html": [
+        "7f9c44293e8e6bdc768a1ab0bc5ac50564f519ff",
         []
        ],
        "line-clamp-010-ref.html": [
@@ -397637,6 +397812,10 @@
        "938d2659a8a8c02230c92db5b575818a5d056809",
        []
       ],
+      "text-control-flow-root-ref.html": [
+       "df2783540d87462a6c0f99c7d2e6bf6e7fd657a1",
+       []
+      ],
       "the-select-element": {
        "option-checked-styling-ref.html": [
         "92504a47b5961a7fa64b98b9382327b7be8e3c83",
@@ -407405,7 +407584,7 @@
     ]
    },
    "lint.ignore": [
-    "c1bec5bbd51f1a6e0f457a32f850489d8f7ae687",
+    "8df85b016fe85482344b9d5cbe76f1e15a8d8827",
     []
    ],
    "loading": {
@@ -409850,7 +410029,7 @@
      []
     ],
     "META.yml": [
-     "d59e5e30845eaef12bab6419e348a01779313c56",
+     "6a5b5839b61443a25ff642b0d9bb3ce77b9e4427",
      []
     ],
     "MediaRecorder-canvas-media-source.https_mimeType=video_mp4-expected.txt": [
@@ -415670,7 +415849,7 @@
      []
     ],
     "testdriver.js": [
-     "12eacd915ba3d94f5fda001d78f9e852a41e8664",
+     "15f3a4b7cc7412ea32c9ff8d337975039c3be2be",
      []
     ],
     "testdriver.js.headers": [
@@ -415863,6 +416042,10 @@
      "0ac1e88666762cb57441bfd0a9bbc7daaff4cce7",
      []
     ],
+    "lock-sandboxed-iframe-expected.txt": [
+     "950245bdc7949710c5e7367b6ab70d5f41614d02",
+     []
+    ],
     "nested-documents-expected.txt": [
      "e5b009f4e6c6403d314e431210f579935df57685",
      []
@@ -415885,7 +416068,7 @@
       []
      ],
      "sandboxed-iframe-locking.html": [
-      "436c67f5b53b1f88ef1537072be3b0011724d7b3",
+      "f4773535dbc3d21319f8dd7a398ff7731d19a240",
       []
      ]
     },
@@ -423486,6 +423669,22 @@
       "45053d43e362e223e0ce5e6dffb4da09c0ce3f34",
       []
      ],
+     "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker.js": [
+      "dc3eb004c384b578f1217575626ba5725018f15e",
+      []
+     ],
+     "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker.js.headers": [
+      "c17d57d19ae4ef9d3e584d10fc39065823cb2f73",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker.js": [
+      "c5c512d98a2748bfbe12880b7003a6845806c6a2",
+      []
+     ],
+     "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker.js.headers": [
+      "c27bd116d8d25f28a411097e6d53b1dc30f3bdc5",
+      []
+     ],
      "trusted-types-reporting-check-report-create-policy-worker.js": [
       "6bb346e3195f613bc45d806b63496c7c9a0b6903",
       []
@@ -424549,7 +424748,7 @@
       []
      ],
      "urlpatterntestdata.json": [
-      "75f1cf8694523b63cee9c94dd90eebeb13434ba5",
+      "a613b6a74b5a900e51185f63bfe597e38f8557b6",
       []
      ],
      "urlpatterntests.js": [
@@ -424558,35 +424757,35 @@
      ]
     },
     "urlpattern.any-expected.txt": [
-     "826817e7b2f9e723f63d7754f3db8649265615c8",
+     "f6d25515d405e94e256013be9b50fdc86f7051fa",
      []
     ],
     "urlpattern.any.serviceworker-expected.txt": [
-     "826817e7b2f9e723f63d7754f3db8649265615c8",
+     "f6d25515d405e94e256013be9b50fdc86f7051fa",
      []
     ],
     "urlpattern.any.sharedworker-expected.txt": [
-     "826817e7b2f9e723f63d7754f3db8649265615c8",
+     "f6d25515d405e94e256013be9b50fdc86f7051fa",
      []
     ],
     "urlpattern.any.worker-expected.txt": [
-     "826817e7b2f9e723f63d7754f3db8649265615c8",
+     "f6d25515d405e94e256013be9b50fdc86f7051fa",
      []
     ],
     "urlpattern.https.any-expected.txt": [
-     "826817e7b2f9e723f63d7754f3db8649265615c8",
+     "f6d25515d405e94e256013be9b50fdc86f7051fa",
      []
     ],
     "urlpattern.https.any.serviceworker-expected.txt": [
-     "826817e7b2f9e723f63d7754f3db8649265615c8",
+     "f6d25515d405e94e256013be9b50fdc86f7051fa",
      []
     ],
     "urlpattern.https.any.sharedworker-expected.txt": [
-     "826817e7b2f9e723f63d7754f3db8649265615c8",
+     "f6d25515d405e94e256013be9b50fdc86f7051fa",
      []
     ],
     "urlpattern.https.any.worker-expected.txt": [
-     "826817e7b2f9e723f63d7754f3db8649265615c8",
+     "f6d25515d405e94e256013be9b50fdc86f7051fa",
      []
     ]
    },
@@ -428804,7 +429003,7 @@
        []
       ],
       "fixtures.py": [
-       "a8f1f2959d4acb02776fc7cc2440fc00f408f50c",
+       "21dbfcc25bcf33e7933f32e657d7b731fc15da99",
        []
       ],
       "fixtures_bidi.py": [
@@ -428816,7 +429015,7 @@
        []
       ],
       "helpers.py": [
-       "8baa895adf2ebace57f8b37ba444be66aaf4eb0b",
+       "0bd27a39acd5d8c2b6bba106bc24e17f4945a8d2",
        []
       ],
       "html": {
@@ -461221,7 +461420,7 @@
       ]
      ],
      "ai_translator_translate.tentative.https.any.js": [
-      "5f395ff9ca6d18efa1b49b95a99f32a0fa150dcb",
+      "992215d921025079dfee122672fcde827c249e6a",
       [
        "ai/translator/ai_translator_translate.tentative.https.any.html",
        {
@@ -482445,8 +482644,26 @@
     ]
    },
    "cookie-store": {
+    "change_eventhandler_for_already_expired.https.window.js": [
+     "89d84b13d1b53ec4d424b363ace9b26ed9685685",
+     [
+      "cookie-store/change_eventhandler_for_already_expired.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Test that setting an already-expired cookie does not trigger an event."
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "change_eventhandler_for_document_cookie.https.window.js": [
-     "0a8b1bd21efc9b0ac69468ad81c306757e5b18ff",
+     "82b0f2baa2bb72f51d944e2138ad56f7a170ba7a",
      [
       "cookie-store/change_eventhandler_for_document_cookie.https.window.html",
       {
@@ -482464,7 +482681,7 @@
      ]
     ],
     "change_eventhandler_for_http_cookie_and_set_cookie_headers.https.window.js": [
-     "2028df5b4bf4611f565e223579b6673a0d368483",
+     "8f5ef1cabbe7a742115ba81328e40ee789496edd",
      [
       "cookie-store/change_eventhandler_for_http_cookie_and_set_cookie_headers.https.window.html",
       {
@@ -505206,6 +505423,15 @@
        }
       ]
      ],
+     "column-scroll-marker-focus-002.html": [
+      "cd26b8aca85fe6d4e9ac643f4675d8ca1a3b83bd",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "column-updates-computed-style.html": [
       "d741b8cf915a189e13a7f7c2738bb2880aa4e852",
       [
@@ -509644,7 +509870,7 @@
        ]
       ],
       "scroll-start-overflow-toggled.tentative.html": [
-       "8829519024a3ce7e98e8bb1321c6f3f1509c40cd",
+       "8c0f2a45177eafd01816d2d8ab9a95cd6392c4e8",
        [
         null,
         {}
@@ -518902,7 +519128,7 @@
       },
       "inline": {
        "append.tentative.html": [
-        "f80875622366939f48a7471513fb6319f75be718",
+        "fa23071c4f22468fd46015b9767c91d6ef81e232",
         [
          null,
          {}
@@ -537029,7 +537255,7 @@
    },
    "ecmascript": {
     "locale-compat.html": [
-     "74806987879e74befd087489285b6610d8107089",
+     "1f863b21ecb3b74287f9f5464303dec45c116c16",
      [
       null,
       {}
@@ -633986,6 +634212,13 @@
         {}
        ]
       ],
+      "text-control-client-width.html": [
+       "cfded6804dba6d5cc82472cae2cc276a7092741a",
+       [
+        null,
+        {}
+       ]
+      ],
       "textarea-cols-rows.html": [
        "5d02a4653ef77fbaab8b1c7aa8df933a8eabcd47",
        [
@@ -662192,7 +662425,7 @@
      ]
     ],
     "decodingInfo.any.js": [
-     "2fd3743b442cf8f3143ee2d4c3ccb02571036b15",
+     "e7a0e6ae430deb71e0f426f63bcac60e60d0448a",
      [
       "media-capabilities/decodingInfo.any.html",
       {
@@ -662262,7 +662495,7 @@
      ]
     ],
     "encodingInfo.any.js": [
-     "14612238e60cdb45cf716a6bd0d7037e1e2506a6",
+     "97b6c196f09d3c4fc3d46f92a916e4020c39d646",
      [
       "media-capabilities/encodingInfo.any.html",
       {}
@@ -663500,7 +663733,7 @@
      ]
     ],
     "MediaRecorder-canvas-media-source.https.html": [
-     "847e6618b3b66a5297f617959c37d70f1bf7d342",
+     "0339c18df424df1081b4ab2275d83d607301637b",
      [
       "mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=''",
       {
@@ -671153,7 +671386,7 @@
      ]
     ],
     "paint-timing-mixin.html": [
-     "65c1062a05912dc87d142a29cd493d92ac52d2bf",
+     "c43b7668b5c9b376774672746b6f1e31e5feb3cb",
      [
       null,
       {}
@@ -694729,7 +694962,7 @@
      ]
     ],
     "lock-sandboxed-iframe.html": [
-     "ab954f04b4c5d9043d893e36892c4061ed446661",
+     "f78d7d72d538fd9384e9b5f7193d318a0ae69589",
      [
       null,
       {
@@ -701462,6 +701695,15 @@
      ],
      "text-selection-with-delegatesFocus-on-slotted-content.html": [
       "7a71c48c44d40f6ede42b9431621f792e2b9b81d",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "text-selection-with-delegatesFocus-text-control.html": [
+      "6474729b8b4a8c496b33e40d5b056a12b7232418",
       [
        null,
        {
@@ -725595,6 +725837,15 @@
       }
      ]
     ],
+    "should-sink-type-mismatch-violation-be-blocked-by-csp-002-worker.html": [
+     "9a7b237f11a5c436141f8f658b1d21b816ceadff",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "should-trusted-type-policy-creation-be-blocked-by-csp-001.html": [
      "6e51bd5ef198a7419539e63b835b4f07becfcea3",
      [
@@ -725615,6 +725866,15 @@
     ],
     "should-trusted-type-policy-creation-be-blocked-by-csp-003.html": [
      "55f1479e3db0e88684a171cfee5a948e5cae8fe9",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "should-trusted-type-policy-creation-be-blocked-by-csp-004-worker.html": [
+     "7e928d2d7192e694d632ce5907c430a673653bf8",
      [
       null,
       {
@@ -765142,7 +765402,7 @@
       ]
      ],
      "reduce_l1.https.any.js": [
-      "63a6ab727cb5f0c64034c533ccab031fe89f7ef0",
+      "1e6b163cff340a6ceb9b161e6f2920b5d833e22c",
       [
        "webnn/conformance_tests/reduce_l1.https.any.html?cpu",
        {
@@ -765253,7 +765513,7 @@
       ]
      ],
      "reduce_l2.https.any.js": [
-      "7358ee8a15c82b839590a99654db3bf235eed702",
+      "0670a1d25c1c6d6abe8c2a585a4fa6421573e9bf",
       [
        "webnn/conformance_tests/reduce_l2.https.any.html?cpu",
        {
@@ -765364,7 +765624,7 @@
       ]
      ],
      "reduce_log_sum.https.any.js": [
-      "31e21dbd50ae51d57097bde5e0f09f24a195dfff",
+      "9d30accb2cb39262f70b8dd2756c5ceaeca846e1",
       [
        "webnn/conformance_tests/reduce_log_sum.https.any.html?cpu",
        {
@@ -765475,7 +765735,7 @@
       ]
      ],
      "reduce_log_sum_exp.https.any.js": [
-      "e60d6cfc892cb2ccda3593023c6d6e69fcd37cd6",
+      "e8026435017b67ee118741eac5d17487d46a5e21",
       [
        "webnn/conformance_tests/reduce_log_sum_exp.https.any.html?cpu",
        {
@@ -765586,7 +765846,7 @@
       ]
      ],
      "reduce_max.https.any.js": [
-      "03458a30470ea09aae07624bd212b7fda14b5ceb",
+      "784db3101b66104ad8ac1208e2d15b5c4982b5ed",
       [
        "webnn/conformance_tests/reduce_max.https.any.html?cpu",
        {
@@ -765697,7 +765957,7 @@
       ]
      ],
      "reduce_mean.https.any.js": [
-      "e9c9475088aa9b01f7b59769287ec3b52f9f1c67",
+      "63566b011c0bfc6ea0a212bec80db3aaa7c31c96",
       [
        "webnn/conformance_tests/reduce_mean.https.any.html?cpu",
        {
@@ -765808,7 +766068,7 @@
       ]
      ],
      "reduce_min.https.any.js": [
-      "aca474d74ff7dc993cd63a9ca3b2e865633f39ac",
+      "64cf8b7ee98cdbe89ff06f7e6c6f11b4eefa2596",
       [
        "webnn/conformance_tests/reduce_min.https.any.html?cpu",
        {
@@ -765919,7 +766179,7 @@
       ]
      ],
      "reduce_product.https.any.js": [
-      "9534c5b92e54ab4f02a1e5c18b78dcc7371d2573",
+      "6b4c1242d7f8f19c4357a91bec38eeec8e3f8e25",
       [
        "webnn/conformance_tests/reduce_product.https.any.html?cpu",
        {
@@ -766030,7 +766290,7 @@
       ]
      ],
      "reduce_sum.https.any.js": [
-      "687f8e5e7ee66847e00525f284581b5ffdbf9a9d",
+      "d333f9fb5ad92b902b17aa55b8a9cb73a0912b7e",
       [
        "webnn/conformance_tests/reduce_sum.https.any.html?cpu",
        {

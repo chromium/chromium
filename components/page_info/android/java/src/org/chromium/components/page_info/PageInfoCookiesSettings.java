@@ -18,6 +18,7 @@ import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -368,6 +369,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         Website currentWebsite = rwsInfo.findWebsiteForOrigin(currentOrigin);
                         if (currentWebsite != null) {
                             mPageInfoControllerDelegate.showSiteSettings(currentWebsite);
+                            RecordUserAction.record(
+                                    "PageInfo.CookiesSubpage.RwsSiteSettingsOpened");
                         }
                         return false;
                     });

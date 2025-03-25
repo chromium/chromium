@@ -27,8 +27,7 @@ namespace {
 
 // Returns the local tab group ID from the InstantMessage.
 std::optional<LocalTabGroupID> UnwrapTabGroupID(InstantMessage message) {
-  CHECK(message.attribution.has_value());
-  auto tab_group_metadata = message.attribution->tab_group_metadata;
+  auto tab_group_metadata = message.attributions[0].tab_group_metadata;
   if (tab_group_metadata.has_value()) {
     return tab_group_metadata->local_tab_group_id;
   }
@@ -57,6 +56,10 @@ void InstantMessageQueueProcessor::Enqueue(InstantMessage message,
   if (message.level !=
       collaboration::messaging::InstantNotificationLevel::BROWSER) {
     // Only handle browser notifications.
+    return;
+  }
+
+  if (message.localized_message.empty()) {
     return;
   }
 
@@ -175,60 +178,21 @@ std::optional<ToastParams> InstantMessageQueueProcessor::GetParamsForMessage(
     const InstantMessage& message) {
   using collaboration::messaging::TabGroupMessageMetadata;
   using collaboration::messaging::TabMessageMetadata;
-  CHECK(message.attribution.has_value());
 
   switch (message.collaboration_event) {
     case CollaborationEvent::TAB_REMOVED: {
-      std::optional<data_sharing::GroupMember> user =
-          message.attribution->triggering_user;
-      std::optional<TabMessageMetadata> tab_metadata =
-          message.attribution->tab_metadata;
-      const bool has_title = tab_metadata.has_value() &&
-                             tab_metadata->last_known_title.has_value();
-      if (!user.has_value() || !has_title) {
-        return std::nullopt;
-      }
-
       ToastParams params(ToastId::kTabGroupSyncTabRemoved);
-      params.body_string_replacement_params = {
-          base::UTF8ToUTF16(user->given_name),
-          base::UTF8ToUTF16(tab_metadata->last_known_title.value()),
-      };
+      params.body_string_override = message.localized_message;
       return params;
     }
     case CollaborationEvent::COLLABORATION_MEMBER_ADDED: {
-      std::optional<data_sharing::GroupMember> user =
-          message.attribution->affected_user;
-      std::optional<TabGroupMessageMetadata> tab_group_metadata =
-          message.attribution->tab_group_metadata;
-      const bool has_group_title =
-          tab_group_metadata.has_value() &&
-          tab_group_metadata->last_known_title.has_value();
-      if (!user.has_value() || !has_group_title) {
-        return std::nullopt;
-      }
-
       ToastParams params(ToastId::kTabGroupSyncUserJoined);
-      params.body_string_replacement_params = {
-          base::UTF8ToUTF16(user->given_name),
-          base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()),
-      };
+      params.body_string_override = message.localized_message;
       return params;
     }
     case CollaborationEvent::TAB_GROUP_REMOVED: {
-      std::optional<TabGroupMessageMetadata> tab_group_metadata =
-          message.attribution->tab_group_metadata;
-      const bool has_group_title =
-          tab_group_metadata.has_value() &&
-          tab_group_metadata->last_known_title.has_value();
-      if (!has_group_title) {
-        return std::nullopt;
-      }
-
       ToastParams params(ToastId::kTabGroupSyncRemovedFromGroup);
-      params.body_string_replacement_params = {
-          base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()),
-      };
+      params.body_string_override = message.localized_message;
       return params;
     }
     default:

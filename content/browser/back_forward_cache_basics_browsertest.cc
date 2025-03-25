@@ -243,6 +243,43 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, StartAndStopLoading) {
   ExpectRestored(FROM_HERE);
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DidFinishLoadNotCalled) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/page_with_iframe.html"));
+
+  int did_finish_load_count = 0;
+
+  // Set up a LoadFinishObserver to observe the DidFinishLoad event.
+  LoadFinishObserver load_finish_observer(
+      shell()->web_contents(),
+      base::BindLambdaForTesting(
+          [&](RenderFrameHost* render_frame_host, const GURL& validated_url) {
+            did_finish_load_count++;
+          }));
+
+  // 1) Navigate to A. DidFinishLoad will be called once.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_EQ(did_finish_load_count, 1);
+
+  // 2) Navigate to B. DidFinishLoad will be called once for the main frame and
+  // once for iframe.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_EQ(did_finish_load_count, 3);
+
+  // 3) Go back to A. DidFinishLoad should not be called in the back forward
+  // cache navigation.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(did_finish_load_count, 3);
+  ExpectRestored(FROM_HERE);
+
+  // 4) Go forward to B. DidFinishLoad should not be called in the back forward
+  // cache navigation.
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
+  EXPECT_EQ(did_finish_load_count, 3);
+  ExpectRestored(FROM_HERE);
+}
+
 // The current page can't enter the BackForwardCache if another page can script
 // it. This can happen when one document opens a popup using window.open() for
 // instance. It prevents the BackForwardCache from being used.

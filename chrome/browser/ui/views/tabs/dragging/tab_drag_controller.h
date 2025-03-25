@@ -18,8 +18,8 @@
 #include "base/uuid.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
+#include "chrome/browser/ui/views/tabs/dragging/dragging_tabs_session.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
-#include "chrome/browser/ui/views/tabs/dragging/tab_strip_scroll_session.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -56,6 +56,7 @@ class TabDragControllerTest;
 class TabDragContext;
 class TabSlotView;
 class TabStripModel;
+class TabStripScrollSession;
 class WindowFinder;
 class TabStripScrollSession;
 
@@ -70,8 +71,7 @@ class TabStripScrollSession;
 // that the tabs should be moved out of the tab strip a new Browser is created
 // and RunMoveLoop() is invoked on the Widget to drag the browser around. This
 // is the default on aura.
-class TabDragController : public views::WidgetObserver,
-                          public TabDragWithScrollManager
+class TabDragController : public views::WidgetObserver
 #if defined(USE_AURA)
     ,
                           public aura::client::DragDropClientObserver
@@ -116,15 +116,13 @@ class TabDragController : public views::WidgetObserver,
   // and is only non-empty if the original selection isn't the same as the
   // dragging set. Returns Liveness::DELETED if `this` was deleted during this
   // call, and Liveness::ALIVE if `this` still exists.
-  [[nodiscard]] Liveness Init(
-      TabDragContext* source_context,
-      TabSlotView* source_view,
-      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>&
-          dragging_views,
-      const gfx::Point& mouse_offset,
-      int source_view_offset,
-      ui::ListSelectionModel initial_selection_model,
-      ui::mojom::DragEventSource event_source);
+  [[nodiscard]] Liveness Init(TabDragContext* source_context,
+                              TabSlotView* source_view,
+                              const std::vector<TabSlotView*>& dragging_views,
+                              const gfx::Point& mouse_offset,
+                              int source_view_offset,
+                              ui::ListSelectionModel initial_selection_model,
+                              ui::mojom::DragEventSource event_source);
 
   // Returns true if there is a drag underway and the drag is attached to
   // `tab_strip`.
@@ -203,10 +201,6 @@ class TabDragController : public views::WidgetObserver,
   //   kDraggingUsingSystemDnD state for the first time.
   void SetDragLoopDoneCallbackForTesting(base::OnceClosure callback);
 
-  TabStripScrollSession* GetTabStripScrollSessionForTesting() {
-    return tab_strip_scroll_session_.get();
-  }
-
  private:
   friend class TabDragControllerTest;
 
@@ -284,13 +278,6 @@ class TabDragController : public views::WidgetObserver,
   // canonical reference if we were dragging that tab.
   void OnActiveStripWebContentsReplaced(content::WebContents* previous,
                                         content::WebContents* next);
-
-  // TabDragWithScrollManager:
-  gfx::Point GetLastPointInScreen() override;
-  views::View* GetAttachedContext() override;
-  views::ScrollView* GetScrollView() override;
-  gfx::Rect GetEnclosingRectForDraggedTabs() override;
-  void MoveAttached(gfx::Point point_in_screen, bool just_attached) override;
 
   void UpdateDockInfo(const gfx::Point& point_in_screen);
 
@@ -395,21 +382,11 @@ class TabDragController : public views::WidgetObserver,
   [[nodiscard]] Liveness RunMoveLoop(gfx::Point point_in_screen,
                                      gfx::Vector2d drag_offset);
 
-  // Retrieves the bounds of the dragged tabs relative to the attached
-  // TabDragContext. `tab_strip_point` is in the attached
-  // TabDragContext's coordinate system.
-  gfx::Rect GetDraggedViewTabStripBounds(const gfx::Point& tab_strip_point);
-
-  // Calculates where to position the dragged tabs, given the cursor is at
-  // `point_in_screen`. Keeps the same point within the source view under the
-  // cursor, unless that would push tabs outside the drag area.
-  gfx::Point GetAttachedDragPoint(const gfx::Point& point_in_screen);
-
   // Finds the TabSlotViews within the specified TabDragContext that
   // corresponds to the WebContents of the dragged views. Also finds the group
   // header if it is dragging. Returns an empty vector if not attached.
-  std::vector<raw_ptr<TabSlotView, VectorExperimental>>
-  GetViewsMatchingDraggedContents(TabDragContext* context);
+  std::vector<TabSlotView*> GetViewsMatchingDraggedContents(
+      TabDragContext* context);
 
   // Does the work for EndDrag(). If we actually started a drag and `how_end` is
   // not TAB_DESTROYED then one of CompleteDrag() or RevertDrag() is invoked.
@@ -458,10 +435,6 @@ class TabDragController : public views::WidgetObserver,
   // Returns the Widget of the currently attached TabDragContext's
   // BrowserView.
   views::Widget* GetAttachedBrowserWidget();
-
-  // Returns true if the tabs were originally one after the other in
-  // `source_context_`.
-  bool AreTabsConsecutive();
 
   // Restores and resizes `attached_context_` so it can be dragged.
   void RestoreAttachedWindowForDrag();
@@ -512,11 +485,6 @@ class TabDragController : public views::WidgetObserver,
   // (NORMAL vs APP).
   bool CanAttachTo(gfx::NativeWindow window);
 
-  // Helper method for TabDragController::MoveAttached to precompute the tab
-  // group membership of selected tabs after performing the move.
-  std::optional<tab_groups::TabGroupId> CalculateGroupForDraggedTabs(
-      int to_index);
-
   // Helper method for OnSystemDnDExited() to calculate a y-coordinate that is
   // out of the bounds of `attached_context_`, keeping
   // `kVerticalDetachMagnetism` in mind.
@@ -532,7 +500,10 @@ class TabDragController : public views::WidgetObserver,
   void MaybePauseTrackingSavedTabGroup();
   void MaybeResumeTrackingSavedTabGroup();
 
-  void MaybeStartScrollSession();
+  // Initializes `dragging_tabs_session_`, and performs a first MoveAttached
+  // within `attached_context_`.
+  void StartDraggingTabsSession(bool initial_move,
+                                gfx::Point start_point_in_screen);
 
 #if defined(USE_AURA)
   // aura::client::DragDropClientObserver:
@@ -541,6 +512,8 @@ class TabDragController : public views::WidgetObserver,
 #endif  // defined(USE_AURA)
 
   DragState current_state_;
+
+  std::unique_ptr<DraggingTabsSession> dragging_tabs_session_;
 
   ui::mojom::DragEventSource event_source_ = ui::mojom::DragEventSource::kMouse;
 
@@ -562,28 +535,14 @@ class TabDragController : public views::WidgetObserver,
   // DraggedTabView is constructed.
   gfx::Point start_point_in_screen_;
 
-  // This is the offset of the mouse from the top left of the first Tab where
-  // dragging began. This is used to ensure that the dragged view is always
-  // positioned at the correct location during the drag, and to ensure that the
-  // detached window is created at the right location.
-  gfx::Point mouse_offset_;
-
   // Ratio of the x-coordinate of the `source_view_offset` to the width of the
   // source view.
   float offset_to_width_ratio_;
-
-  // Location of the first tab in the source tabstrip in screen coordinates.
-  // This is used to calculate `window_create_point_`.
-  gfx::Point first_source_tab_point_;
 
   // Used to track the view that had focus in the window containing
   // `source_view_`. This is saved so that focus can be restored properly when
   // a drag begins and ends within this same window.
   std::unique_ptr<views::ViewTracker> old_focused_view_tracker_;
-
-  // The horizontal position of the mouse cursor in `attached_context_`
-  // coordinates at the time of the last re-order event.
-  int last_move_attached_context_loc_ = 0;
 
   // Timer used to bring the window under the cursor to front. If the user
   // stops moving the mouse for a brief time over a browser window, it is
@@ -598,9 +557,6 @@ class TabDragController : public views::WidgetObserver,
   // primary use cases are when we are in the middle of a drag session (Paired
   // Detach() and Attach() calls) or when reverting a drag (RevertDrag()).
   std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser_;
-
-  // True until MoveAttached() is first invoked.
-  bool initial_move_;
 
   // The selection model before the drag started. See comment above Init() for
   // details.
@@ -694,10 +650,6 @@ class TabDragController : public views::WidgetObserver,
   // or not they destroy `this` might depend on platform behavior or other
   // external factors. Destruction while this is true will DCHECK.
   bool expect_stay_alive_ = false;
-
-  // the scrolling session that handles scrolling when the tabs are dragged
-  // to the scrollable regions of the tab_strip.
-  std::unique_ptr<TabStripScrollSession> tab_strip_scroll_session_ = nullptr;
 
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 

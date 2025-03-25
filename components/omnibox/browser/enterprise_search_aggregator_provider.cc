@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
@@ -644,6 +645,12 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
     if (suggestion_type == SuggestionType::PEOPLE) {
       image_url = ptr_to_string(result.FindStringByDottedPath(
           "document.derivedStructData.displayPhoto.url"));
+      // Ensure that image URLs from lh3.googleusercontent.com include an image
+      // size parameter.
+      if (base::StartsWith(image_url, "https://lh3.googleusercontent.com") &&
+          !base::Contains(image_url, "=s")) {
+        image_url += "=s64";
+      }
     } else if (suggestion_type == SuggestionType::CONTENT) {
       icon_url = ptr_to_string(result.FindStringByDottedPath("iconUri"));
     }

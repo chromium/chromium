@@ -19,7 +19,7 @@ import org.chromium.url.GURL;
 
 /**
  * A list of parameters that explain what kind of context menu to show the user. This data is
- * generated from content/public/common/context_menu_params.h.
+ * generated from components/embedder_support/android/contextmenu/context_menu_builder.h.
  */
 @JNINamespace("context_menu")
 @NullMarked

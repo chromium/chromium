@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -23,18 +24,25 @@ class Extension;
 class ExtensionPrefs;
 class ExternalInstallError;
 
-class ExternalInstallManager : public ExtensionRegistryObserver {
+class ExternalInstallManager : public KeyedService,
+                               public ExtensionRegistryObserver {
  public:
-  ExternalInstallManager(content::BrowserContext* browser_context,
-                         bool is_first_run);
+  explicit ExternalInstallManager(content::BrowserContext* browser_context);
 
   ExternalInstallManager(const ExternalInstallManager&) = delete;
   ExternalInstallManager& operator=(const ExternalInstallManager&) = delete;
 
   ~ExternalInstallManager() override;
 
+  // Specifies whether this is first run or not.
+  void set_is_first_run(bool value) { is_first_run_ = value; }
+
+  // KeyedService:
   // Called when the associated profile will be destroyed.
-  void Shutdown();
+  void Shutdown() override;
+
+  // Returns the instance for the given |browser_context|.
+  static ExternalInstallManager* Get(content::BrowserContext* browser_context);
 
   // Removes the error associated with a given extension.
   void RemoveExternalInstallError(const std::string& extension_id);

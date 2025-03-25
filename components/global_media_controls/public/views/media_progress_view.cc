@@ -226,14 +226,19 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
 
   // Paint the progress rectangle indicator.
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  const gfx::SizeF indicator_size =
+  gfx::SizeF indicator_size =
       (use_squiggly_line_ ? kSquigglyProgressIndicatorSize
                           : kStraightProgressIndicatorSize);
-  canvas->DrawRoundRect(
-      gfx::RectF(gfx::PointF(progress_width - indicator_size.width() / 2,
-                             (view_height - indicator_size.height()) / 2),
-                 indicator_size),
-      indicator_size.width() / 2, flags);
+  // For live media, we should not draw an indicator.
+  if (is_live_) {
+    indicator_size = gfx::SizeF();
+  } else {
+    canvas->DrawRoundRect(
+        gfx::RectF(gfx::PointF(progress_width - indicator_size.width() / 2,
+                               (view_height - indicator_size.height()) / 2),
+                   indicator_size),
+        indicator_size.width() / 2, flags);
+  }
 
   // Paint the background straight line with rounded corners.
   int background_line_x =

@@ -30,6 +30,7 @@ export class PasscodeInputElement extends PolymerElement {
         type: String,
         value: '',
       },
+      charDisplayBoxes: Array,
       disabled: {
         type: Boolean,
         observer: 'disabledChange',
@@ -45,12 +46,13 @@ export class PasscodeInputElement extends PolymerElement {
     };
   }
 
-  length: number;
-  value: string;
+  declare ariaLabel: string;
+  declare private charDisplayBoxes: string[];
+  declare disabled: boolean;
+  declare length: number;
+  declare value: string;
   focused: boolean;
-  disabled: boolean;
   private afterFirstRender: boolean;
-  private charDisplayBoxes: string[];
 
   private static readonly PASSCODE_INPUT_SIZE = 40;
   private static readonly PASSCODE_BOX_SPACING = 8;

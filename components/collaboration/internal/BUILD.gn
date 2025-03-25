@@ -86,6 +86,9 @@ static_library("messaging_internal") {
     "messaging/data_sharing_change_notifier_impl.h",
     "messaging/empty_messaging_backend_service.cc",
     "messaging/empty_messaging_backend_service.h",
+    "messaging/instant_message_processor.h",
+    "messaging/instant_message_processor_impl.cc",
+    "messaging/instant_message_processor_impl.h",
     "messaging/messaging_backend_service_impl.cc",
     "messaging/messaging_backend_service_impl.h",
     "messaging/storage/collaboration_message_util.cc",
@@ -175,6 +178,7 @@ source_set("messaging_unit_tests") {
   testonly = true
   sources = [
     "messaging/data_sharing_change_notifier_impl_unittest.cc",
+    "messaging/instant_message_processor_impl_unittest.cc",
     "messaging/messaging_backend_service_impl_unittest.cc",
     "messaging/storage/messaging_backend_database_impl_unittest.cc",
     "messaging/storage/messaging_backend_store_impl_unittest.cc",
@@ -184,6 +188,7 @@ source_set("messaging_unit_tests") {
     ":messaging_internal",
     "//base",
     "//base/test:test_support",
+    "//components/collaboration:test_support",
     "//components/collaboration/internal/messaging/storage/protocol",
     "//components/collaboration/public:messaging_public",
     "//components/data_sharing:test_support",

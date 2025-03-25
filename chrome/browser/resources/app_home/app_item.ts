@@ -42,7 +42,7 @@ export class AppItemElement extends CrLitElement {
     };
   }
 
-  appInfo: AppInfo = {
+  accessor appInfo: AppInfo = {
     appType: AppType.kWebApp,
     id: '',
     startUrl: {url: ''},

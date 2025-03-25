@@ -569,6 +569,15 @@
       <message name="IDS_IOS_BEST_FEATURES_LENS_CAPTION" desc="Caption for the Lens button on the Chrome iOS Best Features Promo">
         Shop and translate with your camera
       </message>
+      <message name="IDS_IOS_BEST_FEATURES_LENS_STEP_1" desc="The first step to use Lens">
+        Go to your homepage or keyboard
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_LENS_STEP_2" desc="The second step to use Lens">
+        Tap the "Lens icon"
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_LENS_STEP_3" desc="The third step to use Lens">
+        Take a photo of your search
+      </message>
       <message name="IDS_IOS_BEST_FEATURES_LENS_SUBTITLE" desc="Subtitle for the Lens Chrome iOS Best Features Promo">
         Shop, translate, and identify what you see using your camera and photo gallery
       </message>
@@ -599,8 +608,26 @@
       <message name="IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_TITLE" desc="Title for the Passwords in other apps Chrome iOS Best Features Promo">
         Passwords in other apps
       </message>
+      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_1" desc="Text featured on the Price Tracking animation used by Chrome iOS Best Features.">
+        Smart Watch
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_2" desc="Text featured on the Price Tracking animation used by Chrome iOS Best Features. The rendered text is 'Price $100 - $150'">
+        Price &#36;100 - &#36;180
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_3" desc="Text featured on the Price Tracking animation used by Chrome iOS Best Features.">
+        Track Price
+      </message>
       <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_CAPTION" desc="Caption for the Price Tracking button on the Chrome iOS Best Features Promo">
         Track price drops of products
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_1" desc="The first step to use the price tracking feature">
+        Go to the page of a product
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_2" desc="The second step to use the price tracking feature">
+        In the address bar, tap price history to see price changes over time
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_3" desc="The third step to use the price tracking feature">
+        To track the product, tap Track
       </message>
       <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_SUBTITLE" desc="Subtitle for the Price Tracking Chrome iOS Best Features Promo">
         Track prices of products and get alerts when the price drops on any site
@@ -608,8 +635,23 @@
       <message name="IDS_IOS_BEST_FEATURES_PRICE_TRACKING_TITLE" desc="Title for the Price Tracking Chrome iOS Best Features Promo">
         Price tracking and insights
       </message>
+      <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_ANIMATION_TEXT_1" desc="Text featured on the Share Passwords animation used by Chrome iOS Best Features.">
+        Share Your Passwords
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_ANIMATION_TEXT_2" desc="Text featured on the Share Passwords animation used by Chrome iOS Best Features.">
+        Share
+      </message>
       <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_CAPTION" desc="Detail text for the Share Passwords row in the Best Features Screen">
         Share your passwords with your family
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_2" desc="The second step to share passwords with others">
+        Tap the three-dot menu
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_3" desc="The third step to share passwords with others">
+        Go to "Password Manager"
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_4" desc="The fourth step to share passwords with others">
+        Select a password and tap the "share" icon
       </message>
       <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_TITLE" desc="Title for the Share Passwords Chrome iOS Best Features Promo">
         Share passwords
@@ -1420,6 +1462,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE" desc="The title of the settings to toggle the articles suggestions on the NTP on/off">
         Article suggestions
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_CONTEXT_MENU_TITLE" desc="Customize cards title for Price Drops on Tab Resumption">
+          This card shows a price drop on your tracked product from one of your synced devices
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_OPEN_TABS_ACCESSIBILITY_LABEL" desc="Accessibility label for Price Drop on Open Tabs">
           Price drop on your open tab, from <ph name="PREVIOUS_PRICE">$1<ex>$799</ex></ph> to <ph name="PRICE">$2<ex>$699</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Pixel phone</ex></ph>, <ph name="DOMAIN">$4<ex>store.google.com</ex></ph>
       </message>
@@ -1458,6 +1503,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CUSTOMIZE_CARDS" desc="Text for ShopCard Reviews in Customize Cards in Magic Stack">
           Read what people are saying
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CUSTOMIZE_CARDS_SUBTITLE" desc="Subtitle for Price Tracking ShopCard in Customize Cards in Magic Stack">
+          This card shows reviews for products in your open tabs
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_HIDE" desc="Button text indicating reviews ShopCard module can be removed from Magic Stack">
           Hide "Product Reviews for You"
@@ -5952,13 +6000,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNIN_PROMO_RECENT_TABS_WITH_UNITY" desc="Text to inform the user that they can sign in and sync to get tabs shared between devices. [iOS only]">
         To get your tabs from your other devices, turn on sync.
       </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_REVIEW_BOOKMARKS_SETTINGS" desc="This string is on a promo intended to promote reviewing the user's Google Account settings page to enable bookmarks toggle. It appears on the Bookmarks page when the user is signed in not syncing.">
+      <message name="IDS_IOS_SIGNIN_PROMO_REVIEW_BOOKMARKS_SETTINGS" desc="This string is on a promo intended to promote reviewing the user's Google Account settings page to enable bookmarks toggle. It appears on the Bookmarks page when the user is signed in.">
         To get your bookmarks on all your devices, turn on “Bookmarks” in settings.
       </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_REVIEW_READING_LIST_SETTINGS" desc="This string is on a promo intended to promote reviewing the user's Google Account settings page to enable reading list toggle. It appears on the Reading List page when the user is signed in not syncing.">
+      <message name="IDS_IOS_SIGNIN_PROMO_REVIEW_READING_LIST_SETTINGS" desc="This string is on a promo intended to promote reviewing the user's Google Account settings page to enable reading list toggle. It appears on the Reading List page when the user is signed in.">
         To get your reading list on all your devices, turn on “Reading List” in settings.
       </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_REVIEW_SETTINGS_BUTTON" desc="This string is on a promo button intended to promote reviewing the user's Google Account settings page to enable the type toggle. It appears on the Bookmarks or Reading List page when the user is signed in not syncing.">
+      <message name="IDS_IOS_SIGNIN_PROMO_REVIEW_SETTINGS_BUTTON" desc="This string is on a promo button intended to promote reviewing the user's Google Account settings page to enable the type toggle. It appears on the Bookmarks or Reading List page when the user is signed in.">
         Open settings
       </message>
       <message name="IDS_IOS_SIGNIN_PROMO_SIGNIN_WITH_UNO" desc="Button that the user can press if they want to sign-in in the browser. [iOS only]">

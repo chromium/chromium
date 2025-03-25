@@ -36,10 +36,7 @@ class MockTabDragWithScrollManager : public TabDragWithScrollManager {
   MockTabDragWithScrollManager& operator=(MockTabDragWithScrollManager&&) =
       delete;
 
-  MOCK_METHOD(void,
-              MoveAttached,
-              (gfx::Point point_in_screen, bool just_attached),
-              ());
+  MOCK_METHOD(void, MoveAttached, (gfx::Point point_in_screen), ());
   MOCK_METHOD(views::ScrollView*, GetScrollView, (), ());
   MOCK_METHOD(gfx::Point, GetLastPointInScreen, (), ());
   MOCK_METHOD(views::View*, GetAttachedContext, (), ());
@@ -179,7 +176,7 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(dragged_tabs_rect));
 
-  EXPECT_CALL(*drag_controller_, MoveAttached(_, false)).Times(1);
+  EXPECT_CALL(*drag_controller_, MoveAttached(_)).Times(1);
 
   // act
   scroll_session_->MaybeStart();
@@ -217,7 +214,7 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
       .Times(AtLeast(1))
       .WillOnce(Return(dragged_tabs_rect_for_scrolling_right))
       .WillRepeatedly(Return(dragged_tabs_rect_for_scrolling_left));
-  EXPECT_CALL(*drag_controller_, MoveAttached(_, false)).Times(0);
+  EXPECT_CALL(*drag_controller_, MoveAttached(_)).Times(0);
 
   // act
   scroll_session_->MaybeStart();
@@ -270,7 +267,7 @@ TEST_F(TabStripScrollSessionTestWithVariableSpeed,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(gfx::Point()));
 
-  EXPECT_CALL(*drag_controller_, MoveAttached(_, false)).Times(1);
+  EXPECT_CALL(*drag_controller_, MoveAttached(_)).Times(1);
 
   scroll_session_->MaybeStart();
   EXPECT_TRUE(mock_timer_->IsRunning());

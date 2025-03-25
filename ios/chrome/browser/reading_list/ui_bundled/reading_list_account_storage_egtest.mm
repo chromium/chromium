@@ -184,7 +184,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
       performAction:grey_tap()];
 
-  // Verify that the identity is signed-in without sync and the promo is hidden.
+  // Verify that the identity is signed-in and the promo is hidden.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
                                         consent:signin::ConsentLevel::kSignin];
   [SigninEarlGreyUI verifySigninPromoNotVisible];
@@ -239,8 +239,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity2.userEmail)]
       performAction:grey_tap()];
-  // Verify that the identity2 is signed-in without sync, and that the promo is
-  // hidden.
+  // Verify that the identity2 is signed-in and that the promo is hidden.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
                                         consent:signin::ConsentLevel::kSignin];
   [SigninEarlGreyUI verifySigninPromoNotVisible];

@@ -601,8 +601,9 @@ TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
                     std::optional<std::string> recency_factor_name,
                     std::optional<size_t> recency_window_days)
                     -> base::CancelableTaskTracker::TaskId {
+        // Add 1 to simulate 1 site being open.
         EXPECT_EQ(static_cast<int>(scoped_config.Get().max_suggestions) +
-                      top_sites_->NumBlockedSites(),
+                      top_sites_->NumBlockedSites() + 1,
                   result_count);
         EXPECT_TRUE(recency_factor_name.has_value());
         EXPECT_EQ(history::kMvtScoringParamRecencyFactor_Default,

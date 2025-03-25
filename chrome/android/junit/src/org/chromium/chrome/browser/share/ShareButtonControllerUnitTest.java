@@ -91,8 +91,6 @@ public final class ShareButtonControllerUnitTest {
 
         doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
 
-        AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-
         mShareButtonController =
                 new ShareButtonController(
                         mContext,

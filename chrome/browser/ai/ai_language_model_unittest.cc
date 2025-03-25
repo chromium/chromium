@@ -463,18 +463,18 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
       download_progress_run_loop.Run();
     }
 
-    std::vector<blink::mojom::AILanguageCodePtr> expected_input_languages;
+    std::vector<blink::mojom::AILanguageModelExpectedInputPtr> expected_inputs;
     if (!options.should_use_supported_language) {
-      expected_input_languages.emplace_back(
-          blink::mojom::AILanguageCode::New("ja"));
+      expected_inputs.push_back(blink::mojom::AILanguageModelExpectedInput::New(
+          blink::mojom::AILanguageModelPromptType::kText,
+          AITestUtils::ToMojoLanguageCodes({"ja"})));
     }
 
     mock_remote->CreateLanguageModel(
         mock_create_language_model_client.BindNewPipeAndPassRemote(),
         blink::mojom::AILanguageModelCreateOptions::New(
             std::move(options.sampling_params), options.system_prompt,
-            std::move(options.initial_prompts),
-            std::move(expected_input_languages)));
+            std::move(options.initial_prompts), std::move(expected_inputs)));
     creation_run_loop.Run();
 
     if (!options.should_use_supported_language) {
@@ -987,12 +987,17 @@ TEST_P(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
 
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->expected_inputs =
+      std::vector<blink::mojom::AILanguageModelExpectedInputPtr>();
+  options->expected_inputs->push_back(
+      blink::mojom::AILanguageModelExpectedInput::New(
+          blink::mojom::AILanguageModelPromptType::kText,
+          AITestUtils::ToMojoLanguageCodes({"en"})));
   EXPECT_CALL(callback,
               Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
-  GetAIManagerInterface()->CanCreateLanguageModel(
-      std::vector<blink::mojom::AILanguageCodePtr>{
-          AITestUtils::ToMojoLanguageCodes({"en"})},
-      callback.Get());
+  GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
+                                                  callback.Get());
 }
 
 TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
@@ -1005,10 +1010,15 @@ TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
   EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableUnsupportedLanguage));
-  GetAIManagerInterface()->CanCreateLanguageModel(
-      std::vector<blink::mojom::AILanguageCodePtr>{
-          AITestUtils::ToMojoLanguageCodes({"ja"})},
-      callback.Get());
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->expected_inputs =
+      std::vector<blink::mojom::AILanguageModelExpectedInputPtr>();
+  options->expected_inputs->push_back(
+      blink::mojom::AILanguageModelExpectedInput::New(
+          blink::mojom::AILanguageModelPromptType::kText,
+          AITestUtils::ToMojoLanguageCodes({"ja"})));
+  GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
+                                                  callback.Get());
 }
 
 // Test Prompt() with image and audio input.

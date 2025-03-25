@@ -17,6 +17,7 @@
 #import "base/task/thread_pool.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/form_parsing/form_data_parser.h"
+#import "components/password_manager/core/browser/generation/password_generator.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
@@ -77,7 +78,11 @@ bool CheckForDuplicates(
 
 @end
 
-@implementation AddPasswordMediator
+@implementation AddPasswordMediator {
+  // Stores the last suggested password or nil if no password have
+  // been suggested.
+  NSString* _suggestedPassword;
+}
 
 - (instancetype)initWithDelegate:(id<AddPasswordMediatorDelegate>)delegate
             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
@@ -139,6 +144,7 @@ bool CheckForDuplicates(
   std::string signonRealm = password_manager::GetSignonRealm(self.URL);
   credential.username = SysNSStringToUTF16(username);
   credential.password = SysNSStringToUTF16(password);
+
   credential.note = SysNSStringToUTF16(note);
   credential.stored_in = {
       password_manager::features_util::IsAccountStorageEnabled(_prefService,
@@ -208,6 +214,21 @@ bool CheckForDuplicates(
 - (BOOL)isTLDMissing {
   std::string hostname = self.URL.host();
   return !base::Contains(hostname, '.');
+}
+
+- (BOOL)shouldShowSuggestPasswordItem {
+  // Only show the field `suggestPasswordItem` to user who are signed in and
+  // syncing password to their Google Account.
+  return password_manager::features_util::IsAccountStorageEnabled(_prefService,
+                                                                  _syncService);
+}
+
+- (NSString*)generatePassword {
+  // The default spec is used to avoiding complicating the user flow.
+  autofill::PasswordRequirementsSpec defaultSpec;
+  _suggestedPassword =
+      base::SysUTF16ToNSString(autofill::GeneratePassword(defaultSpec));
+  return _suggestedPassword;
 }
 
 @end

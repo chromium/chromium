@@ -191,7 +191,7 @@
 }
 
 + (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {
-  chrome_test_util::SignInWithoutSync(identity);
+  chrome_test_util::SignIn(identity);
 }
 
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {

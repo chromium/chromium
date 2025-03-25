@@ -104,11 +104,10 @@ void EchoAILanguageModel::Fork(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<EchoAILanguageModel>(sampling_params_.Clone()),
       language_model.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(
-      std::move(language_model),
-      blink::mojom::AILanguageModelInstanceInfo::New(
-          EchoAIManagerImpl::kMaxContextSizeInTokens, current_tokens_,
-          sampling_params_->Clone(), std::nullopt));
+  client_remote->OnResult(std::move(language_model),
+                          blink::mojom::AILanguageModelInstanceInfo::New(
+                              EchoAIManagerImpl::kMaxContextSizeInTokens,
+                              current_tokens_, sampling_params_->Clone()));
 }
 
 void EchoAILanguageModel::Destroy() {

@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -82,26 +83,30 @@ void ContextualSearchProvider::Start(
     return;
   }
 
-  const auto [adjusted_input, starter_pack_engine] =
-      AdjustInputForStarterPackKeyword(autocomplete_input,
-                                       client()->GetTemplateURLService());
+  const auto [input, starter_pack_engine] = AdjustInputForStarterPackKeyword(
+      autocomplete_input, client()->GetTemplateURLService());
 
-  // This provider is only expected to be run in '@page' keyword mode.
-  DCHECK(starter_pack_engine);
+  if (!starter_pack_engine) {
+    // Only surface the action matches that help the user find their way into
+    // the '@page' scope.
+    if (input.IsZeroSuggest() ||
+        input.type() == metrics::OmniboxInputType::EMPTY) {
+      AddPageSearchActionMatches();
+    }
+    return;
+  }
+  input_keyword_ = starter_pack_engine->keyword();
 
-  if (adjusted_input.lens_overlay_suggest_inputs().has_value()) {
+  if (input.lens_overlay_suggest_inputs().has_value()) {
     done_ = false;
-    StartSuggestRequest(std::move(adjusted_input));
+    StartSuggestRequest(std::move(input));
+    // TODO(crbug.com/405453922): As long as some match is produced to keep
+    //  in keyword mode, this placeholder could be eliminated.
+    AddPlaceholderMatch(u"Request in progress");
   } else {
     // TODO(crbug.com/404886458): Remove placeholder once async lens input
     //  handling is ready.
-    AutocompleteMatch placeholder(this, kDefaultResultRelevance, false,
-                                  AutocompleteMatchType::SEARCH_SUGGEST);
-    placeholder.keyword = starter_pack_engine->keyword();
-    placeholder.contents = u"Lens inputs not ready yet";
-    placeholder.contents_class = {{0, ACMatchClassification::NONE}};
-    matches_.push_back(placeholder);
-
+    AddPlaceholderMatch(u"Lens inputs not ready yet");
     done_ = true;
   }
 }
@@ -109,7 +114,7 @@ void ContextualSearchProvider::Start(
 void ContextualSearchProvider::Stop(bool clear_cached_results,
                                     bool due_to_user_inactivity) {
   AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-
+  input_keyword_.clear();
   if (loader_) {
     loader_.reset();
   }
@@ -198,6 +203,12 @@ void ContextualSearchProvider::SuggestRequestCompleted(
 
   // Convert the results into |matches_| and notify the listeners.
   ConvertSuggestResultsToAutocompleteMatches(results, input);
+
+  if (matches_.empty()) {
+    // Some match must be available in order to stay in keyword mode.
+    AddPlaceholderMatch(u"Request completed with no matches");
+  }
+
   NotifyListeners(/*updated_matches=*/true);
 }
 
@@ -240,4 +251,52 @@ void ContextualSearchProvider::ConvertSuggestResultsToAutocompleteMatches(
   for (const auto& entry : results.suggestion_groups_map) {
     suggestion_groups_map_[entry.first].MergeFrom(entry.second);
   }
+
+  // TODO(crbug.com/405453922): This shouldn't be necessary once we have
+  //  a default match that by itself keeps the omnibox in keyword mode.
+  for (AutocompleteMatch& match : matches_) {
+    match.keyword = input_keyword_;
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+    match.allowed_to_be_default_match = true;
+  }
+}
+
+void ContextualSearchProvider::AddPageSearchActionMatches() {
+  constexpr int kAdvertActionRelevance = 10000;
+
+  // These matches are effectively pedals that don't require any query matching.
+  AutocompleteMatch match(this, kAdvertActionRelevance, false,
+                          AutocompleteMatchType::PEDAL);
+  match.contents_class = {{0, ACMatchClassification::NONE}};
+  match.transition = ui::PAGE_TRANSITION_GENERATED;
+  match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
+
+  match.takeover_action =
+      base::MakeRefCounted<ContextualSearchAskAboutPageAction>();
+  // TODO(crbug.com/399951524): Use action's label strings hint.
+  match.contents = u"Ask about this page";
+  matches_.push_back(match);
+
+  match.relevance--;
+  match.takeover_action =
+      base::MakeRefCounted<ContextualSearchSelectRegionAction>();
+  // TODO(crbug.com/399951524): Use action's label strings hint.
+  match.contents = u"Search with Google Lens";
+  matches_.push_back(match);
+}
+
+void ContextualSearchProvider::AddPlaceholderMatch(
+    std::u16string_view contents) {
+  int relevance = matches_.empty() ? 10000 : matches_.back().relevance - 1;
+  AutocompleteMatch placeholder(this, relevance, false,
+                                AutocompleteMatchType::SEARCH_SUGGEST);
+  placeholder.contents = contents;
+  placeholder.contents_class = {{0, ACMatchClassification::NONE}};
+
+  // These are necessary to avoid the omnibox dropping out of keyword mode.
+  placeholder.keyword = input_keyword_;
+  placeholder.transition = ui::PAGE_TRANSITION_KEYWORD;
+  placeholder.allowed_to_be_default_match = true;
+
+  matches_.push_back(placeholder);
 }

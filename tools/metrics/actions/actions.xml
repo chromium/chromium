@@ -14919,6 +14919,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.HomeCustomization.MagicStackPage.ShopCardReviews.Toggled">
+  <owner>davidjm@chromium.org</owner>
+  <owner>gloriafang@google.com</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Reported when the ShopCard Reviews cell is toggled from the Magic Stack page
+    in the Home Customization menu.
+  </description>
+</action>
+
 <action name="IOS.HomeCustomization.MagicStackPage.TabResumption.Toggled">
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -31669,6 +31680,14 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <description>Cookies subpage opened from PageInfo.</description>
+</action>
+
+<action name="PageInfo.CookiesSubpage.RwsSiteSettingsOpened">
+  <owner>mjenn@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Opened the RWS site settings page for a website from PageInfo.
+  </description>
 </action>
 
 <action name="PageInfo.CookiesSubpage.SettingsLinkClicked">

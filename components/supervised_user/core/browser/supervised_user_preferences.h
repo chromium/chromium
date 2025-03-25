@@ -24,7 +24,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void EnableParentalControls(PrefService& pref_service);
 void DisableParentalControls(PrefService& pref_service);
 
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsChildAccountStatusKnown(const PrefService& pref_service);
+#endif
 
 // Returns true if the safe sites preference is enabled and user is supervised.
 bool IsSafeSitesEnabled(const PrefService& pref_service);

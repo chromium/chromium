@@ -37,7 +37,6 @@ const void* kTranslationManagerUserDataKey = &kTranslationManagerUserDataKey;
 using blink::mojom::CanCreateTranslatorResult;
 using blink::mojom::CreateTranslatorError;
 using blink::mojom::CreateTranslatorResult;
-using blink::mojom::TranslationAvailability;
 using blink::mojom::TranslationManagerCreateTranslatorClient;
 using blink::mojom::TranslatorLanguageCode;
 using blink::mojom::TranslatorLanguageCodePtr;
@@ -258,33 +257,6 @@ void TranslationManagerImpl::CreateTranslator(
             }
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(create_translator)));
-}
-
-void TranslationManagerImpl::GetTranslatorAvailabilityInfo(
-    GetTranslatorAvailabilityInfoCallback callback) {
-  auto info = blink::mojom::TranslatorAvailabilityInfo::New();
-
-  if (!IsTranslatorAllowed(browser_context())) {
-    info->availability = TranslationAvailability::kNo;
-    std::move(callback).Run(std::move(info));
-    return;
-  }
-
-  const std::vector<std::string_view> accept_languages =
-      GetAcceptLanguages(browser_context());
-  const std::set<LanguagePackKey> installed_packs =
-      ComponentManager::GetInstalledLanguagePacks();
-  info->language_categories = CreateLanguageCategories(
-      accept_languages, installed_packs,
-      /*is_en_preferred*/ IsInAcceptLanguage(accept_languages, "en"));
-  info->language_availability_matrix = CreateAvailabilityMatrix(
-      /*accept_languages_check_enabled*/ kTranslationAPIAcceptLanguagesCheck
-          .Get(),
-      GetInstallablePackageCount(installed_packs.size()));
-  info->availability = ComponentManager::GetTranslateKitLibraryPath().empty()
-                           ? TranslationAvailability::kAfterDownload
-                           : TranslationAvailability::kReadily;
-  std::move(callback).Run(std::move(info));
 }
 
 OnDeviceTranslationServiceController&

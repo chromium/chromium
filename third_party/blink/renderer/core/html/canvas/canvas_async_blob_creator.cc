@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -147,6 +148,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     base::TimeTicks start_time,
     ExecutionContext* context,
     const IdentifiableToken& input_digest,
+    CanvasInterventionsHelper::CanvasInterventionType intervention_type,
     ScriptPromiseResolver<Blob>* resolver)
     : CanvasAsyncBlobCreator(image,
                              options,
@@ -155,6 +157,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
                              start_time,
                              context,
                              input_digest,
+                             intervention_type,
                              resolver) {}
 
 CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
@@ -165,6 +168,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     base::TimeTicks start_time,
     ExecutionContext* context,
     const IdentifiableToken& input_digest,
+    CanvasInterventionsHelper::CanvasInterventionType intervention_type,
     ScriptPromiseResolver<Blob>* resolver)
     : fail_encoder_initialization_for_test_(false),
       enforce_idle_encoding_for_test_(false),
@@ -173,6 +177,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
       start_time_(start_time),
       static_bitmap_image_loaded_(false),
       input_digest_(input_digest),
+      intervention_type_(intervention_type),
       callback_(callback),
       script_promise_resolver_(resolver) {
   CHECK(context);
@@ -520,6 +525,10 @@ void CanvasAsyncBlobCreator::TraceCanvasContent(
                  ";base64," + Base64Encode(*encoded_image);
         }
         ctx.AddDebugAnnotation("data_url", data.Utf8());
+        ctx.AddDebugAnnotation(
+            "noised",
+            intervention_type_ ==
+                CanvasInterventionsHelper::CanvasInterventionType::kNoise);
       });
 }
 

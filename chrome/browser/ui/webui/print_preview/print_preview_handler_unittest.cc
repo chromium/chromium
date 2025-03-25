@@ -175,17 +175,14 @@ base::Value::List ConstructPreviewArgs(std::string_view callback_id,
 
 UserActionBuckets GetUserActionForPrinterType(mojom::PrinterType type) {
   switch (type) {
-    case mojom::PrinterType::kPrivetDeprecated:
-      NOTREACHED();
     case mojom::PrinterType::kExtension:
       return UserActionBuckets::kPrintWithExtension;
     case mojom::PrinterType::kPdf:
       return UserActionBuckets::kPrintToPdf;
     case mojom::PrinterType::kLocal:
       return UserActionBuckets::kPrintToPrinter;
-    case mojom::PrinterType::kCloudDeprecated:
-      NOTREACHED();
   }
+  NOTREACHED();
 }
 
 // Checks whether |histograms| was updated correctly by a job with a printer

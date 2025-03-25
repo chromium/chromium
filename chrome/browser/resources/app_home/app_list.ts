@@ -44,13 +44,13 @@ export class AppListElement extends CrLitElement {
     };
   }
 
-  protected apps_: AppInfo[] = [];
+  protected accessor apps_: AppInfo[] = [];
   private boundContextMenuListener_: any;
   private boundKeydownListener_: any;
   private listenerIds_: number[] = [];
   private mojoEventTarget_: PageCallbackRouter;
   // The app item that has the context menu click opened by user.
-  private selectedAppItem_: AppItemElement|null = null;
+  private accessor selectedAppItem_: AppItemElement|null = null;
 
   constructor() {
     super();

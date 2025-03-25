@@ -165,6 +165,12 @@ ScreenAIServiceRouter::ScreenAIServiceRouter()
 
 ScreenAIServiceRouter::~ScreenAIServiceRouter() = default;
 
+// static
+base::TimeDelta ScreenAIServiceRouter::SuggestedWaitTimeBeforeReAttempt(
+    uint32_t reattempt_number) {
+  return base::Minutes(reattempt_number * reattempt_number);
+}
+
 std::optional<bool> ScreenAIServiceRouter::GetServiceState(Service service) {
   if (GetAndRecordSuspendedState()) {
     return false;
@@ -291,8 +297,8 @@ void ScreenAIServiceRouter::OnScreenAIServiceDisconnected() {
   // Crashed!
   shutdown_handler_data_.crash_count++;
   shutdown_handler_data_.suspended = true;
-  base::TimeDelta suspense_time = base::Minutes(
-      shutdown_handler_data_.crash_count * shutdown_handler_data_.crash_count);
+  base::TimeDelta suspense_time =
+      SuggestedWaitTimeBeforeReAttempt(shutdown_handler_data_.crash_count);
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ScreenAIServiceRouter::ResetSuspend,

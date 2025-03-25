@@ -1,3 +1,4 @@
+
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_create_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_expected_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_ai_language_model_prompt_content.h"
@@ -42,6 +44,35 @@ namespace blink {
 
 namespace {
 
+mojom::blink::AILanguageModelPromptType ToMojoInputType(
+    V8AILanguageModelPromptType type) {
+  switch (type.AsEnum()) {
+    case V8AILanguageModelPromptType::Enum::kText:
+      return mojom::blink::AILanguageModelPromptType::kText;
+    case V8AILanguageModelPromptType::Enum::kAudio:
+      return mojom::blink::AILanguageModelPromptType::kAudio;
+    case V8AILanguageModelPromptType::Enum::kImage:
+      return mojom::blink::AILanguageModelPromptType::kImage;
+  }
+}
+
+Vector<mojom::blink::AILanguageModelExpectedInputPtr> ToMojoExpectedInputs(
+    const HeapVector<Member<AILanguageModelExpectedInput>>& expected_inputs) {
+  Vector<mojom::blink::AILanguageModelExpectedInputPtr> result;
+  result.reserve(expected_inputs.size());
+  std::ranges::transform(
+      expected_inputs, std::back_inserter(result),
+      [](const Member<AILanguageModelExpectedInput>& expected_input) {
+        auto value = mojom::blink::AILanguageModelExpectedInput::New();
+        value->type = ToMojoInputType(expected_input->type());
+        if (expected_input->hasLanguages()) {
+          value->languages = ToMojoLanguageCodes(expected_input->languages());
+        }
+        return value;
+      });
+  return result;
+}
+
 class CreateLanguageModelClient
     : public GarbageCollected<CreateLanguageModelClient>,
       public mojom::blink::AIManagerCreateLanguageModelClient,
@@ -53,10 +84,10 @@ class CreateLanguageModelClient
       ScriptPromiseResolver<AILanguageModel>* resolver,
       AbortSignal* signal,
       mojom::blink::AILanguageModelSamplingParamsPtr sampling_params,
-      WTF::String system_prompt,
-      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts,
+      String system_prompt,
+      Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts,
       AICreateMonitor* monitor,
-      std::optional<WTF::Vector<WTF::String>> expected_input_languages)
+      Vector<mojom::blink::AILanguageModelExpectedInputPtr> expected_inputs)
       : AIContextObserver(script_state, ai, resolver, signal),
         ai_(ai),
         monitor_(monitor),
@@ -70,18 +101,11 @@ class CreateLanguageModelClient
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    std::optional<Vector<mojom::blink::AILanguageCodePtr>>
-        expected_input_language_codes;
-    if (expected_input_languages.has_value()) {
-      expected_input_language_codes =
-          ToMojoLanguageCodes(expected_input_languages.value());
-    }
     ai_->GetAIRemote()->CreateLanguageModel(
         std::move(client_remote),
         mojom::blink::AILanguageModelCreateOptions::New(
             std::move(sampling_params), system_prompt,
-            std::move(initial_prompts),
-            std::move(expected_input_language_codes)));
+            std::move(initial_prompts), std::move(expected_inputs)));
   }
   ~CreateLanguageModelClient() override = default;
 
@@ -198,21 +222,25 @@ ScriptPromise<V8AIAvailability> AILanguageModelFactory::availability(
   base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kCanCreateSession);
-  std::optional<WTF::Vector<mojom::blink::AILanguageCodePtr>>
-      expected_language_codes;
-  if (options && options->hasExpectedInputLanguages()) {
-    expected_language_codes =
-        ToMojoLanguageCodes(options->expectedInputLanguages());
+  mojom::blink::AILanguageModelSamplingParamsPtr sampling_params;
+  Vector<mojom::blink::AILanguageModelExpectedInputPtr> expected_inputs;
+  String system_prompt;
+  Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
+  if (options && options->hasExpectedInputs()) {
+    expected_inputs = ToMojoExpectedInputs(options->expectedInputs());
   }
 
-  auto result = ResolveSamplingParamsOption(options);
-  if (!result.has_value()) {
+  auto sampling_params_or_exception = ResolveSamplingParamsOption(options);
+  if (!sampling_params_or_exception.has_value()) {
     resolver->Resolve(AIAvailabilityToV8(AIAvailability::kUnavailable));
     return promise;
   }
+  sampling_params = std::move(sampling_params_or_exception.value());
 
   ai_->GetAIRemote()->CanCreateLanguageModel(
-      std::move(expected_language_codes),
+      mojom::blink::AILanguageModelCreateOptions::New(
+          std::move(sampling_params), system_prompt, std::move(initial_prompts),
+          std::move(expected_inputs)),
       WTF::BindOnce(&AILanguageModelFactory::OnCanCreateLanguageModelComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -278,12 +306,12 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
   }
 
   mojom::blink::AILanguageModelSamplingParamsPtr sampling_params;
-  WTF::String system_prompt;
-  WTF::Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
+  Vector<mojom::blink::AILanguageModelExpectedInputPtr> expected_inputs;
+  String system_prompt;
+  Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
   AbortSignal* signal = nullptr;
   AICreateMonitor* monitor = MakeGarbageCollected<AICreateMonitor>(
       GetExecutionContext(), task_runner_);
-  std::optional<WTF::Vector<WTF::String>> expected_input_languages;
 
   if (options) {
     signal = options->getSignalOr(nullptr);
@@ -316,9 +344,8 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
     }
     sampling_params = std::move(sampling_params_or_exception.value());
 
-    // The API impl does not yet support expectedInputTypes, more to come soon!
-    if (options->hasExpectedInputTypes()) {
-      resolver->RejectWithTypeError("expectedInputTypes not supported");
+    if (options->hasExpectedInputs()) {
+      expected_inputs = ToMojoExpectedInputs(options->expectedInputs());
     }
 
     if (options->hasSystemPrompt()) {
@@ -385,14 +412,10 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
     }
   }
 
-  if (options->hasExpectedInputLanguages()) {
-    expected_input_languages = options->expectedInputLanguages();
-  }
-
   MakeGarbageCollected<CreateLanguageModelClient>(
       script_state, ai_, resolver, signal, std::move(sampling_params),
       system_prompt, std::move(initial_prompts), monitor,
-      expected_input_languages);
+      std::move(expected_inputs));
 
   return promise;
 }

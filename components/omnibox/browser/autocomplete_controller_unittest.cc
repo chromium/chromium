@@ -2371,8 +2371,8 @@ TEST_F(AutocompleteControllerTest,
   controller_.input_.set_keyword_mode_entry_method(
       metrics::OmniboxEventProto::SPACE_AT_END);
 
-  SetAutocompleteMatches({CreateSearchMatch(u"Summary"),
-                          CreateSearchMatch(u"Summarize this page")});
+  SetAutocompleteMatches({CreateContextualSearchMatch(u"Summary"),
+                          CreateContextualSearchMatch(u"Summarize this page")});
 
   static_cast<FakeTabMatcher&>(
       const_cast<TabMatcher&>(provider_client()->GetTabMatcher()))
@@ -2383,11 +2383,11 @@ TEST_F(AutocompleteControllerTest,
   // The takeover action should be for the contextual search action, not pedals.
   EXPECT_TRUE(controller_.internal_result_.match_at(0)->takeover_action);
   EXPECT_EQ(
-      OmniboxActionId::CONTEXTUAL_SEARCH,
+      OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
       controller_.internal_result_.match_at(0)->takeover_action->ActionId());
   EXPECT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
   EXPECT_EQ(
-      OmniboxActionId::CONTEXTUAL_SEARCH,
+      OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
       controller_.internal_result_.match_at(1)->takeover_action->ActionId());
 }
 
@@ -2441,11 +2441,11 @@ TEST_F(AutocompleteControllerTest,
 
   EXPECT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
   EXPECT_EQ(
-      OmniboxActionId::CONTEXTUAL_SEARCH,
+      OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
       controller_.internal_result_.match_at(1)->takeover_action->ActionId());
   EXPECT_TRUE(controller_.internal_result_.match_at(2)->takeover_action);
   EXPECT_EQ(
-      OmniboxActionId::CONTEXTUAL_SEARCH,
+      OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
       controller_.internal_result_.match_at(2)->takeover_action->ActionId());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

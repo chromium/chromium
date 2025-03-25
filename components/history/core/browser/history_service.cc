@@ -1170,20 +1170,6 @@ void HistoryService::SetImportedFavicons(
 
 // Querying --------------------------------------------------------------------
 
-base::CancelableTaskTracker::TaskId
-HistoryService::GetMostRecentVisitForEachURL(
-    const std::vector<GURL>& urls,
-    base::OnceCallback<void(std::map<GURL, VisitRow>)> callback,
-    base::CancelableTaskTracker* tracker) {
-  DCHECK(backend_task_runner_) << "History service being called after cleanup";
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return tracker->PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::GetMostRecentVisitForEachURL,
-                     history_backend_, urls),
-      std::move(callback));
-}
-
 base::CancelableTaskTracker::TaskId HistoryService::QueryURL(
     const GURL& url,
     bool want_visits,

@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -103,6 +104,7 @@
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -1208,8 +1210,9 @@ void HTMLCanvasElement::SetSurfaceSize(gfx::Size size) {
 }
 
 const AtomicString HTMLCanvasElement::ImageSourceURL() const {
-  return AtomicString(ToDataURLInternal(
-      ImageEncoderUtils::kDefaultRequestedMimeType, 0, kFrontBuffer));
+  return AtomicString(
+      ToDataURLInternal(ImageEncoderUtils::kDefaultRequestedMimeType, 0,
+                        kFrontBuffer, ReadbackType::kNotWebExposed));
 }
 
 scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
@@ -1265,10 +1268,10 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   return image_bitmap;
 }
 
-String HTMLCanvasElement::ToDataURLInternal(
-    const String& mime_type,
-    const double& quality,
-    SourceDrawingBuffer source_buffer) const {
+String HTMLCanvasElement::ToDataURLInternal(const String& mime_type,
+                                            const double& quality,
+                                            SourceDrawingBuffer source_buffer,
+                                            ReadbackType readback_type) const {
   base::TimeTicks start_time = base::TimeTicks::Now();
   if (!IsPaintable())
     return String("data:,");
@@ -1280,6 +1283,11 @@ String HTMLCanvasElement::ToDataURLInternal(
   scoped_refptr<StaticBitmapImage> image_bitmap =
       Snapshot(FlushReason::kToDataURL, source_buffer);
   if (image_bitmap) {
+    bool noised = false;
+    if (readback_type == ReadbackType::kWebExposed) {
+      noised = CanvasInterventionsHelper::MaybeNoiseSnapshot(
+          context_, GetExecutionContext(), image_bitmap, GetRasterMode());
+    }
     std::unique_ptr<ImageDataBuffer> data_buffer =
         ImageDataBuffer::Create(image_bitmap);
     if (!data_buffer)
@@ -1318,6 +1326,11 @@ String HTMLCanvasElement::ToDataURLInternal(
       NOTREACHED();
     }
     IdentifiabilityReportWithDigest(IdentifiabilityBenignStringToken(data_url));
+    if (readback_type == ReadbackType::kWebExposed) {
+      TRACE_EVENT_INSTANT(
+          TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
+          "CanvasReadback", "data_url", data_url.Utf8(), "noised", noised);
+    }
     return data_url;
   }
 
@@ -1345,11 +1358,8 @@ String HTMLCanvasElement::toDataURL(const String& mime_type,
     if (v8_value->IsNumber())
       quality = v8_value.As<v8::Number>()->Value();
   }
-  String data = ToDataURLInternal(mime_type, quality, kBackBuffer);
-  TRACE_EVENT_INSTANT(
-      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
-      "CanvasReadback", "data_url", data.Utf8());
-  return data;
+  return ToDataURLInternal(mime_type, quality, kBackBuffer,
+                           ReadbackType::kWebExposed);
 }
 
 void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
@@ -1397,6 +1407,13 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
   scoped_refptr<StaticBitmapImage> image_bitmap =
       Snapshot(FlushReason::kToBlob, kBackBuffer);
   if (image_bitmap) {
+    auto intervention_type =
+        CanvasInterventionsHelper::CanvasInterventionType::kNone;
+    if (CanvasInterventionsHelper::MaybeNoiseSnapshot(
+            context_, GetExecutionContext(), image_bitmap, GetRasterMode())) {
+      intervention_type =
+          CanvasInterventionsHelper::CanvasInterventionType::kNoise;
+    }
     auto* options = ImageEncodeOptions::Create();
     options->setType(ImageEncoderUtils::MimeTypeName(encoding_mime_type));
     async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
@@ -1406,7 +1423,8 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
         IdentifiabilityStudySettings::Get()->ShouldSampleType(
             IdentifiableSurface::Type::kCanvasReadback)
             ? IdentifiabilityInputDigest(context_)
-            : 0);
+            : 0,
+        intervention_type);
   }
 
   if (async_creator) {
@@ -1559,6 +1577,7 @@ void HTMLCanvasElement::Trace(Visitor* visitor) const {
   PageVisibilityObserver::Trace(visitor);
   CanvasRenderingContextHost::Trace(visitor);
   HTMLElement::Trace(visitor);
+  CanvasRenderingContextHost::Trace(visitor);
 }
 
 CanvasHibernationHandler* HTMLCanvasElement::GetHibernationHandler() const {

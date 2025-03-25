@@ -10,17 +10,20 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_requirements_service.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/credential_details.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item_delegate.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -51,6 +54,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeWebsite = kItemTypeEnumZero,
   ItemTypeUsername,
   ItemTypePassword,
+  ItemTypeSuggestPassword,
   ItemTypeFooter,
   ItemTypeNote,
   ItemTypeDuplicateCredentialButton,
@@ -67,54 +71,57 @@ const int kMinNoteCharAmountForWarning = 901;
 @interface AddPasswordViewController () <TableViewTextEditItemDelegate,
                                          TableViewMultiLineTextEditItemDelegate>
 
-// Whether the password is shown in plain text form or in masked form.
-@property(nonatomic, assign, getter=isPasswordShown) BOOL passwordShown;
-
+// The text item related to the username value.
+@property(nonatomic, strong) TableViewTextEditItem* usernameTextItem;
 // The text item related to the site value.
 @property(nonatomic, strong) TableViewTextEditItem* websiteTextItem;
 
-// The text item related to the username value.
-@property(nonatomic, strong) TableViewTextEditItem* usernameTextItem;
-
-// The text item related to the password value.
-@property(nonatomic, strong) TableViewTextEditItem* passwordTextItem;
-
-// The text item related to the password note value.
-@property(nonatomic, strong) TableViewMultiLineTextEditItem* noteTextItem;
-
-// The view used to anchor error alert which is shown for the username. This is
-// image icon in the `usernameTextItem` cell.
-@property(nonatomic, weak) UIView* usernameErrorAnchorView;
-
-// If YES, denotes that the credential with the same website/username
-// combination already exists. Used when creating a new credential.
-@property(nonatomic, assign) BOOL isDuplicatedCredential;
-
-// Denotes that the save button in the add credential view can be enabled after
-// basic validation of data on all the fields. Does not account for whether the
-// duplicate credential exists or not.
-@property(nonatomic, assign) BOOL shouldEnableSave;
-
-// Yes, when the message for top-level domain missing is shown.
-@property(nonatomic, assign) BOOL isTLDMissingMessageShown;
-
-// Yes, when the footer informing about the max note length is shown.
-@property(nonatomic, assign) BOOL isNoteFooterShown;
-
-// Yes, when the note's length is less or equal than
-// `password_manager::constants::kMaxPasswordNoteLength`.
-@property(nonatomic, assign) BOOL isNoteValid;
-
-// The account where passwords are being saved to, or nil if passwords are only
-// being saved locally.
-@property(nonatomic, strong) NSString* accountSavingPasswords;
-
-// Stores the user current typed password. (Used for testing).
-@property(nonatomic, strong) NSString* passwordForTesting;
-
 @end
 
-@implementation AddPasswordViewController
+@implementation AddPasswordViewController {
+  // Whether the password is shown in plain text form or in masked form.
+  BOOL _passwordShown;
+
+  // The text item related to the password value.
+  TableViewTextEditItem* _passwordTextItem;
+
+  // The text item related to the suggest strong password value.
+  TableViewTextItem* _suggestPasswordTextItem;
+
+  // The text item related to the password note value.
+  TableViewMultiLineTextEditItem* _noteTextItem;
+
+  // The view used to anchor error alert which is shown for the username. This
+  // is image icon in the `usernameTextItem` cell.
+  UIView* _usernameErrorAnchorView;
+
+  // If YES, denotes that the credential with the same website/username
+  // combination already exists. Used when creating a new credential.
+  BOOL _isDuplicatedCredential;
+
+  // Denotes that the save button in the add credential view can be enabled
+  // after
+  // basic validation of data on all the fields. Does not account for whether
+  // the duplicate credential exists or not.
+  BOOL _shouldEnableSave;
+
+  // Yes, when the message for top-level domain missing is shown.
+  BOOL _isTLDMissingMessageShown;
+
+  // Yes, when the footer informing about the max note length is shown.
+  BOOL _isNoteFooterShown;
+
+  // Yes, when the note's length is less or equal than
+  // `password_manager::constants::kMaxPasswordNoteLength`.
+  BOOL _isNoteValid;
+
+  // The account where passwords are being saved to, or nil if passwords are
+  // only being saved locally.
+  NSString* _accountSavingPasswords;
+
+  // Stores the user current typed password. (Used for testing).
+  NSString* _passwordForTesting;
+}
 
 #pragma mark - ViewController Life Cycle.
 
@@ -180,27 +187,36 @@ const int kMinNoteCharAmountForWarning = 901;
 
   TableViewModel* model = self.tableViewModel;
 
-  self.websiteTextItem = [self websiteItem];
+  _websiteTextItem = [self websiteItem];
 
   [model addSectionWithIdentifier:SectionIdentifierSite];
 
-  [model addItem:self.websiteTextItem
+  [model addItem:_websiteTextItem
       toSectionWithIdentifier:SectionIdentifierSite];
 
   [model addSectionWithIdentifier:SectionIdentifierTLDFooter];
 
   [model addSectionWithIdentifier:SectionIdentifierPassword];
 
-  self.usernameTextItem = [self usernameItem];
-  [model addItem:self.usernameTextItem
+  _usernameTextItem = [self usernameItem];
+  [model addItem:_usernameTextItem
       toSectionWithIdentifier:SectionIdentifierPassword];
 
-  self.passwordTextItem = [self passwordItem];
-  [model addItem:self.passwordTextItem
+  _passwordTextItem = [self passwordItem];
+  [model addItem:_passwordTextItem
       toSectionWithIdentifier:SectionIdentifierPassword];
 
-  self.noteTextItem = [self noteItem];
-  [model addItem:self.noteTextItem
+  if (password_manager::features::
+          IsSuggestStrongPasswordInAddPasswordEnabled()) {
+    if ([self.delegate shouldShowSuggestPasswordItem]) {
+      _suggestPasswordTextItem = [self suggestPasswordItem];
+      [model addItem:_suggestPasswordTextItem
+          toSectionWithIdentifier:SectionIdentifierPassword];
+    }
+  }
+
+  _noteTextItem = [self noteItem];
+  [model addItem:_noteTextItem
       toSectionWithIdentifier:SectionIdentifierPassword];
   [model addSectionWithIdentifier:SectionIdentifierNoteFooter];
 
@@ -277,6 +293,17 @@ const int kMinNoteCharAmountForWarning = 901;
   return item;
 }
 
+- (TableViewTextItem*)suggestPasswordItem {
+  // `TableViewTextItem` was chosen instead of `TableViewTextButtonItem` to
+  // avoid unwanted padding introduced by UIStackView.
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeSuggestPassword];
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_SUGGEST_STRONG_PASSWORD);
+  return item;
+}
+
 - (TableViewMultiLineTextEditItem*)noteItem {
   TableViewMultiLineTextEditItem* item =
       [[TableViewMultiLineTextEditItem alloc] initWithType:ItemTypeNote];
@@ -299,16 +326,15 @@ const int kMinNoteCharAmountForWarning = 901;
 - (SettingsImageDetailTextItem*)duplicatePasswordMessageItem {
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:ItemTypeDuplicateCredentialMessage];
-  if (self.usernameTextItem &&
-      [self.usernameTextItem.textFieldValue length] > 0) {
+  if (_usernameTextItem && [_usernameTextItem.textFieldValue length] > 0) {
     item.detailText = l10n_util::GetNSStringF(
         IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION,
-        base::SysNSStringToUTF16(self.usernameTextItem.textFieldValue),
-        base::SysNSStringToUTF16(self.websiteTextItem.textFieldValue));
+        base::SysNSStringToUTF16(_usernameTextItem.textFieldValue),
+        base::SysNSStringToUTF16(_websiteTextItem.textFieldValue));
   } else {
     item.detailText = l10n_util::GetNSStringF(
         IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION_WITHOUT_USERNAME,
-        base::SysNSStringToUTF16(self.websiteTextItem.textFieldValue));
+        base::SysNSStringToUTF16(_websiteTextItem.textFieldValue));
   }
   item.image = DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
   item.imageViewTintColor = [UIColor colorNamed:kRedColor];
@@ -331,8 +357,8 @@ const int kMinNoteCharAmountForWarning = 901;
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   item.text = l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION,
-      base::SysNSStringToUTF16([self.websiteTextItem.textFieldValue
-          stringByAppendingString:@".com"]));
+      base::SysNSStringToUTF16(
+          [_websiteTextItem.textFieldValue stringByAppendingString:@".com"]));
   return item;
 }
 
@@ -347,10 +373,10 @@ const int kMinNoteCharAmountForWarning = 901;
 }
 
 - (NSString*)footerText {
-  if (self.accountSavingPasswords) {
+  if (_accountSavingPasswords) {
     return l10n_util::GetNSStringF(
         IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
-        base::SysNSStringToUTF16(self.accountSavingPasswords));
+        base::SysNSStringToUTF16(_accountSavingPasswords));
   }
 
   return l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING);
@@ -421,7 +447,7 @@ const int kMinNoteCharAmountForWarning = 901;
     return 0;
   }
   if ((sectionIdentifier == SectionIdentifierPassword &&
-       !self.isDuplicatedCredential) ||
+       !_isDuplicatedCredential) ||
       sectionIdentifier == SectionIdentifierDuplicate) {
     return 0;
   }
@@ -470,6 +496,14 @@ const int kMinNoteCharAmountForWarning = 901;
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
     }
+    case ItemTypeSuggestPassword: {
+      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(didTapSuggestStrongPassword:)];
+      [cell addGestureRecognizer:tapRecognizer];
+      cell.accessibilityTraits |= UIAccessibilityTraitButton;
+      break;
+    }
     case ItemTypeDuplicateCredentialMessage:
     case ItemTypeFooter:
       break;
@@ -501,13 +535,14 @@ const int kMinNoteCharAmountForWarning = 901;
 }
 
 - (void)onDuplicateCheckCompletion:(BOOL)duplicateFound {
-  if (duplicateFound == self.isDuplicatedCredential) {
+  if (duplicateFound == _isDuplicatedCredential) {
     return;
   }
 
-  self.isDuplicatedCredential = duplicateFound;
+  _isDuplicatedCredential = duplicateFound;
   [self toggleNavigationBarRightButtonItem];
-  TableViewModel* model = self.tableViewModel;
+
+  __weak __typeof(self) weakSelf = self;
   if (duplicateFound) {
     password_manager::metrics_util::
         LogUserInteractionsWhenAddingCredentialFromSettings(
@@ -516,38 +551,13 @@ const int kMinNoteCharAmountForWarning = 901;
                     kDuplicatedCredentialEntered);
     [self
         performBatchTableViewUpdates:^{
-          NSUInteger passwordSectionIndex = [self.tableViewModel
-              sectionForSectionIdentifier:SectionIdentifierPassword];
-          [model insertSectionWithIdentifier:SectionIdentifierDuplicate
-                                     atIndex:passwordSectionIndex + 1];
-          [self.tableView
-                insertSections:[NSIndexSet
-                                   indexSetWithIndex:passwordSectionIndex + 1]
-              withRowAnimation:UITableViewRowAnimationTop];
-          [model addItem:[self duplicatePasswordMessageItem]
-              toSectionWithIdentifier:SectionIdentifierDuplicate];
-          [model addItem:[self duplicatePasswordViewButtonItem]
-              toSectionWithIdentifier:SectionIdentifierDuplicate];
-          if (self.usernameTextItem &&
-              [self.usernameTextItem.textFieldValue length] > 0) {
-            self.usernameTextItem.hasValidText = NO;
-            [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
-          } else {
-            self.websiteTextItem.hasValidText = NO;
-            [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
-          }
+          [weakSelf updateTableViewWithDuplicatesFound:YES];
         }
                           completion:nil];
   } else {
     [self
         performBatchTableViewUpdates:^{
-          [self removeSectionWithIdentifier:SectionIdentifierDuplicate
-                           withRowAnimation:UITableViewRowAnimationTop];
-          self.usernameTextItem.hasValidText = YES;
-          self.websiteTextItem.hasValidText = YES;
-          [self reconfigureCellsForItems:@[
-            self.websiteTextItem, self.usernameTextItem
-          ]];
+          [weakSelf updateTableViewWithDuplicatesFound:NO];
         }
                           completion:nil];
   }
@@ -557,23 +567,19 @@ const int kMinNoteCharAmountForWarning = 901;
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
   [self reconfigureCellsForItems:@[
-    self.websiteTextItem, self.usernameTextItem, self.passwordTextItem
+    _websiteTextItem, _usernameTextItem, _passwordTextItem
   ]];
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  if (tableViewItem == self.websiteTextItem) {
-    [self.delegate setWebsiteURL:self.websiteTextItem.textFieldValue];
-    if (self.isTLDMissingMessageShown) {
-      self.isTLDMissingMessageShown = NO;
+  if (tableViewItem == _websiteTextItem) {
+    [self.delegate setWebsiteURL:_websiteTextItem.textFieldValue];
+    if (_isTLDMissingMessageShown) {
+      _isTLDMissingMessageShown = NO;
+      __weak __typeof(self) weakSelf = self;
       [self
           performBatchTableViewUpdates:^{
-            [self.tableViewModel setFooter:nil
-                  forSectionWithIdentifier:SectionIdentifierTLDFooter];
-            NSUInteger index = [self.tableViewModel
-                sectionForSectionIdentifier:SectionIdentifierTLDFooter];
-            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
-                          withRowAnimation:UITableViewRowAnimationNone];
+            [weakSelf removeTLDFooter];
           }
                             completion:nil];
     }
@@ -582,44 +588,44 @@ const int kMinNoteCharAmountForWarning = 901;
   BOOL siteValid = [self checkIfValidSite];
   BOOL passwordValid = [self checkIfValidPassword];
 
-  self.shouldEnableSave = (siteValid && passwordValid && self.isNoteValid);
+  _shouldEnableSave = (siteValid && passwordValid && _isNoteValid);
   [self toggleNavigationBarRightButtonItem];
 
-  [self.delegate checkForDuplicates:self.usernameTextItem.textFieldValue];
+  [self.delegate checkForDuplicates:_usernameTextItem.textFieldValue];
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
-  if (tableViewItem == self.websiteTextItem) {
-    if (!self.isDuplicatedCredential) {
-      self.websiteTextItem.hasValidText = [self checkIfValidSite];
+  if (tableViewItem == _websiteTextItem) {
+    if (!_isDuplicatedCredential) {
+      _websiteTextItem.hasValidText = [self checkIfValidSite];
     }
-    if ([self.websiteTextItem.textFieldValue length] > 0 &&
+    if ([_websiteTextItem.textFieldValue length] > 0 &&
         [self.delegate isTLDMissing]) {
       [self showTLDMissingSection];
-      self.websiteTextItem.hasValidText = NO;
+      _websiteTextItem.hasValidText = NO;
     }
-    [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
-  } else if (tableViewItem == self.usernameTextItem) {
-    [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
-  } else if (tableViewItem == self.passwordTextItem) {
-    self.passwordTextItem.hasValidText = [self checkIfValidPassword];
-    [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+    [self reconfigureCellsForItems:@[ _websiteTextItem ]];
+  } else if (tableViewItem == _usernameTextItem) {
+    [self reconfigureCellsForItems:@[ _usernameTextItem ]];
+  } else if (tableViewItem == _passwordTextItem) {
+    _passwordTextItem.hasValidText = [self checkIfValidPassword];
+    [self reconfigureCellsForItems:@[ _passwordTextItem ]];
   }
 }
 
 #pragma mark - TableViewMultiLineTextEditItemDelegate
 
 - (void)textViewItemDidChange:(TableViewMultiLineTextEditItem*)tableViewItem {
-  DCHECK(tableViewItem == self.noteTextItem);
+  DCHECK(tableViewItem == _noteTextItem);
 
   // Update save button state based on the note's length and validity of other
   // input fields.
   BOOL noteValid = tableViewItem.text.length <= kMaxPasswordNoteLength;
-  if (self.isNoteValid != noteValid) {
-    self.isNoteValid = noteValid;
+  if (_isNoteValid != noteValid) {
+    _isNoteValid = noteValid;
     tableViewItem.validText = noteValid;
 
-    self.shouldEnableSave =
+    _shouldEnableSave =
         noteValid && [self checkIfValidSite] && [self checkIfValidPassword];
     [self toggleNavigationBarRightButtonItem];
   }
@@ -636,19 +642,12 @@ const int kMinNoteCharAmountForWarning = 901;
   // Update note footer based on the note's length.
   BOOL shouldDisplayNoteFooter =
       tableViewItem.text.length >= kMinNoteCharAmountForWarning;
-  if (self.isNoteFooterShown != shouldDisplayNoteFooter) {
-    self.isNoteFooterShown = shouldDisplayNoteFooter;
+  if (_isNoteFooterShown != shouldDisplayNoteFooter) {
+    _isNoteFooterShown = shouldDisplayNoteFooter;
+    __weak __typeof(self) weakSelf = self;
     [self
         performBatchTableViewUpdates:^{
-          [self.tableViewModel
-                             setFooter:shouldDisplayNoteFooter
-                                           ? [self tooLongNoteMessageFooterItem]
-                                           : nil
-              forSectionWithIdentifier:SectionIdentifierNoteFooter];
-          NSUInteger index = [self.tableViewModel
-              sectionForSectionIdentifier:SectionIdentifierNoteFooter];
-          [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
-                        withRowAnimation:UITableViewRowAnimationNone];
+          [weakSelf updateNoteFooterVisibility:shouldDisplayNoteFooter];
         }
                           completion:nil];
   }
@@ -669,7 +668,7 @@ const int kMinNoteCharAmountForWarning = 901;
 
 // Handles Save button tap on adding new credentials.
 - (void)didTapSaveButton:(id)sender {
-  if ([self.websiteTextItem.textFieldValue length] > 0 &&
+  if ([_websiteTextItem.textFieldValue length] > 0 &&
       [self.delegate isTLDMissing]) {
     [self showTLDMissingSection];
     return;
@@ -680,15 +679,20 @@ const int kMinNoteCharAmountForWarning = 901;
               AddCredentialFromSettingsUserInteractions::kCredentialAdded);
   base::RecordAction(
       base::UserMetricsAction("MobilePasswordManagerAddPassword"));
-  if (self.noteTextItem.text.length != 0) {
+  if (_noteTextItem.text.length != 0) {
     password_manager::metrics_util::LogPasswordNoteActionInSettings(
         password_manager::metrics_util::PasswordNoteAction::
             kNoteAddedInAddDialog);
   }
+
   [self.delegate addPasswordViewController:self
-                     didAddPasswordDetails:self.usernameTextItem.textFieldValue
-                                  password:self.passwordTextItem.textFieldValue
-                                      note:self.noteTextItem.text];
+                     didAddPasswordDetails:_usernameTextItem.textFieldValue
+                                  password:_passwordTextItem.textFieldValue
+                                      note:_noteTextItem.text];
+}
+- (void)didTapSuggestStrongPassword:(UIButton*)sender {
+  _passwordTextItem.textFieldSecureTextEntry = NO;
+  [_passwordTextItem updateTextFieldValue:[self.delegate generatePassword]];
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -710,6 +714,7 @@ const int kMinNoteCharAmountForWarning = 901;
     case ItemTypeDuplicateCredentialButton:
     case ItemTypeFooter:
     case ItemTypeNote:
+    case ItemTypeSuggestPassword:
       return NO;
   };
 }
@@ -717,21 +722,20 @@ const int kMinNoteCharAmountForWarning = 901;
 #pragma mark - Private
 
 - (BOOL)checkIfValidSite {
-  BOOL siteEmpty = [self.websiteTextItem.textFieldValue length] == 0;
-  if (!siteEmpty && !self.isTLDMissingMessageShown &&
-      !self.isDuplicatedCredential) {
-    self.websiteTextItem.hasValidText = YES;
-    [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
+  BOOL siteEmpty = [_websiteTextItem.textFieldValue length] == 0;
+  if (!siteEmpty && !_isTLDMissingMessageShown && !_isDuplicatedCredential) {
+    _websiteTextItem.hasValidText = YES;
+    [self reconfigureCellsForItems:@[ _websiteTextItem ]];
   }
   return !siteEmpty;
 }
 
 // Checks if the password is valid and updates item accordingly.
 - (BOOL)checkIfValidPassword {
-  BOOL passwordEmpty = [self.passwordTextItem.textFieldValue length] == 0;
+  BOOL passwordEmpty = [_passwordTextItem.textFieldValue length] == 0;
   if (!passwordEmpty) {
-    self.passwordTextItem.hasValidText = YES;
-    [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+    _passwordTextItem.hasValidText = YES;
+    [self reconfigureCellsForItems:@[ _passwordTextItem ]];
   }
 
   return !passwordEmpty;
@@ -752,28 +756,91 @@ const int kMinNoteCharAmountForWarning = 901;
 // Enables/Disables the right bar button item in the navigation bar.
 - (void)toggleNavigationBarRightButtonItem {
   self.navigationItem.rightBarButtonItem.enabled =
-      !self.isDuplicatedCredential && self.shouldEnableSave &&
-      [self.delegate isURLValid] && !self.isTLDMissingMessageShown;
+      !_isDuplicatedCredential && _shouldEnableSave &&
+      [self.delegate isURLValid] && !_isTLDMissingMessageShown;
 }
 
 // Shows the section with the error message for top-level domain missing.
 - (void)showTLDMissingSection {
-  if (self.isTLDMissingMessageShown) {
+  if (_isTLDMissingMessageShown) {
     return;
   }
 
   self.navigationItem.rightBarButtonItem.enabled = NO;
-  self.isTLDMissingMessageShown = YES;
+  _isTLDMissingMessageShown = YES;
+  __weak __typeof(self) weakSelf = self;
   [self
       performBatchTableViewUpdates:^{
-        [self.tableViewModel setFooter:[self TLDMessageFooterItem]
-              forSectionWithIdentifier:SectionIdentifierTLDFooter];
-        NSUInteger index = [self.tableViewModel
-            sectionForSectionIdentifier:SectionIdentifierTLDFooter];
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
-                      withRowAnimation:UITableViewRowAnimationNone];
+        [weakSelf updateTLDMissingSectionCompletion];
       }
                         completion:nil];
+}
+
+- (BOOL)isPasswordShown {
+  return _passwordShown;
+}
+
+// Updates the table view to show the TLD message.
+- (void)updateTLDMissingSectionCompletion {
+  [self.tableViewModel setFooter:[self TLDMessageFooterItem]
+        forSectionWithIdentifier:SectionIdentifierTLDFooter];
+  NSUInteger index = [self.tableViewModel
+      sectionForSectionIdentifier:SectionIdentifierTLDFooter];
+  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
+// Updates the table view based on if a duplicate credentials was found.
+- (void)updateTableViewWithDuplicatesFound:(BOOL)duplicateFound {
+  if (duplicateFound) {
+    TableViewModel* model = self.tableViewModel;
+    NSUInteger passwordSectionIndex = [self.tableViewModel
+        sectionForSectionIdentifier:SectionIdentifierPassword];
+    [model insertSectionWithIdentifier:SectionIdentifierDuplicate
+                               atIndex:passwordSectionIndex + 1];
+    [self.tableView
+          insertSections:[NSIndexSet indexSetWithIndex:passwordSectionIndex + 1]
+        withRowAnimation:UITableViewRowAnimationTop];
+    [model addItem:[self duplicatePasswordMessageItem]
+        toSectionWithIdentifier:SectionIdentifierDuplicate];
+    [model addItem:[self duplicatePasswordViewButtonItem]
+        toSectionWithIdentifier:SectionIdentifierDuplicate];
+    if (_usernameTextItem && [_usernameTextItem.textFieldValue length] > 0) {
+      _usernameTextItem.hasValidText = NO;
+      [self reconfigureCellsForItems:@[ _usernameTextItem ]];
+      return;
+    }
+    _websiteTextItem.hasValidText = NO;
+    [self reconfigureCellsForItems:@[ _websiteTextItem ]];
+    return;
+  }
+  [self removeSectionWithIdentifier:SectionIdentifierDuplicate
+                   withRowAnimation:UITableViewRowAnimationTop];
+  _usernameTextItem.hasValidText = YES;
+  _websiteTextItem.hasValidText = YES;
+  [self reconfigureCellsForItems:@[ _websiteTextItem, _usernameTextItem ]];
+}
+
+// Updates the visibility of the note footer in the table view.
+- (void)updateNoteFooterVisibility:(BOOL)shouldDisplayNoteFooter {
+  [self.tableViewModel setFooter:shouldDisplayNoteFooter
+                                     ? [self tooLongNoteMessageFooterItem]
+                                     : nil
+        forSectionWithIdentifier:SectionIdentifierNoteFooter];
+  NSUInteger index = [self.tableViewModel
+      sectionForSectionIdentifier:SectionIdentifierNoteFooter];
+  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
+// Removes the footer associated with TLD.
+- (void)removeTLDFooter {
+  [self.tableViewModel setFooter:nil
+        forSectionWithIdentifier:SectionIdentifierTLDFooter];
+  NSUInteger index = [self.tableViewModel
+      sectionForSectionIdentifier:SectionIdentifierTLDFooter];
+  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark - Actions
@@ -782,30 +849,30 @@ const int kMinNoteCharAmountForWarning = 901;
 - (void)didTapShowHideButton:(UIButton*)buttonView {
   [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
                                 animated:NO];
-  if (self.isPasswordShown) {
-    self.passwordShown = NO;
-    self.passwordTextItem.textFieldSecureTextEntry = YES;
+  if (_passwordShown) {
+    _passwordShown = NO;
+    _passwordTextItem.textFieldSecureTextEntry = YES;
     // Only change the textFieldValue for tests.
-    if (self.passwordForTesting) {
-      self.passwordTextItem.textFieldValue = kMaskedPassword;
+    if (_passwordForTesting) {
+      _passwordTextItem.textFieldValue = kMaskedPassword;
     }
-    self.passwordTextItem.identifyingIcon =
+    _passwordTextItem.identifyingIcon =
         DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
-    self.passwordTextItem.identifyingIconAccessibilityLabel =
+    _passwordTextItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);
-    [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+    [self reconfigureCellsForItems:@[ _passwordTextItem ]];
   } else {
-    self.passwordTextItem.textFieldSecureTextEntry = NO;
-    self.passwordShown = YES;
+    _passwordTextItem.textFieldSecureTextEntry = NO;
+    _passwordShown = YES;
     // Only change the textFieldValue for tests.
-    if (self.passwordForTesting) {
-      self.passwordTextItem.textFieldValue = self.passwordForTesting;
+    if (_passwordForTesting) {
+      _passwordTextItem.textFieldValue = _passwordForTesting;
     }
-    self.passwordTextItem.identifyingIcon =
+    _passwordTextItem.identifyingIcon =
         DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize);
-    self.passwordTextItem.identifyingIconAccessibilityLabel =
+    _passwordTextItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON);
-    [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+    [self reconfigureCellsForItems:@[ _passwordTextItem ]];
   }
 }
 
@@ -828,9 +895,9 @@ const int kMinNoteCharAmountForWarning = 901;
                 secondaryAttributedString:nil];
 
   errorInfoPopover.popoverPresentationController.sourceView =
-      self.usernameErrorAnchorView;
+      _usernameErrorAnchorView;
   errorInfoPopover.popoverPresentationController.sourceRect =
-      self.usernameErrorAnchorView.bounds;
+      _usernameErrorAnchorView.bounds;
   errorInfoPopover.popoverPresentationController.permittedArrowDirections =
       UIPopoverArrowDirectionAny;
   [self presentViewController:errorInfoPopover animated:YES completion:nil];
@@ -840,12 +907,12 @@ const int kMinNoteCharAmountForWarning = 901;
 
 - (void)setPassword:(NSString*)password {
   NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItem:self.passwordTextItem];
+      [self.tableViewModel indexPathForItem:_passwordTextItem];
   TableViewTextEditItem* item = static_cast<TableViewTextEditItem*>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
-  self.passwordForTesting = password;
+  _passwordForTesting = password;
   item.textFieldValue = [self isPasswordShown] || self.tableView.editing
-                            ? self.passwordForTesting
+                            ? _passwordForTesting
                             : kMaskedPassword;
 }
 

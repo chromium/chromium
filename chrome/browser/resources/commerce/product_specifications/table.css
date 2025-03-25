@@ -35,7 +35,6 @@
   display: grid;
   grid-template-rows: subgrid;
   margin: var(--column-hover-padding) 0; /* Include space for hover border. */
-  position: relative;
   width: var(--column-width);
 }
 

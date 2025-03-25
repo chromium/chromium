@@ -5652,35 +5652,6 @@ TEST_F(HistoryBackendTest, InternalAndExternalReferrer) {
   }
 }
 
-TEST_F(HistoryBackendTest, GetMostRecentVisitForEachURL) {
-  ASSERT_TRUE(backend_.get());
-
-  GURL url("http://www.testquery.com");
-
-  // Clear all history.
-  backend_->DeleteAllHistory();
-
-  // Visit the url after typing it with a past date.
-  backend_->AddPageVisit(
-      url, base::Time::Now() - base::Days(1), /*referring_visit=*/0,
-      /*external_referrer_url=*/GURL(), ui::PAGE_TRANSITION_TYPED, false,
-      SOURCE_BROWSED, true, false, true);
-
-  base::Time curr_time = base::Time::Now();
-
-  // Visit the url after typing it.
-  backend_->AddPageVisit(url, curr_time, /*referring_visit=*/0,
-                         /*external_referrer_url=*/GURL(),
-                         ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, true,
-                         false, true);
-
-  std::map<GURL, VisitRow> visits =
-      backend_->GetMostRecentVisitForEachURL({url});
-
-  EXPECT_EQ(1U, visits.size());
-  EXPECT_EQ(curr_time, visits[url].visit_time);
-}
-
 // We want to test with the VisitedLinkDatabase enabled and disabled.
 enum TestMode {
   kPopulateVisitedLinkDatabaseDisabled,

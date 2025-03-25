@@ -245,6 +245,13 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // group.
   FineTunePosition GetFocusedFineTunePosition() const;
 
+  // Called when the fine tune position is updated, to update the focus ring of
+  // the focused fine tune position if needed. (Note that this will not create a
+  // focus ring if one doesn't exist.) If `notify_selection_event` is true, this
+  // will also trigger an a11y announcement that the fine tune position has been
+  // selected.
+  void OnFineTunePositionUpdated(bool notify_selection_event);
+
   // Called when the capture label widget is made visible or hidden, or changes
   // states. If the label button is visible, it should be on the a11y annotation
   // cycle, otherwise it should be removed from the a11y annotation cycle.

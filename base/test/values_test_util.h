@@ -102,6 +102,37 @@ class DictionaryHasValuesMatcher {
   base::Value::Dict template_value_;
 };
 
+class IsSupersetOfValueMatcher {
+ public:
+  explicit IsSupersetOfValueMatcher(const base::Value& template_value);
+  explicit IsSupersetOfValueMatcher(const base::Value::Dict& template_value);
+  explicit IsSupersetOfValueMatcher(const base::Value::List& template_value);
+  explicit IsSupersetOfValueMatcher(base::Value&& template_value);
+  explicit IsSupersetOfValueMatcher(base::Value::Dict&& template_value);
+  explicit IsSupersetOfValueMatcher(base::Value::List&& template_value);
+
+  IsSupersetOfValueMatcher(const IsSupersetOfValueMatcher&);
+  IsSupersetOfValueMatcher& operator=(const IsSupersetOfValueMatcher&);
+  IsSupersetOfValueMatcher(IsSupersetOfValueMatcher&&) = default;
+  IsSupersetOfValueMatcher& operator=(IsSupersetOfValueMatcher&&) = default;
+
+  ~IsSupersetOfValueMatcher();
+
+  bool MatchAndExplain(const base::Value& value,
+                       testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value::Dict& value,
+                       testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value::List& value,
+                       testing::MatchResultListener* listener) const;
+
+  void DescribeTo(std::ostream* os) const;
+
+  void DescribeNegationTo(std::ostream* os) const;
+
+ private:
+  base::Value template_value_;
+};
+
 // A custom GMock matcher.  For details, see
 // https://github.com/google/googletest/blob/644319b9f06f6ca9bf69fe791be399061044bc3d/googlemock/docs/CookBook.md#writing-new-polymorphic-matchers
 class IsJsonMatcher {
@@ -147,6 +178,16 @@ inline testing::PolymorphicMatcher<internal::DictionaryHasValuesMatcher>
 DictionaryHasValues(const base::Value::Dict& template_value) {
   return testing::MakePolymorphicMatcher(
       internal::DictionaryHasValuesMatcher(template_value));
+}
+
+// Matches when a `base::Value` or `base::Value::Dict` or `base::Value::List` is
+// a superset of `template_value`, ignoring unexpected Dict keys and list items.
+// Uses `testing::DoubleEq` when comparing doubles.
+template <typename T>
+inline testing::PolymorphicMatcher<internal::IsSupersetOfValueMatcher>
+IsSupersetOfValue(T&& template_value) {
+  return testing::MakePolymorphicMatcher(
+      internal::IsSupersetOfValueMatcher(std::forward<T>(template_value)));
 }
 
 // Creates a GMock matcher for testing equivalence of JSON values represented as

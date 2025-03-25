@@ -6,6 +6,12 @@ support underlying systems ranging from embedded SoC targets to new
 X11-alternative window systems on Linux such as Wayland or Mir to bring up Aura
 Chromium by providing an implementation of the platform interface.
 
+> Note: There are 2 buildflags which target platforms who use OZONE.
+> They are slightly different from each other:
+> * IS_OZONE: Targets Linux, ChromeOS, and Fuchsia.
+> * IS_OZONE_WAYLAND: Targets only Linux systems using the Wayland window
+> manager. Does not include ChromeOS or Fuchsia.
+
 ## Guiding Principles
 
 Our goal is to enable chromium to be used in a wide variety of projects by

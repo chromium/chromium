@@ -237,15 +237,7 @@ GN template (not the built-in `rust_library`) to integrate properly into the
 mixed-language Chromium build and get the correct compiler options applied to
 them.
 
-The [CXX](https://cxx.rs) tool is used for generating C++ bindings to Rust
-code. Since it requires explicit declarations in Rust, an wrapper shim around a
-pure Rust library is needed. Add these Rust shims that contain the CXX
-`bridge` macro to the `cxx_bindings` GN variable in the `rust_static_library`
-to have CXX generate a C++ header for that file. To include the C++ header
-file, rooted in the `gen` output directory, use
-```
-#include "the/path/to/the/rust/file.rs.h"
-```
+See `rust-ffi.md` for information on C++/Rust FFI.
 
 # Logging
 

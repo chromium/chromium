@@ -431,7 +431,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiSyncDenied) {
   delegate_->ShowAuthenticationUi(mock_callback.Get());
 }
 
-// Tests `ShowAuthenticationUi` when the user is SignedIn but not syncing.
+// Tests `ShowAuthenticationUi` when the user is signed-in.
 TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiWithSignIn) {
   SignIn();
   InitDelegate();

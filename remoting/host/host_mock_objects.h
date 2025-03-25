@@ -126,7 +126,7 @@ class MockClientSessionControl : public ClientSessionControl {
               DisconnectSession,
               (ErrorCode error,
                std::string_view error_details,
-               const base::Location& error_location),
+               const SourceLocation& error_location),
               (override));
   MOCK_METHOD(void,
               OnLocalPointerMoved,

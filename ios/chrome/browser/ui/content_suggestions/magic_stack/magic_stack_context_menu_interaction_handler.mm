@@ -14,7 +14,10 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -43,16 +46,29 @@ BOOL AllowsLongPressForModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kMostVisited:
       return YES;
     case ContentSuggestionsModuleType::kShopCard:
-      return commerce::kShopCardVariation.Get() == commerce::kShopCardArm1;
+      return commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
+             commerce::kShopCardVariation.Get() == commerce::kShopCardArm2;
     default:
       return NO;
   }
 }
 
 /// Title string for the context menu of this container.
-NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type) {
+NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type,
+                                     MagicStackModule* config) {
   switch (type) {
     case ContentSuggestionsModuleType::kTabResumption:
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3) {
+        TabResumptionItem* tabResumptionItemConfig =
+            static_cast<TabResumptionItem*>(config);
+        if (tabResumptionItemConfig.shopCardData &&
+            tabResumptionItemConfig.shopCardData.shopCardItemType ==
+                ShopCardItemType::kPriceDropOnTab &&
+            tabResumptionItemConfig.shopCardData.priceDrop.has_value()) {
+          return l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_DROP_CONTEXT_MENU_TITLE);
+        }
+      }
       return l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kSafetyCheck:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_TITLE);
@@ -80,8 +96,11 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type) {
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_TITLE);
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_ALT_TITLE);
       }
-      // TODO(crbug.com/404335870) Implement for arm 2 (reviews).
       return @"";
     default:
       NOTREACHED();
@@ -135,6 +154,10 @@ NSString* GetContextMenuHideDescriptionForType(
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE);
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_HIDE_ALT);
       }
       return @"";
     default:
@@ -148,6 +171,9 @@ NSString* GetContextMenuHideDescriptionForType(
 
 /// Type of magic stack module being handled.
 @property(nonatomic, assign) ContentSuggestionsModuleType type;
+
+// Configuration for the Magic Stack Module.
+@property(nonatomic, assign) MagicStackModule* config;
 
 /// Whether the magic stack module should be hidden when the context menu
 /// finishes presentation.
@@ -165,8 +191,10 @@ NSString* GetContextMenuHideDescriptionForType(
   return self;
 }
 
-- (void)configureWithType:(ContentSuggestionsModuleType)type {
+- (void)configureWithType:(ContentSuggestionsModuleType)type
+                   config:(MagicStackModule*)config {
   self.type = type;
+  self.config = config;
 }
 
 - (void)reset {
@@ -217,7 +245,8 @@ NSString* GetContextMenuHideDescriptionForType(
   __weak __typeof(self) weakSelf = self;
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
-        return [UIMenu menuWithTitle:GetContextMenuTitleForType(weakSelf.type)
+        return [UIMenu menuWithTitle:GetContextMenuTitleForType(weakSelf.type,
+                                                                weakSelf.config)
                             children:[weakSelf menuElements]];
       };
   return

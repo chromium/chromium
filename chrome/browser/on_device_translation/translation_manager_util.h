@@ -16,62 +16,9 @@
 
 namespace on_device_translation {
 
-using blink::mojom::TranslationAvailability;
-using blink::mojom::TranslatorLanguageCodePtr;
-
-// `LanguageCategory` is used to represent the language category in the
-// availability matrix.
-struct LanguageCategory {
-  bool installed;
-  bool preferred;
-  bool popular;
-};
-
-// Calculates the translation availability for the given source and target
-// language categories.
-TranslationAvailability CalculateTranslationAvailability(
-    const LanguageCategory& source,
-    const LanguageCategory& target,
-    bool accept_languages_check_enabled,
-    size_t installable_package_count);
-
-// Creates the availability matrix for each language category.
-std::vector<std::vector<TranslationAvailability>> CreateAvailabilityMatrix(
-    bool accept_languages_check_enabled,
-    size_t installable_package_count);
-
-// Creates the language categories for the availability matrix.
-// The language categories are stored in the following order:
-//   0. Installed and preferred popular languages
-//   1. Installed and preferred non-popular languages
-//   2. Installed and non-preferred popular languages
-//   3. Installed and non-preferred non-popular languages
-//   4. Not installed and preferred popular languages
-//   5. Not installed and preferred non-popular languages
-//   6. Not installed and non-preferred popular languages
-//   7. Not installed and non-preferred non-popular languages
-// Note: `preferred` means that the language an Accept Language.
-std::vector<std::vector<TranslatorLanguageCodePtr>> CreateLanguageCategories(
-    const std::vector<std::string_view>& accept_languages,
-    const std::set<LanguagePackKey>& installed_packs,
-    bool is_en_preferred);
-
-// Creates the language category list for the availability matrix.
-std::vector<LanguageCategory> CreateLanguageCategoryList();
-
 // Returns the Accept Languages for a given Profile.
 const std::vector<std::string_view> GetAcceptLanguages(
     content::BrowserContext* browser_context);
-
-// Returns the index of the language category in the availability matrix.
-size_t GetLanguageCategoryIndex(bool installed, bool preferred, bool popular);
-
-// Determines if a given language is an Accept Language.
-bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
-                        const std::string_view lang);
-
-// Determines if a language is both a supported and a popular language.
-bool IsSupportedPopularLanguage(const std::string& lang);
 
 // Determines if the Translator API is enabled.
 bool IsTranslatorAllowed(content::BrowserContext* browser_context);

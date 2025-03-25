@@ -157,10 +157,9 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
       [FakeSystemIdentity fakeIdentity1];
 };
 
-// Tests that account types for a signed in not syncing account are showing
-// correctly.
+// Tests that account types for a signed in account are showing correctly.
 TEST_F(ManageSyncSettingsMediatorTest,
-       CheckAccountSwitchItemsForSignedInNotSyncingAccount) {
+       CheckAccountSwitchItemsForSignedInAccount) {
   CreateManageSyncSettingsMediator();
   SimulateFirstSetupSyncOffWithSignedInAccount();
 
@@ -179,9 +178,9 @@ TEST_F(ManageSyncSettingsMediatorTest,
 }
 
 // Tests that the sign out item exists in the ManageAndSignOutSectionIdentifier
-// for a signed in not syncing account along with manage accounts items.
+// for a signed in account along with manage accounts items.
 TEST_F(ManageSyncSettingsMediatorTest,
-       CheckSignOutSectionItemsForSignedInNotSyncingAccount) {
+       CheckSignOutSectionItemsForSignedInAccount) {
   CreateManageSyncSettingsMediator();
   SimulateFirstSetupSyncOffWithSignedInAccount();
 
@@ -219,9 +218,8 @@ TEST_F(ManageSyncSettingsMediatorTest,
 }
 
 // Tests that Sync errors display as a text button at the top of the page for a
-// signed in not syncing account.
-TEST_F(ManageSyncSettingsMediatorTest,
-       TestSyncErrorsForSignedInNotSyncingAccount) {
+// signed in account.
+TEST_F(ManageSyncSettingsMediatorTest, TestSyncErrorsForSignedInAccount) {
   CreateManageSyncSettingsMediator();
   SimulateFirstSetupSyncOffWithSignedInAccount();
   ON_CALL(*sync_service_mock_, GetUserActionableError())

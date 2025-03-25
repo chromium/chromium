@@ -37,6 +37,7 @@ luci.bucket(
                 # or fix yet.
                 "mdb/chrome-active-sheriffs",
                 "mdb/chrome-gpu",
+                "mdb/clank-engprod",
                 "mdb/bling-engprod",
             ],
             users = [

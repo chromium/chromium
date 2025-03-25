@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
+import static androidx.browser.customtabs.CustomTabsIntent.NO_TITLE;
 
 import static org.chromium.base.MathUtils.interpolate;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
@@ -34,7 +35,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -50,6 +50,7 @@ import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
@@ -224,6 +225,33 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private int mToolbarWidth;
     private BrowserServicesIntentDataProvider mIntentDataProvider;
     private CustomTabMinimizeDelegate mMinimizeDelegate;
+    private Boolean mEnableMinimizeButton;
+
+    private static final class ButtonPositioningParams {
+        public int availableWidth;
+        public int startAlignedButtonCount;
+        public int totalStartAlignedButtonWidth;
+        public int endAlignedButtonCount;
+        public int totalEndAlignedButtonWidth;
+    }
+
+    public static final class OmniboxParams {
+        /** The {@link SearchActivityClient} instance used to request Omnibox. */
+        public SearchActivityClient searchClient;
+        /** The package name of the Custom Tabs embedder. */
+        public String clientPackageName;
+        /** A handler for taps on the omnibox, or null if the default handler should be used. */
+        @Nullable public Consumer<Tab> tapHandler;
+
+        public OmniboxParams(
+                SearchActivityClient searchClient,
+                String clientPackageName,
+                @Nullable Consumer<Tab> tapHandler) {
+            this.searchClient = searchClient;
+            this.clientPackageName = clientPackageName;
+            this.tapHandler = tapHandler;
+        }
+    }
 
     // endregion
 
@@ -310,17 +338,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @param featureOverridesManager {@link CustomTabFeatureOverridesManager} for accessing CCT
      *     feature overrides.
      * @param minimizeDelegate {@link CustomTabMinimizeDelegate} for minimizing the tab.
+     * @param omniboxParams {@link OmniboxParams}, null if omnibox isn't enabled.
      */
     public void initializeToolbar(
             Activity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabFeatureOverridesManager featureOverridesManager,
-            CustomTabMinimizeDelegate minimizeDelegate) {
+            CustomTabMinimizeDelegate minimizeDelegate,
+            OmniboxParams omniboxParams) {
         assert ChromeFeatureList.sCctToolbarRefactor.isEnabled();
 
         mIntentDataProvider = intentDataProvider;
         mFeatureOverridesManager = featureOverridesManager;
         mMinimizeDelegate = minimizeDelegate;
+        if (omniboxParams != null) {
+            setOmniboxParams(omniboxParams);
+        }
         calculateToolbarWidthBeforeMeasure(activity);
         inflateAndPositionToolbarElements(mToolbarWidth);
     }
@@ -331,17 +364,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mToolbarWidth = CustomTabDimensionUtils.getDisplayWidth(activity);
     }
 
-    private void inflateAndPositionToolbarElements(int availableWidth) {
+    private void inflateAndPositionToolbarElements(final int availableWidth) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         int buttonWidth = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        // TODO(crbug.com/402213312): Location bar min width should change based on whether the
-        // security icon is nested.
-        int locationBarMinWidth =
-                getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
-        int totalStartAlignedButtonWidth = 0;
-        int totalEndAlignedButtonWidth = 0;
-        int startAlignedButtonCount = 0;
-        int endAlignedButtonCount = 0;
+        int locationBarMinWidth = getLocationBarMinWidth();
+        var posParams = new ButtonPositioningParams();
+        posParams.availableWidth = availableWidth;
 
         if (mIntentDataProvider.getCustomTabMode() == INCOGNITO) {
             int incognitoIconWidth =
@@ -349,7 +377,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             locationBarMinWidth += incognitoIconWidth;
         }
 
-        availableWidth -= locationBarMinWidth;
+        posParams.availableWidth -= locationBarMinWidth;
 
         mCloseButtonPosition = mIntentDataProvider.getCloseButtonPosition();
         if (mCloseButton == null && mIntentDataProvider.isCloseButtonEnabled()) {
@@ -358,38 +386,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mCloseButton.setOnLongClickListener(this);
         }
 
-        // TODO(crbug.com/402213312): There is a lot of repeated code. See if it can be reused.
         if (mCloseButton != null) {
             boolean isEndPosition = mCloseButtonPosition == CLOSE_BUTTON_POSITION_END;
-            // Close button is currently the first button we're placing. Use start ([][0]) and
-            // end ([][1]) padding corresponding to this position.
-            int startPaddingRes =
-                    isEndPosition
-                            ? END_ALIGNED_BUTTON_PADDING[endAlignedButtonCount][0]
-                            : START_ALIGNED_BUTTON_PADDING[startAlignedButtonCount][0];
-            int endPaddingRes =
-                    isEndPosition
-                            ? END_ALIGNED_BUTTON_PADDING[endAlignedButtonCount][1]
-                            : START_ALIGNED_BUTTON_PADDING[startAlignedButtonCount][1];
-            setHorizontalPadding(mCloseButton, startPaddingRes, endPaddingRes);
-            // Adjust the layout gravity based on where the button is aligned, and offset it by
-            // the total width of the buttons we've previously placed, which will be 0 for the close
-            // button.
-            setHorizontalLayoutParams(
-                    mCloseButton,
-                    isEndPosition ? 0 : totalStartAlignedButtonWidth,
-                    isEndPosition ? totalEndAlignedButtonWidth : 0,
-                    isEndPosition);
-            if (isEndPosition) {
-                // We've placed a button at the end.
-                totalEndAlignedButtonWidth += buttonWidth;
-                endAlignedButtonCount++;
-            } else {
-                // We've placed a button at the start.
-                totalStartAlignedButtonWidth += buttonWidth;
-                startAlignedButtonCount++;
-            }
-            availableWidth -= buttonWidth;
+            positionButton(mCloseButton, posParams, buttonWidth, isEndPosition);
         }
 
         if (mMenuButton == null) {
@@ -400,79 +399,67 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // Now position the menu button.
         {
             boolean isEndPosition = mCloseButtonPosition != CLOSE_BUTTON_POSITION_END;
-            // Menu button is currently the first button we're placing on the opposite side of the
-            // close button. Use start ([][0]) and end ([][1]) padding corresponding to this
-            // position.
-            int startPaddingRes =
-                    isEndPosition
-                            ? END_ALIGNED_BUTTON_PADDING[endAlignedButtonCount][0]
-                            : START_ALIGNED_BUTTON_PADDING[startAlignedButtonCount][0];
-            int endPaddingRes =
-                    isEndPosition
-                            ? END_ALIGNED_BUTTON_PADDING[endAlignedButtonCount][1]
-                            : START_ALIGNED_BUTTON_PADDING[startAlignedButtonCount][1];
-            setHorizontalPadding(mMenuButton, startPaddingRes, endPaddingRes);
-            // Adjust the layout gravity based on where the button is aligned, and offset it by
-            // the total width of the buttons we've previously placed, which will be 0 for the menu
-            // button.
-            setHorizontalLayoutParams(
-                    mMenuButton,
-                    isEndPosition ? 0 : totalStartAlignedButtonWidth,
-                    isEndPosition ? totalEndAlignedButtonWidth : 0,
-                    isEndPosition);
-            if (isEndPosition) {
-                // We've placed a button at the end.
-                totalEndAlignedButtonWidth += buttonWidth;
-                endAlignedButtonCount++;
-            } else {
-                // We've placed a button at the start.
-                totalStartAlignedButtonWidth += buttonWidth;
-                startAlignedButtonCount++;
-            }
-            availableWidth -= buttonWidth;
+            positionButton(mMenuButton, posParams, buttonWidth, isEndPosition);
         }
 
         // Check if we have space for the minimize button.
-        if (availableWidth > buttonWidth) {
-            maybeInitMinimizeButton();
+        if (posParams.availableWidth > buttonWidth) {
+            prepareMinimizeButton();
 
-            if (mMinimizeButton != null) {
+            if (mMinimizeButton != null && mMinimizeButton.getVisibility() == VISIBLE) {
                 boolean isEndPosition = mCloseButtonPosition == CLOSE_BUTTON_POSITION_END;
-                // Use start ([][0]) and end ([][1]) padding corresponding to the next button
-                // position we have.
-                int startPaddingRes =
-                        isEndPosition
-                                ? END_ALIGNED_BUTTON_PADDING[endAlignedButtonCount][0]
-                                : START_ALIGNED_BUTTON_PADDING[startAlignedButtonCount][0];
-                int endPaddingRes =
-                        isEndPosition
-                                ? END_ALIGNED_BUTTON_PADDING[endAlignedButtonCount][1]
-                                : START_ALIGNED_BUTTON_PADDING[startAlignedButtonCount][1];
-                setHorizontalPadding(mMinimizeButton, startPaddingRes, endPaddingRes);
-                // Adjust the layout gravity based on where the button is aligned, and offset it by
-                // the total width of the buttons we've previously placed.
-                setHorizontalLayoutParams(
-                        mMinimizeButton,
-                        isEndPosition ? 0 : totalStartAlignedButtonWidth,
-                        isEndPosition ? totalEndAlignedButtonWidth : 0,
-                        isEndPosition);
-                if (isEndPosition) {
-                    // We've placed another button at the end.
-                    totalEndAlignedButtonWidth += buttonWidth;
-                    endAlignedButtonCount++;
-                } else {
-                    // We've placed another button at the start.
-                    totalStartAlignedButtonWidth += buttonWidth;
-                    startAlignedButtonCount++;
-                }
-                availableWidth -= buttonWidth;
+                positionButton(mMinimizeButton, posParams, buttonWidth, isEndPosition);
             }
         }
 
         mCustomActionButtons = findViewById(R.id.action_buttons);
         mIncognitoImageView = findViewById(R.id.incognito_cct_logo_image_view);
-        ((MarginLayoutParams) mLocationBar.getLayout().getLayoutParams())
-                .setMarginStart(totalStartAlignedButtonWidth);
+        positionLocationBar(posParams);
+    }
+
+    /**
+     * Positions a button on the toolbar based on given arguments.
+     *
+     * @param button The button to be positioned.
+     * @param posParams A {@link ButtonPositioningParams} tracking the current state of the
+     *     positioning process. It will be modified by this method.
+     * @param buttonWidth The width of the button.
+     * @param isEndAligned True if the button is aligned to the end of the toolbar, false if aligned
+     *     to the start.
+     */
+    private void positionButton(
+            View button, ButtonPositioningParams posParams, int buttonWidth, boolean isEndAligned) {
+        assert posParams.startAlignedButtonCount <= START_ALIGNED_BUTTON_PADDING.length;
+        assert posParams.endAlignedButtonCount <= END_ALIGNED_BUTTON_PADDING.length;
+        // Close button is currently the first button we're placing. Use start ([][0]) and
+        // end ([][1]) padding corresponding to this position.
+        int startPaddingRes =
+                isEndAligned
+                        ? END_ALIGNED_BUTTON_PADDING[posParams.endAlignedButtonCount][0]
+                        : START_ALIGNED_BUTTON_PADDING[posParams.startAlignedButtonCount][0];
+        int endPaddingRes =
+                isEndAligned
+                        ? END_ALIGNED_BUTTON_PADDING[posParams.endAlignedButtonCount][1]
+                        : START_ALIGNED_BUTTON_PADDING[posParams.startAlignedButtonCount][1];
+        setHorizontalPadding(button, startPaddingRes, endPaddingRes);
+        // Adjust the layout gravity based on where the button is aligned, and offset it by
+        // the total width of the buttons we've previously placed, which will be 0 for the close
+        // button.
+        setHorizontalLayoutParams(
+                button,
+                isEndAligned ? 0 : posParams.totalStartAlignedButtonWidth,
+                isEndAligned ? posParams.totalEndAlignedButtonWidth : 0,
+                isEndAligned);
+        if (isEndAligned) {
+            // We've placed a button at the end.
+            posParams.totalEndAlignedButtonWidth += buttonWidth;
+            posParams.endAlignedButtonCount++;
+        } else {
+            // We've placed a button at the start.
+            posParams.totalStartAlignedButtonWidth += buttonWidth;
+            posParams.startAlignedButtonCount++;
+        }
+        posParams.availableWidth -= buttonWidth;
     }
 
     private void setHorizontalLayoutParams(
@@ -492,6 +479,37 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 view.getPaddingTop(),
                 getResources().getDimensionPixelSize(endPaddingRes),
                 view.getPaddingBottom());
+    }
+
+    @Px
+    private int getLocationBarMinWidth() {
+        int locationBarMinWidth =
+                getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
+        if (mLocationBar.mOmniboxEnabled) {
+            locationBarMinWidth +=
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        } else if (mIntentDataProvider.getTitleVisibilityState() == NO_TITLE) {
+            locationBarMinWidth +=
+                    getResources().getDimensionPixelSize(R.dimen.custom_tabs_security_icon_width);
+        }
+        return locationBarMinWidth;
+    }
+
+    private void positionLocationBar(ButtonPositioningParams posParams) {
+        var locationBarLp = ((MarginLayoutParams) mLocationBar.getLayout().getLayoutParams());
+        locationBarLp.setMarginStart(posParams.totalStartAlignedButtonWidth);
+        locationBarLp.setMarginEnd(posParams.totalEndAlignedButtonWidth);
+        mLocationBar.getLayout().setLayoutParams(locationBarLp);
+
+        if (mLocationBar.mOmniboxEnabled) {
+            var titleUrlLp =
+                    ((MarginLayoutParams) mLocationBar.mTitleUrlContainer.getLayoutParams());
+            // TODO(crbug.com/402213312): Revisit this when cleaning up CCTNestedSecurityIcon.
+            // The security button is static when omnibox is enabled, so offset the url bar for it.
+            titleUrlLp.leftMargin =
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            mLocationBar.mTitleUrlContainer.setLayoutParams(titleUrlLp);
+        }
     }
 
     @Override
@@ -611,18 +629,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     /**
-     * Enables the interactive Omnibox in CCT.
+     * Sets params for the interactive Omnibox in CCT.
      *
-     * @param searchClient the SearchActivityClient instance used to request Omnibox.
-     * @param clientPackageName the package name of the custom tabs embedder.
-     * @param tapHandler a handler for taps on the omnibox, or null if the default handler should be
-     *     used.
+     * @param omniboxParams The {@link OmniboxParams} to be used.
      */
-    public void setOmniboxEnabled(
-            SearchActivityClient searchClient,
-            String clientPackageName,
-            @Nullable Consumer<Tab> tapHandler) {
-        mLocationBar.setOmniboxEnabled(searchClient, clientPackageName, tapHandler);
+    public void setOmniboxParams(@NonNull OmniboxParams omniboxParams) {
+        mLocationBar.setOmniboxParams(omniboxParams);
     }
 
     private void setButtonsVisibility() {
@@ -695,24 +707,66 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         maximizeButton.setVisibility(View.GONE);
     }
 
-    @VisibleForTesting
-    void maybeInitMinimizeButton() {
-        if (!MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
-                getContext(), mFeatureOverridesManager)) {
+    /**
+     * Inflates and prepares the minimize button if it should be enabled.
+     *
+     * This is only used when CCTToolbarRefactor is enabled.
+     */
+    private void prepareMinimizeButton() {
+        if (!isMinimizeButtonEnabled()) return;
+
+        if (isInMultiWindowMode()) {
+            if (mMinimizeButton != null) {
+                mMinimizeButton.setVisibility(GONE);
+            }
             return;
         }
 
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            if (!MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider)) {
-                return;
-            }
+        if (mMinimizeButton != null) {
+            mMinimizeButton.setVisibility(VISIBLE);
+            return;
+        }
 
-            if (mMinimizeButton == null) {
-                LayoutInflater.from(getContext())
-                        .inflate(R.layout.custom_tabs_minimize_button, this, true);
-                mMinimizeButton = findViewById(R.id.custom_tabs_minimize_button);
-                mMinimizeButton.setOnClickListener(view -> mMinimizeDelegate.minimize());
-            }
+        LayoutInflater.from(getContext()).inflate(R.layout.custom_tabs_minimize_button, this, true);
+        mMinimizeButton = findViewById(R.id.custom_tabs_minimize_button);
+        mMinimizeButton.setOnClickListener(view -> mMinimizeDelegate.minimize());
+        var d =
+                UiUtils.getTintedDrawable(
+                        getContext(), MinimizedFeatureUtils.getMinimizeIcon(), mTint);
+        mMinimizeButton.setTag(R.id.custom_tabs_toolbar_tintable, true);
+        mMinimizeButton.setImageDrawable(d);
+        updateButtonTint(mMinimizeButton);
+        mMinimizeButton.setOnLongClickListener(this);
+    }
+
+    /**
+     * Whether the minimize button should be enabled. A true return value doesn't mean the minimize
+     * button will be visible on the toolbar. The minimize button will be hidden if there isn't
+     * enough space on the toolbar or if the CCT is in multi-window mode.
+     *
+     * This is only used when CCTToolbarRefactor is enabled.
+     */
+    private boolean isMinimizeButtonEnabled() {
+        if (mEnableMinimizeButton != null) return mEnableMinimizeButton;
+
+        mEnableMinimizeButton =
+                MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
+                        getContext(), mFeatureOverridesManager)
+                        && MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(
+                        mIntentDataProvider);
+        return mEnableMinimizeButton;
+    }
+
+    /**
+     * Inflates and prepares the minimize button if it should be enabled, when CCTToolbarRefactor is
+     * disabled.
+     */
+    @VisibleForTesting
+    void maybeInitMinimizeButton() {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
+        if (!MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
+                getContext(), mFeatureOverridesManager)) {
+            return;
         }
 
         ViewStub minimizeButtonStub = findViewById(R.id.minimize_button_stub);
@@ -731,6 +785,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void setMinimizeButtonVisibility() {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
         if (mMinimizeButton == null) return;
 
         if (!mMinimizeButtonEnabled || isInMultiWindowMode()) {
@@ -944,6 +999,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void maybeAdjustButtonSpacingForCloseButtonPosition() {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
         if (mCloseButtonPosition != CLOSE_BUTTON_POSITION_END) return;
 
         final @Dimension int buttonWidth =
@@ -1009,6 +1065,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateToolbarLayoutMargin() {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
         if (mIncognitoImageView != null) {
             final boolean shouldShowIncognitoIcon = isIncognitoBranded();
             mIncognitoImageView.setVisibility(shouldShowIncognitoIcon ? VISIBLE : GONE);
@@ -2288,10 +2345,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mPageInfoIphController = pageInfoIphController;
         }
 
-        void setOmniboxEnabled(
-                SearchActivityClient searchClient,
-                String clientPackageName,
-                @Nullable Consumer<Tab> tapHandler) {
+        void setOmniboxParams(@NonNull OmniboxParams omniboxParams) {
+            assert omniboxParams != null;
             mOmniboxEnabled = true;
             mOmniboxBackground =
                     AppCompatResources.getDrawable(
@@ -2327,18 +2382,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     v -> {
                         RecordUserAction.record("CustomTabs.OmniboxClicked");
                         var tab = getCurrentTab();
-                        if (tapHandler != null) {
-                            tapHandler.accept(tab);
+                        if (omniboxParams.tapHandler != null) {
+                            omniboxParams.tapHandler.accept(tab);
                         } else {
                             var intent =
-                                    searchClient
+                                    omniboxParams
+                                            .searchClient
                                             .newIntentBuilder()
                                             .setPageUrl(tab.getUrl())
-                                            .setReferrer(clientPackageName)
+                                            .setReferrer(omniboxParams.clientPackageName)
                                             .setIncognito(tab.isIncognitoBranded())
                                             .setResolutionType(ResolutionType.SEND_TO_CALLER)
                                             .build();
-                            searchClient.requestOmniboxForResult(intent);
+                            omniboxParams.searchClient.requestOmniboxForResult(intent);
                         }
                     });
 

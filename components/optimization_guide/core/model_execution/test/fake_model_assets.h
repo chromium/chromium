@@ -86,6 +86,7 @@ class FakeSafetyModelAsset {
  public:
   struct Content {
     proto::TextSafetyModelMetadata metadata;
+    int64_t model_info_version = 1;
   };
   // Constructs a safety model with the given content.
   explicit FakeSafetyModelAsset(Content&& content);

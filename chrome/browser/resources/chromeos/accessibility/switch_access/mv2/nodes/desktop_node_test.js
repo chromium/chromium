@@ -5,9 +5,9 @@
 GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 
 /** Test fixture for the desktop node. */
-SwitchAccessDesktopNodeTest = class extends SwitchAccessE2ETest {};
+SwitchAccessMV2DesktopNodeTest = class extends SwitchAccessE2ETest {};
 
-TEST_F('SwitchAccessDesktopNodeTest', 'Build', function() {
+TEST_F('SwitchAccessMV2DesktopNodeTest', 'Build', function() {
   this.runWithLoadedDesktop(desktop => {
     const desktopNode = DesktopNode.build(desktop);
 

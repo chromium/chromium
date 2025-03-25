@@ -102,9 +102,8 @@ IN_PROC_BROWSER_TEST_F(ExternalInstallErrorTest,
   InstallExternalExtension(kId, "1", "update_from_webstore.crx");
 
   // Verify the external error.
-  ExternalInstallManager* manager =
-      extension_service()->external_install_manager();
-  std::vector<ExternalInstallError*> errors = manager->GetErrorsForTesting();
+  std::vector<ExternalInstallError*> errors =
+      ExternalInstallManager::Get(profile())->GetErrorsForTesting();
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(kId, errors[0]->extension_id());
 
@@ -135,9 +134,8 @@ IN_PROC_BROWSER_TEST_F(ExternalInstallErrorTest,
   InstallExternalExtension(kId, "1.0.0.0", "good.crx");
 
   // Verify the external error.
-  ExternalInstallManager* manager =
-      extension_service()->external_install_manager();
-  std::vector<ExternalInstallError*> errors = manager->GetErrorsForTesting();
+  std::vector<ExternalInstallError*> errors =
+      ExternalInstallManager::Get(profile())->GetErrorsForTesting();
   ASSERT_EQ(1u, errors.size());
   EXPECT_EQ(kId, errors[0]->extension_id());
 

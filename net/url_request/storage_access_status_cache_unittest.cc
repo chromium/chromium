@@ -13,18 +13,20 @@ namespace {
 
 TEST(StorageAccessStatusTest, DefaultConstructor) {
   StorageAccessStatusCache status;
-  EXPECT_EQ(status.GetStatusForThirdPartyContext(), std::nullopt);
+  EXPECT_FALSE(status.IsSet());
 }
 
 TEST(StorageAccessStatusTest, ConstructorWithValue) {
   StorageAccessStatusCache status(
       net::cookie_util::StorageAccessStatus::kActive);
+  ASSERT_TRUE(status.IsSet());
   EXPECT_EQ(status.GetStatusForThirdPartyContext(),
             std::make_optional(net::cookie_util::StorageAccessStatus::kActive));
 }
 
 TEST(StorageAccessStatusTest, ConstructorWithNullopt) {
   StorageAccessStatusCache status(std::nullopt);
+  ASSERT_TRUE(status.IsSet());
   EXPECT_EQ(status.GetStatusForThirdPartyContext(), std::nullopt);
 }
 
@@ -36,7 +38,15 @@ TEST(StorageAccessStatusTest, EqualityOperatorWithValue) {
 
 TEST(StorageAccessStatusTest, EqualityOperatorWithoutValue) {
   StorageAccessStatusCache status;
-  EXPECT_NE(status, cookie_util::StorageAccessStatus::kNone);
+  EXPECT_DEATH_IF_SUPPORTED(
+      EXPECT_NE(status, cookie_util::StorageAccessStatus::kNone),
+      "Check failed");
+}
+
+TEST(StorageAccessStatusTest, GetStatusForThirdPartyContext_Unset) {
+  StorageAccessStatusCache status;
+  EXPECT_DEATH_IF_SUPPORTED(status.GetStatusForThirdPartyContext(),
+                            "Check failed");
 }
 
 }  // namespace

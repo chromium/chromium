@@ -43,8 +43,8 @@ export class AppElement extends CrLitElement {
     };
   }
 
-  protected entries_: KeyValuePairEntry[] = [];
-  protected loading_: boolean = false;
+  protected accessor entries_: KeyValuePairEntry[] = [];
+  protected accessor loading_: boolean = false;
 
   override async connectedCallback() {
     super.connectedCallback();

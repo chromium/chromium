@@ -127,20 +127,21 @@ void AggregationServiceImpl::AssembleReport(
 }
 
 void AggregationServiceImpl::SendReport(
-    const GURL& url,
+    GURL url,
     const AggregatableReport& report,
     std::optional<AggregatableReportRequest::DelayType> delay_type,
     SendCallback callback) {
-  SendReport(url, base::Value(report.GetAsJson()), delay_type,
+  SendReport(std::move(url), base::Value(report.GetAsJson()), delay_type,
              std::move(callback));
 }
 
 void AggregationServiceImpl::SendReport(
-    const GURL& url,
+    GURL url,
     const base::Value& contents,
     std::optional<AggregatableReportRequest::DelayType> delay_type,
     SendCallback callback) {
-  sender_->SendReport(url, contents, delay_type, std::move(callback));
+  sender_->SendReport(std::move(url), contents, delay_type,
+                      std::move(callback));
 }
 
 const base::SequenceBound<AggregationServiceStorage>&
@@ -257,7 +258,7 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
   // origin to perform this check.
   base::Value value(report->GetAsJson());
   auto delay_type = report_request.delay_type();
-  SendReport(reporting_url, value, delay_type,
+  SendReport(std::move(reporting_url), value, delay_type,
              /*callback=*/
              base::BindOnce(
                  &AggregationServiceImpl::OnReportSendingComplete,

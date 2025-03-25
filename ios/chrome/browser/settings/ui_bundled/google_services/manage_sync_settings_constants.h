@@ -105,7 +105,7 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   SyncNeedsTrustedVaultKeyErrorItemType,
   SyncTrustedVaultRecoverabilityDegradedErrorItemType,
   SyncDisabledByAdministratorErrorItemType,
-  // Indicates the errors related to the signed in not syncing account.
+  // Indicates the errors related to the signed in account.
   AccountErrorMessageItemType,
   // BatchUploadSectionIdentifier section.
   // Item for the batch upload button.

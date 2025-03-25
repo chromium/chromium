@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.data_sharing.ui.invitation_dialog.DataSharingInvitationDialogCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -151,7 +150,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     /** Lazily initialized when shown. */
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
 
-    private @Nullable DataSharingInvitationDialogCoordinator mDataSharingDialogCoordinator;
     private @Nullable Function<Integer, View> mFetchViewByIndex;
     private @Nullable Supplier<Pair<Integer, Integer>> mGetVisibleIndex;
 
@@ -772,23 +770,5 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     TabListContainerProperties.IS_CLIP_TO_PADDING, bottomPadding == 0);
         }
         mContainerViewModel.set(TabListContainerProperties.BOTTOM_PADDING, bottomPadding);
-    }
-
-    /**
-     * Open the invitation modal on top of the tab switcher view when an invitation intent is
-     * intercepted.
-     *
-     * @param invitationId The id of the invitation.
-     */
-    public void openInvitationModal(String invitationId) {
-        if (mTabGridDialogCoordinator != null) {
-            mTabGridDialogCoordinator.hideDialog(true);
-        }
-
-        if (mDataSharingDialogCoordinator == null) {
-            mDataSharingDialogCoordinator =
-                    new DataSharingInvitationDialogCoordinator(mActivity, mModalDialogManager);
-        }
-        mDataSharingDialogCoordinator.show();
     }
 }

@@ -564,6 +564,7 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
       (data_filtering == ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME);
 
   std::vector<std::string> added_scenarios;
+  std::set<raw_ptr<TracingScenario>> conflicting_scenarios;
   for (const auto& scenario_config : config.scenarios()) {
     auto scenario = TracingScenario::Create(
         scenario_config, enable_privacy_filter, /*is_local_scenario=*/true,
@@ -576,14 +577,23 @@ std::vector<std::string> BackgroundTracingManagerImpl::AddPresetScenarios(
         it != preset_scenarios_.end()) {
       if (active_scenario_ == it->second.get()) {
         active_scenario_->Abort();
-      } else {
+        conflicting_scenarios.insert(it->second.get());
+      } else if (it->second->current_state() !=
+                 TracingScenario::State::kDisabled) {
         it->second->Disable();
+        conflicting_scenarios.insert(it->second.get());
       }
     }
 
     added_scenarios.push_back(scenario->scenario_name());
     preset_scenarios_[scenario->scenario_name()] = std::move(scenario);
   }
+  if (!conflicting_scenarios.empty()) {
+    std::erase_if(enabled_scenarios_, [&](raw_ptr<TracingScenario> scenario) {
+      return conflicting_scenarios.contains(scenario);
+    });
+  }
+
   return added_scenarios;
 }
 

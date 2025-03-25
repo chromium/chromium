@@ -3872,6 +3872,9 @@ extern const char kAccessibilityManifestV3BrailleImeDescription[];
 extern const char kAccessibilityManifestV3EnhancedNetworkTtsName[];
 extern const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[];
 
+extern const char kAccessibilityManifestV3SwitchAccessName[];
+extern const char kAccessibilityManifestV3SwitchAccessDescription[];
+
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 

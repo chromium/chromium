@@ -6,9 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <!-- Surface color elevations -->
-    <dimen name="sheet_bg_color_elev">@dimen/default_elevation_4</dimen>
-
     <!-- Section tab dimensions -->
     <dimen name="section_tab_selected_bg_elevation">@dimen/default_elevation_4</dimen>
 </resources>

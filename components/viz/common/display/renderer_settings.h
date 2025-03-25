@@ -35,6 +35,9 @@ class VIZ_COMMON_EXPORT RendererSettings {
   bool auto_resize_output_surface = true;
   bool requires_alpha_channel = false;
   bool disable_render_pass_bypassing = false;
+  // Force render pass backings to allocate shared images without the scanout
+  // usage. The render pass backing will still claim the backing is scanout.
+  bool force_non_scanout_backing_for_pixel_tests = false;
 
   int slow_down_compositing_scale_factor = 1;
 

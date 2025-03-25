@@ -54,7 +54,7 @@ message EnhancedCalendarRequest {
 }
 
 // The response from executing a Enhanced Calendar query.
-// Next ID: 10
+// Next ID: 12
 message EnhancedCalendarResponse {
   // The model's output title for the calendar event.
   string event_title = 1;
@@ -88,6 +88,13 @@ message EnhancedCalendarResponse {
   // Format should be "HH:MM" (in 24hr format). Empty if none could be found, or
   // if the event is an all day event.
   string end_time = 9;
+
+  // The model's output for if the event is explicitly
+  // booked/reserved/confirmed.
+  bool is_event_booked = 10;
+
+  // The model's output for the event confirmation code, if available.
+  string event_confirmation_code = 11;
 }
 
 // The recurrence cadence for a repeated calendar event. If there's no

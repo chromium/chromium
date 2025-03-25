@@ -267,7 +267,7 @@ Suggestion GenerateSuggestionFromCardDetails(
       last_four, ObfuscationLengthForCreditCardLastFourDigits());
   if (type == CREDIT_CARD_NUMBER) {
     if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
-      std::vector<std::string_view> minor_text = {obfuscated_card_digits};
+      std::vector<std::string> minor_text = {obfuscated_card_digits};
       return Suggestion(
           /*main_text=*/network_or_nickname, minor_text,
           /*label=*/expiration_date_label, icon,

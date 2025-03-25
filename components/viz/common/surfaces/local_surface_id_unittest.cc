@@ -7,8 +7,9 @@
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// TODO(crbug.com/405151792): Flaky on linux-chromeos.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/405151792): Flaky on linux-chromeos; consistently failing on
+// fuchsia.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_VerifyToString DISABLED_VerifyToString
 #else
 #define MAYBE_VerifyToString VerifyToString

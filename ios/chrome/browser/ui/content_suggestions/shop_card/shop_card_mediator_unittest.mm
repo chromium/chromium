@@ -27,6 +27,8 @@ class ShopCardMediatorTest : public PlatformTest {
                     prefService:pref_service()];
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled, true);
   }
 
   ~ShopCardMediatorTest() override {}

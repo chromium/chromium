@@ -19,6 +19,7 @@ import './elements/viewer_toolbar.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -201,14 +202,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
       /** The number of the page being viewed (1-based). */
       pageNo_: {type: Number},
-      pdfAnnotationsEnabled_: {type: Boolean},
 
       // <if expr="enable_pdf_ink2">
       pdfInk2Enabled_: {type: Boolean},
       // </if>
 
       pdfUseShowSaveFilePicker_: {type: Boolean},
-      printingEnabled_: {type: Boolean},
       showPasswordDialog_: {type: Boolean},
       showPropertiesDialog_: {type: Boolean},
       sidenavCollapsed_: {type: Boolean},
@@ -260,13 +259,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected loadProgress_: number = 0;
   private navigator_: PdfNavigator|null = null;
   protected pageNo_: number = 0;
-  protected pdfAnnotationsEnabled_: boolean = false;
   // <if expr="enable_pdf_ink2">
   protected pdfInk2Enabled_: boolean = false;
   // </if>
   private pdfUseShowSaveFilePicker_: boolean = false;
   private pluginController_: PluginController = PluginController.getInstance();
-  protected printingEnabled_: boolean = false;
   // <if expr="enable_pdf_ink2">
   private restoreAnnotationMode_: AnnotationMode = AnnotationMode.NONE;
   // </if>
@@ -804,17 +801,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.currentController.viewportChanged();
   }
 
-  override handleStrings(strings: {[key: string]: string}) {
+  override handleStrings(strings: LoadTimeDataRaw) {
     super.handleStrings(strings);
 
-    this.pdfAnnotationsEnabled_ =
-        loadTimeData.getBoolean('pdfAnnotationsEnabled');
     // <if expr="enable_pdf_ink2">
     this.pdfInk2Enabled_ = loadTimeData.getBoolean('pdfInk2Enabled');
     // </if>
     this.pdfUseShowSaveFilePicker_ =
         loadTimeData.getBoolean('pdfUseShowSaveFilePicker');
-    this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
     const presetZoomFactors = this.viewport.presetZoomFactors;
     assert(presetZoomFactors.length > 0);
     this.zoomBounds_.min = Math.round(presetZoomFactors[0]! * 100);

@@ -21,8 +21,7 @@ namespace {
 
 bool UpdateSVGLayoutIfNeeded(LayoutObject* child,
                              const SVGLayoutInfo& layout_info) {
-  if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled() &&
-      layout_info.viewport_changed && child->HasViewportDependence()) {
+  if (layout_info.viewport_changed && child->HasViewportDependence()) {
     child->SetNeedsLayout(layout_invalidation_reason::kSvgChanged,
                           kMarkOnlyThis);
   }
@@ -130,14 +129,7 @@ SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
       force_child_layout = true;
     }
 
-    bool child_has_viewport_dependence = false;
-    if (RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()) {
-      child_has_viewport_dependence = child->HasViewportDependence();
-    } else if (auto* element = DynamicTo<SVGElement>(child->GetNode())) {
-      child_has_viewport_dependence = element->HasRelativeLengths();
-    }
-
-    if (layout_info.viewport_changed && child_has_viewport_dependence) {
+    if (layout_info.viewport_changed && child->HasViewportDependence()) {
       if (auto* shape = DynamicTo<LayoutSVGShape>(*child)) {
         shape->SetNeedsShapeUpdate();
       } else if (auto* text = DynamicTo<LayoutSVGText>(*child)) {
@@ -147,12 +139,6 @@ SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
         container->SetNeedsTransformUpdate();
       }
 
-      force_child_layout = true;
-    }
-
-    if (!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled() &&
-        layout_info.viewport_changed && !child->NeedsLayout() &&
-        child->SVGSelfOrDescendantHasViewportDependency()) {
       force_child_layout = true;
     }
 

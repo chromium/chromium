@@ -1031,12 +1031,15 @@ void CaptionBubble::CaptionSettingsButtonPressed() {
 }
 
 void CaptionBubble::SetModel(CaptionBubbleModel* model) {
-  if (model_)
+  if (model_) {
     model_->RemoveObserver();
+    model_->GetContext()->RemoveContextActivatabilityObserver();
+  }
   model_ = model;
   if (model_) {
     model_->SetObserver(this);
     back_to_tab_button_->SetVisible(model_->GetContext()->IsActivatable());
+    model_->GetContext()->SetContextActivatabilityObserver(this);
     UpdateLanguageLabelText();
   } else {
     UpdateBubbleVisibility();
@@ -1055,6 +1058,11 @@ void CaptionBubble::AnimationProgressed(const gfx::Animation* animation) {
   translate_header_container_->layer()->SetOpacity(
       animation->GetCurrentValue());
   download_progress_label_->layer()->SetOpacity(animation->GetCurrentValue());
+}
+
+void CaptionBubble::OnContextActivatabilityChanged() {
+  back_to_tab_button_->SetVisible(model_->GetContext()->IsActivatable());
+  UpdateContentSize();
 }
 
 void CaptionBubble::OnTextChanged() {
@@ -1585,7 +1593,12 @@ void CaptionBubble::UpdateContentSize() {
                          : content_height;
   label_->SetMinimumHeight(label_height);
   auto button_size = close_button_->GetPreferredSize({});
-  auto left_header_width = width - 2 * button_size.width();
+
+  // The back-to-tab button is only visible if the context can be activated. The
+  // close button is always visible.
+  int num_buttons = back_to_tab_button_->GetVisible() ? 2 : 1;
+
+  auto left_header_width = width - num_buttons * button_size.width();
   left_header_container_->SetPreferredSize(
       gfx::Size(left_header_width, button_size.height()));
   download_progress_label_->SetPreferredSize(gfx::Size(width, content_height));

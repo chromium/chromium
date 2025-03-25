@@ -10,6 +10,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -145,7 +146,7 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
   if (!FindString(*dict, kUptimeKey, uptime))
     return false;
   errno = 0;
-  params_.process_uptime = strtoull(uptime.c_str(), nullptr, 0);
+  params_.process_uptime = UNSAFE_TODO(strtoull(uptime.c_str(), nullptr, 0));
   if (errno != 0)
     return false;
 

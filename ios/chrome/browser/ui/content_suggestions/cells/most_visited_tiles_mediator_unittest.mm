@@ -48,7 +48,9 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
             &pref_service_, /*identity_manager*/ nullptr,
             /*supervised_user_service*/ nullptr, /*top_sites*/ nullptr,
             /*popular_sites*/ nullptr,
-            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr, true);
+            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr,
+            /*is_default_chrome_app_migrated*/ true,
+            /*is_custom_links_mixable*/ false);
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());

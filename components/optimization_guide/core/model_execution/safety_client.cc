@@ -27,6 +27,15 @@ void SafetyClient::SetLanguageDetectionModel(
 
 void SafetyClient::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
+  if (safety_model_info_ && model_info &&
+      safety_model_info_->GetVersion() == model_info->GetVersion()) {
+    // We could get duplicate update notifications because this object could
+    // receive model updates from multiple profiles.
+    return;
+  }
+  // New safety model means new configs, fail existing sessions.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   auto new_info = SafetyModelInfo::Load(model_info);
   if (!new_info) {
     safety_model_info_.reset();
@@ -41,8 +50,7 @@ SafetyClient::MakeSafetyChecker(ModelBasedCapabilityKey feature,
                                 bool can_skip) {
   if (!features::ShouldUseTextSafetyClassifierModel() || can_skip) {
     // Construct a dummy checker that always passes all checks.
-    return std::make_unique<SafetyChecker>(
-        nullptr, on_device_model::TextSafetyLoaderParams(), SafetyConfig());
+    return std::make_unique<SafetyChecker>(nullptr, SafetyConfig());
   }
   if (!safety_model_info_) {
     return base::unexpected(
@@ -59,11 +67,13 @@ SafetyClient::MakeSafetyChecker(ModelBasedCapabilityKey feature,
         OnDeviceModelEligibilityReason::kLanguageDetectionModelNotAvailable);
   }
 
-  // TODO: crbug.com/375492234 - It's weird that we pass params here. Ideally
-  // this can change so that the SafetyChecker always runs checks with the
-  // latest config.
   return std::make_unique<SafetyChecker>(weak_ptr_factory_.GetWeakPtr(),
-                                         LoaderParams(), SafetyConfig(*config));
+                                         SafetyConfig(*config));
+}
+
+void SafetyClient::StartSession(
+    mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> session) {
+  GetTextSafetyModelRemote()->StartSession(std::move(session));
 }
 
 on_device_model::TextSafetyLoaderParams SafetyClient::LoaderParams() const {
@@ -82,14 +92,13 @@ on_device_model::TextSafetyLoaderParams SafetyClient::LoaderParams() const {
   return params;
 }
 
-SafetyClient::Remote& SafetyClient::GetTextSafetyModelRemote(
-    const on_device_model::TextSafetyLoaderParams& params) {
+SafetyClient::Remote& SafetyClient::GetTextSafetyModelRemote() {
   if (remote_) {
     return remote_;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&on_device_model::LoadTextSafetyParams, params),
+      base::BindOnce(&on_device_model::LoadTextSafetyParams, LoaderParams()),
       base::BindOnce(
           [](base::WeakPtr<SafetyClient> self,
              mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel>

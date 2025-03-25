@@ -120,23 +120,21 @@ class TabDragContext : public TabDragContextBase {
   // groups.
   virtual int GetInsertionIndexForDraggedBounds(
       const gfx::Rect& dragged_bounds,
-      std::vector<raw_ptr<TabSlotView, VectorExperimental>> dragged_views,
+      std::vector<TabSlotView*> dragged_views,
       int num_dragged_tabs,
       std::optional<tab_groups::TabGroupId> group) const = 0;
 
   // Returns the bounds needed for each of the views, relative to a leading
   // coordinate of 0 for the left edge of the first view's bounds.
   virtual std::vector<gfx::Rect> CalculateBoundsForDraggedViews(
-      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views) = 0;
+      const std::vector<TabSlotView*>& views) = 0;
 
   // Sets the bounds of `views` to `bounds`.
-  virtual void SetBoundsForDrag(
-      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views,
-      const std::vector<gfx::Rect>& bounds) = 0;
+  virtual void SetBoundsForDrag(const std::vector<TabSlotView*>& views,
+                                const std::vector<gfx::Rect>& bounds) = 0;
 
   // Used by TabDragController when the user starts or stops dragging.
-  virtual void StartedDragging(
-      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views) = 0;
+  virtual void StartedDragging(const std::vector<TabSlotView*>& views) = 0;
 
   // Invoked when TabDragController detaches a set of tabs.
   virtual void DraggedTabsDetached() = 0;
@@ -149,11 +147,10 @@ class TabDragContext : public TabDragContextBase {
   // Invoked during drag to layout the views being dragged in `views` at
   // `location`. If `initial_drag` is true, this is the initial layout after the
   // user moved the mouse far enough to trigger a drag.
-  virtual void LayoutDraggedViewsAt(
-      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views,
-      TabSlotView* source_view,
-      const gfx::Point& location,
-      bool initial_drag) = 0;
+  virtual void LayoutDraggedViewsAt(const std::vector<TabSlotView*>& views,
+                                    TabSlotView* source_view,
+                                    const gfx::Point& location,
+                                    bool initial_drag) = 0;
 
   // Forces the entire tabstrip to lay out.
   virtual void ForceLayout() = 0;

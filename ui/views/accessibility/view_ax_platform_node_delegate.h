@@ -172,7 +172,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
         std::vector<raw_ptr<Widget, VectorExperimental>> child_widgets,
         bool is_tab_modal_showing);
     ChildWidgetsResult(const ChildWidgetsResult& other);
-    virtual ~ChildWidgetsResult();
+    ~ChildWidgetsResult();
     ChildWidgetsResult& operator=(const ChildWidgetsResult& other);
 
     std::vector<raw_ptr<Widget, VectorExperimental>> child_widgets;

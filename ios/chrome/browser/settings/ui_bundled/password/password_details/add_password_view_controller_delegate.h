@@ -36,6 +36,12 @@
 // Called to check if the url is missing the top-level domain.
 - (BOOL)isTLDMissing;
 
+// Returns YES if the suggest strong password field should be shown.
+- (BOOL)shouldShowSuggestPasswordItem;
+
+// Generates a strong password and returns it.
+- (NSString*)generatePassword;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_DETAILS_ADD_PASSWORD_VIEW_CONTROLLER_DELEGATE_H_

@@ -1,7 +1,0 @@
-Name: rust
-License File: LICENSE-APACHE
-License File: LICENSE-MIT
-Description:
-
-See https://github.com/google/zerocopy/pull/492 for an explanation of why this
-file exists.

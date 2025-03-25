@@ -619,6 +619,11 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
     return false;
   }
 
+  // Listboxes with children should never be a leaf node.
+  if (GetRole() == ax::mojom::Role::kListBox && InternalChildCount() > 0) {
+    return false;
+  }
+
   // For Android only, tab-panels and tab-lists are never leaves. We do this to
   // temporarily get around the gap for aria-labelledby in the Android API.
   // See b/241526393.

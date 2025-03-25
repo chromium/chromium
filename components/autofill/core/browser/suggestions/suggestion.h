@@ -355,7 +355,7 @@ struct Suggestion {
              Icon icon,
              SuggestionType type);
   Suggestion(std::string_view main_text,
-             base::span<std::string_view> minor_text_labels,
+             base::span<const std::string> minor_text_labels,
              std::string_view label,
              Icon icon,
              SuggestionType type);

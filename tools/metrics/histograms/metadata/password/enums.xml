@@ -221,6 +221,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="User edited the generated password"/>
 </enum>
 
+<enum name="BooleanProfilePicker">
+  <int value="0"
+      label="Forced browser sign-in is disabled, so we attempt to save the
+             password hash from the profile picker"/>
+  <int value="1"
+      label="Forced browser sign-in is enabled, so attempting to save the
+             password hash from the profile picker was skipped"/>
+</enum>
+
 <enum name="BooleanRootPopupSuggestionAccepted">
   <int value="0" label="Suggestion was accepted from the subpopup"/>
   <int value="1" label="Suggestion was accepted from the root popup"/>

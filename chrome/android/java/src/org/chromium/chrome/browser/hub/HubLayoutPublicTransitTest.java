@@ -13,7 +13,6 @@ import android.os.Build;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,8 +25,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherAppMenuFacility;
@@ -41,18 +40,14 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class HubLayoutPublicTransitTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Test
     @LargeTest
     public void testEnterAndExitHub() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
         firstPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
@@ -63,7 +58,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
         TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
@@ -75,7 +70,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
 
         TabSwitcherAppMenuFacility appMenu = tabSwitcher.openAppMenu();
@@ -87,7 +82,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testChangeTabSwitcherPanes() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         IncognitoNewTabPageStation incognitoNewTabPage = firstPage.openNewIncognitoTabFast();
 
         IncognitoTabSwitcherStation incognitoTabSwitcher =
@@ -112,7 +107,7 @@ public class HubLayoutPublicTransitTest {
     public void testExitHubOnStartSurfaceAsNtp() {
         ChromeFeatureList.sStartSurfaceReturnTimeTabletSecs.setForTesting(0);
 
-        WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
         RegularNewTabPageStation newTabPage = blankPage.openNewTabFast();
         RegularTabSwitcherStation tabSwitcher = newTabPage.openRegularTabSwitcher();
         blankPage = tabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
@@ -132,10 +127,10 @@ public class HubLayoutPublicTransitTest {
         currentStation.travelToSync(
                 destination,
                 () -> {
-                    ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+                    ChromeTabbedActivity cta = mCtaTestRule.getActivity();
                     ChromeApplicationTestUtils.fireHomeScreenIntent(cta);
                     try {
-                        sActivityTestRule.resumeMainActivityFromLauncher();
+                        mCtaTestRule.getActivityTestRule().resumeMainActivityFromLauncher();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
