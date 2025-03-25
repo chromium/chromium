@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 
 class AggregationKind(Enum):
@@ -16,10 +17,10 @@ class AggregationKind(Enum):
 class AggregationDetails:
   """Aggregation rules, if specified by the processed JSON file."""
   kind: AggregationKind
-  name: str | None
+  name: Optional[str]
   export_items: bool
   elements: dict[str, str]
-  map_key_type: str | None
+  map_key_type: Optional[str]
 
   def GetSortedArrayElements(self) -> list[str]:
     """Returns sorted list of names of all elements."""
