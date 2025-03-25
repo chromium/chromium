@@ -80,13 +80,13 @@ export class BookmarksCommandManagerElement extends
    * menu is not open, indicating that commands are from keyboard shortcuts
    * or elsewhere in the UI.
    */
-  private menuSource_: MenuSource = MenuSource.NONE;
+  private accessor menuSource_: MenuSource = MenuSource.NONE;
   private confirmOpenCallback_: (() => void)|null = null;
-  private canPaste_: boolean = false;
-  private globalCanEdit_: boolean = false;
-  protected menuIds_: Set<string> = new Set<string>();
-  protected showEditDialog_: boolean = false;
-  protected showOpenDialog_: boolean = false;
+  private accessor canPaste_: boolean = false;
+  private accessor globalCanEdit_: boolean = false;
+  protected accessor menuIds_: Set<string> = new Set<string>();
+  protected accessor showEditDialog_: boolean = false;
+  protected accessor showOpenDialog_: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private shortcuts_: Map<Command, KeyboardShortcutList> = new Map();
   private eventTracker_: EventTracker = new EventTracker();

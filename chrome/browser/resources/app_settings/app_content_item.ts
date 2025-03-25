@@ -37,11 +37,11 @@ export class AppContentItemElement extends CrLitElement {
     };
   }
 
-  app: App = createDummyApp();
+  accessor app: App = createDummyApp();
   appContentLabel: string = '';
   appContentSublabel: string = '';
-  showAppContentDialog: boolean = false;
-  override hidden: boolean = false;
+  accessor showAppContentDialog: boolean = false;
+  override accessor hidden: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

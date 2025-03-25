@@ -48,9 +48,9 @@ export class SupportedLinksOverlappingAppsDialogElement extends
     };
   }
 
-  app: App = createDummyApp();
-  overlappingAppIds: string[] = [];
-  apps: AppMap = {};
+  accessor app: App = createDummyApp();
+  accessor overlappingAppIds: string[] = [];
+  accessor apps: AppMap = {};
 
   protected getBodyText_(): string {
     const appNames: string[] = this.overlappingAppIds.map(appId => {

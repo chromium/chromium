@@ -19,22 +19,37 @@ export class AppServiceInternalsElement extends PolymerElement {
 
   static get properties() {
     return {
-      appList_: Array,
-      preferredAppList_: Array,
-      promiseAppList_: Array,
-      appCapabilityList_: Array,
+      appList_: {
+        type: Array,
+        value: () => [],
+      },
+
+      preferredAppList_: {
+        type: Array,
+        value: () => [],
+      },
+
+      promiseAppList_: {
+        type: Array,
+        value: () => [],
+      },
+
+      appCapabilityList_: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
   /** List containing debug information for all installed apps. */
-  private appList_: AppInfo[] = [];
+  declare private appList_: AppInfo[];
   private hashChangeListener_ = () => this.onHashChanged_();
   /** List containing preferred app debug information for installed apps. */
-  private preferredAppList_: PreferredAppInfo[] = [];
+  declare private preferredAppList_: PreferredAppInfo[];
   /** List containing debug information for all promise apps. */
-  private promiseAppList_: PromiseAppInfo[] = [];
+  declare private promiseAppList_: PromiseAppInfo[];
   /** List containing app capability access information. */
-  private appCapabilityList_: AppCapabilityInfo[] = [];
+  declare private appCapabilityList_: AppCapabilityInfo[];
 
   override ready() {
     super.ready();

@@ -58,12 +58,12 @@ export class BookmarksListElement extends BookmarksListElementBase {
     };
   }
 
-  protected displayedIds_: string[] = [];
-  private focusedIndex_: number = 0;
+  protected accessor displayedIds_: string[] = [];
+  private accessor focusedIndex_: number = 0;
   private eventTracker_: EventTracker = new EventTracker();
-  private searchTerm_: string = '';
-  protected selectedFolder_: string = '';
-  private selectedItems_: Set<string> = new Set();
+  private accessor searchTerm_: string = '';
+  protected accessor selectedFolder_: string = '';
+  private accessor selectedItems_: Set<string> = new Set();
 
   override firstUpdated() {
     this.addEventListener('click', () => this.deselectItems_());

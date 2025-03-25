@@ -62,15 +62,15 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     };
   }
 
-  depth: number = -1;
-  isOpen: boolean = false;
-  itemId: string = '';
-  protected item_?: BookmarkNode;
-  private openState_: boolean|null = null;
-  private selectedFolder_: string = '';
-  private searchActive_: boolean = false;
-  protected isSelectedFolder_: boolean = false;
-  protected hasChildFolder_: boolean = false;
+  accessor depth: number = -1;
+  accessor isOpen: boolean = false;
+  accessor itemId: string = '';
+  protected accessor item_: BookmarkNode|undefined;
+  private accessor openState_: boolean|null = null;
+  private accessor selectedFolder_: string = '';
+  private accessor searchActive_: boolean = false;
+  protected accessor isSelectedFolder_: boolean = false;
+  protected accessor hasChildFolder_: boolean = false;
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);

@@ -56,8 +56,8 @@ export class RunOnOsLoginItemElement extends CrLitElement {
     };
   }
 
-  loginModeLabel: string = '';
-  app: App = createDummyApp();
+  accessor loginModeLabel: string = '';
+  accessor app: App = createDummyApp();
 
   override firstUpdated() {
     this.addEventListener('click', this.onClick_);
