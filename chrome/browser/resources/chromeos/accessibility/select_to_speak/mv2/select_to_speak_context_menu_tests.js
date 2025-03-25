@@ -9,7 +9,7 @@ GEN_INCLUDE(['../../common/testing/mock_tts.js']);
  * Browser tests for select-to-speak's feature to speak text
  * using the context menu.
  */
-SelectToSpeakContextMenuTest = class extends SelectToSpeakE2ETest {
+SelectToSpeakMV2ContextMenuTest = class extends SelectToSpeakE2ETest {
   constructor() {
     super();
     this.mockTts = new MockTts();
@@ -24,7 +24,7 @@ SelectToSpeakContextMenuTest = class extends SelectToSpeakE2ETest {
 };
 
 AX_TEST_F(
-    'SelectToSpeakContextMenuTest', 'SimpleSpeakingTest', async function() {
+    'SelectToSpeakMV2ContextMenuTest', 'SimpleSpeakingTest', async function() {
       const root = await this.runWithLoadedTree('<p>This is some text</p>');
       const textNode = this.findTextNode(root, 'This is some text');
       chrome.automation.setDocumentSelection({

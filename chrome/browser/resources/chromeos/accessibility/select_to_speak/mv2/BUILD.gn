@@ -18,7 +18,7 @@ group("build") {
 }
 
 select_to_speak_out_dir =
-    "$root_out_dir/resources/chromeos/accessibility/select_to_speak"
+    "$root_out_dir/resources/chromeos/accessibility/select_to_speak/mv2"
 
 # Directory where typescript build will occur.
 ts_build_staging_dir = "$target_gen_dir/ts_build_staging"

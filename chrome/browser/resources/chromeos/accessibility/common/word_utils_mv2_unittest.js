@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../select_to_speak/mv3/select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/mv2/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for word_utils.js.
  */
-SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {};
+SelectToSpeakMV2WordUtilsUnitTest = class extends SelectToSpeakE2ETest {};
 
 AX_TEST_F(
-    'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartWithoutWordStarts',
+    'SelectToSpeakMV2WordUtilsUnitTest', 'getNextWordStartWithoutWordStarts',
     function() {
       const node = {node: {}};
       assertEquals(0, WordUtils.getNextWordStart('kitty cat', 0, node));
@@ -21,7 +21,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakWordUtilsUnitTest', 'getNextWordEndWithoutWordEnds',
+    'SelectToSpeakMV2WordUtilsUnitTest', 'getNextWordEndWithoutWordEnds',
     function() {
       const node = {node: {}};
       assertEquals(5, WordUtils.getNextWordEnd('kitty cat', 0, node));
@@ -30,7 +30,7 @@ AX_TEST_F(
       assertEquals(9, WordUtils.getNextWordEnd('kitty cat', 7, node));
     });
 
-AX_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordStart', function() {
+AX_TEST_F('SelectToSpeakMV2WordUtilsUnitTest', 'getNextWordStart', function() {
   const inlineText = {wordStarts: [0, 6], name: 'kitty cat'};
   const staticText = {children: [inlineText], name: 'kitty cat'};
   const node = {node: staticText, startChar: 0, hasInlineText: true};
@@ -49,8 +49,8 @@ AX_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordStart', function() {
 });
 
 AX_TEST_F(
-    'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartIgnoresStartCharOffset',
-    function() {
+    'SelectToSpeakMV2WordUtilsUnitTest',
+    'getNextWordStartIgnoresStartCharOffset', function() {
       const inlineText = {
         wordStarts: [0, 5, 10, 16],
         name: 'once upon kitty cat',
@@ -73,7 +73,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartMultipleChildren',
+    'SelectToSpeakMV2WordUtilsUnitTest', 'getNextWordStartMultipleChildren',
     function() {
       const inlineText1 = {
         wordStarts: [0, 6],
@@ -98,7 +98,7 @@ AX_TEST_F(
           13, WordUtils.getNextWordStart('kitty cat is cute', 11, node));
     });
 
-AX_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordEnd', function() {
+AX_TEST_F('SelectToSpeakMV2WordUtilsUnitTest', 'getNextWordEnd', function() {
   const inlineText = {wordEnds: [5, 9], name: 'kitty cat'};
   const staticText = {children: [inlineText], name: 'kitty cat'};
   const node = {node: staticText, startChar: 0, hasInlineText: true};
@@ -117,7 +117,7 @@ AX_TEST_F('SelectToSpeakWordUtilsUnitTest', 'getNextWordEnd', function() {
 });
 
 AX_TEST_F(
-    'SelectToSpeakWordUtilsUnitTest', 'getNextWordEndMultipleChildren',
+    'SelectToSpeakMV2WordUtilsUnitTest', 'getNextWordEndMultipleChildren',
     function() {
       const inlineText1 = {
         wordEnds: [5, 9],

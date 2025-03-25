@@ -7,9 +7,9 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
 /**
  * Test fixture for select_to_speak.js.
  */
-SelectToSpeakUnitTest = class extends SelectToSpeakE2ETest {};
+SelectToSpeakMV2UnitTest = class extends SelectToSpeakE2ETest {};
 
-AX_TEST_F('SelectToSpeakUnitTest', 'getGSuiteAppRoot', function() {
+AX_TEST_F('SelectToSpeakMV2UnitTest', 'getGSuiteAppRoot', function() {
   const root = {url: 'https://docs.google.com/presentation/p/cats_r_awesome'};
   const div1 = {root};
   const frame1 = {url: 'about:blank', parent: div1};

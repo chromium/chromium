@@ -1830,7 +1830,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
    */
   async maybeCreateOffscreenDocument_() {
     const offscreenUrl =
-        chrome.runtime.getURL('select_to_speak/offscreen.html');
+        chrome.runtime.getURL('select_to_speak/mv3/offscreen.html');
 
     const existingContexts = await chrome.runtime.getContexts({
       contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],

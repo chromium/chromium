@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../select_to_speak/mv3/select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/mv2/select_to_speak_e2e_test_base.js']);
 
 /**
  * Browser tests for select-to-speak's feature to filter out overflow text.
  */
-SelectToSpeakParagraphOverflowTest = class extends SelectToSpeakE2ETest {
+SelectToSpeakMV2ParagraphOverflowTest = class extends SelectToSpeakE2ETest {
   generateHorizentalOverflowText(text) {
     return (
         '<div style="width: 50px; overflow: hidden">' +
@@ -37,7 +37,7 @@ SelectToSpeakParagraphOverflowTest = class extends SelectToSpeakE2ETest {
 };
 
 AX_TEST_F(
-    'SelectToSpeakParagraphOverflowTest',
+    'SelectToSpeakMV2ParagraphOverflowTest',
     'ReplaceseHorizentalOverflowTextWithSpace', async function() {
       const inputText = 'This text overflows partially';
       const root = await this.runWithLoadedTree(
@@ -61,7 +61,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphOverflowTest',
+    'SelectToSpeakMV2ParagraphOverflowTest',
     'ReplaceseVerticalOverflowTextWithSpace', async function() {
       const visibleText = 'This text is visible';
       const overflowText = 'This text overflows';
@@ -97,7 +97,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphOverflowTest',
+    'SelectToSpeakMV2ParagraphOverflowTest',
     'ReplacesEntirelyOverflowTextWithSpace', async function() {
       const inputText = 'This text overflows entirely';
       const root = await this.runWithLoadedTree(
@@ -117,7 +117,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphOverflowTest', 'OutputsVisibleText',
+    'SelectToSpeakMV2ParagraphOverflowTest', 'OutputsVisibleText',
     async function() {
       const inputText = 'This text is visible';
       const root =
@@ -138,7 +138,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphOverflowTest',
+    'SelectToSpeakMV2ParagraphOverflowTest',
     'DoesNotClipOverflowWordsWhenDisabled', async function() {
       const inputText = 'This text overflows entirely';
       const root = await this.runWithLoadedTree(

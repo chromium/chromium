@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../select_to_speak/mv3/select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/mv2/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for sentence_utils.js.
  */
-SelectToSpeakSentenceUtilsUnitTest = class extends SelectToSpeakE2ETest {};
+SelectToSpeakMV2SentenceUtilsUnitTest = class extends SelectToSpeakE2ETest {};
 
 AX_TEST_F(
-    'SelectToSpeakSentenceUtilsUnitTest', 'getNextSentenceStart', function() {
+    'SelectToSpeakMV2SentenceUtilsUnitTest', 'getNextSentenceStart',
+    function() {
       // The text of the test node group is "Hello. New. World."
       const nodeGroup = getTestNodeGroupWithOneNode();
       assertEquals(
@@ -41,7 +42,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakSentenceUtilsUnitTest', 'getPrevSentenceStart', function() {
+    'SelectToSpeakMV2SentenceUtilsUnitTest', 'getPrevSentenceStart',
+    function() {
       // The text of the test node group is "Hello. New. World."
       const nodeGroup = getTestNodeGroupWithOneNode();
 
@@ -73,7 +75,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakSentenceUtilsUnitTest', 'getNextSentenceStartMultiNodes',
+    'SelectToSpeakMV2SentenceUtilsUnitTest', 'getNextSentenceStartMultiNodes',
     function() {
       // The text of the test node group is "Hello. New. Beautiful. World." The
       // char indexes of four sentence starts are 0, 7, 12, 23.
@@ -107,7 +109,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakSentenceUtilsUnitTest', 'getPrevSentenceStartMultiNodes',
+    'SelectToSpeakMV2SentenceUtilsUnitTest', 'getPrevSentenceStartMultiNodes',
     function() {
       // The text of the test node group is "Hello. New. Beautiful. World." The
       // char indexes of four sentence starts are 0, 7, 12, 23.
@@ -141,7 +143,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakSentenceUtilsUnitTest',
+    'SelectToSpeakMV2SentenceUtilsUnitTest',
     'getNextSentenceStartSentenceSpanningAcrossMultiNodes', function() {
       // The text of the test node group is "Hello world. New world." The
       // char indexes of four sentence starts are 0, 13.
@@ -170,7 +172,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakSentenceUtilsUnitTest',
+    'SelectToSpeakMV2SentenceUtilsUnitTest',
     'getPrevSentenceStartSentenceSpanningAcrossMultiNodes', function() {
       // The text of the test node group is "Hello world. New world." The
       // char indexes of four sentence starts are 0, 13.
@@ -203,34 +205,35 @@ AX_TEST_F(
               constants.Dir.BACKWARD /* direction */));
     });
 
-AX_TEST_F('SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStart', function() {
-  // The text of the test node group is "Hello. New. World."
-  const nodeGroup = getTestNodeGroupWithOneNode();
+AX_TEST_F(
+    'SelectToSpeakMV2SentenceUtilsUnitTest', 'isSentenceStart', function() {
+      // The text of the test node group is "Hello. New. World."
+      const nodeGroup = getTestNodeGroupWithOneNode();
 
-  assertEquals(
-      true,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 0 /* startCharIndex */));
-  assertEquals(
-      false,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 3 /* startCharIndex */));
-  assertEquals(
-      true,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 7 /* startCharIndex */));
-  assertEquals(
-      false,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 11 /* startCharIndex */));
-  assertEquals(
-      true,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 12 /* startCharIndex */));
-});
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 0 /* startCharIndex */));
+      assertEquals(
+          false,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 3 /* startCharIndex */));
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 7 /* startCharIndex */));
+      assertEquals(
+          false,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 11 /* startCharIndex */));
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 12 /* startCharIndex */));
+    });
 
 AX_TEST_F(
-    'SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStartMultiNodes',
+    'SelectToSpeakMV2SentenceUtilsUnitTest', 'isSentenceStartMultiNodes',
     function() {
       // The text of the test node group is "Hello. New. Beautiful. World." The
       // char indexes of four sentence starts are 0, 7, 12, 23.

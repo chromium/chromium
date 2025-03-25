@@ -5,7 +5,8 @@
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
 GEN_INCLUDE(['../../common/testing/mock_tts.js']);
 
-SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
+SelectToSpeakMV2EnhancedNetworkTtsVoicesTest =
+    class extends SelectToSpeakE2ETest {
   constructor() {
     super();
     this.mockTts = new MockTts();
@@ -45,7 +46,7 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
 };
 
 AX_TEST_F(
-    'SelectToSpeakEnhancedNetworkTtsVoicesTest',
+    'SelectToSpeakMV2EnhancedNetworkTtsVoicesTest',
     'EnablesVoicesIfConfirmedInDialog', async function() {
       this.confirmationDialogResponse_ = true;
 
@@ -71,7 +72,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakEnhancedNetworkTtsVoicesTest',
+    'SelectToSpeakMV2EnhancedNetworkTtsVoicesTest',
     'DisablesVoicesIfCanceledInDialog', async function() {
       this.confirmationDialogResponse_ = false;
 
@@ -97,7 +98,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakEnhancedNetworkTtsVoicesTest',
+    'SelectToSpeakMV2EnhancedNetworkTtsVoicesTest',
     'DisablesVoicesIfDisallowedByPolicy', async function() {
       this.confirmationDialogResponse_ = true;
 
@@ -123,7 +124,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakEnhancedNetworkTtsVoicesTest',
+    'SelectToSpeakMV2EnhancedNetworkTtsVoicesTest',
     'DisablesDialogIfDisallowedByPolicy', async function() {
       await this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
 

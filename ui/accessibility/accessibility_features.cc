@@ -299,6 +299,14 @@ bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts() {
       ::features::kAccessibilityManifestV3EnhancedNetworkTts);
 }
 
+BASE_FEATURE(kAccessibilityManifestV3SelectToSpeak,
+             "AccessibilityManifestV3SelectToSpeak",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityManifestV3EnabledForSelectToSpeak() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityManifestV3SelectToSpeak);
+}
+
 BASE_FEATURE(kAccessibilityManifestV3SwitchAccess,
              "AccessibilityManifestV3SwitchAccess",
              base::FEATURE_DISABLED_BY_DEFAULT);

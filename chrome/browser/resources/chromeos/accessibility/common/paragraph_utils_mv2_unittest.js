@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../select_to_speak/mv3/select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/mv2/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for paragraph_utils.js.
  */
-SelectToSpeakParagraphUnitTest = class extends SelectToSpeakE2ETest {};
+SelectToSpeakMV2ParagraphUnitTest = class extends SelectToSpeakE2ETest {};
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'GetFirstBlockAncestor', function() {
+    'SelectToSpeakMV2ParagraphUnitTest', 'GetFirstBlockAncestor', function() {
       const root = {role: 'rootWebArea'};
       const paragraph = {role: 'paragraph', parent: root, root};
       const text1 =
@@ -27,7 +27,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'SVGRootIsBlockAncestor', function() {
+    'SelectToSpeakMV2ParagraphUnitTest', 'SVGRootIsBlockAncestor', function() {
       const root = {role: 'rootWebArea'};
       const svgRoot = {role: 'svgRoot', parent: root, root};
       const text1 = {role: 'staticText', parent: svgRoot, root};
@@ -41,7 +41,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'ParagraphInSVGIsBlock', function() {
+    'SelectToSpeakMV2ParagraphUnitTest', 'ParagraphInSVGIsBlock', function() {
       // This represents how Google Docs renders Canvas accessibility as of
       // October 24 2022.
       const root = {role: 'rootWebArea'};
@@ -58,7 +58,7 @@ AX_TEST_F(
       assertFalse(ParagraphUtils.inSameParagraph(text1, text3));
     });
 
-AX_TEST_F('SelectToSpeakParagraphUnitTest', 'InSameParagraph', function() {
+AX_TEST_F('SelectToSpeakMV2ParagraphUnitTest', 'InSameParagraph', function() {
   const root = {role: 'rootWebArea'};
   const paragraph1 =
       {role: 'paragraph', display: 'block', parent: 'rootWebArea', root};
@@ -72,7 +72,7 @@ AX_TEST_F('SelectToSpeakParagraphUnitTest', 'InSameParagraph', function() {
 });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BlockDivBreaksSameParagraph',
+    'SelectToSpeakMV2ParagraphUnitTest', 'BlockDivBreaksSameParagraph',
     function() {
       const root = {role: 'rootWebArea'};
       const paragraph1 =
@@ -87,7 +87,7 @@ AX_TEST_F(
       assertTrue(ParagraphUtils.inSameParagraph(text3, text4));
     });
 
-AX_TEST_F('SelectToSpeakParagraphUnitTest', 'IsWhitespace', function() {
+AX_TEST_F('SelectToSpeakMV2ParagraphUnitTest', 'IsWhitespace', function() {
   assertTrue(ParagraphUtils.isWhitespace(''));
   assertTrue(ParagraphUtils.isWhitespace(' '));
   assertTrue(ParagraphUtils.isWhitespace(' \n \t '));
@@ -96,7 +96,7 @@ AX_TEST_F('SelectToSpeakParagraphUnitTest', 'IsWhitespace', function() {
   assertFalse(ParagraphUtils.isWhitespace(' cats '));
 });
 
-AX_TEST_F('SelectToSpeakParagraphUnitTest', 'GetNodeName', function() {
+AX_TEST_F('SelectToSpeakMV2ParagraphUnitTest', 'GetNodeName', function() {
   assertEquals(
       ParagraphUtils.getNodeName({role: 'staticText', name: 'cat'}), 'cat');
   assertEquals(
@@ -133,7 +133,8 @@ AX_TEST_F('SelectToSpeakParagraphUnitTest', 'GetNodeName', function() {
 });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'GetStartCharIndexInParent', function() {
+    'SelectToSpeakMV2ParagraphUnitTest', 'GetStartCharIndexInParent',
+    function() {
       const staticText = {
         role: 'staticText',
         name: 'My name is Bond, James Bond',
@@ -163,7 +164,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'FindInlineTextNodeByCharIndex',
+    'SelectToSpeakMV2ParagraphUnitTest', 'FindInlineTextNodeByCharIndex',
     function() {
       const staticText = {
         role: 'staticText',
@@ -198,7 +199,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'FindInlineTextNodeIndexByCharIndex',
+    'SelectToSpeakMV2ParagraphUnitTest', 'FindInlineTextNodeIndexByCharIndex',
     function() {
       const staticText = {
         role: 'staticText',
@@ -239,7 +240,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupStopsAtNewParagraph',
+    'SelectToSpeakMV2ParagraphUnitTest', 'BuildNodeGroupStopsAtNewParagraph',
     function() {
       const root = {role: 'rootWebArea'};
       const paragraph1 =
@@ -265,7 +266,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupAcrossParagraphs',
+    'SelectToSpeakMV2ParagraphUnitTest', 'BuildNodeGroupAcrossParagraphs',
     function() {
       const root = {role: 'rootWebArea'};
       const paragraph1 =
@@ -292,8 +293,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupStopsAtLanguageBoundary',
-    function() {
+    'SelectToSpeakMV2ParagraphUnitTest',
+    'BuildNodeGroupStopsAtLanguageBoundary', function() {
       const splitOnLanguage = true;
 
       // When the detectedLanguage changes from en-US to fr-FR we expect to
@@ -343,7 +344,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest',
+    'SelectToSpeakMV2ParagraphUnitTest',
     'BuildNodeGroupStopsAtLanguageBoundaryAllUndefined', function() {
       const splitOnLanguage = true;
 
@@ -367,7 +368,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest',
+    'SelectToSpeakMV2ParagraphUnitTest',
     'BuildNodeGroupStopsAtLanguageBoundaryLastNode', function() {
       const splitOnLanguage = true;
 
@@ -397,8 +398,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupSplitOnLanguageDisabled',
-    function() {
+    'SelectToSpeakMV2ParagraphUnitTest',
+    'BuildNodeGroupSplitOnLanguageDisabled', function() {
       // Test behaviour with splitOnLanguage disabled. This is to show that we
       // haven't introduced an obvious regression.
       const splitOnLanguage = false;
@@ -431,7 +432,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest',
+    'SelectToSpeakMV2ParagraphUnitTest',
     'BuildNodeGroupStopsAtLanguageBoundarySomeUndefined', function() {
       const splitOnLanguage = true;
 
@@ -471,7 +472,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupIncludesLinks',
+    'SelectToSpeakMV2ParagraphUnitTest', 'BuildNodeGroupIncludesLinks',
     function() {
       const root = {role: 'rootWebArea'};
       const paragraph1 =
@@ -496,7 +497,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupNativeTextBox',
+    'SelectToSpeakMV2ParagraphUnitTest', 'BuildNodeGroupNativeTextBox',
     function() {
       const root = {role: 'desktop'};
       const parent = {role: 'pane', parent: root, root};
@@ -517,7 +518,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupWithSvg', function() {
+    'SelectToSpeakMV2ParagraphUnitTest', 'BuildNodeGroupWithSvg', function() {
       const root = {role: 'rootWebArea'};
       const svgRoot = {role: 'svgRoot', parent: root, root};
       const text1 = {role: 'staticText', parent: svgRoot, root, name: 'Hello,'};
@@ -533,7 +534,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BuildNodeGroupWithAndroidClickable',
+    'SelectToSpeakMV2ParagraphUnitTest', 'BuildNodeGroupWithAndroidClickable',
     function() {
       const root = {role: 'application'};
       const listRoot = {role: 'list', parent: root, root};
@@ -551,7 +552,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest',
+    'SelectToSpeakMV2ParagraphUnitTest',
     'BuildNodeGroupWithMultipleAndroidClickables', function() {
       const root = {role: 'application'};
       const container = {role: 'genericContainer', parent: root, root};
@@ -577,7 +578,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'findNodeFromNodeGroupByCharIndex',
+    'SelectToSpeakMV2ParagraphUnitTest', 'findNodeFromNodeGroupByCharIndex',
     function() {
       // The array has four inline text nodes and one static text node.
       const nodeGroup =
@@ -640,7 +641,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakParagraphUnitTest', 'BuildSingleNodeGroupWithOffset',
+    'SelectToSpeakMV2ParagraphUnitTest', 'BuildSingleNodeGroupWithOffset',
     function() {
       // The array has four inline text nodes and one static text node.
       // Their starting indexes are 0, 9, 20, 30, and 51.

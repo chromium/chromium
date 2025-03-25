@@ -180,6 +180,7 @@ js2gtest("accessibility_tests") {
     "event_generator_test.js",
     "keep_alive_test.js",
     "local_storage_test.js",
+    "paragraph_utils_overflow_mv2_test.js",
     "paragraph_utils_overflow_test.js",
     "rect_util_test.js",
     "repeated_event_handler_test.js",
@@ -190,10 +191,15 @@ js2gtest("accessibility_tests") {
 
   # These are unit tests run under an extension environment to get ES6 module support.
   sources += [
+    "node_navigation_utils_mv2_unittest.js",
     "node_navigation_utils_unittest.js",
+    "node_utils_mv2_unittest.js",
     "node_utils_unittest.js",
+    "paragraph_utils_mv2_unittest.js",
     "paragraph_utils_unittest.js",
+    "sentence_utils_mv2_unittest.js",
     "sentence_utils_unittest.js",
+    "word_utils_mv2_unittest.js",
     "word_utils_unittest.js",
   ]
 

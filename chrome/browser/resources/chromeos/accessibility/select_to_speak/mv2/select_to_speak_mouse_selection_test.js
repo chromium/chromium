@@ -9,7 +9,7 @@ GEN_INCLUDE(['../../common/testing/mock_tts.js']);
  * Browser tests for select-to-speak's feature to speak text
  * by holding down a key and clicking or dragging with the mouse.
  */
-SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
+SelectToSpeakMV2MouseSelectionTest = class extends SelectToSpeakE2ETest {
   constructor() {
     super();
     this.mockTts = new MockTts();
@@ -52,7 +52,7 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
 };
 
 AX_TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'SpeaksNodeWhenClicked',
+    'SelectToSpeakMV2MouseSelectionTest', 'SpeaksNodeWhenClicked',
     async function() {
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
@@ -75,7 +75,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'SpeaksMultipleNodesWhenDragged',
+    'SelectToSpeakMV2MouseSelectionTest', 'SpeaksMultipleNodesWhenDragged',
     async function() {
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
@@ -108,7 +108,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'SpeaksAcrossNodesInAParagraph',
+    'SelectToSpeakMV2MouseSelectionTest', 'SpeaksAcrossNodesInAParagraph',
     async function() {
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
@@ -139,7 +139,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'SpeaksNodeAfterTrayTapAndMouseClick',
+    'SelectToSpeakMV2MouseSelectionTest', 'SpeaksNodeAfterTrayTapAndMouseClick',
     async function() {
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
@@ -170,7 +170,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'CancelsSelectionModeWithStateChange',
+    'SelectToSpeakMV2MouseSelectionTest', 'CancelsSelectionModeWithStateChange',
     async function() {
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
@@ -193,7 +193,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'CancelsSpeechWithTrayTap',
+    'SelectToSpeakMV2MouseSelectionTest', 'CancelsSpeechWithTrayTap',
     async function() {
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
@@ -225,8 +225,8 @@ AX_TEST_F(
 
 // TODO(crbug.com/40748296) Re-enable test
 TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'DISABLED_DoesNotSpeakOnlyTheTrayButton',
-    function() {
+    'SelectToSpeakMV2MouseSelectionTest',
+    'DISABLED_DoesNotSpeakOnlyTheTrayButton', function() {
       // The tray button itself should not be spoken when clicked in selection
       // mode per UI review (but if more elements are being verbalized than just
       // the STS tray button, it may be spoken). This is similar to how the
@@ -267,7 +267,7 @@ TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'VoiceSwitching', async function() {
+    'SelectToSpeakMV2MouseSelectionTest', 'VoiceSwitching', async function() {
       selectToSpeak.shouldUseVoiceSwitching_ = () => true;
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,<div>' +
@@ -309,7 +309,7 @@ AX_TEST_F(
       this.triggerReadMouseSelectedText(downEvent, upEvent);
     });
 
-AX_TEST_F('SelectToSpeakMouseSelectionTest', 'SystemUI', async function() {
+AX_TEST_F('SelectToSpeakMV2MouseSelectionTest', 'SystemUI', async function() {
   this.runWithLoadedDesktop(async desktop => {
     // Select STS tray and system tray to ensure STS tray is spoken.
     // We can test against the STS tray text because we own it, the

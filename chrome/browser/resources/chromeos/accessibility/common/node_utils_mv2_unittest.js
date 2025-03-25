@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../select_to_speak/mv3/select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/mv2/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for node_utils.js.
  */
-SelectToSpeakNodeUtilsUnitTest = class extends SelectToSpeakE2ETest {};
+SelectToSpeakMV2NodeUtilsUnitTest = class extends SelectToSpeakE2ETest {};
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest', 'GetNodeVisibilityState', function() {
+    'SelectToSpeakMV2NodeUtilsUnitTest', 'GetNodeVisibilityState', function() {
       const nodeWithoutRoot1 = {root: null};
       const nodeWithoutRoot2 = {root: null, state: {invisible: true}};
       assertEquals(
@@ -59,8 +59,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest', 'GetNodeVisibilityStateWithRootWebArea',
-    function() {
+    'SelectToSpeakMV2NodeUtilsUnitTest',
+    'GetNodeVisibilityStateWithRootWebArea', function() {
       // Currently nodes aren't actually marked 'invisible', so we need to
       // navigate up their tree.
       const window = {root: {}, role: 'window', state: {invisible: true}};
@@ -109,7 +109,7 @@ AX_TEST_F(
           NodeUtils.NodeState.NODE_STATE_NORMAL);
     });
 
-AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
+AX_TEST_F('SelectToSpeakMV2NodeUtilsUnitTest', 'findAllMatching', function() {
   const rect = {left: 0, top: 0, width: 100, height: 100};
   const rootNode = {
     root: {},
@@ -244,7 +244,8 @@ AX_TEST_F('SelectToSpeakNodeUtilsUnitTest', 'findAllMatching', function() {
 });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest', 'findAllMatchingWithInputs', function() {
+    'SelectToSpeakMV2NodeUtilsUnitTest', 'findAllMatchingWithInputs',
+    function() {
       const rect = {left: 0, top: 0, width: 100, height: 100};
       const rootNode = {
         root: {},
@@ -270,7 +271,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest',
+    'SelectToSpeakMV2NodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedNoChildren', function() {
       const node = {name: 'Hello, world', children: []};
       let result = NodeUtils.getDeepEquivalentForSelectionDeprecated(node, 0);
@@ -283,7 +284,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest',
+    'SelectToSpeakMV2NodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedSimpleChildren', function() {
       const child1 =
           {name: 'Hello,', children: [], role: 'inlineTextBox', state: {}};
@@ -319,7 +320,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest',
+    'SelectToSpeakMV2NodeUtilsUnitTest',
     'getDeepEquivalentForSelectionDeprecatedComplexChildren', function() {
       const child1 =
           {name: 'Hello', children: [], role: 'inlineTextBox', state: {}};
@@ -392,7 +393,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest', 'sortSvgNodesByReadingOrder', function() {
+    'SelectToSpeakMV2NodeUtilsUnitTest', 'sortSvgNodesByReadingOrder',
+    function() {
       const svgRootNode = {role: 'svgRoot'};
       const gNode1 = {
         role: 'genericContainer',
@@ -431,7 +433,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest', 'sortNodesByReadingOrderMultipleSVGs',
+    'SelectToSpeakMV2NodeUtilsUnitTest', 'sortNodesByReadingOrderMultipleSVGs',
     function() {
       const textNode1 = {role: 'staticText', name: 'Text Node 1'};
       const svg1RootNode = {role: 'svgRoot'};
@@ -484,7 +486,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest', 'GetAllNodesInParagraph', function() {
+    'SelectToSpeakMV2NodeUtilsUnitTest', 'GetAllNodesInParagraph', function() {
       const root = createMockNode({role: 'rootWebArea'});
       const paragraph1 = createMockNode(
           {role: 'paragraph', display: 'block', parent: root, root});
@@ -531,7 +533,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest', 'getPositionFromNodeGroup', function() {
+    'SelectToSpeakMV2NodeUtilsUnitTest', 'getPositionFromNodeGroup',
+    function() {
       // The nodeGroup has four inline text nodes and one static text node.
       // Their starting indexes are 0, 9, 20, 30, and 51. The first and the
       // second inline text nodes belong to one parent, and the third and the
@@ -599,7 +602,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeUtilsUnitTest', 'getDirectionBetweenPositions',
+    'SelectToSpeakMV2NodeUtilsUnitTest', 'getDirectionBetweenPositions',
     function() {
       // The nodeGroup has four inline text nodes and one static text node.
       // Their starting indexes are 0, 9, 20, 30, and 51. The first and the

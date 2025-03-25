@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../select_to_speak/mv3/select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/mv2/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for navigation_utils.js.
  */
-SelectToSpeakNodeNavigationUtilsUnitTest = class extends SelectToSpeakE2ETest {
-};
+SelectToSpeakMV2NodeNavigationUtilsUnitTest =
+    class extends SelectToSpeakE2ETest {};
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNodesForNextParagraph',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest', 'GetNodesForNextParagraph',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
       const paragraph1 = createMockNode(
@@ -68,7 +68,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNextParagraphWithNode',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest', 'GetNextParagraphWithNode',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
       const paragraph1 = createMockNode(
@@ -141,7 +141,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeContainedWithinRoot', function() {
       const desktop = createMockNode({role: 'desktop'});
 
@@ -178,7 +178,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeThroughIframe', function() {
       const desktop = createMockNode({role: 'desktop'});
 
@@ -219,7 +219,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeNonBlockNodes', function() {
       /**
        * Example below is roughly similar to:
@@ -262,7 +262,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeNestedBlocks', function() {
       const root = createMockNode({role: 'rootWebArea'});
       const paragraph1 = createMockNode(
@@ -296,7 +296,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeAndroid', function() {
       const root = createMockNode({role: 'application'});
       const container1 =
@@ -359,7 +359,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupEmptyNodeGroup', function() {
       const nodeGroup = {nodes: []};
       const result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
@@ -369,7 +369,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupForward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
       // Their starting indexes are 0, 9, 20, 30, and 51.
@@ -407,7 +407,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupBackward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
       // Their starting indexes are 0, 9, 20, 30, and 51.
@@ -448,7 +448,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupForwardWithEmptyTail', function() {
       // The nodeGroup consists of three inline text nodes: "Hello", "world ",
       // and " ".
@@ -474,7 +474,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupBackwardWithEmptyHeads', function() {
       // The nodeGroup consists of three inline text nodes: " ", " Hello",
       // "world".
@@ -500,7 +500,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupForwardFromPartialParagraph',
     function() {
       // The nodeGroup consists only one static text node, which is "one". The
@@ -521,7 +521,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupBackwardFromPartialParagraph',
     function() {
       // The nodeGroup consists only one static text node, which is "one". The
@@ -543,7 +543,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNextNodesInParagraph',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest', 'GetNextNodesInParagraph',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
       createMockNode({role: 'paragraph', display: 'block', parent: root, root});
@@ -589,7 +589,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNodesForNextSentence',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest', 'GetNodesForNextSentence',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
       const paragraph1 = createMockNode(
@@ -735,7 +735,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'SelectToSpeakMV2NodeNavigationUtilsUnitTest',
     'GetNodesForNextSentenceWithChoppedNodes', function() {
       const root = createMockNode({role: 'rootWebArea'});
       const paragraph1 = createMockNode(
