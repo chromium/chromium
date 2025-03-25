@@ -26,6 +26,9 @@ std::string ExtractQueryFromLensOverlaySRP(const GURL& url);
 bool IsGoogleRedirection(const GURL& url,
                          web::WebStatePolicyDecider::RequestInfo request_info);
 
+/// Processes the `url` so it can be added to history.
+GURL ProcessURLForHistory(const GURL& url);
+
 }  // namespace lens
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_URL_UTILS_H_

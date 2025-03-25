@@ -61,6 +61,9 @@ class HistoryTabHelper
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
+  // Enables Lens URL processing when adding navigation to history.
+  void EnableLensURLProcessing() { lens_url_processing_enabled_ = true; }
+
  private:
   friend class web::WebStateUserData<HistoryTabHelper>;
 
@@ -107,6 +110,9 @@ class HistoryTabHelper
   // a certain time period after the page load is complete will be saved to the
   // history system. Only applies to the main frame of the page.
   base::TimeTicks last_load_completion_;
+
+  // When enabled, process lens navigation URLs before adding them to history.
+  bool lens_url_processing_enabled_ = false;
 
   // Some cached state about the current navigation, used to identify it again
   // once a new navigation has happened.

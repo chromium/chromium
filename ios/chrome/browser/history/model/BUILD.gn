@@ -75,6 +75,7 @@ source_set("tab_helper") {
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//ios/chrome/browser/complex_tasks/model",
+    "//ios/chrome/browser/lens_overlay/model:utils",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
