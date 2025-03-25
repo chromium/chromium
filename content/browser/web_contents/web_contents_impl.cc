@@ -3642,6 +3642,7 @@ void WebContentsImpl::OnWebPreferencesChanged() {
   }
   updating_web_preferences_ = true;
   SetWebPreferences(ComputeWebPreferences(GetPrimaryMainFrame()));
+
 #if BUILDFLAG(IS_ANDROID)
   const bool force_enable_zoom_changed =
       (force_enable_zoom_ != web_preferences_->force_enable_zoom);
@@ -3663,6 +3664,12 @@ void WebContentsImpl::OnWebPreferencesChanged() {
     }
   }
 #endif
+
+  // Update inner WebContents.
+  for (WebContents* inner : GetInnerWebContents()) {
+    static_cast<WebContentsImpl*>(inner)->OnWebPreferencesChanged();
+  }
+
   updating_web_preferences_ = false;
 }
 
