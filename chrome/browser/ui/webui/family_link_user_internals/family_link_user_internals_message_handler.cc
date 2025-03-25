@@ -33,9 +33,10 @@
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_id.h"
 
-using content::BrowserThread;
 
 namespace {
+
+using content::BrowserThread;
 
 // Creates a 'section' for display on about:family-link-user-internals,
 // consisting of a title and a list of fields. Returns a pointer to the new
@@ -116,6 +117,39 @@ std::string FilteringReasonToString(
   NOTREACHED();
 }
 
+bool IsSubjectToFamilyLinkParentalControls(
+    const signin::IdentityManager* identity_manager) {
+  if (!identity_manager) {
+    return false;
+  }
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  return account_info.capabilities.is_subject_to_parental_controls() ==
+         signin::Tribool::kTrue;
+}
+
+std::string WebContentFiltersToToggle(
+    FamilyLinkUserInternalsMessageHandler::WebContentFilters value) {
+  switch (value) {
+    case FamilyLinkUserInternalsMessageHandler::WebContentFilters::kDisabled:
+      return "off";
+    case FamilyLinkUserInternalsMessageHandler::WebContentFilters::kEnabled:
+      return "on";
+    default:
+      NOTREACHED();
+  }
+}
+FamilyLinkUserInternalsMessageHandler::WebContentFilters
+ToggleToWebContentFilters(std::string value) {
+  if (value == "on") {
+    return FamilyLinkUserInternalsMessageHandler::WebContentFilters::kEnabled;
+  }
+  if (value == "off") {
+    return FamilyLinkUserInternalsMessageHandler::WebContentFilters::kDisabled;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 FamilyLinkUserInternalsMessageHandler::FamilyLinkUserInternalsMessageHandler() =
@@ -143,14 +177,53 @@ void FamilyLinkUserInternalsMessageHandler::RegisterMessages() {
       "tryURL",
       base::BindRepeating(&FamilyLinkUserInternalsMessageHandler::HandleTryURL,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "changeSearchContentFilters",
+      base::BindRepeating(&FamilyLinkUserInternalsMessageHandler::
+                              HandleChangeSearchContentFilters,
+                          base::Unretained(this)));
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnJavascriptDisallowed() {
-  scoped_observation_.Reset();
+  url_filter_observation_.Reset();
+  identity_manager_observation_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnURLFilterChanged() {
+  SendBasicInfo();
+}
+
+void FamilyLinkUserInternalsMessageHandler::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  OnAccountChanged();
+}
+void FamilyLinkUserInternalsMessageHandler::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  OnAccountChanged();
+}
+void FamilyLinkUserInternalsMessageHandler::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  OnAccountChanged();
+}
+void FamilyLinkUserInternalsMessageHandler::
+    OnErrorStateOfRefreshTokenUpdatedForAccount(
+        const CoreAccountInfo& account_info,
+        const GoogleServiceAuthError& error,
+        signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  OnAccountChanged();
+}
+void FamilyLinkUserInternalsMessageHandler::OnAccountsInCookieUpdated(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const GoogleServiceAuthError& error) {
+  OnAccountChanged();
+}
+
+void FamilyLinkUserInternalsMessageHandler::OnAccountChanged() {
+  // There's no need to change the search_content_filtering_status_ setting even
+  // if the account changes to family link supervised - Chrome will use
+  // feature's default.
+  SendWebContentFiltersInfo();
   SendBasicInfo();
 }
 
@@ -165,11 +238,17 @@ void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
     const base::Value::List& args) {
   DCHECK(args.empty());
   AllowJavascript();
-  if (scoped_observation_.IsObserving()) {
-    return;
+  if (!url_filter_observation_.IsObserving()) {
+    url_filter_observation_.Observe(GetSupervisedUserService()->GetURLFilter());
   }
 
-  scoped_observation_.Observe(GetSupervisedUserService()->GetURLFilter());
+  Profile* profile = Profile::FromWebUI(web_ui());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager_observation_.IsObserving() && identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+    SendWebContentFiltersInfo();
+  }
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
@@ -210,6 +289,42 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
       skip_manual_parent_filter);
 }
 
+void FamilyLinkUserInternalsMessageHandler::ConfigureSearchContentFilters() {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  supervised_user::GoogleSafeSearchStateStatus status;
+  switch (search_content_filtering_status_) {
+    case WebContentFilters::kDisabled:
+      status = supervised_user::GoogleSafeSearchStateStatus::kDisabled;
+      break;
+    case WebContentFilters::kEnabled:
+      status = supervised_user::GoogleSafeSearchStateStatus::kEnforced;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  supervised_user::SetGoogleSafeSearch(*profile->GetPrefs(), status);
+}
+
+void FamilyLinkUserInternalsMessageHandler::HandleChangeSearchContentFilters(
+    const base::Value::List& args) {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (IsSubjectToFamilyLinkParentalControls(
+          IdentityManagerFactory::GetForProfile(profile))) {
+    // Feature not available for the Family Link supervised users.
+    return;
+  }
+
+  DCHECK_EQ(1u, args.size());
+  if (!args[0].is_string()) {
+    return;
+  }
+
+  search_content_filtering_status_ =
+      ToggleToWebContentFilters(args[0].GetString());
+  ConfigureSearchContentFilters();
+}
+
 void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   base::Value::List section_list;
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -226,6 +341,12 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   AddSectionEntry(
       section_filter, "Default behavior",
       FilteringBehaviorToString(filter->GetDefaultFilteringBehavior()));
+
+  base::Value::List* section_search =
+      AddSection(&section_list, "Google search");
+  AddSectionEntry(
+      section_search, "Safe search enforced",
+      supervised_user::IsGoogleSafeSearchEnforced(*profile->GetPrefs()));
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -248,6 +369,10 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
           TriboolToString(
               account.capabilities.is_subject_to_parental_controls()));
       AddSectionEntry(section_user, "Is valid", account.IsValid());
+      AddSectionEntry(
+          section_user, "Is subject to family link parental controls",
+          TriboolToString(
+              account.capabilities.is_subject_to_parental_controls()));
     }
   }
 
@@ -267,6 +392,18 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
 void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
     const base::Value::Dict& settings) {
   FireWebUIListener("user-settings-received", settings);
+}
+
+void FamilyLinkUserInternalsMessageHandler::SendWebContentFiltersInfo() {
+  Profile* profile = Profile::FromWebUI(web_ui());
+
+  AllowJavascript();
+  base::Value::Dict info;
+  info.Set("enabled", !IsSubjectToFamilyLinkParentalControls(
+                          IdentityManagerFactory::GetForProfile(profile)));
+  info.Set("search_content_filtering",
+           WebContentFiltersToToggle(search_content_filtering_status_));
+  FireWebUIListener("web-content-filters-info-received", info);
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
