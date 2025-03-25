@@ -3292,9 +3292,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MAGIC_STACK_TURN_ON_NOTIFICATIONS" desc="The notifications opt-in button in Magic Stack modules">
         Turn On Notifications
       </message>
-      <message name="IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON" desc="The title of the Accept button of the Sign in to a managed account dialog. [40em]">
-        Accept and sign in
-      </message>
       <message name="IDS_IOS_MANAGED_SIGNIN_TITLE" desc="The title of the Sign in to a managed account dialog. [40em]">
         Sign in with managed account
       </message>

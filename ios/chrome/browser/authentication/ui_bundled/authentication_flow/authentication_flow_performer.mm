@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
-#import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -440,9 +439,6 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 
 - (void)registerUserPolicy:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity {
-  // Should only fetch user policies when the feature is enabled.
-  DCHECK(policy::IsAnyUserPolicyFeatureEnabled());
-
   std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
   CoreAccountId accountID =
       IdentityManagerFactory::GetForProfile(profile)->PickAccountIdForAccount(
@@ -481,9 +477,6 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
                clientID:(NSString*)clientID
      userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs
                identity:(id<SystemIdentity>)identity {
-  // Should only fetch user policies when the feature is enabled.
-  DCHECK(policy::IsAnyUserPolicyFeatureEnabled());
-
   // Need a `dmToken` and a `clientID` to fetch user policies.
   DCHECK([dmToken length] > 0);
   DCHECK([clientID length] > 0);
@@ -542,12 +535,6 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 }
 
 - (void)updateUserPolicyNotificationStatusIfNeeded:(PrefService*)prefService {
-  if (!policy::IsAnyUserPolicyFeatureEnabled()) {
-    // Don't set the notification pref if the User Policy feature isn't
-    // enabled.
-    return;
-  }
-
   prefService->SetBoolean(policy::policy_prefs::kUserPolicyNotificationWasShown,
                           true);
 }

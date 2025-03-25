@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
-#import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -325,7 +324,7 @@ enum class AuthenticationFlowInProfileState {
 // Registers to DM Server to get a DM token and client ID, to fetch user
 // policies in the next step.
 - (void)registerForUserPolicyIfNeededStep {
-  if (!policy::IsAnyUserPolicyFeatureEnabled() || !_isManagedIdentity) {
+  if (!_isManagedIdentity) {
     [self continueFlow];
     return;
   }
@@ -340,7 +339,6 @@ enum class AuthenticationFlowInProfileState {
     [self continueFlow];
     return;
   }
-  CHECK(policy::IsAnyUserPolicyFeatureEnabled(), base::NotFatalUntil::M140);
   CHECK(_isManagedIdentity, base::NotFatalUntil::M140);
   ProfileIOS* profile = [self originalProfile];
   [_performer fetchUserPolicy:profile
