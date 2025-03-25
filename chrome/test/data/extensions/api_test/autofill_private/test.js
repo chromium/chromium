@@ -856,22 +856,6 @@ var availableTests = [
     chrome.test.succeed();
   },
 
-  function isUserEligibleForAutofillImprovements() {
-    chrome.autofillPrivate.isUserEligibleForAutofillImprovements(function(
-        isEligible) {
-      // TODO(crbug.com/373609897): Override account info status in the test
-      // setup to verify this properly.
-      chrome.test.assertFalse(isEligible, "Expected not eligible");
-      chrome.test.succeed();
-    });
-  },
-
-  function predictionImprovementsIphFeatureUsed() {
-    chrome.autofillPrivate.predictionImprovementsIphFeatureUsed();
-    chrome.test.assertNoLastError();
-    chrome.test.succeed();
-  },
-
   function logServerCardLinkClicked() {
     chrome.autofillPrivate.logServerCardLinkClicked();
     chrome.test.assertNoLastError();
@@ -1088,10 +1072,6 @@ var TESTS_FOR_CONFIG = {
       ['authenticateUserAndFlipMandatoryAuthToggle'],
   'getLocalCard': ['addNewCreditCard', 'getLocalCard'],
   'bulkDeleteAllCvcs': ['bulkDeleteAllCvcs'],
-  'isUserEligibleForAutofillImprovements':
-      ['isUserEligibleForAutofillImprovements'],
-  'predictionImprovementsIphFeatureUsed':
-      ['predictionImprovementsIphFeatureUsed'],
   'logServerCardLinkClicked': ['logServerCardLinkClicked'],
   'addVirtualCard': ['addVirtualCard'],
   'removeVirtualCard': ['removeVirtualCard'],

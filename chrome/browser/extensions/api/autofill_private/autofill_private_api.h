@@ -442,50 +442,6 @@ class AutofillPrivateSetAutofillSyncToggleEnabledFunction
   ResponseAction Run() override;
 };
 
-class AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
-    : public AutofillPrivateExtensionFunction {
- public:
-  AutofillPrivateIsUserEligibleForAutofillImprovementsFunction() = default;
-  AutofillPrivateIsUserEligibleForAutofillImprovementsFunction(
-      const AutofillPrivateIsUserEligibleForAutofillImprovementsFunction&) =
-      delete;
-  AutofillPrivateIsUserEligibleForAutofillImprovementsFunction& operator=(
-      const AutofillPrivateIsUserEligibleForAutofillImprovementsFunction&) =
-      delete;
-  DECLARE_EXTENSION_FUNCTION(
-      "autofillPrivate.isUserEligibleForAutofillImprovements",
-      AUTOFILLPRIVATE_ISUSERELIGIBLEFORAUTOFILLIMPROVEMENTS)
-
- protected:
-  ~AutofillPrivateIsUserEligibleForAutofillImprovementsFunction() override =
-      default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
-class AutofillPrivatePredictionImprovementsIphFeatureUsedFunction
-    : public AutofillPrivateExtensionFunction {
- public:
-  AutofillPrivatePredictionImprovementsIphFeatureUsedFunction() = default;
-  AutofillPrivatePredictionImprovementsIphFeatureUsedFunction(
-      const AutofillPrivatePredictionImprovementsIphFeatureUsedFunction&) =
-      delete;
-  AutofillPrivatePredictionImprovementsIphFeatureUsedFunction& operator=(
-      const AutofillPrivatePredictionImprovementsIphFeatureUsedFunction&) =
-      delete;
-  DECLARE_EXTENSION_FUNCTION(
-      "autofillPrivate.predictionImprovementsIphFeatureUsed",
-      AUTOFILLPRIVATE_PREDICTIONIMPROVEMENTSIPHFFEATUREUSED)
-
- protected:
-  ~AutofillPrivatePredictionImprovementsIphFeatureUsedFunction() override =
-      default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class AutofillPrivateAddOrUpdateEntityInstanceFunction
     : public AutofillPrivateExtensionFunction {
  public:

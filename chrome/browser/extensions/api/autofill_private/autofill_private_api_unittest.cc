@@ -275,21 +275,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
-                       PredictionImprovementsIphFeatureUsed) {
-  using NotifyIphMockCallback =
-      testing::MockFunction<void(autofill::AutofillClient::IphFeature)>;
-  NotifyIphMockCallback mock_callback;
-  autofill_client()->set_notify_iph_feature_used_mock_callback(
-      base::BindRepeating(&NotifyIphMockCallback::Call,
-                          base::Unretained(&mock_callback)));
-
-  EXPECT_CALL(mock_callback,
-              Call(autofill::AutofillClient::IphFeature::kAutofillAi));
-
-  RunAutofillSubtest("predictionImprovementsIphFeatureUsed");
-}
-
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, LogServerCardLinkClicked) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(RunAutofillSubtest("logServerCardLinkClicked"));

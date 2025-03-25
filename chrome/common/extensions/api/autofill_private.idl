@@ -432,7 +432,6 @@ namespace autofillPrivate {
   callback IsValidIbanCallback = void(boolean isValid);
   callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
-  callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
   callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
   callback GetEntityInstanceByGuid = void(EntityInstance entityInstance);
   callback GetAllEntityTypesCallback = void(EntityType[] entityTypes);
@@ -554,13 +553,6 @@ namespace autofillPrivate {
     // Sets the Sync Autofill toggle value, which corresponds to
     // `syncer::UserSelectableType::kAutofill` in `SyncUserSettings`.
     static void setAutofillSyncToggleEnabled(boolean enabled);
-
-    // Returns if the user is eligible for autofill improvements.
-    static void isUserEligibleForAutofillImprovements(
-        isUserEligibleForAutofillImprovementsCallback callback);
-
-    // Notifies autofill client about the prediction improvements pre changing.
-    static void predictionImprovementsIphFeatureUsed();
 
     // Adds a new entity instance if it doesn't exist yet. Otherwise, it updates
     // the entity instance.

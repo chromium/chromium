@@ -970,33 +970,6 @@ AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
-
-// TODO(crbug.com/393318914): Remove function.
-ExtensionFunction::ResponseAction
-AutofillPrivateIsUserEligibleForAutofillImprovementsFunction::Run() {
-  Profile* profile =
-      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
-  return RespondNow(WithArguments(autofill_ai::IsUserEligible(profile)));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivatePredictionImprovementsIphFeatureUsedFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivatePredictionImprovementsIphFeatureUsedFunction::Run() {
-  autofill::ContentAutofillClient* client =
-      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
-  if (!client) {
-    return RespondNow(Error(kErrorDataUnavailable));
-  }
-
-  client->NotifyIphFeatureUsed(
-      autofill::AutofillClient::IphFeature::kAutofillAi);
-  return RespondNow(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateAddOrUpdateEntityInstanceFunction
 
 ExtensionFunction::ResponseAction

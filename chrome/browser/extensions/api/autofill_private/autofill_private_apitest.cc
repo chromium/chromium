@@ -386,12 +386,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, bulkDeleteAllCvcs) {
   EXPECT_TRUE(RunAutofillSubtest("bulkDeleteAllCvcs")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
-                       IsUserEligibleForAutofillImprovements) {
-  EXPECT_TRUE(RunAutofillSubtest("isUserEligibleForAutofillImprovements"))
-      << message_;
-}
-
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddVirtualCard) {
   autofill::TestPersonalDataManager& personal_data_manager =
       autofill_client()->GetPersonalDataManager();
