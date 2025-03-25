@@ -5996,6 +5996,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5386" label="V8AILanguageModel_InputUsage_AttributeGetter"/>
   <int value="5387" label="V8AILanguageModel_InputQuota_AttributeGetter"/>
   <int value="5388" label="V8AILanguageModel_MeasureInputUsage_Method"/>
+  <int value="5389" label="CredentialsGetImmediateMediationWithWebAuthnOnly"/>
+  <int value="5390"
+      label="CredentialsGetImmediateMediationWithWebAuthnAndPasswords"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

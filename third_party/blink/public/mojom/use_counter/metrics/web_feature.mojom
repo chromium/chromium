@@ -4772,6 +4772,8 @@ enum WebFeature {
   kV8AILanguageModel_InputUsage_AttributeGetter = 5386,
   kV8AILanguageModel_InputQuota_AttributeGetter = 5387,
   kV8AILanguageModel_MeasureInputUsage_Method = 5388,
+  kCredentialsGetImmediateMediationWithWebAuthnOnly = 5389,
+  kCredentialsGetImmediateMediationWithWebAuthnAndPasswords = 5390,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
