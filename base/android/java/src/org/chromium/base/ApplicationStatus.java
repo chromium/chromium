@@ -796,6 +796,10 @@ public class ApplicationStatus {
         return ApplicationState.HAS_DESTROYED_ACTIVITIES;
     }
 
+    public static int getApplicationStateListenerCountForTesting() {
+        return sApplicationStateListeners == null ? 0 : sApplicationStateListeners.size();
+    }
+
     @NativeMethods
     interface Natives {
         // Called to notify the native side of state changes.

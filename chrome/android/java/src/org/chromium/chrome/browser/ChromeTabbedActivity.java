@@ -3702,9 +3702,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             mUndoBarPopupController = null;
         }
 
-        if (mStartupPaintPreviewHelperSupplier != null) {
-            mStartupPaintPreviewHelperSupplier.destroy();
+        StartupPaintPreviewHelper startupPaintPreviewHelper =
+                mStartupPaintPreviewHelperSupplier.get();
+        if (startupPaintPreviewHelper != null) {
+            startupPaintPreviewHelper.destroy();
         }
+        mStartupPaintPreviewHelperSupplier.destroy();
 
         if (mModuleRegistrySupplier.hasValue()) {
             mModuleRegistrySupplier.get().destroy();
