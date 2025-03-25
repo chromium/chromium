@@ -9,10 +9,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/connectors_service_base.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
@@ -68,7 +68,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
         base::RepeatingCallback<ChromeUserPopulation()>
             get_user_population_callback,
         std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
-        enterprise_connectors::ConnectorsService* connectors_service,
+        enterprise_connectors::ConnectorsServiceBase* connectors_service,
         ReferrerChainProvider* referrer_chain_provider,
         PrefService* pref_service,
         signin::IdentityManager* identity_manager,

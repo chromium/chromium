@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
@@ -34,6 +33,10 @@ namespace policy {
 class ManagementService;
 }
 
+namespace enterprise_connectors {
+class ConnectorsServiceBase;
+}
+
 class PrefService;
 
 namespace safe_browsing {
@@ -52,7 +55,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
-      enterprise_connectors::ConnectorsService* connectors_service,
+      enterprise_connectors::ConnectorsServiceBase* connectors_service,
       ReferrerChainProvider* referrer_chain_provider,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
@@ -114,7 +117,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
       const override;
 
   // Unowned pointer to ConnectorsService, used to get a DM token.
-  raw_ptr<enterprise_connectors::ConnectorsService, DanglingUntriaged>
+  raw_ptr<enterprise_connectors::ConnectorsServiceBase, DanglingUntriaged>
       connectors_service_;
 
   // The token fetcher used for getting access token.

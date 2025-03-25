@@ -174,6 +174,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
             },
             profile, &test_sync_service_),
         std::move(token_fetcher),
+        // TODO(crbug.com/406211981): Replace with mock ConnectorsServiceBase.
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
             profile),
         referrer_chain_provider_.get(), &test_pref_service_,
