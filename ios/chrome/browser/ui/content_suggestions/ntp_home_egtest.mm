@@ -1098,37 +1098,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [self testNTPInitialPositionAndContent:collectionView];
 }
 
-// Test to ensure that feed can be collapsed/shown and that feed header changes
-// accordingly.
-- (void)testToggleFeedVisible {
-  // Disable customization.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(kHomeCustomization);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [self
-      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
-
-  // Check feed label and if NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
-  [self checkIfNTPIsScrollable];
-
-  // Hide feed.
-  [self hideFeedFromNTPMenu];
-
-  // Check feed label and if NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:NO];
-  [self checkIfNTPIsScrollable];
-
-  // Show feed again.
-  [self showFeedFromNTPMenu];
-
-  // Check feed label and if NTP is scrollable.
-  [self checkFeedLabelForFeedVisible:YES];
-  [self checkIfNTPIsScrollable];
-}
-
 // Test to ensure that feed can be enabled/disabled and that feed header changes
 // accordingly.
 - (void)testToggleFeedEnabled {
@@ -1986,31 +1955,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
-}
-
-- (void)showFeedFromNTPMenu {
-  bool feed_visible =
-      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
-  GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
-
-  // The feed header button may be offscreen, so scroll to find it if needed.
-  id<GREYMatcher> headerButton =
-      grey_allOf(grey_accessibilityID(kNTPFeedHeaderManagementButtonIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:headerButton]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_tap()];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   chrome_test_util::NTPFeedMenuEnableButton(),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  feed_visible =
-      [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
-  GREYAssertTrue(feed_visible, @"Expect feed to be visible!");
 }
 
 - (void)hideFeedFromNTPMenu {

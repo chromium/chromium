@@ -310,7 +310,6 @@ source_set("feed_menu") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "feed_menu_coordinator_unittest.mm",
     "new_tab_page_coordinator_unittest.mm",
     "new_tab_page_header_view_controller_unittest.mm",
     "new_tab_page_mediator_unittest.mm",

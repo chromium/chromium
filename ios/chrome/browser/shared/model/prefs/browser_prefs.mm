@@ -1067,6 +1067,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 02/2025
   prefs->ClearPref(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
+
+  // Added 02/2025.
+  prefs->ClearPref(set_up_list_prefs::kDisabled);
 }
 
 // This method should be periodically pruned of year+ old migrations.
