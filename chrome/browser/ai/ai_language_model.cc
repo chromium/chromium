@@ -374,6 +374,10 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
 
   initial_prompts.tokens = size;
   context_ = std::make_unique<Context>(max_token, std::move(initial_prompts));
+
+  // Begin processing the initial prompts immediately.
+  session_->SetInput(context_->MakeRequest());
+
   std::move(callback).Run(TakePendingRemote(), GetLanguageModelInstanceInfo());
 }
 
