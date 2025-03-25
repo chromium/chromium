@@ -13,6 +13,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -24,6 +25,7 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_gnome_keyring": false,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   }

@@ -7,6 +7,7 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -19,6 +20,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -30,6 +32,7 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -42,6 +45,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -54,6 +58,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x86",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -65,6 +70,7 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -78,6 +84,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -88,6 +95,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_os": "chromeos",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -104,6 +112,7 @@
       "target_cpu": "arm64",
       "target_environment": "device",
       "target_os": "ios",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -120,6 +129,7 @@
       "target_cpu": "arm64",
       "target_environment": "simulator",
       "target_os": "ios",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -131,6 +141,7 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -143,6 +154,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -154,6 +166,7 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -166,6 +179,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -178,6 +192,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "x86",
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -189,6 +204,7 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -204,6 +220,7 @@
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   },
@@ -219,6 +236,7 @@
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true
     }
   }
