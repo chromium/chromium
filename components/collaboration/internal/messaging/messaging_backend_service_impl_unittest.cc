@@ -1844,10 +1844,48 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
             message.attributions[0].tab_group_metadata->sync_tab_group_id);
   EXPECT_TRUE(static_cast<int>(DirtyType::kTombstoned) & db_message.dirty());
   EXPECT_TRUE(static_cast<int>(DirtyType::kMessageOnly) & db_message.dirty());
+  EXPECT_EQ("Tab Group Title",
+            message.attributions[0].tab_group_metadata->last_known_title);
 
   std::move(success_callback).Run(true);
   EXPECT_FALSE(unowned_messaging_backend_store_->HasAnyDirtyMessages(
       DirtyType::kMessageOnly));
+}
+
+TEST_F(MessagingBackendServiceImplTest, TestTabGroupFallbackTitleNTabs) {
+  CreateAndInitializeService();
+  SetupInstantMessageDelegate();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  tab_group.SetTitle(std::u16string());
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
+  // Save the last invocation of calls to the InstantMessageDelegate.
+  InstantMessage message;
+  MessagingBackendService::InstantMessageDelegate::SuccessCallback
+      success_callback;
+  EXPECT_CALL(*mock_instant_message_delegate_,
+              DisplayInstantaneousMessage(_, _))
+      .WillRepeatedly(
+          DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
+
+  // Removing the tab group should inform the delegate.
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group,
+                                           tab_groups::TriggerSource::REMOTE);
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Verify tab group empty title.
+  EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED, message.collaboration_event);
+  EXPECT_EQ("2 tabs",
+            message.attributions[0].tab_group_metadata->last_known_title);
 }
 
 TEST_F(MessagingBackendServiceImplTest,

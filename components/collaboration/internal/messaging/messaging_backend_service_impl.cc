@@ -234,6 +234,11 @@ TabGroupMessageMetadata CreateTabGroupMessageMetadata(
   metadata.local_tab_group_id = tab_group.local_group_id();
   metadata.sync_tab_group_id = tab_group.saved_guid();
   metadata.last_known_title = base::UTF16ToUTF8(tab_group.title());
+  if (metadata.last_known_title->empty()) {
+    metadata.last_known_title = l10n_util::GetPluralStringFUTF8(
+        IDS_DATA_SHARING_TAB_GROUP_DEFAULT_TITLE_TABS_COUNT,
+        tab_group.saved_tabs().size());
+  }
   metadata.last_known_color = tab_group.color();
   return metadata;
 }

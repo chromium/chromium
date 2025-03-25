@@ -176,6 +176,9 @@
   <message name="IDS_DATA_SHARING_TOAST_BLOCK_LEAVE_MULTIPLE_GROUPS" desc="Toast text describing that the user has lost access to multiple shared groups.">
     <ph name="GROUP_COUNT">$1<ex>7</ex></ph> tab groups no longer available
   </message>
+  <message name="IDS_DATA_SHARING_TAB_GROUP_DEFAULT_TITLE_TABS_COUNT" desc="Title of unnamed saved tab group in toast text. [ICU_Syntax]">
+    {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
+  </message>
   <!-- Instant Messages -->
 
 </grit-part>
