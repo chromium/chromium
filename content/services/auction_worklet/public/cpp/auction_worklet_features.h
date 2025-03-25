@@ -64,6 +64,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kFledgeMaxSellerContextsPerThreadInAdvance);
 
+// Send each trusted seller signals request right after it is queued, so
+// that it does not get batched.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSellerSignalsRequestsOneAtATime);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL);
 
 // Provide encodeUtf8/decodeUtf8 helpers.
