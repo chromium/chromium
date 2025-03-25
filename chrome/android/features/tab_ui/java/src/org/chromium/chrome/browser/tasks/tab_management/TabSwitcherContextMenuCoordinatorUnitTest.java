@@ -56,10 +56,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabSwitcherContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.TAB_SWITCHER_CONTEXT_MENU_ANDROID,
-    ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID
-})
+@EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
 public class TabSwitcherContextMenuCoordinatorUnitTest {
     private static @TabId final int TAB_ID = 1;
     private static final int MENU_WIDTH = 300;

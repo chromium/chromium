@@ -2888,9 +2888,6 @@ extern const char kTabStripTransitionInDesktopWindowDescription[];
 extern const char kTabSwitcherColorBlendAnimateName[];
 extern const char kTabSwitcherColorBlendAnimateDescription[];
 
-extern const char kTabSwitcherContextMenuAndroidName[];
-extern const char kTabSwitcherContextMenuAndroidDescription[];
-
 extern const char kHideTabletToolbarDownloadButtonName[];
 extern const char kHideTabletToolbarDownloadButtonDescription[];
 
