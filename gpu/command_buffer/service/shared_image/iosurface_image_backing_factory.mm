@@ -276,7 +276,7 @@ bool IOSurfaceImageBackingFactory::IsSupported(
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
   if (thread_safe &&
-      !base::FeatureList::IsEnabled(features::kMacSupportMultiThreading)) {
+      !base::FeatureList::IsEnabled(features::kIOSurfaceMultiThreading)) {
     return false;
   }
 

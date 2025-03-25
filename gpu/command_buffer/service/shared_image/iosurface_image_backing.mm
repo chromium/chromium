@@ -1008,7 +1008,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       weak_factory_(this) {
   CHECK(io_surface_);
   CHECK(!is_thread_safe ||
-        base::FeatureList::IsEnabled(features::kMacSupportMultiThreading));
+        base::FeatureList::IsEnabled(features::kIOSurfaceMultiThreading));
 
   // If this will be bound to different GL backends, then make RetainGLTexture
   // and ReleaseGLTexture actually create and destroy the texture.
