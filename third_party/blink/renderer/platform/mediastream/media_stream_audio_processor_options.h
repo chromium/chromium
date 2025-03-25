@@ -69,6 +69,7 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   // referred to does not correspond to something that can replace the browser
   // counterpart. I.e., the browser counterpart should be on, even if
   // `disable_hw_noise_suppression` is false.
+  // TODO(crbug.com/405165917): can this member now be removed?
   bool disable_hw_noise_suppression = false;
 
   bool auto_gain_control = true;
