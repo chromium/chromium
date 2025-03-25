@@ -431,9 +431,14 @@ public class ExternalNavigationHandlerTest {
                     "chrome-native://newtab",
                     "devtools://foo",
                     "fido://something",
+                    "intent:chrome-urls#Intent;package=com.android.chrome;scheme=fido;end;",
+                    "intent:chrome-urls#Intent;package=com.android.chrome;scheme=FIDO;end;",
                     "intent:chrome-urls#Intent;package=com.android.chrome;scheme=about;end;",
+                    "intent:chrome-urls#Intent;package=com.android.chrome;scheme=ABOUT;end;",
                     "intent:chrome-urls#Intent;package=com.android.chrome;scheme=chrome;end;",
+                    "intent:chrome-urls#Intent;package=com.android.chrome;scheme=CHROME;end;",
                     "intent://com.android.chrome.FileProvider/foo.html#Intent;scheme=content;end;",
+                    "intent://com.android.chrome.FileProvider/foo.html#Intent;scheme=CONTENT;end;",
                     "intent:///x.mhtml#Intent;package=com.android.chrome;action=android.intent.action.VIEW;scheme=file;end;"
                 };
         for (String url : urlsToIgnore) {
