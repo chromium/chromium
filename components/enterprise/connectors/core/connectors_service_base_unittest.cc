@@ -56,6 +56,14 @@ class TestConnectorsService : public ConnectorsServiceBase {
     }
   }
 
+  std::optional<std::string> GetBrowserDmToken() const override {
+    return std::nullopt;
+  }
+
+  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud) override {
+    return nullptr;
+  }
+
   bool ConnectorsEnabled() const override { return connectors_enabled_; }
 
   bool IsConnectorEnabled(AnalysisConnector connector) const override {
