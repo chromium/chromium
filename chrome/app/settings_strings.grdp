@@ -648,6 +648,18 @@
     Autofill will have less info for filling out forms.
   </message>
   <!-- TODO(crbug.com/395807244): Make string translateable. -->
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_MONTH_DROPDOWN" desc="The accessibility label on the month dropdown of a date field, to let users know the dropdown corresponds to the month." translateable = "false">
+    <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph>: month
+  </message>
+  <!-- TODO(crbug.com/395807244): Make string translateable. -->
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_DAY_DROPDOWN" desc="The accessibility label on the day dropdown of a date field, to let users know the dropdown corresponds to the day." translateable = "false">
+    <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph>: day
+  </message>
+  <!-- TODO(crbug.com/395807244): Make string translateable. -->
+  <message name="IDS_SETTINGS_AUTOFILL_AI_ACCESSIBILITY_LABEL_YEAR_DROPDOWN" desc="The accessibility label on the year dropdown of a date field, to let users know the dropdown corresponds to the year." translateable = "false">
+    <ph name="DROPDOWN_NAME">$1<ex>Expiration date</ex></ph>: year
+  </message>
+  <!-- TODO(crbug.com/395807244): Make string translateable. -->
   <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR"  desc="An error message if the user clicks Save without having filled at least one value in the form." translateable = "false">
     Fill at least one field before saving.
   </message>

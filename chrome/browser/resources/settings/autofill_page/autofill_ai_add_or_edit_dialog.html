@@ -8,6 +8,19 @@
     margin-bottom: var(--cr-form-field-bottom-spacing);
   }
 
+  .md-select + .md-select {
+    margin-inline-start: 8px;
+  }
+
+  #month-select,
+  #day-select {
+    width: 70px;
+  }
+
+  #year-select {
+    width: 100px;
+  }
+
   #dialog::part(body-container) {
     max-height: 550px;
   }
@@ -28,7 +41,8 @@
     <template is="dom-repeat" items="[[completeAttributeInstanceList_]]"
         as="attributeInstanceItem">
 
-      <template is="dom-if" if="[[isCountryDataType_(attributeInstanceItem)]]">
+      <template is="dom-if" if="[[isDataType_(attributeInstanceItem,
+          attributeTypeDataTypeEnum_.COUNTRY)]]">
         <label id="country-select-label" class="cr-form-field-label">
           [[attributeInstanceItem.type.typeNameAsString]]
         </label>
@@ -47,7 +61,57 @@
         </select>
       </template>
 
-      <template is="dom-if" if="[[isStringDataType_(attributeInstanceItem)]]">
+      <!-- TODO(crbug.com/406006293): Revisit the design of date pickers. -->
+      <template is="dom-if" if="[[isDataType_(attributeInstanceItem,
+          attributeTypeDataTypeEnum_.DATE)]]">
+        <label id="date-select-label" class="cr-form-field-label">
+          [[attributeInstanceItem.type.typeNameAsString]]
+        </label>
+
+        <select id="month-select" class="md-select"
+            aria-label="[[i18n('autofillAiAccessibilityLabelMonthDropdown',
+                attributeInstanceItem.type.typeNameAsString)]]"
+            on-change="onMonthSelectChange_">
+          <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+          <template is="dom-repeat" items="[[months_]]" as="month">
+            <option value="[[month]]"
+                selected="[[isMonthSelected_(attributeInstanceItem, month)]]">
+              [[getMonthName_(month)]]
+            </option>
+          </template>
+        </select>
+
+        <select id="day-select" class="md-select"
+            aria-label="[[i18n('autofillAiAccessibilityLabelDayDropdown',
+                attributeInstanceItem.type.typeNameAsString)]]"
+            on-change="onDaySelectChange_">
+          <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+          <template is="dom-repeat" items="[[days_]]" as="day">
+            <option value="[[day]]"
+                selected="[[isDaySelected_(attributeInstanceItem, day)]]">
+              [[day]]
+            </option>
+          </template>
+        </select>
+
+        <select id="year-select" class="md-select"
+            aria-label="[[i18n('autofillAiAccessibilityLabelYearDropdown',
+                attributeInstanceItem.type.typeNameAsString)]]"
+            on-change="onYearSelectChange_">
+          <!-- TODO(crbug.com/393318914): Add another option for the existing
+               year, if the existing year is out of bounds. -->
+          <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
+          <template is="dom-repeat" items="[[years_]]" as="year">
+            <option value="[[year]]"
+                selected="[[isYearSelected_(attributeInstanceItem, year)]]">
+              [[year]]
+            </option>
+          </template>
+        </select>
+      </template>
+
+      <template is="dom-if" if="[[isDataType_(attributeInstanceItem,
+          attributeTypeDataTypeEnum_.STRING)]]">
         <cr-input id="attributeInstanceField" type="text"
             label="[[attributeInstanceItem.type.typeNameAsString]]"
             value="{{attributeInstanceItem.value}}"
@@ -57,6 +121,9 @@
       </template>
 
     </template>
+    <!-- TODO(crbug.com/393318914): Alter this statement to display the error
+         only if allFieldsAreEmpty_ is true. At the same time, add a different
+         validation error for invalid dates. -->
     <div id="validationError" hidden="[[canSave_]]">
       $i18n{autofillAiAddOrEditDialogValidationError}
     </div>
