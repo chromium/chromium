@@ -698,7 +698,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="FidoAuthentication"
       summary="Fido authentication (Better Auth Project)"/>
   <variant name="IBANSave" summary="IBAN save"/>
-  <variant name="LocalCardMigration" summary="Local card migration"/>
   <variant name="VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>
 
@@ -5942,17 +5941,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     button.
   </summary>
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
-</histogram>
-
-<histogram
-    name="Autofill.StrikeDatabase.StrikesPresentWhenLocalCardMigrationAccepted"
-    units="strikes" expires_after="2025-08-31">
-  <owner>jsaul@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records the number of &quot;strikes&quot; a user has when local card
-    migration is accepted.
-  </summary>
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenLocalCardSaved"

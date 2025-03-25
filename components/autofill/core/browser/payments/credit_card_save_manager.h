@@ -25,7 +25,6 @@
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
 #include "url/origin.h"
 
 class SaveCardOfferObserver;
@@ -183,7 +182,6 @@ class CreditCardSaveManager {
  private:
   friend class CreditCardSaveManagerTest;
   friend class CreditCardSaveManagerTestObserverBridge;
-  friend class LocalCardMigrationBrowserTest;
   friend class TestCreditCardSaveManager;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
   friend class FakeCreditCardServer;
@@ -212,11 +210,6 @@ class CreditCardSaveManager {
   // Query the CvcStorageStrikeDatabase to check if the offer-to-save prompt for
   // this CVC should be blocked.
   bool DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Returns the GetLocalCardMigrationStrikeDatabase for |client_|.
-  LocalCardMigrationStrikeDatabase* GetLocalCardMigrationStrikeDatabase();
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Returns the legal message retrieved from Payments. On failure or not
   // meeting Payments's conditions for upload, |legal_message| will contain
@@ -420,11 +413,6 @@ class CreditCardSaveManager {
   // during a card import to determine the name and country for storing a new
   // card.
   std::vector<AutofillProfile> preliminarily_imported_address_profiles_;
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  std::unique_ptr<LocalCardMigrationStrikeDatabase>
-      local_card_migration_strike_database_;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // May be null.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;

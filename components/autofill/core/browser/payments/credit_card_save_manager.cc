@@ -624,18 +624,6 @@ bool CreditCardSaveManager::
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-LocalCardMigrationStrikeDatabase*
-CreditCardSaveManager::GetLocalCardMigrationStrikeDatabase() {
-  if (local_card_migration_strike_database_.get() == nullptr) {
-    local_card_migration_strike_database_ =
-        std::make_unique<LocalCardMigrationStrikeDatabase>(
-            LocalCardMigrationStrikeDatabase(client_->GetStrikeDatabase()));
-  }
-  return local_card_migration_strike_database_.get();
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 void CreditCardSaveManager::OnDidGetUploadDetails(
     ukm::SourceId ukm_source_id,
     PaymentsRpcResult result,
@@ -846,12 +834,6 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
       GetCreditCardSaveStrikeDatabase()->ClearStrikes(
           base::UTF16ToUTF8(card_save_candidate_.LastFourDigits()));
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      // Clear some local card migration strikes, as there is now a new card
-      // eligible for migration.
-      GetLocalCardMigrationStrikeDatabase()->RemoveStrikes(
-          LocalCardMigrationStrikeDatabase::kStrikesToRemoveWhenLocalCardAdded);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       payments_data_manager().OnAcceptedLocalCreditCardSave(
           card_save_candidate_);
       break;

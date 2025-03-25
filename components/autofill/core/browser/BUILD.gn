@@ -909,7 +909,6 @@ static_library("browser") {
     sources += [
       "crowdsourcing/server_prediction_overrides.cc",
       "crowdsourcing/server_prediction_overrides.h",
-      "strike_databases/payments/local_card_migration_strike_database.h",
     ]
     deps += [
       "//ui/native_theme",
