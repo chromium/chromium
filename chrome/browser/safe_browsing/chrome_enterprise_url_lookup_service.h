@@ -61,7 +61,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
       policy::ManagementService* management_service,
       bool is_off_the_record,
       bool is_guest_session,
-      base::RepeatingCallback<std::string()> get_profile_email_callback);
+      base::RepeatingCallback<std::string()> get_profile_email_callback,
+      base::RepeatingCallback<bool()> is_profile_affiliated_callback);
 
   ChromeEnterpriseRealTimeUrlLookupService(
       const ChromeEnterpriseRealTimeUrlLookupService&) = delete;
@@ -141,6 +142,10 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   // Callback for accessing the profile's email.
   base::RepeatingCallback<std::string()> get_profile_email_callback_;
+
+  // Callback returning whether the profile and browser are managed by the same
+  // organization.
+  base::RepeatingCallback<bool()> is_profile_affiliated_callback_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 

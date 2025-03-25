@@ -9,13 +9,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -81,7 +77,8 @@ ChromeEnterpriseRealTimeUrlLookupService::
         policy::ManagementService* management_service,
         bool is_off_the_record,
         bool is_guest_session,
-        base::RepeatingCallback<std::string()> get_profile_email_callback)
+        base::RepeatingCallback<std::string()> get_profile_email_callback,
+        base::RepeatingCallback<bool()> is_profile_affiliated_callback)
     : RealTimeUrlLookupServiceBase(
           url_loader_factory,
           cache_manager,
@@ -97,7 +94,8 @@ ChromeEnterpriseRealTimeUrlLookupService::
       management_service_(management_service),
       is_off_the_record_(is_off_the_record),
       is_guest_session_(is_guest_session),
-      get_profile_email_callback_(get_profile_email_callback) {}
+      get_profile_email_callback_(get_profile_email_callback),
+      is_profile_affiliated_callback_(is_profile_affiliated_callback) {}
 
 ChromeEnterpriseRealTimeUrlLookupService::
     ~ChromeEnterpriseRealTimeUrlLookupService() = default;
@@ -117,7 +115,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
   // managed device.
   if (management_service_->HasManagementAuthority(
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) &&
-      !enterprise_util::IsProfileAffiliated(profile_)) {
+      !is_profile_affiliated_callback_.Run()) {
     return false;
   }
 
@@ -284,7 +282,7 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetProfileDMTokenString()
     const {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (!connectors_service_->GetBrowserDmToken().has_value() ||
-      enterprise_util::IsProfileAffiliated(profile_)) {
+      is_profile_affiliated_callback_.Run()) {
     return connectors_service_->GetProfileDmToken().value_or("");
   }
 #endif

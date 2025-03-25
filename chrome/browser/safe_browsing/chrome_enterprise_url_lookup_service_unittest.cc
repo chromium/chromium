@@ -179,7 +179,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         referrer_chain_provider_.get(), &test_pref_service_,
         identity_test_env_.identity_manager(), management_service_.get(),
         is_off_the_record, is_guest_session,
-        base::BindRepeating([]() -> std::string { return kTestProfileEmail; }));
+        base::BindRepeating([]() -> std::string { return kTestProfileEmail; }),
+        base::BindRepeating([] { return true; }));
 
     test_pref_service_.SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,

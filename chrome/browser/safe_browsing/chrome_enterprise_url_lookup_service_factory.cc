@@ -8,6 +8,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -99,7 +100,8 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       policy::ManagementServiceFactory::GetForProfile(profile),
       profile->IsOffTheRecord(), profile->IsGuestSession(),
-      base::BindRepeating(&GetProfileEmail, profile));
+      base::BindRepeating(&GetProfileEmail, profile),
+      base::BindRepeating(&enterprise_util::IsProfileAffiliated, profile));
 }
 
 }  // namespace safe_browsing
