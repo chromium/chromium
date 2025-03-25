@@ -40,6 +40,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -651,6 +652,7 @@ public class TabPersistentStoreTest {
     @SmallTest
     @Feature("TabPersistentStore")
     @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER + ":migrate_stale_tabs/true")
+    @DisabledTest(message = "crbug.com/406258165")
     public void testSaveStateNoFlatBufferPrior() throws Exception {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
         TabPersistentStore store = storeAndRestoredTabs.first;
