@@ -29,6 +29,8 @@
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_offer_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/valuables/loyalty_card_data_type_controller.h"
+#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_bridge.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -61,6 +63,7 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sharing_message/sharing_message_data_type_controller.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
@@ -104,6 +107,16 @@ AutocompleteDelegateFromDataService(autofill::AutofillWebDataService* service) {
       ->change_processor()
       ->GetControllerDelegate();
 }
+
+#if !BUILDFLAG(IS_IOS)
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+AutofillLoyaltyCardDelegateFromDataService(
+    autofill::AutofillWebDataService* service) {
+  return autofill::LoyaltyCardSyncBridge::FromWebDataService(service)
+      ->change_processor()
+      ->GetControllerDelegate();
+}
+#endif
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 AutofillProfileDelegateFromDataService(
@@ -877,18 +890,21 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 #if !BUILDFLAG(IS_IOS)
   if (!disabled_types.Has(syncer::AUTOFILL_LOYALTY_CARD) &&
       base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-    // TODO(crbug.com/393119606): In CL #4, register the type, i.e. instantiate
-    // the DataTypeController. There is more than one way to go about it,
-    // but one option is:
-    // - Create a trivial implementation of DataTypeSyncBridge which lives in
-    //   your feature's directory. It should have synchronous access to your
-    //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
-    //   CoolKeyedService (often the model itself).
-    // - Expose CoolKeyedService::GetControllerDelegate() which calls
-    //   bridge->change_processor()->GetControllerDelegate().
-    // - Inject CoolKeyedService in this class and call GetControllerDelegate()
-    //   on it to create the DataTypeController.
-    // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
+    controllers.push_back(
+        std::make_unique<autofill::AutofillLoyaltyCardDataTypeController>(
+            syncer::AUTOFILL_LOYALTY_CARD,
+            std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+                account_autofill_web_data_service_.value()->GetDBTaskRunner(),
+                base::BindRepeating(
+                    &AutofillLoyaltyCardDelegateFromDataService,
+                    base::RetainedRef(
+                        account_autofill_web_data_service_.value()))),
+            std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+                account_autofill_web_data_service_.value()->GetDBTaskRunner(),
+                base::BindRepeating(
+                    &AutofillLoyaltyCardDelegateFromDataService,
+                    base::RetainedRef(
+                        account_autofill_web_data_service_.value())))));
   }
 #endif
 
