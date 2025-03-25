@@ -136,19 +136,24 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
       return [];
     }
 
-    return this.completeAttributeTypesList_.map(attributeType => {
-      assert(this.entityInstance);
-      const existingAttributeInstance =
-          this.entityInstance.attributeInstances.find(
-              existingAttributeInstance =>
-                  existingAttributeInstance.type.typeName ===
-                  attributeType.typeName);
-      this.convertCountryAttributeInstance_(existingAttributeInstance);
-      return {
-        type: attributeType,
-        value: existingAttributeInstance?.value || '',
-      };
-    });
+    // TODO(crbug.com/393318914): Handle dates.
+    return this.completeAttributeTypesList_
+        .filter(
+            attributeType =>
+                attributeType.dataType !== AttributeTypeDataType.DATE)
+        .map(attributeType => {
+          assert(this.entityInstance);
+          const existingAttributeInstance =
+              this.entityInstance.attributeInstances.find(
+                  existingAttributeInstance =>
+                      existingAttributeInstance.type.typeName ===
+                      attributeType.typeName);
+          this.convertCountryAttributeInstance_(existingAttributeInstance);
+          return {
+            type: attributeType,
+            value: existingAttributeInstance?.value || '',
+          };
+        });
   }
 
   private convertCountryAttributeInstance_(
@@ -230,8 +235,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
           ...this.entityInstance,
           // Don't take into consideration empty strings or strings made out
           // only of whitespaces.
-          attributeInstances: this.completeAttributeInstanceList_.filter(
-              attributeInstance => attributeInstance.value.trim().length > 0),
+          attributeInstances:
+              this.completeAttributeInstanceList_.filter(attributeInstance => {
+                assert(typeof attributeInstance.value === 'string');
+                return attributeInstance.value.trim().length > 0;
+              }),
         },
       }));
       this.$.dialog.close();
@@ -247,8 +255,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
   private updateCanSave_(): void {
     // Don't take into consideration empty strings or strings made out only of
     // whitespaces.
-    this.canSave_ = this.completeAttributeInstanceList_.some(
-        attributeInstance => attributeInstance.value.trim().length > 0);
+    this.canSave_ =
+        this.completeAttributeInstanceList_.some(attributeInstance => {
+          assert(typeof attributeInstance.value === 'string');
+          return attributeInstance.value.trim().length > 0;
+        });
   }
 }
 

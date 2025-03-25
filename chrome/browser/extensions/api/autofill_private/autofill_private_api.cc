@@ -96,6 +96,8 @@ static const char kErrorCardDataUnavailable[] = "Credit card data unavailable";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
 static const char kErrorAutofillAiUnavailable[] =
     "Autofill AI data unavailable.";
+static const char kErrorAutofillAiInvalidData[] =
+    "The provided Autofill AI entity/attribute is invalid.";
 static const char kErrorAutofillAiTypeNameOutOfBounds[] =
     "The provided Autofill AI entity/attribute type name is out of bounds.";
 static const char kErrorAutofillAiEntityInstanceNotFound[] =
@@ -1008,9 +1010,10 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
       parameters->entity_instance;
   std::optional<EntityInstance> entity_instance =
       autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
-          private_api_entity_instance);
+          private_api_entity_instance,
+          g_browser_process->GetApplicationLocale());
   if (!entity_instance.has_value()) {
-    return RespondNow(Error(kErrorAutofillAiTypeNameOutOfBounds));
+    return RespondNow(Error(kErrorAutofillAiInvalidData));
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());

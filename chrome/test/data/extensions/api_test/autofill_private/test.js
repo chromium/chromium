@@ -36,19 +36,31 @@ var IBAN_VALUE = 'AD1400080001001234567890';
 var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
 var ENTITY_INSTANCE = {
   type: {
-    typeName: 2,
-    typeNameAsString: 'Vehicle',
-    addEntityTypeString: 'Add vehicle',
-    editEntityTypeString: 'Edit vehicle',
+    typeName: 1,
+    typeNameAsString: 'Driver\'s license',
+    addEntityTypeString: 'Add driver\'s license',
+    editEntityTypeString: 'Edit driver\'s license',
   },
   attributeInstances: [
     {
       type: {
-        typeName: 14,
-        typeNameAsString: 'License plate',
+        typeName: 5,
+        typeNameAsString: 'Name',
         dataType: AttributeTypeDataType.STRING,
       },
-      value: 'ABCDE',
+      value: 'John Dolan',
+    },
+    {
+      type: {
+        typeName: 8,
+        typeNameAsString: 'Issue date',
+        dataType: AttributeTypeDataType.DATE,
+      },
+      value: {
+        month: '5',
+        day: '20',
+        year: '2015',
+      }
     },
   ],
   guid: GUID,
@@ -56,7 +68,10 @@ var ENTITY_INSTANCE = {
 };
 
 var UPDATED_ENTITY_INSTANCE = structuredClone(ENTITY_INSTANCE);
-UPDATED_ENTITY_INSTANCE.attributeInstances[0].value = 'XYZ';
+UPDATED_ENTITY_INSTANCE.attributeInstances[0].value = 'Mark Hanks';
+
+var ENTITY_INSTANCE_WITH_INCOMPLETE_DATE = structuredClone(ENTITY_INSTANCE);
+ENTITY_INSTANCE_WITH_INCOMPLETE_DATE.attributeInstances[1].value.month = '';
 
 var failOnceCalled = function() {
   chrome.test.fail();
@@ -898,6 +913,15 @@ var availableTests = [
     chrome.autofillPrivate.addOrUpdateEntityInstance(ENTITY_INSTANCE);
   },
 
+  async function addEntityInstanceWithIncompleteDate() {
+    chrome.autofillPrivate.addOrUpdateEntityInstance(
+        ENTITY_INSTANCE_WITH_INCOMPLETE_DATE, () => {
+          chrome.test.assertLastError(
+              'The provided Autofill AI entity/attribute is invalid.');
+          chrome.test.succeed();
+        });
+  },
+
   async function updateEntityInstance() {
     chrome.test.listenOnce(
         chrome.autofillPrivate.onEntityInstancesChanged,
@@ -1074,6 +1098,8 @@ var TESTS_FOR_CONFIG = {
   'setAutofillSyncToggleEnabled': ['setAutofillSyncToggleEnabled'],
   'logServerIbanLinkClicked': ['logServerIbanLinkClicked'],
   'addEntityInstance': ['addEntityInstance'],
+  'addEntityInstanceWithIncompleteDate':
+      ['addEntityInstanceWithIncompleteDate'],
   'updateEntityInstance': ['updateEntityInstance'],
   'removeEntityInstance': ['removeEntityInstance'],
   'loadEmptyEntityInstancesList': ['loadEmptyEntityInstancesList'],

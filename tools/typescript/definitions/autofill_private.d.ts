@@ -217,9 +217,15 @@ declare global {
         editEntityTypeString: string;
       }
 
+      export interface DateValue {
+        year: string;
+        month: string;
+        day: string;
+      }
+
       export interface AttributeInstance {
         type: AttributeType;
-        value: string;
+        value: string|DateValue;
       }
 
       export interface EntityInstance {

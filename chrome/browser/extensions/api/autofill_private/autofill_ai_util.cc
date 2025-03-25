@@ -13,9 +13,12 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
+#include "base/values.h"
+#include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -79,7 +82,7 @@ std::string GetEditEntityTypeStringForI18n(EntityType entity_type) {
 
 api::autofill_private::AttributeTypeDataType
 AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
-    autofill::AttributeType::DataType data_type) {
+    AttributeType::DataType data_type) {
   switch (data_type) {
     case AttributeType::DataType::kCountry:
       return autofill_private::AttributeTypeDataType::kCountry;
@@ -94,7 +97,8 @@ AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
 }
 
 std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
-    const autofill_private::EntityInstance& private_api_entity_instance) {
+    const autofill_private::EntityInstance& private_api_entity_instance,
+    const std::string& app_locale) {
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attribute_instances;
   for (const autofill_private::AttributeInstance&
@@ -108,11 +112,39 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
 
     AttributeType attribute_type(
         AttributeTypeName(private_api_attribute_instance.type.type_name));
-    AttributeInstance attribute_instance(attribute_type);
-    attribute_instance.SetRawInfo(
-        attribute_instance.type().field_type(),
-        base::UTF8ToUTF16(private_api_attribute_instance.value),
-        autofill::VerificationStatus::kUserVerified);
+    AttributeInstance attribute_instance(std::move(attribute_type));
+
+    if (attribute_instance.type().data_type() ==
+        AttributeType::DataType::kDate) {
+      const std::optional<autofill_private::DateValue>& date =
+          private_api_attribute_instance.value.as_date_value;
+      if (!date.has_value()) {
+        return std::nullopt;
+      }
+      if (date->month.empty() || date->day.empty() || date->year.empty()) {
+        return std::nullopt;
+      }
+
+      attribute_instance.SetInfo(attribute_instance.type().field_type(),
+                                 base::UTF8ToUTF16(date->month), app_locale,
+                                 u"M",
+                                 autofill::VerificationStatus::kUserVerified);
+      attribute_instance.SetInfo(attribute_instance.type().field_type(),
+                                 base::UTF8ToUTF16(date->day), app_locale, u"D",
+                                 autofill::VerificationStatus::kUserVerified);
+      attribute_instance.SetInfo(
+          attribute_instance.type().field_type(), base::UTF8ToUTF16(date->year),
+          app_locale, u"YYYY", autofill::VerificationStatus::kUserVerified);
+    } else {
+      if (!private_api_attribute_instance.value.as_string.has_value()) {
+        return std::nullopt;
+      }
+      attribute_instance.SetRawInfo(
+          attribute_instance.type().field_type(),
+          base::UTF8ToUTF16(
+              private_api_attribute_instance.value.as_string.value()),
+          autofill::VerificationStatus::kUserVerified);
+    }
     attribute_instance.FinalizeInfo();
     attribute_instances.emplace(std::move(attribute_instance));
   }
@@ -146,11 +178,32 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
         base::to_underlying(attribute_instance.type().name());
     private_api_attribute_instances.back().type.type_name_as_string =
         base::UTF16ToUTF8(attribute_instance.type().GetNameForI18n());
+
+    AttributeType::DataType data_type = attribute_instance.type().data_type();
     private_api_attribute_instances.back().type.data_type =
-        AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
-            attribute_instance.type().data_type());
-    private_api_attribute_instances.back().value =
-        base::UTF16ToUTF8(attribute_instance.GetCompleteInfo(app_locale));
+        AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(data_type);
+
+    if (data_type == AttributeType::DataType::kDate) {
+      autofill::FieldType field_type = attribute_instance.type().field_type();
+      base::DictValue date_value;
+      date_value.SetByDottedPath(
+          "month", base::UTF16ToUTF8(attribute_instance.GetInfo(
+                       field_type, app_locale, std::u16string(u"M"))));
+      date_value.SetByDottedPath(
+          "day", base::UTF16ToUTF8(attribute_instance.GetInfo(
+                     field_type, app_locale, std::u16string(u"D"))));
+      date_value.SetByDottedPath(
+          "year", base::UTF16ToUTF8(attribute_instance.GetInfo(
+                      field_type, app_locale, std::u16string(u"YYYY"))));
+      autofill_private::AttributeInstance::Value::Populate(
+          base::Value(std::move(date_value)),
+          private_api_attribute_instances.back().value);
+    } else {
+      autofill_private::AttributeInstance::Value::Populate(
+          base::Value(base::UTF16ToUTF8(
+              attribute_instance.GetCompleteInfo(app_locale))),
+          private_api_attribute_instances.back().value);
+    }
   }
 
   autofill_private::EntityInstance private_api_entity_instance;
