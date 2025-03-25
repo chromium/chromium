@@ -41,6 +41,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -63,6 +64,7 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
@@ -276,8 +278,13 @@ public class InstantMessageDelegateImplUnitTest {
         verify(mSuccessCallback).onResult(true);
 
         // See crbug.com/393023075, it seems message dispatching will re-trigger visibly.
-        // Chrome is backgrounded.
+        // Chrome is backgrounded. Although, it's not technically to reshow the message since after
+        // http://crrev.com/c/6388437 the message is dismissed after being hidden.
         propertyModel.get(ON_FULLY_VISIBLE).onResult(false);
+        ShadowLooper.runUiThreadTasks();
+        verify(mManagedMessageDispatcher)
+                .dismissMessage(any(), eq(DismissReason.DISMISSED_BY_FEATURE));
+
         // Chrome is foregrounded.
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
 
