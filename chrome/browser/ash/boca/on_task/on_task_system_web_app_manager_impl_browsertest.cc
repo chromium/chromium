@@ -8,6 +8,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/boca/boca_manager.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -355,6 +357,57 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       boca_app_browser->session_id(), /*close_bundle_content=*/false);
   EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       PreparingSWAWindowAndDevToolsCommandsDisabled) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Verify that dev tools commands are disabled.
+  system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
+      boca_app_browser->session_id(), /*close_bundle_content=*/false);
+  chrome::BrowserCommandController* const command_controller =
+      boca_app_browser->command_controller();
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_CONSOLE));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_DEVICES));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_INSPECT));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_TOGGLE));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       UnpinSystemWebAppWindowAndDevToolsCommandsDisabled) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/true, boca_app_browser->session_id());
+  content::RunAllTasksUntilIdle();
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+
+  // Unpin the Boca app and verify that dev tools commands are disabled.
+  system_web_app_manager.SetPinStateForSystemWebAppWindow(
+      /*pinned=*/false, boca_app_browser->session_id());
+  content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  chrome::BrowserCommandController* const command_controller =
+      boca_app_browser->command_controller();
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_CONSOLE));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_DEVICES));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_INSPECT));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_DEV_TOOLS_TOGGLE));
 }
 
 }  // namespace

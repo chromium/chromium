@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
@@ -157,7 +158,26 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   } else {
     UnpinWindow(native_window);
     browser->command_controller()->LockedFullscreenStateChanged();
+    DisableCommandsForDevTools(window_id);
   }
+}
+
+void OnTaskSystemWebAppManagerImpl::DisableCommandsForDevTools(
+    SessionID window_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return;
+  }
+
+  // TODO(crbug.com/406052710): Allow dev channel to use commands for devtools.
+  chrome::BrowserCommandController* const command_controller =
+      browser->command_controller();
+  command_controller->UpdateCommandEnabled(IDC_DEV_TOOLS, false);
+  command_controller->UpdateCommandEnabled(IDC_DEV_TOOLS_CONSOLE, false);
+  command_controller->UpdateCommandEnabled(IDC_DEV_TOOLS_DEVICES, false);
+  command_controller->UpdateCommandEnabled(IDC_DEV_TOOLS_INSPECT, false);
+  command_controller->UpdateCommandEnabled(IDC_DEV_TOOLS_TOGGLE, false);
 }
 
 // TODO(b/367417612): Add unit test for this function.
@@ -236,6 +256,7 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
   if (!browser) {
     return;
   }
+  DisableCommandsForDevTools(window_id);
 
   // Configure the browser window for OnTask. This is required to ensure
   // downstream components (especially UI controls) are setup for locked mode
