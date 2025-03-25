@@ -938,7 +938,6 @@ void ProcessServerPredictionsQueryResponse(
         form->fields(), [](FieldType t) { return t != NO_SERVER_DATA; },
         &AutofillField::server_type));
 
-    form->UpdateAutofillCount();
     form->RationalizeFormStructure(log_manager);
 
     AssignSections(form->fields());
