@@ -14172,24 +14172,6 @@
             ]
         }
     ],
-    "MacPlatformLocationProvider": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "LocationProviderManagerMode": "HybridPlatform"
-                    },
-                    "enable_features": [
-                        "LocationProviderManager"
-                    ]
-                }
-            ]
-        }
-    ],
     "MagicStackGradientView": [
         {
             "platforms": [

@@ -237,6 +237,8 @@ TEST_F(GeolocationLocationProviderManagerTest, OnPermissionGranted) {
 // Tests basic operation (valid position and error position update) for network
 // location provider.
 TEST_F(GeolocationLocationProviderManagerTest, NetworkOnly) {
+  ASSERT_TRUE(
+      SetExperimentMode(mojom::LocationProviderManagerMode::kNetworkOnly));
   InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
                                     url_loader_factory_);
   ASSERT_TRUE(location_provider_manager_);
@@ -363,9 +365,11 @@ TEST_F(GeolocationLocationProviderManagerTest, CustomSystemProviderOnly) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Tests flipping from Low to High accuracy mode as requested by a location
-// observer.
+// When in kNetworkOnly mode, test flipping from Low to High accuracy mode as
+// requested by a location observer.
 TEST_F(GeolocationLocationProviderManagerTest, SetObserverOptions) {
+  ASSERT_TRUE(
+      SetExperimentMode(mojom::LocationProviderManagerMode::kNetworkOnly));
   InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
                                     url_loader_factory_);
   location_provider_manager_->StartProvider(false);
