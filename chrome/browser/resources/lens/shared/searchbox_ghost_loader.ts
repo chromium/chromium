@@ -63,6 +63,7 @@ export class SearchboxGhostLoaderElement extends
   private pageContentType: PageContentType;
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
+  private ghostLoaderPrimaryMessage: string;
 
   override connectedCallback() {
     super.connectedCallback();

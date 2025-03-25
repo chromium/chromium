@@ -163,6 +163,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   private errorDialogModel_: CertificatesError|CertificatesImportError|null;
   private activeDialogAnchor_: HTMLElement|null;
   private isKiosk_: boolean;
+  private tabNames_: string[];
 
 
   override connectedCallback() {

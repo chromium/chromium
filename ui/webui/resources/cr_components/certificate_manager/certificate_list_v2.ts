@@ -102,6 +102,7 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
   noCollapse: boolean = false;
   hideIfEmpty: boolean = false;
   private expanded_: boolean = true;
+  private hideEverything_: boolean;
   private certificates_: SummaryCertInfo[] = [];
   private hasCerts_: boolean;
 

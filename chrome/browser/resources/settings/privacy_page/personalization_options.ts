@@ -77,11 +77,6 @@ export class SettingsPersonalizationOptionsElement extends
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       focusConfig: {
         type: Object,
         observer: 'onFocusConfigChange_',

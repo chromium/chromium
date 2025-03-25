@@ -90,6 +90,7 @@ export class ComposeResultTextElement extends PolymerElement {
 
   // Private regular properties.
   private wordStreamer_: WordStreamer;
+  private hasPartialOutput_: boolean;
   private displayedChunks_: StreamChunk[] = [];
   private displayedFullText_: string = '';
   private initialText_: string = '';

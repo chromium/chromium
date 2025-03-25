@@ -42,6 +42,7 @@ import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import type {PageVisibility} from '../page_visibility.js';
 // <if expr="chromeos_ash">
 import type {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 // </if>
@@ -228,12 +229,14 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   prefs: {[key: string]: any};
   focusConfig: FocusConfig;
   private pageStatus_: PageStatus;
+  pageVisibility: PageVisibility;
   syncPrefs?: SyncPrefs;
   syncStatus: SyncStatus;
   private dataEncrypted_: boolean;
   private encryptionExpanded_: boolean;
   forceEncryptionExpanded: boolean;
   private existingPassphrase_: string;
+  private showExistingPassphraseBelowAccount_: boolean;
   private signedIn_: boolean;
   private syncDisabledByAdmin_: boolean;
   private syncSectionDisabled_: boolean;

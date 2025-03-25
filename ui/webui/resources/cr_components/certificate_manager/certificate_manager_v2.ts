@@ -254,6 +254,7 @@ export class CertificateManagerV2Element extends
   }
 
   private selectedPage_: Page;
+  private userSubpageLists_: SubpageCertificateList[];
   private toastMessage_: string;
   private showInfoDialog_: boolean = false;
   private infoDialogTitle_: string;
@@ -261,6 +262,7 @@ export class CertificateManagerV2Element extends
   private showPasswordDialog_: boolean = false;
   private passwordEntryResolver_: PromiseResolver<PasswordResult>|null = null;
   private showConfirmationDialog_: boolean = false;
+  private showSearch_: boolean;
   private confirmationDialogTitle_: string;
   private confirmationDialogMessage_: string;
   private confirmationDialogResolver_: PromiseResolver<ConfirmationResult>|

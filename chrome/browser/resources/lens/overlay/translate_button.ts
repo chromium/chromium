@@ -194,9 +194,11 @@ export class TranslateButtonElement extends PolymerElement {
   private searchedLanguageList: SearchedLanguage[] = [];
   // Whether the stars icon is visible on the source language button.
   private shouldShowStarsIcon: boolean;
+  private sourceLanguageList: Language[];
   // The currently selected source language to translate to. If null, we should
   // auto detect the language.
   private sourceLanguage: Language|null = null;
+  private targetLanguageList: Language[];
   // The currently selected target language to translate to.
   private targetLanguage: Language|null = null;
   // Whether the source language menu picker is visible.

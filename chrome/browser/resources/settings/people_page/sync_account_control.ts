@@ -55,14 +55,6 @@ export class SettingsSyncAccountControlElement extends
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * The current sync status, supplied by parent element.
        */
       syncStatus: Object,
