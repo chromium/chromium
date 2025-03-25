@@ -57,6 +57,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
@@ -376,7 +377,7 @@ NativeWidgetNSWindowBridge::NativeWidgetNSWindowBridge(
 
 NativeWidgetNSWindowBridge::~NativeWidgetNSWindowBridge() {
   SetLocalEventMonitorEnabled(false);
-  DCHECK(!key_down_event_monitor_);
+  DCHECK(!local_event_monitor_);
   GetPendingWindowTitleMap().erase(window_);
   // The delegate should be cleared already. Note this enforces the precondition
   // that -[NSWindow close] is invoked on the hosted window before the
@@ -958,7 +959,7 @@ bool NativeWidgetNSWindowBridge::HasCapture() {
 void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
   if (enabled) {
     // Create the event monitor if it does not exist yet.
-    if (key_down_event_monitor_) {
+    if (local_event_monitor_) {
       return;
     }
 
@@ -972,20 +973,24 @@ void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
       std::unique_ptr<ui::Event> ui_event =
           ui::EventFromNative(base::apple::OwnedNSEvent(event));
       bool event_handled = false;
-      weak_ptr->host_->DispatchMonitorEvent(std::move(ui_event),
-                                            &event_handled);
+      if (ui_event && ui_event->type() != ui::EventType::kUnknown) {
+        weak_ptr->host_->DispatchMonitorEvent(std::move(ui_event),
+                                              &event_handled);
+      }
+
       return event_handled ? nil : event;
     };
-    key_down_event_monitor_ =
-        [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown
+    local_event_monitor_ =
+        [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                               handler:block];
   } else {
     // Destroy the event monitor if it exists.
-    if (!key_down_event_monitor_)
+    if (!local_event_monitor_) {
       return;
+    }
 
-    [NSEvent removeMonitor:key_down_event_monitor_];
-    key_down_event_monitor_ = nil;
+    [NSEvent removeMonitor:local_event_monitor_];
+    local_event_monitor_ = nil;
   }
 }
 
