@@ -175,6 +175,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.LEARN_MORE,
             Action.OPEN_IN_NEW_TAB_IN_GROUP,
             Action.SAVE_PAGE,
+            Action.SHARE_PAGE,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -220,7 +221,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int OPEN_IN_NEW_TAB_IN_GROUP = 39;
             int OPEN_IN_NEW_WINDOW = 40;
             int SAVE_PAGE = 41;
-            int NUM_ENTRIES = 42;
+            int SHARE_PAGE = 42;
+            int NUM_ENTRIES = 43;
         }
     }
 
@@ -297,6 +299,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     && UrlUtilities.isDownloadableScheme(mParams.getPageUrl())) {
                 pageGroup.add(
                         createListItem(Item.SAVE_PAGE, false, !mIsDownloadRestrictedByPolicy));
+            }
+            if (enableShareFromContextMenu()) {
+                pageGroup.add(createShareListItem(Item.SHARE_PAGE, Item.DIRECT_SHARE_LINK));
             }
             groupedItems.add(new Pair<>(R.string.contextmenu_page_title, pageGroup));
         }
@@ -634,6 +639,21 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             } else if (mItemDelegate.startDownload(url, true)) {
                 mNativeDelegate.startDownload(url, false);
             }
+        } else if (itemId == R.id.contextmenu_share_page) {
+            recordContextMenuSelection(ContextMenuUma.Action.SHARE_PAGE);
+            // TODO(crbug.com/40549331): Migrate ShareParams to GURL.
+            ShareParams linkShareParams =
+                    new ShareParams.Builder(
+                                    getWindow(),
+                                    ContextMenuUtils.getTitle(mParams),
+                                    mParams.getPageUrl().getSpec())
+                            .build();
+            mShareDelegateSupplier
+                    .get()
+                    .share(
+                            linkShareParams,
+                            new ChromeShareExtras.Builder().setSaveLastUsed(true).build(),
+                            ShareOrigin.CONTEXT_MENU);
         } else if (itemId == R.id.contextmenu_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_LINK);
             // TODO(crbug.com/40549331): Migrate ShareParams to GURL.
@@ -983,7 +1003,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     private ListItem createShareListItem(@Item int item, @Item int iconButtonItem) {
-        final boolean isLink = item == Item.SHARE_LINK;
+        final boolean isLink = (item == Item.SHARE_LINK || item == Item.SHARE_PAGE);
         final Pair<Drawable, CharSequence> shareInfo = createRecentShareAppInfo(isLink);
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)

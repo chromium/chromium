@@ -1489,7 +1489,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         /* additionalNavigationParams= */ null);
 
-        int[] expected = {R.id.contextmenu_save_page};
+        int[] expected = {R.id.contextmenu_save_page, R.id.contextmenu_share_page};
 
         initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         checkMenuOptions(expected);
@@ -1569,7 +1569,7 @@ public class ChromeContextMenuPopulatorTest {
                         /* additionalNavigationParams= */ null);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
 
-        int[] expected = {R.id.contextmenu_save_page};
+        int[] expected = {R.id.contextmenu_save_page, R.id.contextmenu_share_page};
         List<Integer> expected_disabled = Arrays.asList(R.id.contextmenu_save_page);
 
         initializePopulatorOnDesktop(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);

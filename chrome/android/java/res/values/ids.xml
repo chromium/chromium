@@ -46,6 +46,7 @@ found in the LICENSE file.
     <!-- Context Menu Ids -->
     <!-- Page Group -->
     <item type="id" name="contextmenu_save_page" />
+    <item type="id" name="contextmenu_share_page" />
 
     <!-- Custom Tab Group -->
     <item type="id" name="contextmenu_open_in_new_chrome_tab" />
