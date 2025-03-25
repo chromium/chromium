@@ -8,8 +8,6 @@
 #include <cstdint>
 
 #include "base/functional/callback_forward.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/ced/src/util/encodings/encodings.h"
@@ -20,7 +18,7 @@ class FilePath;
 
 namespace unzip {
 
-// Unzip files and directories in `zip_file` that match `filter_callback` into
+// Unzips files and directories in `zip_file` that match `filter_callback` into
 // `output_dir`. Returns a closure that cancels the unzip operation when called.
 // Unzip must be called on a sequenced task runner. The cancellation closure may
 // be called on any sequence (or none at all). Unzip does not block.
@@ -55,6 +53,17 @@ void GetExtractedInfo(mojo::PendingRemote<mojom::Unzipper> unzipper,
                       GetExtractedInfoCallback result_callback);
 
 UnzipFilterCallback AllContents();
+
+// Decodes an xz file at `in_file` and writes the results to `out_file`.
+// Must be called on a sequenced task runner. `callback` will run on the
+// same sequence, with `true` if and only if decoding is successful. `out_file`
+// must not already exist. The `out_file` dirname must already exist. Returns a
+// cancellation closure. The cancellation closure may be invoked on any sequence
+// and will cancel the decoding operation, triggering `callback`.
+base::OnceClosure DecodeXz(mojo::PendingRemote<mojom::Unzipper> unzipper,
+                           const base::FilePath& in_file,
+                           const base::FilePath& out_file,
+                           base::OnceCallback<void(bool)> callback);
 
 }  // namespace unzip
 
