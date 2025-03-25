@@ -52,8 +52,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   };
 
   static std::unique_ptr<DeviceRestrictionScheduleController> Create(
-      Delegate& delegate,
       PrefService& local_state);
+  static std::unique_ptr<DeviceRestrictionScheduleController>
+  CreateWithDelegate(std::unique_ptr<Delegate> delegate,
+                     PrefService& local_state);
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

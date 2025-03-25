@@ -46,7 +46,6 @@ class SystemClock;
 namespace policy {
 class BrowserPolicyConnectorAsh;
 class DeviceRestrictionScheduleController;
-class DeviceRestrictionScheduleControllerDelegateImpl;
 }  // namespace policy
 
 namespace user_manager {
@@ -206,8 +205,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
   std::unique_ptr<user_manager::MultiUserSignInPolicyController>
       multi_user_sign_in_policy_controller_;
 
-  std::unique_ptr<policy::DeviceRestrictionScheduleControllerDelegateImpl>
-      device_restriction_schedule_controller_delegate_impl_;
   std::unique_ptr<policy::DeviceRestrictionScheduleController>
       device_restriction_schedule_controller_;
 

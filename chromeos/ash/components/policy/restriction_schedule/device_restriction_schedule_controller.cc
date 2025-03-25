@@ -22,6 +22,7 @@
 #include "base/timer/wall_clock_timer.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller_delegate_impl.h"
 #include "chromeos/ash/components/policy/weekly_time/checked_util.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_checked.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval_checked.h"
@@ -71,7 +72,7 @@ class DeviceRestrictionScheduleControllerImpl
     : public DeviceRestrictionScheduleController,
       public ash::LoginState::Observer {
  public:
-  DeviceRestrictionScheduleControllerImpl(Delegate& delegate,
+  DeviceRestrictionScheduleControllerImpl(std::unique_ptr<Delegate> delegate,
                                           PrefService& local_state);
 
   DeviceRestrictionScheduleControllerImpl(
@@ -110,8 +111,7 @@ class DeviceRestrictionScheduleControllerImpl
   void StartRunTimer(base::Time next_run_time);
   void StartMessageUpdateTimer(base::Time current_time);
 
-  // `delegate_` has to outlive `DeviceRestrictionScheduleControllerImpl`.
-  const raw_ref<Delegate> delegate_;
+  std::unique_ptr<Delegate> delegate_;
   PrefChangeRegistrar registrar_;
   base::ObserverList<Observer> observers_;
   raw_ref<const base::Clock> clock_{*base::DefaultClock::GetInstance()};
@@ -129,9 +129,9 @@ class DeviceRestrictionScheduleControllerImpl
 };
 
 DeviceRestrictionScheduleControllerImpl::
-    DeviceRestrictionScheduleControllerImpl(Delegate& delegate,
+    DeviceRestrictionScheduleControllerImpl(std::unique_ptr<Delegate> delegate,
                                             PrefService& local_state)
-    : delegate_(delegate) {
+    : delegate_(std::move(delegate)) {
   registrar_.Init(&local_state);
   // `base::Unretained` is safe here because `this` outlives `registrar_` which
   // unregisters the observer when it is destroyed.
@@ -406,11 +406,20 @@ void DeviceRestrictionScheduleControllerImpl::StartMessageUpdateTimer(
 
 // static
 std::unique_ptr<DeviceRestrictionScheduleController>
-DeviceRestrictionScheduleController::Create(
-    DeviceRestrictionScheduleController::Delegate& delegate,
+DeviceRestrictionScheduleController::Create(PrefService& local_state) {
+  return CreateWithDelegate(
+      std::make_unique<
+          policy::DeviceRestrictionScheduleControllerDelegateImpl>(),
+      local_state);
+}
+
+// static
+std::unique_ptr<DeviceRestrictionScheduleController>
+DeviceRestrictionScheduleController::CreateWithDelegate(
+    std::unique_ptr<Delegate> delegate,
     PrefService& local_state) {
-  return std::make_unique<DeviceRestrictionScheduleControllerImpl>(delegate,
-                                                                   local_state);
+  return std::make_unique<DeviceRestrictionScheduleControllerImpl>(
+      std::move(delegate), local_state);
 }
 
 // static
