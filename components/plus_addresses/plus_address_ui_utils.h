@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/url_formatter/elide_url.h"
 
 namespace plus_addresses {
 
@@ -15,6 +16,11 @@ namespace plus_addresses {
 // For Android origins, the package name is returned. For web origins, the
 // formatted URL without the cryptographic scheme is returned.
 std::u16string GetOriginForDisplay(const PlusProfile& plus_address);
+
+// Returns a string for UI display computed from the `main_frame_origin`.
+// For web origins, the formatted URL without the cryptographic scheme is
+// returned.
+std::u16string GetOriginForDisplay(const url::Origin& main_frame_origin);
 
 }  // namespace plus_addresses
 

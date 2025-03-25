@@ -67,7 +67,8 @@ NSAttributedString* NoticeMessage(NSString* primaryEmailAddress) {
 
 // Generates the description to be displayed in the bottomsheet when the notice
 // is presented.
-NSAttributedString* DescriptionMessageOnNoticeDisplayed() {
+NSAttributedString* DescriptionMessageOnNoticeDisplayed(
+    NSString* originForDisplay) {
   // Create and format the text.
   NSDictionary* text_attributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
@@ -75,8 +76,9 @@ NSAttributedString* DescriptionMessageOnNoticeDisplayed() {
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
   };
 
-  NSString* message = l10n_util::GetNSString(
-      IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_SCREEN);
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_SCREEN,
+      base::SysNSStringToUTF16(originForDisplay));
 
   return [[NSMutableAttributedString alloc] initWithString:message
                                                 attributes:text_attributes];
@@ -84,7 +86,8 @@ NSAttributedString* DescriptionMessageOnNoticeDisplayed() {
 
 // Generates the description to be displayed in the bottomsheet that contains
 // the email.
-NSAttributedString* DescriptionMessageWithEmail(NSString* primaryEmailAddress) {
+NSAttributedString* DescriptionMessageWithEmail(NSString* originForDisplay,
+                                                NSString* primaryEmailAddress) {
   // Create and format the text.
   NSDictionary* text_attributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
@@ -94,6 +97,7 @@ NSAttributedString* DescriptionMessageWithEmail(NSString* primaryEmailAddress) {
 
   NSString* message =
       l10n_util::GetNSStringF(IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_IOS,
+                              base::SysNSStringToUTF16(originForDisplay),
                               base::SysNSStringToUTF16(primaryEmailAddress));
 
   return [[NSMutableAttributedString alloc] initWithString:message
@@ -436,11 +440,14 @@ UIImageView* BrandingImageView() {
   // Set up the view that will indicate the reserved plus address to the user
   // for confirmation.
   NSString* email = [_delegate primaryEmailAddress];
+  NSString* originForDisplay = [_delegate originForDisplay];
   BOOL showNotice = [_delegate shouldShowNotice];
   _reservedPlusAddressTableView = [self reservedPlusAddressView];
   _description =
-      [self descriptionView:(showNotice ? DescriptionMessageOnNoticeDisplayed()
-                                        : DescriptionMessageWithEmail(email))];
+      [self descriptionView:(showNotice ? DescriptionMessageOnNoticeDisplayed(
+                                              originForDisplay)
+                                        : DescriptionMessageWithEmail(
+                                              originForDisplay, email))];
   _noticeMessage =
       [self noticeMessageViewWithMessage:NoticeMessage(
                                              [_delegate primaryEmailAddress])];
