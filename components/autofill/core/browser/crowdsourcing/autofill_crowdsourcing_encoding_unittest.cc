@@ -76,10 +76,9 @@ struct ManualOverride {
   const std::vector<FieldType> field_types;
 };
 
-// Matches any protobuf `actual` whose serialization is equal to the
-// string-serialization of the protobuf `expected`.
-template <typename T>
-auto SerializesSameAs(const T& expected) {
+// TODO(crbug.com/406066782): Add deep comparison for descriptive error messages.
+Matcher<AutofillUploadContents> SerializesSameAs(
+    const AutofillUploadContents& expected) {
   std::string expected_string;
   CHECK(expected.SerializeToString(&expected_string));
   return ResultOf(
@@ -91,14 +90,18 @@ auto SerializesSameAs(const T& expected) {
       Eq(expected_string));
 }
 
-template <typename... Matchers>
-auto ElementsSerializeSameAs(Matchers... element_matchers) {
-  return ElementsAre(SerializesSameAs(element_matchers)...);
-}
-
-template <typename... Matchers>
-auto UnorderedElementsSerializeSameAs(Matchers... element_matchers) {
-  return UnorderedElementsAre(SerializesSameAs(element_matchers)...);
+// TODO(crbug.com/406066782): Add deep comparison for descriptive error messages.
+Matcher<AutofillPageQueryRequest> SerializesSameAs(
+    const AutofillPageQueryRequest& expected) {
+  std::string expected_string;
+  CHECK(expected.SerializeToString(&expected_string));
+  return ResultOf(
+      [](const auto& actual) {
+        std::string actual_string;
+        CHECK(actual.SerializeToString(&actual_string));
+        return actual_string;
+      },
+      Eq(expected_string));
 }
 
 std::string SerializeAndEncode(const AutofillQueryResponse& response) {
@@ -266,7 +269,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 
   // Add 2 address fields - this should be still a valid form.
   for (size_t i = 0; i < 2; ++i) {
@@ -304,7 +307,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 
   // Add 300 address fields - now the form is invalid, as it has too many
   // fields.
@@ -390,7 +393,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
                {u"DD/MM/YYYY", u"MM/DD/YYYY"}}},
           /*available_field_types=*/{NAME_FIRST},
           /*login_form_signature=*/std::nullopt, /*observed_submission=*/true),
-      ElementsSerializeSameAs(upload));
+      ElementsAre(SerializesSameAs(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,
@@ -494,7 +497,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
                                   available_field_types,
                                   /*login_form_signature=*/FormSignature(42),
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
@@ -582,7 +585,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,
@@ -642,7 +645,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/false),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
@@ -698,7 +701,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithLabels) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 }
 
 // Tests that when the form is the result of flattening multiple forms into one,
@@ -810,8 +813,10 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              UnorderedElementsSerializeSameAs(upload_main, upload_name_exp,
-                                               upload_number, upload_cvc));
+              UnorderedElementsAre(SerializesSameAs(upload_main),
+                                   SerializesSameAs(upload_name_exp),
+                                   SerializesSameAs(upload_number),
+                                   SerializesSameAs(upload_cvc)));
 }
 
 // Check that we compute the "datapresent" string correctly for the given
@@ -861,7 +866,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 
   // Only a few types available.
   // datapresent should be "1540000240" == trimmed(0x1540000240000000) ==
@@ -887,7 +892,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 
   // All supported non-credit card types available.
   // datapresent should be "1f7e000378000008" == trimmed(0x1f7e000378000008) ==
@@ -937,7 +942,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 
   // All supported credit card types available.
   // datapresent should be "0000000000001fc0" == trimmed(0x0000000000001fc0) ==
@@ -965,7 +970,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 
   // All supported types available.
   // datapresent should be "1f7e000378001fc8" == trimmed(0x1f7e000378001fc8) ==
@@ -1029,7 +1034,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckDataPresence) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
@@ -1100,7 +1105,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 
   // Match third field as both first and last.
   possible_field_types[2].insert(NAME_FIRST);
@@ -1116,7 +1121,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 
   // Match last field as both address home line 1 and 2.
   possible_field_types[3].insert(ADDRESS_HOME_LINE2);
@@ -1131,7 +1136,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 
   // Replace the address line 2 prediction by company name.
   possible_field_types[3].clear();
@@ -1148,7 +1153,7 @@ TEST_F(AutofillCrowdsourcingEncoding, CheckMultipleTypes) {
                                   available_field_types,
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true),
-              ElementsSerializeSameAs(upload));
+              ElementsAre(SerializesSameAs(upload)));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_PasswordsRevealed) {
