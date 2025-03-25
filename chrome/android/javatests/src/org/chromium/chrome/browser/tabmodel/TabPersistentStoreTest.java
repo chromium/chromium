@@ -680,11 +680,13 @@ public class TabPersistentStoreTest {
                 });
         helper.waitForCallback(0);
 
-        assertFalse(
-                "Legacy TabState File "
-                        + legacyFile
-                        + " should not exist, as it has been deprecated",
-                legacyFile.exists());
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            legacyFile + " should not exist as it has been deprecated",
+                            legacyFile.exists(),
+                            Matchers.is(false));
+                });
         assertTrue(
                 "FlatBuffer TabState File "
                         + flatBufferFile
