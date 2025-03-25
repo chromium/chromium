@@ -477,6 +477,31 @@ IN_PROC_BROWSER_TEST_P(FrameTreeBrowserWithDiscardTest,
       base::test::RunUntil([&]() { return 0u == root->child_count(); }));
 }
 
+IN_PROC_BROWSER_TEST_P(FrameTreeBrowserWithDiscardTest,
+                       DiscardClearsServiceWorkers) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  // Load a new page, register a service worker and wait for it to become ready.
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "/register_service_worker.html")));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('/fetch_event_passthrough.js')"));
+  RenderFrameHostImplWrapper rfh(wc->GetPrimaryMainFrame());
+  EXPECT_EQ(1u, rfh->service_worker_clients_for_testing().size());
+
+  // Discard the frame tree.
+  EXPECT_FALSE(root->was_discarded());
+  EXPECT_FALSE(wc->GetController().NeedsReload());
+  DiscardFrameTree(frame_tree);
+  EXPECT_TRUE(root->was_discarded());
+  EXPECT_TRUE(wc->GetController().NeedsReload());
+
+  // Assert the service worker has been de-registered post discard.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rfh->service_worker_clients_for_testing().size() == 0; }));
+}
+
 // Runs pending navigation discard browsertests with RenderDocument enabled for
 // all frames to ensure a speculative RFH is created during navigation.
 class FrameTreeDiscardPendingNavigationTest

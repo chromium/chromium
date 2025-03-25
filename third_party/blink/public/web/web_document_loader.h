@@ -147,6 +147,11 @@ class BLINK_EXPORT WebDocumentLoader {
   // an initial empty document.
   virtual bool HasLoadedNonInitialEmptyDocument() const = 0;
 
+  // Returns whether the navigation associated with this datasource is for a
+  // frame discard operation, performed with the intention to clear away
+  // associated resources.
+  virtual bool IsForDiscard() const = 0;
+
  protected:
   ~WebDocumentLoader() = default;
 };
