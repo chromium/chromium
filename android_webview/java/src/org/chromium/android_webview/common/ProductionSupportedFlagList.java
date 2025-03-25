@@ -1071,6 +1071,10 @@ public final class ProductionSupportedFlagList {
                         + " background thread. Otherwise runs startup synchronously.\n"
                         + " - caches any chromium startup exception and rethrows it if startup is"
                         + " retried without a restart."),
+        Flag.baseFeature(
+                CcFeatures.EXPORT_FRAME_TIMING_AFTER_FRAME_DONE,
+                "When enabled, moves the layer tree client's metric export call for from beginning"
+                        + " of the subsequent frame to the end of the subsequent frame."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
