@@ -39,16 +39,22 @@ class StorageAccessStatusCache {
   // state is `FirstParty`.
   std::optional<net::cookie_util::StorageAccessStatus>
   GetStatusForThirdPartyContext() const {
+    CHECK(IsSet());
     return base::OptionalFromPtr(
         std::get_if<net::cookie_util::StorageAccessStatus>(&state_));
   }
 
+  bool IsSet() const { return !std::holds_alternative<Unset>(state_); }
+
  private:
+  // `state_` variant used when the storage access status is not set.
+  struct Unset {};
+
   // `state_` variant used when the storage access status is not applicable
   // because the request is first-party.
   struct FirstParty {};
 
-  std::variant<FirstParty, net::cookie_util::StorageAccessStatus> state_;
+  std::variant<Unset, FirstParty, net::cookie_util::StorageAccessStatus> state_;
 };
 
 }  // namespace net
