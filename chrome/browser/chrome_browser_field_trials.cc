@@ -33,7 +33,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/login/ui/management_disclosure_field_trial.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 #endif
@@ -71,8 +70,6 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
   if (!has_seed) {
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
   }
-  ash::management_disclosure_field_trial::Create(feature_list, local_state_,
-                                                 entropy_providers);
 #endif
 }
 
