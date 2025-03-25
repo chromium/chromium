@@ -67,7 +67,7 @@ class LogInAndOpenStateObserver
     : public ui::test::PollingStateObserver<
           GlicWindowController::LogInAndOpen::State> {
  public:
-  explicit LogInAndOpenStateObserver(const GlicWindowController& controller);
+  explicit LogInAndOpenStateObserver(GlicWindowController& controller);
   ~LogInAndOpenStateObserver() override;
 };
 
