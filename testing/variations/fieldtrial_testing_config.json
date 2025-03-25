@@ -12347,6 +12347,21 @@
             ]
         }
     ],
+    "IOSPasskeysM2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPasskeysM2"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasswordBottomSheetV2": [
         {
             "platforms": [
