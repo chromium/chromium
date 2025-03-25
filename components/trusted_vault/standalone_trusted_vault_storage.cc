@@ -268,4 +268,30 @@ void StandaloneTrustedVaultStorage::WriteDataToDisk() {
   file_access_->WriteToDisk(data_);
 }
 
+// static
+bool StandaloneTrustedVaultStorage::HasNonConstantKey(
+    const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault) {
+  std::string constant_key_as_proto_string;
+  AssignBytesToProtoString(GetConstantTrustedVaultKey(),
+                           &constant_key_as_proto_string);
+  for (const trusted_vault_pb::LocalTrustedVaultKey& key :
+       per_user_vault.vault_key()) {
+    if (key.key_material() != constant_key_as_proto_string) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// static
+std::vector<std::vector<uint8_t>>
+StandaloneTrustedVaultStorage::GetAllVaultKeys(
+    const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault) {
+  std::vector<std::vector<uint8_t>> vault_keys;
+  for (const trusted_vault_pb::LocalTrustedVaultKey& key :
+       per_user_vault.vault_key()) {
+    vault_keys.emplace_back(ProtoStringToBytes(key.key_material()));
+  }
+  return vault_keys;
+}
 }  // namespace trusted_vault

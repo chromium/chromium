@@ -17,9 +17,9 @@ namespace trusted_vault {
 enum class SecurityDomainId;
 
 // Storage helper for StandaloneTrustedVaultBackend handling file operations.
-// TODO: This interface currently exposes pointers to internal data structures
-// (|data_|). Consider rewriting it to avoid this, and potentially also get rid
-// of ReadDataFromDisk() and WriteDataToDisk().
+// TODO(crbug.com/405381481): This interface currently exposes pointers to
+// internal data structures (|data_|). Consider rewriting it to avoid this, and
+// potentially also get rid of ReadDataFromDisk() and WriteDataToDisk().
 class StandaloneTrustedVaultStorage {
  public:
   // Interface for actual file access. Can be swapped with a fake for tests.
@@ -71,6 +71,16 @@ class StandaloneTrustedVaultStorage {
   void RemoveUserVaults(
       base::FunctionRef<bool(const trusted_vault_pb::LocalTrustedVaultPerUser&)>
           predicate);
+
+  // Checks whether there is any non-constant key in |per_user_vault|.
+  // This indicates that the corresponding security domain is not in the
+  // pre-enrollment state, but contains usable key material.
+  static bool HasNonConstantKey(
+      const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault);
+
+  // Helper method to get all keys in |per_user_vault|.
+  static std::vector<std::vector<uint8_t>> GetAllVaultKeys(
+      const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault);
 
  private:
   explicit StandaloneTrustedVaultStorage(
