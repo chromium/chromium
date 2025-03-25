@@ -13,13 +13,6 @@ TestExtensionService::TestExtensionService() = default;
 
 TestExtensionService::~TestExtensionService() = default;
 
-scoped_refptr<extensions::CrxInstaller>
-TestExtensionService::CreateUpdateInstaller(const extensions::CRXFileInfo& file,
-                                            bool file_ownership_passed) {
-  ADD_FAILURE();
-  return nullptr;
-}
-
 const Extension* TestExtensionService::GetPendingExtensionUpdate(
     const std::string& id) const {
   ADD_FAILURE();

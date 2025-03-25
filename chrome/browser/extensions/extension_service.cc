@@ -401,6 +401,8 @@ void ExtensionService::EnabledReloadableExtensions() {
   extension_registrar_->EnabledReloadableExtensions();
 }
 
+// TODO(crbug.com/404943906): Migrate CreateUpdateInstaller() out of
+// ExtensionService.
 scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
     const CRXFileInfo& file,
     bool file_ownership_passed) {

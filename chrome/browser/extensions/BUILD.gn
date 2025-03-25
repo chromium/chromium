@@ -727,6 +727,7 @@ source_set("extensions") {
       "update_install_gate.h",
       "updater/extension_updater.cc",
       "updater/extension_updater.h",
+      "updater/extension_updater_delegate.h",
       "warning_badge_service.cc",
       "warning_badge_service.h",
       "warning_badge_service_factory.cc",

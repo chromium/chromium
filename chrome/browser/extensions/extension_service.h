@@ -30,6 +30,7 @@
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
 #include "chrome/browser/extensions/safe_browsing_verdict_handler.h"
+#include "chrome/browser/extensions/updater/extension_updater_delegate.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/sync/model/string_ordinal.h"
@@ -87,13 +88,6 @@ class ExtensionServiceInterface {
  public:
   virtual ~ExtensionServiceInterface() = default;
 
-  // Creates an CrxInstaller to update an extension.
-  // Returns null if an update is not possible. Eg: system shutdown or extension
-  // doesn't exist.
-  virtual scoped_refptr<CrxInstaller> CreateUpdateInstaller(
-      const CRXFileInfo& file,
-      bool file_ownership_passed) = 0;
-
   // Returns an update for an extension with the specified id, if installation
   // of that update was previously delayed because the extension was in use. If
   // no updates are pending for the extension returns NULL.
@@ -145,6 +139,7 @@ class ExtensionServiceInterface {
 // Manages installed and running Chromium extensions. An instance is shared
 // between normal and incognito profiles.
 class ExtensionService : public ExtensionServiceInterface,
+                         public ExtensionUpdaterDelegate,
                          public content::RenderProcessHostCreationObserver,
                          public content::RenderProcessHostObserver,
                          public Blocklist::Observer,
@@ -174,9 +169,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // ExtensionServiceInterface implementation.
   //
-  scoped_refptr<CrxInstaller> CreateUpdateInstaller(
-      const CRXFileInfo& file,
-      bool file_ownership_passed) override;
   void UnloadExtension(const std::string& extension_id,
                        UnloadedExtensionReason reason) override;
   void RemoveComponentExtension(const std::string& extension_id) override;
@@ -189,6 +181,11 @@ class ExtensionService : public ExtensionServiceInterface,
   void CheckManagementPolicy() override;
   void CheckForUpdatesSoon() override;
   base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() override;
+
+  // ExtensionUpdaterDelegate:
+  scoped_refptr<CrxInstaller> CreateUpdateInstaller(
+      const CRXFileInfo& file,
+      bool file_ownership_passed) override;
 
   // ExtensionManagement::Observer implementation:
   void OnExtensionManagementSettingsChanged() override;
