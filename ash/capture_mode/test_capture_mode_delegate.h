@@ -8,6 +8,7 @@
 #include <limits>
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -158,15 +159,12 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
               DetectTextInImage,
               (const SkBitmap& image, OnTextDetectionComplete callback),
               (override));
-  void GetPrimaryAccountAccessToken(
-      base::RepeatingCallback<void(const std::string& access_token)> callback)
-      override;
-  GURL GetBaseSearchURLAndPostContent(
-      const gfx::Image& image,
-      gfx::Size image_original_size,
-      TemplateURLRef::PostContent* post_content) override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
-      const override;
+  void SendLensWebRegionSearch(
+      const gfx::Image& original_image,
+      const bool is_standalone_session,
+      ash::OnSearchUrlFetchedCallback search_callback,
+      ash::OnTextDetectionComplete text_callback,
+      base::OnceCallback<void()> error_callback) override;
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
                         ash::OnSearchUrlFetchedCallback search_callback,
