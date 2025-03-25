@@ -5999,6 +5999,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5389" label="CredentialsGetImmediateMediationWithWebAuthnOnly"/>
   <int value="5390"
       label="CredentialsGetImmediateMediationWithWebAuthnAndPasswords"/>
+  <int value="5391"
+      label="NonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
