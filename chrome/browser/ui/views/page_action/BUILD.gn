@@ -27,6 +27,8 @@ source_set("page_action") {
     "page_action_model.h",
     "page_action_model_observer.h",
     "page_action_observer.cc",
+    "page_action_properties.cc",
+    "page_action_properties.h",
     "page_action_triggers.cc",
     "page_action_view.cc",
   ]
