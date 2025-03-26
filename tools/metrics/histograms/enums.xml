@@ -4240,15 +4240,21 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="5" label="Error"/>
 </enum>
 
+<!-- LINT.IfChange(ElementAnchoredBubbleAction) -->
+
 <enum name="ElementAnchoredBubbleAction">
-  <int value="0" label="GRANTED"/>
-  <int value="1" label="GRANTED_ONCE"/>
-  <int value="2" label="DENIED"/>
-  <int value="3" label="OK"/>
-  <int value="4" label="DISMISSED_X_BUTTON"/>
-  <int value="5" label="DISMISSED_SCRIM"/>
-  <int value="6" label="SYSTEM_SETTINGS"/>
+  <int value="0" label="Grant"/>
+  <int value="1" label="One-time grant"/>
+  <int value="2" label="Deny"/>
+  <int value="3" label="Acknowledge/Ok"/>
+  <int value="4" label="Dismiss via X button"/>
+  <int value="5" label="Dismiss via scrim click"/>
+  <int value="6" label="Go to system settings"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:ElementAnchoredBubbleAction) -->
+
+<!-- LINT.IfChange(ElementAnchoredBubbleVariant) -->
 
 <enum name="ElementAnchoredBubbleVariant">
   <int value="0" label="UNINITIALIZED"/>
@@ -4260,6 +4266,8 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="6" label="PREVIOUSLY_DENIED"/>
   <int value="7" label="ADMINISTRATOR_DENIED"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:ElementAnchoredBubbleVariant) -->
 
 <enum name="EmeApiType">
   <int value="0" label="Not expected"/>

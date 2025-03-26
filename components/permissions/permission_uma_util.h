@@ -303,46 +303,52 @@ enum class AdaptiveTriggers {
   THREE_CONSECUTIVE_DENIES = 0x01,
 };
 
+// LINT.IfChange(DismissedReason)
 enum class DismissedReason {
   // The prompt was dismissed through the [x] button.
-  DISMISSED_X_BUTTON = 0,
+  kDismissedXButton = 0,
 
   // The prompt was dismissed through the user clicking on the scrim (area
   // around the prompt).
-  DISMISSED_SCRIM = 1,
+  kDismissedScrim = 1,
 
-  kMaxValue = DISMISSED_SCRIM,
+  kMaxValue = kDismissedScrim,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:DismissedReason)
 
+// LINT.IfChange(OsScreen)
 enum class OsScreen {
   // Informs the user that Chrome needs permission from the OS level.
-  OS_PROMPT = 0,
+  kOsPrompt = 0,
 
   // Informs the user that they need to go to OS system settings.
-  OS_SYSTEM_SETTINGS = 1,
+  kOsSystemSettings = 1,
 
-  kMaxValue = OS_SYSTEM_SETTINGS,
+  kMaxValue = kOsSystemSettings,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:OsScreen)
 
+// LINT.IfChange(OsScreenAction)
 enum class OsScreenAction {
   // User clicks on "Go to System settings"
-  SYSTEM_SETTINGS = 0,
+  kSystemSettings = 0,
 
   // The prompt was dismissed through the [x] button.
-  DISMISSED_X_BUTTON = 1,
+  kDismissedXButton = 1,
 
   // The prompt was dismissed through the user clicking on the scrim (area
   // around the prompt).
-  DISMISSED_SCRIM = 2,
+  kDismissedScrim = 2,
 
   // Os prompt denied.
-  OS_PROMPT_DENIED = 3,
+  kOsPromptDenied = 3,
 
   // Os prompt allowed.
-  OS_PROMPT_ALLOWED = 4,
+  kOsPromptAllowed = 4,
 
-  kMaxValue = OS_PROMPT_ALLOWED,
+  kMaxValue = kOsPromptAllowed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:OsScreenAction)
 
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
@@ -372,6 +378,7 @@ enum class OneTimePermissionEvent {
   kMaxValue = EXPIRED_ON_SUSPEND,
 };
 
+// LINT.IfChange(ElementAnchoredBubbleVariant)
 // Prompt views shown after the user clicks on the embedded permission prompt.
 // The values represent the priority of each variant, higher number means
 // higher priority.
@@ -379,29 +386,30 @@ enum class OneTimePermissionEvent {
 // numeric values should never be reused.
 enum class ElementAnchoredBubbleVariant {
   // Default when conditions are not met to show any of the permission views.
-  UNINITIALIZED = 0,
+  kUninitialized = 0,
   // Informs the user that the permission was allowed by their administrator.
-  ADMINISTRATOR_GRANTED = 1,
+  kAdministratorGranted = 1,
   // Permission prompt that informs the user they already granted permission.
   // Offers additional options to modify the permission decision.
-  PREVIOUSLY_GRANTED = 2,
+  kPreviouslyGranted = 2,
   // Informs the user that they need to go to OS system settings to grant
   // access to Chrome.
-  OS_SYSTEM_SETTINGS = 3,
+  kOsSystemSettings = 3,
   // Informs the user that Chrome needs permission from the OS level, in order
   // for the site to be able to access a permission.
-  OS_PROMPT = 4,
+  kOsPrompt = 4,
   // Permission prompt that asks the user for site-level permission.
-  ASK = 5,
+  kAsk = 5,
   // Permission prompt that additionally informs the user that they have
   // previously denied permission to the site. May offer different options
   // (buttons) to the site-level prompt |kAsk|.
-  PREVIOUSLY_DENIED = 6,
+  kPreviouslyDenied = 6,
   // Informs the user that the permission was denied by their administrator.
-  ADMINISTRATOR_DENIED = 7,
+  kAdministratorDenied = 7,
 
-  kMaxValue = ADMINISTRATOR_DENIED,
+  kMaxValue = kAdministratorDenied,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ElementAnchoredBubbleVariant)
 
 enum class PermissionAutoRevocationHistory {
   // Permission has not been automatically revoked.
@@ -518,7 +526,7 @@ enum class PermissionChangeAction {
   kMaxValue = REMEMBER_CHECKBOX_TOGGLED,
 };
 
-// This enum backs up the 'ElementAnchoredBubbleAction' histograms enum.
+// LINT.IfChange(ElementAnchoredBubbleAction)
 enum class ElementAnchoredBubbleAction {
   // Site level permission was granted.
   kGranted = 0,
@@ -545,6 +553,7 @@ enum class ElementAnchoredBubbleAction {
   // Always keep at the end.
   kMaxValue = kSystemSettings,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ElementAnchoredBubbleAction)
 
 // The reason the permission action `PermissionAction::IGNORED` was triggered.
 enum class PermissionIgnoredReason {

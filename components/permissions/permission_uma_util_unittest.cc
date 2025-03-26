@@ -676,11 +676,11 @@ TEST_F(PermissionUmaUtilTest, GetDaysSinceUnusedSitePermissionRevocation) {
 // Inside your PermissionRecorderTest test fixture from earlier
 TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
   std::vector<ElementAnchoredBubbleVariant> variant_vector = {
-      ElementAnchoredBubbleVariant::ASK};
+      ElementAnchoredBubbleVariant::kAsk};
 
 #if BUILDFLAG(IS_MAC)
-  variant_vector.push_back(ElementAnchoredBubbleVariant::OS_PROMPT);
-  variant_vector.push_back(ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS);
+  variant_vector.push_back(ElementAnchoredBubbleVariant::kOsPrompt);
+  variant_vector.push_back(ElementAnchoredBubbleVariant::kOsSystemSettings);
 #endif
 
   std::optional<std::vector<ElementAnchoredBubbleVariant>> variants =
@@ -712,13 +712,13 @@ TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
   ASSERT_EQ(1u, entries.size());
   const auto* entry = entries.back().get();
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "SiteLevelScreen"),
-            static_cast<int64_t>(ElementAnchoredBubbleVariant::ASK));
+            static_cast<int64_t>(ElementAnchoredBubbleVariant::kAsk));
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "OsPromptScreen"),
-            static_cast<int64_t>(ElementAnchoredBubbleVariant::OS_PROMPT));
+            static_cast<int64_t>(ElementAnchoredBubbleVariant::kOsPrompt));
   EXPECT_EQ(
       *ukm_recorder.GetEntryMetric(entry, "OsSystemSettingsScreen"),
-      static_cast<int64_t>(ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS));
+      static_cast<int64_t>(ElementAnchoredBubbleVariant::kOsSystemSettings));
 #endif
 }
 
