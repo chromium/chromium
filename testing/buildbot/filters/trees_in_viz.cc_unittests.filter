@@ -35,6 +35,11 @@
 -CommitToPendingTreeLayerTreeHostImplTest.CompositorFrameMetadataFrameIntervalInputs
 -CommitToPendingTreeLayerTreeHostImplTest.LatencyInfoPassedToCompositorFrameMetadata
 
+# These tests directly append quads to LayerTreeHostImpl::FrameData, which isn't
+# a meaningful test for TreesInViz mode.
+-LayerTreeHostTestSubmitFrameResources.RunMultiThread_DelegatingRenderer
+-LayerTreeHostTestSubmitFrameResources.RunSingleThread_DelegatingRenderer
+
 # TODO(crbug.com/401566175) implement checkerboard tracking for TreesInViz mode.
 -LayerTreeHostImplPrepareToDrawTest.PrepareToDrawSucceedsAndFails/CommitToActiveTree
 -LayerTreeHostImplPrepareToDrawTest.PrepareToDrawSucceedsAndFails/CommitToPendingTree
@@ -60,14 +65,6 @@
 # TODO(crbug.com/401568010) Investigate LayerTreeHostImplTest.LayersFreeTextures
 -LayerTreeHostImplTest.LayersFreeTextures/CommitToActiveTree
 -LayerTreeHostImplTest.LayersFreeTextures/CommitToPendingTree
-
-# TODO(crbug.com/404939429) Fix submitted frame.metadata.min_page_scale_factor
--LayerTreeHostTestSubmitFrameMetadata.RunMultiThread_DelegatingRenderer
--LayerTreeHostTestSubmitFrameMetadata.RunSingleThread_DelegatingRenderer
-
-# TODO(crbug.com/404940337) Fix submitted frame.resource_list
--LayerTreeHostTestSubmitFrameResources.RunMultiThread_DelegatingRenderer
--LayerTreeHostTestSubmitFrameResources.RunSingleThread_DelegatingRenderer
 
 # TODO(crbug.com/404940699) Fix missing frame submit to Viz after commit request
 -LayerTreeHostTestBeginFrameAcks.RunMultiThread_DelegatingRenderer
