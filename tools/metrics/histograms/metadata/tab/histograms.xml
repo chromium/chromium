@@ -1795,6 +1795,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.ArchivedTabRestored.TabCount" units="count"
+    expires_after="2025-07-06">
+  <owner>wylieb@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records how many tabs were restored. Recorded when a user
+    restores tabs from the archived tabs dialog, selects the &quot;close all
+    tabs&quot; button, or opens an archived tab.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.ArchivedTabs.MaxLimitReachedAt" units="count"
     expires_after="2025-07-06">
   <owner>wylieb@google.com</owner>
