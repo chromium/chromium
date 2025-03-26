@@ -793,3 +793,41 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelComparisonTableTest,
                        TabStripModel::CommandAddToExistingComparisonTable)
                    .has_value());
 }
+
+// This is a regression test. See crbug.com/406013445 for more details.
+IN_PROC_BROWSER_TEST_F(
+    TabMenuModelComparisonTableTest,
+    MenuShownForExistingTables_SetsDoNotContainUrl_TabNotActive) {
+  const std::vector<commerce::ProductSpecificationsSet> sets = {
+      commerce::ProductSpecificationsSet(
+          base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+          {
+              GURL("https://example1.com"),
+          },
+          "Set 1"),
+  };
+  SetProductSpecs(sets);
+
+  AddAndSelectTab(browser(), GURL("https://example2.com"));
+  // Open a foreground tab with a URL in all sets.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://example1.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Close about:blank tab since we don't need it.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
+
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     tab_strip(), 0);
+
+  // The existing tables do not contain the selected tab's URL, so the submenu
+  // for adding to an existing table should be visible.
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(TabStripModel::CommandAddToNewComparisonTable)
+          .has_value());
+  auto index = model.GetIndexOfCommandId(
+      TabStripModel::CommandAddToExistingComparisonTable);
+  EXPECT_TRUE(index.has_value());
+  EXPECT_TRUE(model.IsEnabledAt(index.value()));
+}
