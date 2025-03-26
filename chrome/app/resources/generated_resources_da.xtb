@@ -1213,7 +1213,8 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1824870205483790748">Fastgør gruppe til bogmærkelinje</translation>
 <translation id="1825073796163165618">Aktivér links</translation>
 <translation id="1825565032302550710">Porten skal være mellem 1024 og 65535</translation>
-<translation id="18260074040409954">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
+<translation id="18260074040409954">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i
+<ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="1826192255355608658">Synkroniser bogmærkerne, adgangskoderne, historikken m.m. i din Chrome-browser</translation>
 <translation id="1826516787628120939">Kontrollerer</translation>
 <translation id="1826657447823925402">Omvendt rulning er deaktiveret</translation>

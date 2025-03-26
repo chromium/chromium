@@ -1131,7 +1131,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5963939892571022323">Non è possibile creare un link al testo evidenziato.</translation>
 <translation id="5971459446352190251">Ricerca di codici QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 preferito eliminato}other{{count} preferiti eliminati}}</translation>
-<translation id="5972844218283131174">Deseleziona tutte</translation>
+<translation id="5972844218283131174">Deseleziona tutto</translation>
 <translation id="5977976211062815271">Su questo dispositivo</translation>
 <translation id="598634819525651074">Area</translation>
 <translation id="5988097621740394599">Visualizza i cali di prezzo nelle tue schede.</translation>

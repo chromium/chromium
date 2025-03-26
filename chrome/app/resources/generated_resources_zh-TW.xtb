@@ -5335,7 +5335,7 @@
 <translation id="4744268813103118742">前往網站</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
-<translation id="4745500401920035244">你的管理員變更了系統設定，部分舊的設定檔因此遭到停用。你無法再存取這個設定檔，但仍可將其移除</translation>
+<translation id="4745500401920035244">你的管理員變更了系統設定，部分舊設定檔因此停用。你無法再存取這個設定檔，但可將其移除</translation>
 <translation id="474609389162964566">說出「Ok Google」即可存取 Google 助理</translation>
 <translation id="4746757725581505837">你即將刪除儲存在這部裝置上的 <ph name="BRAND" /> 資料</translation>
 <translation id="4748783296226936791">網站通常會連線至 HID 裝置，是因為有功能需要使用非標準鍵盤、遊戲控制器和其他裝置。</translation>
@@ -8341,7 +8341,7 @@
 <translation id="6922763095098248079">這部裝置是由貴機構管理。管理員可以存取此裝置上任一設定檔中的資料。</translation>
 <translation id="6923633482430812883">掛接共用裝置時發生錯誤。請檢查你要連接的檔案伺服器是否支援 SMBv2 以上版本。</translation>
 <translation id="6924109527536857168">需要同步處理</translation>
-<translation id="6925127338315966709">你即將在這個瀏覽器中新增受管理的設定檔。管理員可以控管該設定檔，並存取其中的資料。書籤、歷史記錄、密碼和其他設定都會同步到你的帳戶，並由管理員負責管理。</translation>
+<translation id="6925127338315966709">你即將在這個瀏覽器新增受管理的設定檔。管理員可以控管該設定檔，並存取資料。書籤、歷史記錄、密碼和其他設定都會同步到你的帳戶，並由管理員管理。</translation>
 <translation id="6928650056523249512">自動移除未使用網站的權限</translation>
 <translation id="6929126689972602640">學校帳戶不支援家長監護功能。如要新增學校帳戶，以便從家裡存取 Google Classroom 和其他學校作業用的網站，請先使用孩子的個人帳戶登入。你稍後可在設定過程中新增學校帳戶。</translation>
 <translation id="6929760895658557216">Okay Google</translation>
