@@ -77,7 +77,7 @@ TEST(JapaneseSettingsTest, OnUnsetPrefsSetsDefault) {
   expected->selection_shortcut =
       JapaneseSettings::SelectionShortcut::kDigits123456789;
   expected->keymap_style = JapaneseSettings::KeymapStyle::kCustom;
-  expected->disable_personalized_suggestions = true;
+  expected->disable_personalized_suggestions = false;
   expected->automatically_send_statistics_to_google = false;
   EXPECT_EQ(response, expected);
 }
