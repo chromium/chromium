@@ -277,8 +277,7 @@ void DiscardsGraphDumpImpl::OnOpenerFrameNodeChanged(
 
 void DiscardsGraphDumpImpl::OnEmbedderFrameNodeChanged(
     const performance_manager::PageNode* page_node,
-    const performance_manager::FrameNode*,
-    EmbeddingType) {
+    const performance_manager::FrameNode*) {
   DCHECK(HasNode(page_node));
   SendPageNotification(page_node, false);
 }

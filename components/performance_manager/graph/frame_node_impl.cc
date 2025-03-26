@@ -850,12 +850,10 @@ void FrameNodeImpl::SeverPageRelationshipsAndMaybeReparent() {
   NodeSet embedded_page_nodes_copy = embedded_page_nodes_;
   for (const Node* embedded_page_node : embedded_page_nodes_copy) {
     PageNodeImpl* embedded_page = PageNodeImpl::FromNode(embedded_page_node);
-    auto embedding_type = embedded_page->GetEmbeddingType();
     if (parent_frame_node_) {
-      embedded_page->SetEmbedderFrameNodeAndEmbeddingType(parent_frame_node_,
-                                                          embedding_type);
+      embedded_page->SetEmbedderFrameNode(parent_frame_node_);
     } else {
-      embedded_page->ClearEmbedderFrameNodeAndEmbeddingType();
+      embedded_page->ClearEmbedderFrameNode();
     }
   }
 
