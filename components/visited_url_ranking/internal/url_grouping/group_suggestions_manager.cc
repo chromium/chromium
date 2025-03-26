@@ -68,7 +68,25 @@ class GroupSuggestionsManager::GroupSuggestionComputer {
                            std::vector<URLVisitAggregate> candidates) {
     VLOG(1) << "GroupSuggestionComputer::OnFetchedCandidates: "
             << candidates.size();
+    std::erase_if(candidates,
+                  [&](auto& candidate) { return !ShouldInclude(candidate); });
+
     heuristics_.GetSuggestions(std::move(candidates), std::move(callback));
+  }
+
+  bool ShouldInclude(const URLVisitAggregate& candidate) {
+    auto tab_data_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
+    if (tab_data_it == candidate.fetcher_data_map.end()) {
+      return false;
+    }
+    auto* tab = std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
+    // Skip if already in group.
+    if (tab->last_active_tab.tab_metadata.local_tab_group_id) {
+      return false;
+    }
+    // TODO(ssid): Remove tabs that are not in `suggestion_scope_`.
+
+    return true;
   }
 
   GroupingHeuristics heuristics_;
@@ -126,8 +144,21 @@ void GroupSuggestionsManager::ShowSuggestion(
     const GroupSuggestionsService::Scope& scope,
     std::optional<GroupSuggestions> suggestions) {
   if (!suggestions) {
+    if (!suggestion_computed_callback_.is_null()) {
+      suggestion_computed_callback_.Run();
+    }
     return;
   }
+  std::erase_if(suggestions->suggestions, [&](const auto& suggestion) {
+    return suggestion_results_.contains(SuggestedTabs(suggestion.tab_ids));
+  });
+  if (suggestions->suggestions.empty()) {
+    if (!suggestion_computed_callback_.is_null()) {
+      suggestion_computed_callback_.Run();
+    }
+    return;
+  }
+
   GroupSuggestionsDelegate* delegate = nullptr;
   for (auto it : registered_delegates_) {
     if (it.second.scope == scope) {
@@ -137,13 +168,29 @@ void GroupSuggestionsManager::ShowSuggestion(
   if (delegate) {
     VLOG(1) << "Showing suggestion to group tabs "
             << suggestions->suggestions.size();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&GroupSuggestionsDelegate::ShowSuggestion,
-                                  base::Unretained(delegate),
-                                  std::move(*suggestions), base::DoNothing()));
+    std::vector<int> tab_ids = suggestions->suggestions[0].tab_ids;
+    auto result_callback =
+        base::BindOnce(&GroupSuggestionsManager::OnSuggestionResult,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(tab_ids));
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&GroupSuggestionsDelegate::ShowSuggestion,
+                       base::Unretained(delegate), std::move(*suggestions),
+                       std::move(result_callback)),
+        suggestion_computed_callback_);
   } else {
     VLOG(1) << "Suggestion discarded for " << scope.tab_session_id;
+    if (!suggestion_computed_callback_.is_null()) {
+      suggestion_computed_callback_.Run();
+    }
   }
+}
+
+void GroupSuggestionsManager::OnSuggestionResult(
+    const std::vector<int>& tab_ids,
+    GroupSuggestionsDelegate::UserResponseMetadata user_response) {
+  suggestion_results_[SuggestedTabs(tab_ids)] = std::move(user_response);
 }
 
 }  // namespace visited_url_ranking

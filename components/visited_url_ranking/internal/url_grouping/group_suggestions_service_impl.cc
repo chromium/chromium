@@ -15,7 +15,7 @@ GroupSuggestionsServiceImpl::GroupSuggestionsServiceImpl(
     TabEventsVisitTransformer* tab_events_transformer)
     : visited_url_ranking_service_(visited_url_ranking_service),
       tab_events_transformer_(tab_events_transformer),
-      suggestions_state_tracker_(std::make_unique<GroupSuggestionsManager>(
+      group_suggestions_manager_(std::make_unique<GroupSuggestionsManager>(
           visited_url_ranking_service)) {
   tab_tracker_ = std::make_unique<TabEventTrackerImpl>(
       base::BindRepeating(&GroupSuggestionsServiceImpl::OnNewSuggestionTabEvent,
@@ -35,17 +35,17 @@ TabEventTracker* GroupSuggestionsServiceImpl::GetTabEventTracker() {
 void GroupSuggestionsServiceImpl::RegisterDelegate(
     GroupSuggestionsDelegate* delegate,
     const Scope& scope) {
-  suggestions_state_tracker_->RegisterDelegate(delegate, scope);
+  group_suggestions_manager_->RegisterDelegate(delegate, scope);
 }
 
 void GroupSuggestionsServiceImpl::UnregisterDelegate(
     GroupSuggestionsDelegate* delegate) {
-  suggestions_state_tracker_->UnregisterDelegate(delegate);
+  group_suggestions_manager_->UnregisterDelegate(delegate);
 }
 
 void GroupSuggestionsServiceImpl::OnNewSuggestionTabEvent() {
   // TODO(ssid): Plumb in the scope from the trigger events.
-  suggestions_state_tracker_->MaybeTriggerSuggestions(
+  group_suggestions_manager_->MaybeTriggerSuggestions(
       GroupSuggestionsService::Scope());
 }
 
