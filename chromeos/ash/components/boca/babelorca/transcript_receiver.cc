@@ -107,6 +107,7 @@ void TranscriptReceiver::StartReceivingInternal() {
           kTrafficAnnotation, kReceiveMessagesUrl, /*max_retries=*/0,
           base::BindOnce(&TranscriptReceiver::OnResponse,
                          base::Unretained(this)));
+  request_data->uma_name = "ReceiveMessages";
   streaming_client_->StartAuthedRequestString(std::move(request_data),
                                               request.SerializeAsString());
 }

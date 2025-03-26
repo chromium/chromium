@@ -99,6 +99,7 @@ void TachyonStreamingClient::OnComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   parsing_service_.reset();
   timeout_timer_.Stop();
+  MaybeRecordUma(url_loader_.get(), request_data_.get());
   if (success) {
     std::move(request_data_->response_cb)
         .Run(TachyonResponse(TachyonResponse::Status::kOk));

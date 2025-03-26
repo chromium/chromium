@@ -35,6 +35,7 @@ struct RequestDataWrapper {
   int oauth_retry_num = 0;
   std::string content_data;
   const std::string content_type;
+  std::optional<std::string> uma_name;
 };
 
 }  // namespace ash::babelorca
