@@ -592,10 +592,6 @@ crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shade
 ## Metal Common ##
 # Common to all GPU types (both AMD and Intel, at least)
 
-
-## SkiaGraphite on AMD/Intel ##
-
-
 ## Metal AMD ##
 
 crbug.com/angleproject/6430 [ amd-0x679e angle-metal monterey passthrough ] conformance2/textures/misc/tex-srgb-mipmap.html [ Failure ]
@@ -630,25 +626,11 @@ crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/f
 crbug.com/angleproject/7425 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 crbug.com/angleproject/7425 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 
-
 crbug.com/328100306 [ amd angle-metal graphite-enabled sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
-
-## SkiaGraphite on Metal AMD ##
-
 
 ## Metal Intel ##
 
 crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functional/gles3/readpixel.html [ Failure ]
-
-
-## Metal Apple Silicon ##
-
-
-
-
-## Metal Graphite ##
-
-
 
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
@@ -740,6 +722,7 @@ crbug.com/328102507 [ mac amd angle-opengl graphite-disabled asan ] conformance/
 
 crbug.com/372295133 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_array_linear_mipmap_linear_equal.html [ Failure ]
 crbug.com/374696517 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/uniformbuffers/random.html [ RetryOnFailure ]
+crbug.com/406424259 [ mac amd-0x7340 graphite-disabled ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 ## Mac Intel ##
 
