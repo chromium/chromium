@@ -707,11 +707,6 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
   histogram_tester.ExpectBucketCount(
       "ChromeOS.CertProvisioning.Event.User",
       CertProvisioningEvent::kWorkerRetrySucceededWithoutInvalidation, 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.KeypairGenerationTime.User", 1);
-  histogram_tester.ExpectTotalCount("ChromeOS.CertProvisioning.VaTime.User", 1);
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.CertProvisioning.CsrSignTime.User", 1);
 }
 
 // Checks that the worker makes all necessary requests to other modules during

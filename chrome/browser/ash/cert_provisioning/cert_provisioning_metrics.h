@@ -53,22 +53,6 @@ void RecordEvent(ProtocolVersion protocol_version,
                  CertScope scope,
                  CertProvisioningEvent event);
 
-// Records time of generation key pair by certificate provisioning worker.
-void RecordKeypairGenerationTime(ProtocolVersion protocol_version,
-                                 CertScope scope,
-                                 base::TimeDelta sample);
-
-// Records time of building Verified Access response by certificate provisioning
-// worker.
-void RecordVerifiedAccessTime(ProtocolVersion protocol_version,
-                              CertScope scope,
-                              base::TimeDelta sample);
-
-// Records time of generating a signature by certificate provisioning worker.
-void RecordDataSignTime(ProtocolVersion protocol_version,
-                        CertScope scope,
-                        base::TimeDelta sample);
-
 // Records received DeviceManagementStatus-es by the dynamic workers.
 void RecordDmStatusForDynamic(policy::DeviceManagementStatus status);
 
