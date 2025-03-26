@@ -10,7 +10,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter languageModel
 [Worker]     getter rewriter
 [Worker]     getter summarizer
-[Worker]     getter translator
 [Worker]     getter writer
 [Worker]     method constructor
 [Worker] interface AICreateMonitor : EventTarget
@@ -86,11 +85,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method summarize
 [Worker]     method summarizeStreaming
 [Worker] interface AISummarizerFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method availability
-[Worker]     method constructor
-[Worker]     method create
-[Worker] interface AITranslatorFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method availability
 [Worker]     method constructor

@@ -55,6 +55,16 @@ interface Translator {
   readonly attribute unrestricted double inputQuota;
 };
 
+dictionary TranslatorCreateCoreOptions {
+  required DOMString sourceLanguage;
+  required DOMString targetLanguage;
+};
+
+dictionary TranslatorCreateOptions : TranslatorCreateCoreOptions {
+  AbortSignal signal;
+  AICreateMonitorCallback monitor;
+};
+
 dictionary TranslatorTranslateOptions {
   AbortSignal signal;
 };

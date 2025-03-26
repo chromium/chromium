@@ -5,7 +5,6 @@ interface AI
     getter languageModel
     getter rewriter
     getter summarizer
-    getter translator
     getter writer
     method constructor
 interface AICreateMonitor : EventTarget
@@ -81,11 +80,6 @@ interface AISummarizer
     method summarize
     method summarizeStreaming
 interface AISummarizerFactory
-    attribute @@toStringTag
-    method availability
-    method constructor
-    method create
-interface AITranslatorFactory
     attribute @@toStringTag
     method availability
     method constructor

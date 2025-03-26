@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_create_options.h"
+#include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/ai_writer.h"
 #include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"

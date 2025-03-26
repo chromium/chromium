@@ -47,8 +47,6 @@ blink_modules_sources("ai") {
     "model_execution_responder.h",
     "on_device_translation/ai_language_detector_factory.cc",
     "on_device_translation/ai_language_detector_factory.h",
-    "on_device_translation/ai_translator_factory.cc",
-    "on_device_translation/ai_translator_factory.h",
     "on_device_translation/create_translator_client.cc",
     "on_device_translation/create_translator_client.h",
     "on_device_translation/language_detector.cc",
