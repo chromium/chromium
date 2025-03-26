@@ -3550,6 +3550,7 @@ if (!is_android) {
         "//chrome/browser/background/glic:glic",
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic:glic",
+        "//chrome/browser/glic:impl",
         "//chrome/browser/glic:test_support",
       ]
     }

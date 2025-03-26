@@ -508,7 +508,8 @@ class PrefersColorSchemeTest
 #if BUILDFLAG(ENABLE_GLIC)
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
-        /*disabled_features=*/{features::kGlicWarming});
+        /*disabled_features=*/{features::kGlicWarming,
+                               features::kGlicFreWarming});
 #endif
   }
   ~PrefersColorSchemeTest() override {

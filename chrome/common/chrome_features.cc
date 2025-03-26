@@ -425,6 +425,10 @@ BASE_FEATURE(kGlicSizingFitWindow,
 
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicFreWarming,
+             "GlicFreWarming",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicWarmMultiple,
              "GlicWarmMultiple",
              base::FEATURE_DISABLED_BY_DEFAULT);

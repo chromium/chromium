@@ -1420,6 +1420,12 @@ void GlicWindowController::Preload() {
   }
 }
 
+void GlicWindowController::PreloadFre() {
+  if (fre_controller_->ShouldShowFreDialog()) {
+    fre_controller_->TryPreload();
+  }
+}
+
 void GlicWindowController::Reload() {
   if (GetFreWebContents()) {
     GetFreWebContents()->ReloadFocusedFrame();
@@ -1429,7 +1435,7 @@ void GlicWindowController::Reload() {
   }
 }
 
-bool GlicWindowController::IsWarmed() {
+bool GlicWindowController::IsWarmed() const {
   return !!contents_;
 }
 
