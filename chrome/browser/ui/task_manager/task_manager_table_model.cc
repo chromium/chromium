@@ -1119,17 +1119,6 @@ std::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
   return static_cast<size_t>(index - tasks_.begin());
 }
 
-std::optional<size_t> TaskManagerTableModel::GetRowForActiveTask() {
-  if (!active_task_id_.has_value()) {
-    return std::nullopt;
-  }
-  auto index = std::ranges::find(tasks_, active_task_id_.value());
-  if (index == tasks_.end()) {
-    return std::nullopt;
-  }
-  return static_cast<size_t>(index - tasks_.begin());
-}
-
 void TaskManagerTableModel::StartUpdating() {
   TaskManagerInterface::GetTaskManager()->AddObserver(this);
   OnRefresh(observed_task_manager()->GetTaskIdsList());

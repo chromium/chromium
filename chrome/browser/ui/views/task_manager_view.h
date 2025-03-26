@@ -76,7 +76,6 @@ class TaskManagerView : public TableViewDelegate,
   bool IsTableSorted() const override;
   TableSortDescriptor GetSortDescriptor() const override;
   void SetSortDescriptor(const TableSortDescriptor& descriptor) override;
-  void MaybeHighlightActiveTask() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize(

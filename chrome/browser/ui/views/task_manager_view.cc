@@ -216,15 +216,6 @@ void TaskManagerView::SetSortDescriptor(const TableSortDescriptor& descriptor) {
   tab_table_->SetSortDescriptors(descriptor_list);
 }
 
-void TaskManagerView::MaybeHighlightActiveTask() {
-  if (table_model_ && tab_table_->selection_model().empty()) {
-    std::optional<size_t> row = table_model_->GetRowForActiveTask();
-    if (row.has_value()) {
-      tab_table_->Select(row.value());
-    }
-  }
-}
-
 gfx::Size TaskManagerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   // The TaskManagerView's preferred size is used to size the hosting Widget
