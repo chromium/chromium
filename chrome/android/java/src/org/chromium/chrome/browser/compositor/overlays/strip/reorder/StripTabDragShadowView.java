@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
 public class StripTabDragShadowView extends FrameLayout {
@@ -55,6 +56,7 @@ public class StripTabDragShadowView extends FrameLayout {
 
     // Constants
     @VisibleForTesting protected static final int WIDTH_DP = 264;
+    private static final int WIDTH_ON_XR_DP = 528;
     private static final long ANIM_EXPAND_MS = 200L;
 
     // Children Views
@@ -93,7 +95,10 @@ public class StripTabDragShadowView extends FrameLayout {
         super(context, attrs);
 
         Resources resources = context.getResources();
-        mWidthPx = (int) (resources.getDisplayMetrics().density * WIDTH_DP);
+        mWidthPx =
+                (int)
+                        (resources.getDisplayMetrics().density
+                                * (XrUtils.isXrDevice() ? WIDTH_ON_XR_DP : WIDTH_DP));
         mTabHeightPx =
                 resources.getDimensionPixelSize(R.dimen.tab_grid_card_header_height)
                         + (2 * resources.getDimensionPixelSize(R.dimen.tab_grid_card_margin));
