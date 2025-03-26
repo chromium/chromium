@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSe
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Maps {@link PasswordAccessLossDialogSettingsProperties} changes in a {@link PropertyModel} to
  * {@link PasswordAccessLossDialogSettingsCoordinator}'s modal dialog custom view.
  */
+@NullMarked
 class PasswordAccessLossDialogSettingsViewBinder {
     private PasswordAccessLossDialogSettingsViewBinder() {}
 
