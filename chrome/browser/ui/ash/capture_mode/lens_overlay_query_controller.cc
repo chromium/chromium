@@ -1055,7 +1055,7 @@ lens::LensOverlayClientContext
 LensOverlayQueryController::CreateClientContext() {
   lens::LensOverlayClientContext context;
   context.set_surface(lens::SURFACE_CHROMIUM);
-  context.set_platform(lens::WEB);
+  context.set_platform(lens::PLATFORM_WEB);
   context.mutable_rendering_context()->set_rendering_environment(
       lens::RENDERING_ENV_LENS_OVERLAY);
   context.mutable_client_filters()->add_filter()->set_filter_type(
