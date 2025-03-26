@@ -46,8 +46,8 @@ class LocalFilesMigrationPageHandler : public mojom::PageHandler {
   // mojom::PageHandler implementation:
   // Fetches initial information to display in the dialog.
   void GetInitialDialogInfo(GetInitialDialogInfoCallback callback) override;
-  // Closes the dialog and initiates the file upload immediately.
-  void UploadNow() override;
+  // Closes the dialog and initiates the file upload/deletion immediately.
+  void UploadOrDeleteNow() override;
   // Closes the dialog without initiating the upload.
   void Close() override;
 

@@ -13,6 +13,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
+#include "chrome/common/chrome_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
@@ -122,11 +124,12 @@ void MigrationNotificationManager::ShowMigrationInfoDialog(
     MigrationDestination destination,
     base::Time migration_start_time,
     base::OnceClosure migration_callback) {
-  if (destination == MigrationDestination::kDelete) {
-    // TODO(399392370): Adapt dialog for the delete case.
+  if (destination == MigrationDestination::kDelete &&
+      !base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
+    LOG(ERROR) << "Destination set to MigrationDestination::kDelete, but the "
+                  "flag is disabled; ignoring.";
     return;
   }
-
   LocalFilesMigrationDialog::Show(destination, migration_start_time,
                                   std::move(migration_callback));
 }

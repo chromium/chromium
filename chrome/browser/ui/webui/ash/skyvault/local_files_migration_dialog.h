@@ -16,9 +16,9 @@
 
 namespace policy::local_user_files {
 
-// The action signaling the user clicked on "Upload now" and migration should
-// start.
-inline constexpr char kStartMigration[] = "start-migration";
+// The action signaling the user clicked on "Upload now" or "Delete now" and
+// migration/deletion should start.
+inline constexpr char kStartMigration[] = "start-migration-or-deletion";
 
 using StartMigrationCallback = base::OnceClosure;
 

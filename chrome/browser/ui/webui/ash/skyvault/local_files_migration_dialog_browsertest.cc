@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_UploadNow) {
   EXPECT_TRUE(
       content::ExecJs(web_contents,
                       "document.querySelector('local-files-migration-dialog')"
-                      ".$('#upload-now-button').click()"));
+                      ".$('#upload-or-delete-now-button').click()"));
   watcher.Wait();
 
   histogram_tester_.ExpectBucketCount(
