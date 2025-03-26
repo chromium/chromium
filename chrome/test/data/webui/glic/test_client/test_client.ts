@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, PanelState, TabData, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
-import {WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {FocusedTabData, GlicBrowserHost, GlicWebClient, Observable, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, TabData, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
+import {SettingsPageField, WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
@@ -28,7 +28,8 @@ interface PageElementTypes {
   getUserProfileInfoImg: HTMLImageElement;
   changeProfileBn: HTMLButtonElement;
   testPermissionSwitch: HTMLButtonElement;
-  openSettings: HTMLButtonElement;
+  openGlicSettings: HTMLButtonElement;
+  openGlicSettingsHighlight: HTMLSelectElement;
   microphoneSwitch: HTMLInputElement;
   geolocationSwitch: HTMLInputElement;
   tabContextSwitch: HTMLInputElement;
@@ -405,8 +406,16 @@ $.testPermissionSwitch.addEventListener('click', () => {
   );
 });
 
-$.openSettings.addEventListener('click', () => {
-  getBrowser()!.openGlicSettingsPage!();
+$.openGlicSettings.addEventListener('click', () => {
+  const selectedHighlight = $.openGlicSettingsHighlight.value;
+  logMessage(`Opening settings. Will highlight field: ${selectedHighlight}`);
+  const options: OpenSettingsOptions = {};
+  if (selectedHighlight === 'osHotkey') {
+    options.highlightField = SettingsPageField.OS_HOTKEY;
+  } else if (selectedHighlight === 'osEntrypointToggle') {
+    options.highlightField = SettingsPageField.OS_ENTRYPOINT_TOGGLE;
+  }
+  getBrowser()!.openGlicSettingsPage!(options);
 });
 
 $.syncCookiesBn.addEventListener('click', async () => {

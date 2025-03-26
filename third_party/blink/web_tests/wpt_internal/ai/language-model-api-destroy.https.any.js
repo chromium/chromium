@@ -25,16 +25,12 @@ promise_test(async t => {
 
   // After destroying the session, the properties should be still accessible.
   assert_equals(
-    typeof session.maxTokens, "number",
-    "maxTokens must be accessible."
+    typeof session.inputQuota, "number",
+    "inputQuota must be accessible."
   );
   assert_equals(
-    typeof session.tokensSoFar, "number",
-    "tokensSoFar must be accessible."
-  );
-  assert_equals(
-    typeof session.tokensLeft, "number",
-    "tokensLeft must be accessible."
+    typeof session.inputUsage, "number",
+    "inputUsage must be accessible."
   );
   assert_equals(
     typeof session.temperature, "number",

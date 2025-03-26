@@ -287,6 +287,7 @@
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/pref_names.h"
@@ -1055,7 +1056,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // CoralController depends on machine_learning::ServiceConnection, so needs to
   // be initialized after it.
   if (features::IsCoralFeatureEnabled()) {
-    Shell::Get()->coral_controller()->Initialize();
+    Shell::Get()->coral_controller()->Initialize(
+        l10n_util::GetLanguage(g_browser_process->GetApplicationLocale()));
   }
 
   // Needs to be initialized after crosapi_manager_.

@@ -72,10 +72,10 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
     };
   }
 
-  private folderOpenState_?: FolderOpenState;
-  private searchTerm_?: string;
-  protected sidebarWidth_: string = '';
-  protected toolbarShadow_: boolean = false;
+  private accessor folderOpenState_: FolderOpenState|undefined;
+  private accessor searchTerm_: string|undefined;
+  protected accessor sidebarWidth_: string = '';
+  protected accessor toolbarShadow_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
   private dndManager_: DndManager|null = null;
   private router_: BookmarksRouter = new BookmarksRouter();

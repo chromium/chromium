@@ -1147,16 +1147,18 @@ bool DrawingBuffer::CopyToPlatformMailbox(
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
           const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
           const gfx::Size&) -> std::optional<gpu::SyncToken> {
-    dst_raster_interface->WaitSyncTokenCHROMIUM(
-        produce_sync_token.GetConstData());
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+        src_shared_image->BeginRasterAccess(dst_raster_interface,
+                                            produce_sync_token,
+                                            /*readonly=*/true);
 
     dst_raster_interface->CopySharedImage(
         src_shared_image->mailbox(), dst_mailbox, dst_texture_offset.x(),
         dst_texture_offset.y(), src_sub_rectangle.x(), src_sub_rectangle.y(),
         src_sub_rectangle.width(), src_sub_rectangle.height());
 
-    gpu::SyncToken sync_token;
-    dst_raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    gpu::SyncToken sync_token =
+        gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
     return sync_token;
   };
 
@@ -1179,16 +1181,9 @@ bool DrawingBuffer::CopyToVideoFrame(
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
           const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
           const gfx::Size& src_size) -> std::optional<gpu::SyncToken> {
-    bool succeeded = frame_pool->CopyRGBATextureToVideoFrame(
+    return frame_pool->CopyRGBATextureToVideoFrame(
         src_size, src_shared_image, produce_sync_token, dst_color_space,
         std::move(callback));
-    if (!succeeded) {
-      return std::nullopt;
-    }
-
-    gpu::SyncToken sync_token;
-    raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-    return sync_token;
   };
   return CopyToPlatformInternal(raster_interface, /*dst_is_unpremul_gl=*/false,
                                 src_buffer, copy_function);

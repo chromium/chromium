@@ -575,6 +575,7 @@ void OutOfFlowLayoutPart::Run() {
         block_child, LogicalOffset(),
         LogicalStaticPosition::InlineEdge::kInlineStart,
         LogicalStaticPosition::BlockEdge::kBlockStart,
+        LogicalStaticPosition::LogicalAlignmentDirection::kBlock,
         /*is_hidden_for_paint=*/false,
         /*allow_top_layer_nodes=*/true);
 

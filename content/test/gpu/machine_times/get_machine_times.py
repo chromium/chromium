@@ -120,8 +120,8 @@ def _GetTimesForBuilder(inputs: Tuple[data_types.BuilderEntry, int]):
       }
   """
   builder, num_samples = inputs
-  full_builder_string = '%s/%s/%s' % (builder.project, builder.builder_type,
-                                      builder.name)
+  full_builder_string = (
+      f'{builder.project}/{builder.builder_type}/{builder.name}')
   buildbucket_ids = _GetBuildbucketIdsForBuilder(builder, num_samples)
   builder_to_step = {full_builder_string: collections.defaultdict(list)}
   if not buildbucket_ids:
@@ -152,10 +152,10 @@ def _GetBuildbucketIdsForBuilder(builder: data_types.BuilderEntry,
       'bb',
       'ls',
       '-id',
-      '-%d' % num_samples,
+      f'-{num_samples}',
       '-status',
       'ended',
-      '%s/%s/%s' % (builder.project, builder.builder_type, builder.name),
+      f'{builder.project}/{builder.builder_type}/{builder.name}',
   ]
   completed_process = subprocess.run(cmd,
                                      text=True,
@@ -239,8 +239,7 @@ def _GetShardTimesFromStepOutput(
 
     suite_name = s['name']
     assert suite_name not in shard_times, (
-        'Found duplicate suite %s in build %s' %
-        (suite_name, step_output['id']))
+        f'Found duplicate suite {suite_name} in build {step_output["id"]}')
     shard_times[suite_name] = []
     for runtime_str, overhead_str in matches:
       runtime = _ConvertSummaryRuntimeToSeconds(runtime_str)
@@ -302,12 +301,14 @@ def _OutputBuilderInformation(builders_to_steps: Dict[str,
     # datapoints if a test is new or recently renamed. However, this should be
     # quite rare, and the script can simply be run again in the near future to
     # work around this.
-    output_lines.append('      Average per build %f' %
-                        (float(sum(l)) / num_samples))
-    output_lines.append('      Average per shard %f' % (float(sum(l)) / len(l)))
-    output_lines.append('      Median per shard %d' % l[len(l) // 2])
-    output_lines.append('      Min shard %d' % l[0])
-    output_lines.append('      Max shard %d' % l[-1])
+    per_build_average = float(sum(l)) / num_samples
+    per_shard_average = float(sum(l)) / len(l)
+    per_shard_median = l[len(l) // 2]
+    output_lines.append(f'      Average per build {per_build_average}')
+    output_lines.append(f'      Average per shard {per_shard_average}')
+    output_lines.append(f'      Median per shard {per_shard_median}')
+    output_lines.append(f'      Min shard {l[0]}')
+    output_lines.append(f'      Max shard {l[-1]}')
 
   # Re-create the mapping now with sorted keys so that builder output is
   # consistent.
@@ -325,8 +326,8 @@ def _OutputBuilderInformation(builders_to_steps: Dict[str,
       # Skip any steps that are under the requested max shard time.
       if shard_max_threshold is not None and runtimes[-1] < shard_max_threshold:
         continue
-      output_lines.append('  %s (~%d shards)' %
-                          (step, math.ceil(float(len(runtimes)) / num_samples)))
+      approx_shard_count = math.ceil(float(len(runtimes)) / num_samples)
+      output_lines.append(f'  {step} (~{approx_shard_count} shards)')
       output_lines.append('    Runtime')
       _OutputListStats(runtimes, output_lines)
       output_lines.append('    Overhead')

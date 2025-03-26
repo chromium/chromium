@@ -9,6 +9,7 @@
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
@@ -43,6 +44,14 @@ class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
               LogWebFeatureForCurrentPage,
               (content::RenderFrameHost*, blink::mojom::WebFeature),
               (override));
+
+  bool IsFullCookieAccessAllowed(
+      content::BrowserContext* browser_context,
+      content::WebContents* web_contents,
+      const GURL& url,
+      const blink::StorageKey& storage_key) override {
+    return false;
+  }
 };
 }  // namespace
 
@@ -251,8 +260,10 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
 class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
  protected:
   BlobUrlDevToolsIssueTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kBlockCrossPartitionBlobUrlFetching);
+    feature_list_.InitWithFeatures(
+        {features::kBlockCrossPartitionBlobUrlFetching,
+         blink::features::kEnforceNoopenerOnBlobURLNavigation},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -260,7 +271,10 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+    client_ = std::make_unique<MockContentBrowserClient>();
   }
+
+  void TearDownOnMainThread() override { client_.reset(); }
 
   void WaitForIssueAndCheckUrl(const std::string& url,
                                TestDevToolsProtocolClient* client,
@@ -300,7 +314,11 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
     client->ClearNotifications();
   }
 
+ private:
   base::test::ScopedFeatureList feature_list_;
+
+ private:
+  std::unique_ptr<MockContentBrowserClient> client_;
 };
 
 IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
@@ -323,6 +341,12 @@ IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
 
   RenderFrameHost* rfh_b = ChildFrameAt(rfh_c, 0);
   RenderFrameHost* rfh_c_2 = ChildFrameAt(rfh_b, 0);
+
+  static_cast<PermissionControllerImpl*>(
+      rfh_c_2->GetBrowserContext()->GetPermissionController())
+      ->SetPermissionOverride(/*origin=*/std::nullopt,
+                              blink::PermissionType::STORAGE_ACCESS_GRANT,
+                              blink::mojom::PermissionStatus::DENIED);
 
   std::unique_ptr<content::TestDevToolsProtocolClient> client =
       std::make_unique<content::TestDevToolsProtocolClient>();

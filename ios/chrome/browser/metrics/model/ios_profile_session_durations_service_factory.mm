@@ -29,9 +29,9 @@ IOSProfileSessionDurationsServiceFactory::GetInstance() {
 }
 
 // Session time in incognito is counted towards the session time in the
-// regular profile. That means that for a user that is signed in and syncing
-// in their regular profile and that is browsing in incognito profile,
-// Chromium will record the session time as being signed in and syncing.
+// regular profile. That means that for a user that is signed in in their
+// regular profile and that is browsing in incognito profile,
+// Chromium will record the session time as being signed in.
 IOSProfileSessionDurationsServiceFactory::
     IOSProfileSessionDurationsServiceFactory()
     : ProfileKeyedServiceFactoryIOS("IOSProfileSessionDurationsService",

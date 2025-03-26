@@ -31,10 +31,11 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
-#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMArg.h"
@@ -97,8 +98,12 @@ class AccountMenuMediatorTest
 
     // Set the profile.
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
@@ -113,7 +118,8 @@ class AccountMenuMediatorTest
         AuthenticationServiceFactory::GetForProfile(profile_.get());
     account_manager_service_ =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
-    test_sync_service_ = std::make_unique<syncer::TestSyncService>();
+    test_sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile_.get()));
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
 
     AddPrimaryIdentity();
@@ -124,7 +130,7 @@ class AccountMenuMediatorTest
         OCMStrictProtocolMock(@protocol(AccountMenuMediatorDelegate));
     consumer_mock_ = OCMStrictProtocolMock(@protocol(AccountMenuConsumer));
     mediator_ = [[AccountMenuMediator alloc]
-          initWithSyncService:SyncService()
+          initWithSyncService:test_sync_service_
         accountManagerService:account_manager_service_
                   authService:authentication_service_
               identityManager:identity_manager_
@@ -135,12 +141,17 @@ class AccountMenuMediatorTest
   }
 
   void TearDown() override {
+    // Avoid dangling service pointers, since `profile_` is destroyed first.
+    fake_system_identity_manager_ = nullptr;
+    authentication_service_ = nullptr;
+    account_manager_service_ = nullptr;
+    test_sync_service_ = nullptr;
+    identity_manager_ = nullptr;
+
     [mediator_ disconnect];
     VerifyMock();
     PlatformTest::TearDown();
   }
-
-  syncer::TestSyncService* SyncService() { return test_sync_service_.get(); }
 
  protected:
   // Ignores any `updateAccountListWithGaiaIDsToAdd` calls on `mock_consumer_`
@@ -159,11 +170,11 @@ class AccountMenuMediatorTest
     EXPECT_OCMOCK_VERIFY((id)authentication_flow_mock_);
   }
 
-  // Set the passphrase required, update the mediator, return the account error
-  // ui info.
-  AccountErrorUIInfo* setPassphraseRequired() {
-    SyncService()->SetInitialSyncFeatureSetupComplete(false);
-    SyncService()->SetPassphraseRequired();
+  // Sign in, set the passphrase required, update the mediator, return the
+  // account error ui info.
+  AccountErrorUIInfo* SignInAndSetPassphraseRequired() {
+    test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+    test_sync_service_->SetPassphraseRequired();
 
     __block AccountErrorUIInfo* errorSentToConsumer = nil;
     OCMExpect([consumer_mock_
@@ -171,7 +182,7 @@ class AccountMenuMediatorTest
           errorSentToConsumer = value;
           return value;
         }]]);
-    SyncService()->FireStateChanged();
+    test_sync_service_->FireStateChanged();
     return errorSentToConsumer;
   }
 
@@ -197,7 +208,7 @@ class AccountMenuMediatorTest
   AuthenticationFlow* authentication_flow_mock_;
   AccountMenuMediator* mediator_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
-  std::unique_ptr<syncer::TestSyncService> test_sync_service_;
+  raw_ptr<syncer::TestSyncService> test_sync_service_;
   raw_ptr<AuthenticationService> authentication_service_;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   raw_ptr<signin::IdentityManager> identity_manager_;
@@ -431,8 +442,8 @@ TEST_P(AccountMenuMediatorTest, TestError) {
   // us to explicitly set that the setup is not complete, and fire the state
   // change to its observer.
 
-  AccountErrorUIInfo* errorSentToConsumer = setPassphraseRequired();
-  AccountErrorUIInfo* expectedError = GetAccountErrorUIInfo(SyncService());
+  AccountErrorUIInfo* errorSentToConsumer = SignInAndSetPassphraseRequired();
+  AccountErrorUIInfo* expectedError = GetAccountErrorUIInfo(test_sync_service_);
 
   AccountErrorUIInfo* actualError = [mediator_ accountErrorUIInfo];
   EXPECT_THAT(actualError, testing::NotNull());
@@ -591,7 +602,7 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
   // only returns `kNeedsPassphrase` and `kSignInNeedsUpdate`. Furthermore,
   // `kSignInNeedsUpdate` is not an error displayed to the user (technically,
   // `GetAccountErrorUIInfo` returns `nil` on `kSignInNeedsUpdate`.)
-  setPassphraseRequired();
+  SignInAndSetPassphraseRequired();
   OCMExpect([delegate_mock_ openPassphraseDialogWithModalPresentation:YES]);
   [mediator_ didTapErrorButton];
   EXPECT_EQ(1, user_actions_.GetActionCount(

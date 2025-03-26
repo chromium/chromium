@@ -28,6 +28,11 @@ mojom_component("mojom") {
 
   deps = [ "//ui/gfx/geometry/mojom" ]
 
+  webui_module_path = "/"
+
+  # ChromeOS relies heavily on old legacy bindings.
+  generate_legacy_js_bindings = true
+
   output_prefix = "mlservice_mojom"
   macro_prefix = "MLSERVICE_MOJOM"
 }

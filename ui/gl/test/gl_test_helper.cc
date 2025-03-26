@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-#include "testing/gtest/include/gtest/gtest.h"
-
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -128,7 +128,8 @@ SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
       SkISize::Make(size.width(), size.height()),
       SkColorInfo(SkColorType::kBGRA_8888_SkColorType,
                   SkAlphaType::kPremul_SkAlphaType, nullptr))));
-  memcpy(sk_bitmap.getAddr(0, 0), bits, sk_bitmap.computeByteSize());
+  UNSAFE_TODO(
+      memcpy(sk_bitmap.getAddr(0, 0), bits, sk_bitmap.computeByteSize()));
 
   return sk_bitmap;
 }

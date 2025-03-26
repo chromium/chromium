@@ -50,11 +50,14 @@ class DataSharingNetworkLoader {
 
   struct LoadResult {
     LoadResult();
-    LoadResult(std::string result_bytes, NetworkLoaderStatus status);
+    LoadResult(std::string result_bytes,
+               NetworkLoaderStatus status,
+               int network_error_code);
     ~LoadResult();
 
     std::string result_bytes;
     NetworkLoaderStatus status;
+    int network_error_code;
   };
 
   // Callback to return the network response to the caller.

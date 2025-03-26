@@ -213,7 +213,8 @@ enum class NotificationCatalogName {
   kChromeAppDeprecation = 194,
   kDownloadImageFromLobster = 195,
   kBocaSpotlightStarted = 196,
-  kMaxValue = kBocaSpotlightStarted
+  kFaceGazeActive = 197,
+  kMaxValue = kFaceGazeActive
 };
 
 // A living catalog that registers system nudges.

@@ -764,6 +764,18 @@ TEST_F(VideoOverlayWindowViewsTest, TimestampNotDrawnWhen2024UIIsDisabled) {
   ASSERT_EQ(nullptr, timestamp);
 }
 
+TEST_F(VideoOverlayWindowViewsTest, LiveStatusNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/0,
+      /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::Seconds(42),
+      /*end_of_media=*/false);
+  overlay_window().SetMediaPosition(media_position);
+  views::Label* live_status = overlay_window().live_status_for_testing();
+  ASSERT_EQ(nullptr, live_status);
+}
+
 TEST_F(VideoOverlayWindowViewsTest,
        ReplayAndForward10SecondsNotDrawnWhen2024UIIsDisabled) {
   overlay_window().ForceControlsVisibleForTesting(true);
@@ -1051,4 +1063,38 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest,
   // Once the drag ends, the controls should be able to hide.
   task_environment()->FastForwardBy(base::Seconds(7));
   EXPECT_TRUE(overlay_window().GetControlsContainerView()->IsDrawn());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveStatusShownForLiveVideos) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::Label* timestamp = overlay_window().timestamp_for_testing();
+  views::Label* live_status = overlay_window().live_status_for_testing();
+  ASSERT_NE(nullptr, timestamp);
+  ASSERT_NE(nullptr, live_status);
+
+  // The timestamp should start out visible while the live status should start
+  // out hidden.
+  EXPECT_FALSE(live_status->GetVisible());
+  EXPECT_TRUE(timestamp->GetVisible());
+
+  // Setting the position to live should hide the timestamp and show the live
+  // status.
+  media_session::MediaPosition live_media_position(
+      /*playback_rate=*/0,
+      /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::Seconds(42),
+      /*end_of_media=*/false);
+  overlay_window().SetMediaPosition(live_media_position);
+  EXPECT_TRUE(live_status->GetVisible());
+  EXPECT_FALSE(timestamp->GetVisible());
+
+  // Setting the position to a non-live video should hide the live status and
+  // show the timestamp.
+  media_session::MediaPosition media_position(/*playback_rate=*/0,
+                                              /*duration=*/base::Seconds(100),
+                                              /*position=*/base::Seconds(42),
+                                              /*end_of_media=*/false);
+  overlay_window().SetMediaPosition(media_position);
+  EXPECT_FALSE(live_status->GetVisible());
+  EXPECT_TRUE(timestamp->GetVisible());
 }

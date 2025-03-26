@@ -822,10 +822,7 @@ void OnListFamilyMembersResponse(
 // Creates, if needed, and presents saved passwords settings. Assumes all modal
 // dialods are dismissed and `baseViewController` is available to present.
 - (void)showSavedPasswordsSettingsAfterModalDismissFromViewController:
-            (UIViewController*)baseViewController
-                                                     showCancelButton:
-                                                         (BOOL)
-                                                             showCancelButton {
+    (UIViewController*)baseViewController {
   if (!baseViewController) {
     // TODO(crbug.com/41352590): Don't pass base view controller through
     // dispatched command.
@@ -837,15 +834,13 @@ void OnListFamilyMembersResponse(
 
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-        showSavedPasswordsSettingsFromViewController:baseViewController
-                                    showCancelButton:showCancelButton];
+        showSavedPasswordsSettingsFromViewController:baseViewController];
     return;
   }
   Browser* browser = self.mainInterface.browser;
-  self.settingsNavigationController = [SettingsNavigationController
-      savePasswordsControllerForBrowser:browser
-                               delegate:self
-                       showCancelButton:showCancelButton];
+  self.settingsNavigationController =
+      [SettingsNavigationController savePasswordsControllerForBrowser:browser
+                                                             delegate:self];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
@@ -2393,16 +2388,12 @@ using UserFeedbackDataCallback =
 
 // TODO(crbug.com/41352590) : Remove show settings commands from MainController.
 - (void)showSavedPasswordsSettingsFromViewController:
-            (UIViewController*)baseViewController
-                                    showCancelButton:(BOOL)showCancelButton {
+    (UIViewController*)baseViewController {
   // Wait for dismiss to complete before trying to present a new view.
   __weak SceneController* weakSelf = self;
   [self dismissModalDialogsWithCompletion:^{
-    [weakSelf
-        showSavedPasswordsSettingsAfterModalDismissFromViewController:
-            baseViewController
-                                                     showCancelButton:
-                                                         showCancelButton];
+    [weakSelf showSavedPasswordsSettingsAfterModalDismissFromViewController:
+                  baseViewController];
   }];
 }
 

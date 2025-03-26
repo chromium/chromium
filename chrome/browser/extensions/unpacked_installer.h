@@ -39,6 +39,25 @@ class PreloadCheckGroup;
 class UnpackedInstaller : public base::RefCountedThreadSafe<UnpackedInstaller>,
                           public ProfileObserver {
  public:
+  // Manifest settings override types.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ManifestSettingsOverrideType)
+  enum ManifestSettingsOverrideType {
+    // No overrides.
+    kNoOverride = 0,
+    // Overrides the default search engine.
+    kSearchEngine = 1,
+    // Overrides the new tab page.
+    kNewTabPage = 2,
+    // Overrides the default search engine and new tab page.
+    kSearchEngineAndNewTabPage = 3,
+
+    kMaxValue = kSearchEngineAndNewTabPage,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:ManifestSettingsOverrideType)
+
   using CompletionCallback = base::OnceCallback<void(const Extension* extension,
                                                      const base::FilePath&,
                                                      const std::string&)>;
@@ -145,9 +164,9 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<UnpackedInstaller>,
   // file IO is allowed.
   bool IndexAndPersistRulesIfNeeded(std::string* error);
 
-  // Records command-line extension metrics organized by developer mode, emitted
-  // when a command line extension is loaded.
-  void RecordCommandLineDeveloperModeMetrics();
+  // Records command-line extension metrics, emitted when a command line
+  // extension is installed.
+  void RecordCommandLineMetrics();
 
   // ProfileObserver
   void OnProfileWillBeDestroyed(Profile* profile) override;

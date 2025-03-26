@@ -39,6 +39,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -910,6 +911,7 @@ public class CustomTabsConnectionTest {
         ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
         ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
     })
+    @DisabledTest(message = "crbug.com/404623209")
     public void testPrefetch() throws Exception {
         prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
@@ -932,6 +934,7 @@ public class CustomTabsConnectionTest {
         ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
         ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
     })
+    @DisabledTest(message = "crbug.com/404623209")
     public void testPrefetchWithWarmup() throws Exception {
         prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
@@ -955,6 +958,7 @@ public class CustomTabsConnectionTest {
         ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
         ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
     })
+    @DisabledTest(message = "crbug.com/404623209")
     public void testPrefetchWithInvalidUri() throws Exception {
         prepareEmbeddedTestServer();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();

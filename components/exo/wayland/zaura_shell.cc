@@ -28,6 +28,7 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/window_state.h"
 #include "base/bit_cast.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -1386,7 +1387,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
       std::string name = base::UTF16ToUTF8(desk->name());
       char* desk_name =
           static_cast<char*>(wl_array_add(&desk_names, name.size() + 1));
-      strcpy(desk_name, name.c_str());
+      UNSAFE_TODO(strcpy(desk_name, name.c_str()));
     }
 
     zaura_shell_send_desks_changed(aura_shell_resource_, &desk_names);

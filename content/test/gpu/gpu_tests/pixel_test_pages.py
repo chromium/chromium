@@ -6,7 +6,6 @@
 # pylint: disable=too-many-lines
 
 from collections.abc import Callable
-from datetime import date
 import json
 import logging
 import os
@@ -568,7 +567,11 @@ class PixelTestPages():
             ]),
         PixelTestPage('pixel_svg_huge.html',
                       base_name + '_SVGHuge',
-                      crop_action=ca.FixedRectCropAction(0, 0, 400, 400)),
+                      crop_action=ca.FixedRectCropAction(0, 0, 400, 400),
+                      matching_algorithm=algo.SobelMatchingAlgorithm(
+                          max_different_pixels=0,
+                          pixel_delta_threshold=0,
+                          edge_threshold=90)),
         PixelTestPage('pixel_webgl_display_p3.html',
                       base_name + '_WebGLDisplayP3',
                       crop_action=standard_crop),
@@ -601,7 +604,6 @@ class PixelTestPages():
             base_name + '_PerspectiveTest',
             crop_action=ca.NonWhiteContentCropAction(
                 initial_crop=ca.FixedRectCropAction(0, 0, 500, 300)),
-            grace_period_end=date(2024, 8, 1),
         ),
     ]
 

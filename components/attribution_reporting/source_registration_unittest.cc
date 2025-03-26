@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/function_ref.h"
+#include "base/test/fuzztest_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -33,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace attribution_reporting {
 namespace {
@@ -904,6 +906,15 @@ TEST(SourceRegistrationTest, SerializeAggregatableNamedBudgetDefs) {
                 base::test::IsJson(test_case.expected_json));
   }
 }
+
+void Parses(base::Value value, SourceType source_type) {
+  std::ignore = SourceRegistration::Parse(std::move(value), source_type);
+}
+
+FUZZ_TEST(SourceRegistrationTest, Parses)
+    .WithDomains(fuzztest::Arbitrary<base::Value>(),
+                 fuzztest::ElementOf({SourceType::kNavigation,
+                                      SourceType::kEvent}));
 
 }  // namespace
 }  // namespace attribution_reporting

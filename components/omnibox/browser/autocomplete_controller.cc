@@ -1078,8 +1078,7 @@ bool AutocompleteController::ShouldRunProvider(
              TemplateURLData::PolicyOrigin::kSearchAggregator)) {
       if (keyword_turl->starter_pack_id() ==
           TemplateURLStarterPackData::kPage) {
-        return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
-               provider->type() == AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH;
+        return provider->type() == AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH;
       }
       switch (provider->type()) {
         // Keyword provider creates the suggestion attached to the keyword chip
@@ -1173,10 +1172,6 @@ bool AutocompleteController::ShouldRunProvider(
     case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
       return history_embeddings::GetFeatureParameters().omnibox_unscoped;
 #endif
-    case AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH:
-      // This provider is only run in '@page' scope, handled with early return
-      // above.
-      return false;
     default:
       break;
   }
@@ -1604,20 +1599,18 @@ void AutocompleteController::AttachActions() {
   }
 
   #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Attach the contextual search action in the page keyword mode.
-  // TODO(crbug.com/403325029): Once a provider is created for contextual search
-  // actions, move this logic there.
+  // Attach the contextual search fulfillment actions in the @page keyword mode.
   if (base::FeatureList::IsEnabled(
           omnibox::kContextualZeroSuggestLensFulfillment) &&
       input_.IsZeroSuggest()) {
-    internal_result_.AttachContextualSearchActionToMatches();
+    internal_result_.AttachContextualSearchFulfillmentActionToMatches();
   } else if (input_.InKeywordMode()) {
     AutocompleteInput keyword_input = input_;
     const TemplateURL* keyword_turl =
         AutocompleteInput::GetSubstitutingTemplateURLForInput(
             template_url_service_, &keyword_input);
     if (keyword_turl->starter_pack_id() == TemplateURLStarterPackData::kPage) {
-      internal_result_.AttachContextualSearchActionToMatches();
+      internal_result_.AttachContextualSearchFulfillmentActionToMatches();
       return;
     }
   }

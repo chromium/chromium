@@ -40,6 +40,7 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="2758123043070977469">Hisobingizni autentifikatsiya qilishda xatolik yuz berdi. Keyinroq qaytadan urining.</translation>
 <translation id="2803375539583399270">PIN kodni kiriting</translation>
 <translation id="2919669478609886916">Siz hozirda bu kompyuterni boshqa foydalanuvchi bilan ulashmoqdasiz. Ulashishni davom ettirasizmi?</translation>
+<translation id="2929683002824598593">Qurilmani ulashish</translation>
 <translation id="2939145106548231838">Hostdagi haqiqiylik tekshiruvi</translation>
 <translation id="3027681561976217984">Sensorli rejim</translation>
 <translation id="3106379468611574572">Masofaviy kompyuter ulanish so‘roviga javob bermayapti.Uning internetga ulanganligini tekshiring va qaytadan urinib ko‘ring.</translation>
@@ -117,10 +118,12 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 <translation id="6178645564515549384">Masofaviy yordam uchun shaxsiy xabarlashuv hosti</translation>
 <translation id="618120821413932081">Masofaviy ish stolini oynaga moslash</translation>
 <translation id="6223301979382383752">Ekranni yozib olish sozlamalarini ochish</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ekran, klaviatura va sichqonchadan foydalanishga ruxsat olmoqchi. Ruxsat berilsinmi?</translation>
 <translation id="6284412385303060032">Kirish ekrani host konsoli hosti Curtain rejimini qo‘llab-quvvatlamaydi (foydalanuvchi seansiga almashilmoqda).</translation>
 <translation id="6542902059648396432">Muammo haqida xabar yuborish...</translation>
 <translation id="6583902294974160967">Yordam</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del yuborish</translation>
+<translation id="6625262630437221505">{0,plural, =1{Hech qanday chora koʻrilmasa, qurilma # soniyadan avtomatik axborot ulasha boshlaydi.}other{Hech qanday chora koʻrilmasa, qurilma # soniyadan avtomatik axborot ulasha boshlaydi.}}</translation>
 <translation id="6654753848497929428">Ruxsat</translation>
 <translation id="677755392401385740"><ph name="HOST_USERNAME" /> uchun host ishga tushdi.</translation>
 <translation id="6902524959760471898">URL manzilni <ph name="PRODUCT_NAME" /> mijozda ochish uchun yordamchi ilova</translation>

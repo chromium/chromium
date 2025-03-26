@@ -18,7 +18,7 @@ group("build") {
 }
 
 switch_access_dir =
-    "$root_out_dir/resources/chromeos/accessibility/switch_access"
+    "$root_out_dir/resources/chromeos/accessibility/switch_access/mv2"
 
 # Directory where typescript build will occur.
 ts_build_staging_dir = "$target_gen_dir/ts_build_staging"

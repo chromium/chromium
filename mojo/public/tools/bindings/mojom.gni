@@ -86,14 +86,10 @@ if (is_chromeos) {
 # ARC) we have to explicitly opt out there even when NaCl is enabled (and
 # consequently also when building for NaCl toolchains.) For this reason we
 # check |target_os| explicitly, as it's consistent across all toolchains.
-#
-# TODO(crbug.com/40118868): Remove !chromeos_is_browser_only once
-# lacros-chrome switches to target_os="chromeos"
 enable_scrambled_message_ids =
     enable_mojom_message_id_scrambling &&
     (is_mac || is_win || (is_linux && !is_castos) ||
-     ((enable_nacl || is_nacl) &&
-      (target_os != "chromeos" && !chromeos_is_browser_only)))
+     ((enable_nacl || is_nacl) && target_os != "chromeos"))
 
 _mojom_tools_root = "//mojo/public/tools"
 _mojom_library_root = "$_mojom_tools_root/mojom/mojom"

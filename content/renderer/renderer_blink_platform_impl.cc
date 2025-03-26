@@ -512,9 +512,11 @@ std::unique_ptr<WebAudioDevice> RendererBlinkPlatformImpl::CreateAudioDevice(
     const WebAudioSinkDescriptor& sink_descriptor,
     unsigned number_of_output_channels,
     const blink::WebAudioLatencyHint& latency_hint,
+    std::optional<float> context_sample_rate,
     media::AudioRendererSink::RenderCallback* callback) {
   return RendererWebAudioDeviceImpl::Create(
-      sink_descriptor, number_of_output_channels, latency_hint, callback);
+      sink_descriptor, number_of_output_channels, latency_hint,
+      context_sample_rate, callback);
 }
 
 bool RendererBlinkPlatformImpl::DecodeAudioFileData(

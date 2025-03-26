@@ -241,24 +241,23 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
       ax::mojom::StringListAttribute::kAriaNotificationAnnouncements);
   const auto& priority_properties = node_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties);
-  const std::vector<std::string> notification_ids =
-      node_data.GetStringListAttribute(
-          ax::mojom::StringListAttribute::kAriaNotificationIds);
   const std::vector<std::int32_t> interrupt_properties =
       node_data.GetIntListAttribute(
           ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties);
+  const std::vector<std::string> types = node_data.GetStringListAttribute(
+      ax::mojom::StringListAttribute::kAriaNotificationTypes);
 
   DCHECK_EQ(announcements.size(), priority_properties.size());
-  DCHECK_EQ(announcements.size(), notification_ids.size());
   DCHECK_EQ(announcements.size(), interrupt_properties.size());
+  DCHECK_EQ(announcements.size(), types.size());
 
   for (std::size_t i = 0; i < announcements.size(); ++i) {
     FireAriaNotificationEvent(wrapper, announcements[i],
                               static_cast<ax::mojom::AriaNotificationPriority>(
                                   priority_properties[i]),
-                              notification_ids[i],
                               static_cast<ax::mojom::AriaNotificationInterrupt>(
-                                  interrupt_properties[i]));
+                                  interrupt_properties[i]),
+                              types[i]);
   }
 }
 

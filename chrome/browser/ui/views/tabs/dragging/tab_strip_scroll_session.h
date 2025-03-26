@@ -19,7 +19,7 @@ class TabDragWithScrollManager {
   // also starts a scroll session if needed.
   // TODO(crbug.com/40875136): Make this an observer of the scroll_session
   // class.
-  virtual void MoveAttached(gfx::Point point_in_screen, bool just_attached) = 0;
+  virtual void MoveAttached(gfx::Point point_in_screen) = 0;
 
   // Returns a rect starting from the origin of the first dragged tab
   // to the end of the last dragged tab.

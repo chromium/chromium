@@ -11,16 +11,19 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -94,16 +97,29 @@ AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
 bool BuildAutocompleteMatches(AutocompleteProvider* provider,
                               AutocompleteProviderClient* client,
                               const history::MostVisitedURLList& urls,
-                              ACMatches& matches) {
+                              ACMatches& matches,
+                              const AutocompleteInput& input) {
   if (urls.empty()) {
     return false;
   }
+  scoped_refptr<history::TopSites> top_sites = client->GetTopSites();
+  if (!top_sites) {
+    return false;
+  }
+
+  const TabMatcher& tab_matcher = client->GetTabMatcher();
+
   TemplateURLService* const url_service = client->GetTemplateURLService();
   int relevance = kMostVisitedTilesIndividualHighRelevance;
   for (const auto& url : urls) {
-    // Skip SRP results from DSP on Desktop. On-focus ZPS suggestions should
-    // be sites.
-    if (url_service->IsSearchResultsPageFromDefaultSearchProvider(url.url)) {
+    // Skip the match if the following is true:
+    // - It is an SRP result from DSP
+    // - It is a blocked site
+    // - A tab already exists with the match url
+    if (url_service->IsSearchResultsPageFromDefaultSearchProvider(url.url) ||
+        top_sites->IsBlocked(url.url) ||
+        tab_matcher.IsTabOpenWithURL(url.url, &input,
+                                     /*exclude_active_tab =*/false)) {
       continue;
     }
     auto match = BuildMatch(provider, client, url.title, url.url, relevance,
@@ -245,20 +261,43 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
 
   done_ = false;
 
+  const TabMatcher& tab_matcher = client_->GetTabMatcher();
+
   // TODO(ender): Relocate this to StartPrefetch() when additional prefetch
   // contexts are available.
-  // TopSites updates itself after a delay. To ensure up-to-date results,
-  // force an update now.
-  top_sites->SyncWithHistory();
-  top_sites->GetMostVisitedURLs(
-      base::BindRepeating(&MostVisitedSitesProvider::OnMostVisitedUrlsAvailable,
-                          request_weak_ptr_factory_.GetWeakPtr()));
+  auto url_suggestions_on_focus_config =
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
+  if (url_suggestions_on_focus_config.enabled &&
+      url_suggestions_on_focus_config.directly_query_history_service) {
+    // The requested results size is the maximum amount of suggestions
+    // that can be shown in the omnibox in addition to the number of blocked
+    // sites and open tabs. Add 1 to `GetOpenTabs` since it doesn't consider
+    // the currently active tab.
+    client_->GetHistoryService()->QueryMostVisitedURLs(
+        top_sites->NumBlockedSites() +
+            (tab_matcher.GetOpenTabs(&input).size() + 1) +
+            url_suggestions_on_focus_config.max_suggestions,
+        base::BindOnce(
+            &MostVisitedSitesProvider::OnMostVisitedUrlsFromHistoryAvailable,
+            request_weak_ptr_factory_.GetWeakPtr(), input),
+        &cancelable_task_tracker_,
+        url_suggestions_on_focus_config.most_visited_recency_factor,
+        url_suggestions_on_focus_config.most_visited_recency_window);
+  } else {
+    // TopSites updates itself after a delay. To ensure up-to-date results,
+    // force an update now.
+    top_sites->SyncWithHistory();
+    top_sites->GetMostVisitedURLs(base::BindRepeating(
+        &MostVisitedSitesProvider::OnMostVisitedUrlsAvailable,
+        request_weak_ptr_factory_.GetWeakPtr(), input));
+  }
 }
 
 void MostVisitedSitesProvider::Stop(bool clear_cached_results,
                                     bool due_to_user_inactivity) {
   AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
   request_weak_ptr_factory_.InvalidateWeakPtrs();
+  cancelable_task_tracker_.TryCancelAll();
 }
 
 MostVisitedSitesProvider::MostVisitedSitesProvider(
@@ -280,14 +319,24 @@ MostVisitedSitesProvider::MostVisitedSitesProvider(
 MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 
 void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
+    AutocompleteInput input,
     const history::MostVisitedURLList& urls) {
   done_ = true;
   if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled) {
-    if (BuildAutocompleteMatches(this, client_, urls, matches_)) {
+    if (BuildAutocompleteMatches(this, client_, urls, matches_, input)) {
       NotifyListeners(true);
     }
   } else if (BuildTileSuggest(this, client_, device_form_factor_, urls,
                               matches_)) {
+    NotifyListeners(true);
+  }
+}
+
+void MostVisitedSitesProvider::OnMostVisitedUrlsFromHistoryAvailable(
+    AutocompleteInput input,
+    history::MostVisitedURLList sites) {
+  done_ = true;
+  if (BuildAutocompleteMatches(this, client_, sites, matches_, input)) {
     NotifyListeners(true);
   }
 }
@@ -327,6 +376,11 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
          (page_url.scheme() == url::kAboutScheme) ||
          (page_url.scheme() ==
           client_->GetEmbedderRepresentationOfAboutScheme())))) {
+    return false;
+  }
+
+  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled &&
+      page_url.scheme() == content::kChromeUIScheme) {
     return false;
   }
 

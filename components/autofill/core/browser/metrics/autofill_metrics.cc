@@ -1272,9 +1272,9 @@ void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
     ukm::builders::Autofill2_FieldInfoAfterSubmission builder(source_id);
     builder
         .SetFormSessionIdentifier(
-            AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id()))
+            autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()))
         .SetFieldSessionIdentifier(
-            AutofillMetrics::FieldGlobalIdToHash64Bit(field->global_id()));
+            autofill_metrics::FieldGlobalIdToHash64Bit(field->global_id()));
 
     const FieldTypeSet& type_set = field->possible_types();
     if (!type_set.empty()) {
@@ -1537,22 +1537,6 @@ void AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory() {
                             /*delete_confirmed=*/true);
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
                             /*delete_confirmed=*/true);
-}
-
-// static
-uint64_t AutofillMetrics::FormGlobalIdToHash64Bit(
-    const FormGlobalId& form_global_id) {
-  return StrToHash64Bit(
-      base::NumberToString(form_global_id.renderer_id.value()) +
-      form_global_id.frame_token.ToString());
-}
-
-// static
-uint64_t AutofillMetrics::FieldGlobalIdToHash64Bit(
-    const FieldGlobalId& field_global_id) {
-  return StrToHash64Bit(
-      base::NumberToString(field_global_id.renderer_id.value()) +
-      field_global_id.frame_token.ToString());
 }
 
 }  // namespace autofill

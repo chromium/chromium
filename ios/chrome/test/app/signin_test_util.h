@@ -32,9 +32,8 @@ void ResetMockAuthentication();
 // and resets kIosBookmarkPromoAlreadySeen flag for bookmarks.
 void ResetSigninPromoPreferences();
 
-// Revokes the Sync consent of the primary account. The user will be in the
-// signed-in state.
-void SignInWithoutSync(id<SystemIdentity> identity);
+// The user will be in the signed-in state.
+void SignIn(id<SystemIdentity> identity);
 
 // Resets all preferences related to History Sync Opt-In.
 void ResetHistorySyncPreferencesForTesting();

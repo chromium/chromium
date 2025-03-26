@@ -50,8 +50,8 @@ class AIManager : public base::SupportsUserData::Data,
   void CreateLanguageModelForCloning(
       base::PassKey<AILanguageModel> pass_key,
       blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
+      on_device_model::Capabilities capabilities,
       AIContextBoundObjectSet& context_bound_object_set,
-      AIUtils::LanguageCodes expected_input_languages,
       const AILanguageModel::Context& context,
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote,
@@ -104,8 +104,7 @@ class AIManager : public base::SupportsUserData::Data,
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateLanguageModel(
-      std::optional<std::vector<blink::mojom::AILanguageCodePtr>>
-          expected_input_languages,
+      blink::mojom::AILanguageModelCreateOptionsPtr options,
       CanCreateLanguageModelCallback callback) override;
   void CreateLanguageModel(
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
@@ -147,8 +146,8 @@ class AIManager : public base::SupportsUserData::Data,
   std::unique_ptr<CreateLanguageModelOnDeviceSessionTask>
   CreateLanguageModelInternal(
       blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
+      on_device_model::Capabilities capabilities,
       AIContextBoundObjectSet& context_bound_object_set,
-      AIUtils::LanguageCodes expected_input_languages,
       base::OnceCallback<void(AILanguageModelOrCreationError)> callback,
       const std::optional<const AILanguageModel::Context>& context =
           std::nullopt,

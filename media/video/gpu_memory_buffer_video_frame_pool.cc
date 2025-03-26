@@ -983,7 +983,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
     // shutdown we also need to remove the pool entry for the resource.
     if (!in_shutdown_) {
       auto it = std::ranges::find(resources_pool_, frame_resource);
-      CHECK(it != resources_pool_.end(), base::NotFatalUntil::M130);
+      CHECK(it != resources_pool_.end());
       resources_pool_.erase(it);
     }
 

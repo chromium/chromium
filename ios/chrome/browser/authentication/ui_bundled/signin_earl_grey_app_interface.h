@@ -84,12 +84,6 @@ enum class UserSelectableType;
 + (void)signinWithFakeManagedIdentityInPersonalProfile:
     (FakeSystemIdentity*)identity;
 
-// TODO(crbug.com/40066949): Remove all tests invoking this when deleting the
-// MaybeMigrateSyncingUserToSignedIn() call on //ios (not right after launching
-// kMigrateSyncingUserToSignedIn).
-// `fakeIdentity` is added if it was not added yet.
-+ (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity;
-
 // Signs in with `identity` without history sync consent.
 // `fakeIdentity` is added if it was not added yet.
 + (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity;

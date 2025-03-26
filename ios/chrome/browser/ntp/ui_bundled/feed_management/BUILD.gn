@@ -38,17 +38,3 @@ source_set("feed_management_ui") {
 source_set("navigation_delegate") {
   sources = [ "feed_management_navigation_delegate.h" ]
 }
-
-source_set("eg2_tests") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [ "feed_management_egtest.mm" ]
-  deps = [
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-  ]
-}

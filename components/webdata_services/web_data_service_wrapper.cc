@@ -27,6 +27,8 @@
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
@@ -85,6 +87,15 @@ void InitWalletOfferSyncBridgeOnDBSequence(
 }
 
 #if !BUILDFLAG(IS_IOS)
+void InitLoyaltyCardSyncBridgeOnDBSequence(
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
+    const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
+    autofill::AutofillWebDataBackend* autofill_backend) {
+  DCHECK(db_task_runner->RunsTasksInCurrentSequence());
+  autofill::LoyaltyCardSyncBridge::CreateForWebDataServiceAndBackend(
+      autofill_backend, autofill_web_data.get());
+}
+
 void InitWalletUsageDataSyncBridgeOnDBSequence(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
@@ -211,6 +222,11 @@ WebDataServiceWrapper::WebDataServiceWrapper(
       std::make_unique<autofill::AutofillSyncMetadataTable>());
   account_database_->AddTable(
       std::make_unique<autofill::PaymentsAutofillTable>());
+#if !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+    account_database_->AddTable(std::make_unique<autofill::ValuablesTable>());
+  }
+#endif
   account_database_->LoadDatabase(os_crypt);
 
   account_autofill_web_data_ =
@@ -224,8 +240,12 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   account_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletOfferSyncBridgeOnDBSequence, db_task_runner,
                      account_autofill_web_data_));
-
 #if !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+    account_autofill_web_data_->GetAutofillBackend(
+        base::BindOnce(&InitLoyaltyCardSyncBridgeOnDBSequence, db_task_runner,
+                       account_autofill_web_data_));
+  }
   account_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence, db_task_runner,
                      account_autofill_web_data_));

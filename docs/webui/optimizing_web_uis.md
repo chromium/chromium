@@ -5,7 +5,7 @@
 In order to build with a fast configuration, try setting these options in your
 GN args:
 
-```
+```python
 optimize_webui = true
 is_debug = false
 ```

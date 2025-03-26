@@ -182,9 +182,6 @@ public final class ProductionSupportedFlagList {
                 VizFeatures.WEBVIEW_ENABLE_ADPF_RENDERER_MAIN,
                 "Include Renderer Main into ADPF session"),
         Flag.baseFeature(
-                VizFeatures.WEBVIEW_FRAME_RATE_HINTS,
-                "Provide frame rate hints to View system if supported by OS"),
-        Flag.baseFeature(
                 VizFeatures.ALLOW_UNDAMAGED_NONROOT_RENDER_PASS_TO_SKIP,
                 "Enable optimization for skipping undamaged nonroot render passes."),
         Flag.baseFeature(
@@ -864,9 +861,6 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.METRICS_TRACING_CALCULATION_REDUCTION,
                 "Reduces Renderer event latency attribution to only during tracing."),
         Flag.baseFeature(BlinkFeatures.STREAMLINE_RENDERER_INIT),
-        Flag.baseFeature(
-                BlinkFeatures.STATIC_ANIMATION_OPTIMIZATION,
-                "Optimize handling of static properties during animations."),
         Flag.baseFeature("LazyBindJsInjection"),
         Flag.baseFeature(AwFeatures.WEBVIEW_MUTE_AUDIO, "Enables WebView audio to be muted."),
         Flag.baseFeature("WebViewVizUseThreadPool"),
@@ -1077,6 +1071,10 @@ public final class ProductionSupportedFlagList {
                         + " background thread. Otherwise runs startup synchronously.\n"
                         + " - caches any chromium startup exception and rethrows it if startup is"
                         + " retried without a restart."),
+        Flag.baseFeature(
+                CcFeatures.EXPORT_FRAME_TIMING_AFTER_FRAME_DONE,
+                "When enabled, moves the layer tree client's metric export call for from beginning"
+                        + " of the subsequent frame to the end of the subsequent frame."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

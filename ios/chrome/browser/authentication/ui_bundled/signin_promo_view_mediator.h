@@ -84,8 +84,8 @@ enum class SigninPromoAction {
 // (in that case the button opens a dialog to add an account instead).
 // When the user is signed-out and has accounts on the device, this is the
 // default identity.
-// when the user is signed-in and not syncing, this is the signed-in identity
-// (not necessarily the default one).
+// When the user is signed-in, this is the signed-in identity (not necessarily
+// the default one).
 @property(nonatomic, strong, readonly) id<SystemIdentity> displayedIdentity;
 
 // Sign-in promo view state. kNeverVisible by default.

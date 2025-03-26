@@ -28,7 +28,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="@null"
+        android:text="@string/bookmark_widget_empty_msg"
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         android:visibility="gone" />
 

@@ -26,7 +26,8 @@ BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
       // overridden when used.
       return kBadgeTypePermissionsCamera;
     case InfobarType::kInfobarTypeParcelTracking:
-      return kBadgeTypeParcelTracking;
+      // TODO(crbug.com/391002352): Remove kInfobarTypeParcelTracking entirely.
+      NOTREACHED();
     default:
       return kBadgeTypeNone;
   }
@@ -48,8 +49,6 @@ InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
       // Falls through.
     case kBadgeTypePermissionsMicrophone:
       return InfobarType::kInfobarTypePermissions;
-    case kBadgeTypeParcelTracking:
-      return InfobarType::kInfobarTypeParcelTracking;
     default:
       NOTREACHED() << "Unsupported badge type.";
   }

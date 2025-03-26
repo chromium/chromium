@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -100,6 +101,13 @@ void TabFeatures::ReplaceTabFeaturesForTesting(TabFeaturesFactory factory) {
   f = std::move(factory);
 }
 
+LensOverlayController* TabFeatures::lens_overlay_controller() {
+  // LensSearchController won't exist on non-normal windows.
+  return lens_search_controller_
+             ? lens_search_controller_->lens_overlay_controller()
+             : nullptr;
+}
+
 void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   CHECK(!initialized_);
   initialized_ = true;
@@ -120,7 +128,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.
   if (tab.IsInNormalWindow()) {
-    lens_overlay_controller_ = CreateLensController(&tab, profile);
+    lens_search_controller_ = CreateLensController(&tab);
+    lens_search_controller_->Initialize(
+        profile->GetVariationsClient(),
+        IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+        SyncServiceFactory::GetForProfile(profile),
+        ThemeServiceFactory::GetForProfile(profile));
 
     // Each time a new tab is created, validate the topics calculation schedule
     // to help investigate a scheduling bug (crbug.com/343750866).
@@ -263,14 +276,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
 TabFeatures::TabFeatures() = default;
 
-std::unique_ptr<LensOverlayController> TabFeatures::CreateLensController(
-    TabInterface* tab,
-    Profile* profile) {
-  return std::make_unique<LensOverlayController>(
-      tab, profile->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-      SyncServiceFactory::GetForProfile(profile),
-      ThemeServiceFactory::GetForProfile(profile));
+std::unique_ptr<LensSearchController> TabFeatures::CreateLensController(
+    TabInterface* tab) {
+  return std::make_unique<LensSearchController>(tab);
 }
 
 std::unique_ptr<commerce::CommerceUiTabHelper>

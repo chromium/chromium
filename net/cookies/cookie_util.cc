@@ -311,17 +311,25 @@ enum class StorageAccessNetRequestKind {
   // The request had the `kStorageAccessGrantEligible` override, and was
   // same-origin.
   kSameOrigin = 0,
-  // The request had the `kStorageAccessGrantEligible` override, and was
+  // Deprecated: The request had the `kStorageAccessGrantEligible` override, and
+  // was
   // cross-origin, same-site.
-  kCrossOriginSameSite = 1,
+  // kCrossOriginSameSite = 1,
+
   // The request had the `kStorageAccessGrantEligible` override, and was
   // cross-site.
   kCrossSite = 2,
-  kMaxValue = kCrossSite
+  // The request had the `kStorageAccessGrantEligible` override, and was
+  // cross-origin, same-site, and included credentials.
+  kCrossOriginSameSiteCredentialsIncluded = 3,
+  // The request had the `kStorageAccessGrantEligible` override, and was
+  // cross-origin, same-site, but did not include credentials.
+  kCrossOriginSameSiteCredentialsNotIncluded = 4,
+  kMaxValue = kCrossOriginSameSiteCredentialsNotIncluded
 };
 
 void RecordStorageAccessNetRequestMetric(StorageAccessNetRequestKind kind) {
-  base::UmaHistogramEnumeration("Net.HttpJob.StorageAccessNetRequest", kind);
+  base::UmaHistogramEnumeration("Net.HttpJob.StorageAccessNetRequest2", kind);
 }
 
 }  // namespace
@@ -1141,7 +1149,8 @@ bool ShouldAddInitialStorageAccessApiOverride(
     const GURL& url,
     StorageAccessApiStatus api_status,
     base::optional_ref<const url::Origin> request_initiator,
-    bool emit_metrics) {
+    bool emit_metrics,
+    bool credentials_mode_include) {
   if (api_status != StorageAccessApiStatus::kAccessViaAPI ||
       !request_initiator) {
     return false;
@@ -1154,7 +1163,9 @@ bool ShouldAddInitialStorageAccessApiOverride(
   if (request_initiator->IsSameOriginWith(origin)) {
     kind = kSameOrigin;
   } else if (SchemefulSite::IsSameSite(request_initiator.value(), origin)) {
-    kind = kCrossOriginSameSite;
+    kind = credentials_mode_include
+               ? kCrossOriginSameSiteCredentialsIncluded
+               : kCrossOriginSameSiteCredentialsNotIncluded;
   }
   if (emit_metrics) {
     RecordStorageAccessNetRequestMetric(kind);

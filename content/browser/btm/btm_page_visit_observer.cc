@@ -20,9 +20,16 @@ BtmNavigationInfo::BtmNavigationInfo(NavigationHandle& navigation_handle)
     : was_user_initiated(!navigation_handle.IsRendererInitiated() ||
                          navigation_handle.HasUserGesture()),
       was_renderer_initiated(navigation_handle.IsRendererInitiated()),
-      page_transition(navigation_handle.GetPageTransition()) {}
+      page_transition(navigation_handle.GetPageTransition()),
+      destination({navigation_handle.GetURL(),
+                   navigation_handle.GetNextPageUkmSourceId()}) {
+  CHECK(navigation_handle.HasCommitted());
+}
 BtmNavigationInfo::BtmNavigationInfo(const BtmNavigationInfo&) = default;
+BtmNavigationInfo& BtmNavigationInfo::operator=(const BtmNavigationInfo&) =
+    default;
 BtmNavigationInfo::BtmNavigationInfo(BtmNavigationInfo&&) = default;
+BtmNavigationInfo& BtmNavigationInfo::operator=(BtmNavigationInfo&&) = default;
 BtmNavigationInfo::~BtmNavigationInfo() = default;
 
 BtmPageVisitObserver::BtmPageVisitObserver(WebContents* web_contents,
@@ -69,6 +76,7 @@ class NavigationState
 
   // Returns the navigation info paired with the cookie access of the final
   // (i.e. committed) URL of the navigation.
+  // Precondition: `navigation_handle.HasCommitted()` must be `true`.
   std::pair<BtmNavigationInfo, BtmDataAccessType> CreateNavigationInfo(
       NavigationHandle& navigation_handle) {
     BtmNavigationInfo navigation(navigation_handle);
@@ -168,8 +176,7 @@ void BtmPageVisitObserver::DidFinishNavigation(
       state->CreateNavigationInfo(*navigation_handle);
   // Don't report the visit right away; put it in the pending queue and wait a
   // bit to see if we receive any late cookie notifications.
-  pending_visits_.emplace_back(std::move(current_page_), std::move(navigation),
-                               navigation_handle->GetURL());
+  pending_visits_.emplace_back(std::move(current_page_), std::move(navigation));
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BtmPageVisitObserver::ReportVisit,
@@ -186,7 +193,7 @@ void BtmPageVisitObserver::DidFinishNavigation(
 void BtmPageVisitObserver::ReportVisit() {
   CHECK(!pending_visits_.empty());
   VisitTuple& visit = pending_visits_.front();
-  callback_.Run(visit.prev_page, visit.navigation, visit.url);
+  callback_.Run(visit.prev_page, visit.navigation);
   pending_visits_.pop_front();
 }
 
@@ -209,6 +216,17 @@ void BtmPageVisitObserver::OnCookiesAccessed(
       details.source == CookieAccessDetails::Source::kNavigation;
   if (details.blocked_by_policy || is_passive_access ||
       !btm::IsOrWasInPrimaryPage(*render_frame_host)) {
+    return;
+  }
+
+  // Attribute accesses by iframes and other subresources to the first-party
+  // page they're embedded in.
+  const GURL& first_party_url = GetFirstPartyURL(*render_frame_host);
+
+  // BTM is only turned on when non-CHIPS 3PCs are blocked, so mirror that
+  // behavior by ignoring non-CHIPS 3PC accesses.
+  if (!HasCHIPS(details.cookie_access_result_list) &&
+      !IsSameSiteForBtm(first_party_url, details.url)) {
     return;
   }
 
@@ -237,10 +255,8 @@ void BtmPageVisitObserver::OnCookiesAccessed(
 
   // If the cookie was accessed by a subresource request in a now-bfcached
   // page, try to find that page's visit.
-  const GURL& page_url =
-      render_frame_host->GetMainFrame()->GetLastCommittedURL();
   for (VisitTuple& visit : pending_visits_) {
-    if (page_url == visit.prev_page.url) {
+    if (first_party_url == visit.prev_page.url) {
       visit.prev_page.had_qualifying_storage_access = true;
       return;
     }
@@ -257,8 +273,17 @@ void BtmPageVisitObserver::OnCookiesAccessed(
     return;
   }
 
-  if (!navigation_handle->IsInMainFrame()) {
-    // Subframe navigation
+  bool is_subframe_navigation = !navigation_handle->IsInMainFrame();
+  if (is_subframe_navigation) {
+    const GURL& first_party_url = GetFirstPartyURL(*navigation_handle);
+    // BTM is only turned on when non-CHIPS 3PCs are blocked, so mirror that
+    // behavior by ignoring non-CHIPS 3PC accesses.
+    if (!HasCHIPS(details.cookie_access_result_list) &&
+        !IsSameSiteForBtm(first_party_url, details.url)) {
+      return;
+    }
+
+    // Attribute subframe storage accesses to the top-level page.
     current_page_.had_qualifying_storage_access = true;
     return;
   }

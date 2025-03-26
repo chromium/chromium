@@ -120,7 +120,7 @@ void V4L2Device::OnQueueDestroyed(v4l2_buf_type buf_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   auto it = queues_.find(buf_type);
-  CHECK(it != queues_.end(), base::NotFatalUntil::M130);
+  CHECK(it != queues_.end());
   queues_.erase(it);
 }
 

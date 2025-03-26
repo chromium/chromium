@@ -19,7 +19,7 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/browser/interest_group/interest_group_auction.h"
-#include "content/browser/interest_group/privacy_sandbox_coordinator_test_util.h"
+#include "content/public/test/privacy_sandbox_coordinator_test_util.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/common/oblivious_http_header_key_config.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "testing/gtest/include/gtest/gtest.h"

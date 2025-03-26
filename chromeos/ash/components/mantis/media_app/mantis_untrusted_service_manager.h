@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/mantis/mojom/mantis_service.mojom.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -55,6 +56,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
   void OnQueryDone(
       base::OnceCallback<void(bool)> callback,
       chromeos::mojo_service_manager::mojom::ErrorOrServiceStatePtr result);
+  mojo::PendingRemote<chromeos::machine_learning::mojom::TextClassifier>
+  GetTextClassifier();
   void OnInitializeDone(
       CreateCallback callback,
       mojo::PendingRemote<mantis::mojom::MantisProcessor> processor,
@@ -63,6 +66,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
   mojo::Remote<mantis::mojom::MantisService> cros_service_;
   mojo::UniqueReceiverSet<mantis::mojom::PlatformModelProgressObserver>
       progress_observers_;
+  mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
+      ml_service_;
 
   std::unique_ptr<specialized_features::FeatureAccessChecker> access_checker_;
   std::unique_ptr<MantisUntrustedService> mantis_untrusted_service_;

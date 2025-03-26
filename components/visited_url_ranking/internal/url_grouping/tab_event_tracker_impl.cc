@@ -25,6 +25,12 @@ void TabEventTrackerImpl::DidSelectTab(int tab_id,
   on_new_event_callback_.Run();
 }
 
+void TabEventTrackerImpl::WillCloseTab(int tab_id) {}
+
+void TabEventTrackerImpl::TabClosureUndone(int tab_id) {}
+
+void TabEventTrackerImpl::TabClosureCommitted(int tab_id) {}
+
 void TabEventTrackerImpl::DidMoveTab(int tab_id,
                                      int new_index,
                                      int current_index) {}

@@ -34,6 +34,14 @@ class AILanguageDetector final : public ScriptWrappable {
       ExceptionState& exception_state);
   void destroy(ScriptState*);
 
+  ScriptPromise<IDLDouble> measureInputUsage(
+      ScriptState* script_state,
+      const WTF::String& input,
+      AILanguageDetectorDetectOptions* options,
+      ExceptionState& exception_state);
+
+  double inputQuota() const;
+
   // TODO(crbug.com/349927087): Make the functions below free functions.
   static HeapVector<Member<LanguageDetectionResult>> ConvertResult(
       WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions);

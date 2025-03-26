@@ -758,7 +758,7 @@ TEST(VariationsStudyFilteringTest, CheckStudyBothGoogleGroupFiltersSet) {
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(
       filter,
       ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>())));
-  EXPECT_FALSE(internal::CheckStudyGoogleGroup(
+  EXPECT_TRUE(internal::CheckStudyGoogleGroup(
       filter,
       ClientFilterableStateForGoogleGroups(base::flat_set<uint64_t>({1}))));
   EXPECT_FALSE(internal::CheckStudyGoogleGroup(

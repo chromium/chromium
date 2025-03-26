@@ -308,6 +308,11 @@ void NetworkServiceClient::OnPrivateNetworkAccessPermissionRequired(
   std::move(callback).Run(false);
 }
 
+void NetworkServiceClient::OnLocalNetworkAccessPermissionRequired(
+    OnLocalNetworkAccessPermissionRequiredCallback callback) {
+  std::move(callback).Run(false);
+}
+
 void NetworkServiceClient::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,

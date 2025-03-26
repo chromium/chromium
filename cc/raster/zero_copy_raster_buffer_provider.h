@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/trees/raster_capabilities.h"
 
@@ -22,6 +23,38 @@ class ConvertableToTraceFormat;
 }
 
 namespace cc {
+
+// RasterBuffer for the zero copy upload, which is given to the raster worker
+// threads for raster/upload.
+class ZeroCopyRasterBufferImpl : public RasterBuffer {
+ public:
+  ZeroCopyRasterBufferImpl(
+      const ResourcePool::InUsePoolResource& in_use_resource,
+      scoped_refptr<gpu::SharedImageInterface> sii);
+
+  ZeroCopyRasterBufferImpl(const ZeroCopyRasterBufferImpl&) = delete;
+
+  ~ZeroCopyRasterBufferImpl() override;
+
+  ZeroCopyRasterBufferImpl& operator=(const ZeroCopyRasterBufferImpl&) = delete;
+
+  // Overridden from RasterBuffer:
+  void Playback(const RasterSource* raster_source,
+                const gfx::Rect& raster_full_rect,
+                const gfx::Rect& raster_dirty_rect,
+                uint64_t new_content_id,
+                const gfx::AxisTransform2d& transform,
+                const RasterSource::PlaybackSettings& playback_settings,
+                const GURL& url) override;
+
+  bool SupportsBackgroundThreadPriority() const override;
+
+ private:
+  // These fields are safe to access on both the compositor and worker thread.
+  raw_ptr<ResourcePool::Backing> backing_;
+  const scoped_refptr<gpu::SharedImageInterface> sii_;
+  bool failed_to_map_shared_image_ = false;
+};
 
 class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
  public:

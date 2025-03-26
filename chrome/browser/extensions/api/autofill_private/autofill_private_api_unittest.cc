@@ -275,21 +275,6 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
-                       PredictionImprovementsIphFeatureUsed) {
-  using NotifyIphMockCallback =
-      testing::MockFunction<void(autofill::AutofillClient::IphFeature)>;
-  NotifyIphMockCallback mock_callback;
-  autofill_client()->set_notify_iph_feature_used_mock_callback(
-      base::BindRepeating(&NotifyIphMockCallback::Call,
-                          base::Unretained(&mock_callback)));
-
-  EXPECT_CALL(mock_callback,
-              Call(autofill::AutofillClient::IphFeature::kAutofillAi));
-
-  RunAutofillSubtest("predictionImprovementsIphFeatureUsed");
-}
-
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, LogServerCardLinkClicked) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(RunAutofillSubtest("logServerCardLinkClicked"));
@@ -349,6 +334,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, EntityInstances) {
   // Test that loading, adding, editing and deleting entity instances works.
   ASSERT_TRUE(RunAutofillSubtest("loadEmptyEntityInstancesList"));
   ASSERT_TRUE(RunAutofillSubtest("addEntityInstance"));
+  ASSERT_TRUE(RunAutofillSubtest("addEntityInstanceWithIncompleteDate"));
   ASSERT_TRUE(RunAutofillSubtest("getEntityInstanceByGuid"));
   ASSERT_TRUE(RunAutofillSubtest("loadFirstEntityInstance"));
   ASSERT_TRUE(RunAutofillSubtest("updateEntityInstance"));

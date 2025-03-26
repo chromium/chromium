@@ -459,7 +459,6 @@
 <translation id="3114507951000454849">閱讀今天的新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">更多詳情</translation>
 <translation id="3123734510202723619">公告</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" />已變更「<ph name="TAB_NAME" />」分頁</translation>
 <translation id="3148237711805373460">立即前往</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3158667104057012316">根據手動次序排序</translation>
@@ -821,6 +820,7 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{將有 <ph name="TAB_COUNT_ONE" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}other{將有 <ph name="TAB_COUNT_MANY" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}}</translation>
 <translation id="4837753911714442426">開啟列印網頁選項</translation>
 <translation id="4844633725025837809">為進一步增強安全性，請先在裝置上將密碼加密，然後才將密碼儲存至 Google 密碼管理工具</translation>
+<translation id="4849731766219625109">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4852014461738377247">正在登入\u2026</translation>
 <translation id="4860895144060829044">撥號</translation>
@@ -840,14 +840,12 @@
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4912413785358399818">移動分頁</translation>
 <translation id="4913169188695071480">停止重新整理</translation>
-<translation id="4918086044614829423">接受</translation>
 <translation id="4925120120285606924">螢幕截圖 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">系統會匯出您的密碼並下載為文字檔案。任何能存取目的地資料夾的使用者和應用程式都可看到您的密碼。</translation>
 <translation id="4926901776383726965">您可儲存圖片和檔案，方便離線查看或分享到其他應用程式</translation>
 <translation id="4932247056774066048">您即將登出由 <ph name="DOMAIN_NAME" /> 管理的帳戶，因此您的 Chrome 資料亦會從此裝置上刪除，但仍會保留在您的 Google 帳戶中。</translation>
 <translation id="4943703118917034429">虛擬實境</translation>
 <translation id="4943872375798546930">搵唔到結果</translation>
-<translation id="4953833914914492602">無法再存取「<ph name="TAB_GROUP_NAME" />」分頁群組</translation>
 <translation id="4957722034734105353">瞭解詳情…</translation>
 <translation id="4961107849584082341">將此網頁翻譯成任何語言</translation>
 <translation id="4964614743143953889">偵測到不安全的網站和下載內容時，Chrome 會顯示警告</translation>
@@ -966,7 +964,6 @@
 <translation id="5526281268548144413">無法關閉多個視窗中的分頁</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
 <translation id="5548606607480005320">安全檢查</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" />已加入「<ph name="TAB_GROUP_NAME" />」分頁群組</translation>
 <translation id="5554520618550346933">使用密碼時，如果密碼已在網上發佈，Chrome 將會提醒你。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
 <translation id="5555525474779371165">選取您的「安全瀏覽」功能</translation>
 <translation id="5556459405103347317">重新載入</translation>
@@ -1183,7 +1180,6 @@
 <translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化和其他用途</translation>
 <translation id="6482749332252372425">儲存空間不足，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="6486420406192123355">此 PDF 檔案來自的網站使用不安全的連接</translation>
-<translation id="6495590690749880440">要開啟分頁群組嗎？</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{已下載檔案}other{已完成 # 項下載}}</translation>
 <translation id="6508722015517270189">重新啟動 Chrome</translation>
 <translation id="6518133107902771759">驗證</translation>
@@ -1562,6 +1558,7 @@
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8078096376109663956">只分享文字</translation>
+<translation id="8078348702936632821">固定此捷徑</translation>
 <translation id="8084114998886531721">已儲存的密碼</translation>
 <translation id="8084285576995584326">控制 Google 帳戶資料</translation>
 <translation id="8084864785646838999">部分記錄可能沒有在這裡顯示。如要查看所有 Chrome 記錄，請開啟完整 Chrome 記錄。此外，你的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上亦可能有其他形式的瀏覽記錄。</translation>
@@ -1617,7 +1614,6 @@
 <translation id="8282297628636750033">在可用情況下，為網站套用深色主題背景</translation>
 <translation id="8282950411412455249">前往安全性設定</translation>
 <translation id="8306751933352925837">密碼即將停止在此裝置上運作。如要繼續使用密碼，請更新 Google Play 服務。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" />已移除「<ph name="TAB_NAME" />」分頁</translation>
 <translation id="8310451567823644042">密碼即將停止運作</translation>
 <translation id="831192587911042850">將目前的網站新增至您正在追蹤的網站清單。</translation>
 <translation id="8320212361750431956">近期活動</translation>

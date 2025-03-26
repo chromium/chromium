@@ -44,6 +44,7 @@ class SharedStorageManager {
   using InitStatus = SharedStorageDatabase::InitStatus;
   using SetBehavior = SharedStorageDatabase::SetBehavior;
   using OperationResult = SharedStorageDatabase::OperationResult;
+  using BatchUpdateResult = SharedStorageDatabase::BatchUpdateResult;
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
   using TimeResult = SharedStorageDatabase::TimeResult;
@@ -165,6 +166,15 @@ class SharedStorageManager {
   void Delete(url::Origin context_origin,
               std::u16string key,
               base::OnceCallback<void(OperationResult)> callback);
+
+  // Executes `methods_with_options` as a transaction. If any method fails, the
+  // entire batch operation is rolled back. The parameter of `callback` reports
+  // whether the operation is successful.
+  void BatchUpdate(
+      url::Origin context_origin,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      base::OnceCallback<void(BatchUpdateResult)> callback);
 
   // The parameter of `callback` reports the number of entries for
   // `context_origin`, 0 if there are none, or -1 on operation failure.

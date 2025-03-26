@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Åpne en ny fane i Chrome</translation>
 <translation id="1166460004393506534">Slett nettlesingsdata i Chrome</translation>
-<translation id="1171255741903316750">Slå på «Lås inkognitofaner når du lukker Chrome»</translation>
 <translation id="1179527450541388808">Få raskere tilgang til Chrome fra dokken på Hjem-skjermen på iPad.</translation>
 <translation id="1180362651362502943">Fortsett å bruke Chrome-dataene i Google-kontoen din.</translation>
 <translation id="1200396280085622191">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
@@ -178,6 +177,7 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="5716154293141027663">Åpne alltid Chrome når du trykker på linker i andre apper</translation>
 <translation id="5752489513673657785">En tilpasset feed som Google har laget for deg</translation>
 <translation id="5772407442571703917">Last ned Chrome her.</translation>
+<translation id="5777468213129569553">Åpne Chrome</translation>
 <translation id="5779767936254214055">Lås inkognitofanene dine når du går ut av Chrome eller bytter til en annen app.</translation>
 <translation id="5808435672482059465">Se Chrome-loggen din</translation>
 <translation id="5833027901704861726">Noen av Chrome-dataene dine er ikke lagret i <ph name="EMAIL" /> ennå.

@@ -21,7 +21,7 @@ class RegionalCapabilitiesServiceClient
  public:
   RegionalCapabilitiesServiceClient() = default;
 
-  int GetFallbackCountryId() override {
+  country_codes::CountryId GetFallbackCountryId() override {
     return country_codes::GetCurrentCountryID();
   }
 

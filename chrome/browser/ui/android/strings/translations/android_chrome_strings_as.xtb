@@ -459,7 +459,6 @@
 <translation id="3114507951000454849">আজিৰ বাতৰি পঢ়ক <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">অধিক সবিশেষ</translation>
 <translation id="3123734510202723619">ঘোষণাসমূহ</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" />এ “<ph name="TAB_NAME" />” টেবটো সলনি কৰিছে</translation>
 <translation id="3148237711805373460">মোক তালৈ নিয়ক</translation>
 <translation id="314939179385989105">Chromeৰ গৃহপৃষ্ঠা</translation>
 <translation id="3158667104057012316">মেনুৱেল ক্ৰম অনুসৰি সজাই থকা হৈছে</translation>
@@ -821,6 +820,7 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে <ph name="TAB_COUNT_ONE" /> টা টেবৰ গোটটো, <ph name="COLOR_NAME" /> ৰং পুনঃস্থাপন কৰক।}one{এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে <ph name="TAB_COUNT_MANY" /> টা টেবৰ গোটটো, <ph name="COLOR_NAME" /> ৰং পুনঃস্থাপন কৰক।}other{এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে <ph name="TAB_COUNT_MANY" /> টা টেবৰ গোটটো, <ph name="COLOR_NAME" /> ৰং পুনঃস্থাপন কৰক।}}</translation>
 <translation id="4837753911714442426">পৃষ্ঠা প্ৰিণ্ট কৰিবলৈ বিকল্প খোলক</translation>
 <translation id="4844633725025837809">অতিৰিক্ত সুৰক্ষাৰ বাবে, Google পাছৱৰ্ড পৰিচালকত ছেভ কৰাৰ পূৰ্বে আপোনাৰ ডিভাইচত পাছৱৰ্ড এনক্ৰিপ্ট কৰক</translation>
+<translation id="4849731766219625109">আপোনাৰ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> একাউণ্টটো ব্যৱহাৰ কৰক</translation>
 <translation id="4850886885716139402">চাওক</translation>
 <translation id="4852014461738377247">ছাইন ইন কৰি থকা হৈছে\u2026</translation>
 <translation id="4860895144060829044">কল কৰক</translation>
@@ -840,14 +840,12 @@
 <translation id="4910889077668685004">পৰিশোধ এপ্</translation>
 <translation id="4912413785358399818">টেব স্থানান্তৰ কৰক</translation>
 <translation id="4913169188695071480">ৰিফ্রে’শ্ব কৰাটো বন্ধ কৰক</translation>
-<translation id="4918086044614829423">গ্ৰহণ কৰক</translation>
 <translation id="4925120120285606924">স্ক্ৰীনশ্বট <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">আপোনাৰ পাছৱৰ্ডসমূহ ৰপ্তানি কৰা হ’ব আৰু এটা পাঠ ফাইল হিচাপে ডাউনল’ড কৰা হ’ব। গন্তব্যস্থানৰ ফ’ল্ডাৰটোৰ এক্সেছ থকা যিকোনো লোক আৰু এপে সেয়া দেখা পাব।</translation>
 <translation id="4926901776383726965">আপুনি অফলাইনত চাবলৈ অথবা অন্য এপত শ্বেয়াৰ কৰিবলৈ প্ৰতিচ্ছবি আৰু ফাইল ছেভ কৰিব পাৰে</translation>
 <translation id="4932247056774066048">আপুনি যিহেতু <ph name="DOMAIN_NAME" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ লৈছে, সেয়ে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। এইটো আপোনাৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="4943703118917034429">ভাৰ্ছুৱেল ৰিয়েলিটি</translation>
 <translation id="4943872375798546930">কোনো ফলাফল নাই</translation>
-<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” টেবৰ গোটটো আৰু উপলব্ধ নহয়</translation>
 <translation id="4957722034734105353">অধিক জানক...</translation>
 <translation id="4961107849584082341">যিকোনো ভাষালৈ এই পৃষ্ঠাটো অনুবাদ কৰক</translation>
 <translation id="4964614743143953889">Chromeএ অসুৰক্ষিত ছাইট আৰু ডাউনল’ডৰ বিষয়ে আপোনাক সকীয়নি দিয়ে</translation>
@@ -966,7 +964,6 @@
 <translation id="5526281268548144413">একাধিক ৱিণ্ড’ত বন্ধ কৰিব নোৱাৰি</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# মিনিট পূৰ্বে}one{# মিনিট পূৰ্বে}other{# মিনিট পূৰ্বে}}</translation>
 <translation id="5548606607480005320">সুৰক্ষা পৰীক্ষা</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" />এ “<ph name="TAB_GROUP_NAME" />” টেবৰ গোটটোত যোগদান কৰিছে</translation>
 <translation id="5554520618550346933">যেতিয়া আপুনি এটা পাছৱৰ্ড ব্যৱহাৰ কৰে, তেতিয়া সেইটো অনলাইনত প্ৰকাশ কৰা হৈছে নেকি সেই বিষয়ে Chromeএ আপোনাক সকীয়নি দিয়ে। এনে কৰোঁতে আপোনাৰ পাছৱৰ্ডসমূহ আৰু ব্যৱহাৰকাৰীৰ নামসমূহ এনক্ৰিপ্ট কৰা হয়, যাতে সেইবোৰ Googleকে ধৰি অন্য কোনেও পঢ়িব নোৱাৰে।</translation>
 <translation id="5555525474779371165">আপোনাৰ সুৰক্ষিত ব্ৰাউজিঙৰ সুৰক্ষা বাছনি কৰক</translation>
 <translation id="5556459405103347317">পুনৰ ল’ড কৰক</translation>
@@ -1183,7 +1180,6 @@
 <translation id="6481963882741794338">ব্যক্তিগতকৰণ কৰিবলৈ আৰু অন্য উদ্দেশ্যে Chrome আৰু অন্য Google সেৱাসমূহ লিংক কৰক</translation>
 <translation id="6482749332252372425">ষ্ট’ৰেজৰ ঠাই কম হোৱাৰ কাৰণে <ph name="FILE_NAME" /> ডাউনল’ড কৰিব পৰা নগ’ল৷</translation>
 <translation id="6486420406192123355">এই PDF ফাইলটো কোনো অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি এটা ছাইট পৰা লোৱা</translation>
-<translation id="6495590690749880440">টেবৰ গোট খুলিবনে?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ফাইল ডাউনল’ড কৰা হ’ল}one{# টা ডাউনল’ড সম্পূৰ্ণ হ’ল}other{# টা ডাউনল’ড সম্পূৰ্ণ হ’ল}}</translation>
 <translation id="6508722015517270189">Chrome ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="6518133107902771759">সত্যাপন কৰক</translation>
@@ -1562,6 +1558,7 @@
 <translation id="8073388330009372546">প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
 <translation id="8076492880354921740">টেব</translation>
 <translation id="8078096376109663956">কেৱল পাঠ শ্বেয়াৰ কৰক</translation>
+<translation id="8078348702936632821">এই শ্বৰ্টকাটটো পিন কৰক</translation>
 <translation id="8084114998886531721">ছেভ কৰা পাছৱর্ড</translation>
 <translation id="8084285576995584326">আপোনাৰ Google একাউণ্টৰ ডেটা নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="8084864785646838999">আপোনাৰ কিছুমান ইতিহাস ইয়াত প্ৰদৰ্শন কৰা নহ’ব পাৰে। আপোনাৰ Chromeৰ আটাইবোৰ ইতিহাস চাবলৈ, Chromeৰ সম্পূৰ্ণ ইতিহাস খোলক। লগতে, আপোনাৰ Google একাউণ্টৰ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত অন্য ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস থাকিব পাৰে।</translation>
@@ -1617,7 +1614,6 @@
 <translation id="8282297628636750033">সম্ভৱ হ’লে ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ কৰক</translation>
 <translation id="8282950411412455249">সুৰক্ষাৰ ছেটিঙলৈ যাওক</translation>
 <translation id="8306751933352925837">এই ডিভাইচটোত পাছৱৰ্ডসমূহে সোনকালে কাম কৰা বন্ধ কৰিব। আপোনাৰ পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰি থাকিবলৈ, Google Play সেৱা আপডে’ট কৰক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" />এ “<ph name="TAB_NAME" />” টেবটো আঁতৰাইছে</translation>
 <translation id="8310451567823644042">পাছৱৰ্ডসমূহে সোনকালে কাম কৰা বন্ধ কৰিব</translation>
 <translation id="831192587911042850">বৰ্তমানৰ ৱেবছাইটটোক আপুনি ফ’ল’ কৰি থকা ৱেবছাইটসমূহৰ সূচীত যোগ দিয়ে।</translation>
 <translation id="8320212361750431956">শেহতীয়া কাৰ্যকলাপ</translation>

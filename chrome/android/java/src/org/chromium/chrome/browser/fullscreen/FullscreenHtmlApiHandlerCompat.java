@@ -143,6 +143,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
 
     @Override
     boolean isLayoutFullscreen(View contentView) {
+        // TODO(crbug.com/41492646): Coordinate usage of #setDecorFitsSystemWindows
         return !mActivity.getWindow().getDecorView().getFitsSystemWindows();
     }
 

@@ -34,8 +34,8 @@ export class MorePermissionsItemElement extends CrLitElement {
     };
   }
 
-  app: App = createDummyApp();
-  morePermissionsLabel: string = '';
+  accessor app: App = createDummyApp();
+  accessor morePermissionsLabel: string = '';
 
   override firstUpdated() {
     this.addEventListener('click', this.onClick_);

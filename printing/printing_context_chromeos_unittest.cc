@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -90,7 +91,7 @@ class PrintingContextTest : public testing::Test,
     for (ipp_attribute_t* attr = ippFirstAttribute(attributes); attr;
          attr = ippNextAttribute(attributes)) {
       const char* name = ippGetName(attr);
-      if (name && !strcmp(attr_name, name)) {
+      if (name && UNSAFE_TODO(!strcmp(attr_name, name))) {
         EXPECT_EQ(nullptr, ret)
             << "Multiple attributes with name " << attr_name << " found.";
         ret = attr;
@@ -121,7 +122,8 @@ class PrintingContextTest : public testing::Test,
     void* value = ippGetOctetString(attr, 0, &length);
     ASSERT_EQ(expected_value.size(), static_cast<size_t>(length));
     ASSERT_TRUE(value);
-    EXPECT_EQ(0, memcmp(expected_value.data(), value, expected_value.size()));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(expected_value.data(), value,
+                                    expected_value.size())));
   }
 
   void TestResolutionOptionValue(const char* attr_name,
@@ -358,7 +360,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfo) {
   void* version = ippGetOctetString(attr, 0, &length);
   ASSERT_TRUE(version);
   EXPECT_EQ(6, length);
-  EXPECT_EQ(0, memcmp("a.1-B_", version, 6));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp("a.1-B_", version, 6)));
 }
 
 TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoSomeValid) {

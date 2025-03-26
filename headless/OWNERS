@@ -7,7 +7,6 @@ caseq@chromium.org
 kvitekp@chromium.org
 
 # Emeritus:
-altimin@chromium.org
 dvallet@chromium.org
 
 per-file *.cmx=set noparent

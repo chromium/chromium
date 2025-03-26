@@ -459,7 +459,6 @@
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">更多详情</translation>
 <translation id="3123734510202723619">通告</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" />更改了标签页“<ph name="TAB_NAME" />”</translation>
 <translation id="3148237711805373460">立即前往</translation>
 <translation id="314939179385989105">Chrome 主页</translation>
 <translation id="3158667104057012316">手动排序</translation>
@@ -821,6 +820,7 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{将包含 <ph name="TAB_COUNT_ONE" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}other{将包含 <ph name="TAB_COUNT_MANY" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}}</translation>
 <translation id="4837753911714442426">打开选项以打印网页</translation>
 <translation id="4844633725025837809">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理工具中</translation>
+<translation id="4849731766219625109">使用您的 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号</translation>
 <translation id="4850886885716139402">查看</translation>
 <translation id="4852014461738377247">正在登录\u2026</translation>
 <translation id="4860895144060829044">致电</translation>
@@ -840,14 +840,12 @@
 <translation id="4910889077668685004">付款应用</translation>
 <translation id="4912413785358399818">移动标签页</translation>
 <translation id="4913169188695071480">停止刷新</translation>
-<translation id="4918086044614829423">接受</translation>
 <translation id="4925120120285606924">屏幕截图 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">系统会导出您的密码并将其下载为一个文本文件。有权访问目标文件夹的任何人和任何应用都能看到您的密码。</translation>
 <translation id="4926901776383726965">您可保存图片和文件以供离线查看或在其他应用中分享</translation>
 <translation id="4932247056774066048">您将要退出由 <ph name="DOMAIN_NAME" /> 管理的账号，因此您的 Chrome 数据将会从这部设备中删除，但仍会保留在您的 Google 账号中。</translation>
 <translation id="4943703118917034429">虚拟现实</translation>
 <translation id="4943872375798546930">找不到结果</translation>
-<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />”标签页分组已不可用</translation>
 <translation id="4957722034734105353">了解详情...</translation>
 <translation id="4961107849584082341">将此页面翻译成任何语言</translation>
 <translation id="4964614743143953889">在检测到不安全的网站和下载内容时，Chrome 会向您发出警告</translation>
@@ -966,7 +964,6 @@
 <translation id="5526281268548144413">无法在多个窗口中关闭</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
 <translation id="5548606607480005320">安全检查</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" />加入了“<ph name="TAB_GROUP_NAME" />”标签页分组</translation>
 <translation id="5554520618550346933">如果 Chrome 发现您使用的某个密码已被发布到网上，就会发出警告。在这个过程中，您的密码和用户名始终加密，任何人员/任何一方（包括 Google）都无法读取。</translation>
 <translation id="5555525474779371165">选择所需的“安全浏览”功能保护级别</translation>
 <translation id="5556459405103347317">重新加载</translation>
@@ -1183,7 +1180,6 @@
 <translation id="6481963882741794338">关联 Chrome 和其他 Google 服务，以便获得个性化体验和实现其他用途</translation>
 <translation id="6482749332252372425">未能成功下载 <ph name="FILE_NAME" />，因为存储空间不足。</translation>
 <translation id="6486420406192123355">此 PDF 文件来自使用不安全连接的网站</translation>
-<translation id="6495590690749880440">要打开标签页分组吗？</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{文件已下载完毕}other{# 个文件已下载完毕}}</translation>
 <translation id="6508722015517270189">重新启动 Chrome</translation>
 <translation id="6518133107902771759">验证</translation>
@@ -1560,6 +1556,7 @@
 <translation id="8073388330009372546">在新标签页中打开图片</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8078096376109663956">只能分享文本</translation>
+<translation id="8078348702936632821">固定此快捷方式</translation>
 <translation id="8084114998886531721">保存的密码</translation>
 <translation id="8084285576995584326">控制您的 Google 账号数据</translation>
 <translation id="8084864785646838999">您的部分历史记录可能不会在此处显示。如需查看您的所有 Chrome 历史记录，请打开完整的 Chrome 历史记录。此外，您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
@@ -1615,7 +1612,6 @@
 <translation id="8282297628636750033">尽可能对网站应用深色主题</translation>
 <translation id="8282950411412455249">前往安全设置</translation>
 <translation id="8306751933352925837">此设备上的密码即将失效。如需继续使用这些密码，请更新 Google Play 服务。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" />移除了标签页“<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">密码即将失效</translation>
 <translation id="831192587911042850">将当前网站添加到您关注的网站的列表中。</translation>
 <translation id="8320212361750431956">近期活动</translation>
@@ -1707,7 +1703,7 @@
 <translation id="869891660844655955">截止日期</translation>
 <translation id="8699120352855309748">不询问是否翻译这些语言</translation>
 <translation id="8712637175834984815">知道了</translation>
-<translation id="8715286883001906001">增强您 Google 账号中的密码</translation>
+<translation id="8715286883001906001">提升您 Google 账号的密码强度</translation>
 <translation id="8723453889042591629">快速翻译该页面。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8731268612289859741">安全码</translation>

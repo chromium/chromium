@@ -36,16 +36,6 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowIbanBubble(
   return iban_bubble_view_.get();
 }
 
-AutofillBubbleBase* TestAutofillBubbleHandler::ShowLocalCardMigrationBubble(
-    content::WebContents* web_contents,
-    LocalCardMigrationBubbleController* controller,
-    bool is_user_gesture) {
-  if (!local_card_migration_bubble_view_) {
-    local_card_migration_bubble_view_ = std::make_unique<TestAutofillBubble>();
-  }
-  return local_card_migration_bubble_view_.get();
-}
-
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowOfferNotificationBubble(
     content::WebContents* web_contents,
     OfferNotificationBubbleController* controller,

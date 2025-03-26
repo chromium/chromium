@@ -10,7 +10,6 @@
 #include <variant>
 #include <vector>
 
-#include "absl/types/variant.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/expected.h"

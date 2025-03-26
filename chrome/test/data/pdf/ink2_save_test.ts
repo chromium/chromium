@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PluginController, SaveRequestType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, PluginController, SaveRequestType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -51,9 +51,9 @@ chrome.test.runTests([
     mockPlugin.clearMessages();
     mockMetricsPrivate.reset();
 
-    viewerToolbar.toggleAnnotation();
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
-    chrome.test.assertTrue(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
 
     const downloadControls = getDownloadControls();
     const downloadButton = downloadControls.$.download;
@@ -68,7 +68,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(saveMessage !== undefined);
     chrome.test.assertEq(saveMessage.saveRequestType, SaveRequestType.ORIGINAL);
     chrome.test.assertFalse(actionMenu.open);
-    chrome.test.assertTrue(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.SAVE_ORIGINAL_ONLY, 1);
     chrome.test.succeed();
   },
@@ -131,14 +131,14 @@ chrome.test.runTests([
   // Tests that while outside of annotation mode, on a PDF with an ink stroke,
   // clicking the download button will prompt the download menu.
   async function testSaveMenuWithStrokeExitAnnotationMode() {
-    chrome.test.assertTrue(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
 
     mockPlugin.clearMessages();
     mockMetricsPrivate.reset();
 
-    viewerToolbar.toggleAnnotation();
+    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
     await microtasksFinished();
-    chrome.test.assertFalse(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
 
     const downloadControls = getDownloadControls();
     downloadControls.$.menu.close();
@@ -153,14 +153,14 @@ chrome.test.runTests([
   // while in annotation mode, after an undo operation, clicking the download
   // button will save the PDF as original.
   async function testSaveOriginalAfterUndo() {
-    chrome.test.assertFalse(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
 
     mockPlugin.clearMessages();
     mockMetricsPrivate.reset();
 
-    viewerToolbar.toggleAnnotation();
+    viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
-    chrome.test.assertTrue(viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
 
     const undoButton =
         getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');

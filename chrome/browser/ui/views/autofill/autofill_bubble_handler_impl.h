@@ -27,7 +27,6 @@ class View;
 namespace autofill {
 class AutofillBubbleBase;
 class FilledCardInformationBubbleController;
-class LocalCardMigrationBubbleController;
 class SaveCardBubbleController;
 class IbanBubbleController;
 enum class IbanBubbleType;
@@ -53,10 +52,6 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
                                      bool is_user_gesture,
                                      IbanBubbleType bubble_type) override;
 
-  AutofillBubbleBase* ShowLocalCardMigrationBubble(
-      content::WebContents* web_contents,
-      LocalCardMigrationBubbleController* controller,
-      bool is_user_gesture) override;
   AutofillBubbleBase* ShowOfferNotificationBubble(
       content::WebContents* contents,
       OfferNotificationBubbleController* controller,

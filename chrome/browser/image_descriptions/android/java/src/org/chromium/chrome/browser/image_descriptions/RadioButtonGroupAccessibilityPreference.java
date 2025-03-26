@@ -11,6 +11,8 @@ import android.widget.RadioGroup;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
@@ -18,6 +20,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
  * A radio button group used for accessibility preference. This allows the user to toggle between
  * allowing the get image descriptions feature on mobile data, or requiring it need Wi-Fi to run.
  */
+@NullMarked
 public class RadioButtonGroupAccessibilityPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescriptionLayout mButtonGroup;
@@ -39,6 +42,7 @@ public class RadioButtonGroupAccessibilityPreference extends Preference
         return mOnlyOnWifiValue;
     }
 
+    @Initializer
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);

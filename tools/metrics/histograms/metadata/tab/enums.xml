@@ -401,8 +401,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="TabStateMigrationStatus">
   <int value="0" label="FlatBuffer TabState file only exists"/>
-  <int value="1" label="Both FlatBuffer and legacy TabState files exist"/>
-  <int value="2" label="Legacy TabState file only exists"/>
+  <int value="1" label="Legacy TabState file only exists"/>
+  <int value="2" label="Both FlatBuffer and legacy TabState files exist"/>
 </enum>
 
 <enum name="TabStateRestoreMethod">

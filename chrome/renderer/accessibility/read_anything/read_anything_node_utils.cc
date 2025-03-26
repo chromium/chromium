@@ -139,29 +139,6 @@ std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
   return html_tag;
 }
 
-ui::AXNode* GetParentForSelection(ui::AXNode* ax_node) {
-  ui::AXNode* parent = ax_node->GetUnignoredParentCrossingTreeBoundary();
-  // For most nodes, the parent is the same as the most direct parent. However,
-  // to handle special types of text formatting such as links and custom spans,
-  // another parent may be needed. e.g. when a link is highlighted, the start
-  // node has an "inline" display but the parent we want would have a "block"
-  // display role, so in order to get the common parent of
-  // all sibling nodes, the grandparent should be used.
-  // Displays of type "list-item" is an exception to the "inline" display rule
-  // so that all siblings in a list can be shown correctly to avoid
-  // misnumbering.
-  while (parent && parent->GetUnignoredParentCrossingTreeBoundary() &&
-         parent->HasStringAttribute(ax::mojom::StringAttribute::kDisplay) &&
-         ((parent->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)
-               .find("inline") != std::string::npos) ||
-          (parent->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)
-               .find("list-item") != std::string::npos))) {
-    parent = parent->GetUnignoredParentCrossingTreeBoundary();
-  }
-
-  return parent;
-}
-
 std::string GetAltText(ui::AXNode* ax_node) {
   std::string alt_text =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kName);

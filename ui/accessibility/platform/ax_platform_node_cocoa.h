@@ -73,7 +73,7 @@ COMPONENT_EXPORT(AX_PLATFORM)
 + (NSString*)nativeNotificationFromAXEvent:(ax::mojom::Event)event;
 
 - (instancetype)initWithNode:(ui::AXPlatformNodeBase*)node;
-- (void)detach;
+- (void)detachAndNotifyDestroyed:(BOOL)shouldNotify;
 
 // Returns this node's internal role, i.e. the one that is stored in
 // the internal accessibility tree as opposed to the platform tree.

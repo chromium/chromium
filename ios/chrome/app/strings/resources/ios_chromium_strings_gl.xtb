@@ -95,7 +95,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="328933489847748230">{count,plural, =1{Mostrando 1 ventá de Chromium}other{Mostrando {count} ventás de Chromium}}</translation>
 <translation id="3344973607274501920">Chromium non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="3366305173356742781">Datos de Chromium na túa conta</translation>
-<translation id="33788334537425157">Activa Bloquear pestanas do modo de incógnito ao pechar Chromium</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minuto. Eses datos poderían incluír o historial e a función de autocompletar.}other{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minutos. Eses datos poderían incluír o historial e a función de autocompletar.}}</translation>
 <translation id="3410395242749598859">Algúns dos datos de Chromium aínda non se gardaron en <ph name="EMAIL" />.
 Espera uns minutiños antes de cambiar de conta. Se a cambias agora, eliminaranse eses datos.</translation>

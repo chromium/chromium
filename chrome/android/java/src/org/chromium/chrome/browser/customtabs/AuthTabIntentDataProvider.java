@@ -66,7 +66,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
             Intent intent, Context context, @CustomTabsIntent.ColorScheme int colorScheme) {
         assert intent != null;
         mIntent = intent;
-        AuthTabSessionToken token = AuthTabSessionToken.getSessionTokenFromIntent(intent);
+        AuthTabSessionToken token = AuthTabSessionToken.createSessionTokenFromIntent(intent);
         mSession = token != null ? new SessionHolder<>(token) : null;
         mClientPackageName =
                 IntentUtils.safeGetStringExtra(

@@ -20,7 +20,8 @@ Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
    do it but it's half-broken (it gets third_party targets wrong). It
    might still be useful as a baseline. To run it, make sure the
    mako_templates python module is installed ("apt-get install
-   python3-mako").
+   python3-mako"). See https://crbug.com/405054271 for a proposal on how
+   to make this step easier in the future.
 
 Note: Please also remember to check if `plugin_registry/grpc_plugin_registry.cc`
 needs update! Upstream sometimes introduces new plugins in

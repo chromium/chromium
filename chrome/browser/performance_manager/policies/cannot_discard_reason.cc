@@ -13,6 +13,8 @@ const char* CannotDiscardReasonToString(CannotDiscardReason reason) {
   switch (reason) {
     case CannotDiscardReason::kNotATab:
       return "The Page is not a tab";
+    case CannotDiscardReason::kAlreadyDiscarded:
+      return "Tab is already discarded";
     case CannotDiscardReason::kDiscardAttempted:
       return "Tab discarding has already been attempted";
     case CannotDiscardReason::kNoMainFrame:

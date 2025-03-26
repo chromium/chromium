@@ -4011,6 +4011,8 @@ static_library("browser") {
       "preloading/preview/preview_tab.h",
       "preloading/preview/preview_zoom_controller.cc",
       "preloading/preview/preview_zoom_controller.h",
+      "privacy_sandbox/privacy_sandbox_queue_manager.cc",
+      "privacy_sandbox/privacy_sandbox_queue_manager.h",
       "privacy_sandbox/privacy_sandbox_survey_desktop_controller.cc",
       "privacy_sandbox/privacy_sandbox_survey_desktop_controller.h",
       "privacy_sandbox/privacy_sandbox_survey_desktop_controller_factory.cc",
@@ -4263,6 +4265,7 @@ static_library("browser") {
       "//chrome/browser/autofill_ai:util",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
+      "//chrome/browser/enterprise/incognito",
       "//chrome/browser/enterprise/signals:utils",
       "//chrome/browser/error_reporting",
       "//chrome/browser/feedback:feedback_enum",
@@ -5311,7 +5314,6 @@ static_library("browser") {
       "//chrome/browser/chromeos/cros_apps",
       "//chrome/browser/chromeos/cros_apps/api",
       "//chrome/browser/chromeos/drivefs",
-      "//chrome/browser/chromeos/enterprise",
       "//chrome/browser/chromeos/enterprise/cloud_storage",
       "//chrome/browser/chromeos/extensions/contact_center_insights",
       "//chrome/browser/chromeos/extensions/desk_api",
@@ -6639,6 +6641,8 @@ static_library("browser") {
       "enterprise/connectors/reporting/realtime_reporting_client_factory.h",
       "enterprise/connectors/reporting/reporting_event_router.cc",
       "enterprise/connectors/reporting/reporting_event_router.h",
+      "enterprise/connectors/reporting/reporting_event_router_factory.cc",
+      "enterprise/connectors/reporting/reporting_event_router_factory.h",
     ]
     deps += [ "//components/enterprise/connectors/core" ]
   }
@@ -9008,6 +9012,8 @@ static_library("test_support") {
       "notifications/notification_test_util.h",
       "privacy_sandbox/mock_privacy_sandbox_service.cc",
       "privacy_sandbox/mock_privacy_sandbox_service.h",
+      "privacy_sandbox/mock_queue_manager.cc",
+      "privacy_sandbox/mock_queue_manager.h",
       "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.cc",
       "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
       "profile_resetter/profile_resetter_test_base.cc",

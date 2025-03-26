@@ -86,7 +86,7 @@ TEST(CreateModelExecutionResponder, Simple) {
                          mojom::blink::ModelStreamingResponderAction::kReplace);
   responder->OnStreaming("ab",
                          mojom::blink::ModelStreamingResponderAction::kReplace);
-  responder->OnContextOverflow();
+  responder->OnQuotaOverflow();
   responder->OnCompletion(
       mojom::blink::ModelExecutionContextInfo::New(kTestTokenNumber));
   // Check that the promise will be resolved with the "result" string.
@@ -137,7 +137,7 @@ TEST(CreateModelExecutionResponder, ChunkByChunk) {
                          mojom::blink::ModelStreamingResponderAction::kAppend);
   responder->OnStreaming("ab",
                          mojom::blink::ModelStreamingResponderAction::kAppend);
-  responder->OnContextOverflow();
+  responder->OnQuotaOverflow();
   responder->OnCompletion(
       mojom::blink::ModelExecutionContextInfo::New(kTestTokenNumber));
   // Check that the promise will be resolved with the "result" string.

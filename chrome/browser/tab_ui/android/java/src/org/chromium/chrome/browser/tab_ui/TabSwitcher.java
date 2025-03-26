@@ -46,14 +46,6 @@ public interface TabSwitcher {
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs);
 
     /**
-     * Open the invitation modal on top of the tab switcher view when an invitation intent is
-     * intercepted.
-     *
-     * @param invitationId The id of the invitation.
-     */
-    void openInvitationModal(String invitationId);
-
-    /**
      * Requests to show a dialog for a tab group.
      *
      * @param tabId The id of any tab in the group.

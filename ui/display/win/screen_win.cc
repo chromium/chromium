@@ -773,8 +773,10 @@ ScreenWinDisplay ScreenWin::GetScreenWinDisplayWithDisplayId(int64_t id) {
 }
 
 // static
-int64_t ScreenWin::DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor) {
-  return internal::DisplayInfo::DisplayIdFromMonitorInfo(monitor);
+int64_t ScreenWin::DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor_info) {
+  return g_instance
+             ? g_instance->GetDisplayIdFromMonitorInfo(monitor_info)
+             : internal::DisplayInfo::DisplayIdFromMonitorInfo(monitor_info);
 }
 
 // static
@@ -997,6 +999,11 @@ std::optional<MONITORINFOEX> ScreenWin::MonitorInfoFromWindow(
     HWND hwnd,
     DWORD default_options) const {
   return MonitorInfoFromHMONITOR(::MonitorFromWindow(hwnd, default_options));
+}
+
+int64_t ScreenWin::GetDisplayIdFromMonitorInfo(
+    const MONITORINFOEX& monitor_info) const {
+  return internal::DisplayInfo::DisplayIdFromMonitorInfo(monitor_info);
 }
 
 HWND ScreenWin::GetRootWindow(HWND hwnd) const {

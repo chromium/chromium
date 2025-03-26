@@ -12,6 +12,7 @@
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/plus_address_ui_utils.h"
 #import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
@@ -126,6 +127,11 @@ enum class PlusAddressAction {
     return @"";
   }
   return base::SysUTF8ToNSString(primaryAddress.value());
+}
+
+- (NSString*)originForDisplay {
+  return base::SysUTF16ToNSString(
+      plus_addresses::GetOriginForDisplay(_mainFrameOrigin));
 }
 
 - (void)openNewTab:(PlusAddressURLType)type {

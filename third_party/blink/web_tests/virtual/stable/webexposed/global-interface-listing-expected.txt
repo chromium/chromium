@@ -1155,8 +1155,16 @@ interface CanvasRenderingContext2D
     setter wordSpacing
 interface CaptureController : EventTarget
     attribute @@toStringTag
+    getter onzoomlevelchange
+    getter zoomLevel
     method constructor
+    method decreaseZoomLevel
+    method forwardWheel
+    method getSupportedZoomLevels
+    method increaseZoomLevel
+    method resetZoomLevel
     method setFocusBehavior
+    setter onzoomlevelchange
 interface CaretPosition
     attribute @@toStringTag
     getter offset

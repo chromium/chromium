@@ -11,10 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/smart_card/smart_card_permission_request.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker.h"
 #include "components/permissions/object_permission_context_base.h"
@@ -131,8 +133,14 @@ class SmartCardPermissionContext
 
   SmartCardReaderTracker& GetReaderTracker() const;
 
-  // Set of readers to which an origin has ephemeral access to.
-  std::map<url::Origin, std::set<std::string>> ephemeral_grants_;
+  void RevokeEphemeralPermissionIfLongTimeoutOccured(
+      const url::Origin& origin,
+      const std::string& reader_name);
+
+  // Set of readers to which an origin has ephemeral access to and times the
+  // ephemeral permissions should expire.
+  base::flat_map<url::Origin, base::flat_map<std::string, base::Time>>
+      ephemeral_grants_with_expiry_;
 
   // this is for tracking consecutive denials (after 3, guard setting is to be
   // set to blocked)

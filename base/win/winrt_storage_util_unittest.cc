@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_com_initializer.h"
@@ -32,7 +33,7 @@ TEST(WinrtStorageUtilTest, CreateBufferFromData) {
       GetPointerToBufferData(buffer.Get(), &p_buffer_data, &length));
 
   ASSERT_EQ(data.size(), length);
-  EXPECT_EQ(0, memcmp(p_buffer_data, data.data(), data.size()));
+  EXPECT_EQ(0, UNSAFE_TODO(memcmp(p_buffer_data, data.data(), data.size())));
 }
 
 }  // namespace win

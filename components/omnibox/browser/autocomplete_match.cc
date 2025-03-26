@@ -1396,6 +1396,8 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
   if (action_index >= 0 && static_cast<size_t>(action_index) < actions.size()) {
     switch (actions[action_index]->ActionId()) {
       case OmniboxActionId::PEDAL:
+      case OmniboxActionId::CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE:
+      case OmniboxActionId::CONTEXTUAL_SEARCH_SELECT_REGION:
         return OmniboxEventProto::Suggestion::PEDAL;
       case OmniboxActionId::TAB_SWITCH:
         return OmniboxEventProto::Suggestion::TAB_SWITCH;
@@ -1403,7 +1405,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       case OmniboxActionId::ACTION_IN_SUGGEST:
       case OmniboxActionId::ANSWER_ACTION:
       case OmniboxActionId::EXTENSION_ACTION:
-      case OmniboxActionId::CONTEXTUAL_SEARCH:
+      case OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT:
         // Preserve existing behavior by continuing on to use the match `type`.
         break;
       case OmniboxActionId::UNKNOWN:

@@ -63,6 +63,10 @@ namespace {
 // when firing keyboard and mouse click events.
 NSPoint g_mouse_location = { 0, 0 };
 
+// Stores the most recently-entered window so that exit and enter events can be
+// sent correctly.
+__weak NSWindow* g_last_window_weak = nullptr;
+
 // Stores the current pressed mouse buttons. Indexed by
 // ui_controls::MouseButton.
 bool g_mouse_button_down[3] = {false, false, false};
@@ -142,7 +146,7 @@ void SynthesizeKeyEventsSequence(NSWindow* window,
 
 // A helper function to watch for the event queue. The specific task will be
 // fired when there is no more event in the queue.
-void EventQueueWatcher(base::OnceClosure task) {
+void PostWhenEventQueueIsEmpty(base::OnceClosure task) {
   NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                       untilDate:nil
                                          inMode:NSDefaultRunLoopMode
@@ -150,7 +154,7 @@ void EventQueueWatcher(base::OnceClosure task) {
   // If there is still event in the queue, then we need to check again.
   if (event) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&EventQueueWatcher, std::move(task)));
+        FROM_HERE, base::BindOnce(&PostWhenEventQueueIsEmpty, std::move(task)));
   } else {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(task));
@@ -187,6 +191,38 @@ NSWindow* WindowAtCurrentMouseLocation() {
   // Note that -[NSApplication orderedWindows] won't include NSPanels. If a test
   // uses those, it will need to handle that itself.
   return nil;
+}
+
+// Makes a mouse event for `event_type`.
+NSEvent* MakeMouseEvent(NSEventType event_type, NSWindow* window) {
+  NSTimeInterval timestamp = TimeIntervalSinceSystemStartup();
+  NSPoint point_in_window = g_mouse_location;
+  if (window) {
+    point_in_window = [window convertPointFromScreen:point_in_window];
+  }
+  const bool is_move = event_type == NSEventTypeMouseMoved;
+  const bool is_enter_exit = event_type == NSEventTypeMouseEntered ||
+                             event_type == NSEventTypeMouseExited;
+  if (is_enter_exit) {
+    return [NSEvent enterExitEventWithType:event_type
+                                  location:point_in_window
+                             modifierFlags:0
+                                 timestamp:timestamp
+                              windowNumber:[window windowNumber]
+                                   context:nil
+                               eventNumber:0
+                            trackingNumber:0
+                                  userData:nullptr];
+  }
+  return [NSEvent mouseEventWithType:event_type
+                            location:point_in_window
+                       modifierFlags:0
+                           timestamp:timestamp
+                        windowNumber:[window windowNumber]
+                             context:nil
+                         eventNumber:0
+                          clickCount:is_move ? 0 : 1
+                            pressure:is_move ? 0.0 : 1.0];
 }
 
 }  // namespace
@@ -319,7 +355,7 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
 
   if (!task.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&EventQueueWatcher, std::move(task)));
+        FROM_HERE, base::BindOnce(&PostWhenEventQueueIsEmpty, std::move(task)));
   }
 
   return true;
@@ -339,16 +375,24 @@ bool SendMouseMoveNotifyWhenDone(int x,
                                  base::OnceClosure task,
                                  gfx::NativeWindow window_hint) {
   CHECK(g_ui_controls_enabled);
-  g_mouse_location = gfx::ScreenPointToNSPoint(gfx::Point(x, y));  // flip!
 
+  g_mouse_location = gfx::ScreenPointToNSPoint(gfx::Point(x, y));  // flip!
   NSWindow* window = window_hint ? window_hint.GetNativeNSWindow()
                                  : WindowAtCurrentMouseLocation();
 
-  NSPoint pointInWindow = g_mouse_location;
-  if (window) {
-    pointInWindow = [window convertPointFromScreen:pointInWindow];
+  // Possibly send exit and enter events.
+  if (g_last_window_weak != window) {
+    if (g_last_window_weak) {
+      NSEvent* event =
+          MakeMouseEvent(NSEventTypeMouseExited, g_last_window_weak);
+      [g_last_window_weak.contentView mouseExited:event];
+    }
+    if (window) {
+      NSEvent* event = MakeMouseEvent(NSEventTypeMouseEntered, window);
+      [g_last_window_weak.contentView mouseEntered:event];
+    }
   }
-  NSTimeInterval timestamp = TimeIntervalSinceSystemStartup();
+  g_last_window_weak = window;
 
   NSEventType event_type = NSEventTypeMouseMoved;
   if (g_mouse_button_down[LEFT]) {
@@ -359,21 +403,21 @@ bool SendMouseMoveNotifyWhenDone(int x,
     event_type = NSEventTypeOtherMouseDragged;
   }
 
-  NSEvent* event = [NSEvent
-      mouseEventWithType:event_type
-                location:pointInWindow
-           modifierFlags:0
-               timestamp:timestamp
-            windowNumber:[window windowNumber]
-                 context:nil
-             eventNumber:0
-              clickCount:event_type == NSEventTypeMouseMoved ? 0 : 1
-                pressure:event_type == NSEventTypeMouseMoved ? 0.0 : 1.0];
-  [[NSApplication sharedApplication] postEvent:event atStart:NO];
+  // Moves must be sent directly to the window as they won't be relayed by the
+  // OS.
+  NSEvent* event = MakeMouseEvent(event_type, window);
+  if (window_hint && event_type == NSEventTypeMouseMoved) {
+    if (window) {
+      [window.contentView mouseMoved:event];
+    }
+  } else {
+    [[NSApplication sharedApplication] postEvent:event atStart:NO];
+  }
 
+  // Maybe post the follow-up task.
   if (!task.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&EventQueueWatcher, std::move(task)));
+        FROM_HERE, base::BindOnce(&PostWhenEventQueueIsEmpty, std::move(task)));
   }
 
   return true;
@@ -457,7 +501,7 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
 
   if (!task.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&EventQueueWatcher, std::move(task)));
+        FROM_HERE, base::BindOnce(&PostWhenEventQueueIsEmpty, std::move(task)));
   }
 
   return true;

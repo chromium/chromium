@@ -517,6 +517,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7787950393032327779">Mae'n ymddangos bod y proffil yn cael ei ddefnyddio gan broses Chrome arall (<ph name="PROCESS_ID" />) ar gyfrifiadur arall (<ph name="HOST_NAME" />). Mae Chrome wedi cloi'r proffil fel nad yw'n cael ei lygru.  Os ydych yn siŵr nad oes unrhyw brosesau eraill yn defnyddio'r proffil hwn, gallwch ddatgloi'r proffil ac ail-lansio Chrome.</translation>
 <translation id="7801699035218095297">Mae Google Chrome yn ceisio copïo cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="7808348361785373670">Tynnu o Chrome...</translation>
+<translation id="782480918904119604">I ddefnyddio'r proffil hwn gyda Glic, agorwch Chrome a mewngofnodwch</translation>
 <translation id="7825851276765848807">Methwyd y gosodiad oherwydd gwall amhenodol. Lawrlwythwch Google Chrome eto.</translation>
 <translation id="7845233973568007926">Diolch am osod. Rhaid i chi ailgychwyn eich cyfrifiadur cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7872446069773932638">Wrthi'n lawrlwytho... Mae <ph name="SECONDS" /> eiliad ar ôl</translation>

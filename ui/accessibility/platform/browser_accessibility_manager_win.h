@@ -59,8 +59,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
       BrowserAccessibility* node,
       const std::string& announcement,
       ax::mojom::AriaNotificationPriority priority_property,
-      const std::string& notification_id,
-      ax::mojom::AriaNotificationInterrupt interrupt_property) override;
+      ax::mojom::AriaNotificationInterrupt interrupt_property,
+      const std::string& type) override;
 
   void FireFocusEvent(AXNode* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,

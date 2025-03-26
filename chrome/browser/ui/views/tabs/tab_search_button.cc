@@ -19,6 +19,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -32,18 +33,12 @@ TabSearchButton::TabSearchButton(
     BrowserWindowInterface* browser_window_interface,
     Edge fixed_flat_edge,
     Edge animated_flat_edge,
-    views::View* anchor_view,
     TabStrip* tab_strip)
     : TabStripControlButton(tab_strip_controller,
                             PressedCallback(),
                             vector_icons::kExpandMoreIcon,
                             fixed_flat_edge,
-                            animated_flat_edge),
-      tab_search_bubble_host_(
-          std::make_unique<TabSearchBubbleHost>(this,
-                                                browser_window_interface,
-                                                anchor_view,
-                                                tab_strip->AsWeakPtr())) {
+                            animated_flat_edge) {
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));

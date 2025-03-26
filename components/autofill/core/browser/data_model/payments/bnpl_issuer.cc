@@ -16,6 +16,19 @@
 
 namespace autofill {
 
+std::u16string BnplIssuerIdToDisplayName(std::string_view issuer_id) {
+  if (issuer_id == kBnplAffirmIssuerId) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM);
+  }
+  if (issuer_id == kBnplZipIssuerId) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP);
+  }
+  if (issuer_id == kBnplAfterpayIssuerId) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFTER_PAY);
+  }
+  NOTREACHED() << "Unknown issuer_id " << issuer_id;
+}
+
 BnplIssuer::EligiblePriceRange::EligiblePriceRange(
     const BnplIssuer::EligiblePriceRange&) = default;
 
@@ -81,16 +94,7 @@ bool BnplIssuer::IsEligibleAmount(uint64_t amount_in_micros,
 }
 
 std::u16string BnplIssuer::GetDisplayName() const {
-  if (issuer_id_ == kBnplAffirmIssuerId) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM);
-  }
-  if (issuer_id_ == kBnplZipIssuerId) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP);
-  }
-  if (issuer_id_ == kBnplAfterpayIssuerId) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFTER_PAY);
-  }
-  NOTREACHED() << "Unknown issuer_id_ " << issuer_id_;
+  return BnplIssuerIdToDisplayName(issuer_id_);
 }
 
 }  // namespace autofill

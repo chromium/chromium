@@ -55,8 +55,6 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
       return [self permissionsCameraBadgeButton];
     case kBadgeTypePermissionsMicrophone:
       return [self permissionsMicrophoneBadgeButton];
-    case kBadgeTypeParcelTracking:
-      return [self parcelTrackingBadgeButton];
     case kBadgeTypeNone:
       NOTREACHED() << "A badge should not have kBadgeTypeNone";
   }
@@ -245,21 +243,6 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
       kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier;
   button.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_INFOBAR_BADGES_PERMISSIONS_HINT);
-  return button;
-}
-
-- (BadgeButton*)parcelTrackingBadgeButton {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kShippingBoxSymbol, kInfobarSymbolPointSize);
-  BadgeButton* button = [self createButtonForType:kBadgeTypeParcelTracking
-                                            image:image];
-  [button addTarget:self.delegate
-                action:@selector(parcelTrackingBadgeButtonTapped:)
-      forControlEvents:UIControlEventTouchUpInside];
-  button.accessibilityIdentifier =
-      kBadgeButtonParcelTrackingAccessibilityIdentifier;
-  button.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_INFOBAR_BADGES_PARCEL_TRACKING_HINT);
   return button;
 }
 

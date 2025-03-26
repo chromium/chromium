@@ -149,6 +149,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1455242230282523554">Til sozlamalarini ochish</translation>
 <translation id="1459693405370120464">Ob-havo</translation>
 <translation id="1460620680449458626">Ovozsiz</translation>
+<translation id="1462439140224375968">Google Docs hujjati yaratildi</translation>
 <translation id="14648076227129703">Bunda kameraga ruxsat beriladi. <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> va barcha ilovalar va saytlar kameradan foydalana oladi</translation>
 <translation id="1467432559032391204">Chapga</translation>
 <translation id="146902737843070955">Administrator bu oʻzgartirishni talab qilmoqda</translation>
@@ -593,6 +594,7 @@ Bekor qilinsa, <ph name="TIMEOUT_SECONDS" />dan keyin sensorli panel qayta yoqil
 <translation id="301584155502740476">Hotspot axborotini ochish. Hotspot oʻchiq.</translation>
 <translation id="3017079585324758401">Orqa fon</translation>
 <translation id="3018135054368884502">Mediani oldinga oʻtkazish</translation>
+<translation id="3026897869154397692">Taqvimga kiritildi</translation>
 <translation id="3033545621352269033">Yoniq</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> bilan birlashtirish</translation>
 <translation id="3036649622769666520">Ochiq fayllar</translation>
@@ -1481,6 +1483,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="5825969630400862129">Ulangan qurilmalar sozlamalari</translation>
 <translation id="5830180081891717894">Yana <ph name="WINDOWS" /> ta</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> <ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinishi to‘xtatilsin</translation>
+<translation id="5840658767386246331">Google orqali qidirish</translation>
 <translation id="5841296711770970362">Keyingi trekka oʻtish</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> hotspoti yoniq, hech qanday qurilma ulanmagan</translation>
 <translation id="584525477304726060">Butunlay yoyish uchun bosib turing</translation>
@@ -1894,6 +1897,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7228968829656641943">Ekrandan qidirish hududini belgilang. Keyin klaviatura yordamida harakatlanish uchun avval Tab, keyin Boʻshliq tugmalarini bosing.</translation>
 <translation id="7229029500464092426">Xotira: <ph name="AVAILABLE_MEMORY" /> | jami: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Sichqonchaning ikkala tugmasi</translation>
+<translation id="7240636904654154599">Google Sheets jadvali yaratildi</translation>
 <translation id="7244725679040769470">Batareyada <ph name="PERCENTAGE" />% quvvat qoldi. Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Yangilanish amalga oshishi uchun Chromebook qayta ishga tushirilishi lozim. Bu 1 daqiqacha vaqt olishi mumkin.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8921624153894383499">Google Assistent hozircha bu tilda gapirmaydi.</translation>
 <translation id="8926951137623668982">Javon doim berk</translation>
 <translation id="8929566928381252430">Caps Lock bosish kerakmi? Buni ishlating:</translation>
+<translation id="8929623844713377237">Kontakt yaratildi</translation>
 <translation id="8934418770423095813">Google Doc hujjatini yaratish</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ta fayl}other{# ta fayl}}</translation>
 <translation id="8936501819958976551">faolsizlantirildi</translation>

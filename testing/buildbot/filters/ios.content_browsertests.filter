@@ -341,10 +341,8 @@
 
 # TODO(crbug.com/40274214): Assertion happens because |spawner_url_base_| is
 # empty.
--All/WorkerTest.WebSocketSharedWorker/0
--All/WorkerTest.WebSocketSharedWorker/1
--All/WorkerTest.WebSocketSharedWorker/2
--All/WorkerTest.WebSocketSharedWorker/3
+-All/WorkerTest.WebSocketSharedWorker/PrivateNetworkAccessForWorkersDisabled
+-All/WorkerTest.WebSocketSharedWorker/PrivateNetworkAccessForWorkersEnabled
 
 # TODO(crbug.com/335331442): A timeout happens after bump the version of SDK up to 17.4.
 -All/AccessibilityHitTestingBrowserTest.HitTestInPopup/ZoomFactor1

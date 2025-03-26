@@ -14,8 +14,10 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import '../settings_shared.css.js';
+import './passwords_shared.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -29,7 +31,9 @@ import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 type AttributeInstance = chrome.autofillPrivate.AttributeInstance;
 type AttributeType = chrome.autofillPrivate.AttributeType;
 const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
+type AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
 type CountryEntry = chrome.autofillPrivate.CountryEntry;
+type DateValue = chrome.autofillPrivate.DateValue;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
 
 export interface SettingsAutofillAiAddOrEditDialogElement {
@@ -38,8 +42,10 @@ export interface SettingsAutofillAiAddOrEditDialogElement {
   };
 }
 
+const SettingsAutofillAiSectionElementBase = I18nMixin(PolymerElement);
 
-export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
+export class SettingsAutofillAiAddOrEditDialogElement extends
+    SettingsAutofillAiSectionElementBase {
   static get is() {
     return 'settings-autofill-ai-add-or-edit-dialog';
   }
@@ -62,6 +68,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
       dialogTitle: {
         type: String,
         value: '',
+      },
+
+      attributeTypeDataTypeEnum_: {
+        type: Object,
+        value: AttributeTypeDataType,
       },
 
       /**
@@ -94,6 +105,17 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
       },
 
       /**
+         True if all fields are empty. The first validation occurs when the user
+         clicks the "Save" button for the first time. Subsequent validations
+         occur any time an input field is changed. If true, the "Save" button
+         is disabled and an error message is displayed.
+       */
+      allFieldsAreEmpty_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
          False if the form is invalid. The first validation occurs when the user
          clicks the "Save" button for the first time. Subsequent validations
          occur any time an input field is changed. If false, the "Save" button
@@ -103,6 +125,40 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
         type: Boolean,
         value: true,
       },
+
+      userClickedSaveButton_: {
+        type: Boolean,
+        value: false,
+      },
+
+      months_: {
+        type: Array,
+        // [1, 2, ..., 12]
+        value: Array.from({length: 12}, (_, i) => i + 1).map(String),
+      },
+
+      days_: {
+        type: Array,
+        // There are always 31 days, regardless of month and year. This is an
+        // acceptable trade-off.
+        // [1, 2, ..., 31]
+        value: Array.from({length: 31}, (_, i) => i + 1).map(String),
+      },
+
+      years_: {
+        type: Array,
+        value: () => {
+          const currentYear: number = (new Date()).getFullYear();
+          const firstYear: number = currentYear - 90;
+          const lastYear: number = currentYear + 15;
+          // [lastYear, ..., firstYear] (decreasing order)
+          return Array
+              .from(
+                  {length: lastYear - firstYear + 1},
+                  (_, index) => lastYear - index)
+              .map(String);
+        },
+      },
     };
   }
 
@@ -111,8 +167,10 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
   private completeAttributeInstanceList_: AttributeInstance[];
   private countryList_: CountryEntry[];
   private completeAttributeTypesList_: AttributeType[];
+  private allFieldsAreEmpty_: boolean;
   private canSave_: boolean;
-  private userClickedSaveButton_: boolean = false;
+  private userClickedSaveButton_: boolean;
+
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
   private countryDetailManager_: CountryDetailManagerProxy =
@@ -144,16 +202,23 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
                   existingAttributeInstance.type.typeName ===
                   attributeType.typeName);
       this.convertCountryAttributeInstance_(existingAttributeInstance);
+
       return {
         type: attributeType,
-        value: existingAttributeInstance?.value || '',
+        value: existingAttributeInstance?.value ||
+            (attributeType.dataType === AttributeTypeDataType.DATE ? {
+                 month: '',
+                 day: '',
+                 year: '',
+               } :
+                                                                     ''),
       };
     });
   }
 
   private convertCountryAttributeInstance_(
-      attributeInstace: AttributeInstance|undefined): void {
-    if (!attributeInstace) {
+      attributeInstance: AttributeInstance|undefined): void {
+    if (!attributeInstance) {
       return;
     }
     // If `entityInstance` has a value stored for the country attribute, the
@@ -164,33 +229,35 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
     // This logic exists because of a trade-off in the C++ autofill private API,
     // that has to call `EntityInstance::GetCompleteInfo()`, instead of
     // `EntityInstance::GetRawInfo()`.
-    if (attributeInstace.type.dataType === AttributeTypeDataType.COUNTRY) {
+    if (attributeInstance.type.dataType === AttributeTypeDataType.COUNTRY) {
       // TODO(crbug.com/403312087): Remove comment and exclamation marks once
       // the <hr> TODO below is solved.
       // The find operation will always find a match. Currently, the only entry
       // that doesn't have a name or a country code is the separator.
-      attributeInstace.value = this.countryList_
-                                   .find(
-                                       country => attributeInstace.value ===
-                                           country.name)!.countryCode!;
+      attributeInstance.value = this.countryList_
+                                    .find(
+                                        country => attributeInstance.value ===
+                                            country.name)!.countryCode!;
     }
   }
 
-  private isCountryDataType_(attributeInstace: AttributeInstance): boolean {
-    return attributeInstace.type.dataType === AttributeTypeDataType.COUNTRY;
+  private isDataType_(
+      attributeInstance: AttributeInstance,
+      dataType: AttributeTypeDataType): boolean {
+    return attributeInstance.type.dataType === dataType;
   }
 
-  private isStringDataType_(attributeInstace: AttributeInstance): boolean {
-    // TODO(crbug.com/393318914): Handle dates separately.
-    return attributeInstace.type.dataType === AttributeTypeDataType.STRING ||
-        attributeInstace.type.dataType === AttributeTypeDataType.DATE;
-  }
 
   private getCountryCode_(country: CountryEntry): string {
     // In case there is no country code, the string does not matter as long as
     // it is not empty and does not collide with any other country code.
     return country.countryCode || 'SEPARATOR';
   }
+
+  private isCountrySeparator_(country: CountryEntry): boolean {
+    return !country.countryCode;
+  }
+
 
   private getCountryName_(country: CountryEntry): string {
     // TODO(crbug.com/403312087): Use <hr> as a separator, instead of hacking
@@ -200,19 +267,130 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
     return country.name || '------';
   }
 
-  private isCountrySeparator_(country: CountryEntry): boolean {
-    return !country.countryCode;
+  private getMonthName_(month: string): string {
+    // TODO(crbug.com/393318914): Use names instead of numbers ("Jan", "Feb",
+    // etc.).
+    return month;
   }
+
 
   private isCountrySelected_(
       attributeInstance: AttributeInstance, country: CountryEntry): boolean {
     return attributeInstance.value === this.getCountryCode_(country);
   }
 
-  private onCountrySelectChange_(e: DomRepeatEvent<AttributeInstance>) {
+  private isMonthSelected_(attributeInstance: AttributeInstance, month: string):
+      boolean {
+    return (attributeInstance.value as DateValue).month === month;
+  }
+
+  private isDaySelected_(attributeInstance: AttributeInstance, day: string):
+      boolean {
+    return (attributeInstance.value as DateValue).day === day;
+  }
+
+  private isYearSelected_(attributeInstance: AttributeInstance, year: string):
+      boolean {
+    return (attributeInstance.value as DateValue).year === year;
+  }
+
+
+  private onCountrySelectChange_(e: DomRepeatEvent<AttributeInstance>): void {
     this.completeAttributeInstanceList_[e.model.index].value =
         (e.target as HTMLSelectElement).value;
     this.onAttributeInstanceFieldInput_(e);
+  }
+
+  private onMonthSelectChange_(e: DomRepeatEvent<AttributeInstance>): void {
+    (this.completeAttributeInstanceList_[e.model.index].value as DateValue)
+        .month = (e.target as HTMLSelectElement).value;
+    this.onAttributeInstanceFieldInput_(e);
+  }
+
+  private onDaySelectChange_(e: DomRepeatEvent<AttributeInstance>): void {
+    (this.completeAttributeInstanceList_[e.model.index].value as DateValue)
+        .day = (e.target as HTMLSelectElement).value;
+    this.onAttributeInstanceFieldInput_(e);
+  }
+
+  private onYearSelectChange_(e: DomRepeatEvent<AttributeInstance>): void {
+    (this.completeAttributeInstanceList_[e.model.index].value as DateValue)
+        .year = (e.target as HTMLSelectElement).value;
+    this.onAttributeInstanceFieldInput_(e);
+  }
+
+
+  /**
+   * Returns true if the date is invalid. A date is invalid either if it is
+   * incomplete (i.e. only some of the month, day, year selectors are empty), or
+   * if the combination of month, day, year is invalid (i.e. 30th of February
+   * 2020 is invalid).
+   * Returns false if month, day, year are all empty, or if the combination of
+   * month, day, year is complete and valid.
+   * The first validation occurs when the user clicks the "Save" button for the
+   * first time. Subsequent validations occur any time a field is changed.
+   */
+  private isDateInvalid_(attributeInstance: AttributeInstance): boolean {
+    if (attributeInstance.type.dataType !== AttributeTypeDataType.DATE) {
+      return false;
+    }
+    const value: DateValue = attributeInstance.value as DateValue;
+    const month = value.month;
+    const day = value.day;
+    const year = value.year;
+
+    const allEmpty =
+        month.length === 0 && day.length === 0 && year.length === 0;
+    const someEmpty =
+        month.length === 0 || day.length === 0 || year.length === 0;
+
+    if (allEmpty) {
+      // The date is valid because month, day, year are all empty.
+      return false;
+    }
+    if (someEmpty) {
+      // The date is invalid because it is incomplete.
+      return true;
+    }
+
+    // The date is complete. Check whether the combination of month, day, year
+    // is valid. I.e. 30th of February 2020 is invalid.
+    // `monthIndex` is indexed from 0, while `month` is indexed from 1.
+    const date = new Date(+year, /*monthIndex=*/ +month - 1, +day);
+    // If the combination of month, day, year is invalid, then `date` will
+    // overflow into the next month.
+    return (date.getFullYear() !== +year) || (date.getMonth() !== +month - 1) ||
+        (date.getDate() !== +day);
+  }
+
+  /**
+   * Returns true if the value is not empty and it is not made out only of
+   * whitespaces.
+   * For dates, at least one of month, day and year has to be not empty. An
+   * incomplete date is not an empty field.
+   */
+  private isAttributeInstanceNotEmpty(attributeInstance: AttributeInstance):
+      boolean {
+    if (attributeInstance.type.dataType === AttributeTypeDataType.DATE) {
+      const value: DateValue = attributeInstance.value as DateValue;
+      return value.month.trim().length > 0 || value.day.trim().length > 0 ||
+          value.year.trim().length > 0;
+    }
+    return (attributeInstance.value as string).trim().length > 0;
+  }
+
+  private onAttributeInstanceFieldInput_(_e: Event): void {
+    if (this.userClickedSaveButton_) {
+      this.validateForm_();
+    }
+  }
+
+  private validateForm_(): void {
+    this.allFieldsAreEmpty_ = !this.completeAttributeInstanceList_.some(
+        this.isAttributeInstanceNotEmpty);
+    const invalidDateExists =
+        this.completeAttributeInstanceList_.some(this.isDateInvalid_);
+    this.canSave_ = !this.allFieldsAreEmpty_ && !invalidDateExists;
   }
 
   private onCancelClick_(): void {
@@ -221,34 +399,19 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
 
   private onConfirmClick_(): void {
     this.userClickedSaveButton_ = true;
-    this.updateCanSave_();
+    this.validateForm_();
     if (this.canSave_) {
       this.dispatchEvent(new CustomEvent('autofill-ai-add-or-edit-done', {
         bubbles: true,
         composed: true,
         detail: {
           ...this.entityInstance,
-          // Don't take into consideration empty strings or strings made out
-          // only of whitespaces.
           attributeInstances: this.completeAttributeInstanceList_.filter(
-              attributeInstance => attributeInstance.value.trim().length > 0),
+              this.isAttributeInstanceNotEmpty),
         },
       }));
       this.$.dialog.close();
     }
-  }
-
-  private onAttributeInstanceFieldInput_(_e: Event): void {
-    if (this.userClickedSaveButton_) {
-      this.updateCanSave_();
-    }
-  }
-
-  private updateCanSave_(): void {
-    // Don't take into consideration empty strings or strings made out only of
-    // whitespaces.
-    this.canSave_ = this.completeAttributeInstanceList_.some(
-        attributeInstance => attributeInstance.value.trim().length > 0);
   }
 }
 

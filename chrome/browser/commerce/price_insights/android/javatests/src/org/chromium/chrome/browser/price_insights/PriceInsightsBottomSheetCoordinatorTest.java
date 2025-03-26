@@ -42,6 +42,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -79,7 +80,7 @@ public class PriceInsightsBottomSheetCoordinatorTest {
     @Mock private ShoppingService mMockShoppingService;
     @Mock private Profile mMockProfile;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
-    @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
+    @Mock private ObservableSupplier<PriceTrackingState> mMockPriceTrackingStateSupplier;
 
     @Captor private ArgumentCaptor<PriceInsightsBottomSheetContent> mBottomSheetContentCaptor;
 
@@ -121,7 +122,7 @@ public class PriceInsightsBottomSheetCoordinatorTest {
         doReturn(mMockPriceHistoryChart)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO);
-        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(PriceTrackingState.UNTRACKED).when(mMockPriceTrackingStateSupplier).get();
         doReturn(mMockPriceTrackingStateSupplier)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceTrackingStateSupplier(mMockTab);

@@ -24,7 +24,8 @@ include_rules = [
   "+components/sharing_message/sharing_sync_preference.h",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/authentication/ui_bundled",
-  "+ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
+  "+ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h",
+  "+ios/chrome/browser/push_notification/model/push_notification_prefs.h"
 ]
 
 specific_include_rules = {

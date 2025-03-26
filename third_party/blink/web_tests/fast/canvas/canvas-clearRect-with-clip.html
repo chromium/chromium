@@ -1,4 +1,4 @@
-<html>
+<html class="reftest-wait">
 <body>
 <canvas id="c" width=200 height=200></canvas>
 <script>
@@ -17,6 +17,7 @@ window.requestAnimationFrame( dt=> {
   window.requestAnimationFrame (dt =>{
     ctx.fillStyle="#00FF00";
     ctx.fillRect(0, 0, 200, 200);
+    document.documentElement.classList.remove('reftest-wait');
   });
 });
 

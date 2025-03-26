@@ -33,34 +33,22 @@ namespace web_app {
 namespace {
 
 base::expected<void, UnusableSwbnFileError> ValidateIntegrityBlockAndMetadata(
+    Profile& profile,
     const SignedWebBundleReader& reader,
-    IsolatedWebAppValidator& validator,
-    IsolatedWebAppTrustChecker& trust_checker,
     const web_package::SignedWebBundleId& web_bundle_id,
     bool dev_mode) {
-  RETURN_IF_ERROR(
-      validator.ValidateIntegrityBlock(
-          web_bundle_id, reader.GetIntegrityBlock(), dev_mode, trust_checker),
-      [](const auto& error) -> base::expected<void, UnusableSwbnFileError> {
-        return base::unexpected(UnusableSwbnFileError(
-            UnusableSwbnFileError::Error::kIntegrityBlockValidationError,
-            error));
-      });
-
-  RETURN_IF_ERROR(validator.ValidateMetadata(
+  RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateIntegrityBlock(
+      profile, web_bundle_id, reader.GetIntegrityBlock(), dev_mode));
+  RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateMetadata(
       web_bundle_id, reader.GetPrimaryURL(), reader.GetEntries()));
-
   return base::ok();
 }
 
 }  // namespace
 
 IsolatedWebAppResponseReaderFactory::IsolatedWebAppResponseReaderFactory(
-    Profile& profile,
-    std::unique_ptr<IsolatedWebAppValidator> validator)
-    : profile_(profile),
-      trust_checker_(profile),
-      validator_(std::move(validator)) {}
+    Profile& profile)
+    : profile_(profile) {}
 
 IsolatedWebAppResponseReaderFactory::~IsolatedWebAppResponseReaderFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -142,8 +130,7 @@ void IsolatedWebAppResponseReaderFactory::OnReaderCreated(
   });
 
   RETURN_IF_ERROR(
-      ValidateIntegrityBlockAndMetadata(*reader, *validator_, trust_checker_,
-                                        web_bundle_id,
+      ValidateIntegrityBlockAndMetadata(*profile_, *reader, web_bundle_id,
                                         flags.Has(Flag::kDevModeBundle)),
       [&](const auto& error) {
         UmaLogExpectedStatus<UnusableSwbnFileError>(
@@ -168,14 +155,8 @@ void IsolatedWebAppResponseReaderFactory::OnReaderCreated(
       "WebApp.Isolated.SwbnFileUsability", base::ok());
 
   std::move(callback).Run(std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader),
-      base::BindRepeating(
-          &IsolatedWebAppTrustChecker::IsTrusted,
-          // Do not re-use `trust_checker_` here, because
-          // `IsolatedWebAppResponseReaderImpl` might outlive `this`.
-          std::make_unique<IsolatedWebAppTrustChecker>(*profile_),
-          web_bundle_id,
-          /*is_dev_mode_bundle=*/flags.Has(Flag::kDevModeBundle))));
+      std::move(reader), *profile_, web_bundle_id,
+      flags.Has(Flag::kDevModeBundle)));
 }
 
 }  // namespace web_app

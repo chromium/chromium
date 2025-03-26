@@ -527,8 +527,10 @@ void SessionServiceBase::OnGotSessionCommands(
   std::vector<std::unique_ptr<sessions::SessionWindow>> valid_windows;
   SessionID active_window_id = SessionID::InvalidValue();
 
+  // TODO(crbug.com/352081012): Add platform session plumbing code.
+  std::string platform_session_id;
   sessions::RestoreSessionFromCommands(commands, &valid_windows,
-                                       &active_window_id);
+                                       &active_window_id, &platform_session_id);
   RemoveUnusedRestoreWindows(&valid_windows);
 
   std::move(callback).Run(std::move(valid_windows), active_window_id,
@@ -809,4 +811,15 @@ void SessionServiceBase::SetSavingEnabled(bool enabled) {
   } else {
     ScheduleResetCommands();
   }
+}
+
+std::optional<std::string> SessionServiceBase::GetPlatformSessionId() {
+  // TODO(crbug.com/352081012): Request from the platform API, if needed.
+  return platform_session_id_;
+}
+
+void SessionServiceBase::SetPlatformSessionIdForTesting(const std::string& id) {
+  platform_session_id_ = id;
+  ScheduleCommand(sessions::CreateSetPlatformSessionIdCommand(
+      platform_session_id_.value()));
 }

@@ -691,8 +691,8 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
       std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
       param2_ = AngleToUnitCircleDegrees(param2_);
 
-      // Hue component is powerless for fully transparent or achromatic colors.
-      if (IsFullyTransparent() || param1_ <= kAchromaticChromaThreshold) {
+      // Hue component is powerless for achromatic colors.
+      if (param1_ <= kAchromaticChromaThreshold) {
         param2_is_none_ = true;
       }
 
@@ -719,8 +719,8 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
         param2_ = AngleToUnitCircleDegrees(param2_);
       }
 
-      // Hue component is powerless for fully transparent or archromatic colors.
-      if (IsFullyTransparent() || param1_ <= kAchromaticChromaThreshold) {
+      // Hue component is powerless for archromatic colors.
+      if (param1_ <= kAchromaticChromaThreshold) {
         param2_is_none_ = true;
       }
 
@@ -775,9 +775,8 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
             gfx::SRGBToHSL(param0_, param1_, param2_);
       }
 
-      // Hue component is powerless for fully transparent or achromatic (s==0)
-      // colors.
-      if (IsFullyTransparent() || param1_ == 0) {
+      // Hue component is powerless for achromatic (s==0) colors.
+      if (param1_ == 0) {
         param0_is_none_ = true;
       }
 
@@ -805,8 +804,8 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
             gfx::SRGBToHWB(param0_, param1_, param2_);
       }
 
-      // Hue component is powerless for fully transparent or achromatic colors.
-      if (IsFullyTransparent() || param1_ + param2_ >= 1) {
+      // Hue component is powerless for achromatic colors.
+      if (param1_ + param2_ >= 1) {
         param0_is_none_ = true;
       }
 

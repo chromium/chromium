@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/test_data_util.h"
@@ -41,7 +42,7 @@ StringHlsDataSourceStreamFactory::CreateStream(std::string content,
       HlsDataSourceStream::StreamId::FromUnsafeValue(42), std::move(segments),
       base::DoNothing());
   auto* buffer = stream->LockStreamForWriting(content.length());
-  memcpy(buffer, content.c_str(), content.length());
+  UNSAFE_TODO(memcpy(buffer, content.c_str(), content.length()));
   stream->UnlockStreamPostWrite(content.length(), true);
   if (taint_origin) {
     stream->set_would_taint_origin();

@@ -506,7 +506,12 @@ void OpenscreenSessionHost::OnNegotiated(
             mirror_settings_.refresh_interval().InMilliseconds())));
 
     if (video_capture_client_ && video_stream_) {
-      ResumeCapturingVideo();
+      // NOTE: it is possible that we may renegotiate without pausing video
+      // capture, in which case we don't need to change the video capture client
+      // state.
+      if (is_video_capture_paused_) {
+        ResumeCapturingVideo();
+      }
     } else {
       StartCapturingVideo();
     }

@@ -27,9 +27,21 @@
       </div>
     </div>
   </section>
+  <section hidden class="dialog panel" id="offlinePanel">
+    <div class="header">
+      <cr-icon-button class="close-button" iron-icon="cr:close">
+      </cr-icon-button>
+    </div>
+    <div class="container">
+      <div class="notice">
+        <div class="icon"><cr-icon icon="glic:offline"></cr-icon></div>
+        <p class="headline">$i18n{offlineNoticeHeader}</p>
+        <p>$i18n{offlineNoticeAction}</p>
+      </div>
+    </div>
+  </section>
   <section hidden class="panel" id="guestPanel">
-    <webview id="fre-guest-frame" partition="glicfrepart">
-    </webview>
+    <div id="webviewContainer"></div>
   </section>
 </body>
 </html>

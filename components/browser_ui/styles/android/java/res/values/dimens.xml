@@ -34,9 +34,6 @@ found in the LICENSE file.
     <item name="progress_bar_bg_alpha" format="float" type="dimen">0.2</item>
     <item name="filled_button_bg_disabled_alpha" format="float" type="dimen">0.12</item>
 
-    <!-- Surface color elevations -->
-    <dimen name="sheet_bg_color_elev">@dimen/default_elevation_0</dimen>
-
     <!-- Favicon dimensions -->
     <dimen name="default_favicon_size">16dp</dimen>
     <dimen name="default_favicon_corner_radius">4dp</dimen>

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -322,10 +323,11 @@ void PepperInternalFileRefBackend::GetMetadataComplete(
   reply_context.params.set_result(ppapi::FileErrorToPepperError(error));
 
   PP_FileInfo pp_file_info;
-  if (error == base::File::FILE_OK)
+  if (error == base::File::FILE_OK) {
     ppapi::FileInfoToPepperFileInfo(file_info, fs_type_, &pp_file_info);
-  else
-    memset(&pp_file_info, 0, sizeof(pp_file_info));
+  } else {
+    UNSAFE_TODO(memset(&pp_file_info, 0, sizeof(pp_file_info)));
+  }
 
   host_->SendReply(reply_context,
                    PpapiPluginMsg_FileRef_QueryReply(pp_file_info));

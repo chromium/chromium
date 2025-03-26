@@ -132,9 +132,14 @@ TouchAction AdjustTouchActionForElement(TouchAction touch_action,
   bool is_child_document =
       element == document_element && element->GetDocument().LocalOwner();
   if (scrolls_overflow || is_child_document) {
-    return touch_action | TouchAction::kPan |
-           TouchAction::kInternalPanXScrolls |
-           TouchAction::kInternalNotWritable;
+    touch_action |= TouchAction::kPan | TouchAction::kInternalPanXScrolls |
+                    TouchAction::kInternalNotWritable;
+    // TODO(crbug.com/378027646): Remove after making a decision regarding
+    // handwriting enablement.
+    touch_action |= TouchAction::kInternalHandwritingPanningRules;
+  }
+  if (is_child_document) {
+    touch_action |= TouchAction::kInternalHandwriting;
   }
   return touch_action;
 }
@@ -922,18 +927,29 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   // Apply the adjusted parent effective touch actions.
   builder.SetEffectiveTouchAction(effective_touch_action);
 
-  // crbug.com/378027646 : This use counter counts how many pages would lose
-  // handwriting capabilities on platforms that support it if the handwriting
-  // keyword were implemented on this CSS attribute. Please see the linked bug
-  // for more information.
-  const bool would_lose_handwriting =
-      is_writable && effective_touch_action != TouchAction::kNone &&
-      (effective_touch_action & TouchAction::kInternalHandwriting) !=
-          TouchAction::kInternalHandwriting;
-  if (would_lose_handwriting) {
-    UseCounter::Count(
-        element->GetDocument(),
-        WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting);
+  if (is_writable && effective_touch_action != TouchAction::kNone) {
+    const auto would_lose_handwriting =
+        [effective_touch_action](TouchAction handwriting_touch_action) {
+          return (effective_touch_action & handwriting_touch_action) !=
+                 handwriting_touch_action;
+        };
+    // TODO(crbug.com/378027646) : This use counter counts how many pages would
+    // lose handwriting capabilities on platforms that support it if the
+    // handwriting keyword were implemented on this CSS attribute.
+    if (would_lose_handwriting(TouchAction::kInternalHandwriting)) {
+      UseCounter::Count(
+          element->GetDocument(),
+          WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting);
+    }
+    // Similar to the use counter above, but this will measure how many pages
+    // would lose handwriting capabilities if the handwriting keyword follows
+    // the rules for panning (being re-enabled when on a scrollable element).
+    if (would_lose_handwriting(TouchAction::kInternalHandwritingPanningRules)) {
+      UseCounter::Count(
+          element->GetDocument(),
+          WebFeature::
+              kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller);
+    }
   }
 
   // Propagate touch action to child frames.

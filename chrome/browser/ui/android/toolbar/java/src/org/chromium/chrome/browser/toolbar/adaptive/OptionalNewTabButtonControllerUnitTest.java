@@ -79,8 +79,6 @@ public final class OptionalNewTabButtonControllerUnitTest {
 
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
 
-        AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-
         mOptionalNewTabButtonController =
                 new OptionalNewTabButtonController(
                         mContext,

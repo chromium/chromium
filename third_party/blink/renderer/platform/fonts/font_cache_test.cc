@@ -156,6 +156,21 @@ TEST_F(FontCacheTest, firstAvailableOrFirst) {
             FontCache::FirstAvailableOrFirst(", not exist, not exist"));
 }
 
+TEST_F(FontCacheTest, FontUniqueNameMatchAvailable) {
+  FontCache& font_cache = FontCache::Get();
+
+  FontDescription font_description;
+  font_description.SetGenericFamily(FontDescription::kStandardFamily);
+  font_description.SetComputedSize(12.f);
+  FontFaceCreationParams creation_params;
+  EXPECT_FALSE(font_cache.IsPlatformFontUniqueNameMatchAvailable(
+      font_description, AtomicString()));
+  EXPECT_TRUE(font_cache.IsPlatformFontUniqueNameMatchAvailable(
+      font_description, AtomicString("Arial")));
+  EXPECT_FALSE(font_cache.IsPlatformFontUniqueNameMatchAvailable(
+      font_description, AtomicString("INVALID_FONT_NAME")));
+}
+
 // Unfortunately, we can't ensure a font here since on Android and Mac the
 // unittests can't access the font configuration. However, this test passes
 // when it's not crashing in FontCache.

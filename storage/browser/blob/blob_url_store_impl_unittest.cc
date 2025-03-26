@@ -75,17 +75,18 @@ class BlobURLStoreImplTestP
   bool BlockCrossPartitionBlobUrlFetchingEnabled() {
     switch (test_case_) {
       case PartitionedBlobUrlTestCase::
-          kBlockCrossPartitionBlobUrlFetchingDisabled:
-      case PartitionedBlobUrlTestCase::
           kBlockCrossPartitionBlobUrlFetchingEnabled:
         return true;
+      case PartitionedBlobUrlTestCase::
+          kBlockCrossPartitionBlobUrlFetchingDisabled:
       default:
         return false;
     }
   }
 
   bool StoragePartitioningEnabled() {
-    return test_case_ != PartitionedBlobUrlTestCase::kPartitioningDisabled;
+    return test_case_ == PartitionedBlobUrlTestCase::
+                             kBlockCrossPartitionBlobUrlFetchingEnabled;
   }
 
   void TearDown() override {

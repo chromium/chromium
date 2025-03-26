@@ -125,55 +125,6 @@ suite('PaymentsSection', function() {
     assertFalse(addPaymentMethodsButton.disabled);
   });
 
-  test('verifyMigrationButtonNotShownIfMigrationNotEnabled', async function() {
-    // Mock prerequisites are not met.
-    loadTimeData.overrideValues({migrationEnabled: false});
-
-    // Add one migratable credit card.
-    const creditCard = createCreditCardEntry();
-    creditCard.metadata!.isMigratable = true;
-    const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
-        {credit_card_enabled: {value: true}});
-
-    assertTrue(section.$.migrateCreditCards.hidden);
-  });
-
-  test('verifyMigrationButtonNotShownIfCreditCardDisabled', async function() {
-    // Add one migratable credit card.
-    const creditCard = createCreditCardEntry();
-    creditCard.metadata!.isMigratable = true;
-    // Mock credit card save toggle is turned off by users.
-    const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
-        {credit_card_enabled: {value: false}});
-
-    assertTrue(section.$.migrateCreditCards.hidden);
-  });
-
-  test('verifyMigrationButtonNotShownIfNoCardIsMigratable', async function() {
-    // Add one migratable credit card.
-    const creditCard = createCreditCardEntry();
-    // Mock credit card is not valid.
-    creditCard.metadata!.isMigratable = false;
-    const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
-        {credit_card_enabled: {value: true}});
-
-    assertTrue(section.$.migrateCreditCards.hidden);
-  });
-
-  test('verifyMigrationButtonShown', async function() {
-    // Add one migratable credit card.
-    const creditCard = createCreditCardEntry();
-    creditCard.metadata!.isMigratable = true;
-    const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
-        {credit_card_enabled: {value: true}});
-
-    assertFalse(section.$.migrateCreditCards.hidden);
-  });
-
   test('CanMakePaymentToggle_RecordsMetrics', async function() {
     const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);

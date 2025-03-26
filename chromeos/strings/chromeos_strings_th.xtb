@@ -11,6 +11,7 @@
 <translation id="102432830749687801">โปรดใช้แอป Content Transfer โดย Google เพื่อย้ายข้อมูลบัญชีโรงเรียนไปยังบัญชีส่วนตัวก่อนที่คุณจะสูญเสียสิทธิ์เข้าถึง</translation>
 <translation id="1026212596705997935">มีการใช้แป้นพิมพ์ลัดนี้สำหรับ "<ph name="CONFLICT_ACCEL_NAME" />" แล้ว โปรดกดแป้นพิมพ์ลัดใหม่ หากต้องการเปลี่ยนแป้นพิมพ์ลัดที่มีอยู่ ให้กดแป้นพิมพ์ลัดนี้อีกครั้ง</translation>
 <translation id="1030856839388844477">รีเซ็ตปริมาณการใช้อินเทอร์เน็ต</translation>
+<translation id="1047095725494118091">ดาวน์โหลดไม่ได้ ลองอีกครั้งหรือรีสตาร์ท <ph name="DEVICE_TYPE" /></translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> เทรด, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">มีฟีเจอร์ใหม่ ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="1049663189809099096">เหลืองพาสเทล</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">กำลังดาวน์โหลดโปรแกรมรักษาหน้าจอ</translation>
 <translation id="1094693127011229778">ที่อยู่ IP ไม่พร้อมใช้งาน</translation>
 <translation id="1100902271996134409">กำลังสร้างรูปภาพ...</translation>
+<translation id="1107856713690040084">ไฟล์เสียง <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">เกี่ยวกับ</translation>
 <translation id="1118572504348554005">เราอาจแชร์ความคิดเห็นที่ส่งมาทางแบบฟอร์มนี้กับพาร์ทเนอร์เพื่อแก้ไขข้อบกพร่องและปัญหาอื่นๆ ที่คุณรายงานให้ทราบ อย่าใส่ข้อมูลที่ละเอียดอ่อน เช่น รหัสผ่าน</translation>
 <translation id="1119403468619527527">มีคำน้อยเกินไปที่จะย่อความ</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">เปิดโหมดมืด</translation>
 <translation id="2164131940279488868">ตรวจสอบว่าได้เชื่อมต่อไมค์แล้วเพื่อเริ่มบันทึกเสียง</translation>
 <translation id="2173302385160625112">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
+<translation id="2176909213844392588">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำของภาษา<ph name="LANGUAGE_NAME" />ไม่ได้ ลองอีกครั้งหรือรีสตาร์ท <ph name="DEVICE_TYPE" /></translation>
 <translation id="2180197493692062006">เกิดข้อผิดพลาด ลองเปิดแอปอีกครั้ง</translation>
 <translation id="2189104374785738357">แก้ไขรายละเอียด APN</translation>
 <translation id="2195732836444333448">ขณะนี้ถึงขีดจำกัดแล้ว โปรดกลับมาใหม่เร็วๆ นี้</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
 <translation id="3201315366910775591">ผู้อื่นจะอัปเดตอัลบั้มที่แชร์ได้</translation>
 <translation id="3211671540163313381">D-pad การแมปคีย์</translation>
+<translation id="3217462202230355157">ตรวจสอบว่าไมค์เชื่อมต่ออยู่หรือลองรีสตาร์ท <ph name="DEVICE_TYPE" /></translation>
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
 <translation id="3226657629376379887">เมนูการทำงานสำหรับเลย์เอาต์</translation>
 <translation id="3227186760713762082">นำค่า <ph name="CATEGORY_TEXT" /> มาหารด้วย <ph name="CONVERSION_RATE" /></translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">พิเศษ</translation>
 <translation id="3404249063913988450">เปิดใช้โปรแกรมรักษาหน้าจอ</translation>
 <translation id="3413935475507503304">คลิก "ถัดไป" เพื่อดำเนินการอัปเดตต่อ</translation>
+<translation id="3416709353545797224">กำลังบันทึกเสียงทั้งหมดจาก <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">กลางแจ้ง</translation>
 <translation id="3428971106895559033">พาสเทล</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">ตรวจสอบว่าเครื่องสแกนเปิดอยู่และใช้งานได้ผ่านทางเครือข่ายของคุณหรือการเชื่อมต่อโดยตรง</translation>
 <translation id="4159238217853743776">บางส่วน</translation>
 <translation id="4159784952369912983">ม่วง</translation>
+<translation id="416219735020840807">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำไม่ได้ ลองอีกครั้งหรือรีสตาร์ท <ph name="DEVICE_TYPE" /></translation>
 <translation id="4170180284036919717">ถ่ายรูป</translation>
 <translation id="4170700058716978431">ไม่สำเร็จ</translation>
 <translation id="4171077696775491955">ลดความสว่าง</translation>
@@ -698,6 +704,16 @@
 <translation id="4249717042534905822">ในวันอาทิตย์</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4251839292699800785">สำนักงานที่มีสไตล์</translation>
+<translation id="4252261480746798874">เมื่อเลือก "สร้างของคุณเอง" คุณจะเขียนพรอมต์ที่กำหนดเองได้ คุณยังเลือก "เลือกธีม" แล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนวอลเปเปอร์ AI ในแบบของคุณได้ด้วย
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เลือก "ขอแรงบันดาลใจหน่อย" เพื่อรับตัวเลือกรูปภาพ AI ที่เป็นเอกลักษณ์และหลากหลายยิ่งขึ้น
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          เมื่อสร้างวอลเปเปอร์ของคุณเอง ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ของ Google เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ข้อกำหนดในการให้บริการและนโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> อย่าระบุสิ่งที่เป็นเรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generative AI อาจทำผิดพลาดได้ ซึ่งรวมถึงการให้ข้อมูลเกี่ยวกับผู้คน ดังนั้นโปรดตรวจสอบคำตอบอีกครั้ง <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">เวลาในตอบสนองของ HTTP</translation>
 <translation id="4266143281602681663">ไหมพรม</translation>
 <translation id="4269815121975886860">การกำหนดค่าเริ่มต้น</translation>
@@ -942,6 +958,7 @@
 <translation id="5344619683981067131">แทนที่ข้อความที่เลือกด้วยข้อความแนะนำ</translation>
 <translation id="5346687412805619883">เครือข่ายภายใน</translation>
 <translation id="5358174242040570474">เกิดข้อผิดพลาด ลองเลือกวอลเปเปอร์อีกครั้งหรือเปิดแอปใหม่</translation>
+<translation id="5368228070728130240">ดาวน์โหลดโมเดลสำหรับการสร้างชื่อและสรุปไม่ได้ ลองอีกครั้งหรือรีสตาร์ท <ph name="DEVICE_TYPE" /></translation>
 <translation id="5372659122375744710">เครือข่าย WiFi ไม่ปลอดภัย</translation>
 <translation id="5376354385557966694">โหมดสว่างอัตโนมัติ</translation>
 <translation id="5378184552853359930">ประเภท IP</translation>
@@ -1247,6 +1264,7 @@
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="6786747875388722282">ส่วนขยาย</translation>
+<translation id="6789891265243243337">เมื่อเสียง <ph name="DEVICE_TYPE" /> เปิดอยู่ โปรแกรมอัดเสียงจะบันทึกเสียงทั้งหมดที่เล่นในอุปกรณ์นี้</translation>
 <translation id="6791471867139427246">สีไฟแป้นพิมพ์</translation>
 <translation id="6796229976413584781">ลบแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="6798678288485555829">การนำทางสำหรับข้อความ</translation>
@@ -1718,6 +1736,7 @@
 <translation id="8930622219860340959">ไร้สาย</translation>
 <translation id="8933650076320258356">คีย์ที่เลือกคือ <ph name="KEYS" /> สำหรับ <ph name="DIRECTION" /> <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">ที่อยู่ IP ของไคลเอ็นต์</translation>
+<translation id="8938606491880817721">ดาวน์โหลดไม่ได้ ลองอีกครั้งหรือรีสตาร์ท <ph name="DEVICE_TYPE" /></translation>
 <translation id="8944651180182756621">สีของ Launcher</translation>
 <translation id="8945308580158685341">ผึ้ง</translation>
 <translation id="894617464444543719">อุปกรณ์เป็นโทรศัพท์</translation>

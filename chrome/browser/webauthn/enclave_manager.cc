@@ -1971,14 +1971,26 @@ class EnclaveManager::StateMachine {
       return;
     }
     if (result->gpm_pin_metadata) {
-      auto& metadata = *result->gpm_pin_metadata;
-      auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
-      if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
-          !CheckPINInvariants(*wrapped_pin).has_value()) {
-        if (metadata.public_key.has_value()) {
-          FIDO_LOG(EVENT) << "Updating GPM PIN data";
+      // This code saves the PIN public key even if the security domain reports
+      // it is not usable or if it is invalid. This is necessary because the
+      // security domain requires the current PIN public key to be set when
+      // joining a PIN, which Chrome will do later during processing.
+      if (result->gpm_pin_metadata->public_key) {
+        FIDO_LOG(EVENT) << "Updating GPM PIN public key";
+        user_->set_pin_public_key(
+            std::move(*result->gpm_pin_metadata->public_key));
+      }
+      if (result->gpm_pin_metadata->usable_pin_metadata) {
+        const auto& metadata = *result->gpm_pin_metadata->usable_pin_metadata;
+        auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
+        if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
+            !CheckPINInvariants(*wrapped_pin).has_value()) {
+          FIDO_LOG(EVENT) << "Updating wrapped GPM PIN";
           *user_->mutable_wrapped_pin() = std::move(*wrapped_pin);
-          user_->set_pin_public_key(std::move(*metadata.public_key));
+        } else {
+          FIDO_LOG(ERROR)
+              << "Wrapped PIN from security domain update is invalid: "
+              << base::HexEncode(base::as_byte_span(metadata.wrapped_pin));
         }
       }
     }
@@ -2256,9 +2268,11 @@ class EnclaveManager::StateMachine {
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
         *primary_account_info_, std::move(*member_keys_source),
         *secure_box_pub_key,
-        trusted_vault::GpmPinMetadata(previous_pin_public_key,
-                                      std::move(wrapped_pin_proto_serialized),
-                                      /*expiry=*/base::Time()),
+        trusted_vault::GpmPinMetadata(
+            previous_pin_public_key,
+            trusted_vault::UsableRecoveryPinMetadata(
+                std::move(wrapped_pin_proto_serialized),
+                /*expiry=*/base::Time())),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -2790,9 +2804,10 @@ bool EnclaveManager::AddDeviceToAccount(
   CHECK(has_pending_keys());
 
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
-  if (pin_metadata.has_value()) {
+  if (pin_metadata.has_value() && pin_metadata->usable_pin_metadata) {
     wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
-    if (!wrapped_pin->ParseFromString(pin_metadata->wrapped_pin) ||
+    if (!wrapped_pin->ParseFromString(
+            pin_metadata->usable_pin_metadata->wrapped_pin) ||
         CheckPINInvariants(*wrapped_pin).has_value()) {
       return false;
     }
@@ -2922,10 +2937,12 @@ bool EnclaveManager::ConsiderSecurityDomainState(
     return false;
   }
 
-  if (ret && state.gpm_pin_metadata.has_value()) {
+  if (ret && state.gpm_pin_metadata.has_value() &&
+      state.gpm_pin_metadata->usable_pin_metadata) {
     const auto& metadata = *state.gpm_pin_metadata;
     auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
-    if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
+    if (wrapped_pin->ParseFromString(
+            metadata.usable_pin_metadata->wrapped_pin) &&
         !CheckPINInvariants(*wrapped_pin).has_value()) {
       if (metadata.public_key.has_value() &&
           (!user_->has_wrapped_pin() ||
@@ -2942,8 +2959,8 @@ bool EnclaveManager::ConsiderSecurityDomainState(
       }
     } else {
       FIDO_LOG(ERROR) << "Wrapped PIN from security domain update is invalid: "
-                      << base::HexEncode(
-                             base::as_byte_span(metadata.wrapped_pin));
+                      << base::HexEncode(base::as_byte_span(
+                             metadata.usable_pin_metadata->wrapped_pin));
     }
   }
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -43,7 +44,7 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest {
   }
 
   TabSearchBubbleHost* tab_search_bubble_host() {
-    return tab_search_button()->tab_search_bubble_host();
+    return browser_view()->GetTabSearchBubbleHost();
   }
 
   WebUIBubbleManager* bubble_manager() {

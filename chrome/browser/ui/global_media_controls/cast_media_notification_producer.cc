@@ -33,8 +33,6 @@ bool ShouldHideNotification(Profile* profile,
   }
   // If the user changes the pref to show all Cast sessions, they won't be shown
   // until `OnRoutesUpdated()` is called again.
-  // TODO(crbug.com/41321719): Ash currently considers Lacros routes non-local
-  // and hides them if the pref is set to false.
   if (!route.is_local() &&
       !profile->GetPrefs()->GetBoolean(
           media_router::prefs::

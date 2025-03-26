@@ -146,6 +146,8 @@ void GetDefault(std::vector<std::string>* app_ids) {
 
     ash::kMessagesAppId,
 
+    ash::kNotebookLmAppId,
+
     arc::kYoutubeAppId,
     extension_misc::kYoutubeAppId,
     ash::kYoutubeAppId,

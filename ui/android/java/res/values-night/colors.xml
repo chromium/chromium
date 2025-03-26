@@ -46,9 +46,6 @@ found in the LICENSE file.
     <color name="legacy_bg_color_elev_4">@color/legacy_bg_color_dark_elev_4</color>
     <color name="default_bg_color_blue">@color/default_bg_color_blue_light</color>
 
-    <!-- Bottom sheet colors -->
-    <color name="sheet_bg_color_baseline">@color/default_bg_color_dark_elev_4_baseline</color>
-
     <!-- Dialog colors -->
     <color name="dialog_bg_color_baseline">@color/dialog_bg_color_dark_baseline</color>
 

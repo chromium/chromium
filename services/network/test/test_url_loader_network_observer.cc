@@ -57,6 +57,11 @@ void TestURLLoaderNetworkObserver::OnPrivateNetworkAccessPermissionRequired(
   std::move(callback).Run(false);
 }
 
+void TestURLLoaderNetworkObserver::OnLocalNetworkAccessPermissionRequired(
+    OnLocalNetworkAccessPermissionRequiredCallback callback) {
+  std::move(callback).Run(false);
+}
+
 void TestURLLoaderNetworkObserver::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,

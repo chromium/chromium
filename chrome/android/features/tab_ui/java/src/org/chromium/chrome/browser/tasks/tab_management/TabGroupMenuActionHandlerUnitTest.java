@@ -84,7 +84,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
         TabGroupListBottomSheetCoordinatorFactory factory =
-                (a, b, callback, d, e, f) -> {
+                (a, b, callback, d, e, f, g) -> {
                     mTabGroupCreationCallback = callback;
                     return mTabGroupListBottomSheetCoordinator;
                 };
@@ -126,7 +126,6 @@ public class TabGroupMenuActionHandlerUnitTest {
         assertNotNull(mTabGroupCreationCallback);
         mTabGroupCreationCallback.onTabGroupCreated(mTab.getTabGroupId());
         verify(mFilter, never()).createSingleTabGroup(mTab);
-        verify(mTabGroupListBottomSheetCoordinator).destroy();
     }
 
     @Test
@@ -135,6 +134,5 @@ public class TabGroupMenuActionHandlerUnitTest {
         mHandler.handleAddToGroupAction(mTab);
 
         verify(mFilter).createSingleTabGroup(mTab);
-        verify(mTabGroupListBottomSheetCoordinator, never()).destroy();
     }
 }

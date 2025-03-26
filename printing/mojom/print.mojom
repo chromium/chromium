@@ -170,14 +170,13 @@ enum ResultCode {
   kCanceled,
 };
 
-// Matches print_preview.PrinterType in
-// chrome/browser/resources/print_preview/data/destination_match.ts
+// Matches print_preview.PrinterType in:
+// chrome/browser/resources/print_preview/data/destination.ts and
+// chrome/browser/resources/ash/print_preview/data/destination_cros.ts
 enum PrinterType {
-  kPrivetDeprecated,
   kExtension,
   kPdf,
   kLocal,
-  kCloudDeprecated
 };
 
 [EnableIf=is_win]

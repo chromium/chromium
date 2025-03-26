@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -312,6 +314,24 @@ testing::AssertionResult WaitForNavigationFinishedMessage(
     return testing::AssertionFailure() << "Message never received.";
   }
   return testing::AssertionSuccess();
+}
+
+std::vector<GURL> GetLaunchParamUrlsInContents(
+    content::WebContents* contents,
+    const std::string& params_variable_name) {
+  std::vector<GURL> launch_params;
+  content::EvalJsResult launchParamsResults =
+      content::EvalJs(contents->GetPrimaryMainFrame(),
+                      "'" + params_variable_name + "' in window ? " +
+                          params_variable_name + " : []");
+  EXPECT_THAT(launchParamsResults, content::EvalJsResult::IsOk());
+  base::Value::List launchParamsTargetUrls = launchParamsResults.ExtractList();
+  if (!launchParamsTargetUrls.empty()) {
+    for (const base::Value& url : launchParamsTargetUrls) {
+      launch_params.emplace_back(url.GetString());
+    }
+  }
+  return launch_params;
 }
 
 }  // namespace apps::test

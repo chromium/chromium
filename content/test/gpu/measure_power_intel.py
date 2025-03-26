@@ -164,7 +164,7 @@ def CreateWebDriver(browser, user_data_dir, url, fullscreen,
   else:
     options = webdriver.ChromeOptions()
     options.binary_location = browser
-    options.add_argument('--user-data-dir=%s' % user_data_dir)
+    options.add_argument(f'--user-data-dir={user_data_dir}')
     options.add_argument('--no-first-run')
     options.add_argument('--no-default-browser-check')
     options.add_argument('--autoplay-policy=no-user-gesture-required')
@@ -301,7 +301,7 @@ def main():
   for run in range(1, options.repeat + 1):
     logfile = ipg_utils.GenerateIPGLogFilename(log_prefix, options.logdir, run,
                                                options.repeat, True)
-    print('Iteration #%d out of %d' % (run, options.repeat))
+    print(f'Iteration #{run} out of {options.repeat}')
     results = MeasurePowerOnce(browser, logfile, options.duration,
                                options.delay, options.resolution, options.url,
                                options.fullscreen, extra_browser_args)
@@ -309,8 +309,7 @@ def main():
     all_results.append(results)
 
   now = datetime.datetime.now()
-  results_filename = '%s_%s_results.csv' % (log_prefix,
-                                            now.strftime('%Y%m%d%H%M%S'))
+  results_filename = f'{log_prefix}_{now.strftime("%Y%m%d%H%M%S")}_results.csv'
   try:
     with open(results_filename, 'wb') as results_csv:
       labels = sorted(all_results[0].keys())

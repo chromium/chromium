@@ -164,6 +164,7 @@ CreateLanguageModelOnDeviceSessionTask::CreateLanguageModelOnDeviceSessionTask(
     AIContextBoundObjectSet& context_bound_object_set,
     content::BrowserContext* browser_context,
     optimization_guide::SamplingParams sampling_params,
+    on_device_model::Capabilities capabilities,
     base::OnceCallback<
         void(std::unique_ptr<
              optimization_guide::OptimizationGuideModelExecutor::Session>)>
@@ -173,6 +174,7 @@ CreateLanguageModelOnDeviceSessionTask::CreateLanguageModelOnDeviceSessionTask(
           browser_context,
           optimization_guide::ModelBasedCapabilityKey::kPromptApi),
       sampling_params_(std::move(sampling_params)),
+      capabilities_(capabilities),
       completion_callback_(std::move(completion_callback)) {}
 
 CreateLanguageModelOnDeviceSessionTask::
@@ -187,4 +189,5 @@ void CreateLanguageModelOnDeviceSessionTask::OnFinish(
 void CreateLanguageModelOnDeviceSessionTask::UpdateSessionConfigParams(
     optimization_guide::SessionConfigParams* config_params) {
   config_params->sampling_params = sampling_params_;
+  config_params->capabilities = capabilities_;
 }

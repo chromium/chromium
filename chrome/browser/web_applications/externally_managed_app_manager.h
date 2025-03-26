@@ -38,7 +38,6 @@ class WebContents;
 namespace web_app {
 
 class AllAppsLock;
-class ExternallyManagedAppInstallTask;
 class ExternallyManagedAppRegistrationTaskBase;
 class WebAppDataRetriever;
 class WebAppProvider;
@@ -185,9 +184,6 @@ class ExternallyManagedAppManager {
  protected:
   virtual void ReleaseWebContents();
 
-  virtual std::unique_ptr<ExternallyManagedAppInstallTask>
-  CreateInstallationTask(ExternalInstallOptions install_options);
-
   virtual std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
   CreateRegistration(GURL install_url,
                      const base::TimeDelta registration_timeout);
@@ -200,7 +196,7 @@ class ExternallyManagedAppManager {
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
  private:
-  struct TaskAndCallback;
+  struct ExternalInstallMetadata;
 
   struct SynchronizeRequest {
     SynchronizeRequest(SynchronizeCallback callback,
@@ -245,7 +241,7 @@ class ExternallyManagedAppManager {
                                     base::Value::Dict& debug_value);
 
   void StartInstallationTask(
-      std::unique_ptr<TaskAndCallback> task,
+      std::unique_ptr<ExternalInstallMetadata> external_install_metadata,
       std::optional<webapps::AppId> installed_placeholder_app_id);
 
   bool RunNextRegistration();
@@ -276,9 +272,10 @@ class ExternallyManagedAppManager {
 
   std::unique_ptr<content::WebContents> web_contents_;
 
-  std::unique_ptr<TaskAndCallback> current_install_;
+  std::unique_ptr<ExternalInstallMetadata> current_install_metadata_;
 
-  base::circular_deque<std::unique_ptr<TaskAndCallback>> pending_installs_;
+  base::circular_deque<std::unique_ptr<ExternalInstallMetadata>>
+      pending_installs_metadata_;
 
   std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
       current_registration_;

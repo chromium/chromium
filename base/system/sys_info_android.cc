@@ -20,12 +20,11 @@
 namespace {
 
 // Default version of Android to fall back to when actual version numbers
-// cannot be acquired. Use the latest Android release with a higher bug fix
-// version to avoid unnecessarily comparison errors with the latest release.
-// This should be manually kept up to date on each Android release.
-const int kDefaultAndroidMajorVersion = 12;
+// cannot be acquired. Use a super high number in this case, as we assume
+// it's due to being a pre-release version.
+const int kDefaultAndroidMajorVersion = 9999;
 const int kDefaultAndroidMinorVersion = 0;
-const int kDefaultAndroidBugfixVersion = 99;
+const int kDefaultAndroidBugfixVersion = 0;
 
 // Get and parse out the OS version numbers from the system properties.
 // Note if parse fails, the "default" version is returned as fallback.

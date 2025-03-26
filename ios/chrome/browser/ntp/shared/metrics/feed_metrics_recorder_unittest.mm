@@ -11,7 +11,10 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
@@ -19,6 +22,7 @@
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder+testing.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +44,8 @@ class FeedMetricsRecorderTest : public PlatformTest {
   FeedMetricsRecorderTest() {
     RegisterProfilePrefs(test_pref_service_.registry());
     recorder_ =
-        [[FeedMetricsRecorder alloc] initWithPrefService:&test_pref_service_];
+        [[FeedMetricsRecorder alloc] initWithPrefService:&test_pref_service_
+                                featureEngagementTracker:&mock_tracker_];
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     actions_tester_ = std::make_unique<base::UserActionTester>();
     NTP_state_ = [[NewTabPageState alloc] init];
@@ -61,6 +66,7 @@ class FeedMetricsRecorderTest : public PlatformTest {
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   FeedMetricsRecorder* recorder_;
   NewTabPageState* NTP_state_;
+  feature_engagement::test::MockTracker mock_tracker_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<base::UserActionTester> actions_tester_;
 };
@@ -679,4 +685,14 @@ TEST_F(FeedMetricsRecorderTest, TestComputeActivityBuckets_kMediumActivity) {
 
   DCHECK_EQ(test_pref_service_.GetInteger(kActivityBucketKey),
             static_cast<int>(FeedActivityBucket::kMediumActivity));
+}
+
+// Tests that the `kIOSActionOnFeed` FET event is fired after an interaction
+// with the feed.
+TEST_F(FeedMetricsRecorderTest, TestFeatureEngagementTrackerEventFired) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeedSwipeInProductHelp}, {});
+  EXPECT_CALL(mock_tracker_,
+              NotifyEvent(feature_engagement::events::kIOSActionOnFeed));
+  [recorder_ recordOpenURLInIncognitoTab];
 }

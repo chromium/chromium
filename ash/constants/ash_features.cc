@@ -2470,7 +2470,7 @@ BASE_FEATURE(kProjectorGm3, "ProjectorGm3", base::FEATURE_ENABLED_BY_DEFAULT);
 // playback urls.
 BASE_FEATURE(kProjectorUseDVSPlaybackEndpoint,
              "ProjectorUseDVSPlaybackEndpoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to show promise icons during app installations.
 BASE_FEATURE(kPromiseIcons, "PromiseIcons", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2750,13 +2750,13 @@ BASE_FEATURE(kSunfishFeature,
 // Chromnient-like query.
 BASE_FEATURE(kSunfishLensWeb,
              "SunfishLensWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes the Sunfish copy text functionality to use the Lens Web API instead
 // of the Chromnient-like query.
 BASE_FEATURE(kSunfishLensWebCopyText,
              "SunfishLensWebCopyText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the suspend state machine to better handle suspend accelerators.
 BASE_FEATURE(kSuspendStateMachine,

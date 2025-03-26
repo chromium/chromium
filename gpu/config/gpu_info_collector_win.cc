@@ -15,6 +15,7 @@
 #include <vulkan/vulkan.h>
 #include <wrl/client.h>
 
+#include "base/compiler_specific.h"
 #include "base/file_version_info_win.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -330,7 +331,7 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
         CHROME_LUID{desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart};
     device.device_string = base::WideToUTF8(std::wstring_view(
         desc.Description,
-        wcsnlen_s(desc.Description, std::size(desc.Description))));
+        UNSAFE_TODO(wcsnlen_s(desc.Description, std::size(desc.Description)))));
 
     LARGE_INTEGER umd_version;
     hr = dxgi_adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice),

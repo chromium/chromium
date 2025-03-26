@@ -168,11 +168,10 @@ const std::string& DesktopSessionAgent::client_jid() const {
 void DesktopSessionAgent::DisconnectSession(
     ErrorCode error,
     std::string_view error_details,
-    const base::Location& error_location) {
+    const SourceLocation& error_location) {
   if (desktop_session_state_handler_) {
-    // TODO: crbug.com/382334458 - serialize `error_details` and
-    // `error_location` over mojo.
-    desktop_session_state_handler_->DisconnectSession(error);
+    desktop_session_state_handler_->DisconnectSession(
+        error, std::string(error_details), error_location);
   }
 }
 

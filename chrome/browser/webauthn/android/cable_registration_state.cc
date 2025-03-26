@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "crypto/random.h"
@@ -138,7 +139,7 @@ void RegistrationState::MaybeFlushPendingEvent() {
     // peers should have reasonably recent information.
     uint64_t id;
     static_assert(std::tuple_size_v<decltype(event->pairing_id)> == sizeof(id));
-    memcpy(&id, event->pairing_id.data(), sizeof(id));
+    UNSAFE_TODO(memcpy(&id, event->pairing_id.data(), sizeof(id)));
 
     // A maximum age is enforced for sync secrets so that any leak of
     // information isn't valid forever. The desktop ignores DeviceInfo

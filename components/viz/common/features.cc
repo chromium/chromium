@@ -65,7 +65,12 @@ BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
 
 BASE_FEATURE(kUseFrameIntervalDecider,
              "UseFrameIntervalDecider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kUseFrameIntervalDeciderNewAndroidFeatures,
@@ -226,11 +231,6 @@ BASE_FEATURE(kWebViewEnableADPFRendererMain,
 // otherwise this is a no-op.
 BASE_FEATURE(kWebViewEnableADPFGpuMain,
              "WebViewEnableADPFGpuMain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable WebView providing frame rate hints to View system.
-BASE_FEATURE(kWebViewFrameRateHints,
-             "WebViewFrameRateHints",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -597,11 +597,6 @@ bool ShouldLogFrameQuadInfo() {
 }
 
 bool IsUsingFrameIntervalDecider() {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kWebViewFrameRateHints)) {
-    return true;
-  }
-#endif
   return base::FeatureList::IsEnabled(kUseFrameIntervalDecider);
 }
 

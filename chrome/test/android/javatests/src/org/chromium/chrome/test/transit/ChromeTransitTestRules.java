@@ -31,6 +31,11 @@ public class ChromeTransitTestRules {
                 RegularNewTabPageStation.class, ChromeTabbedActivityEntryPoints::startOnNtp);
     }
 
+    /** Auto reset the state of the ChromeTabbedActivity and reuse it within the batch. */
+    public static AutoResetCtaTransitTestRule autoResetCtaActivityRule() {
+        return new AutoResetCtaTransitTestRule();
+    }
+
     /**
      * Starts each test case in a fresh ChromeTabbedActivity.
      *

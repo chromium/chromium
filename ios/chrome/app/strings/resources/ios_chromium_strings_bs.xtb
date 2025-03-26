@@ -95,7 +95,6 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromiumu id
 <translation id="328933489847748230">{count,plural, =1{Trenutno se prikazuje 1 prozor Chromiuma}one{Trenutno se prikazuje {count} prozor Chromiuma}few{Trenutno se prikazuju {count} prozora Chromiuma}other{Trenutno se prikazuje {count} prozora Chromiuma}}</translation>
 <translation id="3344973607274501920">Chromium nije mogao provjeriti vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="3366305173356742781">Podaci Chromiuma na vašem računu</translation>
-<translation id="33788334537425157">Uključite "Zaključaj anonimne kartice prilikom zatvaranja Chromiuma"</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu. Ovo može uključivati historiju i automatsko popunjavanje.}one{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu. Ovo može uključivati historiju i automatsko popunjavanje.}few{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minute. Ovo može uključivati historiju i automatsko popunjavanje.}other{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minuta. Ovo može uključivati historiju i automatsko popunjavanje.}}</translation>
 <translation id="3410395242749598859">Neki podaci Chromiuma još uvijek nisu sačuvani na <ph name="EMAIL" />.
 Pričekajte nekoliko minuta prije nego što promijenite račun. Ako promijenite račun sada, ti podaci će se izbrisati.</translation>

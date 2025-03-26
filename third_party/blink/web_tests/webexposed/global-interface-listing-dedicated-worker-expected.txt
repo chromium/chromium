@@ -20,9 +20,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter ondownloadprogress
 [Worker] interface AILanguageDetector
 [Worker]     attribute @@toStringTag
+[Worker]     getter inputQuota
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker]     method detect
+[Worker]     method measureInputUsage
 [Worker] interface AILanguageDetectorFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method availability
@@ -30,20 +32,18 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AILanguageModel : EventTarget
 [Worker]     attribute @@toStringTag
-[Worker]     getter expectedInputLanguages
-[Worker]     getter maxTokens
-[Worker]     getter oncontextoverflow
+[Worker]     getter inputQuota
+[Worker]     getter inputUsage
+[Worker]     getter onquotaoverflow
 [Worker]     getter temperature
-[Worker]     getter tokensLeft
-[Worker]     getter tokensSoFar
 [Worker]     getter topK
 [Worker]     method clone
 [Worker]     method constructor
-[Worker]     method countPromptTokens
 [Worker]     method destroy
+[Worker]     method measureInputUsage
 [Worker]     method prompt
 [Worker]     method promptStreaming
-[Worker]     setter oncontextoverflow
+[Worker]     setter onquotaoverflow
 [Worker] interface AILanguageModelFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method availability

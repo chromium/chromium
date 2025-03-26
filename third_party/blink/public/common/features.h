@@ -1768,6 +1768,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kWebAudioBypassOutputBufferingExact);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kWebAudioRemoveAudioDestinationResampler);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebFontsCacheAwareTimeoutAdaption);
 
 // Combine WebRTC Network and Worker threads. More info at crbug.com/1373439.

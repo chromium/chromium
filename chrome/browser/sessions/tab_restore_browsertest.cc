@@ -1515,7 +1515,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 }
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 
-IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_GetRestoreTabType) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_GetRestoreWindowType) {
   // The TabRestoreService should get initialized (Loaded)
   // automatically upon launch.
   // Wait for robustness because InProcessBrowserTest::PreRunTestOnMainThread
@@ -1539,12 +1539,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_GetRestoreTabType) {
   browser()->tab_strip_model()->CloseSelectedTabs();
   destroyed_watcher.Wait();
 
-  // We now should see a Tab as the restore type.
+  // We now should see a Tab as the restore type because we manually closed one.
   ASSERT_EQ(1u, service->entries().size());
   EXPECT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRestoreTest, GetRestoreTabType) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, GetRestoreWindowType) {
   // The TabRestoreService should get initialized (Loaded)
   // automatically upon launch.
   // Wait for robustness because InProcessBrowserTest::PreRunTestOnMainThread
@@ -1555,9 +1555,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, GetRestoreTabType) {
   TabRestoreServiceLoadWaiter waiter(service);
   waiter.Wait();
 
-  // When we start this time we should get a Tab.
+  // After a restart, we should see a Window since the browser was closed.
   ASSERT_GE(service->entries().size(), 1u);
-  EXPECT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
+  EXPECT_EQ(sessions::tab_restore::Type::WINDOW,
+            service->entries().front()->type);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithName) {
@@ -2075,12 +2076,14 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreAfterMultipleRestarts) {
   EnableSessionService();
 
   // Restore url2 from one session ago.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 1));
-  EXPECT_EQ(url2_, browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, 0));
+  Browser* browser_2 = GetBrowser(1);
+  EXPECT_EQ(url2_, browser_2->tab_strip_model()->GetWebContentsAt(0)->GetURL());
 
   // Restore url1 from two sessions ago.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 2));
-  EXPECT_EQ(url1_, browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL());
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(2, 0));
+  Browser* browser_3 = GetBrowser(2);
+  EXPECT_EQ(url1_, browser_3->tab_strip_model()->GetWebContentsAt(0)->GetURL());
 }
 
 // Test that it is possible to navigate back to a restored about:blank history
@@ -3175,8 +3178,10 @@ IN_PROC_BROWSER_TEST_P(TabRestoreSavedGroupsTest,
   // previous group id defined in the PRE step to this test.
   chrome::RestoreTab(browser());
 
+  Browser* restored_browser = GetBrowser(1);
   // Verify the browser has a single tab group.
-  TabGroupModel* group_model = browser()->tab_strip_model()->group_model();
+  TabGroupModel* group_model =
+      restored_browser->tab_strip_model()->group_model();
   EXPECT_EQ(1u, group_model->ListTabGroups().size());
 
   // Verify there is still only 1 saved group and that it is open now.

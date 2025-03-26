@@ -18,8 +18,8 @@ import org.chromium.build.annotations.Nullable;
  */
 public class Account {
     private final String mId;
-    private final String mEmail;
-    private final String mName;
+    private final String mDisplayIdentifier;
+    private final String mDisplayName;
     private final String mGivenName;
     // The secondary description. This value is not null if and only if the UI being displayed is
     // multi IDP. The text contains the IDP origin and possibly the last used timestamp if this is
@@ -34,8 +34,8 @@ public class Account {
 
     /**
      * @param id The account ID.
-     * @param email Email shown to the user.
-     * @param name Full name.
+     * @param displayIdentifier Identifier to show for the user (e.g. email).
+     * @param displayName Name to show for the user.
      * @param givenName Given name.
      * @param secondaryDescription The secondary description for the account button. This is only
      *     used when multiple IDPs are being used in the dialog.
@@ -56,8 +56,8 @@ public class Account {
     @CalledByNative
     public Account(
             @JniType("std::string") String id,
-            @JniType("std::string") String email,
-            @JniType("std::string") String name,
+            @JniType("std::string") String displayIdentifier,
+            @JniType("std::string") String displayName,
             @JniType("std::string") String givenName,
             @JniType("std::optional<std::string>") @Nullable String secondaryDescription,
             Bitmap pictureBitmap,
@@ -67,8 +67,8 @@ public class Account {
             boolean isFilteredOut,
             IdentityProviderData identityProviderData) {
         mId = id;
-        mEmail = email;
-        mName = name;
+        mDisplayIdentifier = displayIdentifier;
+        mDisplayName = displayName;
         mGivenName = givenName;
         mSecondaryDescription = secondaryDescription;
         mPictureBitmap = pictureBitmap;
@@ -83,12 +83,12 @@ public class Account {
         return mId;
     }
 
-    public String getEmail() {
-        return mEmail;
+    public String getDisplayIdentifier() {
+        return mDisplayIdentifier;
     }
 
-    public String getName() {
-        return mName;
+    public String getDisplayName() {
+        return mDisplayName;
     }
 
     public String getGivenName() {

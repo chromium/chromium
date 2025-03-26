@@ -569,7 +569,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(0)];
 }
 
-// Tests that TabGroupAppInterface creates shared tab groups correctly.
+// Tests that TabGroupAppInterface creates and deletes shared tab groups
+// correctly.
 - (void)testPreparedSharedGroupsAtStartup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
@@ -589,6 +590,18 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(2)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(3)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Delete the first group.
+  [TabGroupAppInterface removeAtIndex:0];
+
+  // Verify the first shared group is deleted and the position of other 2 shared
+  // groups is shifted.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(3)];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(2)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify that the context menu offers to Manage button instead of the Share

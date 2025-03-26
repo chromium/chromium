@@ -2255,8 +2255,8 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON)
-    @DisabledTest(message = "crbug.com/402655848")
     public void testAllowGeolocation() {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         new TwoStatePermissionTestCase(
                         "Geolocation",
                         SiteSettingsCategory.Type.DEVICE_LOCATION,

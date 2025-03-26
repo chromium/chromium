@@ -943,10 +943,9 @@ TEST_F(CreditCardOtpAuthenticatorCardInfoRetrievalErrorTest,
 // Params of the CreditCardOtpAuthenticatorCardMetadataTest:
 // -- bool card_name_available;
 // -- bool card_art_available;
-// -- bool metadata_enabled;
 class CreditCardOtpAuthenticatorCardMetadataTest
     : public CreditCardOtpAuthenticatorTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   CreditCardOtpAuthenticatorCardMetadataTest() = default;
   ~CreditCardOtpAuthenticatorCardMetadataTest() override = default;
@@ -959,26 +958,13 @@ class CreditCardOtpAuthenticatorCardMetadataTest
 
   bool CardNameAvailable() { return std::get<0>(GetParam()); }
   bool CardArtAvailable() { return std::get<1>(GetParam()); }
-  bool MetadataEnabled() { return std::get<2>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          CreditCardOtpAuthenticatorCardMetadataTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
-  base::test::ScopedFeatureList metadata_feature_list;
-  if (MetadataEnabled()) {
-    metadata_feature_list.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableCardProductName},
-        /*disabled_features=*/{});
-  } else {
-    metadata_feature_list.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kAutofillEnableCardProductName});
-  }
   if (CardNameAvailable()) {
     card_.set_product_description(u"fake product description");
   }
@@ -1012,7 +998,7 @@ TEST_P(CreditCardOtpAuthenticatorCardMetadataTest, MetadataSignal) {
       payments_network_interface().unmask_request()->risk_data.empty());
   std::vector<ClientBehaviorConstants> signals =
       payments_network_interface().unmask_request()->client_behavior_signals;
-  if (MetadataEnabled() && CardNameAvailable() && CardArtAvailable()) {
+  if (CardNameAvailable() && CardArtAvailable()) {
     EXPECT_NE(
         signals.end(),
         std::ranges::find(

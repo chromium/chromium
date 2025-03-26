@@ -88,6 +88,9 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
         new_native_obj, NSAccessibilityFocusedUIElementChangedNotification);
   }
 
+  // Detach the old native wrapper to avoid UAF, but suppress the notification
+  // so it won't interfere the VO changing focus to the new native object.
+  [old_native_obj detachAndNotifyDestroyed:NO];
   // Postpone the old native wrapper destruction. It will be destroyed after
   // a delay so that VO is securely on the new focus first (otherwise the focus
   // event will not be announced).
@@ -98,9 +101,9 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
       FROM_HERE,
       base::BindOnce(
           [](AXPlatformNodeCocoa* destroyed) {
-            if (destroyed && [destroyed instanceActive]) {
-              // Follow destruction pattern from NativeReleaseReference().
-              [destroyed detach];
+            if (destroyed) {
+              NSAccessibilityPostNotification(
+                  destroyed, NSAccessibilityUIElementDestroyedNotification);
             }
           },
           old_native_obj),

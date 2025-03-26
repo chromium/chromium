@@ -223,7 +223,7 @@
         Keep your browsing private with device authentication when you close Chrome
       </message>
       <message name="IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_THIRD_STEP" desc="The third step to setting up Locked Incognito tabs">
-        Turn on "Lock Icognito tabs when you close Chrome"
+        Turn on "Lock Incognito tabs when you close Chrome"
       </message>
       <message name="IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_CAPTION" desc="Caption for the Never Forget Passwords button on the Chrome iOS Best Features Promo">
         Save and autofill passwords in Chrome
@@ -233,6 +233,9 @@
       </message>
       <message name="IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_SUBTITLE" desc="Subtitle for the Passwords in other apps Chrome iOS Best Features Promo">
         To easily get your saved passwords in your other apps, choose Chrome for Autofill
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_1" desc="The first step to share passwords with others">
+        Open Chrome
       </message>
       <message name="IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_SUBTITLE" desc="Subtitle for the Share Passwords Chrome iOS Best Features Promo">
         Easily and securely share a copy of a password with your family group in Google Password Manager
@@ -676,9 +679,6 @@ Things to consider:
       </message>
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_INFO_UNITY" desc="Message explaining that signing out of a managed account will clear all the Chrome data. [Length: 200em, may be line wrapped to multiple lines at run time.] [iOS only].">
         Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN">$1<ex>google.com</ex></ph>, your Chrome data will be deleted from this device. Your data will remain in your Google Account.
-      </message>
-      <message name="IDS_IOS_MANAGED_SIGNIN_SUBTITLE" desc="The subtitle of the Sign in to a managed account dialog. If the User Policy feature is enabled, the IDS_IOS_MANAGED_SYNC_WITH_USER_POLICY_SUBTITLE subtitle will be used instead of this one. [300em]">
-        You are signing in with an account managed by <ph name="DOMAIN">$1<ex>doe.com</ex></ph> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.
       </message>
       <message name="IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE" desc="The subtitle of the Sign in with a managed account dialog when user policies are enabled. [iOS only]">
         Your organization, <ph name="DOMAIN">$1<ex>doe.com</ex></ph>, manages the account you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.

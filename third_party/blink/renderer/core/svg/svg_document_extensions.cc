@@ -126,35 +126,6 @@ void SVGDocumentExtensions::DispatchSVGLoadEventToOutermostSVGElements() {
   }
 }
 
-void SVGDocumentExtensions::AddSVGRootWithRelativeLengthDescendents(
-    SVGSVGElement* svg_root) {
-#if DCHECK_IS_ON()
-  DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
-  DCHECK(!in_relative_length_svg_roots_invalidation_);
-#endif
-  relative_length_svg_roots_.insert(svg_root);
-}
-
-void SVGDocumentExtensions::RemoveSVGRootWithRelativeLengthDescendents(
-    SVGSVGElement* svg_root) {
-#if DCHECK_IS_ON()
-  DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
-  DCHECK(!in_relative_length_svg_roots_invalidation_);
-#endif
-  relative_length_svg_roots_.erase(svg_root);
-}
-
-void SVGDocumentExtensions::InvalidateSVGRootsWithRelativeLengthDescendents() {
-#if DCHECK_IS_ON()
-  DCHECK(!in_relative_length_svg_roots_invalidation_);
-  base::AutoReset<bool> in_relative_length_svg_roots_change(
-      &in_relative_length_svg_roots_invalidation_, true);
-#endif
-
-  for (SVGSVGElement* element : relative_length_svg_roots_)
-    element->InvalidateRelativeLengthClients();
-}
-
 bool SVGDocumentExtensions::ZoomAndPanEnabled() const {
   SVGSVGElement* svg = rootElement(*document_);
   return !svg || svg->ZoomAndPanEnabled();
@@ -182,7 +153,6 @@ void SVGDocumentExtensions::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(time_containers_);
   visitor->Trace(web_animations_pending_svg_elements_);
-  visitor->Trace(relative_length_svg_roots_);
 }
 
 }  // namespace blink

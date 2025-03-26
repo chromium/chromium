@@ -336,6 +336,12 @@ TEST_F(DisruptiveNotificationPermissionsManagerTest, FalsePositivePermission) {
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kFalsePositive, 1);
   t.ExpectBucketCount(kFalsePositiveSiteEngagementHistogram, 5, 1);
+
+  // Verify that future calls will report `kAlreadyFalsePositive` instead of
+  // `kFalsePositive`.
+  manager()->RevokeDisruptiveNotifications();
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kAlreadyFalsePositive, 1);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerTest, ProposedMetrics) {

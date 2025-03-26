@@ -130,6 +130,10 @@ GPU_EXPORT bool IsSyncPointGraphValidationEnabled();
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kANGLEPerContextBlobCache);
 
+#if BUILDFLAG(IS_APPLE)
+GPU_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceMultiThreading);
+#endif
+
 }  // namespace features
 
 #endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_

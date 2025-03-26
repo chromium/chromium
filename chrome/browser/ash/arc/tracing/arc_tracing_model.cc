@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -123,8 +124,8 @@ bool HandleGraphicsEvent(GraphicsEventsContext* context,
                          const std::string& line,
                          size_t event_position) {
   if (event_position + kTraceEventClockSyncLength < line.length() &&
-      !strncmp(&line[event_position], kTraceEventClockSync,
-               kTraceEventClockSyncLength)) {
+      UNSAFE_TODO(!strncmp(&line[event_position], kTraceEventClockSync,
+                           kTraceEventClockSyncLength))) {
     // Ignore this service message.
     return true;
   }
@@ -230,8 +231,9 @@ bool HandleCpuIdle(AllCpuEvents* all_cpu_events,
   }
   uint32_t state;
   uint32_t cpu_id_from_event;
-  if (sscanf(&line[event_position], "state=%" SCNu32 " cpu_id=%" SCNu32, &state,
-             &cpu_id_from_event) != 2 ||
+  if (UNSAFE_TODO(sscanf(&line[event_position],
+                         "state=%" SCNu32 " cpu_id=%" SCNu32, &state,
+                         &cpu_id_from_event)) != 2 ||
       cpu_id != cpu_id_from_event) {
     LOG(ERROR) << "Failed to parse cpu_idle event: " << line;
     return false;
@@ -249,7 +251,7 @@ bool HandleSchedWakeUp(AllCpuEvents* all_cpu_events,
                        uint32_t tid,
                        const std::string& line,
                        size_t event_position) {
-  const char* data = strstr(&line[event_position], " pid=");
+  const char* data = UNSAFE_TODO(strstr(&line[event_position], " pid="));
   uint32_t target_tid;
   uint32_t target_priority;
   uint32_t success;
@@ -267,8 +269,9 @@ bool HandleSchedWakeUp(AllCpuEvents* all_cpu_events,
     static bool use_this = true;
     if (!parsed && use_this) {
       parsed =
-          sscanf(data, " pid=%" SCNu32 " prio=%" SCNu32 " target_cpu=%" SCNu32,
-                 &target_tid, &target_priority, &target_cpu_id) == 3;
+          UNSAFE_TODO(sscanf(
+              data, " pid=%" SCNu32 " prio=%" SCNu32 " target_cpu=%" SCNu32,
+              &target_tid, &target_priority, &target_cpu_id)) == 3;
       use_this = parsed;
     }
   }
@@ -276,11 +279,11 @@ bool HandleSchedWakeUp(AllCpuEvents* all_cpu_events,
   {
     static bool use_this = true;
     if (!parsed && use_this) {
-      parsed =
-          sscanf(data,
-                 " pid=%" SCNu32 " prio=%" SCNu32 " success=%" SCNu32
-                 " target_cpu=%" SCNu32,
-                 &target_tid, &target_priority, &success, &target_cpu_id) == 4;
+      parsed = UNSAFE_TODO(sscanf(data,
+                                  " pid=%" SCNu32 " prio=%" SCNu32
+                                  " success=%" SCNu32 " target_cpu=%" SCNu32,
+                                  &target_tid, &target_priority, &success,
+                                  &target_cpu_id)) == 4;
       use_this = parsed;
     }
   }
@@ -305,11 +308,11 @@ bool HandleSchedSwitch(AllCpuEvents* all_cpu_events,
                        uint32_t tid,
                        const std::string& line,
                        size_t event_position) {
-  const char* data = strstr(&line[event_position], " next_pid=");
+  const char* data = UNSAFE_TODO(strstr(&line[event_position], " next_pid="));
   uint32_t next_tid;
   uint32_t next_priority;
-  if (!data || sscanf(data, " next_pid=%d next_prio=%d", &next_tid,
-                      &next_priority) != 2) {
+  if (!data || UNSAFE_TODO(sscanf(data, " next_pid=%d next_prio=%d", &next_tid,
+                                  &next_priority)) != 2) {
     LOG(ERROR) << "Failed to parse sched_switch event: " << line;
     return false;
   }
@@ -323,7 +326,8 @@ bool HandleGpuFreq(ValueEvents* value_events,
                    const std::string& line,
                    size_t event_position) {
   int new_freq = -1;
-  if (sscanf(&line[event_position], "new_freq=%d", &new_freq) != 1) {
+  if (UNSAFE_TODO(sscanf(&line[event_position], "new_freq=%d", &new_freq)) !=
+      1) {
     LOG(ERROR) << "Failed to parse GPU freq event: " << line;
     return false;
   }
@@ -646,39 +650,42 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
       continue;
     }
 
-    if (!strncmp(&line[separator_position], kTracingMarkWrite,
-                 kTracingMarkWriteLength)) {
+    if (UNSAFE_TODO(!strncmp(&line[separator_position], kTracingMarkWrite,
+                             kTracingMarkWriteLength))) {
       if (!HandleGraphicsEvent(&graphics_events_context, timestamp, tid, line,
                                separator_position + kTracingMarkWriteLength)) {
         return false;
       }
-    } else if (!strncmp(&line[separator_position], kCpuIdle, kCpuIdleLength)) {
+    } else if (UNSAFE_TODO(!strncmp(&line[separator_position], kCpuIdle,
+                                    kCpuIdleLength))) {
       if (!HandleCpuIdle(&system_model_.all_cpu_events(), timestamp, cpu_id,
                          tid, line, separator_position + kCpuIdleLength)) {
         return false;
       }
-    } else if (!strncmp(&line[separator_position], kSchedWakeUp,
-                        kSchedWakeUpLength)) {
+    } else if (UNSAFE_TODO(!strncmp(&line[separator_position], kSchedWakeUp,
+                                    kSchedWakeUpLength))) {
       if (!HandleSchedWakeUp(&system_model_.all_cpu_events(), timestamp, cpu_id,
                              tid, line,
                              separator_position + kSchedWakeUpLength)) {
         return false;
       }
-    } else if (!strncmp(&line[separator_position], kSchedSwitch,
-                        kSchedSwitchLength)) {
+    } else if (UNSAFE_TODO(!strncmp(&line[separator_position], kSchedSwitch,
+                                    kSchedSwitchLength))) {
       if (!HandleSchedSwitch(&system_model_.all_cpu_events(), timestamp, cpu_id,
                              tid, line,
                              separator_position + kSchedSwitchLength)) {
         return false;
       }
-    } else if (!strncmp(&line[separator_position], kIntelGpuFreqChange,
-                        kIntelGpuFreqChangeLength)) {
+    } else if (UNSAFE_TODO(!strncmp(&line[separator_position],
+                                    kIntelGpuFreqChange,
+                                    kIntelGpuFreqChangeLength))) {
       if (!HandleGpuFreq(&system_model_.memory_events(), timestamp, line,
                          separator_position + kIntelGpuFreqChangeLength)) {
         return false;
       }
-    } else if (!strncmp(&line[separator_position], kMsmGpuFreqChange,
-                        kMsmGpuFreqChangeLength)) {
+    } else if (UNSAFE_TODO(!strncmp(&line[separator_position],
+                                    kMsmGpuFreqChange,
+                                    kMsmGpuFreqChangeLength))) {
       // msm_gpu_freq_change event has same format as intel_gpu_freq_change:
       if (!HandleGpuFreq(&system_model_.memory_events(), timestamp, line,
                          separator_position + kMsmGpuFreqChangeLength)) {

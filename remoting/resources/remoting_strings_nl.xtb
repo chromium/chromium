@@ -40,6 +40,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="2758123043070977469">Er is een fout opgetreden tijdens het verifiëren. Log opnieuw in.</translation>
 <translation id="2803375539583399270">Pincode invoeren</translation>
 <translation id="2919669478609886916">Je deelt deze computer momenteel met een andere gebruiker. Wil je doorgaan met delen?</translation>
+<translation id="2929683002824598593">Apparaat delen</translation>
 <translation id="2939145106548231838">Verifiëren naar host</translation>
 <translation id="3027681561976217984">Aanraakmodus</translation>
 <translation id="3106379468611574572">De externe computer reageert niet op verbindingsverzoeken. Controleer of deze online is en probeer het opnieuw.</translation>
@@ -117,10 +118,12 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="6178645564515549384">Systeemeigen berichthost voor externe support</translation>
 <translation id="618120821413932081">Externe resolutie aanpassen aan venster</translation>
 <translation id="6223301979382383752">Voorkeuren voor Schermopname openen</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> heeft toegang gevraagd om je scherm te zien en je toetsenbord en muis te bedienen. Wil je je apparaat delen?</translation>
 <translation id="6284412385303060032">De actieve host op het console-inlogscherm is uitgezet om de gordijnmodus te ondersteunen door over te schakelen naar een host die in een gebruikersspecifieke sessie wordt uitgevoerd.</translation>
 <translation id="6542902059648396432">Een probleem melden…</translation>
 <translation id="6583902294974160967">Support</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del verzenden</translation>
+<translation id="6625262630437221505">{0,plural, =1{Als je niets doet, wordt je apparaat over # seconde automatisch gedeeld.}other{Als je niets doet, wordt je apparaat over # seconden automatisch gedeeld.}}</translation>
 <translation id="6654753848497929428">Delen</translation>
 <translation id="677755392401385740">Host gestart voor gebruiker: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Helper-app waarmee je een URL kunt openen in de <ph name="PRODUCT_NAME" />-client</translation>

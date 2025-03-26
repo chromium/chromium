@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="WebCore.DistillabilityUs" units="microseconds"
-    expires_after="2025-07-20">
+    expires_after="2025-09-21">
   <owner>wychen@chromium.org</owner>
   <owner>gilmanmh@google.com</owner>
   <summary>
@@ -506,7 +506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.RequestDuration2.{RequestType}.Foreground"
-    units="ms" expires_after="2025-07-20">
+    units="ms" expires_after="2025-09-21">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2.Foreground"
-    units="ms" expires_after="2025-07-20">
+    units="ms" expires_after="2025-09-21">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -580,7 +580,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeQueued.Foreground"
-    units="ms" expires_after="2025-07-20">
+    units="ms" expires_after="2025-09-21">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

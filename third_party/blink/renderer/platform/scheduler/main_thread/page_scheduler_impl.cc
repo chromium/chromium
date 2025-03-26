@@ -424,13 +424,15 @@ bool PageSchedulerImpl::OptedOutFromAggressiveThrottling() const {
 }
 
 bool PageSchedulerImpl::RequestBeginMainFrameNotExpected(bool new_state) {
+  CHECK(!base::FeatureList::IsEnabled(kUseWidgetSchedulerForIdlePeriodSignals));
   if (!delegate_)
     return false;
   return delegate_->RequestBeginMainFrameNotExpected(new_state);
 }
 
-scoped_refptr<WidgetScheduler> PageSchedulerImpl::CreateWidgetScheduler() {
-  return main_thread_scheduler_->CreateWidgetScheduler();
+scoped_refptr<WidgetScheduler> PageSchedulerImpl::CreateWidgetScheduler(
+    WidgetScheduler::Delegate* delegate) {
+  return main_thread_scheduler_->CreateWidgetScheduler(delegate);
 }
 
 bool PageSchedulerImpl::IsAudioPlaying() const {

@@ -459,7 +459,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3114507951000454849">Læs dagens nyheder <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Flere oplysninger</translation>
 <translation id="3123734510202723619">Meddelelser</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> skiftede fane til "<ph name="TAB_NAME" />"</translation>
 <translation id="3148237711805373460">Gå derhen</translation>
 <translation id="314939179385989105">Chromes startside</translation>
 <translation id="3158667104057012316">Sorteres i manuel rækkefølge</translation>
@@ -821,6 +820,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Gendan fanegruppen med <ph name="TAB_COUNT_ONE" /> fane og farven <ph name="COLOR_NAME" /> som en ny fanegruppe i baggrunden.}one{Gendan fanegruppen med <ph name="TAB_COUNT_MANY" /> fane og farven <ph name="COLOR_NAME" /> som en ny fanegruppe i baggrunden.}other{Gendan fanegruppen med <ph name="TAB_COUNT_MANY" /> faner og farven <ph name="COLOR_NAME" /> som en ny fanegruppe i baggrunden.}}</translation>
 <translation id="4837753911714442426">Åbn valgmuligheder for udskrivning af siden</translation>
 <translation id="4844633725025837809">For at beskytte adgangskoderne yderligere krypteres de på din enhed, inden de gemmes i Googles Adgangs­kode­admin­istrator</translation>
+<translation id="4849731766219625109">Brug din <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-konto</translation>
 <translation id="4850886885716139402">Vis</translation>
 <translation id="4852014461738377247">Logger ind\u2026</translation>
 <translation id="4860895144060829044">Ring op</translation>
@@ -840,14 +840,12 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4910889077668685004">Betalingsapps</translation>
 <translation id="4912413785358399818">Flyt fane</translation>
 <translation id="4913169188695071480">Stop med at opdatere</translation>
-<translation id="4918086044614829423">Accepter</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Dine adgangskoder eksporteres og downloades som en tekstfil. De vil være synlige for alle brugere og enhver app med adgang til destinationsmappen.</translation>
 <translation id="4926901776383726965">Du kan gemme billeder og filer, så du kan se dem offline, eller dele dem i andre apps</translation>
 <translation id="4932247056774066048">Da du er ved at logge ud af en konto, der administreres af <ph name="DOMAIN_NAME" />, slettes dine Chrome-data fra denne enhed. Dataene vil stadig være at finde på din Google-konto.</translation>
 <translation id="4943703118917034429">Virtual reality</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
-<translation id="4953833914914492602">Fanegruppen "<ph name="TAB_GROUP_NAME" />" er ikke længere tilgængelig</translation>
 <translation id="4957722034734105353">Flere oplysninger...</translation>
 <translation id="4961107849584082341">Oversæt denne side til et hvilket som helst sprog</translation>
 <translation id="4964614743143953889">Chrome advarer dig om usikre websites og downloads</translation>
@@ -966,7 +964,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5526281268548144413">Kan ikke lukkes i flere vinduer</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{For # min. siden}one{# min ago}other{For # min. siden}}</translation>
 <translation id="5548606607480005320">Sikkerhedstjek</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> blev tilmeldt fanegruppen "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">Når du bruger en adgangskode, underretter Chrome dig, hvis den er blevet afsløret online. I forbindelse med dette krypteres dine adgangskoder og brugernavne, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="5555525474779371165">Vælg din beskyttelse i Beskyttet browsing</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
@@ -1183,7 +1180,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6481963882741794338">Tilknyt Chrome og andre Google-tjenester med henblik på personlig tilpasning og andre formål</translation>
 <translation id="6482749332252372425">Download af <ph name="FILE_NAME" /> mislykkedes, fordi der ikke er nok lagerplads.</translation>
 <translation id="6486420406192123355">Denne PDF-fil er fra et website med en usikker forbindelse</translation>
-<translation id="6495590690749880440">Vil du åbne fanegruppen?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Filen er downloadet}one{# fil er downloadet}other{# filer er downloadet}}</translation>
 <translation id="6508722015517270189">Genstart Chrome</translation>
 <translation id="6518133107902771759">Verificer</translation>
@@ -1562,6 +1558,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8073388330009372546">Åbn billede på ny fane</translation>
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8078096376109663956">Kun deling af tekst</translation>
+<translation id="8078348702936632821">Fastgør denne genvej</translation>
 <translation id="8084114998886531721">Gemt adgangskode</translation>
 <translation id="8084285576995584326">Administrer dine Google-kontodata</translation>
 <translation id="8084864785646838999">Noget af din historik vises muligvis ikke her. Hvis du vil se hele din Chrome-historik, skal du åbne den komplette Chrome-historik. Din Google-konto kan desuden have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -1617,7 +1614,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8282297628636750033">Anvend Mørkt tema på websites</translation>
 <translation id="8282950411412455249">Gå til sikkerhedsindstillingerne</translation>
 <translation id="8306751933352925837">Du mister snart adgangen til dine gemte adgangskoder på denne enhed. Opdater Google Play-tjenester, hvis du fortsat vil kunne bruge dine adgangskoder. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> har fjernet fanen "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">Du mister snart adgangen til dine gemte adgangskoder</translation>
 <translation id="831192587911042850">Føjer det aktuelle website til den liste over websites, du følger.</translation>
 <translation id="8320212361750431956">Seneste aktivitet</translation>

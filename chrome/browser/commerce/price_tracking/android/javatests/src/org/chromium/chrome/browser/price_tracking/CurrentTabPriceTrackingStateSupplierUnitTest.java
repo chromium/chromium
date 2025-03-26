@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.price_tracking;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -109,18 +107,18 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
     @Test
     public void testWithEmptySuppliers() {
-        Callback<Boolean> mockCallback = mock(Callback.class);
+        Callback<PriceTrackingState> mockCallback = mock(Callback.class);
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
         supplier.addObserver(mockCallback);
 
-        verify(mockCallback, never()).onResult(anyBoolean());
-        assertFalse(supplier.get());
+        verify(mockCallback, never()).onResult(any());
+        assertEquals(PriceTrackingState.UNKNOWN, supplier.get());
     }
 
     @Test
     public void testWithTabWithoutProductInfo() {
-        Callback<Boolean> mockCallback = mock(Callback.class);
+        Callback<PriceTrackingState> mockCallback = mock(Callback.class);
         when(mMockTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
 
         var supplier = new CurrentTabPriceTrackingStateSupplier(mTabSupplier, mProfileSupplier);
@@ -135,14 +133,14 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         // Return no product info for the current tab.
         mProductInfoCallbackCaptor.getValue().onResult(JUnitTestGURLs.GOOGLE_URL_CAT, null);
 
-        // Supplier shouldn't invoke the callback.
-        verify(mockCallback, never()).onResult(anyBoolean());
-        assertFalse(supplier.get());
+        // Supplier should invoke callback.
+        verify(mockCallback).onResult(PriceTrackingState.NOT_ELIGIBLE);
+        assertEquals(PriceTrackingState.NOT_ELIGIBLE, supplier.get());
     }
 
     @Test
     public void testWithTabWithProductInfo_untracked() {
-        Callback<Boolean> mockCallback = mock(Callback.class);
+        Callback<PriceTrackingState> mockCallback = mock(Callback.class);
         long productClusterId = 1234L;
         ShoppingService.ProductInfo productInfo = createProductInfoWithId(productClusterId);
 
@@ -178,14 +176,14 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         // Set ShoppingService to return false on the callback to isSubscribed.
         shoppingServiceCallbackCaptor.getValue().onResult(false);
 
-        // Supplier shouldn't invoke the callback.
-        verify(mockCallback, never()).onResult(anyBoolean());
-        assertFalse(supplier.get());
+        // Supplier should invoke callback.
+        verify(mockCallback).onResult(PriceTrackingState.UNTRACKED);
+        assertEquals(PriceTrackingState.UNTRACKED, supplier.get());
     }
 
     @Test
     public void testWithTabWithProductInfo_tracked() {
-        Callback<Boolean> mockCallback = mock(Callback.class);
+        Callback<PriceTrackingState> mockCallback = mock(Callback.class);
         long productClusterId = 1234L;
         ShoppingService.ProductInfo productInfo = createProductInfoWithId(productClusterId);
 
@@ -211,14 +209,14 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         shoppingServiceCallbackCaptor.getValue().onResult(true);
 
         // Supplier should invoke callback.
-        verify(mockCallback).onResult(true);
-        // Supplier value should now be true.
-        assertTrue(supplier.get());
+        verify(mockCallback).onResult(PriceTrackingState.TRACKED);
+        // Supplier value should now be tracked.
+        assertEquals(PriceTrackingState.TRACKED, supplier.get());
     }
 
     @Test
     public void testWithTabWithProductInfo_untrackedAndThenTracked() {
-        Callback<Boolean> mockCallback = mock(Callback.class);
+        Callback<PriceTrackingState> mockCallback = mock(Callback.class);
         long productClusterId = 1234L;
         ShoppingService.ProductInfo productInfo = createProductInfoWithId(productClusterId);
 
@@ -258,15 +256,17 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
                 .getValue()
                 .onSubscribe(commerceSubscriptionArgumentCaptor.getValue(), true);
 
-        // Supplier should invoke callback.
-        verify(mockCallback).onResult(true);
+        // Supplier callback should have been called twice, once on start indicating the product was
+        // untracked then again indicating the product is tracked.
+        verify(mockCallback).onResult(PriceTrackingState.UNTRACKED);
+        verify(mockCallback).onResult(PriceTrackingState.TRACKED);
         // Supplier value should now be true.
-        assertTrue(supplier.get());
+        assertEquals(PriceTrackingState.TRACKED, supplier.get());
     }
 
     @Test
     public void testWithTabWithProductInfo_trackedAndThenUnTracked() {
-        Callback<Boolean> mockCallback = mock(Callback.class);
+        Callback<PriceTrackingState> mockCallback = mock(Callback.class);
         long productClusterId = 1234L;
         ShoppingService.ProductInfo productInfo = createProductInfoWithId(productClusterId);
 
@@ -308,16 +308,16 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
         // Supplier callback should have been called twice, once on start indicating the product was
         // tracked then again indicating the product is no longer tracked.
-        verify(mockCallback).onResult(true);
-        verify(mockCallback).onResult(false);
-        // Supplier value should now be false.
-        assertFalse(supplier.get());
+        verify(mockCallback).onResult(PriceTrackingState.TRACKED);
+        verify(mockCallback).onResult(PriceTrackingState.UNTRACKED);
+        // Supplier value should now be untracked.
+        assertEquals(PriceTrackingState.UNTRACKED, supplier.get());
     }
 
     @Test
     public void testWithTabWithProductInfo_tabChangesWhileLoading() {
         Tab anotherTab = mock(Tab.class);
-        Callback<Boolean> mockCallback = mock(Callback.class);
+        Callback<PriceTrackingState> mockCallback = mock(Callback.class);
         long productClusterId = 1234L;
         ShoppingService.ProductInfo productInfo = createProductInfoWithId(productClusterId);
 
@@ -349,7 +349,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
         // Supplier shouldn't invoke callback, because the result of isSubscribed doesn't correspond
         // with the current tab.
-        verify(mockCallback, never()).onResult(anyBoolean());
-        assertFalse(supplier.get());
+        verify(mockCallback, never()).onResult(any());
+        assertEquals(PriceTrackingState.UNKNOWN, supplier.get());
     }
 }

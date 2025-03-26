@@ -860,6 +860,21 @@ class LoadingStopObserver : public WebContentsObserver {
   Callback callback_;
 };
 
+// Forwards DidFinishLoad calls to the provided callback.
+class LoadFinishObserver : public WebContentsObserver {
+ public:
+  using Callback = base::RepeatingCallback<void(RenderFrameHost*, const GURL&)>;
+
+  LoadFinishObserver(WebContents* web_contents, Callback callback);
+  ~LoadFinishObserver() override;
+
+ private:
+  void DidFinishLoad(RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+
+  Callback callback_;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_TEST_CONTENT_BROWSER_TEST_UTILS_INTERNAL_H_

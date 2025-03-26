@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
@@ -132,7 +133,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
       }
 
       // Write recorded data chunk to the file and prepare for next chunk.
-      fwrite(chunk.data(), 1, chunk.size(), binary_file_);
+      UNSAFE_TODO(fwrite(chunk.data(), 1, chunk.size(), binary_file_));
       buffer_.Seek(chunk.size());
       bytes_written += chunk.size();
     }

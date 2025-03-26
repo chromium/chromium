@@ -256,6 +256,10 @@ export class CrLazyListElement<T = object> extends CrLitElement {
       if (restoreFocus) {
         // Async to allow clients to update in response to viewport-filled.
         setTimeout(() => {
+          // The element may have been removed from the DOM by the client.
+          if (!this.restoreFocusElement) {
+            return;
+          }
           (this.restoreFocusElement as HTMLElement).focus();
           this.fire('focus-restored-for-test');
         }, 0);

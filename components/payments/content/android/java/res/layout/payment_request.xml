@@ -16,7 +16,7 @@ found in the LICENSE file.
     android:gravity="center"
     app:maxWidthLandscape="@dimen/payments_ui_max_dialog_width"
     app:maxWidthPortrait="@dimen/payments_ui_max_dialog_width"
-    android:background="@drawable/sheet_background" >
+    android:background="@macro/sheet_bg_color" >
 
     <include layout="@layout/payment_request_header" />
     <include layout="@layout/payment_request_spinny" />

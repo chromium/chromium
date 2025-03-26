@@ -154,6 +154,10 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
+  bool ShouldTriggerIntervention() const override {
+    return HasTriggerForIntervention();
+  }
+
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
 
   int LayerCount() const override;

@@ -873,14 +873,6 @@ class AutofillMetrics {
       std::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
                    CreditCard::RecordType> card_type);
 
-  // Returns 64-bit hash of the string of form global id, which consists of
-  // |frame_token| and |renderer_id|.
-  static uint64_t FormGlobalIdToHash64Bit(const FormGlobalId& form_global_id);
-  // Returns 64-bit hash of the string of field global id, which consists of
-  // |frame_token| and |renderer_id|.
-  static uint64_t FieldGlobalIdToHash64Bit(
-      const FieldGlobalId& field_global_id);
-
   // Logs the Autofill2_FieldInfoAfterSubmission UKM event after the form is
   // submitted and uploaded for votes to the crowdsourcing server.
   static void LogAutofillFieldInfoAfterSubmission(

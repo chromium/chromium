@@ -12,16 +12,6 @@ namespace ml {
 
 namespace {
 
-// TODO(crbug.com/385173789): Pass enable_image_input via LoadAdaptationParams.
-const base::FeatureParam<bool> kImageInput{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_image_input", false};
-
-// TODO(crbug.com/385173368): Pass enable_audio_input via LoadAdaptationParams.
-const base::FeatureParam<bool> kAudioInput{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_audio_input", false};
-
 float GetTemperature(std::optional<float> temperature) {
   return std::max(0.0f, temperature.value_or(0.0f));
 }
@@ -172,13 +162,6 @@ void SessionAccessor::CreateInternal(
     params->top_k = GetTopK(params->top_k);
     params->temperature = GetTemperature(params->temperature);
   }
-  if (kImageInput.Get()) {
-    params->capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
-  }
-  if (kAudioInput.Get()) {
-    params->capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
-  }
-
   ChromeMLAdaptationDescriptor descriptor = {
       .max_tokens = params->max_tokens,
       .top_k = params->top_k,

@@ -138,11 +138,7 @@ int GetObfuscationLength() {
 }
 
 bool ShouldSplitCardNameAndLastFourDigits() {
-#if BUILDFLAG(IS_IOS)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
-#endif
+  return !BUILDFLAG(IS_IOS);
 }
 
 // Returns whether the `suggestion_canon` is a valid match given

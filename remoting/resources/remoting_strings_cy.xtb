@@ -40,6 +40,7 @@ Os yw '<ph name="SERVICE_SCRIPT_NAME" />' eisoes wedi'i dicio, dad-diciwch ef a 
 <translation id="2758123043070977469">Bu problem wrth ddilysu, mewngofnodwch eto.</translation>
 <translation id="2803375539583399270">Rhowch y PIN</translation>
 <translation id="2919669478609886916">Ar hyn o bryd rydych yn rhannu'r peiriant hwn â defnyddiwr arall. Ydych chi am barhau i rannu?</translation>
+<translation id="2929683002824598593">Rhannu dyfais</translation>
 <translation id="2939145106548231838">Dilysu i westeiwr</translation>
 <translation id="3027681561976217984">Modd cyffwrdd</translation>
 <translation id="3106379468611574572">Nid yw'r cyfrifiadur o bell yn ymateb i geisiadau cysylltu. Cadarnhewch ei fod ar-lein a rhowch gynnig arall arni.</translation>
@@ -117,10 +118,12 @@ Os yw '<ph name="SERVICE_SCRIPT_NAME" />' eisoes wedi'i dicio, dad-diciwch ef a 
 <translation id="6178645564515549384">Gwesteiwr negeseua brodorol ar gyfer cymorth o bell</translation>
 <translation id="618120821413932081">Diweddaru'r cydraniad o bell i gyd-fynd â'r ffenestr</translation>
 <translation id="6223301979382383752">Agor Dewisiadau Recordio'r Sgrîn</translation>
+<translation id="6252344563748670011">Mae <ph name="CLIENT_USERNAME" /> wedi gofyn am fynediad i weld eich sgrîn a rheoli eich bysellfwrdd a'ch llygoden. Hoffech chi rannu'ch dyfais?</translation>
 <translation id="6284412385303060032">Mae gwesteiwr sy'n rhedeg ar sgrîn rhesymeg y consol wedi cau i gefnogi'r modd llenni drwy newid i westeiwr sy'n rhedeg mewn sesiwn defnyddiwr-benodol.</translation>
 <translation id="6542902059648396432">Adrodd am broblem…</translation>
 <translation id="6583902294974160967">Cymorth</translation>
 <translation id="6612717000975622067">Anfon Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Os na fyddwch yn gweithredu, bydd eich dyfais yn dechrau rhannu'n awtomatig ymhen # eiliad.}zero{Os na fyddwch yn gweithredu, bydd eich dyfais yn dechrau rhannu'n awtomatig ymhen # eiliad.}two{Os na fyddwch yn gweithredu, bydd eich dyfais yn dechrau rhannu'n awtomatig ymhen # eiliad.}few{Os na fyddwch yn gweithredu, bydd eich dyfais yn dechrau rhannu'n awtomatig ymhen # eiliad.}many{Os na fyddwch yn gweithredu, bydd eich dyfais yn dechrau rhannu'n awtomatig ymhen # eiliad.}other{Os na fyddwch yn gweithredu, bydd eich dyfais yn dechrau rhannu'n awtomatig ymhen # eiliad.}}</translation>
 <translation id="6654753848497929428">Rhannu</translation>
 <translation id="677755392401385740">Gwnaeth y gwesteiwr ddechrau ar gyfer defnyddiwr: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Ap cymorth i agor URL ar y cleient <ph name="PRODUCT_NAME" /></translation>

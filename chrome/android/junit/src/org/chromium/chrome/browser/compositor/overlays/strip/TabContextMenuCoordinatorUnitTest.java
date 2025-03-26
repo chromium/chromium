@@ -254,4 +254,38 @@ public class TabContextMenuCoordinatorUnitTest {
         mOnItemClickedCallback.onClick(R.id.add_to_tab_group, TAB_ID, COLLABORATION_ID);
         verify(mBottomSheetCoordinator, times(1)).showBottomSheet(List.of(mTab1));
     }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAnchorWidth_smallAnchorWidth() {
+        assertEquals(
+                mWeakReferenceActivity
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
+                mTabContextMenuCoordinator.getMenuWidth(1));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAnchorWidth_largeAnchorWidth() {
+        assertEquals(
+                mWeakReferenceActivity
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width),
+                mTabContextMenuCoordinator.getMenuWidth(10000));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAnchorWidth_moderateAnchorWidth() {
+        int minWidth =
+                mWeakReferenceActivity
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width);
+        int expectedWidth = minWidth + 1;
+        assertEquals(expectedWidth, mTabContextMenuCoordinator.getMenuWidth(expectedWidth));
+    }
 }

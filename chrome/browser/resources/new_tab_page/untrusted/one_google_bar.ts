@@ -4,6 +4,9 @@
 
 type MessageType = 'overlaysUpdated'|'click'|'loaded';
 
+// TODO(crbug.com/373569279): Post launch completion of OGB ABP integration,
+// remove all references and logic associated to the legacy integration
+// implementation.
 declare let abp: boolean;
 
 /**
@@ -32,6 +35,14 @@ interface AsyncBar {
   setDarkMode(matches: boolean): void;
 }
 
+if (abp) {
+  window.addEventListener('gbar_a', () => {
+    postMessage('loaded');
+    overlayUpdater.track();
+    oneGoogleBarApi.trackDarkModeChanges();
+  });
+}
+
 const oneGoogleBarApi = (() => {
   type IndexableApi = Record<string, Function>;
   interface Gbar {
@@ -51,11 +62,11 @@ const oneGoogleBarApi = (() => {
   async function callAsyncBarApi(
       fnName: string, ...args: any[]): Promise<unknown> {
     const {gbar} = window as Window & Gbar;
-    if (!gbar) {
+    if (!gbar || !gbar.a) {
       return Promise.resolve();
     }
 
-    const barApi = new (gbar.P as any)();
+    const barApi = await gbar.a['bf']!();
     return barApi[fnName]!.apply(barApi, args);
   }
 
@@ -311,17 +322,20 @@ window.addEventListener('click', () => {
   postMessage('click');
 }, /*useCapture=*/ true);
 
-document.addEventListener('DOMContentLoaded', () => {
-  // TODO(crbug.com/40667075): remove after OneGoogleBar links are updated.
-  // Updates <a>'s so they load on the top frame instead of the iframe.
-  document.body.querySelectorAll('a').forEach(el => {
-    if (el.target !== '_blank') {
-      el.target = '_top';
-    }
+if (!abp) {
+  document.addEventListener('DOMContentLoaded', () => {
+    // TODO(crbug.com/40667075): remove after OneGoogleBar links are updated.
+    // Updates <a>'s so they load on the top frame instead of the iframe.
+    document.body.querySelectorAll('a').forEach(el => {
+      if (el.target !== '_blank') {
+        el.target = '_top';
+      }
+    });
+
+    postMessage('loaded');
+    overlayUpdater.track();
+    oneGoogleBarApi.trackDarkModeChanges();
   });
-  postMessage('loaded');
-  overlayUpdater.track();
-  oneGoogleBarApi.trackDarkModeChanges();
-});
+}
 
 export {};

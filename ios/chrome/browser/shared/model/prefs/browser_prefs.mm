@@ -105,6 +105,7 @@
 #import "ios/chrome/browser/photos/model/photos_policy.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_prefs.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
@@ -419,6 +420,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   PushNotificationService::RegisterLocalStatePrefs(registry);
   TipsNotificationClient::RegisterLocalStatePrefs(registry);
   auto_deletion::AutoDeletionService::RegisterLocalStatePrefs(registry);
+  push_notification_prefs::RegisterLocalStatePrefs(registry);
 
   // Preferences related to the profile manager.
   registry->RegisterStringPref(prefs::kLastUsedProfile, std::string());
@@ -1065,6 +1067,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 02/2025
   prefs->ClearPref(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
+
+  // Added 02/2025.
+  prefs->ClearPref(set_up_list_prefs::kDisabled);
 }
 
 // This method should be periodically pruned of year+ old migrations.

@@ -358,9 +358,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // Instruct Chrome to show the password dropdown.
   autofill::FormData form;
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
-      kElementId, form,
-      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
-      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds));
+      autofill::TriggeringField(
+          kElementId,
+          autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+          base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds),
+      form, 0, 0));
   autofill::AutofillSuggestionController* controller = nullptr;
   // Showing the Autofill Popup is an asynchronous task.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -385,9 +387,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForPasswordStore();
   // Reshow the dropdown.
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
-      kElementId, form,
-      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
-      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds));
+      autofill::TriggeringField(
+          kElementId,
+          autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+          base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds),
+      form, 0, 0));
   // Showing the Autofill Popup is an asynchronous task.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return controller =
@@ -409,9 +413,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForPasswordStore();
   // Reshow the dropdown won't work because there is nothing to suggest.
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
-      kElementId, form,
-      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
-      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds));
+      autofill::TriggeringField(
+          kElementId,
+          autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+          base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds),
+      form, 0, 0));
   // Showing the Autofill Popup is an asynchronous task.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());

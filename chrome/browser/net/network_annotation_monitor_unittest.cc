@@ -25,7 +25,7 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   // Setup profile with the disabled hash code in blocklist pref.
   TestingProfileManager profile_manager_(TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_.SetUp());
-  profile_manager_.CreateTestingProfile("testing_profile", true);
+  profile_manager_.CreateTestingProfile("testing_profile");
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetDict(
       prefs::kNetworkAnnotationBlocklist,
       base::Value::Dict().Set(base::NumberToString(kTestDisabledHashCode),

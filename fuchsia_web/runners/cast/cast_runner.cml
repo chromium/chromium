@@ -4,8 +4,6 @@
 {
   include: [
     "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
-    "inspect/client.shard.cml",
-    "syslog/client.shard.cml",
 
     // `main()` intantiates tracing directly.
     // Although the protocol is technically optional, as in this shard, not

@@ -13,6 +13,8 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/common/pref_names.h"
 #import "components/feed/core/v2/public/ios/notice_card_tracker.h"
 #import "components/feed/core/v2/public/ios/prefs.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_follow_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -100,13 +103,19 @@ using feed::FeedUserActionType;
 
 @end
 
-@implementation FeedMetricsRecorder
+@implementation FeedMetricsRecorder {
+  // Used to track Feed events for IPH display.
+  raw_ptr<feature_engagement::Tracker> _featureEngagementTracker;
+}
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithPrefService:(PrefService*)prefService
+           featureEngagementTracker:
+               (feature_engagement::Tracker*)featureEngagementTracker {
   DCHECK(prefService);
   self = [super init];
   if (self) {
     _prefService = prefService;
+    _featureEngagementTracker = featureEngagementTracker;
   }
   return self;
 }
@@ -1127,6 +1136,12 @@ using feed::FeedUserActionType;
   if (self.NTPState.selectedFeed == FeedTypeFollowing) {
     base::UmaHistogramEnumeration(kFollowingFeedEngagementTypeHistogram,
                                   FeedEngagementType::kFeedInteracted);
+  }
+
+  // Log interaction with the Feature Engagement Tracker.
+  if (base::FeatureList::IsEnabled(kFeedSwipeInProductHelp)) {
+    _featureEngagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSActionOnFeed);
   }
 }
 

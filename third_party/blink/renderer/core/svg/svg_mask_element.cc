@@ -94,7 +94,6 @@ void SVGMaskElement::SvgAttributeChanged(
       SVGTests::IsKnownAttribute(attr_name)) {
     if (is_length_attr) {
       UpdatePresentationAttributeStyle(params.property);
-      UpdateRelativeLengthsInformation();
     }
 
     auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());

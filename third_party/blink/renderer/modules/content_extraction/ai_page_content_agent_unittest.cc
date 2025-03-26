@@ -2294,6 +2294,64 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
             "HTML, CSS, JavaScript");
 }
 
+TEST_F(AIPageContentAgentTest, NestedIframesMetaTags) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<head><meta name=author content=George></head>"
+      "<body>parent"
+      "  <iframe srcdoc=\""
+      "    <head><meta name=author content=Gary></head>"
+      "    <body>child"
+      "      <iframe srcdoc='"
+      "        <head><meta name=author content=Jordan></head>"
+      "        <body>grandchild</body"
+      "      '></iframe>"
+      "    </body>"
+      "  \"></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  mojom::blink::AIPageContentOptions options;
+  options.max_meta_elements = 32;
+  auto content = GetAIPageContent(options);
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  EXPECT_EQ(content->frame_data->meta_data.size(), 1u);
+
+  EXPECT_EQ(content->frame_data->meta_data[0]->name, "author");
+  EXPECT_EQ(content->frame_data->meta_data[0]->content, "George");
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& iframe = *root.children_nodes[1];
+  EXPECT_EQ(iframe.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+
+  const auto& iframe_data = *iframe.content_attributes->iframe_data;
+  EXPECT_EQ(iframe_data.local_frame_data->meta_data.size(), 1u);
+
+  EXPECT_EQ(iframe_data.local_frame_data->meta_data[0]->name, "author");
+  EXPECT_EQ(iframe_data.local_frame_data->meta_data[0]->content, "Gary");
+
+  EXPECT_EQ(iframe.children_nodes.size(), 1u);
+
+  // In the iframe children_nodes there is a root node that has two children.
+  // The first child is a text node and the second is the subiframe.  The key
+  // thing we want to check here is that the subiframe has the correct meta
+  // data.
+  const auto& subiframe = *iframe.children_nodes[0]->children_nodes[1];
+  EXPECT_EQ(subiframe.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+
+  const auto& subiframe_data = *subiframe.content_attributes->iframe_data;
+  EXPECT_EQ(subiframe_data.local_frame_data->meta_data.size(), 1u);
+
+  EXPECT_EQ(subiframe_data.local_frame_data->meta_data[0]->name, "author");
+  EXPECT_EQ(subiframe_data.local_frame_data->meta_data[0]->content, "Jordan");
+}
+
 TEST_F(AIPageContentAgentTest, Title) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

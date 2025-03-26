@@ -448,6 +448,14 @@ inline constexpr char kNetworkPredictionOptions[] =
 inline constexpr char kPreinstalledAppsInstallState[] =
     "default_apps_install_state";
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_LINUX)
+// A list of extensions ids that have to be allowed to run in Incognito by the
+// user in order to use Incognito mode.
+inline constexpr char kMandatoryExtensionsForIncognitoNavigation[] =
+    "mandatory_extensions_for_incognito_navigation";
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 // The list of extensions allowed to use the platformKeys API for remote
 // attestation.
@@ -1287,11 +1295,6 @@ inline constexpr char kFloatingSsoEnabled[] = "floating_sso_enabled";
 // window size.
 inline constexpr char kForceMaximizeOnFirstRun[] =
     "ui.force_maximize_on_first_run";
-
-// A list of extensions ids that have to be allowed to run in Incognito by the
-// user in order to use Incognito mode.
-inline constexpr char kMandatoryExtensionsForIncognitoNavigation[] =
-    "mandatory_extensions_for_incognito_navigation";
 
 // Counter for reporting daily OOM kills count.
 inline constexpr char kOOMKillsDailyCount[] = "oom_kills.daily_count";
@@ -4093,6 +4096,10 @@ inline constexpr char kCompressionDictionaryTransportEnabled[] =
 // Boolean that specifies whether Zstd Content-Encoding is enabled.
 inline constexpr char kZstdContentEncodingEnabled[] =
     "net.zstd_content_encoding_enabled";
+
+// Boolean that specifies whether Happy Eyeballs V3 is enabled.
+inline constexpr char kHappyEyeballsV3Enabled[] =
+    "net.happy_eyeballs_v3_enabled";
 
 // Boolean that specifies whether IPv6 reachability check override is enabled.
 inline constexpr char kIPv6ReachabilityOverrideEnabled[] =

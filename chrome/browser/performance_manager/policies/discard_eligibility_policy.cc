@@ -122,6 +122,14 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
     return CanDiscardResult::kDisallowed;
   }
 
+  const auto* live_state_data = GetPageNodeLiveStateData(page_node);
+
+  // Don't discard tabs that are already discarded, as that will fail.
+  if (live_state_data && live_state_data->IsDiscarded()) {
+    add_reason(CannotDiscardReason::kAlreadyDiscarded);
+    return CanDiscardResult::kDisallowed;
+  }
+
   bool is_proactive_or_suggested;
   switch (discard_reason) {
     case DiscardReason::EXTERNAL:
@@ -218,8 +226,6 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
     add_reason_and_update_result(CannotDiscardReason::kNotificationsEnabled,
                                  CanDiscardResult::kProtected);
   }
-
-  const auto* live_state_data = GetPageNodeLiveStateData(page_node);
 
   // The live state data won't be available if none of these events ever
   // happened on the page.

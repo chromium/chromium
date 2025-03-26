@@ -5,7 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_EXECUTOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_EXECUTOR_H_
 
+#include <optional>
+
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+namespace optimization_guide::proto {
+class AnnotatedPageContent;
+}
 
 namespace autofill {
 
@@ -19,7 +26,14 @@ class AutofillAiModelExecutor : public KeyedService {
   // the model execution completes. Errors during model execution also lead to
   // cache writes, but with empty values. If there is already an ongoing cache
   // request for a form of the same signature, the model is not run.
-  virtual void GetPredictions(FormData form_data) = 0;
+  // If `annotated_page_content` is set, it includes it in its upload to the
+  // model.
+  virtual void GetPredictions(
+      FormData form_data,
+      std::optional<optimization_guide::proto::AnnotatedPageContent>
+          annotated_page_content) = 0;
+
+  virtual base::WeakPtr<AutofillAiModelExecutor> GetWeakPtr() = 0;
 };
 
 }  // namespace autofill

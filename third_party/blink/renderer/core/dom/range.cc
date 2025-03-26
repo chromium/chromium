@@ -100,6 +100,7 @@ class RangeUpdateScope {
       range_->RemoveFromSelectionIfInDifferentRoot(*old_document_);
       range_->UpdateSelectionIfAddedToSelection();
     }
+    range_->ResetUpdateSelectionBehavior();
 
     range_->ScheduleVisualUpdateIfInRegisteredHighlight(
         range_->OwnerDocument());
@@ -292,7 +293,7 @@ void Range::CollapseIfNeeded(bool did_move_document, bool collapse_to_start) {
     // Further, if collapse is not due to being in different tree scopes, the
     // range should update both selection's start and end positions.
     collapse(collapse_to_start);
-    update_selection_behavior_ = UpdateSelectionBehavior::kAll;
+    ResetUpdateSelectionBehavior();
   }
 }
 
@@ -1787,19 +1788,21 @@ void Range::UpdateSelectionIfAddedToSelection() {
   DCHECK(endContainer()->GetDocument() == OwnerDocument());
   EventDispatchForbiddenScope no_events;
 
-  // Given this range's update_selection_behavior_, update selection to either
-  // the range's new position or keep using current selection's position.
-  const Position& start_position =
-      RuntimeEnabledFeatures::SelectionAcrossShadowDOMEnabled() &&
-              update_selection_behavior_ == UpdateSelectionBehavior::kEndOnly
-          ? selection.GetSelectionInDOMTree().ComputeStartPosition()
-          : StartPosition();
-  const Position& end_position =
-      RuntimeEnabledFeatures::SelectionAcrossShadowDOMEnabled() &&
-              update_selection_behavior_ == UpdateSelectionBehavior::kStartOnly
-          ? selection.GetSelectionInDOMTree().ComputeEndPosition()
-          : EndPosition();
-  update_selection_behavior_ = UpdateSelectionBehavior::kAll;
+  Position start_position = StartPosition();
+  Position end_position = EndPosition();
+  if (RuntimeEnabledFeatures::SelectionAcrossShadowDOMEnabled()) {
+    switch (update_selection_behavior_) {
+      case UpdateSelectionBehavior::kEndOnly:
+        start_position =
+            selection.GetSelectionInDOMTree().ComputeStartPosition();
+        break;
+      case UpdateSelectionBehavior::kStartOnly:
+        end_position = selection.GetSelectionInDOMTree().ComputeEndPosition();
+        break;
+      case UpdateSelectionBehavior::kAll:
+        break;
+    }
+  }
 
   selection.SetSelection(SelectionInDOMTree::Builder()
                              .Collapse(start_position)
@@ -1811,6 +1814,10 @@ void Range::UpdateSelectionIfAddedToSelection() {
                              .SetDoNotSetFocus(true)
                              .Build());
   selection.CacheRangeOfDocument(this);
+}
+
+void Range::ResetUpdateSelectionBehavior() {
+  update_selection_behavior_ = UpdateSelectionBehavior::kAll;
 }
 
 void Range::ScheduleVisualUpdateIfInRegisteredHighlight(Document& document) {

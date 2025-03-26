@@ -70,14 +70,10 @@ void SVGForeignObjectElement::Trace(Visitor* visitor) const {
 void SVGForeignObjectElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
-  bool is_width_height_attribute =
-      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
-  bool is_xy_attribute =
-      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr;
-
-  if (is_xy_attribute || is_width_height_attribute) {
+  if (attr_name == svg_names::kWidthAttr ||
+      attr_name == svg_names::kHeightAttr || attr_name == svg_names::kXAttr ||
+      attr_name == svg_names::kYAttr) {
     UpdatePresentationAttributeStyle(params.property);
-    UpdateRelativeLengthsInformation();
     if (LayoutObject* layout_object = GetLayoutObject())
       MarkForLayoutAndParentResourceInvalidation(*layout_object);
 

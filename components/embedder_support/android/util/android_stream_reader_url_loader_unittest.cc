@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/embedder_support/android/util/input_stream.h"
@@ -53,7 +54,7 @@ class FakeInputStream : public embedder_support::InputStream {
       return true;
     }
     CHECK_GE(length, static_cast<int>(contents_.length()));
-    memcpy(buf->data(), contents_.c_str(), contents_.length());
+    UNSAFE_TODO(memcpy(buf->data(), contents_.c_str(), contents_.length()));
     *bytes_read = contents_.length();
     buffer_written_ = true;
     nb_reads_--;

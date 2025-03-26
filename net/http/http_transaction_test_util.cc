@@ -25,6 +25,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_chain.h"
@@ -485,6 +486,11 @@ bool MockNetworkTransaction::GetLoadTimingInfo(
     load_timing_info->send_end = base::TimeTicks::Now();
   }
   return true;
+}
+
+void MockNetworkTransaction::PopulateLoadTimingInternalInfo(
+    LoadTimingInternalInfo* load_timing_internal_info) const {
+  load_timing_internal_info->initialize_stream_delay = base::TimeDelta();
 }
 
 bool MockNetworkTransaction::GetRemoteEndpoint(IPEndPoint* endpoint) const {

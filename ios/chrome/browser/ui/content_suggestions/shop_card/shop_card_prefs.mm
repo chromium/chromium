@@ -12,6 +12,8 @@ namespace shop_card_prefs {
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, true);
+  registry->RegisterBooleanPref(
+      prefs::kHomeCustomizationMagicStackShopCardReviewsEnabled, true);
 }
 
 }  // namespace shop_card_prefs

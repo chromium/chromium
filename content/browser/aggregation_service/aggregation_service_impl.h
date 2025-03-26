@@ -76,12 +76,12 @@ class CONTENT_EXPORT AggregationServiceImpl
   void AssembleReport(AggregatableReportRequest report_request,
                       AssemblyCallback callback) override;
   void SendReport(
-      const GURL& url,
+      GURL url,
       const AggregatableReport& report,
       std::optional<AggregatableReportRequest::DelayType> delay_type,
       SendCallback callback) override;
   void SendReport(
-      const GURL& url,
+      GURL url,
       const base::Value& contents,
       std::optional<AggregatableReportRequest::DelayType> delay_type,
       SendCallback callback) override;

@@ -484,6 +484,10 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
           "Conversions."
           "TimeFromTriggerToReportSentSuccessfullyExceeds30Days",
           time_from_conversion_to_report_sent > base::Days(30));
+      UMA_HISTOGRAM_BOOLEAN(
+          "Conversions."
+          "ExtraReportDelayForSuccessfulSendExceeds30Days",
+          time_since_original_report_time > base::Days(30));
 
       RecordReportRetriesEventLevel(report.failed_send_attempts());
       break;
@@ -502,6 +506,10 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
           "Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend",
           time_since_original_report_time, base::Seconds(1), base::Days(24),
           /*bucket_count=*/50);
+      UMA_HISTOGRAM_BOOLEAN(
+          "Conversions.AggregatableReport."
+          "ExtraReportDelayForSuccessfulSendExceeds30Days",
+          time_since_original_report_time > base::Days(30));
 
       RecordReportRetriesAggregatable(report.failed_send_attempts());
       break;

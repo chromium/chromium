@@ -86,7 +86,7 @@ contribution can be accepted:
 
 ## Initial git setup
 
-1. Set up [Gerrit access](https://www.chromium.org/developers/gerrit-guide/).
+1. Set up [Gerrit access](gerrit_guide.md).
 2. Tell git about your name, email and some other settings.
    ```
    git config --global user.name "My Name"

@@ -2907,7 +2907,7 @@ void TabStripModel::MoveTabRelative(TabRelativeDirection direction) {
 
 std::pair<std::optional<int>, std::optional<int>>
 TabStripModel::GetAdjacentTabsAfterSelectedMove(
-    base::PassKey<TabDragController>,
+    base::PassKey<DraggingTabsSession>,
     int destination_index) {
   const int pinned_tab_count = IndexOfFirstNonPinnedTab();
   const std::vector<int> pinned_selected_indices = GetSelectedPinnedTabs();
@@ -3170,9 +3170,11 @@ void TabStripModel::MoveTabsAndSetPropertiesImpl(
 }
 
 void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
+  std::vector<WebContents*> web_contentses;
   for (int index : indices) {
-    delegate_->AddToReadLater(GetWebContentsAt(index));
+    web_contentses.push_back(GetWebContentsAt(index));
   }
+  delegate_->AddToReadLater(web_contentses);
 }
 
 void TabStripModel::InsertTabAtIndexImpl(

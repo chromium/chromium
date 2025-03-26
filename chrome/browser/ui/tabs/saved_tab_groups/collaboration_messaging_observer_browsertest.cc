@@ -113,12 +113,13 @@ InstantMessage CreateInstantMessage(
   attribution.tab_group_metadata = tab_group_metadata;
 
   InstantMessage message;
-  message.attribution = attribution;
+  message.attributions.emplace_back(attribution);
   message.type = event == CollaborationEvent::TAB_REMOVED
                      ? InstantNotificationType::CONFLICT_TAB_REMOVED
                      : InstantNotificationType::UNDEFINED;
   message.level = InstantNotificationLevel::BROWSER;
   message.collaboration_event = event;
+  message.localized_message = u"Sample instant message";
 
   return message;
 }
@@ -458,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   auto message = CreateInstantMessage(
       "User", CollaborationEvent::COLLABORATION_MEMBER_ADDED, test_url,
       "Chrome Settings", std::nullopt, "Vacation");
-  message.attribution->tab_group_metadata->sync_tab_group_id =
+  message.attributions[0].tab_group_metadata->sync_tab_group_id =
       sync_tab_group_id;
 
   EXPECT_CALL(cb, Run(true));

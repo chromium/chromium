@@ -125,41 +125,22 @@ const base::TimeDelta SystemMemoryPressureEvaluator::kMemorySamplingPeriod =
 const base::TimeDelta SystemMemoryPressureEvaluator::kModeratePressureCooldown =
     base::Seconds(10);
 
-// TODO(chrisha): Explore the following constants further with an experiment.
-
-// A system is considered 'high memory' if it has more than 1.5GB of system
-// memory available for use by the memory manager (not reserved for hardware
-// and drivers). This is a fuzzy version of the ~2GB discussed below.
-const int SystemMemoryPressureEvaluator::kLargeMemoryThresholdMb = 1536;
-
-// These are the default thresholds used for systems with < ~2GB of physical
-// memory. Such systems have been observed to always maintain ~100MB of
-// available memory, paging until that is the case. To try to avoid paging a
-// threshold slightly above this is chosen. The moderate threshold is slightly
-// less grounded in reality and chosen as 2.5x critical.
+// Many years ago, we observed that Windows maintain ~300MB of available memory,
+// paging until that is the case (this may not be accurate at the time of
+// writing this). Therefore, we consider that there is critical memory pressure
+// when approaching this amount of available memory.
 const int
-    SystemMemoryPressureEvaluator::kSmallMemoryDefaultModerateThresholdMb = 500;
-const int
-    SystemMemoryPressureEvaluator::kSmallMemoryDefaultCriticalThresholdMb = 200;
-
-// These are the default thresholds used for systems with >= ~2GB of physical
-// memory. Such systems have been observed to always maintain ~300MB of
-// available memory, paging until that is the case.
-const int
-    SystemMemoryPressureEvaluator::kLargeMemoryDefaultModerateThresholdMb =
+    SystemMemoryPressureEvaluator::kPhysicalMemoryDefaultModerateThresholdMb =
         1000;
 const int
-    SystemMemoryPressureEvaluator::kLargeMemoryDefaultCriticalThresholdMb = 400;
+    SystemMemoryPressureEvaluator::kPhysicalMemoryDefaultCriticalThresholdMb =
+        400;
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     std::unique_ptr<MemoryPressureVoter> voter)
-    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
-      moderate_threshold_mb_(0),
-      critical_threshold_mb_(0),
-      moderate_pressure_repeat_count_(0) {
-  InferThresholds();
-  StartObserving();
-}
+    : SystemMemoryPressureEvaluator(kPhysicalMemoryDefaultModerateThresholdMb,
+                                    kPhysicalMemoryDefaultCriticalThresholdMb,
+                                    std::move(voter)) {}
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     int moderate_threshold_mb,
@@ -176,26 +157,6 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
 
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
   StopObserving();
-}
-
-void SystemMemoryPressureEvaluator::InferThresholds() {
-  // Default to a 'high' memory situation, which uses more conservative
-  // thresholds.
-  bool high_memory = true;
-  MEMORYSTATUSEX mem_status = {};
-  if (GetSystemMemoryStatus(&mem_status)) {
-    static const DWORDLONG kLargeMemoryThresholdBytes =
-        static_cast<DWORDLONG>(kLargeMemoryThresholdMb) * kMBBytes;
-    high_memory = mem_status.ullTotalPhys >= kLargeMemoryThresholdBytes;
-  }
-
-  if (high_memory) {
-    moderate_threshold_mb_ = kLargeMemoryDefaultModerateThresholdMb;
-    critical_threshold_mb_ = kLargeMemoryDefaultCriticalThresholdMb;
-  } else {
-    moderate_threshold_mb_ = kSmallMemoryDefaultModerateThresholdMb;
-    critical_threshold_mb_ = kSmallMemoryDefaultCriticalThresholdMb;
-  }
 }
 
 void SystemMemoryPressureEvaluator::StartObserving() {

@@ -1773,7 +1773,8 @@ class TabListMediator implements TabListNotificationHandler {
                             mOnMenuItemClickedCallback,
                             () -> mCurrentTabGroupModelFilterSupplier.get().getTabModel(),
                             tabGroupSyncService,
-                            collaborationService);
+                            collaborationService,
+                            mActivity);
         }
         return mTabListGroupMenuCoordinator.getTabActionListener();
     }

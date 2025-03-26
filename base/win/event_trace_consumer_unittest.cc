@@ -13,6 +13,7 @@
 #include <iterator>
 #include <list>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -62,7 +63,7 @@ class TestConsumer : public EtwTraceConsumerBase<TestConsumer> {
 
     if (event->MofData != nullptr && event->MofLength != 0) {
       back.MofData = new char[event->MofLength];
-      memcpy(back.MofData, event->MofData, event->MofLength);
+      UNSAFE_TODO(memcpy(back.MofData, event->MofData, event->MofLength));
     }
   }
 

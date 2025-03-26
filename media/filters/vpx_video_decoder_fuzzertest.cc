@@ -28,10 +28,14 @@ struct Env {
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
     media::InitializeMediaLibrary();
     TestTimeouts::Initialize();
+
+    // This must be initialized after TestTimeouts.
+    task_environment =
+        std::make_unique<base::test::SingleThreadTaskEnvironment>();
   }
 
   base::AtExitManager at_exit_manager;
-  base::test::SingleThreadTaskEnvironment task_environment;
+  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment;
 };
 
 void OnDecodeComplete(base::OnceClosure quit_closure,

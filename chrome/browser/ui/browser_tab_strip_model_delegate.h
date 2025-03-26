@@ -58,7 +58,8 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
       content::WebContents* contents) override;
   bool ShouldDisplayFavicon(content::WebContents* contents) const override;
   bool CanReload() const override;
-  void AddToReadLater(content::WebContents* web_contents) override;
+  void AddToReadLater(
+      std::vector<content::WebContents*> web_contentses) override;
   bool SupportsReadLater() override;
   bool IsForWebApp() override;
   void CopyURL(content::WebContents* web_contents) override;

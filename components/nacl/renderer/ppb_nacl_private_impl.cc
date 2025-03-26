@@ -1095,12 +1095,15 @@ bool ShouldUseSubzero(const PP_PNaClOptions* pnacl_options) {
     return false;
   // Check a list of allowed architectures.
   const char* arch = GetSandboxArch();
-  if (strcmp(arch, "x86-32") == 0)
+  if (UNSAFE_TODO(strcmp(arch, "x86-32")) == 0) {
     return true;
-  if (strcmp(arch, "x86-64") == 0)
+  }
+  if (UNSAFE_TODO(strcmp(arch, "x86-64")) == 0) {
     return true;
-  if (strcmp(arch, "arm") == 0)
+  }
+  if (UNSAFE_TODO(strcmp(arch, "arm")) == 0) {
     return true;
+  }
 
   return false;
 }

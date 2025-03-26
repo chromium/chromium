@@ -19,7 +19,14 @@ import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
-/** Wraps BlankCTATabInitialStateRule to be used in Public Transit batched tests. */
+/**
+ * Wraps BlankCTATabInitialStateRule to be used in Public Transit batched tests.
+ *
+ * <p>TODO(crbug.com/404294940): Remove this after migrating all usages.
+ *
+ * @deprecated Use {@link ChromeTransitTestRules#autoResetCtaActivityRule()} instead.
+ */
+@Deprecated
 public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
 
     private final ChromeTabbedActivityTestRule mActivityTestRule;
@@ -29,6 +36,7 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
     public final BlankCTATabInitialStateRule mInitialStateRule;
     private final RuleChain mChain;
 
+    @Deprecated
     public BlankCTATabInitialStatePublicTransitRule(ChromeTabbedActivityTestRule activityTestRule) {
         mActivityTestRule = activityTestRule;
         mBatchedRule =

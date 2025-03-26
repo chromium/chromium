@@ -461,7 +461,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     public void initializeHistoricalTabModelObserver(Supplier<TabModel> regularTabModelSupplier) {
-        mHistoricalTabModelObserver.addSecodaryTabModelSupplier(regularTabModelSupplier);
+        mHistoricalTabModelObserver.addSecondaryTabModelSupplier(regularTabModelSupplier);
     }
 
     // TabModelOrchestrator lifecycle methods.

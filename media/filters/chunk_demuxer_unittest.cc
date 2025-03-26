@@ -262,14 +262,15 @@ class ChunkDemuxerTest : public ::testing::Test {
 
     if (has_audio) {
       audio_track_entry = ReadTestDataFile("webm_vorbis_track_entry");
-      tracks_element_size += audio_track_entry->size();
+      auto audio_track_entry_span = base::span(*audio_track_entry);
+      tracks_element_size += audio_track_entry_span.size();
       // Verify that we have TrackNum (0xD7) EBML element at expected offset.
-      DCHECK_EQ(audio_track_entry->data()[9], kWebMIdTrackNumber);
+      DCHECK_EQ(audio_track_entry_span[9], kWebMIdTrackNumber);
       // Verify that the size of TrackNum element is 1. The actual value is 0x81
       // due to how element sizes are encoded in EBML.
-      DCHECK_EQ(audio_track_entry->data()[10], 0x81);
+      DCHECK_EQ(audio_track_entry_span[10], 0x81);
       // Ensure the track id in TrackNum EBML element matches kAudioTrackNum.
-      DCHECK_EQ(audio_track_entry->data()[11], kAudioTrackNum);
+      DCHECK_EQ(audio_track_entry_span[11], kAudioTrackNum);
       if (stream_flags & USE_ALTERNATE_AUDIO_TRACK_ID)
         audio_track_entry->writable_data()[11] = kAlternateAudioTrackNum;
       if (is_audio_encrypted) {
@@ -280,14 +281,15 @@ class ChunkDemuxerTest : public ::testing::Test {
 
     if (has_video) {
       video_track_entry = ReadTestDataFile("webm_vp8_track_entry");
-      tracks_element_size += video_track_entry->size();
+      auto video_track_entry_span = base::span(*video_track_entry);
+      tracks_element_size += video_track_entry_span.size();
       // Verify that we have TrackNum (0xD7) EBML element at expected offset.
-      DCHECK_EQ(video_track_entry->data()[9], kWebMIdTrackNumber);
+      DCHECK_EQ(video_track_entry_span[9], kWebMIdTrackNumber);
       // Verify that the size of TrackNum element is 1. The actual value is 0x81
       // due to how element sizes are encoded in EBML.
-      DCHECK_EQ(video_track_entry->data()[10], 0x81);
+      DCHECK_EQ(video_track_entry_span[10], 0x81);
       // Ensure the track id in TrackNum EBML element matches kVideoTrackNum.
-      DCHECK_EQ(video_track_entry->data()[11], kVideoTrackNum);
+      DCHECK_EQ(video_track_entry_span[11], kVideoTrackNum);
       if (stream_flags & USE_ALTERNATE_VIDEO_TRACK_ID)
         video_track_entry->writable_data()[11] = kAlternateVideoTrackNum;
       if (is_video_encrypted) {
@@ -302,11 +304,13 @@ class ChunkDemuxerTest : public ::testing::Test {
     *buffer = base::HeapArray<uint8_t>::Uninit(size);
 
     uint8_t* buf = buffer->data();
-    memcpy(buf, ebml_header->data(), ebml_header->size());
-    buf += ebml_header->size();
+    auto ebml_header_span = base::span(*ebml_header);
+    memcpy(buf, ebml_header_span.data(), ebml_header_span.size());
+    buf += ebml_header_span.size();
 
-    memcpy(buf, info->data(), info->size());
-    buf += info->size();
+    auto info_span = base::span(*info);
+    memcpy(buf, info_span.data(), info_span.size());
+    buf += info_span.size();
 
     memcpy(buf, kTracksHeader, kTracksHeaderSize);
     WriteInt64(buf + kTracksSizeOffset, tracks_element_size);
@@ -315,29 +319,39 @@ class ChunkDemuxerTest : public ::testing::Test {
     // TODO(xhwang): Simplify this! Probably have test data files that contain
     // ContentEncodings directly instead of trying to create one at run-time.
     if (has_video) {
-      memcpy(buf, video_track_entry->data(), video_track_entry->size());
+      auto video_track_entry_span = base::span(*video_track_entry);
+      memcpy(buf, video_track_entry_span.data(), video_track_entry_span.size());
       if (is_video_encrypted) {
-        memcpy(buf + video_track_entry->size(), video_content_encodings->data(),
-               video_content_encodings->size());
+        auto video_content_encodings_span =
+            base::span(*video_content_encodings);
+        memcpy(buf + video_track_entry_span.size(),
+               video_content_encodings_span.data(),
+               video_content_encodings_span.size());
         WriteInt64(buf + kVideoTrackSizeOffset,
-                   video_track_entry->size() + video_content_encodings->size() -
+                   video_track_entry_span.size() +
+                       video_content_encodings_span.size() -
                        kVideoTrackEntryHeaderSize);
-        buf += video_content_encodings->size();
+        buf += video_content_encodings_span.size();
       }
-      buf += video_track_entry->size();
+      buf += video_track_entry_span.size();
     }
 
     if (has_audio) {
-      memcpy(buf, audio_track_entry->data(), audio_track_entry->size());
+      auto audio_track_entry_span = base::span(*audio_track_entry);
+      memcpy(buf, audio_track_entry_span.data(), audio_track_entry_span.size());
       if (is_audio_encrypted) {
-        memcpy(buf + audio_track_entry->size(), audio_content_encodings->data(),
-               audio_content_encodings->size());
+        auto audio_content_encodings_span =
+            base::span(*audio_content_encodings);
+        memcpy(buf + audio_track_entry_span.size(),
+               audio_content_encodings_span.data(),
+               audio_content_encodings_span.size());
         WriteInt64(buf + kAudioTrackSizeOffset,
-                   audio_track_entry->size() + audio_content_encodings->size() -
+                   audio_track_entry_span.size() +
+                       audio_content_encodings_span.size() -
                        kAudioTrackEntryHeaderSize);
-        buf += audio_content_encodings->size();
+        buf += audio_content_encodings_span.size();
       }
-      buf += audio_track_entry->size();
+      buf += audio_track_entry_span.size();
     }
   }
 
@@ -847,6 +861,9 @@ class ChunkDemuxerTest : public ::testing::Test {
     scoped_refptr<DecoderBuffer> bear1 = ReadTestDataFile("bear-320x240.webm");
     scoped_refptr<DecoderBuffer> bear2 = ReadTestDataFile("bear-640x360.webm");
 
+    auto bear_span1 = base::span(*bear1);
+    auto bear_span2 = base::span(*bear2);
+
     EXPECT_CALL(*this, DemuxerOpened());
 
     // Adding expectation prior to CreateInitDoneCallback() here because
@@ -872,7 +889,7 @@ class ChunkDemuxerTest : public ::testing::Test {
     // Expect duration adjustment since actual duration differs slightly from
     // duration in the init segment
     EXPECT_CALL(host_, SetDuration(base::Milliseconds(2768)));
-    EXPECT_TRUE(AppendData(base::span(*bear1)));
+    EXPECT_TRUE(AppendData(bear_span1));
     // Last audio frame has timestamp 2721 and duration 24 (estimated from max
     // seen so far for audio track).
     // Last video frame has timestamp 2703 and duration 33 (from TrackEntry
@@ -886,21 +903,21 @@ class ChunkDemuxerTest : public ::testing::Test {
     // generated from media/test/data/bear-640x360.webm and
     // media/test/data/bear-320x240.webm respectively.
     EXPECT_CALL(*this, InitSegmentReceivedMock(_));
-    EXPECT_TRUE(AppendData(base::span(bear2->data(), 4340u)));
+    EXPECT_TRUE(AppendData(bear_span2.first(4340u)));
 
     // Append a media segment that goes from [0.527000, 1.014000).
     EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(24));
     EXPECT_MEDIA_LOG(TrimmedSpliceOverlap(527000, 524000, 20000));
-    EXPECT_TRUE(AppendData(base::span(bear2->data() + 55290, 18785u)));
+    EXPECT_TRUE(AppendData(bear_span2.subspan(55290u, 18785u)));
     CheckExpectedRanges("{ [0,2736) }");
 
     // Append initialization segment for bear1 and buffer [779-1197)
     // segment.
     EXPECT_CALL(*this, InitSegmentReceivedMock(_));
-    EXPECT_TRUE(AppendData(base::span(bear1->data(), 4370u)));
+    EXPECT_TRUE(AppendData(bear_span1.first(4370u)));
     EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimated(24));
     EXPECT_MEDIA_LOG(TrimmedSpliceOverlap(779000, 759000, 3000));
-    EXPECT_TRUE(AppendData(base::span(bear1->data() + 72737, 28183u)));
+    EXPECT_TRUE(AppendData(bear_span1.subspan(72737u, 28183u)));
     CheckExpectedRanges("{ [0,2736) }");
 
     MarkEndOfStream(PIPELINE_OK);
@@ -3319,6 +3336,7 @@ TEST_F(ChunkDemuxerTest, EmitBuffersDuringAbort) {
   //        PTS: 353788 (0x000565fc)  [= 90 kHz-Timestamp: 0:00:03.9309]
 
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear-1280x720.ts");
+  auto buffer_span = base::span(*buffer);
   EXPECT_CALL(*this, InitSegmentReceivedMock(_));
 
   // This mp2ts file contains buffers which can trigger media logs related to
@@ -3332,12 +3350,11 @@ TEST_F(ChunkDemuxerTest, EmitBuffersDuringAbort) {
   // Append the media in small chunks.
   size_t appended_bytes = 0;
   const size_t chunk_size = 1024;
-  while (appended_bytes < buffer->size()) {
+  while (appended_bytes < buffer_span.size()) {
     size_t cur_chunk_size =
-        std::min(chunk_size, buffer->size() - appended_bytes);
+        std::min(chunk_size, buffer_span.size() - appended_bytes);
     ASSERT_TRUE(AppendData(
-        kSourceId,
-        base::span(buffer->data() + appended_bytes, cur_chunk_size)));
+        kSourceId, buffer_span.subspan(appended_bytes, cur_chunk_size)));
     appended_bytes += cur_chunk_size;
   }
 
@@ -3384,6 +3401,7 @@ TEST_F(ChunkDemuxerTest, SeekCompleteDuringAbort) {
   //        PTS: 353788 (0x000565fc)  [= 90 kHz-Timestamp: 0:00:03.9309]
 
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear-1280x720.ts");
+  auto buffer_span = base::span(*buffer);
   EXPECT_CALL(*this, InitSegmentReceivedMock(_));
 
   // This mp2ts file contains buffers which can trigger media logs related to
@@ -3397,12 +3415,11 @@ TEST_F(ChunkDemuxerTest, SeekCompleteDuringAbort) {
   // Append the media in small chunks.
   size_t appended_bytes = 0;
   const size_t chunk_size = 1024;
-  while (appended_bytes < buffer->size()) {
+  while (appended_bytes < buffer_span.size()) {
     size_t cur_chunk_size =
-        std::min(chunk_size, buffer->size() - appended_bytes);
+        std::min(chunk_size, buffer_span.size() - appended_bytes);
     ASSERT_TRUE(AppendData(
-        kSourceId,
-        base::span(buffer->data() + appended_bytes, cur_chunk_size)));
+        kSourceId, buffer_span.subspan(appended_bytes, cur_chunk_size)));
     appended_bytes += cur_chunk_size;
   }
 

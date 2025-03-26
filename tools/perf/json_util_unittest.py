@@ -1072,14 +1072,21 @@ class JsonUtilTest(unittest.TestCase):
           'win-10-perf',
           'ChromiumPerf',
           False,
-          ['chrome-perf-public'],
+          ['chrome-perf-public', 'chrome-perf-non-public'],
       ),
       (
           'internal_builder',
           'win-11-perf',
           'ChromiumPerf',
           False,
-          ['chrome-perf-public', 'chrome-perf-non-public'],
+          ['chrome-perf-non-public'],
+      ),
+      (
+          'another_internal_builder',
+          'android-pixel6-perf',
+          'ChromiumPerf',
+          False,
+          ['chrome-perf-non-public'],
       ),
       (
           'experiment_only',

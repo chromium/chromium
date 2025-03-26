@@ -17,7 +17,7 @@ namespace cc {
 // This is intended to be the single canonical definition of the enum, it's used
 // elsewhere in both Blink and content since touch action logic spans those
 // subsystems.
-const size_t kTouchActionBits = 6;
+const size_t kTouchActionBits = 10;
 
 enum class TouchAction {
   // No scrolling or zooming allowed.
@@ -48,11 +48,16 @@ enum class TouchAction {
   // how many pages would lose handwriting if handwriting were to ship as a new
   // touch action value as describedd in the linked bug.
   kInternalHandwriting = 0x100,
+  // This value will be used to measure how many pages will lose handwriting
+  // if it follows the panning rules for re-enablement.
+  kInternalHandwritingPanningRules = 0x200,
 
-  kManipulation = kPan | kPinchZoom | kInternalHandwriting,
+  kManipulation = kPan | kPinchZoom | kInternalHandwriting |
+                  kInternalHandwritingPanningRules,
   kAuto = kManipulation | kDoubleTapZoom | kInternalPanXScrolls |
-          kInternalNotWritable | kInternalHandwriting,
-  kMax = (1 << 9) - 1
+          kInternalNotWritable | kInternalHandwriting |
+          kInternalHandwritingPanningRules,
+  kMax = (1 << kTouchActionBits) - 1
 };
 
 inline TouchAction operator|(TouchAction a, TouchAction b) {
@@ -88,7 +93,8 @@ inline const char* TouchActionToString(TouchAction touch_action) {
   // non-handwriting bits should result in values of auto / manipulation in the
   // exposed CSS value.
   // TODO(crbug.com/382525574): Launch or clean up kHandwriting.
-  touch_action &= ~TouchAction::kInternalHandwriting;
+  touch_action &= ~(TouchAction::kInternalHandwriting |
+                    TouchAction::kInternalHandwritingPanningRules);
 
   switch (static_cast<int>(touch_action)) {
     case 0:
@@ -153,10 +159,10 @@ inline const char* TouchActionToString(TouchAction touch_action) {
       return "PAN_LEFT_PAN_Y_PINCH_ZOOM";
     case 30:
       return "PAN_RIGHT_PAN_Y_PINCH_ZOOM";
-    case 32:
-      return "DOUBLE_TAP_ZOOM";
     case 31:
       return "MANIPULATION";
+    case 32:
+      return "DOUBLE_TAP_ZOOM";
     case 33:
       return "PAN_LEFT_DOUBLE_TAP_ZOOM";
     case 34:

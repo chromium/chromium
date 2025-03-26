@@ -31,6 +31,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   CHECK(handle.type == gfx::SHARED_MEMORY_BUFFER);
   SharedMemoryRegionWrapper shm_wrapper;

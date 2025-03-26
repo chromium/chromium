@@ -30,21 +30,6 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-arm-generic-cfi-thin-lto-chrome-reclient": {
-    "args_file": "//build/args/chromeos/arm-generic.gni",
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_cfi": true,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "ozone_platform_headless": true,
-      "symbol_level": 2,
-      "use_cfi_cast": true,
-      "use_remoteexec": true,
-      "use_thin_lto": true
-    }
-  },
   "linux-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,

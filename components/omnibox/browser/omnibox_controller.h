@@ -70,10 +70,6 @@ class OmniboxController : public AutocompleteController::Observer {
   // Turns off keyword mode for the current match.
   void ClearPopupKeywordMode() const;
 
-  // Called when keyword mode is entered for a starter pack template URL.
-  void OnStarterPackKeywordModeEntered(
-      TemplateURLStarterPackData::StarterPackID id) const;
-
   // Returns the header string associated with `suggestion_group_id`, or an
   // empty string if `suggestion_group_id` is not found in the results.
   std::u16string GetHeaderForSuggestionGroup(

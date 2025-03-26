@@ -967,14 +967,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="InputMethod.Commit.Index" units="units"
+<histogram name="InputMethod.Commit.Index{IMEMajorNames}" units="units"
     expires_after="2025-11-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
     The suggestion index (1-based) of the suggestion list item which user
-    chooses to commit.
+    chooses to commit. {IMEMajorNames}
   </summary>
+  <token key="IMEMajorNames">
+    <variant name=""/>
+    <variant name=".FR" summary="The French keyboard input method"/>
+    <variant name=".Pinyin" summary="The Chinse Pinyin input method"/>
+    <variant name=".US" summary="The US keyboard input method"/>
+  </token>
 </histogram>
 
 <histogram name="InputMethod.Commit.Type2" enum="IMECommitType2"

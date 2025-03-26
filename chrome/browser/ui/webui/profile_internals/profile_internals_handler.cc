@@ -39,7 +39,7 @@ std::string ProfileInternalsHandler::CountryIdToDebugString(
   if (!country_id.has_value()) {
     return "not available";
   }
-  if (country_id.value() == CountryIdHolder(country_codes::kCountryIDUnknown)) {
+  if (country_id.value() == CountryIdHolder(country_codes::CountryId())) {
     return "unknown";
   }
 

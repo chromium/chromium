@@ -51,6 +51,7 @@ struct ToastParams {
   ToastId toast_id;
   std::vector<std::u16string> body_string_replacement_params;
   std::vector<std::u16string> action_button_string_replacement_params;
+  std::optional<int> body_string_cardinality_param;
   std::optional<std::u16string> body_string_override;
   std::optional<ui::ImageModel> image_override;
   std::unique_ptr<ui::MenuModel> menu_model;
@@ -106,7 +107,8 @@ class ToastController : public views::WidgetObserver,
   virtual void CreateToast(ToastParams params, const ToastSpecification* spec);
   virtual void CloseToast(toasts::ToastCloseReason reason);
   std::u16string FormatString(int string_id,
-                              std::vector<std::u16string> replacement);
+                              std::vector<std::u16string> replacement,
+                              std::optional<int> cardinality);
   void ClearTabScopedToasts();
   void UpdateToastWidgetVisibility(bool show_toast_widget);
   bool ShouldRenderToastOverWebContents();

@@ -74,6 +74,11 @@ GL_EXPORT BASE_DECLARE_FEATURE(kAllowD3D11WarpFallback);
 // Check if any form of software WebGL fallback is available
 GL_EXPORT bool IsAnySoftwareGLAllowed(const base::CommandLine* command_line);
 
+// Check if falling back to software GL due to crashes on hardware GL is
+// allowed.
+GL_EXPORT bool IsSoftwareGLFallbackDueToCrashesAllowed(
+    const base::CommandLine* command_line);
+
 // Query the delay we add to glCompileShader.
 // Default is 0 if kAddDelayToGLCompileShader is off.
 GL_EXPORT base::TimeDelta GetGLCompileShaderDelay();

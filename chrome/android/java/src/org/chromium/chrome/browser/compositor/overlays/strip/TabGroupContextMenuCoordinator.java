@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -123,7 +122,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         dataSharingTabManager),
                 tabModelSupplier,
                 tabGroupSyncService,
-                collaborationService);
+                collaborationService,
+                windowAndroid.getActivity().get());
         mTabGroupModelFilter = tabGroupModelFilter;
         mWindowAndroid = windowAndroid;
         mKeyboardVisibilityListener =
@@ -440,8 +440,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     @Override
-    protected @DimenRes int getMenuWidth() {
-        return R.dimen.tab_strip_group_context_menu_max_width;
+    protected int getMenuWidth(int anchorViewWidthPx) {
+        return getDimensionPixelSize(R.dimen.tab_strip_group_context_menu_max_width);
     }
 
     private void updateTabGroupColor() {

@@ -209,17 +209,16 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
     //   * The request matches our URL filtering criteria.
     //   * There is a valid frame token we can use to retrieve information
     //     about the current `Document`.
-    //   * The resource requested is not cross-origin. Reuses
-    //   subresource_filter::IsThirdParty for this check, but cross-origin is
-    //   more accurate terminology for FPF
+    //   * The resource requested is not cross-origin. Uses
+    //   net::SchemefulSite::IsSameSite to reduce memory performance impact.
     bool should_check_request =
         !is_frame_resource &&
         type_ == blink::URLLoaderThrottleProviderType::kFrame &&
         !fingerprinting_protection_filter::RendererURLLoaderThrottle::
             WillIgnoreRequest(request.url, request.destination) &&
         local_frame_token.has_value() &&
-        subresource_filter::FirstPartyOrigin(request.request_initiator.value())
-            .IsThirdParty(request.url);
+        !net::SchemefulSite::IsSameSite(url::Origin::Create(request.url),
+                                        request.request_initiator.value());
     if (should_check_request) {
       throttles.emplace_back(
           std::make_unique<

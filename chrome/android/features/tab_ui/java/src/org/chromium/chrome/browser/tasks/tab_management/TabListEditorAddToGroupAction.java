@@ -171,13 +171,11 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
             Profile profile,
             BottomSheetController controller) {
         TabGroupCreationCallback groupCreationCallback =
-                tabGroupId -> {
-                    mTabGroupCreationDialogManager.showDialog(tabGroupId, filter);
-                };
+                tabGroupId -> mTabGroupCreationDialogManager.showDialog(tabGroupId, filter);
 
         mTabGroupListBottomSheetCoordinator =
                 mFactory.create(
-                        mActivity, profile, groupCreationCallback, filter, controller, true);
+                        mActivity, profile, groupCreationCallback, filter, controller, true, true);
         mTabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
     }
 
@@ -194,9 +192,6 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
         TabGroupModelFilter filter = getTabGroupModelFilter();
         filter.removeTabGroupObserver(mFilterObserver);
         filter.getTabModel().removeObserver(mTabModelObserver);
-        if (mTabGroupListBottomSheetCoordinator != null) {
-            mTabGroupListBottomSheetCoordinator.destroy();
-        }
     }
 
     private boolean hasTabGroups() {

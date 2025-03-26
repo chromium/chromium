@@ -49,11 +49,6 @@ class DedicatedWorkerHostFactoryClient final
   ~DedicatedWorkerHostFactoryClient() override;
 
   // Implements blink::WebDedicatedWorkerHostFactoryClient.
-  void CreateWorkerHostDeprecated(
-      const blink::DedicatedWorkerToken& dedicated_worker_token,
-      const blink::WebURL& script_url,
-      const blink::WebSecurityOrigin& origin,
-      CreateWorkerHostCallback callback) override;
   void CreateWorkerHost(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const blink::WebURL& script_url,

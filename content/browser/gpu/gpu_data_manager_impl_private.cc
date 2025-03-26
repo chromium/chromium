@@ -1667,6 +1667,19 @@ void GpuDataManagerImplPrivate::FallBackToNextGpuMode() {
     OnGpuBlocked();
 }
 
+void GpuDataManagerImplPrivate::FallBackToNextGpuModeDueToCrash() {
+  FallBackToNextGpuMode();
+
+  // If we fell back to sofware GL due to crashes and it is disabled with a
+  // feature. Fall back again.
+  if (gpu_mode_ == gpu::GpuMode::SOFTWARE_GL &&
+      !features::IsSoftwareGLFallbackDueToCrashesAllowed(
+          base::CommandLine::ForCurrentProcess())) {
+    FallBackToNextGpuMode();
+    DCHECK_NE(gpu_mode_, gpu::GpuMode::SOFTWARE_GL);
+  }
+}
+
 void GpuDataManagerImplPrivate::RecordCompositingMode() {
   CompositingMode compositing_mode;
   if (IsGpuCompositingDisabled()) {

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/atomicops.h"
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "content/public/browser/render_process_host.h"
@@ -31,7 +32,8 @@ CrashMemoryMetricsCollector::CrashMemoryMetricsCollector(
       base::UnsafeSharedMemoryRegion::Create(
           sizeof(blink::OomInterventionMetrics));
   metrics_mapping_ = shared_metrics_buffer.Map();
-  memset(metrics_mapping_.memory(), 0, sizeof(blink::OomInterventionMetrics));
+  UNSAFE_TODO(memset(metrics_mapping_.memory(), 0,
+                     sizeof(blink::OomInterventionMetrics)));
 
   mojo::Remote<blink::mojom::CrashMemoryMetricsReporter> reporter;
   rph->BindReceiver(reporter.BindNewPipeAndPassReceiver());

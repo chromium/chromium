@@ -365,6 +365,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // PostAfterStartupTask() API instead.
   virtual bool IsBrowserStartupComplete();
 
+  // Allows the embedder to control when to enable native ui task execution.
+  virtual void OnUiTaskRunnerReady(
+      base::OnceClosure enable_native_ui_task_execution_callback);
+
   // Allows the embedder to handle a request from unit tests running in the
   // content layer to consider startup complete (for the sake of
   // PostAfterStartupTask()).

@@ -206,7 +206,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableCardBenefitsForAmericanExpress";
     public static final String AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO =
             "AutofillEnableCardBenefitsForBmo";
-    public static final String AUTOFILL_ENABLE_CARD_PRODUCT_NAME = "AutofillEnableCardProductName";
     public static final String AUTOFILL_ENABLE_LOCAL_IBAN = "AutofillEnableLocalIban";
     public static final String AUTOFILL_ENABLE_SERVER_IBAN = "AutofillEnableServerIban";
     public static final String AUTOFILL_ENABLE_CVC_STORAGE = "AutofillEnableCvcStorageAndFilling";
@@ -557,7 +556,6 @@ public abstract class ChromeFeatureList {
             "TabStripTransitionInDesktopWindow";
     public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
     public static final String TAB_SWITCHER_COLOR_BLEND_ANIMATE = "TabSwitcherColorBlendAnimate";
-    public static final String TAB_SWITCHER_CONTEXT_MENU_ANDROID = "TabSwitcherContextMenuAndroid";
     public static final String TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT =
             "TabSwitcherForeignFaviconSupport";
     public static final String TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH =
@@ -759,7 +757,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     LEGACY_TAB_STATE_DEPRECATION,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
@@ -1046,8 +1044,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherColorBlendAnimate =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_COLOR_BLEND_ANIMATE, true);
-    public static final MutableFlagWithSafeDefault sTabSwitcherContextMenuAndroid =
-            newMutableFlagWithSafeDefault(TAB_SWITCHER_CONTEXT_MENU_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherForeignFaviconSupport =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
@@ -1097,6 +1093,13 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationMultiDataSourceUseSchemaV1 =
             newBooleanCachedFeatureParam(
                     ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE, "use_schema_v1", false);
+
+    public static final BooleanCachedFeatureParam
+            sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck =
+                    newBooleanCachedFeatureParam(
+                            ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE,
+                            "multi_data_source_skip_device_check",
+                            false);
 
     public static final IntCachedFeatureParam sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs =
             newIntCachedFeatureParam(
@@ -1402,6 +1405,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs,
                     sAndroidAppIntegrationWithFaviconSkipSchemaCheck,
                     sAndroidAppIntegrationMultiDataSourceUseSchemaV1,
+                    sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck,
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
                     sCctAdaptiveButtonEnableOpenInBrowser,

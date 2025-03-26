@@ -147,6 +147,7 @@
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/static_http_user_agent_settings.h"
+#include "net/url_request/storage_access_status_cache.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
@@ -13749,7 +13750,8 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, Retry) {
                                      test.origin_header->Serialize(),
                                      /*overwrite=*/true);
   }
-  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
+  req->set_storage_access_status(
+      StorageAccessStatusCache(cookie_util::StorageAccessStatus::kInactive));
 
   req->Start();
   d.RunUntilComplete();
@@ -13880,13 +13882,15 @@ TEST_F(StorageAccessHeaderURLRequestTest, RedirectPrioritizesRetryHeader) {
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
+  req->set_storage_access_status(
+      StorageAccessStatusCache(cookie_util::StorageAccessStatus::kInactive));
 
   req->Start();
   d.RunUntilRedirect();
 
   EXPECT_EQ(req->url().path(), kStorageAccessRetryPath);
-  req->set_storage_access_status(cookie_util::StorageAccessStatus::kActive);
+  req->set_storage_access_status(
+      StorageAccessStatusCache(cookie_util::StorageAccessStatus::kActive));
   req->FollowDeferredRedirect(/*removed_headers=*/{}, /*modified_headers=*/{});
 
   d.RunUntilComplete();
@@ -13931,7 +13935,8 @@ TEST_F(StorageAccessHeaderURLRequestTest, AuthChallengeIgnoresRetryHeader) {
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
+  req->set_storage_access_status(
+      StorageAccessStatusCache(cookie_util::StorageAccessStatus::kInactive));
 
   req->Start();
   d.RunUntilComplete();
@@ -13975,7 +13980,8 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
+  req->set_storage_access_status(
+      StorageAccessStatusCache(cookie_util::StorageAccessStatus::kInactive));
 
   req->Start();
   d.RunUntilComplete();
@@ -14013,7 +14019,8 @@ TEST_F(StorageAccessHeaderURLRequestTest, SurvivesPostAuthRetries) {
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
+  req->set_storage_access_status(
+      StorageAccessStatusCache(cookie_util::StorageAccessStatus::kInactive));
 
   req->Start();
   d.RunUntilComplete();

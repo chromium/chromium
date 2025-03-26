@@ -56,11 +56,12 @@ void TabGroupSyncCoordinatorImpl::InitializeTabGroupSync() {
   }
 }
 
-void TabGroupSyncCoordinatorImpl::HandleOpenTabGroupRequest(
+std::optional<LocalTabGroupID>
+TabGroupSyncCoordinatorImpl::HandleOpenTabGroupRequest(
     const base::Uuid& sync_tab_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
-  platform_delegate_->HandleOpenTabGroupRequest(sync_tab_group_id,
-                                                std::move(context));
+  return platform_delegate_->HandleOpenTabGroupRequest(sync_tab_group_id,
+                                                       std::move(context));
 }
 
 void TabGroupSyncCoordinatorImpl::ConnectLocalTabGroup(

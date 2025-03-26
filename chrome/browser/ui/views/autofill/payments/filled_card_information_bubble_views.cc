@@ -109,17 +109,19 @@ void FilledCardInformationBubbleViews::Init() {
     explanation_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
     explanation_label->SetText(explanation);
 
-    views::StyledLabel::RangeStyleInfo style_info =
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &FilledCardInformationBubbleViews::LearnMoreLinkClicked,
-            weak_ptr_factory_.GetWeakPtr()));
+    if (controller_->EducationalBodyHasLearnMoreLink()) {
+      views::StyledLabel::RangeStyleInfo style_info =
+          views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+              &FilledCardInformationBubbleViews::LearnMoreLinkClicked,
+              weak_ptr_factory_.GetWeakPtr()));
 
-    uint32_t offset =
-        explanation.length() - controller_->GetLearnMoreLinkText().length();
-    explanation_label->AddStyleRange(
-        gfx::Range(offset,
-                   offset + controller_->GetLearnMoreLinkText().length()),
-        style_info);
+      uint32_t offset =
+          explanation.length() - controller_->GetLearnMoreLinkText().length();
+      explanation_label->AddStyleRange(
+          gfx::Range(offset,
+                     offset + controller_->GetLearnMoreLinkText().length()),
+          style_info);
+    }
   }
 
   AddCardDetailButtons(this);
@@ -131,8 +133,11 @@ void FilledCardInformationBubbleViews::AddedToWidget() {
         std::make_unique<TitleWithIconAfterLabelView>(
             GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
   } else {
-    GetBubbleFrameView()->SetTitleView(std::make_unique<views::Label>(
-        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE));
+    auto title_view = std::make_unique<views::Label>(
+        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
+    title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    title_view->SetMultiLine(true);
+    GetBubbleFrameView()->SetTitleView(std::move(title_view));
   }
 }
 

@@ -38,7 +38,7 @@ enum class BackgroundManifestType {
 };
 
 base::FilePath kBackgroundScriptPath(FILE_PATH_LITERAL("foo/bg.txt"));
-base::FilePath kContentScriptPath(FILE_PATH_LITERAL("foo/content.txt"));
+base::FilePath kContentScriptPath(FILE_PATH_LITERAL("foo/content.js"));
 base::FilePath kBackgroundPagePath(FILE_PATH_LITERAL("foo/page.txt"));
 base::FilePath kScriptFilePath(FILE_PATH_LITERAL("bar/code.js"));
 base::FilePath kUnknownTypeFilePath(FILE_PATH_LITERAL("bar/code.txt"));

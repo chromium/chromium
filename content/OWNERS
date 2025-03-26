@@ -13,7 +13,6 @@ set noparent
 # NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 alexmos@chromium.org
-altimin@chromium.org
 arthursonzogni@chromium.org
 avi@chromium.org
 clamy@chromium.org

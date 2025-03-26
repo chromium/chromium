@@ -29,15 +29,15 @@
     'chrome': {
       # Don't include unwind tables for linux-/mac-/win-/win64-chrome builders.
       # They monitor binary size growth, which may be affected by the tables.
-      'linux-chrome': 'official_reclient',
-      'mac-chrome': 'official_reclient_mac_x64',
-      'win-branded-rel': 'chrome_branded_reclient_minimal_symbols',
-      'win-chrome': 'official_reclient_x86',
-      'win64-chrome': 'official_reclient_x64',
+      'linux-chrome': 'official_remoteexec',
+      'mac-chrome': 'official_remoteexec_mac_x64',
+      'win-branded-rel': 'chrome_branded_remoteexec_minimal_symbols',
+      'win-chrome': 'official_remoteexec_x86',
+      'win64-chrome': 'official_remoteexec_x64',
     },
 
     'chrome.gpu.fyi': {
-      'ChromeOS FYI Release Skylab (jacuzzi)': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab',
+      'ChromeOS FYI Release Skylab (jacuzzi)': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_remoteexec_skylab',
     },
 
     'chrome.orderfile': {
@@ -64,37 +64,37 @@
     },
 
     'chromium.infra.codesearch': {
-      'codesearch-gen-chromium-android': 'codesearch_gen_chromium_android_bot_reclient',
-      'codesearch-gen-chromium-chromiumos': 'codesearch_gen_chromium_chromiumos_bot_reclient',
-      'codesearch-gen-chromium-cronet': 'codesearch_gen_chromium_cronet_bot_reclient',
-      'codesearch-gen-chromium-fuchsia': 'codesearch_gen_chromium_fuchsia_bot_reclient',
-      'codesearch-gen-chromium-ios': 'codesearch_gen_chromium_ios_bot_reclient',
-      'codesearch-gen-chromium-linux': 'codesearch_gen_chromium_bot_reclient',
-      'codesearch-gen-chromium-mac': 'codesearch_gen_chromium_mac_bot_reclient',
-      'codesearch-gen-chromium-webview': 'codesearch_gen_chromium_android_bot_reclient',
-      'codesearch-gen-chromium-win': 'codesearch_gen_chromium_bot_reclient',
+      'codesearch-gen-chromium-android': 'codesearch_gen_chromium_android_bot_remoteexec',
+      'codesearch-gen-chromium-chromiumos': 'codesearch_gen_chromium_chromiumos_bot_remoteexec',
+      'codesearch-gen-chromium-cronet': 'codesearch_gen_chromium_cronet_bot_remoteexec',
+      'codesearch-gen-chromium-fuchsia': 'codesearch_gen_chromium_fuchsia_bot_remoteexec',
+      'codesearch-gen-chromium-ios': 'codesearch_gen_chromium_ios_bot_remoteexec',
+      'codesearch-gen-chromium-linux': 'codesearch_gen_chromium_bot_remoteexec',
+      'codesearch-gen-chromium-mac': 'codesearch_gen_chromium_mac_bot_remoteexec',
+      'codesearch-gen-chromium-webview': 'codesearch_gen_chromium_android_bot_remoteexec',
+      'codesearch-gen-chromium-win': 'codesearch_gen_chromium_bot_remoteexec',
     },
 
     'chromium.perf': {
-      'Android Builder Perf': 'official_reclient_minimal_symbols_android',
+      'Android Builder Perf': 'official_remoteexec_minimal_symbols_android',
       'Android arm64 Builder Perf': 'official_minimal_symbols_android_arm64',
-      'android-builder-perf': 'official_reclient_minimal_symbols_android',
-      'android-builder-perf-pgo': 'official_reclient_minimal_symbols_android_pgo',
+      'android-builder-perf': 'official_remoteexec_minimal_symbols_android',
+      'android-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_pgo',
       'android_arm64-builder-perf': 'official_minimal_symbols_android_arm64',
-      'android_arm64-builder-perf-pgo': 'official_reclient_minimal_symbols_android_arm64_pgo',
-      'android_arm64_high_end-builder-perf': 'official_reclient_minimal_symbols_android_arm64_high_end',
-      'android_arm64_high_end-builder-perf-pgo': 'official_reclient_minimal_symbols_android_arm64_high_end_pgo',
-      'chromecast-linux-builder-perf': 'cast_binary_size_reclient',
+      'android_arm64-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_pgo',
+      'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
+      'android_arm64_high_end-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo',
+      'chromecast-linux-builder-perf': 'cast_binary_size_remoteexec',
       'linux-builder-perf': 'official_linux_perf',
-      'linux-builder-perf-pgo': 'official_reclient_linux_perf_pgo',
+      'linux-builder-perf-pgo': 'official_remoteexec_linux_perf_pgo',
       'linux-builder-perf-rel': 'official_linux_perf',
-      'mac-arm-builder-perf': 'official_reclient_mac_arm_perf',
-      'mac-arm-builder-perf-pgo': 'official_reclient_mac_arm_perf_pgo',
-      'mac-arm-no-brp-builder-perf': 'official_reclient_mac_arm_no_brp_perf',
-      'mac-builder-perf': 'official_reclient_mac_perf',
-      'mac-builder-perf-pgo': 'official_reclient_mac_perf_pgo',
-      'win64-builder-perf': 'official_reclient_perf_win_cross',
-      'win64-builder-perf-pgo': 'official_reclient_perf_pgo',
+      'mac-arm-builder-perf': 'official_remoteexec_mac_arm_perf',
+      'mac-arm-builder-perf-pgo': 'official_remoteexec_mac_arm_perf_pgo',
+      'mac-arm-no-brp-builder-perf': 'official_remoteexec_mac_arm_no_brp_perf',
+      'mac-builder-perf': 'official_remoteexec_mac_perf',
+      'mac-builder-perf-pgo': 'official_remoteexec_mac_perf_pgo',
+      'win64-builder-perf': 'official_remoteexec_perf_win_cross',
+      'win64-builder-perf-pgo': 'official_remoteexec_perf_pgo',
     },
 
     'chromium.perf.calibration': {
@@ -102,33 +102,33 @@
     },
 
     'chromium.perf.fyi': {
-      'android-cfi-builder-perf-fyi': 'official_reclient_minimal_symbols_android_thin_lto_opt',
-      'android_arm64-cfi-builder-perf-fyi': 'official_reclient_minimal_symbols_android_thin_lto_opt_arm64',
-      'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official_reclient',
-      'fuchsia-builder-perf-arm64': 'official_reclient_fuchsia_arm64_perf',
-      'win-arm64-builder-perf': 'official_reclient_perf_win_cross_arm64',
+      'android-cfi-builder-perf-fyi': 'official_remoteexec_minimal_symbols_android_thin_lto_opt',
+      'android_arm64-cfi-builder-perf-fyi': 'official_remoteexec_minimal_symbols_android_thin_lto_opt_arm64',
+      'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official_remoteexec',
+      'fuchsia-builder-perf-arm64': 'official_remoteexec_fuchsia_arm64_perf',
+      'win-arm64-builder-perf': 'official_remoteexec_perf_win_cross_arm64',
     },
 
     'chromium.perf.pinpoint': {
-      'Android Builder Perf': 'official_reclient_minimal_symbols_android',
+      'Android Builder Perf': 'official_remoteexec_minimal_symbols_android',
       'Android arm64 Builder Perf': 'official_minimal_symbols_android_arm64',
-      'android-builder-perf': 'official_reclient_minimal_symbols_android',
-      'android-builder-perf-pgo': 'official_reclient_minimal_symbols_android_pgo',
+      'android-builder-perf': 'official_remoteexec_minimal_symbols_android',
+      'android-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_pgo',
       'android_arm64-builder-perf': 'official_minimal_symbols_android_arm64',
-      'android_arm64-builder-perf-pgo': 'official_reclient_minimal_symbols_android_arm64_pgo',
-      'android_arm64_high_end-builder-perf': 'official_reclient_minimal_symbols_android_arm64_high_end',
-      'android_arm64_high_end-builder-perf-pgo': 'official_reclient_minimal_symbols_android_arm64_high_end_pgo',
-      'chromecast-linux-builder-perf': 'cast_binary_size_reclient',
+      'android_arm64-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_pgo',
+      'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
+      'android_arm64_high_end-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo',
+      'chromecast-linux-builder-perf': 'cast_binary_size_remoteexec',
       'linux-builder-perf': 'official_linux_perf',
-      'linux-builder-perf-pgo': 'official_reclient_linux_perf_pgo',
+      'linux-builder-perf-pgo': 'official_remoteexec_linux_perf_pgo',
       'linux-builder-perf-rel': 'official_linux_perf',
-      'mac-arm-builder-perf': 'official_reclient_mac_arm_perf',
-      'mac-arm-builder-perf-pgo': 'official_reclient_mac_arm_perf_pgo',
-      'mac-builder-perf': 'official_reclient_mac_perf',
-      'mac-builder-perf-pgo': 'official_reclient_mac_perf_pgo',
-      'win-arm64-builder-perf': 'official_reclient_perf_win_cross_arm64',
-      'win64-builder-perf': 'official_reclient_perf_win_cross',
-      'win64-builder-perf-pgo': 'official_reclient_perf_pgo',
+      'mac-arm-builder-perf': 'official_remoteexec_mac_arm_perf',
+      'mac-arm-builder-perf-pgo': 'official_remoteexec_mac_arm_perf_pgo',
+      'mac-builder-perf': 'official_remoteexec_mac_perf',
+      'mac-builder-perf-pgo': 'official_remoteexec_mac_perf_pgo',
+      'win-arm64-builder-perf': 'official_remoteexec_perf_win_cross_arm64',
+      'win64-builder-perf': 'official_remoteexec_perf_win_cross',
+      'win64-builder-perf-pgo': 'official_remoteexec_perf_pgo',
     },
 
     'client.devtools-frontend.integration': {
@@ -137,41 +137,40 @@
     },
 
     'client.openscreen.chromium': {
-      'chromium_linux_x64': 'debug_bot_reclient',
-      'chromium_mac_x64': 'debug_bot_reclient',
-      'chromium_win_x64': 'debug_bot_reclient',
+      'chromium_linux_x64': 'debug_bot_remoteexec',
+      'chromium_mac_x64': 'debug_bot_remoteexec',
+      'chromium_win_x64': 'debug_bot_remoteexec',
     },
 
     'client.v8.chromium': {
-      'Linux V8 API Stability': 'release_bot_reclient',
+      'Linux V8 API Stability': 'release_bot_remoteexec',
     },
 
     'client.v8.fyi': {
-      'Android V8 FYI Release': 'gpu_tests_android_release_trybot_arm64_reclient',
-      'Linux ASAN Builder': 'asan_lsan_release_trybot_reclient',
+      'Android V8 FYI Release': 'gpu_tests_android_release_trybot_arm64_remoteexec',
+      'Linux ASAN Builder': 'asan_lsan_release_trybot_remoteexec',
       'Linux Debug Builder': 'debug_bot_blink',
-      'Linux V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'Linux V8 FYI Release - pointer compression (NVIDIA)': 'gpu_tests_release_trybot_ptr_comp_reclient',
-      'Mac V8 FYI Release (Intel)': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'V8 Android GN (dbg)': 'android_debug_bot_reclient',
+      'Linux V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbols_remoteexec',
+      'Linux V8 FYI Release - pointer compression (NVIDIA)': 'gpu_tests_release_trybot_ptr_comp_remoteexec',
+      'Mac V8 FYI Release (Intel)': 'gpu_tests_release_trybot_minimal_symbols_remoteexec',
+      'V8 Android GN (dbg)': 'android_debug_bot_remoteexec',
       'V8 Blink Linux': 'release_bot_blink',
-      'V8 Blink Linux Debug': 'release_bot_blink_v8_debug_reclient',
+      'V8 Blink Linux Debug': 'release_bot_blink_v8_debug_remoteexec',
       'V8 Blink Linux Future': 'release_bot_blink',
       'V8 Blink Mac': 'release_bot_blink',
       'V8 Blink Win': 'release_bot_blink',
-      'V8 Linux GN': 'release_bot_reclient_siso',
-      'Win V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient',
+      'V8 Linux GN': 'release_bot_remoteexec_siso',
+      'Win V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_remoteexec',
     },
 
     'internal.chrome.fyi': {
-      'android-buildspeed-dbg': 'android_debug_bot_reclient_fastbuild',
-      'android-emulator-finch-smoke-chrome': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient',
-      'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
-      'linux-finch-smoke-chrome': 'official_reclient',
-      'lorenz-graph-dbg': 'android_debug_bot_reclient_external_fastbuild',
-      'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
+      'android-buildspeed-dbg': 'android_debug_bot_remoteexec_fastbuild',
+      'android-emulator-finch-smoke-chrome': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_remoteexec',
+      'linux-finch-smoke-chrome': 'official_remoteexec',
+      'lorenz-graph-dbg': 'android_debug_bot_remoteexec_external_fastbuild',
+      'mac-arm64-finch-smoke-chrome': 'official_remoteexec_mac_arm',
       'win-celab-rel': 'official_celab_release_bot',
-      'win-finch-smoke-chrome': 'official_reclient',
+      'win-finch-smoke-chrome': 'official_remoteexec',
     },
 
     'internal.optimization_guide': {
@@ -199,8 +198,8 @@
 
     # Internal codesearch builders.
     'luci.infra-internal.codesearch': {
-      'codesearch-gen-chrome-internal-android': 'codesearch_gen_chrome_android_bot_reclient',
-      'codesearch-gen-chrome-internal-linux': 'codesearch_gen_chrome_bot_reclient',
+      'codesearch-gen-chrome-internal-android': 'codesearch_gen_chrome_android_bot_remoteexec',
+      'codesearch-gen-chrome-internal-linux': 'codesearch_gen_chrome_bot_remoteexec',
     },
 
     'official.chrome': {
@@ -209,19 +208,19 @@
     },
 
     'tryserver.chrome': {
-      'linux-chrome': 'official_reclient',
-      'linux-finch-smoke-chrome': 'official_reclient',
-      'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
-      'mac-chrome': 'official_reclient_mac_x64',
-      'win-branded-compile-rel': 'chrome_branded_reclient_minimal_symbols',
+      'linux-chrome': 'official_remoteexec',
+      'linux-finch-smoke-chrome': 'official_remoteexec',
+      'mac-arm64-finch-smoke-chrome': 'official_remoteexec_mac_arm',
+      'mac-chrome': 'official_remoteexec_mac_x64',
+      'win-branded-compile-rel': 'chrome_branded_remoteexec_minimal_symbols',
       'win-celab-try-rel': 'official_celab_release_bot',
-      'win-chrome': 'official_reclient_x86',
-      'win-finch-smoke-chrome': 'official_reclient',
-      'win64-chrome': 'official_reclient_x64',
+      'win-chrome': 'official_remoteexec_x86',
+      'win-finch-smoke-chrome': 'official_remoteexec',
+      'win64-chrome': 'official_remoteexec_x64',
     },
 
     'tryserver.chrome.gpu': {
-      'gpu-fyi-try-chromeos-skylab-jacuzzi': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab',
+      'gpu-fyi-try-chromeos-skylab-jacuzzi': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_remoteexec_skylab',
     },
 
     'tryserver.chrome.orderfile': {
@@ -253,10 +252,10 @@
     },
 
     'tryserver.internal.chrome.fyi': {
-      'android-emulator-finch-smoke-chrome': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient',
-      'linux-finch-smoke-chrome': 'official_reclient',
-      'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
-      'win-finch-smoke-chrome': 'official_reclient',
+      'android-emulator-finch-smoke-chrome': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_remoteexec',
+      'linux-finch-smoke-chrome': 'official_remoteexec',
+      'mac-arm64-finch-smoke-chrome': 'official_remoteexec_mac_arm',
+      'win-finch-smoke-chrome': 'official_remoteexec',
     },
 
     'tryserver.internal.optimization_guide': {
@@ -282,17 +281,17 @@
 
     'tryserver.v8': {
       'v8_linux_blink_rel': 'release_trybot_blink_siso',
-      'v8_linux_chromium_gn_rel': 'release_trybot_reclient_siso',
+      'v8_linux_chromium_gn_rel': 'release_trybot_remoteexec_siso',
     },
 
     'tryserver.webrtc': {
-      'android_chromium_compile': 'android_release_trybot_reclient',
-      'linux_chromium_compile': 'release_trybot_reclient',
-      'linux_chromium_compile_dbg': 'debug_bot_reclient',
-      'mac_chromium_compile': 'gpu_tests_release_trybot_reclient',
+      'android_chromium_compile': 'android_release_trybot_remoteexec',
+      'linux_chromium_compile': 'release_trybot_remoteexec',
+      'linux_chromium_compile_dbg': 'debug_bot_remoteexec',
+      'mac_chromium_compile': 'gpu_tests_release_trybot_remoteexec',
       'webrtc_linux_chromium': 'release_trybot_blink',
-      'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting_reclient',
-      'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
+      'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting_remoteexec',
+      'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols_remoteexec',
     },
   },
 
@@ -302,46 +301,42 @@
   # we must support. A given config *may* be platform-specific but
   # is not necessarily so.
   'configs': {
-    'android_debug_bot_reclient': [
-      'android', 'debug_bot_reclient', 'use_siso',
+    'android_debug_bot_remoteexec': [
+      'android', 'debug_bot_remoteexec', 'use_siso',
     ],
 
-    'android_debug_bot_reclient_external_fastbuild': [
-      'android', 'debug_bot_reclient', 'android_external', 'android_fastbuild',
+    'android_debug_bot_remoteexec_external_fastbuild': [
+      'android', 'debug_bot_remoteexec', 'android_external', 'android_fastbuild',
     ],
 
-    'android_debug_bot_reclient_fastbuild': [
-      'android', 'debug_bot_reclient', 'android_fastbuild',
+    'android_debug_bot_remoteexec_fastbuild': [
+      'android', 'debug_bot_remoteexec', 'android_fastbuild',
     ],
 
-    'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient': [
-      'android', 'release_bot_reclient', 'minimal_symbols', 'x86',
+    'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_remoteexec': [
+      'android', 'release_bot_remoteexec', 'minimal_symbols', 'x86',
       'strip_debug_info', 'android_fastbuild', 'webview_trichrome',
       'webview_shell',
     ],
 
-    'android_release_trybot_reclient': [
-      'android', 'release_trybot_reclient', 'strip_debug_info',
+    'android_release_trybot_remoteexec': [
+      'android', 'release_trybot_remoteexec', 'strip_debug_info',
     ],
 
-    'asan_lsan_release_trybot_reclient': [
-      'asan', 'lsan', 'release_trybot_minimal_symbols_reclient', 'use_siso'
+    'asan_lsan_release_trybot_remoteexec': [
+      'asan', 'lsan', 'release_trybot_minimal_symbols_remoteexec', 'use_siso'
     ],
 
-    'cast_binary_size_reclient': [
-      'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot_reclient',
+    'cast_binary_size_remoteexec': [
+      'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot_remoteexec',
     ],
 
-    'chrome_branded_reclient_minimal_symbols': [
-      'chrome_branded', 'minimal_symbols', 'release_bot_reclient',
+    'chrome_branded_remoteexec_minimal_symbols': [
+      'chrome_branded', 'minimal_symbols', 'release_bot_remoteexec',
     ],
 
-    'chromeos_arm-generic_cfi_thin_lto_official_reclient': [
-      'chromeos_device_reclient', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols', 'ozone_headless'
-    ],
-
-    'chromeos_kevin_include_unwind_tables_official_reclient': [
-      'chromeos_kevin_reclient', 'include_unwind_tables', 'official',
+    'chromeos_kevin_include_unwind_tables_official_remoteexec': [
+      'chromeos_kevin_remoteexec', 'include_unwind_tables', 'official',
     ],
 
     'clang_tot_official': [
@@ -356,82 +351,82 @@
       'clang_tot', 'official', 'full_symbols', 'static', 'x86', 'win_linker_timing',
     ],
 
-    'codesearch_gen_chrome_android_bot_reclient': [
-      'codesearch_reclient', 'android_without_codecs', 'static', 'chrome_branded',
+    'codesearch_gen_chrome_android_bot_remoteexec': [
+      'codesearch_remoteexec', 'android_without_codecs', 'static', 'chrome_branded',
     ],
 
-    'codesearch_gen_chrome_bot_reclient': [
-      'codesearch_reclient', 'chrome_branded',
+    'codesearch_gen_chrome_bot_remoteexec': [
+      'codesearch_remoteexec', 'chrome_branded',
     ],
 
-    'codesearch_gen_chromium_android_bot_reclient': [
-      'codesearch_reclient', 'android_without_codecs', 'static',
+    'codesearch_gen_chromium_android_bot_remoteexec': [
+      'codesearch_remoteexec', 'android_without_codecs', 'static',
     ],
 
-    'codesearch_gen_chromium_bot_reclient': [
-      'codesearch_reclient',
+    'codesearch_gen_chromium_bot_remoteexec': [
+      'codesearch_remoteexec',
     ],
 
-    'codesearch_gen_chromium_chromiumos_bot_reclient': [
-      'codesearch_reclient', 'chromeos', 'use_cups',
+    'codesearch_gen_chromium_chromiumos_bot_remoteexec': [
+      'codesearch_remoteexec', 'chromeos', 'use_cups',
     ],
 
-    'codesearch_gen_chromium_cronet_bot_reclient': [
+    'codesearch_gen_chromium_cronet_bot_remoteexec': [
       # Set is_cronet_build to true in order to build cronet.
-      'codesearch_cronet_reclient', 'android_without_codecs', 'static', 'is_cronet_build',
+      'codesearch_cronet_remoteexec', 'android_without_codecs', 'static', 'is_cronet_build',
       'cronet_android', 'arm_no_neon',
     ],
 
-    'codesearch_gen_chromium_fuchsia_bot_reclient': [
-      'codesearch_release_reclient', 'fuchsia', 'cast_receiver',
+    'codesearch_gen_chromium_fuchsia_bot_remoteexec': [
+      'codesearch_release_remoteexec', 'fuchsia', 'cast_receiver',
     ],
 
-    'codesearch_gen_chromium_ios_bot_reclient': [
-      'codesearch_ios_reclient', 'ios', 'ios_device', 'ios_disable_code_signing'
+    'codesearch_gen_chromium_ios_bot_remoteexec': [
+      'codesearch_ios_remoteexec', 'ios', 'ios_device', 'ios_disable_code_signing'
     ],
 
-    'codesearch_gen_chromium_mac_bot_reclient': [
-      'codesearch_reclient', 'mac',
+    'codesearch_gen_chromium_mac_bot_remoteexec': [
+      'codesearch_remoteexec', 'mac',
     ],
 
     'debug_bot_blink': [
       'debug_bot_blink', 'use_siso',
     ],
 
-    'debug_bot_reclient': [
-      'debug_bot_reclient',
+    'debug_bot_remoteexec': [
+      'debug_bot_remoteexec',
     ],
 
-    'gpu_tests_android_release_trybot_arm64_reclient': [
-      'gpu_tests', 'android', 'release_trybot_minimal_symbols_reclient', 'arm64', 'static_angle', 'use_siso',
+    'gpu_tests_android_release_trybot_arm64_remoteexec': [
+      'gpu_tests', 'android', 'release_trybot_minimal_symbols_remoteexec', 'arm64', 'static_angle', 'use_siso',
     ],
 
-    'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab': [
-      'gpu_tests', 'chromeos_jacuzzi_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols', 'is_skylab',
+    'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_remoteexec_skylab': [
+      'gpu_tests', 'chromeos_jacuzzi_remoteexec', 'release_trybot_dcheck_off_remoteexec', 'no_symbols', 'is_skylab',
     ],
 
-    'gpu_tests_debug_bot_x86_no_symbols_reclient': [
-      'gpu_tests', 'debug_bot_reclient', 'x86', 'no_symbols'
+    'gpu_tests_debug_bot_x86_no_symbols_remoteexec': [
+      'gpu_tests', 'debug_bot_remoteexec', 'x86', 'no_symbols'
     ],
 
-    'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient': [
-      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'x86', 'resource_allowlisting', 'use_siso',
+    'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_remoteexec': [
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'x86', 'resource_allowlisting', 'use_siso',
     ],
 
-    'gpu_tests_release_trybot_minimal_symbols_reclient': [
-      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'use_siso',
+    'gpu_tests_release_trybot_minimal_symbols_remoteexec': [
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'use_siso',
     ],
 
-    'gpu_tests_release_trybot_ptr_comp_reclient': [
-      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'v8_pointer_compression', 'use_siso',
+    'gpu_tests_release_trybot_ptr_comp_remoteexec': [
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'v8_pointer_compression', 'use_siso',
     ],
 
-    'gpu_tests_release_trybot_reclient': [
-      'gpu_tests', 'release_trybot_reclient',
+    'gpu_tests_release_trybot_remoteexec': [
+      'gpu_tests', 'release_trybot_remoteexec',
     ],
 
-    'gpu_tests_release_trybot_resource_allowlisting_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting',
+    'gpu_tests_release_trybot_resource_allowlisting_remoteexec': [
+      'gpu_tests', 'release_trybot_remoteexec', 'resource_allowlisting',
     ],
 
     'mac_clang_tot_official': [
@@ -439,23 +434,23 @@
     ],
 
     'official_android_arm32_orderfile': [
-      'official', 'reclient', 'android', 'android_external', 'arm', 'minimal_symbols', 'orderfile',
+      'official', 'remoteexec', 'android', 'android_external', 'arm', 'minimal_symbols', 'orderfile',
     ],
 
     'official_android_arm32_pgo': [
-      'official', 'reclient', 'android', 'android_external', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
+      'official', 'remoteexec', 'android', 'android_external', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
     ],
 
     'official_android_arm64_orderfile': [
-      'official', 'reclient', 'android', 'android_external', 'arm64', 'minimal_symbols', 'orderfile',
+      'official', 'remoteexec', 'android', 'android_external', 'arm64', 'minimal_symbols', 'orderfile',
     ],
 
     'official_android_arm64_pgo': [
-      'official', 'reclient', 'android', 'android_external', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
+      'official', 'remoteexec', 'android', 'android_external', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
     ],
 
     'official_celab_release_bot': [
-      'official', 'release_bot_reclient', 'minimal_symbols',
+      'official', 'release_bot_remoteexec', 'minimal_symbols',
     ],
 
     'official_fuchsia_arm64': [
@@ -467,192 +462,192 @@
     ],
 
     'official_linux_perf': [
-      'official', 'reclient', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0',
+      'official', 'remoteexec', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0',
     ],
 
     'official_linux_pgo': [
-      'official', 'reclient', 'no_symbols', 'pgo_phase_1', 'release'
+      'official', 'remoteexec', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_linux_pgo_with_symbols': [
-      'official', 'reclient', 'minimal_symbols', 'pgo_phase_1', 'release'
+      'official', 'remoteexec', 'minimal_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_mac_arm_pgo_with_symbols': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
+      'official', 'remoteexec', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
     ],
 
     'official_mac_pgo_with_symbols': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'x64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
+      'official', 'remoteexec', 'no_widevine_cdm_host_verification', 'x64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release', 'disable_stripping'
     ],
 
     'official_minimal_symbols_android_arm64': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'android_low_end',
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'android_low_end',
     ],
 
-    'official_reclient': [
-      'official', 'reclient',
+    'official_remoteexec': [
+      'official', 'remoteexec',
     ],
 
-    'official_reclient_fuchsia_arm64_perf': [
-      'cast_receiver_size_optimized_internal', 'official', 'reclient', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'release', 'test_isolate_no_emulator',
+    'official_remoteexec_fuchsia_arm64_perf': [
+      'cast_receiver_size_optimized_internal', 'official', 'remoteexec', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'release', 'test_isolate_no_emulator',
     ],
 
-    'official_reclient_linux_perf_pgo': [
-      'official', 'reclient', 'no_gnome_keyring', 'minimal_symbols',
+    'official_remoteexec_linux_perf_pgo': [
+      'official', 'remoteexec', 'no_gnome_keyring', 'minimal_symbols',
     ],
 
-    'official_reclient_mac_arm': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64',
+    'official_remoteexec_mac_arm': [
+      'official', 'remoteexec', 'no_widevine_cdm_host_verification', 'arm64',
     ],
 
-    'official_reclient_mac_arm_no_brp_perf': [
-      'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64', 'pgo_phase_0', 'no_brp',
+    'official_remoteexec_mac_arm_no_brp_perf': [
+      'official', 'remoteexec', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64', 'pgo_phase_0', 'no_brp',
     ],
 
-    'official_reclient_mac_arm_perf': [
-      'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64', 'pgo_phase_0',
+    'official_remoteexec_mac_arm_perf': [
+      'official', 'remoteexec', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64', 'pgo_phase_0',
     ],
 
-    'official_reclient_mac_arm_perf_pgo': [
-      'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64',
+    'official_remoteexec_mac_arm_perf_pgo': [
+      'official', 'remoteexec', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64',
     ],
 
-    'official_reclient_mac_perf': [
-      'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'pgo_phase_0',
+    'official_remoteexec_mac_perf': [
+      'official', 'remoteexec', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'pgo_phase_0',
     ],
 
-    'official_reclient_mac_perf_pgo': [
-      'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols',
+    'official_remoteexec_mac_perf_pgo': [
+      'official', 'remoteexec', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols',
     ],
 
-    'official_reclient_mac_x64': [
-      'official', 'reclient', 'x64', 'no_widevine_cdm_host_verification',
+    'official_remoteexec_mac_x64': [
+      'official', 'remoteexec', 'x64', 'no_widevine_cdm_host_verification',
     ],
 
-    'official_reclient_minimal_symbols_android': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo'
+    'official_remoteexec_minimal_symbols_android': [
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo'
     ],
 
-    'official_reclient_minimal_symbols_android_arm64_high_end': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo',
+    'official_remoteexec_minimal_symbols_android_arm64_high_end': [
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo',
     ],
 
-    'official_reclient_minimal_symbols_android_arm64_high_end_pgo': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo',
+    'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo': [
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo',
     ],
 
-    'official_reclient_minimal_symbols_android_arm64_pgo': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'android_low_end',
+    'official_remoteexec_minimal_symbols_android_arm64_pgo': [
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'android_low_end',
     ],
 
-    'official_reclient_minimal_symbols_android_pgo': [
-      'official', 'reclient', 'minimal_symbols', 'android'
+    'official_remoteexec_minimal_symbols_android_pgo': [
+      'official', 'remoteexec', 'minimal_symbols', 'android'
     ],
 
-    'official_reclient_minimal_symbols_android_thin_lto_opt': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'thin_lto_opt', 'no_default_afdo'
+    'official_remoteexec_minimal_symbols_android_thin_lto_opt': [
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'thin_lto_opt', 'no_default_afdo'
     ],
 
-    'official_reclient_minimal_symbols_android_thin_lto_opt_arm64': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'thin_lto_opt', 'arm64', 'no_default_afdo'
+    'official_remoteexec_minimal_symbols_android_thin_lto_opt_arm64': [
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'thin_lto_opt', 'arm64', 'no_default_afdo'
     ],
 
-    'official_reclient_perf_pgo': [
-      'official', 'reclient', 'minimal_symbols',
+    'official_remoteexec_perf_pgo': [
+      'official', 'remoteexec', 'minimal_symbols',
     ],
 
-    'official_reclient_perf_win_cross': [
-      'official', 'reclient_win_cross', 'minimal_symbols', 'pgo_phase_0',
+    'official_remoteexec_perf_win_cross': [
+      'official', 'remoteexec_win_cross', 'minimal_symbols', 'pgo_phase_0',
     ],
 
-    'official_reclient_perf_win_cross_arm64': [
-      'official', 'reclient_win_cross', 'arm64', 'minimal_symbols', 'pgo_phase_0',
+    'official_remoteexec_perf_win_cross_arm64': [
+      'official', 'remoteexec_win_cross', 'arm64', 'minimal_symbols', 'pgo_phase_0',
     ],
 
-    'official_reclient_x64': [
-      'official', 'reclient', 'x64', 'minimal_symbols',
+    'official_remoteexec_x64': [
+      'official', 'remoteexec', 'x64', 'minimal_symbols',
     ],
 
-    'official_reclient_x86': [
-      'official', 'reclient', 'x86', 'minimal_symbols',
+    'official_remoteexec_x86': [
+      'official', 'remoteexec', 'x86', 'minimal_symbols',
     ],
 
     'official_win_arm64_pgo': [
-      'official', 'reclient', 'arm64', 'no_symbols', 'pgo_phase_1', 'release'
+      'official', 'remoteexec', 'arm64', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_win_arm64_pgo_with_symbols': [
-      'official', 'reclient', 'arm64', 'minimal_symbols', 'pgo_phase_1', 'release'
+      'official', 'remoteexec', 'arm64', 'minimal_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_x64_pgo': [
-      'official', 'reclient', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
+      'official', 'remoteexec', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_x64_pgo_with_symbols': [
-      'official', 'reclient', 'x64', 'minimal_symbols', 'pgo_phase_1', 'release'
+      'official', 'remoteexec', 'x64', 'minimal_symbols', 'pgo_phase_1', 'release'
     ],
 
 
     'official_x86_pgo': [
-      'official', 'reclient', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
+      'official', 'remoteexec', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_x86_pgo_with_symbols': [
-      'official', 'reclient', 'x86', 'minimal_symbols', 'pgo_phase_1', 'release'
+      'official', 'remoteexec', 'x86', 'minimal_symbols', 'pgo_phase_1', 'release'
     ],
 
 
     'optimization_guide_android_arm64_rel': [
-      'minimal_symbols', 'reclient', 'release', 'android', 'arm64',
+      'minimal_symbols', 'remoteexec', 'release', 'android', 'arm64',
     ],
 
     'optimization_guide_cros_rel': [
-      'minimal_symbols', 'optimization_guide', 'reclient', 'release', 'chromeos',
+      'minimal_symbols', 'optimization_guide', 'remoteexec', 'release', 'chromeos',
     ],
     'optimization_guide_ios_device_rel': [
-      'arm64', 'codesigning_identity', 'ios', 'ios_default_args', 'ios_device', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'xctest',
+      'arm64', 'codesigning_identity', 'ios', 'ios_default_args', 'ios_device', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'remoteexec', 'release', 'xctest',
     ],
 
     'optimization_guide_ios_sim_rel': [
-      'arm64', 'codesigning_identity', 'ios', 'ios_default_args', 'ios_simulator', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'xctest',
+      'arm64', 'codesigning_identity', 'ios', 'ios_default_args', 'ios_simulator', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'remoteexec', 'release', 'xctest',
     ],
 
     'optimization_guide_mac_arm64_rel': [
-      'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'arm64',
+      'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'remoteexec', 'release', 'arm64',
     ],
 
     'optimization_guide_official_rel': [
-      'minimal_symbols', 'ml_internal', 'no_widevine_cdm_host_verification', 'official', 'optimization_guide', 'pgo_phase_0', 'reclient', 'release',
+      'minimal_symbols', 'ml_internal', 'no_widevine_cdm_host_verification', 'official', 'optimization_guide', 'pgo_phase_0', 'remoteexec', 'release',
     ],
 
     'optimization_guide_rel': [
-      'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release',
+      'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'remoteexec', 'release',
     ],
 
     'optimization_guide_win_arm64_rel': [
-      'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'x86', 'arm64'
+      'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'remoteexec', 'release', 'x86', 'arm64'
     ],
 
     'optimization_guide_x86_rel': [
-      'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'reclient', 'release', 'x86',
+      'chrome_branded', 'minimal_symbols', 'ml_internal', 'optimization_guide', 'remoteexec', 'release', 'x86',
     ],
 
     'release_bot_blink': [
       'release_bot_blink', 'use_siso',
     ],
 
-    'release_bot_blink_v8_debug_reclient': [
+    'release_bot_blink_v8_debug_remoteexec': [
       'release_bot_blink', 'v8_enable_debugging_features', 'use_siso',
     ],
 
-    'release_bot_reclient': [
-      'release_bot_reclient',
+    'release_bot_remoteexec': [
+      'release_bot_remoteexec',
     ],
 
-    'release_bot_reclient_siso': [
-      'release_bot_reclient', 'use_siso',
+    'release_bot_remoteexec_siso': [
+      'release_bot_remoteexec', 'use_siso',
     ],
 
     'release_trybot_blink': [
@@ -667,12 +662,12 @@
       'release_trybot_blink', 'use_siso',
     ],
 
-    'release_trybot_reclient': [
-      'release_trybot_reclient',
+    'release_trybot_remoteexec': [
+      'release_trybot_remoteexec',
     ],
 
-    'release_trybot_reclient_siso': [
-      'release_trybot_reclient', 'use_siso',
+    'release_trybot_remoteexec_siso': [
+      'release_trybot_remoteexec', 'use_siso',
     ],
   },
 
@@ -713,10 +708,6 @@
       'gn_args': 'target_cpu="arm"',
     },
 
-    'arm-generic': {
-      'args_file': '//build/args/chromeos/arm-generic.gni',
-    },
-
     'arm64': {
       'gn_args': 'target_cpu="arm64"',
     },
@@ -750,15 +741,6 @@
       'args_file': '//build/config/fuchsia/size_optimized_cast_receiver_args_internal.gn',
     },
 
-    'cfi': {
-      'gn_args': 'is_cfi=true',
-    },
-
-    'cfi_full': {
-      'mixins': ['cfi'],
-      'gn_args': 'use_cfi_cast=true',
-    },
-
     'chrome_branded': {
       'gn_args': 'is_chrome_branded=true'
     },
@@ -771,17 +753,17 @@
       'gn_args': 'target_os="chromeos"',
     },
 
-    'chromeos_device_reclient': {
+    'chromeos_device_remoteexec': {
       'gn_args': 'is_chromeos_device=true',
-      'mixins': ['dcheck_off', 'reclient'],
+      'mixins': ['dcheck_off', 'remoteexec'],
     },
 
-    'chromeos_jacuzzi_reclient': {
-      'mixins': ['chromeos_device_reclient', 'jacuzzi', 'ozone_headless']
+    'chromeos_jacuzzi_remoteexec': {
+      'mixins': ['chromeos_device_remoteexec', 'jacuzzi', 'ozone_headless']
     },
 
-    'chromeos_kevin_reclient': {
-      'mixins': ['chromeos_device_reclient', 'kevin', 'ozone_headless']
+    'chromeos_kevin_remoteexec': {
+      'mixins': ['chromeos_device_remoteexec', 'kevin', 'ozone_headless']
     },
 
     'clang': {
@@ -794,28 +776,28 @@
     },
 
     # Same as regulary codesearch without blink_enable_generated_code_formatting
-    'codesearch_cronet_reclient': {
+    'codesearch_cronet_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['reclient', 'clang', 'shared', 'debug', 'minimal_symbols'],
+      'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols'],
     },
 
     # Same as regular codesearch except ios does not allow component builds
-    'codesearch_ios_reclient': {
+    'codesearch_ios_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['reclient', 'clang', 'debug', 'minimal_symbols',
+      'mixins': ['remoteexec', 'clang', 'debug', 'minimal_symbols',
+                 'blink_enable_generated_code_formatting'],
+    },
+
+    'codesearch_release_remoteexec': {
+      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
+      'mixins': ['release', 'static', 'remoteexec',
                  'blink_enable_generated_code_formatting'],
     },
 
     # Settings used by the codesearch builders to generate cross-references.
-    'codesearch_reclient': {
+    'codesearch_remoteexec': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['reclient', 'clang', 'shared', 'debug', 'minimal_symbols',
-                 'blink_enable_generated_code_formatting'],
-    },
-
-    'codesearch_release_reclient': {
-      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['release', 'static', 'reclient',
+      'mixins': ['remoteexec', 'clang', 'shared', 'debug', 'minimal_symbols',
                  'blink_enable_generated_code_formatting'],
     },
 
@@ -863,11 +845,11 @@
     },
 
     'debug_bot_blink': {
-      'mixins': ['debug', 'shared', 'reclient', 'minimal_symbols', 'chrome_with_codecs'],
+      'mixins': ['debug', 'shared', 'remoteexec', 'minimal_symbols', 'chrome_with_codecs'],
     },
 
-    'debug_bot_reclient': {
-      'mixins': ['debug', 'shared', 'reclient', 'minimal_symbols'],
+    'debug_bot_remoteexec': {
+      'mixins': ['debug', 'shared', 'remoteexec', 'minimal_symbols'],
     },
 
     # Representative GN args for developer builds.
@@ -1033,15 +1015,6 @@
       'gn_args': 'proprietary_codecs=true',
     },
 
-    'reclient': {
-      'gn_args': 'use_remoteexec=true',
-    },
-
-    # windows cross. crbug.com/1213717 crbug.com/1407983
-    'reclient_win_cross': {
-      'gn_args': 'use_remoteexec=true reclient_cfg_dir="//buildtools/reclient_cfgs/win-cross"',
-    },
-
     # Historically, a 'release' bot had DCHECKs turned off. DCHECKs are now
     # enabled by default, but explicitly turning them off here preserves
     # backwards compatibility. TODO: We should probably come up with better
@@ -1053,31 +1026,40 @@
     # All bots that run the WPT test suite must have H.264 compiled in,
     # in order to give consistent results for WebRTC codec-dependent tests.
     'release_bot_blink': {
-      'mixins': ['release', 'static', 'reclient', 'chrome_with_codecs'],
+      'mixins': ['release', 'static', 'remoteexec', 'chrome_with_codecs'],
     },
 
-    'release_bot_reclient': {
-      'mixins': ['release', 'static', 'reclient'],
-    },
-
-    'release_trybot_blink': {
-      'mixins': ['release_bot_blink', 'minimal_symbols', 'dcheck_always_on'],
+    'release_bot_remoteexec': {
+      'mixins': ['release', 'static', 'remoteexec'],
     },
 
     'release_trybot_blink': {
       'mixins': ['release_bot_blink', 'minimal_symbols', 'dcheck_always_on'],
     },
 
-    'release_trybot_dcheck_off_reclient': {
-      'mixins': ['release_trybot_reclient', 'dcheck_off'],
+    'release_trybot_blink': {
+      'mixins': ['release_bot_blink', 'minimal_symbols', 'dcheck_always_on'],
     },
 
-    'release_trybot_minimal_symbols_reclient': {
-      'mixins': ['release_bot_reclient', 'minimal_symbols', 'dcheck_always_on'],
+    'release_trybot_dcheck_off_remoteexec': {
+      'mixins': ['release_trybot_remoteexec', 'dcheck_off'],
     },
 
-    'release_trybot_reclient': {
-      'mixins': ['release_bot_reclient', 'no_symbols', 'dcheck_always_on'],
+    'release_trybot_minimal_symbols_remoteexec': {
+      'mixins': ['release_bot_remoteexec', 'minimal_symbols', 'dcheck_always_on'],
+    },
+
+    'release_trybot_remoteexec': {
+      'mixins': ['release_bot_remoteexec', 'no_symbols', 'dcheck_always_on'],
+    },
+
+    'remoteexec': {
+      'gn_args': 'use_remoteexec=true',
+    },
+
+    # windows cross. crbug.com/1213717 crbug.com/1407983
+    'remoteexec_win_cross': {
+      'gn_args': 'use_remoteexec=true reclient_cfg_dir="//buildtools/reclient_cfgs/win-cross"',
     },
 
     'resource_allowlisting': {
@@ -1112,10 +1094,6 @@
 
     'test_isolate_no_emulator': {
       'gn_args': 'test_isolate_uses_emulator=false',
-    },
-
-    'thin_lto': {
-      'gn_args': 'use_thin_lto=true',
     },
 
     'thin_lto_opt': {

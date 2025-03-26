@@ -33,6 +33,7 @@
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/common/content_features.h"
 #include "net/base/data_url.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -584,9 +585,7 @@ void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
   ResetContentChangedEventsCounter();
 
   // Turn off accessibility on the renderer side by resetting the AXMode.
-  BrowserAccessibilityStateImpl* accessibility_state =
-      BrowserAccessibilityStateImpl::GetInstance();
-  accessibility_state->ResetAccessibilityMode();
+  scoped_accessibility_mode_.reset();
 }
 
 void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
@@ -615,6 +614,41 @@ void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
   if (root_manager) {
     root_manager->set_web_contents_accessibility(GetWeakPtr());
   }
+}
+
+void WebContentsAccessibilityAndroid::SetBrowserAXMode(
+    JNIEnv* env,
+    jboolean needs_full_engine,
+    jboolean is_form_controls_candidate,
+    jboolean is_screen_reader_running) {
+  BrowserAccessibilityStateImpl* accessibility_state =
+      BrowserAccessibilityStateImpl::GetInstance();
+  auto* accessibility_state_android =
+      static_cast<BrowserAccessibilityStateImplAndroid*>(accessibility_state);
+  accessibility_state_android->SetScreenReaderAppActive(
+      is_screen_reader_running);
+
+  ui::AXMode target_mode;
+  // Set the AXMode based on currently running services, sent from Java-side
+  // code and will fit into one of the below categories:
+  // 1. Screen reader -- |ui::kAXModeComplete|.
+  // 2. Performance filtering disallowed -- |ui::kAXModeComplete|.
+  // 2. Only password manager running -- |ui::kAXModeFormControls|
+  // 3. Some accessibility services running that need more information than a
+  //       password manager, but not as much as a screenreader -
+  //       |ui::kAXModeBasic|
+  if (needs_full_engine) {
+    target_mode = ui::kAXModeComplete;
+  } else if (!accessibility_state->IsPerformanceFilteringAllowed()) {
+    target_mode = ui::kAXModeComplete;
+  } else if (is_form_controls_candidate) {
+    target_mode = ui::kAXModeFormControls;
+  } else {
+    target_mode = ui::kAXModeBasic;
+  }
+
+  scoped_accessibility_mode_ =
+      accessibility_state->CreateScopedModeForProcess(target_mode);
 }
 
 jboolean WebContentsAccessibilityAndroid::IsRootManagerConnected(JNIEnv* env) {
@@ -2184,77 +2218,6 @@ jlong JNI_WebContentsAccessibilityImpl_InitForAssistData(
 
   return reinterpret_cast<intptr_t>(new WebContentsAccessibilityAndroid(
       env, obj, jassist_data_builder, web_contents));
-}
-
-void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean is_screen_reader_enabled,
-    jboolean form_controls_mode,
-    jboolean is_known_screen_reader_running,
-    jboolean is_any_accessibility_tool_present) {
-  BrowserAccessibilityStateImpl* accessibility_state =
-      BrowserAccessibilityStateImpl::GetInstance();
-
-  // Always update state if a known screen reader is running.
-  auto* accessibility_state_android =
-      static_cast<BrowserAccessibilityStateImplAndroid*>(accessibility_state);
-  accessibility_state_android->SetScreenReaderAppActive(
-      is_known_screen_reader_running);
-
-  // The AXMode flags will be set according to requirements of the current
-  // system based on running services. This can be disabled with an enterprise
-  // policy, in which case accessibility becomes an all-or-none approach.
-  if (!accessibility_state->IsPerformanceFilteringAllowed()) {
-    // When the browser is not yet accessible, then set the AXMode to
-    // |ui::kAXModeComplete| for all web contents.
-    if (!accessibility_state->IsAccessibleBrowser()) {
-      accessibility_state->OnScreenReaderDetected();
-    }
-    return;
-  }
-
-  // Set the AXMode based on currently running services, sent from Java-side
-  // code and will fit into one of the below categories:
-  //
-  //    1. Screenreader running - |ui::kAXModeComplete|
-  //    2. Only password manager running - |ui::kAXModeFormControls|
-  //    3. Some accessibility services running that need more information than a
-  //       password manager, but not as much as a screenreader -
-  //       |ui::kAXModeBasic|
-  //
-  if (is_screen_reader_enabled) {
-    // Remove form controls filter mode to preserve screen reader mode.
-    ui::AXMode flags_to_remove(ui::AXMode::kNone,
-                               ui::AXMode::kFormsAndLabelsOnly);
-    accessibility_state->RemoveAccessibilityModeFlags(flags_to_remove);
-
-    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-  } else if (form_controls_mode) {
-    // TODO (aldietz): Add a SetAccessibilityModeFlags method to
-    // BrowserAccessibilityState to add and remove flags atomically in one
-    // operation.
-    // Remove the mode flags present in kAXModeComplete but not in
-    // kAXModeFormControls, thereby reverting the mode to kAXModeFormControls
-    // while not touching any other flags.
-    ui::AXMode flags_to_remove(ui::kAXModeComplete.flags() &
-                               ~ui::kAXModeFormControls.flags());
-    accessibility_state->RemoveAccessibilityModeFlags(flags_to_remove);
-
-    // Add form controls filter mode.
-    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeFormControls);
-  } else {
-    // Remove the mode flags present in kAXModeComplete and
-    // kFormsAndLabelsOnly but not in kAXModeBasic, thereby reverting
-    // the mode to kAXModeBasic while not touching any other flags.
-    ui::AXMode flags_to_remove(
-        ui::kAXModeComplete.flags() & ~ui::kAXModeBasic.flags(),
-        ui::AXMode::kFormsAndLabelsOnly);
-    accessibility_state->RemoveAccessibilityModeFlags(flags_to_remove);
-
-    // Add basic mode
-    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeBasic);
-  }
 }
 
 }  // namespace content

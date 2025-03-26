@@ -11,6 +11,7 @@
   "headers": [
     "base/containers/fixed_flat_map.h",
     "base/containers/span.h",
+    "components/country_codes/country_codes.h",
     "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
   ],
 

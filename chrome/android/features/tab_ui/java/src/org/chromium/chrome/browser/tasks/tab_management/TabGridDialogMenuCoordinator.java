@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -36,19 +36,22 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
      * @param tabGroupIdSupplier The tab group ID supplier for the tab group being acted on.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
+     * @param context The {@link Context} that the coordinator resides in.
      */
     public TabGridDialogMenuCoordinator(
             OnItemClickedCallback<Token> onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             Supplier<Token> tabGroupIdSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @NonNull CollaborationService collaborationService) {
+            @NonNull CollaborationService collaborationService,
+            @NonNull Context context) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
                 tabGroupSyncService,
-                collaborationService);
+                collaborationService,
+                context);
         mTabGroupIdSupplier = tabGroupIdSupplier;
     }
 
@@ -171,8 +174,8 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     }
 
     @Override
-    protected @DimenRes int getMenuWidth() {
-        return R.dimen.menu_width;
+    protected int getMenuWidth(int anchorViewWidthPx) {
+        return getDimensionPixelSize(R.dimen.menu_width);
     }
 
     private int getMenuItemIndex(ModelList itemList, int menuItemId) {

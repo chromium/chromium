@@ -66,6 +66,7 @@ const ActionTarget& ToolInvocation::GetActionTarget() const {
     case ActionInformation::ActionInfoCase::kNavigate:
     case ActionInformation::ActionInfoCase::kBack:
     case ActionInformation::ActionInfoCase::kForward:
+    case ActionInformation::ActionInfoCase::kWait:
     case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
       NOTREACHED();
   }
@@ -87,6 +88,7 @@ bool ToolInvocation::IsTargetingTab() const {
     case ActionInformation::ActionInfoCase::kNavigate:
     case ActionInformation::ActionInfoCase::kBack:
     case ActionInformation::ActionInfoCase::kForward:
+    case ActionInformation::ActionInfoCase::kWait:
       return true;
     case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
       NOTREACHED();

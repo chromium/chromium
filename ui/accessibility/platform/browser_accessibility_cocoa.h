@@ -57,7 +57,7 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // Clear this object's pointer to the wrapped BrowserAccessibility object
 // because the wrapped object has been deleted, but this object may
 // persist if the system still has references to it.
-- (void)detach;
+- (void)detachAndNotifyDestroyed:(BOOL)shouldNotify;
 
 // Invalidate children for a non-ignored ancestor (including self).
 - (void)childrenChanged;

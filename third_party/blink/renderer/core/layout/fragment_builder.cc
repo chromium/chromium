@@ -447,6 +447,7 @@ void FragmentBuilder::AddOutOfFlowChildCandidate(
     const LogicalOffset& child_offset,
     LogicalStaticPosition::InlineEdge inline_edge,
     LogicalStaticPosition::BlockEdge block_edge,
+    LogicalStaticPosition::LogicalAlignmentDirection align_self_direction,
     bool is_hidden_for_paint,
     bool allow_top_layer_nodes) {
   DCHECK(child);
@@ -457,7 +458,9 @@ void FragmentBuilder::AddOutOfFlowChildCandidate(
 
   oof_candidates_may_have_anchor_queries_ |= child.MayHaveAnchorQuery();
   oof_positioned_candidates_.emplace_back(
-      child, LogicalStaticPosition{child_offset, inline_edge, block_edge},
+      child,
+      LogicalStaticPosition{child_offset, inline_edge, block_edge,
+                            align_self_direction},
       RequiresContentBeforeBreaking(), is_hidden_for_paint,
       OofInlineContainer<LogicalOffset>());
 }
@@ -476,7 +479,8 @@ void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
       child, child_offset,
       IsLtr(inline_container_direction) ? LogicalStaticPosition::kInlineStart
                                         : LogicalStaticPosition::kInlineEnd,
-      LogicalStaticPosition::kBlockStart, is_hidden_for_paint);
+      LogicalStaticPosition::kBlockStart, LogicalStaticPosition::kBlock,
+      is_hidden_for_paint);
 }
 
 void FragmentBuilder::AddOutOfFlowFragmentainerDescendant(

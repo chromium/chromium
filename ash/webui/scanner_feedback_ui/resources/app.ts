@@ -40,7 +40,7 @@ export class ScannerFeedbackAppElement extends I18nMixin
       openUrl: Object,
       extraInfoCallback: Object,
       screenshotUrl: String,
-      revertToPeviousScreen: Object,
+      revertToPreviousScreen: Object,
       submitFeedback: Object,
     };
   }

@@ -116,15 +116,6 @@ struct PasswordForm;
 
 enum class ErrorMessageFlowType { kSaveFlow, kFillFlow };
 
-#if BUILDFLAG(IS_ANDROID)
-struct PasswordFillingParams {
-  autofill::FormData form;
-  uint64_t username_field_index;
-  uint64_t password_field_index;
-  autofill::FieldRendererId focused_field_renderer_id_;
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // An abstraction of operations that depend on the embedders (e.g. Chrome)
 // environment. PasswordManagerClient is instantiated once per WebContents.
 // Main frame w.r.t WebContents refers to the primary main frame so usages of
@@ -225,9 +216,7 @@ class PasswordManagerClient {
   // storage notice is gone.
   virtual void ShowKeyboardReplacingSurface(
       PasswordManagerDriver* driver,
-      const PasswordFillingParams& password_filling_params,
-      bool is_webauthn_form,
-      base::OnceCallback<void(bool)> shown_cb);
+      const autofill::PasswordSuggestionRequest& request);
 #endif
 
   // Checks whether user re-authentication should be triggered before password

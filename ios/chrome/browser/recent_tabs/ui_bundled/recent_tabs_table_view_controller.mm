@@ -99,7 +99,6 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/modals/modals_api.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/time_format.h"
@@ -1747,8 +1746,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     // exist anymore. The mediator should not be removed each time the section
     // is removed since the section is replaced at each reload.
     // Metrics would be recorded too often.
-    // The other device section can be present even without the sync promo. This
-    // happens when sync is disabled.
+    // The other device section can be present even without the promo.
     [self.signinPromoViewMediator disconnect];
     self.signinPromoViewMediator = nil;
     return;
@@ -1906,12 +1904,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (BOOL)shouldShowHistorySyncOnPromoAction {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(_profile);
-  // TODO(crbug.com/40276546): Delete the usage of ConsentLevel::kSync after
-  // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
-  // details.
-  if (authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
-    return NO;
-  }
   // Check if History Sync Opt-In should be skipped.
   // In case it's not necessary to show the history opt-in, but the promo action
   // button is still available, sync errors should be checked to show the

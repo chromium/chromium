@@ -83,11 +83,17 @@ NtpMicrosoftAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
     return nullptr;
   }
 
-  // The opener for the web contents should be the microsoft auth iframe on
-  // the NTP.
-  if (!web_contents->HasOpener() ||
-      web_contents->GetOpener()->GetLastCommittedURL() !=
-          GURL(chrome::kChromeUIUntrustedNtpMicrosoftAuthURL)) {
+  // The web contents' opener or the navigation handle's parent frame
+  // should be the microsoft auth iframe on the NTP.
+  bool is_valid_popup_navigation =
+      web_contents->HasOpener() && navigation_handle->IsInMainFrame() &&
+      web_contents->GetOpener()->GetLastCommittedURL() ==
+          GURL(chrome::kChromeUIUntrustedNtpMicrosoftAuthURL);
+  bool is_valid_iframe_navigation =
+      navigation_handle->GetParentFrame() &&
+      navigation_handle->GetParentFrame()->GetLastCommittedURL() ==
+          GURL(chrome::kChromeUIUntrustedNtpMicrosoftAuthURL);
+  if (!is_valid_popup_navigation && !is_valid_iframe_navigation) {
     return nullptr;
   }
 
@@ -158,31 +164,36 @@ NtpMicrosoftAuthResponseCaptureNavigationThrottle::
 //
 // This method navigates to about:blank with the URL
 // fragments transferred. By navigating to about:blank and setting
-// source_site_instance and initiator_origin to match the popup's opener, the
-// popup will be in the correct |SiteInstance| and |BrowsingInstance| to be
-// same-origin and same-process with the MSAL integration's iframe.
+// source_site_instance and initiator_origin to match the popup's opener or
+// iframe's parent frame, the popup or iframe will be in the correct
+// |SiteInstance| and |BrowsingInstance| to be same-origin and same-process
+// with the MSAL integration's iframe.
 void NtpMicrosoftAuthResponseCaptureNavigationThrottle::
     RedirectNavigationHandleToAboutBlank() {
   GURL::Replacements addRef;
   addRef.SetRefStr(navigation_handle()->GetURL().ref_piece());
 
   auto* web_contents = navigation_handle()->GetWebContents();
-  if (!web_contents->GetOpener()) {
+  if (!web_contents->HasOpener() && !navigation_handle()->GetParentFrame()) {
     return;
   }
+  auto* opener_or_parent_frame = navigation_handle()->GetParentFrame()
+                                     ? navigation_handle()->GetParentFrame()
+                                     : web_contents->GetOpener();
 
   // Move the URL authentication fragment into a new navigation in the opener's
-  // |BrowsingInstance|, with the minimum number of params copied over.
+  // or parent frame's |BrowsingInstance|, with the minimum number of params
+  // copied over.
   content::OpenURLParams nav_params(
       GURL("about:blank").ReplaceComponents(addRef),
       content::Referrer(navigation_handle()->GetReferrer()),
+      navigation_handle()->GetFrameTreeNodeId(),
       WindowOpenDisposition::CURRENT_TAB,
       navigation_handle()->GetPageTransition(),
       navigation_handle()->IsRendererInitiated());
-  nav_params.source_site_instance =
-      web_contents->GetOpener()->GetSiteInstance();
+  nav_params.source_site_instance = opener_or_parent_frame->GetSiteInstance();
   nav_params.initiator_origin =
-      web_contents->GetOpener()->GetLastCommittedOrigin();
+      opener_or_parent_frame->GetLastCommittedOrigin();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](content::OpenURLParams nav_params,

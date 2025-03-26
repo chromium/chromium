@@ -95,17 +95,19 @@ class ScrollTracingBrowserTest : public ContentBrowserTest {
     }
   }
 
-  int64_t ConvertToHistogramValue(std::string query_value) {
-    int64_t result;
-    base::StringToInt64(query_value, &result);
-    return result;
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
+
+std::optional<int64_t> ConvertToIntValue(std::string query_value) {
+  int64_t result;
+  if (base::StringToInt64(query_value, &result)) {
+    return result;
+  }
+  return std::nullopt;
+}
 
 // NOTE:  Mac doesn't support touch events, and will not record scrolls with
 // touch input. Linux bots are inconsistent.
@@ -164,27 +166,333 @@ IN_PROC_BROWSER_TEST_F(ScrollTracingBrowserTest, ScrollingMetricsParity) {
   auto scroll_metrics = scroll_metrics_result[1];
 
   // frame_count
-  EXPECT_GE(ConvertToHistogramValue(scroll_metrics[0]), 1);
+  std::optional<int64_t> metrics = ConvertToIntValue(scroll_metrics[0]);
+  EXPECT_TRUE(metrics.has_value());
+  EXPECT_GE(metrics.value(), 1);
   // vsync_count
-  EXPECT_GE(ConvertToHistogramValue(scroll_metrics[1]), 1);
+  metrics = ConvertToIntValue(scroll_metrics[1]);
+  EXPECT_TRUE(metrics.has_value());
+  EXPECT_GE(metrics.value(), 1);
 
   ValidateUkm(
       url, ukm::builders::Event_Scroll::kEntryName,
       {
           {ukm::builders::Event_Scroll::kFrameCountName,
-           ConvertToHistogramValue(scroll_metrics[0])},
+           ConvertToIntValue(scroll_metrics[0]).value()},
           {ukm::builders::Event_Scroll::kVsyncCountName,
-           ConvertToHistogramValue(scroll_metrics[1])},
+           ConvertToIntValue(scroll_metrics[1]).value()},
           {ukm::builders::Event_Scroll::kScrollJank_MissedVsyncsMaxName,
-           ConvertToHistogramValue(scroll_metrics[2])},
+           ConvertToIntValue(scroll_metrics[2]).value()},
           {ukm::builders::Event_Scroll::kScrollJank_MissedVsyncsSumName,
-           ConvertToHistogramValue(scroll_metrics[3])},
+           ConvertToIntValue(scroll_metrics[3]).value()},
           {ukm::builders::Event_Scroll::kScrollJank_DelayedFrameCountName,
-           ConvertToHistogramValue(scroll_metrics[4])},
+           ConvertToIntValue(scroll_metrics[4]).value()},
           {ukm::builders::Event_Scroll::kPredictorJankyFrameCountName,
-           ConvertToHistogramValue(scroll_metrics[5])},
+           ConvertToIntValue(scroll_metrics[5]).value()},
       });
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+/**
+ * Helper classes to make it more convenient to iterate on the results returned
+ * by `TestTraceProcessor::RunQuery()`. This is the basic version that is only
+ * used in one test at the moment. If more tests start using
+ *`TestTraceProcessor`, we can improve the helpers and move them to
+ *`TestTraceProcessor`.
+ **/
+class Column {
+ public:
+  explicit Column(std::vector<std::string> column) : column_(column) {}
+
+  std::vector<std::optional<int64_t>> GetIntValuesOrNulls() const {
+    std::vector<std::optional<int64_t>> result;
+    for (const std::string& row : column_) {
+      result.push_back(ConvertToIntValue(row));
+    }
+    return result;
+  }
+
+ private:
+  const std::vector<std::string> column_;
+};
+
+class Row {
+ public:
+  Row(const std::vector<std::string>& row,
+      const std::map<std::string, int64_t>& column_name_to_index_)
+      : row_(row), column_name_to_index_(column_name_to_index_) {}
+
+  bool HasValue(const std::string& column_name) {
+    const auto it = column_name_to_index_->find(column_name);
+    EXPECT_NE(it, column_name_to_index_->end())
+        << "Column " << column_name << " not found";
+    return (*row_)[it->second] != "[NULL]";
+  }
+
+  std::optional<int64_t> GetIntValueOrNull(
+      const std::string& column_name) const {
+    const auto it = column_name_to_index_->find(column_name);
+    EXPECT_NE(it, column_name_to_index_->end())
+        << "Column " << column_name << " not found";
+    return ConvertToIntValue((*row_)[it->second]);
+  }
+
+ private:
+  const raw_ref<const std::vector<std::string>> row_;
+  const raw_ref<const std::map<std::string, int64_t>> column_name_to_index_;
+};
+
+class Result {
+ public:
+  explicit Result(std::vector<std::vector<std::string>>& results)
+      : results_(results) {
+    const std::vector<std::string>& column_names = results_[0];
+
+    for (size_t i = 0; i < column_names.size(); ++i) {
+      column_name_to_index_[column_names[i]] = i;
+    }
+
+    // Remove the header with column names.
+    results_.erase(results_.begin());
+  }
+
+  Column GetColumn(const std::string& column_name) const {
+    std::vector<std::string> column;
+    auto it = column_name_to_index_.find(column_name);
+    EXPECT_NE(it, column_name_to_index_.end())
+        << "Column " << column_name << " not found";
+    for (const auto& result : results_) {
+      column.push_back(result[it->second]);
+    }
+    return Column(std::move(column));
+  }
+
+  std::vector<Row> GetRows() const {
+    std::vector<Row> result;
+    for (const std::vector<std::string>& row : results_) {
+      result.emplace_back(row, column_name_to_index_);
+    }
+    return result;
+  }
+
+ private:
+  std::map<std::string, int64_t> column_name_to_index_;
+  std::vector<std::vector<std::string>> results_;
+};
+
+std::vector<std::optional<int64_t>> GetNullableValues(
+    const Row& row,
+    const std::vector<const char*>& column_names) {
+  std::vector<std::optional<int64_t>> nullable_values;
+
+  for (const char* column_name : column_names) {
+    nullable_values.push_back(row.GetIntValueOrNull(column_name));
+  }
+
+  return nullable_values;
+}
+
+std::vector<int64_t> FilterOutNulls(
+    const std::vector<std::optional<int64_t>>& nullable_values) {
+  std::vector<int64_t> result;
+  for (const auto& nullable_value : nullable_values) {
+    if (nullable_value) {
+      result.push_back(nullable_value.value());
+    }
+  }
+  return result;
+}
+
+// Verifies that the scroll updates in the tracing standard library
+// have correct properties and expected sequence of steps.
+IN_PROC_BROWSER_TEST_F(ScrollTracingBrowserTest, ScrollUpdateInfo) {
+  using base::test::TestTraceProcessor;
+  TestTraceProcessor ttp_;
+  ttp_.StartTrace("input");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url(
+      embedded_test_server()->GetURL("/scrollable_page_with_content.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Do a single scroll.
+  DoScroll(gfx::Point(10, 10), {gfx::Vector2d(0, 10), gfx::Vector2d(0, 10)},
+           content::mojom::GestureSourceType::kTouchInput);
+
+  RunUntilInputProcessed(GetRenderWidgetHostImpl());
+  ASSERT_EQ(true, EvalJs(shell()->web_contents(), "did_scroll;"));
+
+  absl::Status status = ttp_.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  // Select chrome scroll updates.
+  base::expected<TestTraceProcessor::QueryResult, std::string> raw_result =
+      ttp_.RunQuery(R"(
+    INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
+
+    SELECT
+      id,
+      is_presented,
+      is_first_scroll_update_in_scroll,
+      is_first_scroll_update_in_frame,
+      previous_input_id,
+      presentation_timestamp,
+      generation_ts,
+      touch_move_received_ts,
+      scroll_update_created_ts,
+      compositor_dispatch_ts,
+      compositor_on_begin_frame_ts,
+      compositor_generate_compositor_frame_ts,
+      compositor_submit_compositor_frame_ts,
+      viz_receive_compositor_frame_ts,
+      viz_draw_and_swap_ts,
+      viz_swap_buffers_ts,
+      latch_timestamp,
+      generation_to_browser_main_dur,
+      touch_move_processing_dur,
+      scroll_update_processing_dur,
+      browser_to_compositor_delay_dur,
+      compositor_dispatch_dur,
+      compositor_dispatch_to_on_begin_frame_delay_dur,
+      compositor_on_begin_frame_dur,
+      compositor_on_begin_frame_to_generation_delay_dur,
+      compositor_generate_frame_to_submit_frame_dur,
+      compositor_submit_frame_dur,
+      compositor_to_viz_delay_dur,
+      viz_receive_compositor_frame_dur,
+      viz_wait_for_draw_dur,
+      viz_draw_and_swap_dur,
+      viz_to_gpu_delay_dur,
+      viz_swap_buffers_dur,
+      viz_swap_buffers_to_latch_dur,
+      viz_latch_to_presentation_dur
+    FROM
+      chrome_scroll_update_info
+    ORDER BY id
+  )");
+
+  ASSERT_TRUE(raw_result.has_value()) << raw_result.error();
+  TestTraceProcessor::QueryResult result_value = raw_result.value();
+
+  Result result(result_value);
+  EXPECT_GE(result.GetRows().size(), 1u);
+
+  std::vector<std::optional<int64_t>> nullable_scroll_update_ids =
+      result.GetColumn("id").GetIntValuesOrNulls();
+  std::vector<int64_t> scroll_update_ids =
+      FilterOutNulls(nullable_scroll_update_ids);
+
+  // Check that latency ids are not duplicated
+  std::set<int64_t> unique_ids(std::begin(scroll_update_ids),
+                               std::end(scroll_update_ids));
+  EXPECT_THAT(scroll_update_ids,
+              testing::UnorderedElementsAreArray(unique_ids));
+
+  // Check that at least one frame was presented and at least
+  // one update was the first in the frame.
+  EXPECT_THAT(
+      FilterOutNulls(result.GetColumn("is_presented").GetIntValuesOrNulls()),
+      testing::Contains(1))
+      << "No rows with is_presented = 1";
+  EXPECT_THAT(FilterOutNulls(result.GetColumn("is_first_scroll_update_in_frame")
+                                 .GetIntValuesOrNulls()),
+              testing::Contains(1))
+      << "No rows with is_first_scroll_update_in_frame = 1";
+
+  size_t row_number = 0;
+  for (Row row : result.GetRows()) {
+    std::optional<int64_t> maybe_is_presented =
+        row.GetIntValueOrNull("is_presented");
+    EXPECT_TRUE(maybe_is_presented.has_value());
+    bool is_presented = maybe_is_presented.value() == 1;
+    LOG(ERROR) << "is presented = " << is_presented;
+    if (is_presented) {
+      EXPECT_TRUE(row.HasValue("presentation_timestamp"))
+          << "No presentation timestamp for update in row " << row_number
+          << ", result:\n"
+          << result_value;
+    }
+
+    std::optional<int64_t> maybe_is_first_scroll_update_in_frame =
+        row.GetIntValueOrNull("is_first_scroll_update_in_frame");
+    EXPECT_TRUE(maybe_is_first_scroll_update_in_frame.has_value());
+    bool is_first_scroll_update_in_frame =
+        maybe_is_first_scroll_update_in_frame.value() == 1;
+
+    std::optional<int64_t> maybe_is_first_scroll_update_in_scroll =
+        row.GetIntValueOrNull("is_first_scroll_update_in_scroll");
+    EXPECT_TRUE(maybe_is_first_scroll_update_in_scroll.has_value());
+    bool is_first_scroll_update_in_scroll =
+        maybe_is_first_scroll_update_in_scroll.value() == 1;
+
+    std::optional<int64_t> maybe_previous_input_id =
+        row.GetIntValueOrNull("previous_input_id");
+
+    if (is_first_scroll_update_in_scroll) {
+      EXPECT_FALSE(maybe_previous_input_id.has_value())
+          << "Previous input id is not null for the first update in a scroll "
+             "in row "
+          << row_number << ", result:\n"
+          << result_value;
+      EXPECT_TRUE(is_first_scroll_update_in_frame)
+          << "First update in scroll is not first update in frame in row "
+          << row_number << ", result:\n"
+          << result_value;
+    }
+
+    // Static constant array of timestamp column names.
+    static const std::vector<const char*> kTimestampColumnNames = {
+        "generation_ts",
+        "touch_move_received_ts",
+        "scroll_update_created_ts",
+        "compositor_dispatch_ts",
+        "compositor_on_begin_frame_ts",
+        "compositor_generate_compositor_frame_ts",
+        "compositor_submit_compositor_frame_ts",
+        "viz_receive_compositor_frame_ts",
+        "viz_draw_and_swap_ts",
+        "viz_swap_buffers_ts",
+        "latch_timestamp"};
+
+    std::vector<std::optional<int64_t>> nullable_timestamps =
+        GetNullableValues(row, kTimestampColumnNames);
+    std::vector<int64_t> timestamps = FilterOutNulls(nullable_timestamps);
+
+    std::vector<int64_t> expected_timestamps = timestamps;
+
+    // The non-NULL timestamps for consecutive stages should be increasing.
+    std::sort(expected_timestamps.begin(), expected_timestamps.end());
+    EXPECT_EQ(timestamps, expected_timestamps)
+        << "Timestamps for consecutive stages are not increasing in row "
+        << row_number << ", result:\n"
+        << result_value;
+
+    static const std::vector<const char*> kDurationColumnNames = {
+        "generation_to_browser_main_dur", "touch_move_processing_dur",
+        "scroll_update_processing_dur", "browser_to_compositor_delay_dur",
+        "compositor_dispatch_dur",
+        // TODO(b:381273884): fix negative stage duration
+        // "compositor_dispatch_to_on_begin_frame_delay_dur",
+        "compositor_on_begin_frame_dur",
+        "compositor_on_begin_frame_to_generation_delay_dur",
+        "compositor_generate_frame_to_submit_frame_dur",
+        "compositor_submit_frame_dur", "compositor_to_viz_delay_dur",
+        "viz_receive_compositor_frame_dur", "viz_wait_for_draw_dur",
+        "viz_draw_and_swap_dur", "viz_to_gpu_delay_dur", "viz_swap_buffers_dur",
+        "viz_swap_buffers_to_latch_dur", "viz_latch_to_presentation_dur"};
+
+    std::vector<std::optional<int64_t>> nullable_durations =
+        GetNullableValues(row, kDurationColumnNames);
+    std::vector<int64_t> durations = FilterOutNulls(nullable_durations);
+
+    EXPECT_THAT(durations, testing::Not(testing::Contains(testing::Lt(0))))
+        << "Negative duration(s) in row " << row_number << ", result:\n"
+        << result_value;
+    row_number++;
+  }
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

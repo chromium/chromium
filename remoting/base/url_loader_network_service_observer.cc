@@ -127,6 +127,9 @@ void UrlLoaderNetworkServiceObserver::OnPrivateNetworkAccessPermissionRequired(
     const std::optional<std::string>& private_network_device_name,
     OnPrivateNetworkAccessPermissionRequiredCallback callback) {}
 
+void UrlLoaderNetworkServiceObserver::OnLocalNetworkAccessPermissionRequired(
+    OnLocalNetworkAccessPermissionRequiredCallback callback) {}
+
 void UrlLoaderNetworkServiceObserver::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,

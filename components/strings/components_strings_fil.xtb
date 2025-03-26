@@ -32,7 +32,6 @@
 <translation id="1055184225775184556">&amp;I-undo ang Pagdagdag</translation>
 <translation id="1056898198331236512">Babala</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para laruin ang Dino Run sa Chrome</translation>
-<translation id="1058479211578257048">Sine-save ang mga card...</translation>
 <translation id="1060136083665017312">Mga Game System at Console</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
 <translation id="1062407476771304334">Palitan</translation>
@@ -115,6 +114,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1195073053842921378">Made-delete ang address na ito sa device na ito</translation>
 <translation id="1195558154361252544">Awtomatikong naka-block ang mga notification para sa lahat ng site maliban sa mga pinapayagan mo</translation>
 <translation id="1197088940767939838">Orange</translation>
+<translation id="1198412233443148072">Inalis ni <ph name="MEMBER_FIRST_NAME" /> ang tab na “<ph name="WEBSITE_TITLE" />”</translation>
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1201895884277373915">Higit pa mula sa site na ito</translation>
 <translation id="1202892408424955784">Mga sinusubaybayang produkto</translation>
@@ -409,7 +409,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1692622044604477956">Mga Listing ng Pelikula at Oras ng Pagpapalabas sa Sinehan</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Paano mo mapapamahalaan ang iyong data:<ph name="END_BOLD" /> Awtomatikong dine-delete ng Chrome ang mga paksang mahigit 4 na linggo na. Habang patuloy kang nagba-browse, posibleng may paksang lumabas ulit sa listahan. Puwede mo ring i-block ang mga paksang ayaw mong i-share ng Chrome sa mga site at i-off ang mga paksa ng ad anumang oras sa mga setting ng Chrome.</translation>
-<translation id="1697532407822776718">Handa ka na!</translation>
 <translation id="1699651774646344471">Puwede ka na ngayong gumamit ng mga address mula sa iyong Google Account</translation>
 <translation id="1700542542921501212">Puwede mong gamitin ang <ph name="SEARCH_ENGINE_NAME" /> para maghanap sa web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -506,6 +505,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1846432862466000825">Plastic (Archival)</translation>
 <translation id="1848640291751752317">mga download</translation>
 <translation id="1848982255014129637">Photo (High-Gloss)</translation>
+<translation id="1849438148665368129">Dapat ay wala pang <ph name="CHECKOUT_AMOUNT_MAXIMUM" /> ang bibilhin</translation>
 <translation id="1853392626017747777">Sarado na ang pag-enroll sa virtual card</translation>
 <translation id="1854180393107901205">Ihinto ang pagka-cast</translation>
 <translation id="1855370856221982654">Boxing</translation>
@@ -886,7 +886,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2518584823165598232">Hindi available ang card na ito. Makipag-ugnayan sa provider ng iyong card.</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2521736961081452453">Gumawa ng form</translation>
-<translation id="2523886232349826891">Ise-save sa device lang na ito</translation>
 <translation id="2524461107774643265">Magdagdag ng Higit Pang Impormasyon</translation>
 <translation id="2526062290525841862">Para patakbuhin ang app na ito, i-enable ulit ang Developer Mode ng Naka-isolate na Web App</translation>
 <translation id="2526280916094749336">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Mase-save ang address na ito sa iyong Google Account na <ph name="ACCOUNT" />.</translation>
@@ -1343,7 +1342,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3360306038446926262">Mga Window</translation>
 <translation id="3362968246557010467">Awtomatikong kinopya ang patakarang ito mula sa hindi na ginagamit na patakarang <ph name="OLD_POLICY" />. Dapat mong gamitin ang patakarang ito sa halip.</translation>
 <translation id="3364869320075768271">Gustong gamitin ng <ph name="URL" /> ang iyong virtual reality device at data</translation>
-<translation id="3366477098757335611">Tingnan ang mga card</translation>
 <translation id="3369192424181595722">Error sa orasan</translation>
 <translation id="3371064404604898522">Itakda ang Chrome bilang default na browser</translation>
 <translation id="337363190475750230">Naalis sa pagkakaprobisyon</translation>
@@ -1742,6 +1740,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4036753017940930924">Mga Lote at Lupain</translation>
 <translation id="4039506337798853114">Para ipakita ang iyong cursor, pindutin ang |<ph name="ACCELERATOR" />|</translation>
+<translation id="4045441967987592849">Buksan ulit</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
 <translation id="404831776305217138">Invalid o gumagamit ng hindi sinusuportahang scheme ang URL ng update para sa extension na may ID na "<ph name="EXTENSION_ID" />." Ang mga sinusuportahang scheme ay: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> at <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Magagamit mo ito sa lahat ng produkto ng Google</translation>
@@ -1902,7 +1901,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4282280603030594840">Pamimili ng Sasakyan</translation>
 <translation id="4282346679996504092">Na-off ang mga alerto para sa produktong ito at inalis ang bookmark</translation>
 <translation id="4285498937028063278">I-unpin</translation>
-<translation id="428639260510061158">{NUM_CARDS,plural, =1{Na-save na ang card na ito sa iyong Google Account}one{Na-save na ang mga card na ito sa iyong Google Account}other{Na-save na ang mga card na ito sa iyong Google Account}}</translation>
 <translation id="4287495839370498922">Pinahusay na privacy sa mga ad sa Chrome</translation>
 <translation id="4290920330097335010">Huwag kailanman payagan</translation>
 <translation id="4296207570293932800">Available na ang bagong feature ng privacy sa mga ad</translation>
@@ -1965,7 +1963,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4378154925671717803">Telepono</translation>
 <translation id="4384395682990721132">A4x3</translation>
 <translation id="4387692837058041921">Na-pause ang pag-upload ng file sa Microsoft OneDrive</translation>
-<translation id="4389931020843542579">Naglo-load ang grupo ng tab</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4395550503472021297">Kinokontrol ng patakarang ito ang default na gawi ng mga sumusunod na patakaran: <ph name="POLICIES" /></translation>
 <translation id="4397978002248035985">Magbubukas ng pop-up para mag-verify sa website ng iyong bangko</translation>
@@ -2047,7 +2044,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4569155249847375786">Na-verify</translation>
 <translation id="457875822857220463">Paghahatid</translation>
 <translation id="4579699065574932398">Pagbabangko</translation>
-<translation id="4582204425268416675">Alisin ang card</translation>
 <translation id="4582595824823167856">Makatanggap ng text message</translation>
 <translation id="4586607503179159908">Na-verify na ang paraan ng pagbabayad</translation>
 <translation id="4587425331216688090">Alisin ang address sa Chrome?</translation>
@@ -2171,6 +2167,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4796594887379589189">Account ID ng trabaho</translation>
 <translation id="4798269756263412078">Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site. Ipapadala ang mga alerto sa iyong email.</translation>
 <translation id="4800132727771399293">Tingnan ang iyong petsa ng pag-expire at CVC at subukan ulit</translation>
+<translation id="4800546479758254481">Pinapayagan ang AR</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Mga tagubilin mula sa administrator ng iyong device:</translation>
 <translation id="4811450222531576619">Alamin ang tungkol sa source at paksa nito</translation>
@@ -2430,6 +2427,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5255771248404149177">Gustong tiyakin ng iyong provider ng card na ikaw ito</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Hindi inirerekomenda ng patakaran ng administrator na kopyahin ang file na ito sa <ph name="DESTINATION_NAME" />}one{Hindi inirerekomenda ng patakaran ng administrator na kopyahin ang mga file na ito sa <ph name="DESTINATION_NAME" />}other{Hindi inirerekomenda ng patakaran ng administrator na kopyahin ang mga file na ito sa <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="5258473597674772367">Hindi na available ang grupo ng tab na "<ph name="GROUP_NAME" />"</translation>
 <translation id="5263867360296733198">Kinakailangan ang pagsusuri bago i-upload</translation>
 <translation id="5266128565379329178">Bind top</translation>
 <translation id="5269225904387178860">Quad punch bottom</translation>
@@ -2704,7 +2702,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5730040223043577876">Inirerekomenda ng Chrome na i-reset ang iyong password kung ginamit mo ito sa iba pang site.</translation>
 <translation id="5732392974455271431">Maaari itong i-unblock ng iyong mga magulang para sa iyo</translation>
 <translation id="573555826359077410">Button na Gumawa ng form, i-activate para mabilis na makagawa ng bagong form sa Google Forms</translation>
-<translation id="5737183892635480227">{NUM_CARDS,plural, =1{I-save ang card sa iyong Google Account}one{I-save ang mga card sa iyong Google Account}other{I-save ang mga card sa iyong Google Account}}</translation>
 <translation id="5738385766833540397">Pamahalaan kung paano mo matatanggap ang mga alerto sa pagbaba ng presyo para sa mga produktong tina-track mo</translation>
 <translation id="573974402615125334">Para magawang mag-share ng, sumali sa, at makipag-collaborate sa mga grupo ng tab, i-sync ang iyong history at mga tab</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
@@ -2793,7 +2790,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5921185718311485855">Naka-on</translation>
 <translation id="5921639886840618607">I-save ang card sa Google Account?</translation>
 <translation id="5921952831792678223">Mga Pickup Truck</translation>
-<translation id="5922853866070715753">Malapit nang matapos</translation>
 <translation id="5923492272538889093">Gamitin ang pag-unlock ng device sa halip na CVC?</translation>
 <translation id="5924510104057992926">Kinakailangan ang pagsusuri bago buksan</translation>
 <translation id="5924782825030413055">Source ng huling update ng pahintulot:</translation>
@@ -2881,7 +2877,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6055982527635883756">Envelope (Archival)</translation>
 <translation id="6057177372083677067">Online na Video</translation>
 <translation id="6058646026409894363">Civil Engineering</translation>
-<translation id="6058977677006700226">Gamitin ang iyong mga card sa lahat ng device mo?</translation>
 <translation id="6059925163896151826">Mga USB device</translation>
 <translation id="6060009363608157444">Invalid ang DnsOverHttps mode.</translation>
 <translation id="6061154937977953833">Wrestling</translation>
@@ -3033,6 +3028,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6327065120806001832">access sa lokal na network</translation>
 <translation id="6328639280570009161">Subukang i-disable ang paghula ng network</translation>
 <translation id="6335029926534404762">Mga Sapatos na Pang-atleta</translation>
+<translation id="6336948221660696475">Hindi pinapayagan ang VR</translation>
 <translation id="6337133576188860026">Magbabakante ng wala pang <ph name="SIZE" />. Maaaring mag-load nang mas mabagal ang ilang site sa iyong susunod na pagbisita.</translation>
 <translation id="6337534724793800597">I-filter ang mga patakaran ayon sa pangalan</translation>
 <translation id="633770708279464947">Invalid ang value ng <ph name="SECURE_DNS_SALT" /> at hindi ito gagamitin.</translation>
@@ -3076,6 +3072,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6391700400718590966">Nakasara ang sheet na walang tumutugmang kredensyal sa kredensyal sa secure na pagbabayad</translation>
 <translation id="6392799395081100092">Papel (Vellum)</translation>
 <translation id="6393156038355142111">Magmungkahi ng malakas na password</translation>
+<translation id="6393310910507376797">Hindi sinusuportahan ng merchant</translation>
 <translation id="6393956493820063117">Na-block ng patakaran ng administrator ang pag-paste sa lokasyong ito mula sa <ph name="ORIGIN_NAME" /></translation>
 <translation id="6394852772105848029">Gusto ng site na ito na buksan ang <ph name="APP_NAME" /> app</translation>
 <translation id="639673288733510393">Mga Scooter at Moped</translation>
@@ -3155,6 +3152,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6519885440226079262">Puwedeng hilinging i-track ang iyong mga kamay</translation>
 <translation id="6520026037299163656">Mga Web App at Online na Tool</translation>
 <translation id="65203098586853226">Pagsasalin ng <ph name="SOURCE" /> sa <ph name="TARGET" /></translation>
+<translation id="6520509611422418552">Sumali si <ph name="MEMBER_FIRST_NAME" /> sa grupo ng tab na "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Hindi aktibo</translation>
 <translation id="6522682797352430154">Classical Music</translation>
 <translation id="6524830701589638230">Button na Pamahalaan ang mga setting ng accessibility, i-activate para ma-personalize ang iyong mga tool sa accessibility sa mga setting ng Chrome</translation>
@@ -3228,6 +3226,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6668389483194953109">May nakitang pangalan ng laki ng papel na "custom," pero walang laman o invalid ang property na "custom_size."</translation>
 <translation id="6671169470640320959">Financing para sa Kotse</translation>
 <translation id="6671697161687535275">Gusto mo bang alisin ang form para sa suhestyon sa Chromium?</translation>
+<translation id="6675846980676550611">Hindi pinapayagan ang AR</translation>
 <translation id="6677351035258626477">Fast Food</translation>
 <translation id="6679354743514146922">Sinusubukan ng Chrome browser ilagay ang iyong password sa <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Na-save ang CVC</translation>
@@ -3440,7 +3439,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="704738887031336226">Ipakita ang mga opsyon sa <ph name="PAY_OVER_TIME_HELP_LINK_BEGIN" />pagbabayad sa paglipas ng panahon<ph name="PAY_OVER_TIME_HELP_LINK_END" /> sa pag-checkout</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Sinubukan mong puntahan ang <ph name="DOMAIN" />, ngunit nagpakita ang server ng certificate na masyadong mahaba ang panahon ng pagkakaroon ng bisa upang maging mapagkakatiwalaan.</translation>
-<translation id="705310974202322020">{NUM_CARDS,plural, =1{Hindi mase-save sa ngayon ang card na ito}one{Hindi mase-save sa ngayon ang mga card na ito}other{Hindi mase-save sa ngayon ang mga card na ito}}</translation>
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7054717457611655239">Mula ngayon, i-save ang iyong mga file sa <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998">Na-verify ng <ph name="BROWSER" /> na ang <ph name="ISSUER" /> ang nag-isyu ng certificate na ito ng website.</translation>
@@ -3716,6 +3714,7 @@ Mga karagdagang detalye:
 <translation id="7512685745044087310">Hindi puwedeng itakda sa "True" at maging mandatoryo ang patakarang ito, kung kaya naman, ginawa itong inirerekomenda.</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">Pinapayagan ang VR sa pagkakataong ito</translation>
 <translation id="7517201160922869406">Mga Off-road na Sasakyan</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">Walang webpage na nahanap para sa web address:<ph name="URL" /></translation>
@@ -3835,7 +3834,6 @@ Mga karagdagang detalye:
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">Natanggap na ang pagkakasunod-sunod ng page</translation>
 <translation id="769424100851389104">Simulan ang pag-update ngayon</translation>
-<translation id="769721561045429135">Sa ngayon, may mga card kang magagamit lang sa device na ito. I-click ang Magpatuloy para suriin ang mga card.</translation>
 <translation id="7697837508203274589">Mga Live na Event sa Sports</translation>
 <translation id="7698864304447945242">I-update ang Google Play Services para sa AR?</translation>
 <translation id="7701040980221191251">Wala</translation>
@@ -4000,7 +3998,6 @@ Mga karagdagang detalye:
 <translation id="8009225694047762179">Pamahalaan ang Mga Password</translation>
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Subukang i-delete ang iyong cookies<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 x 11 in</translation>
-<translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ise-save ang card na ito at ang billing address nito. Magagamit mo ito kapag nag-sign in ka sa <ph name="USER_EMAIL" />.}one{Ise-save ang mga card na ito at ang mga billing address ng mga ito. Magagamit mo ang mga ito kapag nag-sign in ka sa <ph name="USER_EMAIL" />.}other{Ise-save ang mga card na ito at ang mga billing address ng mga ito. Magagamit mo ang mga ito kapag nag-sign in ka sa <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8012647001091218357">Hindi namin makaugnayan ang iyong mga magulang sa sandaling ito. Pakisubukang muli.</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Mga Ahensya at Serbisyo sa Pagbiyahe</translation>
@@ -4058,7 +4055,6 @@ Mga karagdagang detalye:
 <translation id="8094917007353911263">Maaaring hilingin ng network na ginagamit mo na bisitahin mo ang <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
-<translation id="8100588592594801589">Naalis na ang mga invalid na card</translation>
 <translation id="8103161714697287722">Paraan ng Pagbabayad</translation>
 <translation id="8103643211515685474">I-print pa rin</translation>
 <translation id="8105368624971345109">I-off</translation>
@@ -4616,6 +4612,7 @@ Mga karagdagang detalye:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Gustong gumamit ng Chrome browser ng fingerprint para i-autofill ang mga password</translation>
 <translation id="9141013498910525015">Pamahalaan ang mga address</translation>
+<translation id="9141672681283222114">Pinapayagan ang AR sa pagkakataong ito</translation>
 <translation id="9143898823728499852">Puwede mong i-autofill ang card na ito dahil naka-link sa Google Pay ang iyong <ph name="CARD_ISSUER_NAME" /> account</translation>
 <translation id="9144951720726881238">Expiration date:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Mag-sign in<ph name="END_LINK" />
@@ -4673,6 +4670,7 @@ Mga karagdagang detalye:
 <translation id="922152298093051471">I-customize ang Chrome</translation>
 <translation id="9222403027701923763">Primarya at Sekondaryang Pag-aaral (K-12)</translation>
 <translation id="93020190163435405">Mga Internship</translation>
+<translation id="931598121743515856">Dapat ay mahigit <ph name="CHECKOUT_AMOUNT_MINIMUM" /> ang bibilhin</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Payagan ang <ph name="APP_NAME" /> app na mag-set up ng mga Wi-Fi network?</translation>
 <translation id="936602727769022409">Maaari kang mawalan ng access sa iyong Google Account. Inirerekomenda ng Chromium na palitan na ang iyong password. Hihilingin sa iyong mag-sign in.</translation>
@@ -4682,13 +4680,13 @@ Mga karagdagang detalye:
 <translation id="940524522703752213">Magsisimula ang pag-upload ng iyong file sa <ph name="CLOUD_PROVIDER" /> sa loob ng <ph name="MINUTES" /> (na) minuto</translation>
 <translation id="944578681290094302">Ipakita kung aling mga reward at benepisyo ang available para sa iyong mga card kapag nag-checkout <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Matuto tungkol sa mga benepisyo ng card<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">Bina-block ng Chrome ang mga site para hindi makagamit ng third-party na cookies para ma-track ka habang nagba-browse ka.</translation>
-<translation id="945855313015696284">Tingnan ang impormasyon sa ibaba at mag-delete ng anumang invalid na card</translation>
 <translation id="94613679163347541">Paghambingin ang <ph name="CATEGORY" />?</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong site sa Google Sites nang mabilis</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Maglilimita ulit ang Chrome ng cookies ngayong araw}=1{Maglilimita ulit ang Chrome ng cookies bukas}one{# araw bago maglimita ulit ang Chrome ng cookies}other{# na araw bago maglimita ulit ang Chrome ng cookies}}</translation>
 <translation id="949314938206378263">Hiniling mong bisitahin ang site na ito. Puwedeng sumagot ang iyong magulang sa Family Link.</translation>
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="950926967802086924">Passkey • Google Password Manager</translation>
+<translation id="955429569736351433">Pinapayagan ang VR</translation>
 <translation id="95721182352849470">Dilaw 2</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="961856697154696964">I-delete ang browsing data</translation>

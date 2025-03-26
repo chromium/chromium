@@ -1,4 +1,8 @@
 This is a testharness.js-based test.
+[FAIL] Test that decodingInfo rejects if the video configuration contentType is of type audio
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that decodingInfo rejects if the audio configuration contentType is of type video
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 [FAIL] Test that decodingInfo rejects if the video configuration contentType does not imply a single media codec but has no codecs parameter
   assert_unreached: Should have rejected: undefined Reached unreachable code
 [FAIL] Test that decodingInfo rejects if the video configuration contentType has a codecs parameter that indicates multiple video codecs
@@ -12,3 +16,4 @@ This is a testharness.js-based test.
 [FAIL] Test that decodingInfo rejects if the audio configuration contentType has a codecs parameter that indicates both an audio and a video codec
   assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
+

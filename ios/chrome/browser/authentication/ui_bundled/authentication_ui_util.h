@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, SignoutActionSheetCoordinatorResult) {
   SignoutActionSheetCoordinatorResultKeepOnDevice,
 };
 
-// Enum to describe all 3 cases for a user being signed-in and syncing.
+// Enum to describe all 3 cases for a user being signed-in.
 enum class SignedInUserState {
   // Sign-in with UNO. The sign-out needs to ask confirmation to sign out only
   // if there are unsaved data. When signed out, a snackbar needs to be

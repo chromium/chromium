@@ -10,6 +10,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -168,8 +169,8 @@ TEST_F(EdgeDatabaseReaderTest, OpenTableAndReadDataDatabaseTest) {
     GUID guid_col_value = {};
     GUID expected_guid_col_value = {};
     EXPECT_TRUE(table_enum->RetrieveColumn(L"GuidCol", &guid_col_value));
-    memset(&expected_guid_col_value, row_count,
-           sizeof(expected_guid_col_value));
+    UNSAFE_TODO(memset(&expected_guid_col_value, row_count,
+                       sizeof(expected_guid_col_value)));
     EXPECT_EQ(expected_guid_col_value, guid_col_value);
 
     FILETIME filetime_col_value = {};
@@ -331,9 +332,10 @@ TEST_F(EdgeDatabaseReaderTest, CheckNullColumnDatabaseTest) {
 
   GUID guid_col_value = {};
   GUID expected_guid_col_value = {};
-  memset(&guid_col_value, 0x1, sizeof(guid_col_value));
+  UNSAFE_TODO(memset(&guid_col_value, 0x1, sizeof(guid_col_value)));
   EXPECT_TRUE(table_enum->RetrieveColumn(L"GuidCol", &guid_col_value));
-  memset(&expected_guid_col_value, 0, sizeof(expected_guid_col_value));
+  UNSAFE_TODO(
+      memset(&expected_guid_col_value, 0, sizeof(expected_guid_col_value)));
   EXPECT_EQ(expected_guid_col_value, guid_col_value);
 
   FILETIME filetime_col_value = {1, 1};

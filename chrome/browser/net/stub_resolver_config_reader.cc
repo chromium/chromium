@@ -124,6 +124,7 @@ StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
   pref_change_registrar_.Add(prefs::kBuiltInDnsClientEnabled, pref_callback);
   pref_change_registrar_.Add(prefs::kAdditionalDnsQueryTypesEnabled,
                              pref_callback);
+  pref_change_registrar_.Add(prefs::kHappyEyeballsV3Enabled, pref_callback);
 
   parental_controls_delay_timer_.Start(
       FROM_HERE, kParentalControlsCheckDelay,
@@ -150,6 +151,7 @@ void StubResolverConfigReader::RegisterPrefs(PrefRegistrySimple* registry) {
   // for SystemNetworkContextManager, at which point the feature list is ready.
   registry->RegisterBooleanPref(prefs::kBuiltInDnsClientEnabled, false);
   registry->RegisterBooleanPref(prefs::kAdditionalDnsQueryTypesEnabled, true);
+  registry->RegisterBooleanPref(prefs::kHappyEyeballsV3Enabled, false);
 }
 
 SecureDnsConfig StubResolverConfigReader::GetSecureDnsConfiguration(
@@ -225,7 +227,9 @@ StubResolverConfigReader::GetDnsOverHttpsConfigSource() const {
 }
 
 bool StubResolverConfigReader::GetHappyEyeballsV3Enabled() const {
-  // TODO(crbug.com/401410305): Add a policy and check the policy here.
+  if (local_state_->IsManagedPreference(prefs::kHappyEyeballsV3Enabled)) {
+    return local_state_->GetBoolean(prefs::kHappyEyeballsV3Enabled);
+  }
   return base::FeatureList::IsEnabled(net::features::kHappyEyeballsV3);
 }
 

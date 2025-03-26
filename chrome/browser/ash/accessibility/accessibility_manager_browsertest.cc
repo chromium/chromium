@@ -1610,6 +1610,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
 // is successfully downloaded.
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, FaceGazeAssetsSucceeded) {
   AccessibilityManager::Get()->EnableFaceGaze(true);
+  // Turning on FaceGaze will add a pinned notification to the message center,
+  // so clear it for the purposes of this test.
+  ClearMessageCenter();
   InstallFaceGazeAssetsAndWait();
 
   message_center::NotificationList::Notifications notifications =
@@ -1625,6 +1628,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, FaceGazeAssetsSucceeded) {
 // fails to download.
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, FaceGazeAssetsFailed) {
   AccessibilityManager::Get()->EnableFaceGaze(true);
+  // Turning on FaceGaze will add a pinned notification to the message center,
+  // so clear it for the purposes of this test.
+  ClearMessageCenter();
   OnFaceGazeAssetsFailed();
 
   message_center::NotificationList::Notifications notifications =
@@ -2019,8 +2025,15 @@ INSTANTIATE_TEST_SUITE_P(UserTypeInstantiation,
 IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   if (GetParam() == user_manager::UserType::kChild) {
     logged_in_user_mixin_->LogInUser();
+    histogram_tester_.ExpectBucketCount("Accessibility.CrosSpokenFeedback",
+                                        /*sample=*/false, 2);
+  } else {
+    histogram_tester_.ExpectBucketCount("Accessibility.CrosSpokenFeedback",
+                                        /*sample=*/false, 1);
   }
 
+  histogram_tester_.ExpectBucketCount("Accessibility.CrosSpokenFeedback",
+                                      /*sample=*/true, 0);
   histogram_tester_.ExpectBucketCount(
       "Accessibility.CrosSpokenFeedback.BrailleDisplayConnected."
       "ConnectionChanged",

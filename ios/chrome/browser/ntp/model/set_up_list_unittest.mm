@@ -42,6 +42,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using set_up_list_prefs::SetUpListItemState;
 
@@ -90,8 +91,6 @@ class SetUpListTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
     auth_service_->SignIn(identity, signin_metrics::AccessPoint::kUnknown);
-    auth_service_->GrantSyncConsent(identity,
-                                    signin_metrics::AccessPoint::kUnknown);
 
     profile_manager_.GetProfileAttributesStorage()
         ->UpdateAttributesForProfileWithName(
@@ -338,6 +337,7 @@ TEST_F(SetUpListTest, BuildListWithFollow) {
 // Tests that SetUpList observes local state changes, updates the item, and
 // calls the delegate.
 TEST_F(SetUpListTest, ObservesPrefs) {
+  SetFalseChromeLikelyDefaultBrowser();
   BuildSetUpList();
   id delegate = [OCMockObject mockForProtocol:@protocol(SetUpListDelegate)];
   set_up_list_.delegate = delegate;
@@ -347,7 +347,7 @@ TEST_F(SetUpListTest, ObservesPrefs) {
   set_up_list_prefs::MarkItemComplete(GetLocalState(),
                                       SetUpListItemType::kDefaultBrowser);
   EXPECT_TRUE(item.complete);
-  [delegate verify];
+  EXPECT_OCMOCK_VERIFY(delegate);
 }
 
 // Tests that `allItemsComplete` correctly returns whether all items are
@@ -400,9 +400,9 @@ TEST_F(SetUpListTest, RecordsAllItemsCompleteOnce) {
 
 // Tests that the Set Up List can be disabled.
 TEST_F(SetUpListTest, Disable) {
-  EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(GetLocalState()));
-  set_up_list_prefs::DisableSetUpList(GetLocalState());
-  EXPECT_TRUE(set_up_list_prefs::IsSetUpListDisabled(GetLocalState()));
+  EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(prefs_));
+  set_up_list_prefs::DisableSetUpList(prefs_);
+  EXPECT_TRUE(set_up_list_prefs::IsSetUpListDisabled(prefs_));
 
   BuildSetUpList();
   EXPECT_EQ(set_up_list_, nil);

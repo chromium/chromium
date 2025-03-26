@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.paint_preview;
 import android.content.Context;
 import android.os.SystemClock;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -26,10 +29,10 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Glue code for the Paint Preview show-on-startup feature. */
-public class StartupPaintPreviewHelper {
+public class StartupPaintPreviewHelper implements Destroyable {
     /**
-     * Tracks whether a paint preview should be shown on tab restore. We use this to only attempt
-     * to display a paint preview on the first tab restoration that happens on Chrome startup when
+     * Tracks whether a paint preview should be shown on tab restore. We use this to only attempt to
+     * display a paint preview on the first tab restoration that happens on Chrome startup when
      * cold.
      */
     private static boolean sShouldShowOnRestore;
@@ -41,6 +44,8 @@ public class StartupPaintPreviewHelper {
     private final Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
     private final ObserverList<PaintPreviewMetricsObserver> mMetricsObservers =
             new ObserverList<>();
+
+    private @Nullable Destroyable mServiceObserver;
 
     /**
      * Initializes the logic required for the Paint Preview on startup feature. Mainly, observes a
@@ -88,8 +93,10 @@ public class StartupPaintPreviewHelper {
                                                 .areMultipleChromeInstancesRunning(context);
                         // Avoid running the audit in multi-window mode as otherwise we will delete
                         // data that is possibly in use by the other Activity's TabModelSelector.
-                        PaintPreviewTabServiceFactory.getServiceInstance()
-                                .onRestoreCompleted(tabModelSelector, runAudit);
+                        assert mServiceObserver == null;
+                        mServiceObserver =
+                                PaintPreviewTabServiceFactory.getServiceInstance()
+                                        .onRestoreCompleted(tabModelSelector, runAudit);
                         tabModelSelector.removeObserver(this);
                     }
 
@@ -172,5 +179,12 @@ public class StartupPaintPreviewHelper {
      */
     public void addMetricsObserver(PaintPreviewMetricsObserver observer) {
         mMetricsObservers.addObserver(observer);
+    }
+
+    @Override
+    public void destroy() {
+        if (mServiceObserver != null) {
+            mServiceObserver.destroy();
+        }
     }
 }

@@ -1,4 +1,5 @@
-<style include="cr-shared-style settings-shared settings-columned-section">
+<style include="cr-shared-style settings-shared settings-columned-section
+    passwords-shared">
   .flex {
     flex: 1;
   }
@@ -6,6 +7,10 @@
   .list-item {
     padding-top: 8px;
     padding-bottom: 8px;
+  }
+
+  .start {
+    overflow: hidden;
   }
 
   #entries {
@@ -91,8 +96,12 @@
   <template is="dom-repeat" items="[[entityInstances_]]">
     <li class="list-item">
       <div class="start">
-        [[item.entityInstanceLabel]]
-        <div class="cr-secondary-text">[[item.entityInstanceSubLabel]]</div>
+        <div class="ellipses">
+          [[item.entityInstanceLabel]]
+        </div>
+        <div class="ellipses cr-secondary-text">
+          [[item.entityInstanceSubLabel]]
+        </div>
       </div>
       <cr-icon-button id="moreButton" class="icon-more-vert"
           on-click="onMoreButtonClick_" title="[[getMoreButtonTitle_(

@@ -394,6 +394,12 @@ void ToolbarView::Init() {
   pinned_toolbar_actions_container_ = container_view_->AddChildView(
       std::make_unique<PinnedToolbarActionsContainer>(browser_view_));
 
+  if (features::HasTabSearchToolbarButton()) {
+    tab_search_button_ =
+        pinned_toolbar_actions_container()->CreatePermanentButtonFor(
+            kActionTabSearch);
+  }
+
   if (IsChromeLabsEnabled()) {
     chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
     UpdateChromeLabsNewBadgePrefs(browser_->profile(),

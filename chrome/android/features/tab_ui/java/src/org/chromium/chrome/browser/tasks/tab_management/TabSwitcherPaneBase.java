@@ -87,8 +87,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     protected final UserEducationHelper mUserEducationHelper;
     protected final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     protected final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    protected final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
-            new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
@@ -310,11 +308,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                 mOnToolbarAlphaChange);
     }
 
-    @Override
-    public @NonNull ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
-        return mHubSearchEnabledStateSupplier;
-    }
-
     private @ColorInt int getAnimationBackgroundColor() {
         if (mIsIncognito) {
             return ChromeColors.getPrimaryBackgroundColor(mRootView.getContext(), mIsIncognito);
@@ -490,13 +483,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             return;
         }
         coordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
-    }
-
-    @Override
-    public void openInvitationModal(String invitationId) {
-        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
-        if (coordinator == null) return;
-        coordinator.openInvitationModal(invitationId);
     }
 
     @Override

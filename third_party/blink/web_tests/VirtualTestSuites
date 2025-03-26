@@ -1050,8 +1050,12 @@
       "http/tests/inspector-protocol/network/response-received-extra-info-exempted-cookie.js"
     ],
     "args": ["--test-third-party-cookie-phaseout"],
-    "expires": "May 1, 2025",
-    "owners": ["shuuran@chromium.org", "dylancutler@google.com"]
+    "expires": "May 1, 2026",
+    "owners": [
+      "shuuran@chromium.org",
+      "dylancutler@google.com",
+      "amaliev@chromium.com"
+    ]
   },
   {
     "prefix": "sandbox-allow-same-site-none-cookies-3PC-blocked",
@@ -1112,10 +1116,11 @@
     "bases": [
       "external/wpt/FileAPI/BlobURL/cross-partition.https.html",
       "external/wpt/FileAPI/BlobURL/cross-partition-worker-creation.https.html",
-      "external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html"
+      "external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html"
     ],
     "args": ["--enable-features=BlockCrossPartitionBlobUrlFetching,EnforceNoopenerOnBlobURLNavigation"],
-    "expires": "Mar 1, 2025",
+    "expires": "Sep 1, 2025",
     "owners": ["janiceliu@chromium.org"]
   },
 

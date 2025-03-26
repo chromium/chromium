@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -76,8 +77,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   EXPECT_EQ(app_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             GetAppUrl());
 
-  std::vector<GURL> launch_params =
-      GetLaunchParams(app_contents, "launchParamsTargetUrls");
+  std::vector<GURL> launch_params = apps::test::GetLaunchParamUrlsInContents(
+      app_contents, "launchParamsTargetUrls");
   // There should be two launch params -- one for the initial launch and one
   // for when the existing app got focus (via the Intent Picker) and launch
   // params were enqueued.
@@ -120,8 +121,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   EXPECT_EQ(app_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             GetAppUrlWithQuery());
 
-  std::vector<GURL> launch_params =
-      GetLaunchParams(app_contents, "launchParamsTargetUrls");
+  std::vector<GURL> launch_params = apps::test::GetLaunchParamUrlsInContents(
+      app_contents, "launchParamsTargetUrls");
   // There should be one launch param -- because the Intent Picker triggers a
   // new navigation in the app (and launch params are then enqueued).
   EXPECT_THAT(launch_params, testing::ElementsAre(GetAppUrlWithQuery()));

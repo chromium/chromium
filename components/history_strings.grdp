@@ -139,6 +139,9 @@
   <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER" desc="On the history page, the persistent disclaimer text shown below the search box indicating what content is sent to Google for the history search feature.">
     Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER_LOGGING_OFF" desc="On the history page, the persistent disclaimer text shown below the search box indicating what content is sent to Google for the history search feature when logging is disabled by policy.">
+    Your searches, best matches, and their page contents are sent to Google. It will not be used by human reviewers to improve AI. Your organization may change these settings at any time.
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_LABEL" desc="On the history page, the accessiblility label for the promo for history search powered by AI." translateable="false">
     Promo
   </message>

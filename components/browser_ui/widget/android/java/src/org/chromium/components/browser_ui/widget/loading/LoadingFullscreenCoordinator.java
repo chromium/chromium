@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.widget.loading;
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 
@@ -44,17 +43,20 @@ public class LoadingFullscreenCoordinator {
      *
      * @param onFinishCallback The callback to call when the loading screen exits.
      */
-    public void startLoading(String loadingText, Runnable onFinishCallback) {
+    public void startLoading(Runnable onFinishCallback) {
         @ColorInt int backgroundColor = SemanticColorUtils.getDefaultBgColor(mActivity);
-        TextView textView = mContainer.findViewById(R.id.loading_text);
-        textView.setText(loadingText);
-        View.OnClickListener closeButtonClickListener =
+        View.OnClickListener cancelButtonClickListener =
                 (view) -> {
                     onFinishCallback.run();
                 };
         mContainer
-                .findViewById(R.id.loading_close_button)
-                .setOnClickListener(closeButtonClickListener);
+                .findViewById(R.id.loading_cancel_button)
+                .setOnClickListener(cancelButtonClickListener);
+
+        // Do not stack two loading screens.
+        if (mPropertyModel != null) {
+            closeLoadingScreen();
+        }
 
         mPropertyModel =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)

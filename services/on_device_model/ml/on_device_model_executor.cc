@@ -390,11 +390,11 @@ on_device_model::Capabilities OnDeviceModelExecutor::GetCapabilities(
   }
 
   PlatformFile platform_file;
-  std::string weights_path_str = assets.weights_path.AsUTF8Unsafe();
   if (assets.weights.IsValid()) {
     platform_file = assets.weights.TakePlatformFile();
   } else {
-    base::File file(assets.weights_path, base::File::FLAG_OPEN);
+    base::File file(assets.weights_path,
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
     platform_file = file.TakePlatformFile();
   }
   ChromeMLCapabilities capabilities;

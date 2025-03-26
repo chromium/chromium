@@ -16,7 +16,7 @@ WebAppTest::~WebAppTest() = default;
 void WebAppTest::SetUp() {
   ASSERT_TRUE(testing_profile_manager_.SetUp());
   profile_ = testing_profile_manager_.CreateTestingProfile(
-      TestingProfile::kDefaultProfileUserName, /*is_main_profile=*/true,
+      TestingProfile::kDefaultProfileUserName, /*testing_factories=*/{},
       shared_url_loader_factory_);
   content::RenderViewHostTestHarness::SetUp();
 }

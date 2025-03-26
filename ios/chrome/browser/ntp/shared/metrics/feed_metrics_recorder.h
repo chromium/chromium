@@ -17,9 +17,15 @@
 @protocol NewTabPageFollowDelegate;
 @protocol NewTabPageActionsDelegate;
 @class NewTabPageState;
+namespace feature_engagement {
+class Tracker;
+}
 class PrefService;
 
 // Records different metrics for the NTP feeds.
+// TODO(crbug.com/402798827): Rename `FeedMetricsRecorder` to something more
+// general like `FeedRecorder` if kFeedSwipeInProductHelp becomes a full launch
+// candidate.
 @interface FeedMetricsRecorder : NSObject <FeedRefreshStateTracker>
 
 // The last active new tab page state.
@@ -35,6 +41,8 @@ class PrefService;
 @property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
+           featureEngagementTracker:
+               (feature_engagement::Tracker*)featureEngagementTracker
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

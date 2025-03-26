@@ -22,7 +22,6 @@ class EntryMock : public Entry {
   MOCK_METHOD(void, Doom, (), (override));
   MOCK_METHOD(std::string, GetKey, (), (const, override));
   MOCK_METHOD(base::Time, GetLastUsed, (), (const, override));
-  MOCK_METHOD(base::Time, GetLastModified, (), (const, override));
   MOCK_METHOD(int32_t, GetDataSize, (int index), (const, override));
   MOCK_METHOD(int,
               ReadData,

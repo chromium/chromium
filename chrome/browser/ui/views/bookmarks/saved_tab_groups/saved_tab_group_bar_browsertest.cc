@@ -102,14 +102,12 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
 
     const int original_model_count = model->GetTabCount();
     const base::Uuid guid = group->saved_guid();
-    service->OpenTabGroup(guid,
-                          std::make_unique<TabGroupActionContextDesktop>(
-                              browser(), OpeningSource::kOpenedFromRevisitUi));
+    std::optional<LocalTabGroupID> group_id = service->OpenTabGroup(
+        guid, std::make_unique<TabGroupActionContextDesktop>(
+                  browser(), OpeningSource::kOpenedFromRevisitUi));
 
-    group = service->GetGroup(guid);
-    EXPECT_TRUE(group->local_group_id());
-    EXPECT_TRUE(model->group_model()->ContainsTabGroup(
-        group->local_group_id().value()));
+    EXPECT_TRUE(group_id.has_value());
+    EXPECT_TRUE(model->group_model()->ContainsTabGroup(group_id.value()));
     EXPECT_EQ(model->count(), original_model_count);
   } else {
     SavedTabGroupKeyedService* saved_tab_group_service =
@@ -172,12 +170,11 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
     service->RemoveGroup(guid);
 
     // Attempt to reopen, it should not open.
-    service->OpenTabGroup(guid,
-                          std::make_unique<TabGroupActionContextDesktop>(
-                              browser(), OpeningSource::kOpenedFromRevisitUi));
+    std::optional<LocalTabGroupID> group_id = service->OpenTabGroup(
+        guid, std::make_unique<TabGroupActionContextDesktop>(
+                  browser(), OpeningSource::kOpenedFromRevisitUi));
 
-    group = service->GetGroup(guid);
-    EXPECT_FALSE(group);
+    EXPECT_FALSE(group_id);
     EXPECT_FALSE(model->group_model()->ContainsTabGroup(id));
   } else {
     SavedTabGroupKeyedService* saved_tab_group_service =

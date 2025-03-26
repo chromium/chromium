@@ -4,6 +4,8 @@
 
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -21,6 +23,8 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/metrics/dwa/dwa_builders.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -44,7 +48,8 @@ using DelayType = AggregatableReportRequest::DelayType;
 void RecordHistograms(std::optional<DelayType> delay_type,
                       int net_error,
                       std::optional<int> http_response_code,
-                      AggregatableReportSender::RequestStatus status) {
+                      AggregatableReportSender::RequestStatus status,
+                      std::string_view serialized_url) {
   // Since net errors are always negative and HTTP errors are always positive,
   // it is fine to combine these in a single histogram.
   const int http_response_or_net_error =
@@ -52,6 +57,12 @@ void RecordHistograms(std::optional<DelayType> delay_type,
 
   base::UmaHistogramEnumeration(
       "PrivacySandbox.AggregationService.ReportSender.Status", status);
+
+  dwa::builders::PrivacySandbox_AggregationService_ReportSenderAttempt()
+      .SetContent(serialized_url)
+      .SetStatus(static_cast<int64_t>(status))
+      .Record(metrics::dwa::DwaRecorder::Get());
+
   base::UmaHistogramSparse(
       "PrivacySandbox.AggregationService.ReportSender."
       "HttpResponseOrNetErrorCode",
@@ -101,7 +112,7 @@ AggregatableReportSender::CreateForTesting(
       std::move(url_loader_factory), enable_debug_logging));
 }
 
-void AggregatableReportSender::SendReport(const GURL& url,
+void AggregatableReportSender::SendReport(GURL url,
                                           const base::Value& contents,
                                           std::optional<DelayType> delay_type,
                                           ReportSentCallback callback) {
@@ -114,8 +125,10 @@ void AggregatableReportSender::SendReport(const GURL& url,
         storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   }
 
+  std::string serialized_url = url.spec();
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = url;
+  resource_request->url = std::move(url);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags =
@@ -185,13 +198,14 @@ void AggregatableReportSender::SendReport(const GURL& url,
       url_loader_factory_.get(),
       base::BindOnce(&AggregatableReportSender::OnReportSent,
                      base::Unretained(this), std::move(it), std::move(callback),
-                     delay_type));
+                     delay_type, std::move(serialized_url)));
 }
 
 void AggregatableReportSender::OnReportSent(
     UrlLoaderList::iterator it,
     ReportSentCallback callback,
     std::optional<DelayType> delay_type,
+    std::string serialized_url,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   std::optional<int> http_response_code;
   if (headers) {
@@ -217,7 +231,8 @@ void AggregatableReportSender::OnReportSent(
                        : "N/A");
   }
 
-  RecordHistograms(delay_type, net_error, http_response_code, status);
+  RecordHistograms(delay_type, net_error, http_response_code, status,
+                   serialized_url);
 
   loaders_in_progress_.erase(it);
   std::move(callback).Run(status);

@@ -66,7 +66,7 @@ class BackgroundApplicationListModel::Application final {
   Application(BackgroundApplicationListModel* model,
               const Extension* an_extension);
 
-  virtual ~Application();
+  ~Application();
 
   // Invoked when a request icon is available.
   void OnImageLoaded(const gfx::Image& image);

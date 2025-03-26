@@ -9,6 +9,7 @@
 #include <map>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -255,7 +256,7 @@ bool DesktopResizerWin::IsResizeSupported() {
 bool DesktopResizerWin::GetPrimaryDisplayMode(DWORD mode_number,
                                               DWORD flags,
                                               DEVMODE* mode) {
-  memset(mode, 0, sizeof(DEVMODE));
+  UNSAFE_TODO(memset(mode, 0, sizeof(DEVMODE)));
   mode->dmSize = sizeof(DEVMODE);
   if (!EnumDisplaySettingsEx(nullptr, mode_number, mode, flags)) {
     return false;

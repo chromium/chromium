@@ -68,6 +68,7 @@ constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
     "ntp-photos-module-opt-out";
 constexpr char kHatsSurveyTriggerPerformanceControlsPerformance[] =
     "performance-general";
+constexpr char kHatsSurveyTriggerPerformanceControlsPPM[] = "performance-ppm";
 constexpr char kHatsSurveyTriggerPerformanceControlsBatteryPerformance[] =
     "performance-battery";
 constexpr char kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut[] =
@@ -476,14 +477,26 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &performance_manager::features::kPerformanceControlsPerformanceSurvey,
       kHatsSurveyTriggerPerformanceControlsPerformance,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"high_efficiency_mode", "battery_saver_mode"},
+      std::vector<std::string>{"Memory Saver Mode Enabled",
+                               "Battery Saver Mode Enabled"},
       std::vector<std::string>{});
+  survey_configs.emplace_back(
+      &performance_manager::features::kPerformanceControlsPPMSurvey,
+      kHatsSurveyTriggerPerformanceControlsPPM,
+      /*presupplied_trigger_id=*/std::nullopt,
+      std::vector<std::string>{"Memory Saver Mode Enabled",
+                               "Battery Saver Mode Enabled"},
+      std::vector<std::string>{},
+      // TODO(crbug.com/404915122): Enable UMA logging.
+      /*log_responses_to_uma=*/false,
+      /*log_responses_to_ukm=*/false);
   survey_configs.emplace_back(
       &performance_manager::features::
           kPerformanceControlsBatteryPerformanceSurvey,
       kHatsSurveyTriggerPerformanceControlsBatteryPerformance,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"high_efficiency_mode", "battery_saver_mode"},
+      std::vector<std::string>{"Memory Saver Mode Enabled",
+                               "Battery Saver Mode Enabled"},
       std::vector<std::string>{});
   survey_configs.emplace_back(
       &performance_manager::features::

@@ -449,7 +449,7 @@ public class HistoricalTabSaverImplTest {
         CriteriaHelper.pollUiThread(() -> archivedTabModelOrchestrator.getTabArchiver() != null);
 
         Supplier<TabModel> archivedTabModelSupplier = archivedTabModelOrchestrator::getTabModel;
-        mHistoricalTabSaver.addSecodaryTabModelSupplier(archivedTabModelSupplier);
+        mHistoricalTabSaver.addSecondaryTabModelSupplier(archivedTabModelSupplier);
 
         runOnUiThreadBlocking(
                 () -> {

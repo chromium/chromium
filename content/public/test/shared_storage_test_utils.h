@@ -52,6 +52,9 @@ network::mojom::SharedStorageModifierMethodWithOptionsPtr MojomClearMethod(
 std::vector<MethodWithOptionsPtr> CloneSharedStorageMethods(
     const std::vector<MethodWithOptionsPtr>& methods_with_options);
 
+std::string SerializeSharedStorageMethods(
+    const std::vector<MethodWithOptionsPtr>& methods_with_options);
+
 SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
     StoragePartition* storage_partition);
 

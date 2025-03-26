@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="1146503048444965320">Chrome で新しいタブを開く</translation>
 <translation id="1166460004393506534">Chrome の閲覧履歴データを削除する</translation>
-<translation id="1171255741903316750">[Chrome を終了するときにシークレット タブをロックする] をオンにします</translation>
 <translation id="1179527450541388808">iPad のホーム画面ドックから Chrome にすばやくアクセス。</translation>
 <translation id="1180362651362502943">Google アカウントの Chrome データを引き続き使用してください。</translation>
 <translation id="1200396280085622191">メッセージや他のアプリのリンクをタップしたときに、常に Chrome で開くよう設定できます。</translation>
@@ -178,6 +177,7 @@
 <translation id="5716154293141027663">他のアプリでタップしたリンクを Chrome で開くことができます</translation>
 <translation id="5752489513673657785">Google があなた向けに作成したカスタム フィード</translation>
 <translation id="5772407442571703917">こちらから Chrome をダウンロードできます。</translation>
+<translation id="5777468213129569553">Chrome を起動</translation>
 <translation id="5779767936254214055">Chrome から離れたり、別のアプリに切り替えたりするときに、シークレット タブをロックできます。</translation>
 <translation id="5808435672482059465">Chrome 履歴を表示</translation>
 <translation id="5833027901704861726">Chrome データの一部が <ph name="EMAIL" /> にまだ保存されていません。

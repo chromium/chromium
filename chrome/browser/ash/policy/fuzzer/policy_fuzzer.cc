@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/at_exit.h"
 #include "base/check_op.h"
@@ -51,7 +52,7 @@ constexpr logging::LogSeverity kLogSeverity = logging::LOGGING_FATAL;
 // threshold. It's needed in order to suppress unneeded syslog logging (which by
 // default is exempt from the level set by `logging::SetMinLogLevel()`).
 bool VoidifyingLogHandler(int severity,
-                          const char* /*file*/,
+                          std::string_view /*file*/,
                           int /*line*/,
                           size_t /*message_start*/,
                           const std::string& /*str*/) {

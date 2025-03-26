@@ -663,38 +663,8 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
     return;
   }
 
-  MaybePauseTrackingSavedTabGroup(source_browser, group_id.value());
   tab_strip_ui::MoveGroupAcrossWindows(source_browser, target_browser, to_index,
                                        group_id.value());
-  MaybeResumeTrackingSavedTabGroup(target_browser);
-}
-
-void TabStripPageHandler::MaybePauseTrackingSavedTabGroup(
-    Browser* browser,
-    const tab_groups::TabGroupId& group_id) {
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
-
-  if (!tab_group_service || !tab_group_service->GetGroup(group_id)) {
-    return;
-  }
-
-  observation_pauser_ = tab_group_service->CreateScopedLocalObserverPauser();
-}
-
-void TabStripPageHandler::MaybeResumeTrackingSavedTabGroup(Browser* browser) {
-  if (!observation_pauser_) {
-    return;
-  }
-
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
-
-  if (!tab_group_service) {
-    return;
-  }
-
-  observation_pauser_.reset();
 }
 
 void TabStripPageHandler::MoveTab(int32_t tab_id, int32_t to_index) {

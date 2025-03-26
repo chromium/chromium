@@ -457,6 +457,9 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
     "src/org/chromium/chrome/browser/ChromeTabbedActivityTest.java",
     "src/org/chromium/chrome/browser/ContentViewFocusTest.java",
     "src/org/chromium/chrome/browser/ContentWebFeatureUsageUtilsIntegrationTest.java",
+    "src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java",
+    "src/org/chromium/chrome/browser/ExampleFreshCtaTest.java",
+    "src/org/chromium/chrome/browser/ExampleReusedCtaTest.java",
     "src/org/chromium/chrome/browser/ExampleUiCaptureTest.java",
     "src/org/chromium/chrome/browser/FeaturesAnnotationsTest.java",
     "src/org/chromium/chrome/browser/FocusedEditableTextFieldZoomTest.java",
@@ -1722,6 +1725,7 @@ android_library("chrome_unit_test_java_various") {
   resources_package = "org.chromium.chrome"
 
   sources = [
+    "src/org/chromium/chrome/browser/ExampleOnDeviceUnitTest.java",
     "src/org/chromium/chrome/browser/IntentFilterUnitTest.java",
     "src/org/chromium/chrome/browser/IntentHandlerNativeTest.java",
     "src/org/chromium/chrome/browser/autofill/AutofillUnitTest.java",

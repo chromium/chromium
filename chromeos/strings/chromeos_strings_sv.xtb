@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">på söndag</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4251839292699800785">Elegant kontor</translation>
+<translation id="4252261480746798874">När du väljer Skapa din egen kan du skriva en anpassad prompt. Du kan även välja Välj ett tema och sedan välja de understrukna orden för att anpassa AI-bakgrunden.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Välj Inspirera mig för att få mer unika och varierade AI-bildalternativ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          När du skapar en egen bakgrund skickas prompten till Googles servrar för att generera bilder och förbättra produkten i enlighet med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles användarvillkor och integritetspolicy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ange inget som är personligt, känsligt eller konfidentiellt.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Generativ AI kan göra misstag, inklusive om personer, så dubbelkolla svaren. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Läs mer<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP-latens</translation>
 <translation id="4266143281602681663">garn</translation>
 <translation id="4269815121975886860">Startinställningar</translation>

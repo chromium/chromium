@@ -264,11 +264,16 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   using InlineEdge = LogicalStaticPosition::InlineEdge;
   using BlockEdge = LogicalStaticPosition::BlockEdge;
+  using LogicalAlignmentDirection =
+      LogicalStaticPosition::LogicalAlignmentDirection;
   InlineEdge StaticInlineEdge() const {
     return static_cast<InlineEdge>(static_inline_edge_);
   }
   BlockEdge StaticBlockEdge() const {
     return static_cast<BlockEdge>(static_block_edge_);
+  }
+  LogicalAlignmentDirection StaticAlignSelfDirection() const {
+    return static_cast<LogicalAlignmentDirection>(static_align_self_direction_);
   }
 
   void SetStaticPositionFromNG(const LogicalStaticPosition& position) {
@@ -276,6 +281,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     static_block_position_ = position.offset.block_offset;
     static_inline_edge_ = position.inline_edge;
     static_block_edge_ = position.block_edge;
+    static_align_self_direction_ = position.align_self_direction;
   }
 
   LogicalStaticPosition GetStaticPosition() const {
@@ -284,6 +290,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     position.offset.block_offset = static_block_position_;
     position.inline_edge = StaticInlineEdge();
     position.block_edge = StaticBlockEdge();
+    position.align_self_direction = StaticAlignSelfDirection();
     return position;
   }
 
@@ -747,6 +754,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned needs_reorder_overlay_overflow_controls_ : 1;
   unsigned static_inline_edge_ : 2;
   unsigned static_block_edge_ : 2;
+  unsigned static_align_self_direction_ : 1;
 
   unsigned invisible_for_position_visibility_ : 4 = 0;
   unsigned descendant_needs_check_position_visibility_ : 1 = false;

@@ -252,15 +252,13 @@ class CORE_EXPORT GridLayoutAlgorithm
       LayoutUnit* intrinsic_block_size,
       LayoutUnit* offset_in_stitched_container);
 
-  void BuildGapIntersectionPoints(
-      const GridLayoutData& layout_data,
-      GapFragmentData::GapGeometry* gap_geometry) const;
+  void BuildGapIntersectionPoints(const GridLayoutData& layout_data,
+                                  GapGeometry* gap_geometry) const;
 
   // Updates the blocked status of the relevant gap intersection
   // points in `gap_geometry` based on the span of `grid_item`.
-  void MarkBlockedStatusForGapIntersections(
-      const GridItemData& grid_item,
-      GapFragmentData::GapGeometry* gap_geometry) const;
+  void MarkBlockedStatusForGapIntersections(const GridItemData& grid_item,
+                                            GapGeometry* gap_geometry) const;
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid (as provided by `oof_children`).

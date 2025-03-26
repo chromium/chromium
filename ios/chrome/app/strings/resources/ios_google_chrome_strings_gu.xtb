@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">તમારો પાસવર્ડ <ph name="EMAIL" /> માટેના Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે.</translation>
 <translation id="1146503048444965320">Chromeમાં નવું ટૅબ ખોલો</translation>
 <translation id="1166460004393506534">Chromeમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
-<translation id="1171255741903316750">“જ્યારે તમે Chrome બંધ કરો, ત્યારે છૂપા ટૅબ લૉક કરો” ચાલુ કરો</translation>
 <translation id="1179527450541388808">તમારા iPadની હોમ સ્ક્રીનના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="1180362651362502943">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો.</translation>
 <translation id="1200396280085622191">જ્યારે પણ તમે મેસેજ અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
@@ -43,6 +42,7 @@
 <translation id="1799920918471566157">Chrome વિશે ટિપ</translation>
 <translation id="1830634592642484976">આ સરનામું હાલમાં Chromeમાં સાચવેલું છે. Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="USER_EMAIL" />માં સાચવો.</translation>
 <translation id="1891812034154776216">જ્યારે તમે Chromeમાંથી બહાર નીકળો, ત્યારે ખુલ્લા છૂપા ટૅબ છુપાવો</translation>
+<translation id="1894434821386148799">તમે અહીં Chrome સેટિંગ અને વધુ શોધી શકો છો</translation>
 <translation id="1917964099031477364">આ ડિવાઇસ પરની Chrome અને અન્ય Google ઍપમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>
 <translation id="1919130412786645364">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="1965935827552890526">તમે અન્ય ખુલ્લી Chrome વિંડોમાં જે કાર્ય કરતા તા તે પૂર્ણ કરો.</translation>
@@ -177,6 +177,7 @@
 <translation id="5716154293141027663">કોઈપણ સમયે તમે અન્ય ઍપમાં લિંક પર ટૅપ કરો ત્યારે Chrome ખૂલશે</translation>
 <translation id="5752489513673657785">Google દ્વારા તમારા માટે બનાવવામાં આવેલું કસ્ટમ ફીડ</translation>
 <translation id="5772407442571703917">અહીં Chrome ડાઉનલોડ કરો.</translation>
+<translation id="5777468213129569553">Chrome ખોલો</translation>
 <translation id="5779767936254214055">જ્યારે તમે Chromeમાંથી બહાર નીકળો અથવા કોઈ અન્ય ઍપ પર સ્વિચ કરો, ત્યારે તમારા છૂપા ટૅબ લૉક કરો.</translation>
 <translation id="5808435672482059465">તમારો Chrome ઇતિહાસ જુઓ</translation>
 <translation id="5833027901704861726">Chromeનો તમારો અમુક ડેટા હજી સુધી <ph name="EMAIL" />માં સાચવવામાં આવ્યો નથી.

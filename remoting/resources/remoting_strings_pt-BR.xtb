@@ -40,6 +40,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="2758123043070977469">Ocorreu um problema durante a autenticação. Faça login novamente.</translation>
 <translation id="2803375539583399270">Insira o PIN</translation>
 <translation id="2919669478609886916">Esta máquina está sendo compartilhada com outro usuário. Quer continuar compartilhando?</translation>
+<translation id="2929683002824598593">Compartilhar dispositivo</translation>
 <translation id="2939145106548231838">Autenticar para host</translation>
 <translation id="3027681561976217984">Modo de toque</translation>
 <translation id="3106379468611574572">O computador remoto não está respondendo às solicitações de conexão. Certifique-se de que ele esteja on-line e tente novamente.</translation>
@@ -117,10 +118,12 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="6178645564515549384">Host de mensagens nativas para assistência remota</translation>
 <translation id="618120821413932081">Atualizar a resolução remota para que fique do tamanho da janela</translation>
 <translation id="6223301979382383752">Abrir preferências de gravação de tela</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> pediu acesso para ver sua tela e controlar seu teclado e mouse. Quer compartilhar seu dispositivo?</translation>
 <translation id="6284412385303060032">O host que está sendo executado na tela de lógica do console foi encerrado para suportar o modo de cortina, alternando para um host executado em uma sessão específica do usuário.</translation>
 <translation id="6542902059648396432">Informar um problema...</translation>
 <translation id="6583902294974160967">Suporte</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Se você não realizar nenhuma ação, seu dispositivo começará a compartilhar em # segundo.}one{Se você não realizar nenhuma ação, seu dispositivo começará a compartilhar em # segundo.}other{Se você não realizar nenhuma ação, seu dispositivo começará a compartilhar em # segundos.}}</translation>
 <translation id="6654753848497929428">Compartilhar</translation>
 <translation id="677755392401385740">Host iniciado para o usuário <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplicativo para ajudar a abrir um URL no cliente da <ph name="PRODUCT_NAME" /></translation>

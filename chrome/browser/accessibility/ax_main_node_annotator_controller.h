@@ -13,20 +13,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/callback_list.h"
-#else
 #include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
-#endif
 
 class Profile;
-
-#if BUILDFLAG(IS_CHROMEOS)
-namespace ash {
-struct AccessibilityStatusEventDetails;
-}
-#endif
 
 namespace content {
 class ScopedAccessibilityMode;
@@ -40,12 +30,8 @@ class AXMainNodeAnnotatorControllerFactory;
 // changes in the per-profile preference and updates the accessibility mode of
 // WebContents when it changes, provided its feature flag is enabled.
 class AXMainNodeAnnotatorController : public KeyedService,
-                                      public ScreenAIInstallState::Observer
-#if !BUILDFLAG(IS_CHROMEOS)
-    ,
-                                      public ui::AXModeObserver
-#endif
-{
+                                      public ScreenAIInstallState::Observer,
+                                      public ui::AXModeObserver {
  public:
   explicit AXMainNodeAnnotatorController(Profile* profile);
   AXMainNodeAnnotatorController(const AXMainNodeAnnotatorController&) = delete;
@@ -61,10 +47,8 @@ class AXMainNodeAnnotatorController : public KeyedService,
 
   void Activate();
 
-#if !BUILDFLAG(IS_CHROMEOS)
   // ui::AXModeObserver:
   void OnAssistiveTechChanged(ui::AssistiveTech assistive_tech) override;
-#endif
 
   void set_service_ready_for_testing() { service_ready_ = true; }
   void complete_service_intialization_for_testing() {
@@ -73,11 +57,6 @@ class AXMainNodeAnnotatorController : public KeyedService,
 
  private:
   friend class AXMainNodeAnnotatorControllerFactory;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnAccessibilityStatusEvent(
-      const ash::AccessibilityStatusEventDetails& details);
-#endif
 
   // Receives the result of main node extraction service initialization.
   void MainNodeExtractionServiceInitializationCallback(bool successful);
@@ -93,14 +72,9 @@ class AXMainNodeAnnotatorController : public KeyedService,
   // before the profile gets destroyed.
   raw_ptr<Profile> profile_;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Observes spoken feedback.
-  base::CallbackListSubscription accessibility_status_subscription_;
-#else
   // Observes the presence of a screen reader.
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
-#endif
 
   // Observes changes in Screen AI component download and readiness state.
   base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>

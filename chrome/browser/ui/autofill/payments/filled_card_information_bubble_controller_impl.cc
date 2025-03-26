@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -127,11 +128,7 @@ std::u16string FilledCardInformationBubbleControllerImpl::GetBubbleTitleText()
 
 std::u16string FilledCardInformationBubbleControllerImpl::GetLearnMoreLinkText()
     const {
-  if (IsBnplFlow()) {
-    return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL,
-        options_.filled_card.CardNameForAutofillDisplay());
-  }
+  CHECK(!IsBnplFlow());
   return options_.filled_card.record_type() ==
                  CreditCard::RecordType::kVirtualCard
              ? l10n_util::GetStringUTF16(
@@ -143,9 +140,8 @@ std::u16string FilledCardInformationBubbleControllerImpl::GetLearnMoreLinkText()
 std::u16string
 FilledCardInformationBubbleControllerImpl::GetEducationalBodyLabel() const {
   if (IsBnplFlow()) {
-    return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL,
-        GetLearnMoreLinkText());
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_EDUCATIONAL_BODY_LABEL);
   }
   return options_.filled_card.record_type() ==
                  CreditCard::RecordType::kVirtualCard
@@ -264,13 +260,7 @@ std::u16string
 FilledCardInformationBubbleControllerImpl::GetMaskedCardNameForDescriptionView()
     const {
   if (IsBnplFlow()) {
-    if (options_.filled_card.issuer_id() == kBnplAffirmIssuerId) {
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM);
-    }
-
-    if (options_.filled_card.issuer_id() == kBnplZipIssuerId) {
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP);
-    }
+    return BnplIssuerIdToDisplayName(options_.filled_card.issuer_id());
   }
 
   return options_.masked_card_name;
@@ -291,6 +281,11 @@ FilledCardInformationBubbleControllerImpl::GetCardImageForDescriptionView()
     }
   }
   return options_.card_image;
+}
+
+bool FilledCardInformationBubbleControllerImpl::
+    EducationalBodyHasLearnMoreLink() const {
+  return !IsBnplFlow();
 }
 
 void FilledCardInformationBubbleControllerImpl::UpdateClipboard(

@@ -15,13 +15,21 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/utils.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
@@ -51,6 +59,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/gfx/animation/animation.h"
@@ -72,6 +81,10 @@ constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 constexpr char kDocumentWithAudio[] = "/autoplay_audio.html";
 constexpr char kDocumentWithVideo[] = "/media/bigbuck-player.html";
 constexpr char kDocumentWithForm[] = "/form_interaction.html";
+
+// Any Chrome page that can be reliably discarded. This was previously the NTP,
+// but NTP is sometimes ineligible for proactive tab discard.
+constexpr std::string_view kChromePage = chrome::kChromeUIVersionURL;
 
 }  // namespace
 
@@ -154,7 +167,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
                           embedded_test_server()->GetURL(kDocumentWithVideo)),
       ExecuteJsAt(kFirstTabContents, video, kPlayVideo),
       WaitForStateChange(kFirstTabContents, video_is_playing),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
       TryDiscardTab(0), CheckTabIsDiscarded(0, false));
 }
 
@@ -177,7 +190,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
                           embedded_test_server()->GetURL(kDocumentWithAudio)),
       ExecuteJsAt(kFirstTabContents, audio, "(el) => { el.play(); }"),
       WaitForEvent(kFirstTabContents, kAudioIsAudible),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
       TryDiscardTab(0), CheckTabIsDiscarded(0, false));
 }
 
@@ -219,8 +232,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
       WaitForStateChange(kFirstTabContents, input_is_focused), PressKeyboard(),
       WaitForStateChange(kFirstTabContents, input_value_updated),
 
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL),
-                         1),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage), 1),
       TryDiscardTab(0), CheckTabIsDiscarded(0, false));
 }
 
@@ -237,42 +249,100 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                  ContentSetting::CONTENT_SETTING_ALLOW);
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(
-          kFirstTabContents,
-          https_server.GetURL("a.test",
-                              "/notifications/notification_tester.html")),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      TryDiscardTab(0), CheckTabIsDiscarded(0, false));
+  RunTestSequence(InstrumentTab(kFirstTabContents, 0),
+                  NavigateWebContents(
+                      kFirstTabContents,
+                      https_server.GetURL(
+                          "a.test", "/notifications/notification_tester.html")),
+                  AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+                  TryDiscardTab(0), CheckTabIsDiscarded(0, false));
 }
+
+struct MemorySaverChipInteractiveTestParams {
+  bool web_contents_discard = false;
+  bool page_actions_migration_enabled = false;
+};
 
 // Tests the functionality of the Memory Saver page action chip
 class MemorySaverChipInteractiveTest
-    : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest>,
-      public ::testing::WithParamInterface<bool> {
+    : public PageActionInteractiveTestMixin<
+          MemorySaverInteractiveTestMixin<InteractiveBrowserTest>>,
+      public ::testing::WithParamInterface<
+          MemorySaverChipInteractiveTestParams> {
  public:
   MemorySaverChipInteractiveTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kWebContentsDiscard,
-                                              GetParam());
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam().web_contents_discard) {
+      enabled_features.push_back({features::kWebContentsDiscard, {}});
+    } else {
+      disabled_features.push_back(features::kWebContentsDiscard);
+    }
+    if (GetParam().page_actions_migration_enabled) {
+      enabled_features.push_back(
+          {features::kPageActionsMigration,
+           {{features::kPageActionsMigrationMemorySaver.name, "true"}}});
+    } else {
+      disabled_features.push_back(features::kPageActionsMigration);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+    CHECK_EQ(IsPageActionMigrationEnabled(),
+             GetParam().page_actions_migration_enabled);
   }
+
   ~MemorySaverChipInteractiveTest() override = default;
+
+  bool IsPageActionMigrationEnabled() const {
+    return IsPageActionMigrated(PageActionIconType::kMemorySaver);
+  }
 
   void SetUpOnMainThread() override {
     MemorySaverInteractiveTestMixin::SetUpOnMainThread();
     SetMemorySaverModeEnabled(true);
   }
 
-  PageActionIconView* GetPageActionIconView() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetLocationBarView()
-        ->page_action_icon_controller()
-        ->GetIconView(PageActionIconType::kMemorySaver);
+  views::BubbleDialogDelegate* GetMemorySaverBubble() {
+    return IsPageActionMigrationEnabled()
+               ? browser()
+                     ->browser_window_features()
+                     ->memory_saver_bubble_controller()
+                     ->bubble_for_testing()
+               : BrowserView::GetBrowserViewForBrowser(browser())
+                     ->GetLocationBarView()
+                     ->page_action_icon_controller()
+                     ->GetIconView(PageActionIconType::kMemorySaver)
+                     ->GetBubble();
+  }
+
+  using PageActionInteractiveTestMixin::WaitForPageActionButtonVisible;
+
+  auto WaitForPageActionButtonVisible() {
+    MultiStep steps;
+    if (IsPageActionMigrationEnabled()) {
+      steps += WaitForPageActionButtonVisible(kActionShowMemorySaverChip);
+    } else {
+      steps += WaitForShow(kMemorySaverChipElementId);
+    }
+    return steps;
   }
 
   auto CheckChipIsExpandedState(bool is_expanded) {
-    return CheckViewProperty(kMemorySaverChipElementId,
-                             &PageActionIconView::ShouldShowLabel, is_expanded);
+    MultiStep steps;
+    if (IsPageActionMigrationEnabled()) {
+      steps += Steps(
+          WaitForPageActionButtonVisible(),
+          CheckViewProperty(kMemorySaverChipElementId,
+                            &page_actions::PageActionView::ShouldShowLabel,
+                            is_expanded));
+    } else {
+      steps +=
+          CheckViewProperty(kMemorySaverChipElementId,
+                            &PageActionIconView::ShouldShowLabel, is_expanded);
+    }
+    AddDescriptionPrefix(steps, "CheckChipIsExpandedState()");
+    return steps;
   }
 
   // Discard and reload the tab at discard_tab_index the number of times the
@@ -282,14 +352,42 @@ class MemorySaverChipInteractiveTest
       size_t discard_tab_index,
       size_t non_discard_tab_index,
       const ui::ElementIdentifier& contents_id) {
-    MultiStep result;
+    MultiStep steps;
     for (int i = 0; i < MemorySaverChipTabHelper::kChipAnimationCount; i++) {
-      result += Steps(SelectTab(kTabStripElementId, non_discard_tab_index),
-                      DiscardAndReloadTab(discard_tab_index, contents_id),
-                      CheckChipIsExpandedState(true));
+      steps += Steps(SelectTab(kTabStripElementId, non_discard_tab_index),
+                     DiscardAndReloadTab(discard_tab_index, contents_id),
+                     CheckChipIsExpandedState(true));
     }
+    AddDescriptionPrefix(steps, "DiscardTabUntilChipStopsExpanding()");
+    return steps;
+  }
 
-    return result;
+  auto PressPageActionButton() {
+    MultiStep steps;
+    if (IsPageActionMigrationEnabled()) {
+      steps += Steps(WaitForPageActionButtonVisible(),
+                     PressButton(kMemorySaverChipElementId));
+    } else {
+      steps += PressButton(kMemorySaverChipElementId);
+    }
+    AddDescriptionPrefix(steps, "PressPageActionButton()");
+    return steps;
+  }
+
+  // With the new page action framework, a few tests explicitly require a
+  // mouse-driven button press. Eg, in practice mouse click on the chip will
+  // dismiss the associated bubble. Sending a key event directly to the chip
+  // in tests will not. See crbug.com/395901614.
+  auto MousePressPageActionButton() {
+    MultiStep steps;
+    if (IsPageActionMigrationEnabled()) {
+      steps += Steps(WaitForPageActionButtonVisible(),
+                     MoveMouseTo(kMemorySaverChipElementId), ClickMouse());
+    } else {
+      steps += PressButton(kMemorySaverChipElementId);
+    }
+    AddDescriptionPrefix(steps, "MousePressPageActionButton()");
+    return steps;
   }
 
   auto NameTab(size_t index, std::string name) {
@@ -307,16 +405,15 @@ class MemorySaverChipInteractiveTest
 // Page Action Chip should appear expanded the first three times a tab is
 // discarded and collapse all subsequent times
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, PageActionChipShows) {
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      SelectTab(kTabStripElementId, 0),
-      EnsureNotPresent(kMemorySaverChipElementId),
-      DiscardTabUntilChipStopsExpanding(0, 1, kFirstTabContents),
-      SelectTab(kTabStripElementId, 1),
-      DiscardAndReloadTab(0, kFirstTabContents),
-      CheckChipIsExpandedState(false));
+  RunTestSequence(InstrumentTab(kFirstTabContents, 0),
+                  NavigateWebContents(kFirstTabContents, GetURL()),
+                  AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+                  SelectTab(kTabStripElementId, 0),
+                  EnsureNotPresent(kMemorySaverChipElementId),
+                  DiscardTabUntilChipStopsExpanding(0, 1, kFirstTabContents),
+                  SelectTab(kTabStripElementId, 1),
+                  DiscardAndReloadTab(0, kFirstTabContents),
+                  CheckChipIsExpandedState(false));
 }
 
 // Page Action chip should collapses after navigating to a tab without a chip
@@ -360,18 +457,18 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 // Page Action chip should only show on discarded non-chrome pages
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
                        ChipShowsOnNonChromeSites) {
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      // Discards tab on non-chrome page
-      DiscardAndReloadTab(0, kFirstTabContents),
-      WaitForShow(kMemorySaverChipElementId),
+  RunTestSequence(InstrumentTab(kFirstTabContents, 0),
+                  NavigateWebContents(kFirstTabContents, GetURL()),
+                  AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
 
-      // Discards tab on chrome://newtab page
-      TryDiscardTab(1), CheckTabIsDiscarded(1, true),
-      SelectTab(kTabStripElementId, 1),
-      EnsureNotPresent(kMemorySaverChipElementId));
+                  // Discards tab on non-chrome page
+                  DiscardAndReloadTab(0, kFirstTabContents),
+                  WaitForPageActionButtonVisible(),
+
+                  // Discards tab on chrome:// page
+                  TryDiscardTab(1), CheckTabIsDiscarded(1, true),
+                  SelectTab(kTabStripElementId, 1),
+                  EnsureNotPresent(kMemorySaverChipElementId));
 }
 
 // Memory Saver Dialog bubble should close after clicking the "OK" button
@@ -380,9 +477,8 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      DiscardAndReloadTab(0, kFirstTabContents),
-      PressButton(kMemorySaverChipElementId),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       PressButton(MemorySaverBubbleView::kMemorySaverDialogOkButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
@@ -397,16 +493,14 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      DiscardAndReloadTab(0, kFirstTabContents),
-      PressButton(kMemorySaverChipElementId),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
-      NameView(kDialogCloseButton, base::BindLambdaForTesting([&]() {
-                 return static_cast<views::View*>(GetPageActionIconView()
-                                                      ->GetBubble()
-                                                      ->GetBubbleFrameView()
-                                                      ->close_button());
-               })),
+      NameView(
+          kDialogCloseButton, base::BindLambdaForTesting([&]() {
+            return static_cast<views::View*>(
+                GetMemorySaverBubble()->GetBubbleFrameView()->close_button());
+          })),
       PressButton(kDialogCloseButton),
       EnsureNotPresent(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
 }
@@ -417,11 +511,10 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, CloseBubbleOnChipClick) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      DiscardAndReloadTab(0, kFirstTabContents),
-      PressButton(kMemorySaverChipElementId),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
-      PressButton(kMemorySaverChipElementId),
+      MousePressPageActionButton(),
       EnsureNotPresent(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
 }
 
@@ -433,9 +526,8 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      DiscardAndReloadTab(0, kFirstTabContents),
-      PressButton(kMemorySaverChipElementId),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       NameTab(1, kSecondTab), MoveMouseTo(kSecondTab), ClickMouse(),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId));
@@ -446,10 +538,9 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
       ForceRefreshMemoryMetrics(), DiscardAndReloadTab(0, kFirstTabContents),
-      WaitForShow(kMemorySaverChipElementId),
-      PressButton(kMemorySaverChipElementId),
+      PressPageActionButton(),
       WaitForShow(MemorySaverResourceView::
                       kMemorySaverResourceViewMemorySavingsElementId),
       CheckView(
@@ -479,9 +570,8 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      DiscardAndReloadTab(0, kFirstTabContents),
-      PressButton(kMemorySaverChipElementId),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
+      DiscardAndReloadTab(0, kFirstTabContents), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
@@ -508,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 
       // Dialog's cancel button should now allow users to navigate to the
       // performance settings page
-      PressButton(kMemorySaverChipElementId),
+      PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
@@ -527,41 +617,41 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 // Memory Saver Dialog bubble's cancel button's state should be preserved
 // for that tab even when navigating to another tab.
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       CancelButtonStatePreseveredWhenSwitchingTabs) {
+                       CancelButtonStatePreservedWhenSwitchingTabs) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("a.test", "/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GetURL("b.test", "/title1.html")),
       DiscardAndReloadTab(0, kFirstTabContents), TryDiscardTab(1),
-      PressButton(kMemorySaverChipElementId),
+      PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       // Add site to the exceptions list
       PressButton(MemorySaverBubbleView::kMemorySaverDialogCancelButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
 
       // Check that the cancel button can go to settings page
-      PressButton(kMemorySaverChipElementId),
+      PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
           &views::LabelButton::GetText,
           l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_DIALOG_SETTINGS_BUTTON)),
-      PressButton(kMemorySaverChipElementId),
+      MousePressPageActionButton(),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       // Second tab's cancel button should allow users to exclude the site
       // since this tab's site wasn't excluded yet
-      SelectTab(kTabStripElementId, 1), PressButton(kMemorySaverChipElementId),
+      SelectTab(kTabStripElementId, 1), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
           &views::LabelButton::GetText,
           l10n_util::GetStringUTF16(
               IDS_MEMORY_SAVER_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
-      PressButton(kMemorySaverChipElementId),
+      MousePressPageActionButton(),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       // Ensure that the first tab's cancel button continues to allow users
       // to navigate to the settings page even after we selected another tab
-      SelectTab(kTabStripElementId, 0), PressButton(kMemorySaverChipElementId),
+      SelectTab(kTabStripElementId, 0), PressPageActionButton(),
       WaitForShow(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       CheckViewProperty(
           MemorySaverBubbleView::kMemorySaverDialogCancelButton,
@@ -578,7 +668,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
                               kSkipPixelTestsReason),
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
       ForceRefreshMemoryMetrics(), DiscardAndReloadTab(0, kFirstTabContents),
       Do(base::BindLambdaForTesting([&]() {
         content::WebContents* web_contents =
@@ -589,7 +679,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
         pre_discard_resource_usage->UpdateDiscardInfo(
             135 * 1024, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
       })),
-      PressButton(kMemorySaverChipElementId),
+      PressPageActionButton(),
       WaitForShow(
           MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId),
       Screenshot(MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId,
@@ -624,7 +714,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardIndicatorIPHTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
       WaitForPromo(feature_engagement::kIPHDiscardRingFeature),
       PressNonDefaultPromoButton(), InstrumentTab(kThirdTabContents, 2),
@@ -675,7 +765,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverImprovedFaviconTreatmentTest,
                               kSkipPixelTestsReason),
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      AddInstrumentedTab(kSecondTabContents, GURL(kChromePage)),
       Do(base::BindLambdaForTesting(
           [=, this]() { GetTabStrip()->StopAnimating(true); })),
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
@@ -734,13 +824,33 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param ? "RetainedWebContents" : "UnretainedWebContents";
     });
 
+// TODO(crbug.com/404543902): Add cases for new Page Action framework.
 INSTANTIATE_TEST_SUITE_P(,
                          MemorySaverChipInteractiveTest,
-                         ::testing::Values(false, true),
+                         ::testing::Values(
+                             MemorySaverChipInteractiveTestParams{
+                                 .web_contents_discard = false,
+                                 .page_actions_migration_enabled = false},
+                             MemorySaverChipInteractiveTestParams{
+                                 .web_contents_discard = true,
+                                 .page_actions_migration_enabled = false},
+                             MemorySaverChipInteractiveTestParams{
+                                 .web_contents_discard = false,
+                                 .page_actions_migration_enabled = true},
+                             MemorySaverChipInteractiveTestParams{
+                                 .web_contents_discard = true,
+                                 .page_actions_migration_enabled = true}),
+
                          [](const ::testing::TestParamInfo<
                              MemorySaverChipInteractiveTest::ParamType>& info) {
-                           return info.param ? "RetainedWebContents"
-                                             : "UnretainedWebContents";
+                           return base::StrCat(
+                               {info.param.web_contents_discard
+                                    ? "RetainedWebContents"
+                                    : "UnretainedWebContents",
+                                "_",
+                                info.param.page_actions_migration_enabled
+                                    ? "NewPageAction"
+                                    : "OriginalPageAction"});
                          });
 
 INSTANTIATE_TEST_SUITE_P(

@@ -26,6 +26,7 @@ import java.util.List;
  * segmentation experiment.
  */
 public class AdaptiveToolbarStatePredictor {
+
     /**
      * Key used to lookup segmentation results for adaptive toolbar. Must be kept in sync with
      * components/segmentation_platform/internal/constants.cc.
@@ -33,7 +34,6 @@ public class AdaptiveToolbarStatePredictor {
     private static List<Integer> sSegmentationResultsForTesting;
 
     private static Integer sToolbarStateForTesting;
-    private final Context mContext;
     @NonNull private final Profile mProfile;
     private final AdaptiveToolbarBehavior mBehavior;
 
@@ -79,8 +79,7 @@ public class AdaptiveToolbarStatePredictor {
             Context context,
             Profile profile,
             @Nullable AndroidPermissionDelegate androidPermissionDelegate,
-            AdaptiveToolbarBehavior behavior) {
-        mContext = context;
+            @Nullable AdaptiveToolbarBehavior behavior) {
         mProfile = profile;
         mAndroidPermissionDelegate = androidPermissionDelegate;
         mBehavior =
@@ -116,11 +115,11 @@ public class AdaptiveToolbarStatePredictor {
         }
 
         int manualOverride = readManualOverrideFromPrefs();
-        int defaultSegment = AdaptiveToolbarFeatures.getSegmentationDefault(mContext);
         boolean toolbarToggle = readToolbarToggleStateFromPrefs();
         readFromSegmentationPlatform(
                 segmentSelectionResults -> {
                     int topSegmentationResult = filterSegmentationResults(segmentSelectionResults);
+                    int defaultSegment = mBehavior.getSegmentationDefault();
                     UiState uiState =
                             new UiState(
                                     AdaptiveToolbarFeatures.isCustomizationEnabled(),
@@ -227,7 +226,7 @@ public class AdaptiveToolbarStatePredictor {
     private @AdaptiveToolbarButtonVariant int replaceVariantIfDisabled(
             @AdaptiveToolbarButtonVariant int variant) {
         if (isVariantEnabled(variant)) return variant;
-        variant = AdaptiveToolbarFeatures.getSegmentationDefault(mContext);
+        variant = mBehavior.getSegmentationDefault();
         if (isVariantEnabled(variant)) return variant;
         // Fallback in the unlikely situation the default is disabled.
         return AdaptiveToolbarButtonVariant.UNKNOWN;

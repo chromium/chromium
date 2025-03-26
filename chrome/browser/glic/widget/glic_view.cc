@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_bounds_change_animation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -35,8 +36,8 @@ GlicView::GlicView(Profile* profile,
     : accelerator_delegate_(accelerator_delegate) {
   SetProperty(views::kElementIdentifierKey, kGlicViewElementId);
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetBackground(views::CreateRoundedRectBackground(kDefaultBackgroundColor,
-                                                   kCornerRadius));
+  SetBackground(
+      views::CreateRoundedRectBackground(kColorGlicBackground, kCornerRadius));
   auto web_view = std::make_unique<views::WebView>(profile);
   web_view->SetProperty(views::kElementIdentifierKey,
                         kWebViewElementIdForTesting);

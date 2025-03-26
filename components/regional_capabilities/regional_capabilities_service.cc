@@ -22,6 +22,8 @@
 #include "components/regional_capabilities/android/jni_headers/RegionalCapabilitiesService_jni.h"
 #endif
 
+using ::country_codes::CountryId;
+
 namespace regional_capabilities {
 namespace {
 
@@ -53,14 +55,14 @@ RegionalCapabilitiesService::~RegionalCapabilitiesService() {
 #endif
 }
 
-int RegionalCapabilitiesService::GetCountryIdInternal() {
+CountryId RegionalCapabilitiesService::GetCountryIdInternal() {
   std::optional<SearchEngineCountryOverride> country_override =
       GetSearchEngineCountryOverride();
   if (country_override.has_value()) {
-    if (std::holds_alternative<int>(country_override.value())) {
-      return std::get<int>(country_override.value());
+    if (std::holds_alternative<CountryId>(country_override.value())) {
+      return std::get<CountryId>(country_override.value());
     }
-    return country_codes::kCountryIDUnknown;
+    return CountryId();
   }
 
   if (!country_id_cache_.has_value()) {
@@ -81,12 +83,13 @@ bool RegionalCapabilitiesService::IsInEeaCountry() {
 void RegionalCapabilitiesService::InitializeCountryIdCache() {
   // TODO(crbug.com/328040066): Move `kCountryIDAtInstall` pref declaration in
   // this file / package.
-  std::optional<int> country_id;
+  std::optional<CountryId> country_id;
 
   // Check the validity of the initially persisted value, if present.
   if (profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
-    country_id = profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
-    if (country_id.value() != country_codes::kCountryIDUnknown) {
+    country_id = CountryId::Deserialize(
+        profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall));
+    if (country_id.value().IsValid()) {
       base::UmaHistogramEnumeration(kUnknownCountryIdStored,
                                     UnknownCountryIdStored::kValidCountryId);
     } else {
@@ -108,17 +111,18 @@ void RegionalCapabilitiesService::InitializeCountryIdCache() {
 
   if (!country_id.has_value()) {
     client_->FetchCountryId(base::BindOnce(
-        [](base::WeakPtr<RegionalCapabilitiesService> service, int country_id) {
-          if (service && country_id != country_codes::kCountryIDUnknown) {
+        [](base::WeakPtr<RegionalCapabilitiesService> service,
+           CountryId country_id) {
+          if (service && country_id.IsValid()) {
             service->profile_prefs_->SetInteger(
-                country_codes::kCountryIDAtInstall, country_id);
+                country_codes::kCountryIDAtInstall, country_id.Serialize());
           }
         },
         weak_ptr_factory_.GetWeakPtr()));
     if (profile_prefs_->HasPrefPath(country_codes::kCountryIDAtInstall)) {
       // The initialization above completed synchronously, return its outcome.
-      country_id =
-          profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall);
+      country_id = CountryId::Deserialize(
+          profile_prefs_->GetInteger(country_codes::kCountryIDAtInstall));
     } else {
       // The initialization failed or did not complete synchronously. Use the
       // fallback value and don't persist it. If the fetch completes later, the
@@ -127,7 +131,7 @@ void RegionalCapabilitiesService::InitializeCountryIdCache() {
     }
   }
 
-  country_id_cache_ = country_id.value();
+  country_id_cache_ = CountryId(country_id.value());
 }
 
 void RegionalCapabilitiesService::ClearCountryIdCacheForTesting() {

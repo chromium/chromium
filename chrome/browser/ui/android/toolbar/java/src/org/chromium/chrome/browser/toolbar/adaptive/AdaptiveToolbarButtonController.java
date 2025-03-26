@@ -6,10 +6,15 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
+import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_AUTO_BUTTON_CAPTION;
+import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_CAN_SHOW_UI;
+import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_PREFERENCE_SELECTION;
+import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_TOOLBAR_BUTTON_STATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -37,6 +42,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor.UiState;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -111,8 +117,7 @@ public class AdaptiveToolbarButtonController
                 id -> {
                     if (id == R.id.customize_adaptive_button_menu_id) {
                         RecordUserAction.record("MobileAdaptiveMenuCustomize");
-                        SettingsNavigationFactory.createSettingsNavigation()
-                                .startSettings(context, AdaptiveToolbarSettingsFragment.class);
+                        mAdaptiveToolbarStatePredictor.recomputeUiState(this::startSettings);
                         return;
                     }
                     assert false : "unknown adaptive button menu id: " + id;
@@ -136,6 +141,16 @@ public class AdaptiveToolbarButtonController
 
         new OneShotCallback<>(
                 profileSupplier, mCallbackController.makeCancelable(this::setProfile));
+    }
+
+    private void startSettings(UiState uiState) {
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_UI_STATE_CAN_SHOW_UI, uiState.canShowUi);
+        args.putInt(ARG_UI_STATE_TOOLBAR_BUTTON_STATE, uiState.toolbarButtonState);
+        args.putInt(ARG_UI_STATE_PREFERENCE_SELECTION, uiState.preferenceSelection);
+        args.putInt(ARG_UI_STATE_AUTO_BUTTON_CAPTION, uiState.autoButtonCaption);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(mContext, AdaptiveToolbarSettingsFragment.class, args);
     }
 
     /**

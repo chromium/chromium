@@ -92,8 +92,7 @@ TEST_F(PasswordTabHelperTest, RedirectsToPasswordsAndCancelsRequest) {
         callback_called = true;
       });
 
-  OCMExpect([dispatcher_ showSavedPasswordsSettingsFromViewController:nil
-                                                     showCancelButton:NO]);
+  OCMExpect([dispatcher_ showSavedPasswordsSettingsFromViewController:nil]);
 
   helper_->ShouldAllowRequest(request, request_info, std::move(callback));
 

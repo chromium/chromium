@@ -12,7 +12,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/accessibility_labels_bubble_model.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
@@ -26,6 +25,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -115,7 +115,7 @@ bool AccessibilityLabelsMenuObserver::ShouldShowLabelsItem() {
     return false;
   }
 
-  return accessibility_state_utils::IsScreenReaderEnabled();
+  return ui::AXPlatform::GetInstance().IsScreenReaderActive();
 }
 
 void AccessibilityLabelsMenuObserver::ShowConfirmBubble(Profile* profile,

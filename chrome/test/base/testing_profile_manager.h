@@ -88,19 +88,12 @@ class TestingProfileManager : public ProfileObserver {
       std::optional<bool> is_new_profile = std::nullopt,
       std::optional<std::unique_ptr<policy::PolicyService>> policy_service =
           std::nullopt,
-      bool is_main_profile = false,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
           nullptr);
   // Small helpers for creating testing profiles. Just forward to above.
   TestingProfile* CreateTestingProfile(
       const std::string& name,
-      bool is_main_profile = false,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
-          nullptr);
-  TestingProfile* CreateTestingProfile(
-      const std::string& name,
-      TestingProfile::TestingFactories testing_factories,
-      bool is_main_profile = false,
+      TestingProfile::TestingFactories testing_factories = {},
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
           nullptr);
 
