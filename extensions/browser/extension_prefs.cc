@@ -175,13 +175,6 @@ constexpr const char kPrefDesiredActivePermissions[] = "active_permissions";
 // permissions increase.
 constexpr const char kPrefGrantedPermissions[] = "granted_permissions";
 
-// Pref that was previously used to indicate if host permissions should be
-// withheld. Due to the confusing name and the need to logically invert it when
-// being used, we transitioned to use kPrefWithholdingPermissions
-// instead.
-const char kGrantExtensionAllHostPermissions[] =
-    "extension_can_script_all_urls";
-
 // A preference indicating if requested host permissions are being withheld from
 // the extension, requiring them to be granted through the permissions API or
 // runtime host permissions.
@@ -2222,8 +2215,6 @@ ExtensionPrefs::ExtensionPrefs(
 
   BackfillAndMigrateInstallTimePrefs();
 
-  MigrateToNewWithholdingPref();
-
   MigrateDeprecatedDisableReasons();
 
   MaybeMigrateDisableReasonsBitflagToList();
@@ -2720,50 +2711,6 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
 
     for (const char* key : kObsoleteKeys)
       inner_update->Remove(key);
-  }
-}
-
-void ExtensionPrefs::MigrateToNewWithholdingPref() {
-  const ExtensionsInfo extensions_info = GetInstalledExtensionsInfo();
-
-  for (const auto& info : extensions_info) {
-    const ExtensionId& extension_id = info.extension_id;
-    // The manifest may be null in some cases, such as unpacked extensions
-    // retrieved from the Preference file.
-    if (!info.extension_manifest) {
-      continue;
-    }
-
-    // If the new key is present in the prefs already, we don't need to check
-    // further.
-    bool value = false;
-    if (ReadPrefAsBoolean(extension_id, kPrefWithholdingPermissions, &value)) {
-      continue;
-    }
-
-    // We only want to migrate extensions we can actually withhold permissions
-    // from.
-    Manifest::Type type =
-        Manifest::GetTypeFromManifestValue(*info.extension_manifest);
-    ManifestLocation location = info.extension_location;
-    if (!util::CanWithholdPermissionsFromExtension(extension_id, type,
-                                                   location))
-      continue;
-
-    bool old_pref_value = false;
-    // If there was an old preference set, use the same (conceptual) value.
-    // Otherwise, use the default setting.
-    bool new_pref_value = kDefaultWithholdingBehavior;
-    if (ReadPrefAsBoolean(extension_id, kGrantExtensionAllHostPermissions,
-                          &old_pref_value)) {
-      // We invert the value as the previous pref stored if the extension was
-      // granted all the requested permissions, whereas the new pref stores if
-      // requested permissions are currently being withheld.
-      new_pref_value = !old_pref_value;
-    }
-
-    UpdateExtensionPref(extension_id, kPrefWithholdingPermissions,
-                        base::Value(new_pref_value));
   }
 }
 
