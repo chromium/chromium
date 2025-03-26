@@ -802,6 +802,12 @@ extern const char kLensOverlayForceShowOnboardingScreenDescription[] =
     "When enabled, it forces showing the onboarding screen everytime lens "
     "overlay is open";
 
+extern const char kLensOverlayNavigationHistoryName[] =
+    "Enable Lens overlay navigation history";
+extern const char kLensOverlayNavigationHistoryDescription[] =
+    "When enabled, web navigation in the Lens overlay are recorded in browser "
+    "history.";
+
 extern const char kLensPrewarmHardStickinessInInputSelectionName[] =
     "Lens prewarm hard stickiness in input selection";
 extern const char kLensPrewarmHardStickinessInInputSelectionDescription[] =

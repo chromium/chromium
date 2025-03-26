@@ -5846,6 +5846,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-overlay-navigation-history",
+    "owners": [ "christianxu@google.com", "stkhapugin@chromium.org"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "lens-prewarm-hard-stickiness-in-input-selection",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 140

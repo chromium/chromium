@@ -2551,6 +2551,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSupportForHomeAndWork)},
+    {"lens-overlay-navigation-history",
+     flag_descriptions::kLensOverlayNavigationHistoryName,
+     flag_descriptions::kLensOverlayNavigationHistoryDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensOverlayNavigationHistory)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

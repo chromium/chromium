@@ -464,6 +464,9 @@ extern const char kLensOverlayEnableLocationBarEntrypointOnSRPDescription[];
 extern const char kLensOverlayEnableSameTabNavigationName[];
 extern const char kLensOverlayEnableSameTabNavigationDescription[];
 
+extern const char kLensOverlayNavigationHistoryName[];
+extern const char kLensOverlayNavigationHistoryDescription[];
+
 extern const char kLensPrewarmHardStickinessInInputSelectionName[];
 extern const char kLensPrewarmHardStickinessInInputSelectionDescription[];
 
