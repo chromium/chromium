@@ -101,12 +101,12 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Returns a view containing a button for the user to login to an IDP for
   // which there was a login status mismatch, to be used in the multiple account
   // chooser case.
-  std::unique_ptr<views::View> CreateIdpLoginRow(
+  std::unique_ptr<views::View> CreateMultiIdpLoginRow(
       const std::u16string& idp_for_display,
       const IdentityProviderDataPtr& idp_data);
 
-  // Creates the "Use other account" button.
-  std::unique_ptr<views::View> CreateUseOtherAccountButton(
+  // Creates the "Use other account" button when showing a dialog with one IDP.
+  std::unique_ptr<views::View> CreateSingleIdpUseOtherAccountButton(
       const content::IdentityProviderMetadata& idp_metadata,
       const std::u16string& title,
       int icon_margin);

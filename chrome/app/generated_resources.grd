@@ -18067,7 +18067,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Use a different account
     </message>
     <message name="IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT_MULTI_IDP" desc="Title of the button that lets the user log in to a different account of a given origin.">
-      Use a different <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> account
+      Use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> account
     </message>
     <message name="IDS_ACCOUNT_SELECTION_BACK" desc="Title of the button that lets the user go back to a previous sheet.">
       Back
@@ -18077,9 +18077,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY" desc="Body for mismatch dialog which is shown to prompt the user to sign in to a website using an account from an identity provider.">
       You can use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph> account on this site. To continue, sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>.
-    </message>
-    <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_BUTTON_TEXT" desc="Text for the button to sign in to an IDP for which there was a mismatch, in the multiple account chooser case.">
-      Sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>
     </message>
     <message name="IDS_SIGNIN_GENERIC_ERROR_DIALOG_SUMMARY" desc="Summary of generic error upon user failing to sign in with an account from an identity provider.">
       Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>

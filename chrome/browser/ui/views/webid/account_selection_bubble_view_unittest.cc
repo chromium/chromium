@@ -430,11 +430,11 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   }
 
   void CheckMismatchIdp(views::View* idp_row,
-                        const std::u16string& expected_idp) {
+                        const std::u16string& expected_title) {
     ASSERT_EQ("HoverButton", idp_row->GetClassName());
     HoverButton* idp_button = static_cast<HoverButton*>(idp_row);
     ASSERT_TRUE(idp_button);
-    EXPECT_EQ(GetHoverButtonTitle(idp_button), u"Sign in to " + expected_idp);
+    EXPECT_EQ(GetHoverButtonTitle(idp_button), expected_title);
     EXPECT_EQ(GetHoverButtonSubtitle(idp_button), nullptr);
     ASSERT_TRUE(GetHoverButtonIconView(idp_button));
     // Using GetPreferredSize() since BrandIconImageView uses a fetched image.
@@ -896,7 +896,8 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
 
   // Add one for the separator.
   ++index;
-  CheckMismatchIdp(contents[index], kSecondIdpETLDPlusOne);
+  CheckMismatchIdp(contents[index],
+                   u"Use your " + kSecondIdpETLDPlusOne + u" account");
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
@@ -1000,8 +1001,8 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, ShowSingleReturningAccount) {
   CheckHoverableAccountRows(contents, kAccountSuffixes1, accounts_index,
                             /*expect_idp=*/true);
   EXPECT_TRUE(IsViewClass<views::Separator>(contents[accounts_index++]));
-  CheckMismatchIdp(contents[accounts_index++], u"idp3.com");
-  CheckMismatchIdp(contents[accounts_index++], u"idp4.com");
+  CheckMismatchIdp(contents[accounts_index++], u"Use your idp3.com account");
+  CheckMismatchIdp(contents[accounts_index++], u"Use your idp4.com account");
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
@@ -1031,8 +1032,9 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
   std::vector<raw_ptr<views::View, VectorExperimental>> contents =
       GetContents(children[1]);
 
-  CheckMismatchIdp(contents[0], kIdpETLDPlusOne);
-  CheckMismatchIdp(contents[1], kSecondIdpETLDPlusOne);
+  CheckMismatchIdp(contents[0], u"Use your " + kIdpETLDPlusOne + u" account");
+  CheckMismatchIdp(contents[1],
+                   u"Use your " + kSecondIdpETLDPlusOne + u" account");
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleReturningAccounts) {
