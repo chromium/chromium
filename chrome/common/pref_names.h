@@ -4118,6 +4118,9 @@ inline constexpr char kReadAloudVoiceSettings[] = "readaloud.voices";
 // is 2.0, etc.
 inline constexpr char kReadAloudSpeed[] = "readaloud.speed";
 
+// Integer indicating Read Aloud playback mode (enum). Default is 0 (UNSPECIFIED).
+inline constexpr char kReadAloudPlaybackMode[] = "readaloud.playback_mode";
+
 // Boolean that specifies whether Read Aloud highlights words on the page during
 // playback and scrolls the page to match the playback position.
 inline constexpr char kReadAloudHighlightingEnabled[] =

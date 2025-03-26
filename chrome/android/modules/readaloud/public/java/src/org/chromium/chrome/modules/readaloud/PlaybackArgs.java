@@ -7,7 +7,6 @@ package org.chromium.chrome.modules.readaloud;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
@@ -31,9 +30,28 @@ public class PlaybackArgs {
 
     /** Playback mode. */
     public enum PlaybackMode {
-        UNSPECIFIED,
-        CLASSIC,
-        OVERVIEW
+        UNSPECIFIED(0),
+        CLASSIC(1),
+        OVERVIEW(2);
+
+        private final int mValue;
+
+        PlaybackMode(int value) {
+            mValue = value;
+        }
+
+        public int getValue() {
+            return mValue;
+        }
+
+        public static PlaybackMode fromValue(int value) {
+            for (PlaybackMode mode : values()) {
+                if (mode.getValue() == value) {
+                    return mode;
+                }
+            }
+            throw new IllegalArgumentException("Unknown value: " + value);
+        }
     }
 
     /**
