@@ -806,10 +806,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // Update the browser-level AXMode based on running applications.
             WebContentsAccessibilityImplJni.get()
                     .setBrowserAXMode(
-                            mNativeObj,
+                            WebContentsAccessibilityImpl.this,
                             AccessibilityState.isScreenReaderEnabled(),
                             AccessibilityState.isOnlyPasswordManagersEnabled(),
-                            AccessibilityState.isScreenReaderRunning());
+                            AccessibilityState.isScreenReaderRunning(),
+                            /* isAccessibilityEnabled= */ true);
 
             // Update the state of enabling/disabling the image descriptions feature. To enable the
             // feature, this instance must be a candidate and a screen reader must be enabled.
@@ -2260,10 +2261,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         void connectInstanceToRootManager(long nativeWebContentsAccessibilityAndroid);
 
         void setBrowserAXMode(
-                long nativeWebContentsAccessibilityAndroid,
+                WebContentsAccessibilityImpl caller,
                 boolean screenReaderMode,
                 boolean formControlsMode,
-                boolean isScreenReaderRunning);
+                boolean isScreenReaderRunning,
+                boolean isAccessibilityEnabled);
 
         void disableRendererAccessibility(long nativeWebContentsAccessibilityAndroid);
 
