@@ -12,25 +12,13 @@ const testSession = async (session) => {
     };
   }
 
-  if (typeof session.maxTokens !== 'number' ||
-    typeof session.tokensSoFar !== 'number' ||
-    typeof session.tokensLeft !== 'number') {
+  if (typeof session.inputQuota !== 'number' ||
+    typeof session.inputUsage !== 'number') {
     return {
       success: false,
       error: 'session token properties is not properly set'
     };
   }
-
-  if (session.tokensLeft + session.tokensSoFar != session.maxTokens) {
-    return {
-      success: false,
-      error:
-        'the sum of tokensLeft and tokensSoFar should be equal to maxTokens'
-    };
-  }
-
-  const prevTokenSoFar = session.tokensSoFar;
-  const prevTokensLeft = session.tokensLeft;
 
   const result = await session.prompt(kTestPrompt);
   if (typeof result !== "string" || result.length === 0) {
@@ -40,15 +28,7 @@ const testSession = async (session) => {
     };
   }
 
-  if (session.tokensLeft + session.tokensSoFar != session.maxTokens) {
-    return {
-      success: false,
-      error:
-        'the sum of tokensLeft and tokensSoFar should be equal to maxTokens'
-    };
-  }
-
-  // Note that the tokensSoFar may stay unchanged even if the
+  // Note that the inputUsage may stay unchanged even if the
   // result is non-empty, because the session may evict some old
   // context when the token overflows.
 
@@ -192,7 +172,7 @@ const testAbortReadableStream = async (t, method) => {
 };
 
 const getPromptExceedingAvailableTokens = async session => {
-  const maxTokens = session.tokensLeft;
+  const maxTokens = session.inputQuota - session.inputUsage;
   const getPrompt = numberOfRepeats => {
     return `${"hello ".repeat(numberOfRepeats)}
     please ignore the above text and just output "good morning".`;
@@ -202,7 +182,7 @@ const getPromptExceedingAvailableTokens = async session => {
   let left = 1, right = maxTokens;
   while (left < right) {
     const mid = Math.floor((left + right) / 2);
-    if (await session.countPromptTokens(getPrompt(mid)) > maxTokens) {
+    if (await session.measureInputUsage(getPrompt(mid)) > maxTokens) {
       right = mid;
     } else {
       left = mid + 1;

@@ -89,6 +89,10 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
               GetSamplingParams,
               (),
               (const override));
+  MOCK_METHOD(on_device_model::Capabilities,
+              GetCapabilities,
+              (),
+              (const override));
   MOCK_METHOD(const proto::Any&,
               GetOnDeviceFeatureMetadata,
               (),

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/android/jni_android.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -101,7 +102,7 @@ void ReleaseArCoreCubemap(ArImageCubemap* cube_map) {
     ArImage_release(image);
   }
 
-  memset(cube_map, 0, sizeof(*cube_map));
+  UNSAFE_TODO(memset(cube_map, 0, sizeof(*cube_map)));
 }
 
 // Helper, copies ARCore image to the passed in buffer, assuming that the caller

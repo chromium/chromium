@@ -1762,15 +1762,13 @@ public class AwSettings {
         if (TRACE) Log.i(TAG, "setPaymentRequestEnabled=" + enabled);
         synchronized (mAwSettingsLock) {
             if (mPaymentRequestEnabled != enabled) {
-                flushBackForwardCacheOnUiThreadLocked();
+                mPaymentRequestEnabled = enabled;
+                mEventHandler.updateWebkitPreferencesLocked();
             }
-            mPaymentRequestEnabled = enabled;
-            // TODO(crbug.com/395104227): Make this setting control whether the PaymentRequest API
-            // is defined in JavaScript, e.g., by calling:
-            // `WebRuntimeFeatures::EnablePaymentRequest(enabled)`.
         }
     }
 
+    @CalledByNative
     public boolean getPaymentRequestEnabled() {
         synchronized (mAwSettingsLock) {
             return mPaymentRequestEnabled;

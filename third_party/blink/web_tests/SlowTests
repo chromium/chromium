@@ -1447,3 +1447,10 @@ crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-step/de
 # Gardener 2025-02-18
 crbug.com/391006701 [ Debug ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Slow ]
 crbug.com/391006701 [ Debug ] images/yuv-decode-eligible/webp-image-decoding.html [ Slow ]
+
+# Gardener 2025-03-24
+crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-horizontal.html [ Slow ]
+crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-sideways-lr.html [ Slow ]
+crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-sideways-rl.html [ Slow ]
+crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Slow ]
+crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-vertical-rl.html [ Slow ]

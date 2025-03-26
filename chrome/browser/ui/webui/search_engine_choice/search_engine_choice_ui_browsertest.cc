@@ -97,7 +97,7 @@ class MockSearchEngineChoiceDialogService
           choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
         } else {
           // Uses the default generic favicon.
-          choice.SetKeyword(TemplateURLPrepopulateData::incredibar.keyword);
+          choice.SetKeyword(u"incredibar");
         }
         choices_.push_back(std::make_unique<TemplateURL>(choice));
       }

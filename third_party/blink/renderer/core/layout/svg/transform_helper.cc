@@ -77,27 +77,6 @@ bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {
   return false;
 }
 
-bool TransformHelper::UpdateReferenceBoxDependency(
-    LayoutObject& layout_object) {
-  DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
-  const bool transform_uses_reference_box =
-      DependsOnReferenceBox(layout_object.StyleRef());
-  UpdateReferenceBoxDependency(layout_object, transform_uses_reference_box);
-  return transform_uses_reference_box;
-}
-
-void TransformHelper::UpdateReferenceBoxDependency(
-    LayoutObject& layout_object,
-    bool transform_uses_reference_box) {
-  DCHECK(!RuntimeEnabledFeatures::SvgViewportOptimizationEnabled());
-  if (transform_uses_reference_box &&
-      layout_object.StyleRef().TransformBox() == ETransformBox::kViewBox) {
-    layout_object.SetSVGSelfOrDescendantHasViewportDependency();
-  } else {
-    layout_object.ClearSVGSelfOrDescendantHasViewportDependency();
-  }
-}
-
 bool TransformHelper::CheckReferenceBoxDependencies(
     const ComputedStyle& old_style,
     const ComputedStyle& style) {

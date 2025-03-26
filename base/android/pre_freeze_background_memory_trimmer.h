@@ -123,10 +123,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   static bool SelfCompactionIsSupported();
 
-  // Compacts the memory for the process.
-  void CompactSelf(scoped_refptr<SequencedTaskRunner> task_runner,
-                   base::TimeTicks triggered_at);
-
   // If we are currently running self compaction, cancel it. If it was running,
   // record a metric with the reason for the cancellation.
   static void MaybeCancelSelfCompaction(
@@ -164,6 +160,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   friend class base::OneShotDelayedBackgroundTimer;
   friend class PreFreezeBackgroundMemoryTrimmerTest;
   friend class PreFreezeSelfCompactionTest;
+  FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, Disabled);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, Cancel);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, NotCanceled);
   FRIEND_TEST_ALL_PREFIXES(PreFreezeSelfCompactionTest, OnSelfFreezeCancel);
@@ -243,30 +240,46 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     std::optional<debug::SmapsRollup> smaps_after_60s_;
   };
 
+  class CompactionState final {
+   public:
+    CompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
+                    std::vector<debug::MappedMemoryRegion> regions,
+                    base::TimeTicks triggered_at,
+                    uint64_t max_bytes);
+    ~CompactionState();
+
+    scoped_refptr<CompactionMetric> MakeCompactionMetric() const;
+
+    scoped_refptr<SequencedTaskRunner> task_runner_;
+    std::vector<debug::MappedMemoryRegion> regions_;
+    const base::TimeTicks triggered_at_;
+    const uint64_t max_bytes_;
+  };
+
   PreFreezeBackgroundMemoryTrimmer();
 
   static base::Lock& lock() { return Instance().lock_; }
 
-  void StartSelfCompaction(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                           std::vector<debug::MappedMemoryRegion> regions,
-                           uint64_t max_size,
-                           base::TimeTicks triggered_at) LOCKS_EXCLUDED(lock());
+  // Compacts the memory for the process.
+  void CompactSelf(scoped_refptr<SequencedTaskRunner> task_runner,
+                   base::TimeTicks triggered_at);
+
+  void StartSelfCompaction(std::unique_ptr<CompactionState> state)
+      LOCKS_EXCLUDED(lock());
   static base::TimeDelta GetDelayBetweenSelfCompaction();
-  void MaybePostSelfCompactionTask(
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      std::vector<debug::MappedMemoryRegion> regions,
-      scoped_refptr<CompactionMetric> metric,
-      uint64_t max_size,
-      base::TimeTicks triggered_at) LOCKS_EXCLUDED(lock());
-  void SelfCompactionTask(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                          std::vector<debug::MappedMemoryRegion> regions,
-                          scoped_refptr<CompactionMetric> metric,
-                          uint64_t max_size,
-                          base::TimeTicks triggered_at) LOCKS_EXCLUDED(lock());
-  void FinishSelfCompaction(scoped_refptr<CompactionMetric> metric,
-                            base::TimeTicks triggered_at)
+  void MaybePostSelfCompactionTask(std::unique_ptr<CompactionState> state,
+                                   scoped_refptr<CompactionMetric> metric)
+      LOCKS_EXCLUDED(lock());
+  void SelfCompactionTask(std::unique_ptr<CompactionState> state,
+                          scoped_refptr<CompactionMetric> metric)
+      LOCKS_EXCLUDED(lock());
+  void FinishSelfCompaction(std::unique_ptr<CompactionState> state,
+                            scoped_refptr<CompactionMetric> metric)
       LOCKS_EXCLUDED(lock());
 
+  static bool ShouldContinueSelfCompaction(
+      const PreFreezeBackgroundMemoryTrimmer::CompactionState& state)
+      LOCKS_EXCLUDED(lock());
   static bool ShouldContinueSelfCompaction(
       base::TimeTicks self_compaction_triggered_at) LOCKS_EXCLUDED(lock());
 

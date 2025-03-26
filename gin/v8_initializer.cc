@@ -389,6 +389,10 @@ void SetFeatureFlags() {
     SetV8FlagsFormatted("--memory-reducer-gc-count=%i",
                         features::kV8MemoryReducerGCCount.Get());
   }
+  if (base::FeatureList::IsEnabled(features::kV8PreconfigureOldGen)) {
+    SetV8FlagsFormatted("--initial-old-space-size=%i",
+                        features::kV8PreconfigureOldGenSize.Get());
+  }
   SetV8FlagsIfOverridden(features::kV8IncrementalMarkingStartUserVisible,
                          "--incremental-marking-start-user-visible",
                          "--no-incremental-marking-start-user-visible");

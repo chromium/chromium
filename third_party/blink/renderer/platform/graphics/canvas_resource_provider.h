@@ -218,7 +218,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void RecycleResource(scoped_refptr<CanvasResource>&&);
   void SetResourceRecyclingEnabled(bool);
   void ClearRecycledResources();
-  scoped_refptr<CanvasResource> NewOrRecycledResource();
 
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
@@ -413,10 +412,17 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // IsResourceUsable() must be true for `resource`.
   void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
 
+  // TODO(crbug.com/352263194): Move these fields inside of
+  // CanvasResourceProviderSharedImage.
+  // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
+  // will only hold one CanvasResource at most.
+  WTF::Vector<UnusedResource> canvas_resources_;
+  int num_inflight_resources_ = 0;
+  int max_inflight_resources_ = 0;
+
  private:
   friend class FlushForImageListener;
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
-  virtual scoped_refptr<CanvasResource> CreateResource();
   virtual bool UseOopRasterization() { return false; }
   bool UseHardwareDecodeCache() const {
     return IsAccelerated() && context_provider_wrapper_;
@@ -466,9 +472,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       cc::PaintImage::kInvalidContentId;
   uint32_t snapshot_sk_image_id_ = 0u;
 
-  // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
-  // will only hold one CanvasResource at most.
-  WTF::Vector<UnusedResource> canvas_resources_;
   base::OneShotTimer unused_resources_reclaim_timer_;
   bool resource_recycling_enabled_ = true;
   bool oopr_uses_dmsaa_ = false;
@@ -482,9 +485,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Note: This parameter does not affect the flushing of recorded PaintOps.
   // See kMaxRecordedOpBytes above.
   static constexpr int kMaxDrawsBeforeContextFlush = 50;
-
-  int num_inflight_resources_ = 0;
-  int max_inflight_resources_ = 0;
 
   // Parameters for the auto-flushing heuristic.
   size_t max_recorded_op_bytes_;

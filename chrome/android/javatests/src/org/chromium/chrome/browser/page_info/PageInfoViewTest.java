@@ -80,6 +80,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -869,6 +870,7 @@ public class PageInfoViewTest {
     public void shouldNavigateToSiteSettingsWhenRwsManagedAndButtonClicked() throws IOException {
         mFakePrivacySandboxBridge.setIsRwsManaged(true);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        UserActionTester userActionTester = new UserActionTester();
         String hostName = "example.com";
         String url = mTestServerRule.getServer().getURLWithHostName(hostName, "/");
         Website currentSite = new Website(WebsiteAddress.create(url), null);
@@ -885,6 +887,10 @@ public class PageInfoViewTest {
         extras.putSerializable(EXTRA_SITE, currentSite);
         Mockito.verify(mSettingsNavigation)
                 .startSettings(any(), eq(SingleWebsiteSettings.class), refEq(extras));
+        assertEquals(
+                1,
+                userActionTester.getActionCount("PageInfo.CookiesSubpage.RwsSiteSettingsOpened"));
+        userActionTester.tearDown();
     }
 
     /** Tests the cookies page of the PageInfo UI with the Cookie Controls UI enabled. */

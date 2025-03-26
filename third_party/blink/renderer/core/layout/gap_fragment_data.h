@@ -11,124 +11,119 @@
 
 namespace blink {
 
-class GapFragmentData {
+// Represents the direction in which a GapIntersecion is blocked. When
+// considering column gaps, `kBefore` means a GapIntersection is blocked by a
+// spanning item upwards and `kAfter` means it is blocked downwards. When
+// considering row gaps, `kBefore` means a GapIntersection is blocked by a
+// spanning item to the left and `kAfter` means it is blocked to the right.
+enum class BlockedGapDirection {
+  kBefore,
+  kAfter,
+};
+
+// GapIntersection points are used to paint gap decorations. An intersection
+// point occurs:
+// 1. At the center of an intersection between a gap and the container edge.
+// 2. At the center of an intersection between gaps in different directions.
+// https://drafts.csswg.org/css-gaps-1/#layout-painting
+class GapIntersection {
  public:
-  // Represents the direction in which a GapIntersecion is blocked. When
-  // considering column gaps, `kBefore` means a GapIntersection is blocked by a
-  // spanning item upwards and `kAfter` means it is blocked downwards. When
-  // considering row gaps, `kBefore` means a GapIntersection is blocked by a
-  // spanning item to the left and `kAfter` means it is blocked to the right.
-  enum BlockedDirection {
-    kBefore,
-    kAfter,
-  };
-  // GapIntersection points are used to paint gap decorations. An
-  // intersection point occurs:
-  // 1. At the center of an intersection between a gap and the container edge.
-  // 2. At the center of an intersection between gaps in different directions.
-  // https://drafts.csswg.org/css-gaps-1/#layout-painting
-  class GapIntersection {
-   public:
-    GapIntersection() = default;
-    GapIntersection(LayoutUnit inline_offset, LayoutUnit block_offset)
-        : inline_offset(inline_offset), block_offset(block_offset) {}
+  GapIntersection() = default;
+  GapIntersection(LayoutUnit inline_offset, LayoutUnit block_offset)
+      : inline_offset(inline_offset), block_offset(block_offset) {}
 
-    LayoutUnit inline_offset;
-    LayoutUnit block_offset;
+  LayoutUnit inline_offset;
+  LayoutUnit block_offset;
 
-    // Represents whether the intersection point is blocked before or after
-    // due to the presence of a spanning item.
-    bool is_blocked_before = false;
-    bool is_blocked_after = false;
-  };
+  // Represents whether the intersection point is blocked before or after
+  // due to the presence of a spanning item.
+  bool is_blocked_before = false;
+  bool is_blocked_after = false;
+};
 
-  using GapIntersectionList = Vector<GapIntersection>;
+using GapIntersectionList = Vector<GapIntersection>;
 
-  // TODO(samomekarajr): Take this out when done with the new implementation.
-  // GapBoundary represents the start and end offsets of a single gap.
-  struct GapBoundary {
-    DISALLOW_NEW();
+// TODO(samomekarajr): Take this out when done with the new implementation.
+// GapBoundary represents the start and end offsets of a single gap.
+struct GapBoundary {
+  DISALLOW_NEW();
 
-   public:
-    GapBoundary(wtf_size_t index,
-                LayoutUnit start_offset,
-                LayoutUnit end_offset)
-        : index(index), start_offset(start_offset), end_offset(end_offset) {}
+ public:
+  GapBoundary(wtf_size_t index, LayoutUnit start_offset, LayoutUnit end_offset)
+      : index(index), start_offset(start_offset), end_offset(end_offset) {}
 
-    void Trace(Visitor* visitor) const { visitor->Trace(intersection_points); }
+  void Trace(Visitor* visitor) const { visitor->Trace(intersection_points); }
 
-    wtf_size_t index;
-    LayoutUnit start_offset;
-    LayoutUnit end_offset;
-    HeapVector<LayoutUnit> intersection_points;
-  };
+  wtf_size_t index;
+  LayoutUnit start_offset;
+  LayoutUnit end_offset;
+  HeapVector<LayoutUnit> intersection_points;
+};
 
-  using GapBoundaries = HeapVector<GapBoundary>;
+using GapBoundaries = HeapVector<GapBoundary>;
 
-  // Gap locations are used for painting gap decorations.
-  struct GapGeometry : public GarbageCollected<GapGeometry> {
-   public:
-    GapBoundaries columns;
-    GapBoundaries rows;
+// Gap locations are used for painting gap decorations.
+struct GapGeometry : public GarbageCollected<GapGeometry> {
+ public:
+  GapBoundaries columns;
+  GapBoundaries rows;
 
-    void AddGapBoundary(GridTrackSizingDirection track_direction,
-                        GapBoundary gap) {
-      (track_direction == kForColumns) ? columns.push_back(gap)
-                                       : rows.push_back(gap);
-    }
+  void AddGapBoundary(GridTrackSizingDirection track_direction,
+                      GapBoundary gap) {
+    (track_direction == kForColumns) ? columns.push_back(gap)
+                                     : rows.push_back(gap);
+  }
 
-    GapBoundaries& GetGapBoundaries(GridTrackSizingDirection track_direction) {
-      return track_direction == kForColumns ? columns : rows;
-    }
+  GapBoundaries& GetGapBoundaries(GridTrackSizingDirection track_direction) {
+    return track_direction == kForColumns ? columns : rows;
+  }
 
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(rows);
-      visitor->Trace(columns);
-    }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(rows);
+    visitor->Trace(columns);
+  }
 
-    void SetGapIntersections(GridTrackSizingDirection track_direction,
-                             Vector<GapIntersectionList>&& intersection_list) {
-      track_direction == kForColumns ? column_intersections_ = intersection_list
-                                     : row_intersections_ = intersection_list;
-    }
+  void SetGapIntersections(GridTrackSizingDirection track_direction,
+                           Vector<GapIntersectionList>&& intersection_list) {
+    track_direction == kForColumns ? column_intersections_ = intersection_list
+                                   : row_intersections_ = intersection_list;
+  }
 
-    // Marks the intersection point at [main_index][inner_index] in the
-    // specified `track_direction` (kColumns or kRows) as blocked in the given
-    // `blocked_direction` (`kBefore` or `kAfter`). This is necessary to avoid
-    // painting gap decorations behind spanners when authors set the
-    // `*-rule-break` property to 'spanning-item' or `intersection`.
-    void MarkGapIntersectionBlocked(GridTrackSizingDirection track_direction,
-                                    BlockedDirection blocked_direction,
-                                    wtf_size_t main_index,
-                                    wtf_size_t inner_index) {
-      auto& intersections = track_direction == kForColumns
-                                ? column_intersections_
-                                : row_intersections_;
+  // Marks the intersection point at [main_index][inner_index] in the specified
+  // `track_direction` (kColumns or kRows) as blocked in the given
+  // `blocked_direction` (`kBefore` or `kAfter`). This is necessary to avoid
+  // painting gap decorations behind spanners when authors set the
+  // `*-rule-break` property to 'spanning-item' or `intersection`.
+  void MarkGapIntersectionBlocked(GridTrackSizingDirection track_direction,
+                                  BlockedGapDirection blocked_direction,
+                                  wtf_size_t main_index,
+                                  wtf_size_t inner_index) {
+    auto& intersections = track_direction == kForColumns ? column_intersections_
+                                                         : row_intersections_;
 
-      blocked_direction == kBefore
-          ? intersections[main_index][inner_index].is_blocked_before = true
-          : intersections[main_index][inner_index].is_blocked_after = true;
-    }
+    blocked_direction == BlockedGapDirection::kBefore
+        ? intersections[main_index][inner_index].is_blocked_before = true
+        : intersections[main_index][inner_index].is_blocked_after = true;
+  }
 
-    const Vector<GapIntersectionList>& GetGapIntersections(
-        GridTrackSizingDirection track_direction) const {
-      return track_direction == kForColumns ? column_intersections_
-                                            : row_intersections_;
-    }
+  const Vector<GapIntersectionList>& GetGapIntersections(
+      GridTrackSizingDirection track_direction) const {
+    return track_direction == kForColumns ? column_intersections_
+                                          : row_intersections_;
+  }
 
-   private:
-    // TODO(samomekarajr): Potential optimization. This can be a single
-    // Vector<GapIntersection> if we exclude intersection points at the edge of
-    // the container. We can check the "blocked" status of edge intersection
-    // points to determine if we should draw from edge of the container to that
-    // intersection.
-    Vector<GapIntersectionList> column_intersections_;
-    Vector<GapIntersectionList> row_intersections_;
-  };
+ private:
+  // TODO(samomekarajr): Potential optimization. This can be a single
+  // Vector<GapIntersection> if we exclude intersection points at the edge of
+  // the container. We can check the "blocked" status of edge intersection
+  // points to determine if we should draw from edge of the container to that
+  // intersection.
+  Vector<GapIntersectionList> column_intersections_;
+  Vector<GapIntersectionList> row_intersections_;
 };
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::GapFragmentData::GapBoundary)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::GapBoundary)
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_FRAGMENT_DATA_H_

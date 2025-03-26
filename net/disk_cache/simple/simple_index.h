@@ -137,7 +137,7 @@ class NET_EXPORT_PRIVATE SimpleIndex final {
               net::CacheType cache_type,
               std::unique_ptr<SimpleIndexFile> simple_index_file);
 
-  virtual ~SimpleIndex();
+  ~SimpleIndex();
 
   void Initialize(base::Time cache_mtime);
 

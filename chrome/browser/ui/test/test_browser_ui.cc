@@ -91,8 +91,6 @@ class ScopedMouseDisabler {
 }  // namespace
 
 TestBrowserUi::TestBrowserUi() {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
   // TODO(crbug.com/40262522): Make these pass with x64 win magic numbers.
   SetPixelMatchAlgorithm(

@@ -3,3 +3,6 @@ aaronhk@chromium.org
 jpgravel@chromium.org
 junov@chromium.org
 yiyix@chromium.org
+
+# Canvas interventions
+per-file canvas_noise_test.cc=file://third_party/blink/renderer/core/canvas_interventions/OWNERS

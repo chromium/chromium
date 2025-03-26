@@ -75,6 +75,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -108,6 +109,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       base::span<const uint8_t> pixel_data);
   std::unique_ptr<SharedImageBacking> CreateSharedImageGMBs(
       const Mailbox& mailbox,
@@ -119,6 +121,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
       gfx::GpuMemoryBufferHandle handle,
+      bool is_thread_safe,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   const GrContextType gr_context_type_;

@@ -172,7 +172,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
            !Style().ShouldIgnoreOverflowPropertyForInlineBlockBaseline();
   }
 
-  const GapFragmentData::GapGeometry* GapGeometry() const {
+  const GapGeometry* GapGeometry() const {
     return rare_data_->gap_geometry_.Get();
   }
 

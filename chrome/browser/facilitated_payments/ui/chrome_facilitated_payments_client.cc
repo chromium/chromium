@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -72,6 +73,25 @@ ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsNetworkInterface() {
         GetPaymentsDataManager(), profile->IsOffTheRecord());
   }
   return facilitated_payments_network_interface_.get();
+}
+
+payments::facilitated::MultipleRequestFacilitatedPaymentsNetworkInterface*
+ChromeFacilitatedPaymentsClient::
+    GetMultipleRequestFacilitatedPaymentsNetworkInterface() {
+  if (!multiple_request_facilitated_payments_network_interface_) {
+    Profile* profile =
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+    if (!profile) {
+      return nullptr;
+    }
+    multiple_request_facilitated_payments_network_interface_ = std::make_unique<
+        payments::facilitated::
+            MultipleRequestFacilitatedPaymentsNetworkInterface>(
+        profile->GetURLLoaderFactory(),
+        *IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile()),
+        *GetPaymentsDataManager(), profile->IsOffTheRecord());
+  }
+  return multiple_request_facilitated_payments_network_interface_.get();
 }
 
 std::optional<CoreAccountInfo>

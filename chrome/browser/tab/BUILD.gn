@@ -17,6 +17,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedApp.java",
     "java/src/org/chromium/chrome/browser/tab/TabAttributeKeys.java",
     "java/src/org/chromium/chrome/browser/tab/TabAttributes.java",
+    "java/src/org/chromium/chrome/browser/tab/TabContextMenuData.java",
     "java/src/org/chromium/chrome/browser/tab/TabCreationState.java",
     "java/src/org/chromium/chrome/browser/tab/TabDelegateFactory.java",
     "java/src/org/chromium/chrome/browser/tab/TabHidingType.java",
@@ -151,6 +152,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
+    "java/src/org/chromium/chrome/browser/tab/TabContextMenuDataUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabIdManagerTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateAttributesTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabSupplierObserverTest.java",

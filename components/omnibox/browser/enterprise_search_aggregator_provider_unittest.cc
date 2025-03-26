@@ -34,6 +34,7 @@
 
 namespace {
 using testing::_;
+using testing::FieldsAre;
 using testing::Return;
 }  // namespace
 
@@ -220,6 +221,95 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
         ]
         })");
 
+const std::string kGoodJsonResponseImageUrls = base::StringPrintf(
+    R"({
+      "querySuggestions": [],
+      "peopleSuggestions": [
+        {
+          "suggestion": "john@example.com",
+          "document": {
+            "name": "sundar",
+            "derivedStructData": {
+              "name": {
+                "display_name_lower": "john doe",
+                "familyName": "Doe",
+                "givenName": "John",
+                "given_name_lower": "john",
+                "family_name_lower": "doe",
+                "displayName": "John Doe",
+                "userName": "john"
+              },
+              "emails": [
+                {
+                  "type": "primary",
+                  "value": "john@example.com"
+                }
+              ],
+              "displayPhoto": {
+                "url": "https://example.com/image.png"
+              }
+            }
+          },
+          "dataStore": "project 1"
+        },
+        {
+          "suggestion": "john2@example.com",
+          "document": {
+            "name": "sundar2",
+            "derivedStructData": {
+              "name": {
+                "display_name_lower": "john doe2",
+                "familyName": "Doe2",
+                "givenName": "John",
+                "given_name_lower": "john",
+                "family_name_lower": "doe2",
+                "displayName": "John Doe2",
+                "userName": "john2"
+              },
+              "emails": [
+                {
+                  "type": "primary",
+                  "value": "john2@example.com"
+                }
+              ],
+              "displayPhoto": {
+                "url": "https://lh3.googleusercontent.com/some/path"
+              }
+            }
+          },
+          "dataStore": "project 1"
+        },
+        {
+          "suggestion": "john3@example.com",
+          "document": {
+            "name": "sundar3",
+            "derivedStructData": {
+              "name": {
+                "display_name_lower": "john doe3",
+                "familyName": "Doe3",
+                "givenName": "John",
+                "given_name_lower": "john",
+                "family_name_lower": "doe3",
+                "displayName": "John Doe3",
+                "userName": "john3"
+              },
+              "emails": [
+                {
+                  "type": "primary",
+                  "value": "john3@example.com"
+                }
+              ],
+              "displayPhoto": {
+                "url": "https://lh3.googleusercontent.com/some/path=s100"
+              }
+            }
+          },
+          "dataStore": "project 1"
+        }
+      ],
+      "contentSuggestions": []
+    })");
+
 const std::string kNonDictJsonResponse =
     base::StringPrintf(R"(["test","result1","result2"])");
 
@@ -387,7 +477,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
       std::vector<ACMatchClassification>{{0, ACMatchClassification::DIM}};
 
   auto query_match = provider_->CreateMatch(
-      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, 1000,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::QUERY, true, {1000},
       "https://url.com/", "https://example.com/image.png",
       "https://example.com/icon.png", u"input title", u"additional text",
       u"keyword additional text");
@@ -408,7 +498,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, CreateMatch) {
   EXPECT_EQ(query_match.from_keyword, true);
 
   auto people_match = provider_->CreateMatch(
-      AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE, false, 1000,
+      AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE, false, {1000},
       "https://url.com/", "https://example.com/image.png",
       "https://example.com/icon.png", u"additional text", u"input name",
       u"keyword https://url.com/");
@@ -582,7 +672,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   ASSERT_EQ(matches.size(), 3u);
 
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NAVSUGGEST);
-  EXPECT_EQ(matches[0].relevance, 600);
+  EXPECT_EQ(matches[0].relevance, 610);
   EXPECT_EQ(matches[0].contents, u"john@example.com");
   EXPECT_EQ(matches[0].description, u"John Doe");
   EXPECT_EQ(matches[0].destination_url,
@@ -594,7 +684,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
             u"keyword https://www.google.com/?q=john%40example.com");
 
   EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
-  EXPECT_EQ(matches[1].relevance, 501);
+  EXPECT_EQ(matches[1].relevance, 520);
   EXPECT_EQ(matches[1].contents, u"10/15/07 - John Doe - Google Docs");
   EXPECT_EQ(matches[1].description, u"John's doodle");
   EXPECT_EQ(matches[1].destination_url, GURL("https://www.example.com"));
@@ -604,7 +694,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_EQ(matches[1].fill_into_edit, u"keyword https://www.example.com");
 
   EXPECT_EQ(matches[2].type, AutocompleteMatchType::SEARCH_SUGGEST);
-  EXPECT_EQ(matches[2].relevance, 500);
+  EXPECT_EQ(matches[2].relevance, 510);
   EXPECT_EQ(matches[2].contents, u"John's Document 1");
   EXPECT_EQ(matches[2].description, u"");
   EXPECT_EQ(matches[2].destination_url,
@@ -612,6 +702,29 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_TRUE(PageTransitionCoreTypeIs(matches[2].transition,
                                        ui::PAGE_TRANSITION_KEYWORD));
   EXPECT_EQ(matches[2].fill_into_edit, u"keyword John's Document 1");
+}
+
+// Test response is parsed accurately and image_url is adjusted appropriately.
+TEST_F(EnterpriseSearchAggregatorProviderTest, ParseAndModifyImageUrls) {
+  provider_->adjusted_input_ = CreateInput(u"john d", true);
+  ParseResponse(kGoodJsonResponseImageUrls);
+
+  ACMatches matches = provider_->matches_;
+  ASSERT_EQ(matches.size(), 3u);
+
+  EXPECT_EQ(matches[0].contents, u"john@example.com");
+  EXPECT_EQ(matches[0].description, u"John Doe");
+  EXPECT_EQ(matches[0].image_url, GURL("https://example.com/image.png"));
+
+  EXPECT_EQ(matches[1].contents, u"john2@example.com");
+  EXPECT_EQ(matches[1].description, u"John Doe2");
+  EXPECT_EQ(matches[1].image_url,
+            GURL("https://lh3.googleusercontent.com/some/path=s64"));
+
+  EXPECT_EQ(matches[2].contents, u"john3@example.com");
+  EXPECT_EQ(matches[2].description, u"John Doe3");
+  EXPECT_EQ(matches[2].image_url,
+            GURL("https://lh3.googleusercontent.com/some/path=s100"));
 }
 
 // Test results with missing expected fields are skipped.
@@ -838,12 +951,12 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
   EXPECT_THAT(
       GetScoredMatches(),
       testing::ElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 600},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 600},
-          ScoredMatch{u"https://url-mango-1/", 501},
-          ScoredMatch{u"https://url-mango-2/", 501},
-          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 500},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 500}));
+          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 607},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 606},
+          ScoredMatch{u"https://url-mango-1/", 517},
+          ScoredMatch{u"https://url-mango-2/", 516},
+          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 507},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 506}));
 
   // At most 4 per type when scoped. Filtered matches shouldn't count against
   // the limit.
@@ -897,20 +1010,19 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
       }));
   EXPECT_THAT(
       GetScoredMatches(),
-      // Using `UnorderedElementsAre()` because `partial_sort()` is not-stable.
-      testing::UnorderedElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 600},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 600},
-          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 600},
-          ScoredMatch{u"https://www.google.com/?q=mango-4-people", 600},
-          ScoredMatch{u"https://url-mango-1/", 501},
-          ScoredMatch{u"https://url-mango-2/", 501},
-          ScoredMatch{u"https://url-mango-3/", 501},
-          ScoredMatch{u"https://url-mango-4/", 501},
-          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 500},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 500},
-          ScoredMatch{u"https://www.google.com/?q=mango-3-query", 500},
-          ScoredMatch{u"https://www.google.com/?q=mango-4-query", 500}));
+      testing::ElementsAre(
+          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 607},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 606},
+          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 605},
+          ScoredMatch{u"https://www.google.com/?q=mango-4-people", 604},
+          ScoredMatch{u"https://url-mango-1/", 517},
+          ScoredMatch{u"https://url-mango-2/", 516},
+          ScoredMatch{u"https://url-mango-3/", 515},
+          ScoredMatch{u"https://url-mango-4/", 514},
+          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 507},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 506},
+          ScoredMatch{u"https://www.google.com/?q=mango-3-query", 505},
+          ScoredMatch{u"https://www.google.com/?q=mango-4-query", 504}));
 
   // Types that have less than 2 results aren't backfilled by other types.
   provider_->adjusted_input_ = CreateInput(u"mango m", false);
@@ -931,8 +1043,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
                                              "https://url-mango-3/"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url-mango-1/", 501},
-                                   ScoredMatch{u"https://url-mango-2/", 501}));
+              testing::ElementsAre(ScoredMatch{u"https://url-mango-1/", 517},
+                                   ScoredMatch{u"https://url-mango-2/", 516}));
 
   // The best 2 suggestions should be shown, even if they're not
   // the 1st 2.
@@ -948,8 +1060,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
                                              "https://url-mango-3/"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url-mango-2/", 501},
-                                   ScoredMatch{u"https://url-mango-3/", 501}));
+              testing::ElementsAre(ScoredMatch{u"https://url-mango-2/", 519},
+                                   ScoredMatch{u"https://url-mango-3/", 518}));
 
   // Can show more than 2 per type when scoped.
   provider_->adjusted_input_ = CreateInput(u"mango m", true);
@@ -992,16 +1104,16 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
       }));
   EXPECT_THAT(
       GetScoredMatches(),
-      testing::UnorderedElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 600},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 600},
-          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 600},
-          ScoredMatch{u"https://url-mango-1/", 501},
-          ScoredMatch{u"https://url-mango-2/", 501},
-          ScoredMatch{u"https://url-mango-3/", 501},
-          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 500},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 500},
-          ScoredMatch{u"https://www.google.com/?q=mango-3-query", 500}));
+      testing::ElementsAre(
+          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 607},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 606},
+          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 605},
+          ScoredMatch{u"https://url-mango-1/", 517},
+          ScoredMatch{u"https://url-mango-2/", 516},
+          ScoredMatch{u"https://url-mango-3/", 515},
+          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 507},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 506},
+          ScoredMatch{u"https://www.google.com/?q=mango-3-query", 505}));
 
   // Limit low-quality suggestions. Only the 1st 2 matches are allowed to score
   // lower than 500. Even if the 1st 2 matches score higher than 500, the
@@ -1047,8 +1159,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
   EXPECT_THAT(
       GetScoredMatches(),
       testing::ElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 300},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 300}));
+          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 307},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 306}));
 
   // Scoped inputs have a higher limit of 8 matches allowed to score lower than
   // 500. Even if the 1st 2 matches score higher than 500, the remaining matches
@@ -1093,15 +1205,15 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
       }));
   EXPECT_THAT(
       GetScoredMatches(),
-      testing::UnorderedElementsAre(
-          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 300},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 300},
-          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 300},
-          ScoredMatch{u"https://url-mango-1/", 201},
-          ScoredMatch{u"https://url-mango-2/", 201},
-          ScoredMatch{u"https://url-mango-3/", 201},
-          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 200},
-          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 200}));
+      testing::ElementsAre(
+          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 307},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 306},
+          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 305},
+          ScoredMatch{u"https://url-mango-1/", 217},
+          ScoredMatch{u"https://url-mango-2/", 216},
+          ScoredMatch{u"https://url-mango-3/", 215},
+          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 207},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 206}));
 }
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
@@ -1124,9 +1236,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
       }));
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
-                  ScoredMatch{u"https://www.google.com/?q=matchUserName", 600},
-                  ScoredMatch{u"https://url/", 501},
-                  ScoredMatch{u"https://www.google.com/?q=matchQuery", 500}));
+                  ScoredMatch{u"https://www.google.com/?q=matchUserName", 609},
+                  ScoredMatch{u"https://url/", 519},
+                  ScoredMatch{u"https://www.google.com/?q=matchQuery", 509},
+                  FieldsAre(_, 0), FieldsAre(_, 0), FieldsAre(_, 0)));
 
   // Score using weighted sum of matches.
   provider_->adjusted_input_ = CreateInput(u"zero on tw th", true);
@@ -1140,9 +1253,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                               "https://url-0123/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url-0123/", 701},
-                                   ScoredMatch{u"https://url-012/", 601},
-                                   ScoredMatch{u"https://url-01/", 501}));
+              testing::ElementsAre(ScoredMatch{u"https://url-0123/", 717},
+                                   ScoredMatch{u"https://url-012/", 618},
+                                   ScoredMatch{u"https://url-01/", 519},
+                                   FieldsAre(_, 0)));
 
   // Duplicate matches do not count.
   // - If the input repeats a word, only 1 should count.
@@ -1155,7 +1269,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("one one", "one one", "https://url-1/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url-1/", 401}));
+              testing::ElementsAre(ScoredMatch{u"https://url-1/", 420}));
 
   // Each input word can match only 1 result word.
   provider_->adjusted_input_ = CreateInput(u"one one", true);
@@ -1165,7 +1279,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("one oneTwo", "mime_type", "https://url/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url/", 401}));
+              testing::ElementsAre(ScoredMatch{u"https://url/", 420}));
 
   // A result word can match multiple input words. This is just a side effect
   // of the implementation rather than intentional design.
@@ -1176,7 +1290,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("one", "mime_type", "https://url/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url/", 601}));
+              testing::ElementsAre(ScoredMatch{u"https://url/", 620}));
 
   // Matches outside contents and description contribute less to the score.
   provider_->adjusted_input_ = CreateInput(u"one two three four five", true);
@@ -1189,8 +1303,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                                              "https://outside/"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://inside/", 801},
-                                   ScoredMatch{u"https://outside/", 501}));
+              testing::ElementsAre(ScoredMatch{u"https://inside/", 820},
+                                   ScoredMatch{u"https://outside/", 519}));
 
   // Short input words contribute less to the score.
   provider_->adjusted_input_ = CreateInput(u"on two three four five", true);
@@ -1200,7 +1314,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("one", "two three four five", "https://url/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url/", 501}));
+              testing::ElementsAre(ScoredMatch{u"https://url/", 520}));
 
   // Short input words contribute less to score, except for exact (non-prefix)
   // matches in people suggestions.
@@ -1217,10 +1331,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                      }));
   EXPECT_THAT(
       GetScoredMatches(),
-      testing::ElementsAre(ScoredMatch{u"https://www.google.com/?q=ab", 600},
-                           ScoredMatch{u"https://www.google.com/?q=abc", 300},
-                           ScoredMatch{u"https://url-ab/", 201},
-                           ScoredMatch{u"https://url-abc/", 201}));
+      testing::ElementsAre(ScoredMatch{u"https://www.google.com/?q=ab", 610},
+                           ScoredMatch{u"https://www.google.com/?q=abc", 309},
+                           ScoredMatch{u"https://url-ab/", 220},
+                           ScoredMatch{u"https://url-abc/", 219}));
 
   // For all suggestions, long input words contribute fully to the score
   // regardless of whether they fully or prefix match.
@@ -1237,10 +1351,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
       }));
   EXPECT_THAT(
       GetScoredMatches(),
-      testing::ElementsAre(ScoredMatch{u"https://www.google.com/?q=abc", 600},
-                           ScoredMatch{u"https://www.google.com/?q=abcd", 600},
-                           ScoredMatch{u"https://url-abc/", 501},
-                           ScoredMatch{u"https://url-abcd/", 501}));
+      testing::ElementsAre(ScoredMatch{u"https://www.google.com/?q=abc", 610},
+                           ScoredMatch{u"https://www.google.com/?q=abcd", 609},
+                           ScoredMatch{u"https://url-abc/", 520},
+                           ScoredMatch{u"https://url-abcd/", 519}));
 
   // Matches outside human-readable fields aren't considered in scoring.
   provider_->adjusted_input_ = CreateInput(u"title url", true);
@@ -1251,8 +1365,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                          CreateContentResult("title", "mime", "https://url2/"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url1/", 401},
-                                   ScoredMatch{u"https://url2/", 401}));
+              testing::ElementsAre(ScoredMatch{u"https://url1/", 420},
+                                   ScoredMatch{u"https://url2/", 419}));
 
   // Suggestions that match every input words, when there are at least 2, should
   // be scored higher.
@@ -1263,7 +1377,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("one two three", "mime", "https://url/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url/", 1001}));
+              testing::ElementsAre(ScoredMatch{u"https://url/", 1020}));
 
   // Suggestions that match every input words, when there is not at least 2,
   // should not be scored higher.
@@ -1274,7 +1388,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("one two three", "mime", "https://url/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url/", 401}));
+              testing::ElementsAre(ScoredMatch{u"https://url/", 420}));
 
   // Suggestions that match at least 2 but not all inputs words should not be
   // scored higher.
@@ -1285,7 +1399,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("one two three", "mime", "https://url/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url/", 801}));
+              testing::ElementsAre(ScoredMatch{u"https://url/", 820}));
 
   // Require at least 1 strong match or 2 weak matches.
   provider_->adjusted_input_ = CreateInput(u"title", true);
@@ -1295,7 +1409,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                          CreateContentResult("title", "mime", "https://url/"),
                      }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url/", 401}));
+              testing::ElementsAre(ScoredMatch{u"https://url/", 420}));
 
   // When unscoped, requires at least 1 strong match or 2 weak matches.
   provider_->adjusted_input_ = CreateInput(u"mimeA mimeB", false);
@@ -1306,7 +1420,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("title", "mimeA mimeB", "https://url-2/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url-2/", 201}));
+              testing::ElementsAre(ScoredMatch{u"https://url-2/", 219},
+                                   FieldsAre(_, 0)));
 
   // When scoped, does not require at least 1 strong match or 2 weak matches.
   provider_->adjusted_input_ = CreateInput(u"mimeA mimeB", true);
@@ -1317,8 +1432,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
           CreateContentResult("title", "mimeA mimeB", "https://url-2/"),
       }));
   EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(ScoredMatch{u"https://url-2/", 201},
-                                   ScoredMatch{u"https://url-1/", 101}));
+              testing::ElementsAre(ScoredMatch{u"https://url-2/", 219},
+                                   ScoredMatch{u"https://url-1/", 120}));
 
   // Require at least half the input words to match.
   provider_->adjusted_input_ = CreateInput(u"title x y", true);
@@ -1327,7 +1442,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
                      {
                          CreateContentResult("title", "mime", "https://url/"),
                      }));
-  EXPECT_THAT(GetScoredMatches(), testing::ElementsAre());
+  EXPECT_THAT(GetScoredMatches(), testing::ElementsAre(FieldsAre(_, 0)));
 
   // People matches should be boosted.
   provider_->adjusted_input_ = CreateInput(u"query q", true);
@@ -1338,7 +1453,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
       {
           CreatePeopleResult("displayName query", "userName", "givenName",
                              "familyName"),
-          CreatePeopleResult("displayName", "matchUserName", "givenName",
+          CreatePeopleResult("displayName", "NoMatchUserName", "givenName",
                              "familyName"),
       },
       {
@@ -1346,9 +1461,10 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
       }));
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
-                  ScoredMatch{u"https://www.google.com/?q=userName", 600},
-                  ScoredMatch{u"https://url/", 501},
-                  ScoredMatch{u"https://www.google.com/?q=query", 500}));
+                  ScoredMatch{u"https://www.google.com/?q=userName", 610},
+                  ScoredMatch{u"https://url/", 520},
+                  ScoredMatch{u"https://www.google.com/?q=query", 510},
+                  FieldsAre(_, 0)));
 
   // People matches must match all input words.
   provider_->adjusted_input_ = CreateInput(u"query q unmatched", true);
@@ -1365,10 +1481,11 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
       {
           CreateContentResult("title query", "mime_type", "https://url/"),
       }));
-  EXPECT_THAT(GetScoredMatches(),
-              testing::ElementsAre(
-                  ScoredMatch{u"https://url/", 501},
-                  ScoredMatch{u"https://www.google.com/?q=query", 500}));
+  EXPECT_THAT(
+      GetScoredMatches(),
+      testing::ElementsAre(ScoredMatch{u"https://url/", 520},
+                           ScoredMatch{u"https://www.google.com/?q=query", 510},
+                           FieldsAre(_, 0), FieldsAre(_, 0)));
 
   // When content and query matches equally match the input, content matches
   // should be preferred.
@@ -1383,6 +1500,6 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
       }));
   EXPECT_THAT(GetScoredMatches(),
               testing::ElementsAre(
-                  ScoredMatch{u"https://url/", 401},
-                  ScoredMatch{u"https://www.google.com/?q=query", 400}));
+                  ScoredMatch{u"https://url/", 420},
+                  ScoredMatch{u"https://www.google.com/?q=query", 410}));
 }

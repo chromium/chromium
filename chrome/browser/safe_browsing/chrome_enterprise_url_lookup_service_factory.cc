@@ -5,6 +5,10 @@
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -23,7 +27,18 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
+
+namespace {
+
+// Helper function for retrieving the email associated with `profile`.
+// Makes it easier to bind a callback to
+// `enterprise_connectors::GetProfileEmail` which has multiple overloads, so
+// binding to it would require a cast.
+std::string GetProfileEmail(Profile* profile) {
+  return enterprise_connectors::GetProfileEmail(profile);
+}
+
+}  // namespace
 
 namespace safe_browsing {
 
@@ -59,6 +74,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
   DependsOn(SafeBrowsingNavigationObserverManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(policy::ManagementServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
@@ -73,7 +89,7 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
           profile->GetURLLoaderFactory());
   return std::make_unique<ChromeEnterpriseRealTimeUrlLookupService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
-      VerdictCacheManagerFactory::GetForProfile(profile), profile,
+      VerdictCacheManagerFactory::GetForProfile(profile),
       base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),
@@ -82,7 +98,10 @@ std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile),
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-      profile->IsOffTheRecord(), profile->IsGuestSession());
+      policy::ManagementServiceFactory::GetForProfile(profile),
+      profile->IsOffTheRecord(), profile->IsGuestSession(),
+      base::BindRepeating(&GetProfileEmail, profile),
+      base::BindRepeating(&enterprise_util::IsProfileAffiliated, profile));
 }
 
 }  // namespace safe_browsing

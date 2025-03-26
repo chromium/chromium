@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -133,7 +134,7 @@ void FakeAudioCapturer::ProducePackets() {
     return;
   }
   base::FixedArray<char> data(GetPacketSize());
-  memset(data.data(), 0, data.memsize());
+  UNSAFE_TODO(memset(data.data(), 0, data.memsize()));
   SendData(start_timestamp_ + base::Seconds(1) * packet_index_ *
                                   frames_per_packet_ /
                                   stream_type_->frames_per_second,

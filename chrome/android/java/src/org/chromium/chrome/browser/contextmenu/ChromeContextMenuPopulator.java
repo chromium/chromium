@@ -173,7 +173,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.SHARE_HIGHLIGHT,
             Action.REMOVE_HIGHLIGHT,
             Action.LEARN_MORE,
-            Action.OPEN_IN_NEW_TAB_IN_GROUP
+            Action.OPEN_IN_NEW_TAB_IN_GROUP,
+            Action.SAVE_PAGE,
+            Action.SHARE_PAGE,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -218,7 +220,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int LEARN_MORE = 38;
             int OPEN_IN_NEW_TAB_IN_GROUP = 39;
             int OPEN_IN_NEW_WINDOW = 40;
-            int NUM_ENTRIES = 41;
+            int SAVE_PAGE = 41;
+            int SHARE_PAGE = 42;
+            int NUM_ENTRIES = 43;
         }
     }
 
@@ -275,7 +279,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
     }
 
-    public static boolean shouldShowEmptySpaceContextMenu() {
+    @VisibleForTesting
+    boolean shouldShowEmptySpaceContextMenu() {
         return DeviceFormFactor.isDesktop()
                 && DeviceInput.supportsAlphabeticKeyboard()
                 && DeviceInput.supportsPrecisionPointer();
@@ -288,7 +293,17 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
 
         if (mParams.isPage() && shouldShowEmptySpaceContextMenu()) {
-            // TODO (crbug.com/391719844): add new groups and items for page actions.
+            ModelList pageGroup = new ModelList();
+            // TODO(crbug.com/405842034): investigate supporting downloads in incognito mode.
+            if (!mItemDelegate.isIncognito()
+                    && UrlUtilities.isDownloadableScheme(mParams.getPageUrl())) {
+                pageGroup.add(
+                        createListItem(Item.SAVE_PAGE, false, !mIsDownloadRestrictedByPolicy));
+            }
+            if (enableShareFromContextMenu()) {
+                pageGroup.add(createShareListItem(Item.SHARE_PAGE, Item.DIRECT_SHARE_LINK));
+            }
+            groupedItems.add(new Pair<>(R.string.contextmenu_page_title, pageGroup));
         }
 
         if (mParams.isAnchor()) {
@@ -616,6 +631,29 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             } else if (mItemDelegate.startDownload(url, true)) {
                 mNativeDelegate.startDownload(url, false);
             }
+        } else if (itemId == R.id.contextmenu_save_page) {
+            recordContextMenuSelection(ContextMenuUma.Action.SAVE_PAGE);
+            GURL url = mItemDelegate.getPageUrl();
+            if (mIsDownloadRestrictedByPolicy) {
+                showDownloadRestrictedToast();
+            } else if (mItemDelegate.startDownload(url, true)) {
+                mNativeDelegate.startDownload(url, false);
+            }
+        } else if (itemId == R.id.contextmenu_share_page) {
+            recordContextMenuSelection(ContextMenuUma.Action.SHARE_PAGE);
+            // TODO(crbug.com/40549331): Migrate ShareParams to GURL.
+            ShareParams linkShareParams =
+                    new ShareParams.Builder(
+                                    getWindow(),
+                                    ContextMenuUtils.getTitle(mParams),
+                                    mParams.getPageUrl().getSpec())
+                            .build();
+            mShareDelegateSupplier
+                    .get()
+                    .share(
+                            linkShareParams,
+                            new ChromeShareExtras.Builder().setSaveLastUsed(true).build(),
+                            ShareOrigin.CONTEXT_MENU);
         } else if (itemId == R.id.contextmenu_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_LINK);
             // TODO(crbug.com/40549331): Migrate ShareParams to GURL.
@@ -965,7 +1003,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     private ListItem createShareListItem(@Item int item, @Item int iconButtonItem) {
-        final boolean isLink = item == Item.SHARE_LINK;
+        final boolean isLink = (item == Item.SHARE_LINK || item == Item.SHARE_PAGE);
         final Pair<Drawable, CharSequence> shareInfo = createRecentShareAppInfo(isLink);
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)

@@ -77,7 +77,6 @@ void SVGCircleElement::SvgAttributeChanged(
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kRAttr || attr_name == svg_names::kCxAttr ||
       attr_name == svg_names::kCyAttr) {
-    UpdateRelativeLengthsInformation();
     GeometryPresentationAttributeChanged(params.property);
     return;
   }

@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">เปิดแท็บใหม่ใน Chrome</translation>
 <translation id="1166460004393506534">ลบข้อมูลการท่องเว็บใน Chrome</translation>
-<translation id="1171255741903316750">เปิด "ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chrome"</translation>
 <translation id="1179527450541388808">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอปในหน้าจอหลักของ iPad</translation>
 <translation id="1180362651362502943">ใช้ข้อมูล Chrome ในบัญชี Google ต่อไป</translation>
 <translation id="1200396280085622191">ใช้ Chrome ทุกครั้งที่คุณแตะลิงก์ในข้อความและแอปอื่นๆ</translation>
@@ -178,6 +177,7 @@
 <translation id="5716154293141027663">คุณแตะลิงก์ในแอปอื่นๆ เพื่อเปิด Chrome ได้ทุกเมื่อ</translation>
 <translation id="5752489513673657785">ฟีดที่กำหนดมาเพื่อคุณโดยเฉพาะจาก Google</translation>
 <translation id="5772407442571703917">ดาวน์โหลด Chrome ที่นี่</translation>
+<translation id="5777468213129569553">เปิด Chrome</translation>
 <translation id="5779767936254214055">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อคุณออกจาก Chrome หรือเปลี่ยนไปใช้แอปอื่น</translation>
 <translation id="5808435672482059465">ดูประวัติการเข้าชมใน Chrome</translation>
 <translation id="5833027901704861726">ยังไม่ได้บันทึกข้อมูล Chrome บางอย่างของคุณใน <ph name="EMAIL" />

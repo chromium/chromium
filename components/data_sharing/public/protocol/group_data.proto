@@ -11,6 +11,8 @@ option optimize_for = LITE_RUNTIME;
 
 package data_sharing_pb;
 
+import "components/sync/protocol/collaboration_group_metadata.proto";
+
 enum MemberRole {
   MEMBER_ROLE_UNSPECIFIED = 0;
   MEMBER_ROLE_OWNER = 1;
@@ -34,4 +36,5 @@ message GroupData {
   repeated GroupMember members = 3;
   optional string access_token = 4;
   repeated GroupMember former_members = 5;
+  optional sync_pb.CollaborationGroupMetadata collaboration_group_metadata = 6;
 };

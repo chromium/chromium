@@ -12,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -317,6 +318,8 @@ static const char* const kSwitchNames[] = {
     switches::kDisableAdpf,
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/371609830): Remove reven switch on experiment end.
+    ash::switches::kRevenBranding,
     switches::kSchedulerBoostUrgent,
 #endif
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
@@ -1415,7 +1418,7 @@ void GpuProcessHost::RecordProcessCrash() {
   if (recent_crash_count_ >= GetFallbackCrashLimit() && !disable_crash_limit) {
     base::UmaHistogramEnumeration(kFallbackEventCause,
                                   GPUFallbackEventCauseType::kCrashLimit);
-    GpuDataManagerImpl::GetInstance()->FallBackToNextGpuMode();
+    GpuDataManagerImpl::GetInstance()->FallBackToNextGpuModeDueToCrash();
   }
 }
 

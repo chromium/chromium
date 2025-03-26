@@ -56,6 +56,8 @@ using ::testing::Return;
 constexpr char kFakeEmailAddress[] = "alice@email.example";
 constexpr char16_t kFakeEmailAddressU16[] = u"alice@email.example";
 constexpr char kFakeManagementUrl[] = "https://manage.example/";
+constexpr char kFakeOrigin[] = "https://test.example";
+constexpr char16_t kFakeDomainU16[] = u"test.example";
 constexpr char kFakeOauthScope[] = "https://foo.example";
 constexpr char kFakeErrorReportUrl[] = "https://error-link.example/";
 constexpr char kFakeLearnMoreUrl[] = "https://learn-more.stuff";
@@ -304,7 +306,7 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
     });
   }
 
-  const url::Origin facet = url::Origin::Create(GURL("https://test.example"));
+  const url::Origin facet = url::Origin::Create(GURL(kFakeOrigin));
   base::CallbackListSubscription unused_subscription_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
@@ -555,8 +557,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           CheckViewProperty(
               PlusAddressCreationView::kPlusAddressDescriptionTextElementId,
               &views::StyledLabel::GetText,
-              l10n_util::GetStringUTF16(
-                  IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE)),
+              l10n_util::GetStringFUTF16(
+                  IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE, kFakeDomainU16)),
           EnsurePresent(PlusAddressCreationView::kPlusAddressNoticeElementId),
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),

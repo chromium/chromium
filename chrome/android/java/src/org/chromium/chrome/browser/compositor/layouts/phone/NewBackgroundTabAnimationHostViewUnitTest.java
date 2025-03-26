@@ -100,7 +100,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testGetAnimatorSet_Uninitialized() {
-        mHostView.getAnimatorSet(/* originX= */ 0, /* originY= */ 0);
+        mHostView.getAnimatorSet(/* originX= */ 0, /* originY= */ 0, /* statusBarHeight= */ 0);
     }
 
     @Test
@@ -112,7 +112,9 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 /* backgroundColor= */ Color.CYAN,
                 /* isIncognito= */ false,
                 /* yOffset= */ 0);
-        AnimatorSet animatorSet = mHostView.getAnimatorSet(/* originX= */ -1, /* originY= */ -1);
+        AnimatorSet animatorSet =
+                mHostView.getAnimatorSet(
+                        /* originX= */ -1, /* originY= */ -1, /* statusBarHeight= */ 0);
         assertEquals(2, animatorSet.getChildAnimations().size());
     }
 

@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/version_info/channel.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -22,7 +23,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 
 namespace ip_protection {
-
 
 // Implements IpProtectionProbabilisticRevealTokenFetcher abstract base class.
 // Main functionality is implemented in TryGetProbabilisticRevealTokens method.
@@ -32,8 +32,9 @@ class IpProtectionProbabilisticRevealTokenDirectFetcher
   // Retriever class fetches probabilistic reveal tokens from the issuer server.
   class Retriever {
    public:
-    explicit Retriever(std::unique_ptr<network::PendingSharedURLLoaderFactory>
-                           pending_url_loader_factory);
+    Retriever(std::unique_ptr<network::PendingSharedURLLoaderFactory>
+                  pending_url_loader_factory,
+              version_info::Channel channel);
     ~Retriever();
     // Returns HTTP body string from issuer or url_loader->NetError() code on
     // error.
@@ -54,9 +55,10 @@ class IpProtectionProbabilisticRevealTokenDirectFetcher
     base::WeakPtrFactory<Retriever> weak_ptr_factory_{this};
   };
 
-  explicit IpProtectionProbabilisticRevealTokenDirectFetcher(
+  IpProtectionProbabilisticRevealTokenDirectFetcher(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          url_loader_factory);
+          url_loader_factory,
+      version_info::Channel channel);
 
   ~IpProtectionProbabilisticRevealTokenDirectFetcher() override;
 

@@ -1577,6 +1577,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_FACEGAZE_CLOSE_BUTTON_TEXT" desc="The text for the close button that is shown in the FaceGaze top bar UI.">
         Turn off Face control
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FACEGAZE_ACTIVE_TITLE" desc="The title of the notification shown when FaceGaze is active.">
+        Face control active
+      </message>
 
       <!-- Accessibility nudges -->
       <message name="IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_NO_FOCUSED_TEXT_FIELD" desc="Displayed in a nudge when Dictation is stopped automatically because there is no focused text field.">
@@ -4480,9 +4483,8 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Label for accelerator action - Take window screenshot or screen recording.">
         Take window screenshot or screen recording
       </message>
-      <!-- TODO: crbug.com/375967525 - Mark this string as translateable once it is confirmed. -->
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION" desc="Label for accelerator action - Search my screen." translateable="false">
-        Search my screen
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION" desc="Label for accelerator action - Search my screen with Google Lens.">
+        Search my screen with Google Lens
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TILING_WINDOW_RESIZE_LEFT" desc="Label for accelerator action - Tiled resize window toward the left.">
         Tiled resize window toward the left

@@ -53,6 +53,9 @@ std::u16string MakeHowToUseText(const extensions::ActionInfo* action,
     extra = command->accelerator().GetShortcutText();
   }
 
+  // TODO(crbug.com/405148986): This returns an empty string for MV3 extensions
+  // which specify the "action" key in the manifest since
+  // ActionInfo::Type::kAction is not handled. Add the appropriate string here.
   int message_id = 0;
   if (action && action->type == extensions::ActionInfo::Type::kBrowser) {
     message_id =
@@ -116,6 +119,9 @@ ExtensionInstalledBubbleModel::ExtensionInstalledBubbleModel(
 
   if (show_how_to_use_) {
     how_to_use_text_ = MakeHowToUseText(action_info, command, keyword);
+
+    // Don't show how to use if the text returned is empty.
+    show_how_to_use_ = !how_to_use_text_.empty();
   }
 }
 

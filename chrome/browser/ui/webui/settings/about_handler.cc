@@ -428,10 +428,12 @@ void AboutHandler::OnJavascriptAllowed() {
 }
 
 void AboutHandler::OnJavascriptDisallowed() {
+  // Invalidate all existing WeakPtrs so that no stale callbacks occur.
+  weak_factory_.InvalidateWeakPtrs();
+
   apply_changes_from_upgrade_observer_ = false;
   version_updater_.reset();
   policy_registrar_.reset();
-  weak_factory_.InvalidateWeakPtrs();
 }
 
 void AboutHandler::OnUpgradeRecommended() {

@@ -40,6 +40,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="2758123043070977469">Ocorreu um problema na autenticação. Inicie sessão novamente.</translation>
 <translation id="2803375539583399270">Introduzir PIN</translation>
 <translation id="2919669478609886916">Está atualmente a partilhar este computador com outro utilizador. Quer continuar a partilhar?</translation>
+<translation id="2929683002824598593">Partilhar dispositivo</translation>
 <translation id="2939145106548231838">Autenticar para anfitrião</translation>
 <translation id="3027681561976217984">Modo tátil</translation>
 <translation id="3106379468611574572">O computador remoto não está a responder aos pedidos de ligação. Verifique se está online e tente novamente.</translation>
@@ -117,10 +118,12 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="6178645564515549384">Anfitrião de mensagens nativo para assistência remota</translation>
 <translation id="618120821413932081">Atualizar resolução remota para corresponder à janela</translation>
 <translation id="6223301979382383752">Abrir as preferências Gravação de ecrã</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> pediu acesso para ver o seu ecrã e controlar o teclado e o rato. Quer partilhar o seu dispositivo?</translation>
 <translation id="6284412385303060032">O anfitrião em execução no ecrã de início de sessão da consola foi encerrado para suportar o modo de cortina ao alternar para um anfitrião em execução numa sessão específica de utilizador.</translation>
 <translation id="6542902059648396432">Comunicar um problema...</translation>
 <translation id="6583902294974160967">Apoio técnico</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Se não tomar medidas, o seu dispositivo vai começar automaticamente a partilhar a localização dentro de # segundo.}other{Se não tomar medidas, o seu dispositivo vai começar automaticamente a partilhar a localização dentro de # segundos.}}</translation>
 <translation id="6654753848497929428">Partilhar</translation>
 <translation id="677755392401385740">O anfitrião começou para o utilizador: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplicação de ajuda para abrir um URL no cliente do <ph name="PRODUCT_NAME" /></translation>

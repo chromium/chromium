@@ -100,6 +100,7 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
   private numSystemCertsString_: string;
   private importOsCertsEnabled_: boolean;
   private importOsCertsEnabledManaged_: boolean;
+  private showViewOsCertsLinkRow_: boolean;
   // </if>
 
   override ready() {

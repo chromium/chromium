@@ -445,7 +445,11 @@ void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
           DOMExceptionCode::kOperationError,
           "Unexpected failure in onSubmittedWorkDone");
       break;
+#ifdef WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
+    case wgpu::QueueWorkDoneStatus::CallbackCancelled:
+#else
     case wgpu::QueueWorkDoneStatus::InstanceDropped:
+#endif  // WGPU_BREAKING_CHANGE_INSTANCE_DROPPED_RENAME
       resolver->RejectWithDOMException(
           DOMExceptionCode::kOperationError,
           "Instance dropped in onSubmittedWorkDone");

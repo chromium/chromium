@@ -651,34 +651,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, WindowOpenXHR) {
   EXPECT_EQ(last_request_relative_url(), "/title2.html");
 }
 
-// Run tests with PlzDedicatedWorker.
-// TODO(crbug.com/40093136): Merge this test fixture into
-// NetworkServiceRestartBrowserTest once PlzDedicatedWorker is enabled by
-// default.
-class NetworkServiceRestartForWorkerBrowserTest
-    : public NetworkServiceRestartBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  NetworkServiceRestartForWorkerBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kPlzDedicatedWorker);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kPlzDedicatedWorker);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NetworkServiceRestartForWorkerBrowserTest,
-                         ::testing::Values(false, true));
-
 // Make sure worker fetch works after crash.
-IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest, WorkerFetch) {
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, WorkerFetch) {
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
@@ -704,7 +678,7 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest, WorkerFetch) {
 }
 
 // Make sure multiple workers are tracked correctly and work after crash.
-IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest,
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        MultipleWorkerFetch) {
   if (IsInProcessNetworkService())
     return;

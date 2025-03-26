@@ -6,6 +6,7 @@
 #include <sensors.h>
 #include <wrl/implements.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -747,7 +748,8 @@ TEST_F(PlatformSensorAndProviderTestWin,
   // InitPropVariantFromGUIDAsBuffer with quaternion format GUID.
   InitPropVariantFromGUIDAsBuffer(SENSOR_DATA_TYPE_QUATERNION.fmtid,
                                   pvQuat.Receive());
-  memcpy(pvQuat.get().caub.pElems, &quat_elements, sizeof(quat_elements));
+  UNSAFE_TODO(
+      memcpy(pvQuat.get().caub.pElems, &quat_elements, sizeof(quat_elements)));
   GenerateDataUpdatedEvent({{SENSOR_DATA_TYPE_QUATERNION, pvQuat.ptr()}});
 
   base::RunLoop().RunUntilIdle();

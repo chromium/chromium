@@ -85,6 +85,7 @@ class OptionsNamespace(argparse.Namespace):
     # The following are bot-specific args.
     isolated_script_test_output: Optional[str]
     isolated_script_test_perf_output: Optional[str]
+    android_hostname: str
 
 
 def parse_args():
@@ -153,6 +154,8 @@ def parse_args():
                         help='Output.json file that the script can write to.')
     parser.add_argument('--isolated-script-test-perf-output',
                         help='Deprecated and ignored, but bots pass it.')
+    parser.add_argument("--android-hostname",
+                        help="Run benchmarks with adb hostname.")
     # ▲▲▲▲▲ Please update OptionsNamespace when adding or modifying args. ▲▲▲▲▲
 
     args = parser.parse_args(namespace=OptionsNamespace())
@@ -303,6 +306,10 @@ def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
             cmd += ['--assume-browser-already-installed']
         else:
             _android_browser_installed = True
+
+        if args.android_hostname:
+            cmd += [f"--android={args.android_hostname}"]
+
         _LOGGER.debug(
             f"Running benchmark on Android with command: {' '.join(cmd)}")
     else:

@@ -92,17 +92,20 @@ void CreatePasswordGenerationUIData(
   data->form_data = test::CreateTestAddressFormData();
 }
 
-void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
+void CreateTriggeringField(TriggeringField* data) {
   data->element_id = FieldRendererId(123);
-  data->form_data = test::CreateTestAddressFormData();
   data->trigger_source =
       AutofillSuggestionTriggerSource::kFormControlElementClicked;
-  data->username_field_index = 0ul;
-  data->password_field_index = 1ul;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
   data->typed_username = u"username";
   data->show_webauthn_credentials = true;
+}
+
+void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
+  CreateTriggeringField(&data->field);
   data->form_data = test::CreateTestAddressFormData();
+  data->username_field_index = 0ul;
+  data->password_field_index = 1ul;
 }
 
 void CheckEqualPasswordFormFillData(const PasswordFormFillData& expected,
@@ -130,20 +133,25 @@ void CheckEqualPassPasswordGenerationUIData(
       test::WithoutUnserializedData(expected.form_data), actual.form_data));
 }
 
-void CheckEqualPasswordSuggestionRequest(
-    const PasswordSuggestionRequest& expected,
-    const PasswordSuggestionRequest& actual) {
+void CheckEqualTriggeringField(const TriggeringField& expected,
+                               const TriggeringField& actual) {
   EXPECT_EQ(expected.element_id, actual.element_id);
-  EXPECT_TRUE(FormData::DeepEqual(
-      test::WithoutUnserializedData(expected.form_data), actual.form_data));
   EXPECT_EQ(expected.trigger_source, actual.trigger_source);
-  EXPECT_EQ(expected.username_field_index, actual.username_field_index);
-  EXPECT_EQ(expected.password_field_index, actual.password_field_index);
   EXPECT_EQ(expected.text_direction, actual.text_direction);
   EXPECT_EQ(expected.typed_username, actual.typed_username);
   EXPECT_EQ(expected.show_webauthn_credentials,
             actual.show_webauthn_credentials);
   EXPECT_EQ(expected.bounds, actual.bounds);
+}
+
+void CheckEqualPasswordSuggestionRequest(
+    const PasswordSuggestionRequest& expected,
+    const PasswordSuggestionRequest& actual) {
+  CheckEqualTriggeringField(expected.field, actual.field);
+  EXPECT_TRUE(FormData::DeepEqual(
+      test::WithoutUnserializedData(expected.form_data), actual.form_data));
+  EXPECT_EQ(expected.username_field_index, actual.username_field_index);
+  EXPECT_EQ(expected.password_field_index, actual.password_field_index);
 }
 
 class AutofillTypeTraitsTestImpl : public testing::Test,

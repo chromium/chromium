@@ -7,6 +7,7 @@
 #include <cstring>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -169,7 +170,7 @@ class SharedMemoryBufferStrategy : public BufferStrategy {
     DCHECK(mapping_.IsValid());
     uint8_t* buffer_ptr = mapping_.GetMemoryAsSpan<uint8_t>().data();
     const int buffer_size = mapping_.size();
-    memset(buffer_ptr, 0, buffer_size);
+    UNSAFE_TODO(memset(buffer_ptr, 0, buffer_size));
     SkBitmap bitmap;
     bitmap.setInfo(
         SkImageInfo::MakeN32Premul(frame_size.width(), frame_size.height()));

@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -31,18 +31,21 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      * @param onItemClicked A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
+     * @param context The {@link Context} that the coordinator resides in.
      */
     public TabListGroupMenuCoordinator(
             OnItemClickedCallback<Token> onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @NonNull CollaborationService collaborationService) {
+            @NonNull CollaborationService collaborationService,
+            @NonNull Context context) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
                 tabGroupSyncService,
-                collaborationService);
+                collaborationService,
+                context);
     }
 
     /**
@@ -151,7 +154,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
     }
 
     @Override
-    protected @DimenRes int getMenuWidth() {
-        return R.dimen.tab_group_menu_width;
+    protected int getMenuWidth(int anchorViewWidthPx) {
+        return getDimensionPixelSize(R.dimen.tab_group_menu_width);
     }
 }

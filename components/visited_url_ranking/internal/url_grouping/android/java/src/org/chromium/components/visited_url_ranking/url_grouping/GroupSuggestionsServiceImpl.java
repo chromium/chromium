@@ -8,11 +8,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Java side of the JNI bridge between GroupSuggestionsServiceImpl in Java and C++. All method calls
  * are delegated to the native C++ class.
  */
 @JNINamespace("visited_url_ranking")
+@NullMarked
 public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
     private long mNativePtr;
 
@@ -41,6 +44,21 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
     public void didSelectTab(int tabId, int tabSelectionType, int lastId) {
         GroupSuggestionsServiceImplJni.get()
                 .didSelectTab(mNativePtr, tabId, tabSelectionType, lastId);
+    }
+
+    @Override
+    public void willCloseTab(int tabId) {
+        GroupSuggestionsServiceImplJni.get().willCloseTab(mNativePtr, tabId);
+    }
+
+    @Override
+    public void tabClosureUndone(int tabId) {
+        GroupSuggestionsServiceImplJni.get().tabClosureUndone(mNativePtr, tabId);
+    }
+
+    @Override
+    public void tabClosureCommitted(int tabId) {
+        GroupSuggestionsServiceImplJni.get().tabClosureCommitted(mNativePtr, tabId);
     }
 
     @Override
@@ -73,6 +91,12 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
                 int tabId,
                 int tabSelectionType,
                 int lastId);
+
+        void willCloseTab(long nativeGroupSuggestionsServiceAndroid, int tabId);
+
+        void tabClosureUndone(long nativeGroupSuggestionsServiceAndroid, int tabId);
+
+        void tabClosureCommitted(long nativeGroupSuggestionsServiceAndroid, int tabId);
 
         void didEnterTabSwitcher(long nativeGroupSuggestionsServiceAndroid);
     }

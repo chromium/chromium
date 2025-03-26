@@ -111,6 +111,9 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateAddWindowExtraDataCommand(
     const std::string& key,
     const std::string& data);
 
+SESSIONS_EXPORT std::unique_ptr<SessionCommand>
+CreateSetPlatformSessionIdCommand(const std::string& platform_session_id);
+
 // Searches for a pending command using |command_storage_manager| that can be
 // replaced with |command|. If one is found, pending command is removed, the
 // command is added to the pending commands (taken ownership) and true is
@@ -129,7 +132,8 @@ SESSIONS_EXPORT bool IsClosingCommand(SessionCommand* command);
 SESSIONS_EXPORT void RestoreSessionFromCommands(
     const std::vector<std::unique_ptr<SessionCommand>>& commands,
     std::vector<std::unique_ptr<SessionWindow>>* valid_windows,
-    SessionID* active_window_id);
+    SessionID* active_window_id,
+    std::string* platform_session_id);
 
 }  // namespace sessions
 

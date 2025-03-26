@@ -1,0 +1,62 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/toolbar/pinned_toolbar/tab_search_toolbar_button_controller.h"
+
+#include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
+
+TabSearchToolbarButtonController::TabSearchToolbarButtonController(
+    BrowserView* browser_view)
+    : browser_view_(browser_view) {}
+
+TabSearchToolbarButtonController::~TabSearchToolbarButtonController() = default;
+
+void TabSearchToolbarButtonController::OnBubbleInitializing() {
+  bubble_showing_ = true;
+  PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
+      browser_view_->toolbar()->pinned_toolbar_actions_container();
+
+  if (pinned_toolbar_actions_container->IsActionPinned(kActionTabSearch)) {
+    return;
+  }
+
+  pinned_toolbar_actions_container->ShowActionEphemerallyInToolbar(
+      kActionTabSearch, true);
+}
+
+void TabSearchToolbarButtonController::OnBubbleDestroying() {
+  bubble_showing_ = false;
+  PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
+      browser_view_->toolbar()->pinned_toolbar_actions_container();
+
+  if (pinned_toolbar_actions_container->IsActionPinned(kActionTabSearch)) {
+    return;
+  }
+
+  // Post a delayed task to give a chance for the user to use the context menu
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TabSearchToolbarButtonController::
+                         MaybeHideActionEphemerallyInToolbar,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(1));
+}
+
+void TabSearchToolbarButtonController::MaybeHideActionEphemerallyInToolbar() {
+  PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
+      browser_view_->toolbar()->pinned_toolbar_actions_container();
+
+  if (bubble_showing_ ||
+      pinned_toolbar_actions_container->IsActionPinned(kActionTabSearch)) {
+    return;
+  }
+
+  pinned_toolbar_actions_container->ShowActionEphemerallyInToolbar(
+      kActionTabSearch, false);
+}

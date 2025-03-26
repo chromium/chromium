@@ -149,6 +149,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1455242230282523554">Mostrar a configuración do idioma</translation>
 <translation id="1459693405370120464">O tempo</translation>
 <translation id="1460620680449458626">O volume está silenciado.</translation>
+<translation id="1462439140224375968">Creouse un documento de Google</translation>
 <translation id="14648076227129703">Desta forma, poderán acceder á cámara <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="146902737843070955">O teu administrador solicitou este cambio</translation>
@@ -593,6 +594,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="301584155502740476">Mostrar os detalles da zona wifi. A zona wifi está desactivada.</translation>
 <translation id="3017079585324758401">Fondo</translation>
 <translation id="3018135054368884502">Avanzar rapidamente o contido multimedia</translation>
+<translation id="3026897869154397692">Engadiuse ao calendario</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
@@ -1013,6 +1015,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4351244548802238354">Pechar cadro de diálogo</translation>
 <translation id="4356872429719185452">Mostrar os detalles da zona wifi. A zona wifi está activada.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Gravando</translation>
+<translation id="4368227575116094370">Crear folla de cálculo de Google</translation>
 <translation id="4371348193907997655">Configuración da emisión</translation>
 <translation id="4371834685492830207">O PIN debe conter só caracteres válidos</translation>
 <translation id="4375482231364171368">Buscar na barra de enderezos</translation>
@@ -1482,6 +1485,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> máis</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Buscar con Google</translation>
 <translation id="5841296711770970362">Ir á pista seguinte</translation>
 <translation id="5842553299352339114">A zona wifi de <ph name="DEVICE_NAME" /> está activada. Non hai ningún dispositivo conectado</translation>
 <translation id="584525477304726060">Para maximizar a ventá, mantena premida</translation>
@@ -1895,6 +1899,7 @@ Nova instalación</translation>
 <translation id="7228968829656641943">Selecciona unha zona para facer buscas na miña pantalla. Preme Tabulador e despois Espazo para desprazarte polo teclado.</translation>
 <translation id="7229029500464092426">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Ambos os botóns do rato</translation>
+<translation id="7240636904654154599">Creouse unha folla de cálculo de Google</translation>
 <translation id="7244725679040769470">Queda un <ph name="PERCENTAGE" /> % de batería. Conecta o dispositivo á corrente.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tes que reiniciar este Chromebook para aplicar unha actualización. Esta acción pode tardar 1 minuto.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2410,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8921624153894383499">O Asistente de Google non fala este idioma.</translation>
 <translation id="8926951137623668982">O estante ocúltase sempre</translation>
 <translation id="8929566928381252430">Estás tentando usar a tecla de bloqueo de maiúsculas? Usar</translation>
+<translation id="8929623844713377237">Creouse o contacto</translation>
 <translation id="8934418770423095813">Crear documento de Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desactivou</translation>

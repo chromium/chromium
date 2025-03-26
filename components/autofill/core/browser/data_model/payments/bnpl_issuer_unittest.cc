@@ -134,7 +134,7 @@ TEST(BnplIssuerTest, GetDisplayName) {
             l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
   issuer.set_issuer_id("unknown_issuer");
   EXPECT_CHECK_DEATH_WITH(issuer.GetDisplayName(),
-                          "Unknown issuer_id_ unknown_issuer");
+                          "Unknown issuer_id unknown_issuer");
 }
 
 // Test for the equality operator for the BNPL issuer data model.
@@ -170,6 +170,17 @@ TEST(BnplIssuerTest, EqualityOperator) {
   price_range.price_upper_bound = 10'000'000'000;
   issuer2.set_eligible_price_ranges({price_range});
   EXPECT_FALSE(issuer1 == issuer2);
+}
+
+TEST(BnplIssuerTest, BnplIssuerIdToDisplayName) {
+  EXPECT_EQ(BnplIssuerIdToDisplayName(kBnplAffirmIssuerId),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM));
+  EXPECT_EQ(BnplIssuerIdToDisplayName(kBnplZipIssuerId),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
+  EXPECT_EQ(BnplIssuerIdToDisplayName(kBnplAfterpayIssuerId),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFTER_PAY));
+  EXPECT_CHECK_DEATH_WITH(BnplIssuerIdToDisplayName("unknown_issuer"),
+                          "Unknown issuer_id unknown_issuer");
 }
 
 }  // namespace autofill

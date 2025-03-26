@@ -70,7 +70,7 @@ AXPlatformNodeMac::~AXPlatformNodeMac() = default;
 
 void AXPlatformNodeMac::Destroy() {
   if (objc_storage_->native_node) {
-    [objc_storage_->native_node detach];
+    [objc_storage_->native_node detachAndNotifyDestroyed:YES];
     // Also, clear the pointer to make accidental use-after-free impossible.
     objc_storage_->native_node = nil;
   }

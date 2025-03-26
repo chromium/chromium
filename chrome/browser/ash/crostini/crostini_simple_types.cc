@@ -89,6 +89,7 @@ const char* CrostiniResultString(const CrostiniResult res) {
     ENTRY(START_BAGUETTE_VM_TIMED_OUT);
     ENTRY(UNINSTALL_BAGUETTE_FAILED);
     ENTRY(INSTALL_BAGUETTE_CANCELLED);
+    ENTRY(DOWNLOAD_BAGUETTE_FAILED);
   }
 #undef ENTRY
   return "unknown code";

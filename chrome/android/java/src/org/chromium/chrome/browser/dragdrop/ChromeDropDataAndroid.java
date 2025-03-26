@@ -24,6 +24,9 @@ public abstract class ChromeDropDataAndroid extends DropDataAndroid {
     /** Build clip data text with tab info. */
     public abstract String buildTabClipDataText();
 
+    /** Get supported MimeTypes for the associated browser content. */
+    public abstract String[] getSupportedMimeTypes();
+
     /** Builder for @{@link ChromeDropDataAndroid} instance. */
     public abstract static class Builder {
         private boolean mAllowDragToCreateInstance;

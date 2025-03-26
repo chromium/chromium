@@ -27,7 +27,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_viewer.h"
-#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_eye_dropper.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/process_sharing_infobar_delegate.h"
@@ -1162,12 +1162,7 @@ bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
   // broken there. See https://crbug.com/514551 for context.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
     return false;
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-  return false;
-#else
-  return ChromeDevToolsManagerDelegate::AllowInspection(profile, web_contents);
-#endif
+  return IsInspectionAllowed(profile, web_contents);
 }
 
 // static

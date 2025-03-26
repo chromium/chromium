@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -140,11 +141,11 @@ TEST_F(CanvasPathTest, RectMoveToLineTo) {
   canvas_path->lineTo(end.x(), end.y());
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
-  Path path;
+  PathBuilder path;
   path.AddRect(rect);
   path.MoveTo(start);
-  path.AddLineTo(end);
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  path.LineTo(end);
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
 }
 
 TEST_F(CanvasPathTest, MoveToLineToRect) {
@@ -157,11 +158,11 @@ TEST_F(CanvasPathTest, MoveToLineToRect) {
   canvas_path->rect(rect.x(), rect.y(), rect.width(), rect.height());
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
-  Path path;
+  PathBuilder path;
   path.MoveTo(start);
-  path.AddLineTo(end);
+  path.LineTo(end);
   path.AddRect(rect);
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
 }
 
 TEST_F(CanvasPathTest, OnlyLineTo) {

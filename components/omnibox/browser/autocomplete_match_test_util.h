@@ -23,6 +23,9 @@ AutocompleteMatch CreateCompanyEntityMatch(std::string website_uri);
 
 AutocompleteMatch CreateSearchMatch(std::u16string contents = u"text");
 
+AutocompleteMatch CreateContextualSearchMatch(
+    std::u16string contents = u"text");
+
 AutocompleteMatch CreateStarterPackMatch(std::u16string keyword);
 
 AutocompleteMatch CreateFeaturedEnterpriseSearch(std::u16string keyword);

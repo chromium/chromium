@@ -31,7 +31,7 @@ export class AppContentDialogElement extends CrLitElement {
     };
   }
 
-  app: App = createDummyApp();
+  accessor app: App = createDummyApp();
 
   override firstUpdated() {
     this.addEventListener('keydown', e => this.trapFocus_(e));

@@ -34,7 +34,11 @@ using manual_fill::ManualFillDataType;
 namespace {
 
 // The form suggestion view's layer mask gradient's start point.
-constexpr CGFloat kFormSuggestionViewLayerMaskGradientStartPoint = 0.94;
+constexpr CGFloat kFormSuggestionViewLayerMaskGradientStartPoint = 0.96;
+
+// The form suggestion view's layer mask gradient's start point.
+constexpr CGFloat kFormSuggestionViewLayerMaskGradientStartPointForTablet =
+    0.98;
 
 // The form suggestion view's layer mask gradient's end point.
 constexpr CGFloat kFormSuggestionViewLayerMaskGradientEndPoint = 1.0;
@@ -514,18 +518,20 @@ UIImage* GetManualFillSymbol() {
     // Put a mask on the formSuggestionView's container view so that the mask
     // doesn't move along with the scroll view.
     self.formSuggestionViewMask = [CAGradientLayer layer];
+    CGFloat startPoint =
+        (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+            ? kFormSuggestionViewLayerMaskGradientStartPointForTablet
+            : kFormSuggestionViewLayerMaskGradientStartPoint;
     if (base::i18n::IsRTL()) {
       // Create a gradient in the reverse direction from the non RTL case below.
       self.formSuggestionViewMask.startPoint =
           CGPointMake(1.0 - kFormSuggestionViewLayerMaskGradientEndPoint, 0.0);
-      self.formSuggestionViewMask.endPoint = CGPointMake(
-          1.0 - kFormSuggestionViewLayerMaskGradientStartPoint, 0.0);
+      self.formSuggestionViewMask.endPoint = CGPointMake(1.0 - startPoint, 0.0);
       self.formSuggestionViewMask.colors = @[
         (id)[UIColor clearColor].CGColor, (id)[UIColor whiteColor].CGColor
       ];
     } else {
-      self.formSuggestionViewMask.startPoint =
-          CGPointMake(kFormSuggestionViewLayerMaskGradientStartPoint, 0.0);
+      self.formSuggestionViewMask.startPoint = CGPointMake(startPoint, 0.0);
       self.formSuggestionViewMask.endPoint =
           CGPointMake(kFormSuggestionViewLayerMaskGradientEndPoint, 0.0);
       self.formSuggestionViewMask.colors = @[

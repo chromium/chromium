@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Coordinator managing the non modal sign in promo.
-@interface NonModalSigninPromoCoordinator : ChromeCoordinator
+@interface NonModalSignInPromoCoordinator : ChromeCoordinator
 
 // Creates a coordinator that uses `viewController`,`browser` and `promoType`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

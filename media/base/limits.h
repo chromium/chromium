@@ -78,7 +78,8 @@ inline constexpr int kMinAudioBufferSize = 256;
 inline constexpr int kMaxAudioBufferSize = 8192;
 #endif
 
-// Maximum buffer size supported by Web Audio.
+// Minimum and maximum buffer size supported by Web Audio.
+inline constexpr int kMinWebAudioBufferSize = 128;
 inline constexpr int kMaxWebAudioBufferSize = 8192;
 
 // Bounds for the number of threads used for software video decoding.

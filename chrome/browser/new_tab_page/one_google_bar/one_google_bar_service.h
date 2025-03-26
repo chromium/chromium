@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_SERVICE_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 
@@ -37,7 +38,7 @@ class OneGoogleBarService : public KeyedService {
 
   // Requests an asynchronous refresh from the network. After the update
   // completes, OnOneGoogleBarDataUpdated will be called on the observers.
-  void Refresh();
+  virtual void Refresh();
 
   // Add/remove observers. All observers must unregister themselves before the
   // OneGoogleBarService is destroyed.
@@ -52,7 +53,11 @@ class OneGoogleBarService : public KeyedService {
   void SetLanguageCodeForTesting(const std::string& language_code);
 
   // Sets ogdeb query parameter in loader.
-  bool SetAdditionalQueryParams(const std::string& value);
+  virtual void SetAdditionalQueryParams(
+      const std::map<std::string, std::string>& params);
+
+ protected:
+  void NotifyObservers();
 
  private:
   class SigninObserver;
@@ -61,8 +66,6 @@ class OneGoogleBarService : public KeyedService {
 
   void OneGoogleBarDataLoaded(OneGoogleBarLoader::Status status,
                               const std::optional<OneGoogleBarData>& data);
-
-  void NotifyObservers();
 
   std::unique_ptr<OneGoogleBarLoader> loader_;
 

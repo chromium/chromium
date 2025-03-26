@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerHelper final {
                                AddExampleCB add_example_cb,
                                SequenceBoundFeatureProvider feature_provider =
                                    SequenceBoundFeatureProvider());
-  virtual ~LearningTaskControllerHelper();
+  ~LearningTaskControllerHelper();
 
   // See LearningTaskController::BeginObservation.
   void BeginObservation(base::UnguessableToken id,

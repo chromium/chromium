@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -230,8 +231,9 @@ bool OpenXrHandTrackerFactory::IsEnabled(
          std::ranges::any_of(
              GetRequestedExtensions(),
              [&extension_enum](std::string_view extension) {
-               return strcmp(extension.data(),
-                             XR_EXT_HAND_TRACKING_EXTENSION_NAME) != 0 &&
+               return UNSAFE_TODO(
+                          strcmp(extension.data(),
+                                 XR_EXT_HAND_TRACKING_EXTENSION_NAME)) != 0 &&
                       extension_enum->ExtensionSupported(extension.data());
              });
 }

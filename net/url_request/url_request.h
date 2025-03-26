@@ -29,6 +29,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -59,6 +60,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
+#include "net/url_request/storage_access_status_cache.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -556,6 +558,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // non-cached HTTP responses.
   void GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
 
+  // Gets load timing internal information. Events that have not yet
+  // occurred are left uninitialized.
+  LoadTimingInternalInfo GetLoadTimingInternalInfo() const;
+
   // Gets the networkd error details of the most recent origin that the network
   // stack makes the request to.
   void PopulateNetErrorDetails(NetErrorDetails* details) const;
@@ -884,16 +890,14 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void SetSharedDictionaryGetter(
       SharedDictionaryGetter shared_dictionary_getter);
 
-  void set_storage_access_status(
-      std::optional<cookie_util::StorageAccessStatus> status) {
+  void set_storage_access_status(StorageAccessStatusCache status) {
     storage_access_status_ = status;
   }
 
   // Returns the StorageAccessStatus for this request.
   // TODO(https://crbug.com/366284840): move this state out of //net (into
   // network::URLLoader) to respect layering rules.
-  std::optional<cookie_util::StorageAccessStatus> storage_access_status()
-      const {
+  StorageAccessStatusCache storage_access_status() const {
     return storage_access_status_;
   }
 
@@ -907,8 +911,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // `Delegate::OnReceivedRedirect`.
   // TODO(https://crbug.com/366284840): Move this to URLLoader once the
   // "Activate-Storage-Access: retry" header is handled in URLLoader.
-  std::optional<net::cookie_util::StorageAccessStatus>
-  CalculateStorageAccessStatus() const;
+  StorageAccessStatusCache CalculateStorageAccessStatus() const;
 
   base::WeakPtr<URLRequest> GetWeakPtr();
 
@@ -1167,6 +1170,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // populated during Start(), and the rest are populated in OnResponseReceived.
   LoadTimingInfo load_timing_info_;
 
+  // Internal load timing information that is not exposed to the web.
+  LoadTimingInternalInfo load_timing_internal_info_;
+
   // The proxy chain used for this request, if any.
   ProxyChain proxy_chain_;
 
@@ -1200,9 +1206,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   SharedDictionaryGetter shared_dictionary_getter_;
 
-  // The storage access status for this request. If this is nullopt, this
-  // request will not include the Sec-Fetch-Storage-Access header.
-  std::optional<net::cookie_util::StorageAccessStatus> storage_access_status_;
+  // The storage access status for this request.
+  StorageAccessStatusCache storage_access_status_;
 
   base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
       device_bound_session_access_callback_;

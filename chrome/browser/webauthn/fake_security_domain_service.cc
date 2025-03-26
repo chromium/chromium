@@ -70,6 +70,30 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     pretend_there_are_members_ = true;
   }
 
+  void MakePinMemberUnusable() override {
+    auto pin_member =
+        std::ranges::find_if(members_, [](const auto& member) -> bool {
+          return member.member_type() ==
+                 trusted_vault_pb::SecurityDomainMember::
+                     MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;
+        });
+    CHECK(pin_member != members_.end());
+    pin_member->mutable_member_metadata()
+        ->clear_google_password_manager_pin_metadata();
+    pin_member->mutable_member_metadata()->set_usable_for_retrieval(false);
+  }
+
+  void SetPinMemberPublicKey(std::string public_key) override {
+    auto pin_member =
+        std::ranges::find_if(members_, [](const auto& member) -> bool {
+          return member.member_type() ==
+                 trusted_vault_pb::SecurityDomainMember::
+                     MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;
+        });
+    CHECK(pin_member != members_.end());
+    pin_member->set_public_key(std::move(public_key));
+  }
+
   size_t num_physical_members() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -115,8 +139,9 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     const auto& pin_metadata =
         pin_member->member_metadata().google_password_manager_pin_metadata();
     return trusted_vault::GpmPinMetadata(
-        GetPinMemberPublicKey(), pin_metadata.encrypted_pin_hash(),
-        ToTime(pin_metadata.expiration_time()));
+        GetPinMemberPublicKey(), trusted_vault::UsableRecoveryPinMetadata(
+                                     pin_metadata.encrypted_pin_hash(),
+                                     ToTime(pin_metadata.expiration_time())));
   }
 
   base::span<const trusted_vault_pb::SecurityDomainMember> members()

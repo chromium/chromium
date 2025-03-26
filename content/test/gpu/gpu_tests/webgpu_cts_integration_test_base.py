@@ -216,19 +216,19 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       enable_dawn_features.append('use_tint_ir')
 
     if enable_dawn_features:
-      browser_args.append('--enable-dawn-features=%s' %
-                          ','.join(enable_dawn_features))
+      browser_args.append(
+          f'--enable-dawn-features={",".join(enable_dawn_features)}')
 
     if disable_dawn_features:
-      browser_args.append('--disable-dawn-features=%s' %
-                          ','.join(disable_dawn_features))
+      browser_args.append(
+          f'--disable-dawn-features={",".join(disable_dawn_features)}')
 
     browser_args.extend(cba.ENABLE_WEBGPU_FOR_TESTING)
     if cls._use_webgpu_adapter:
-      browser_args.append('--use-webgpu-adapter=%s' % cls._use_webgpu_adapter)
+      browser_args.append(f'--use-webgpu-adapter={cls._use_webgpu_adapter}')
     if cls._use_webgpu_power_preference:
-      browser_args.append('--use-webgpu-power-preference=%s' %
-                          cls._use_webgpu_power_preference)
+      browser_args.append(
+          f'--use-webgpu-power-preference={cls._use_webgpu_power_preference}')
     if cls._enable_dawn_backend_validation:
       if host_information.IsWindows():
         browser_args.append('--enable-dawn-backend-validation=partial')
@@ -513,8 +513,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         if time.time() - start_time > global_timeout:
           self.HandleDurationTagOnFailure(message_state, global_timeout)
           raise WebGpuTestTimeoutError(
-              '%s hit %.3f second global timeout. Message state: %s' %
-              (self._query, global_timeout, message_state))
+              f'{self._query} hit {global_timeout:.3f} second global timeout. '
+              f'Message state: {message_state}')
 
         if response_type == MESSAGE_TYPE_INFRA_FAILURE:
           self.fail(response['message'])
@@ -538,7 +538,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
           js_duration = response['js_duration_ms'] / 1000
           # Specify the precision to avoid scientific notation. Nanoseconds
           # should be more precision than we need anyways.
-          self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % js_duration
+          self.additionalTags[JAVASCRIPT_DURATION] = f'{js_duration:.9f}s'
           step_timeout = MESSAGE_TIMEOUT_TEST_LOG
 
         elif response_type == MESSAGE_TYPE_TEST_LOG:
@@ -551,13 +551,12 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
         else:
           raise WebGpuMessageProtocolError(
-              '%s received unknown message type %s' % self._query,
-              response_type)
+              f'{self._query} received unknown message type {response_type}')
       except wss.WebsocketReceiveMessageTimeoutError as e:
         self.HandleDurationTagOnFailure(message_state, global_timeout)
         raise WebGpuMessageTimeoutError(
-            '%s timed out waiting %.3f seconds for a message. Message state: %s'
-            % (self._query, timeout, message_state)) from e
+            f'{self._query} timed out waiting {timeout:.3f} seconds for a '
+            f'message. Message state: {message_state}') from e
       finally:
         self._test_duration = time.time() - start_time
     return result
@@ -579,7 +578,7 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     if (message_state[MESSAGE_TYPE_TEST_STARTED]
         and not message_state[MESSAGE_TYPE_TEST_STATUS]
         and JAVASCRIPT_DURATION not in self.additionalTags):
-      self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % test_timeout
+      self.additionalTags[JAVASCRIPT_DURATION] = f'{test_timeout:.9f}s'
 
   def _NavigateIfNecessary(self, path: str) -> bool:
     cls = self.__class__
@@ -590,8 +589,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     self.tab.Navigate(url)
     self.tab.action_runner.WaitForJavaScriptCondition(
         'window.setupWebsocket != undefined')
-    self.tab.action_runner.ExecuteJavaScript('window.setupWebsocket("%s")' %
-                                             cls.websocket_server.server_port)
+    self.tab.action_runner.ExecuteJavaScript(
+        f'window.setupWebsocket("{cls.websocket_server.server_port}")')
     timeout_multiplier = 1
     if not cls.attempted_websocket_connection:
       cls.attempted_websocket_connection = True

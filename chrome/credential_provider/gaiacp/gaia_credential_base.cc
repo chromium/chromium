@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -448,7 +449,7 @@ HRESULT FindExistingUserSidIfAvailable(const std::string& refresh_token,
                             &existing_sid, error_text);
 
   if (SUCCEEDED(hr))
-    wcscpy_s(sid, sid_length, existing_sid.c_str());
+    UNSAFE_TODO(wcscpy_s(sid, sid_length, existing_sid.c_str()));
 
   return hr;
 }
@@ -548,7 +549,8 @@ HRESULT MakeUsernameForAccount(const base::Value::Dict& result,
   }
 
   LOGFN(VERBOSE) << "No existing user found associated to gaia id:" << *gaia_id;
-  wcscpy_s(domain, domain_length, OSUserManager::GetLocalDomain().c_str());
+  UNSAFE_TODO(
+      wcscpy_s(domain, domain_length, OSUserManager::GetLocalDomain().c_str()));
   username[0] = 0;
   sid[0] = 0;
 
@@ -605,11 +607,12 @@ HRESULT MakeUsernameForAccount(const base::Value::Dict& result,
   // Replace invalid characters.  While @ is not strictly invalid according to
   // MSDN docs, it causes trouble.
   for (auto& c : os_username) {
-    if (wcschr(L"@\\[]:|<>+=;?*", c) != nullptr || c < 32)
+    if (UNSAFE_TODO(wcschr(L"@\\[]:|<>+=;?*", c)) != nullptr || c < 32) {
       c = L'_';
+    }
   }
 
-  wcscpy_s(username, username_length, os_username.c_str());
+  UNSAFE_TODO(wcscpy_s(username, username_length, os_username.c_str()));
 
   return S_OK;
 }
@@ -1513,7 +1516,7 @@ HRESULT CGaiaCredentialBase::GetSerialization(
 
   *status_text = nullptr;
   *status_icon = CPSI_NONE;
-  memset(cpcs, 0, sizeof(*cpcs));
+  UNSAFE_TODO(memset(cpcs, 0, sizeof(*cpcs)));
 
   // This may be a long running function so disable user input while processing.
   if (events_) {

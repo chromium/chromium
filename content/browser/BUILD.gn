@@ -3668,6 +3668,11 @@ source_set("browser") {
       "profiling_utils.cc",
     ]
   }
+
+  # TODO(crbug.com/371609830): Remove dep on experiment end.
+  if (is_chromeos) {
+    deps += [ "//ash/constants:constants" ]
+  }
 }
 
 if (is_android) {

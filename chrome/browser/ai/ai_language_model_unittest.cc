@@ -353,10 +353,17 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                           : 1);
                 });
             ON_CALL(*session, SetInput(_))
-                .WillByDefault([&](MultimodalMessage request_metadata) {
-                  EXPECT_THAT(
-                      ToString(request_metadata),
-                      options.expected_context + options.expected_prompt);
+                .WillByDefault([&, initial = true](
+                                   MultimodalMessage request_metadata) mutable {
+                  if (initial && !options.expected_context.empty()) {
+                    initial = false;
+                    EXPECT_THAT(ToString(request_metadata),
+                                options.expected_context);
+                  } else {
+                    EXPECT_THAT(
+                        ToString(request_metadata),
+                        options.expected_context + options.expected_prompt);
+                  }
                 });
 
             EXPECT_CALL(*session, ExecuteModel(_, _))
@@ -413,12 +420,12 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                             language_model,
                         blink::mojom::AILanguageModelInstanceInfoPtr info) {
             EXPECT_TRUE(language_model);
-            EXPECT_EQ(info->max_tokens,
+            EXPECT_EQ(info->input_quota,
                       AITestUtils::GetFakeTokenLimits().max_context_tokens);
             if (is_initial_prompts_or_system_prompt_set) {
-              EXPECT_GT(info->current_tokens, 0ul);
+              EXPECT_GT(info->input_usage, 0ul);
             } else {
-              EXPECT_EQ(info->current_tokens, 0ul);
+              EXPECT_EQ(info->input_usage, 0ul);
             }
             mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
                 std::move(language_model));
@@ -463,18 +470,18 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
       download_progress_run_loop.Run();
     }
 
-    std::vector<blink::mojom::AILanguageCodePtr> expected_input_languages;
+    std::vector<blink::mojom::AILanguageModelExpectedInputPtr> expected_inputs;
     if (!options.should_use_supported_language) {
-      expected_input_languages.emplace_back(
-          blink::mojom::AILanguageCode::New("ja"));
+      expected_inputs.push_back(blink::mojom::AILanguageModelExpectedInput::New(
+          blink::mojom::AILanguageModelPromptType::kText,
+          AITestUtils::ToMojoLanguageCodes({"ja"})));
     }
 
     mock_remote->CreateLanguageModel(
         mock_create_language_model_client.BindNewPipeAndPassRemote(),
         blink::mojom::AILanguageModelCreateOptions::New(
             std::move(options.sampling_params), options.system_prompt,
-            std::move(options.initial_prompts),
-            std::move(expected_input_languages)));
+            std::move(options.initial_prompts), std::move(expected_inputs)));
     creation_run_loop.Run();
 
     if (!options.should_use_supported_language) {
@@ -658,7 +665,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
                   action);
             }));
 
-    EXPECT_CALL(mock_responder_2, OnContextOverflow())
+    EXPECT_CALL(mock_responder_2, OnQuotaOverflow())
         .Times(should_overflow_context ? 1 : 0);
 
     EXPECT_CALL(mock_responder_1, OnCompletion(_))
@@ -933,7 +940,7 @@ TEST_P(AILanguageModelTest, PromptSessionWithPromptApiRequests) {
   });
 }
 
-TEST_P(AILanguageModelTest, PromptSessionWithContextOverflow) {
+TEST_P(AILanguageModelTest, PromptSessionWithQuotaOverflow) {
   RunPromptTest({.prompt_input = kTestPrompt,
                  .expected_prompt = kExpectedFormattedTestPrompt,
                  .should_overflow_context = true});
@@ -969,13 +976,13 @@ TEST_P(AILanguageModelTest, PromptBeforeDestroy) {
 
 // Tests that the session will call `AddContext()` from the second prompt when
 // there is no context overflow.
-TEST_P(AILanguageModelTest, PromptWithHistoryWithoutContextOverflow) {
+TEST_P(AILanguageModelTest, PromptWithHistoryWithoutQuotaOverflow) {
   TestSessionAddContext(/*should_overflow_context=*/false);
 }
 
 // Tests that the session will not call `AddContext()` from the second prompt
 // when there is context overflow.
-TEST_P(AILanguageModelTest, PromptWithHistoryWithContextOverflow) {
+TEST_P(AILanguageModelTest, PromptWithHistoryWithQuotaOverflow) {
   TestSessionAddContext(/*should_overflow_context=*/true);
 }
 
@@ -987,12 +994,17 @@ TEST_P(AILanguageModelTest, CanCreate_IsLanguagesSupported) {
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
 
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->expected_inputs =
+      std::vector<blink::mojom::AILanguageModelExpectedInputPtr>();
+  options->expected_inputs->push_back(
+      blink::mojom::AILanguageModelExpectedInput::New(
+          blink::mojom::AILanguageModelPromptType::kText,
+          AITestUtils::ToMojoLanguageCodes({"en"})));
   EXPECT_CALL(callback,
               Run(blink::mojom::ModelAvailabilityCheckResult::kAvailable));
-  GetAIManagerInterface()->CanCreateLanguageModel(
-      std::vector<blink::mojom::AILanguageCodePtr>{
-          AITestUtils::ToMojoLanguageCodes({"en"})},
-      callback.Get());
+  GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
+                                                  callback.Get());
 }
 
 TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
@@ -1005,10 +1017,15 @@ TEST_P(AILanguageModelTest, CanCreate_UnIsLanguagesSupported) {
   base::MockCallback<AIManager::CanCreateLanguageModelCallback> callback;
   EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableUnsupportedLanguage));
-  GetAIManagerInterface()->CanCreateLanguageModel(
-      std::vector<blink::mojom::AILanguageCodePtr>{
-          AITestUtils::ToMojoLanguageCodes({"ja"})},
-      callback.Get());
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  options->expected_inputs =
+      std::vector<blink::mojom::AILanguageModelExpectedInputPtr>();
+  options->expected_inputs->push_back(
+      blink::mojom::AILanguageModelExpectedInput::New(
+          blink::mojom::AILanguageModelPromptType::kText,
+          AITestUtils::ToMojoLanguageCodes({"ja"})));
+  GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
+                                                  callback.Get());
 }
 
 // Test Prompt() with image and audio input.

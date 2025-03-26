@@ -80,6 +80,11 @@ const base::FeatureParam<base::TimeDelta>
         &kAutofillAiServerModel, "autofill_ai_model_execution_timeout",
         base::Seconds(10)};
 
+// Whether AnnotatedPageContent is included in the request to the AutofillAI
+// model.
+const base::FeatureParam<bool> kAutofillAiServerModelSendPageContent{
+    &kAutofillAiServerModel, "autofill_ai_model_send_apc", false};
+
 // Whether the page's full URL is included in the data sent to the model.
 const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl{
     &kAutofillAiServerModel, "autofill_ai_model_send_page_url", false};

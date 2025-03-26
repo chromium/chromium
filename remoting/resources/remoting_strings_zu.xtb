@@ -40,6 +40,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="2758123043070977469">Kube nenkinga ukugunyaza, sicela ungene ngemvume futhi.</translation>
 <translation id="2803375539583399270">Faka iphinikhodi</translation>
 <translation id="2919669478609886916">Okwamanje wabelana ngalo mshini nomunye umsebenzisi. Ingabe ufuna ukuqhubeka wabelane?</translation>
+<translation id="2929683002824598593">Yabelana ngedivayisi</translation>
 <translation id="2939145106548231838">Qinisekisa ukuze usingathe</translation>
 <translation id="3027681561976217984">Imodi yokuthinta</translation>
 <translation id="3106379468611574572">Ikhompyutha eyisilawuli kude ayiphenduli izicelo zokuxhumeka. Sicela uqinisekise ukuthi iku-inthanethi uphinde uzame futhi.</translation>
@@ -117,10 +118,12 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="6178645564515549384">Ukusingatha komdabu kokuyaleza kosizo olukude</translation>
 <translation id="618120821413932081">Buyekeza ukulungiswa kwerimothi ukuze kumeshe iwindi</translation>
 <translation id="6223301979382383752">Vula okuncanyelwayo kokurekhoda kwesikrini</translation>
+<translation id="6252344563748670011">U-<ph name="CLIENT_USERNAME" /> ucele ukufinyelela ukuze abone isikrini sakho futhi alawule ikhibhodi ne-mouse yakho. Ungathanda yini ukwabelana ngedivayisi yakho?</translation>
 <translation id="6284412385303060032">Usokhaya osebenza kusikrini esihlakaniphile uvalile ukusekela imodi yekhethini ngokushintshela kusokhaya osebenza ngesikhathi somsebenzisi esithile.</translation>
 <translation id="6542902059648396432">Bika inkinga...</translation>
 <translation id="6583902294974160967">Usekelo</translation>
 <translation id="6612717000975622067">Thumela u-Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Uma ungathathi sinyathelo, idivayisi yakho izoqala ukwabelana ngokuzenzekelayo emzuzwaneni o-#.}one{Uma ungathathi sinyathelo, idivayisi yakho izoqala ukwabelana ngokuzenzekelayo emizuzwaneni engu-#.}other{Uma ungathathi sinyathelo, idivayisi yakho izoqala ukwabelana ngokuzenzekelayo emizuzwaneni engu-#.}}</translation>
 <translation id="6654753848497929428">Yaba</translation>
 <translation id="677755392401385740">Umsingathi uqalelwe umsebenzisi: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Uhlelo lokusebenza lomsizi lokuvula i-URL kuklayenti ye-<ph name="PRODUCT_NAME" /></translation>

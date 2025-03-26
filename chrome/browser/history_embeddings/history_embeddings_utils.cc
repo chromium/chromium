@@ -7,11 +7,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -127,7 +131,6 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
       history_embeddings::GetFeatureParameters().enable_images_for_results);
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
       {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
-      {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
       {"historyEmbeddingsHeading", IDS_HISTORY_EMBEDDINGS_HEADING},
       {"historyEmbeddingsWithAnswersResultsHeading",
        IDS_HISTORY_EMBEDDINGS_WITH_ANSWERS_RESULTS_HEADING},
@@ -158,6 +161,20 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
       optimization_guide::features::IsAiSettingsPageRefreshEnabled()
           ? chrome::kHistorySearchV2SettingURL
           : chrome::kHistorySearchSettingURL);
+
+  bool logging_disabled_by_enterprise =
+      profile->GetPrefs()->GetInteger(
+          optimization_guide::prefs::kHistorySearchEnterprisePolicyAllowed) ==
+      static_cast<int>(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+  if (logging_disabled_by_enterprise) {
+    source->AddLocalizedString("historyEmbeddingsDisclaimer",
+                               IDS_HISTORY_EMBEDDINGS_DISCLAIMER_LOGGING_OFF);
+  } else {
+    source->AddLocalizedString("historyEmbeddingsDisclaimer",
+                               IDS_HISTORY_EMBEDDINGS_DISCLAIMER);
+  }
 }
 
 bool IsHistoryEmbeddingsFeatureEnabled() {

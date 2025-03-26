@@ -374,6 +374,19 @@ bool IsAnySoftwareGLAllowed(const base::CommandLine* command_line) {
   return IsSwiftShaderAllowed(command_line);
 }
 
+BASE_FEATURE(kAllowSoftwareGLFallbackDueToCrashes,
+             "AllowSoftwareGLFallbackDueToCrashes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsSoftwareGLFallbackDueToCrashesAllowed(
+    const base::CommandLine* command_line) {
+  if (!IsAnySoftwareGLAllowed(command_line)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kAllowSoftwareGLFallbackDueToCrashes);
+}
+
 base::TimeDelta GetGLCompileShaderDelay() {
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
   if (UsePassthroughCommandDecoder()) {

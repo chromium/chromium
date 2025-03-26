@@ -182,7 +182,7 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     }
 
     @Override
-    protected boolean newAuthTabSession(AuthTabSessionToken sessionToken) {
+    protected boolean registerAuthTabSession(AuthTabSessionToken sessionToken) {
         return mImpl.newAuthTabSession(sessionToken);
     }
 

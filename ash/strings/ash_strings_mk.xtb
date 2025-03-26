@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
 <translation id="1459693405370120464">Време</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
+<translation id="1462439140224375968">Создаден е документ на Docs</translation>
 <translation id="14648076227129703">Ова дозволува пристап до камерата за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и сите апликации и веб-сајтови со дозвола за камерата</translation>
 <translation id="1467432559032391204">Лево</translation>
 <translation id="146902737843070955">Администраторот ја побара променава</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">Прикажи детали за точката на пристап. Точката на пристап е исклучена.</translation>
 <translation id="3017079585324758401">Заднина</translation>
 <translation id="3018135054368884502">Премотување аудиовизуелни содржини нанапред</translation>
+<translation id="3026897869154397692">Додадено во „Календар“</translation>
 <translation id="3033545621352269033">Вклучено</translation>
 <translation id="3033912566804961911">Комбинирајте со <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Отвори датотеки</translation>
@@ -1482,6 +1484,7 @@
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
 <translation id="5830180081891717894">уште <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Пребарувајте со Google</translation>
 <translation id="5841296711770970362">Одење на следната песна</translation>
 <translation id="5842553299352339114">Точката на пристап на <ph name="DEVICE_NAME" /> е вклучена, нема поврзани уреди</translation>
 <translation id="584525477304726060">Задржете за максимирање</translation>
@@ -1895,6 +1898,7 @@
 <translation id="7228968829656641943">Изберете да го пребарување својот екран. Притиснете Tab, па Space за навигација со тастатурата.</translation>
 <translation id="7229029500464092426">Меморија: <ph name="AVAILABLE_MEMORY" /> | вкупно: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Двете копчиња на глувчето</translation>
+<translation id="7240636904654154599">Создадена е табела на Sheets</translation>
 <translation id="7244725679040769470">Престануваат уште <ph name="PERCENTAGE" /> % од батеријата. Приклучете го уредот во струја.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Треба да го рестартирате овој Chromebook за да се примени ажурирањето. Ова може да потрае 1 минута.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2409,7 @@
 <translation id="8921624153894383499">„Помошникот на Google“ не зборува на овој јазик.</translation>
 <translation id="8926951137623668982">Полицата е секогаш скриена</translation>
 <translation id="8929566928381252430">Се обидувате да го искористите копчето Caps Lock? Користете</translation>
+<translation id="8929623844713377237">Создаден е контакт</translation>
 <translation id="8934418770423095813">Создај документ на Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>

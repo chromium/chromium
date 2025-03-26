@@ -118,6 +118,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/photos/model:policy",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/prerender/model:prerender_pref",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/reading_list/ui_bundled:reading_list_constants",
     "//ios/chrome/browser/safety_check/model:constants",

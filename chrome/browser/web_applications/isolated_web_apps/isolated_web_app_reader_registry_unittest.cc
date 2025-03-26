@@ -39,6 +39,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
+#include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,30 +71,6 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
-
-class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
- public:
-  explicit FakeIsolatedWebAppValidator(
-      base::expected<void, std::string> integrity_block_validation_result)
-      : integrity_block_validation_result_(integrity_block_validation_result) {}
-
-  base::expected<void, std::string> ValidateIntegrityBlock(
-      const web_package::SignedWebBundleId& web_bundle_id,
-      const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-      bool dev_mode,
-      const IsolatedWebAppTrustChecker& trust_checker) override {
-    return integrity_block_validation_result_;
-  }
-
-  void set_integrity_block_validation_result(
-      base::expected<void, std::string> integrity_block_validation_result) {
-    integrity_block_validation_result_ =
-        std::move(integrity_block_validation_result);
-  }
-
- private:
-  base::expected<void, std::string> integrity_block_validation_result_;
-};
 
 }  // namespace
 
@@ -147,9 +124,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         web_package::test::GetAttributesForSignedWebBundleId(kWebBundleId.id());
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-        *profile_, std::make_unique<IsolatedWebAppResponseReaderFactory>(
-                       *profile_, std::make_unique<FakeIsolatedWebAppValidator>(
-                                      base::ok())));
+        *profile_,
+        std::make_unique<IsolatedWebAppResponseReaderFactory>(*profile_));
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(
@@ -160,6 +136,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
+
+    AddTrustedWebBundleIdForTesting(kWebBundleId);
   }
 
   void TearDown() override {
@@ -323,19 +301,12 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
   EXPECT_CALL(signature_verifier_, VerifySignatures)
       .WillOnce(RunOnceCallback<2>(base::ok()));
 #endif
-  auto validator = std::make_unique<FakeIsolatedWebAppValidator>(base::ok());
-  auto* validator_ref = validator.get();
-
-  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      *profile_, std::make_unique<IsolatedWebAppResponseReaderFactory>(
-                     *profile_, std::move(validator)));
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
   // First, simulate a successful parsing of the integrity block, and read a
   // response.
-  validator_ref->set_integrity_block_validation_result(base::ok());
   {
     base::test::TestFuture<ReadResult> read_response_future;
     registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
@@ -349,10 +320,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
     EXPECT_EQ(response.head()->response_code, 200);
   }
 
-  // Now, make all further attempts to parse an integrity block return with an
-  // error.
-  validator_ref->set_integrity_block_validation_result(
-      base::unexpected("some error"));
   {
     // A request to the already opened bundle should still succeed.
     base::test::TestFuture<ReadResult> read_response_future;
@@ -364,22 +331,12 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
                          read_response_future.Take());
     EXPECT_EQ(response.head()->response_code, 200);
   }
-  {
-    // A request to the same bundle, but this time with a different `dev_mode`
-    // flag, should not succeed. This verifies that the cache is partitioned by
-    // `dev_mode`.
-    base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/true, kWebBundleId,
-                            resource_request,
-                            read_response_future.GetCallback());
-    FulfillIntegrityBlock();
-    FulfillMetadata();
-    EXPECT_THAT(read_response_future.Take(),
-                testing::Not(base::test::HasValue()));
-  }
 
-  // Now, clear the cache - requests should all fail now.
+  // Now revoke trust for this bundle and clear the cache. New requests will
+  // fail from now on.
+  SetTrustedWebBundleIdsForTesting({});
   base::test::TestFuture<void> close_future;
+
   registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
   EXPECT_TRUE(close_future.Wait());
   {
@@ -471,11 +428,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
   EXPECT_CALL(signature_verifier_, VerifySignatures)
       .WillOnce(RunOnceCallback<2>(base::ok()));
 #endif
-
-  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      *profile_, std::make_unique<IsolatedWebAppResponseReaderFactory>(
-                     *profile_, std::make_unique<FakeIsolatedWebAppValidator>(
-                                    base::ok())));
 
   // Verify that the cache cleanup timer has not yet started.
   EXPECT_FALSE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
@@ -610,23 +562,23 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
-  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      *profile_, std::make_unique<IsolatedWebAppResponseReaderFactory>(
-                     *profile_, std::make_unique<FakeIsolatedWebAppValidator>(
-                                    base::unexpected("test error"))));
-
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
                           resource_request, read_response_future.GetCallback());
 
-  FulfillIntegrityBlock();
+  auto integrity_block = integrity_block_->Clone();
+  // Simulate a failed validation by returning a different ID.
+  integrity_block->attributes =
+      web_package::test::GetAttributesForSignedWebBundleId(
+          web_package::test::GetDefaultEcdsaP256WebBundleId().id());
+  parser_factory_->RunIntegrityBlockCallback(std::move(integrity_block));
   FulfillMetadata();
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message,
-            "Failed to validate integrity block: test error");
+  EXPECT_THAT(result.error().message,
+              testing::HasSubstr("Failed to validate integrity block"));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -647,10 +599,6 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
-  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      *profile_, std::make_unique<IsolatedWebAppResponseReaderFactory>(
-                     *profile_, std::make_unique<FakeIsolatedWebAppValidator>(
-                                    base::ok())));
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,

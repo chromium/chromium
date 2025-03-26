@@ -17,7 +17,7 @@
 <translation id="1887631853265748225">广告隐私权功能有助于限制网站及其广告合作伙伴在向您展示个性化广告时可以了解您的哪些信息。</translation>
 <translation id="1954777269544683286">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK" />详情请参阅《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
-<translation id="2089118378428549994">您将会从这些网站上自动退出账号</translation>
+<translation id="2089118378428549994">您将从这些网站上退出账号</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />您可以如何管理这些数据？<ph name="END_BOLD" />Chrome 会自动删除保留时长超过 30 天的网站。您再次访问的网站可能会重新出现在列表中。您还可随时在 Chrome 设置中禁止某个网站建议广告，以及停用网站推荐广告功能。</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
@@ -43,7 +43,7 @@
 <translation id="3749724428455457489">详细了解网站推荐广告</translation>
 <translation id="3763433740586298940">您可根据自己的需要屏蔽网站。Chrome 还会从列表中自动删除保留时长超过 30 天的网站。</translation>
 <translation id="385051799172605136">返回</translation>
-<translation id="3873208162463987752">相关网站可以相互共享第三方 Cookie，以帮助网站正常运行，例如让您保持登录状态或记住您的网站设置。网站有责任说明他们为何需要使用这些数据。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="3873208162463987752">相关网站可以相互共享第三方 Cookie，以帮助网站正常运行，例如让您保持登录状态或记住您的网站设置。各网站有责任说明为何需要访问这些数据。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="390681677935721732">Chrome 会在 30 天后删除您与网站分享的所有活动数据。如果您再次访问某个网站，该网站可能会重新出现在列表中。详细了解如何<ph name="BEGIN_LINK" />在 Chrome 中管理广告隐私权设置<ph name="END_LINK" />。</translation>
 <translation id="3918378745482005425">部分功能可能无法正常运行。相关网站仍然可以使用第三方 Cookie。</translation>
 <translation id="3918927280411834522">网站推荐广告</translation>
@@ -54,7 +54,7 @@
 <translation id="4301151630239508244">广告主题只是网站用来展示个性化广告的众多方法之一。即使没有广告主题，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解如何<ph name="BEGIN_LINK_1" />管理广告隐私权<ph name="END_LINK_1" />。</translation>
 <translation id="4412992751769744546">允许第三方 Cookie</translation>
 <translation id="4456330419644848501">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK_1" />网站推荐广告<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。</translation>
-<translation id="4497735604533667838">相关网站可以相互共享第三方 Cookie，以帮助网站正常运行，例如让您保持登录状态或记住您的网站设置。网站有责任说明他们为何需要使用这些数据。详细了解<ph name="START_LINK" />相关网站和第三方 Cookie<ph name="END_LINK" /></translation>
+<translation id="4497735604533667838">相关网站可以相互共享第三方 Cookie，以帮助网站正常运行，例如让您保持登录状态或记住您的网站设置。各网站有责任说明为何需要访问这些数据。详细了解<ph name="START_LINK" />相关网站和第三方 Cookie<ph name="END_LINK" /></translation>
 <translation id="4501357987281382712">如需详细了解 Google 如何保护您的数据，请参阅我们的<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="4502954140581098658">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK_1" />广告主题<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。</translation>
 <translation id="453692855554576066">您可以在 Chromium 设置中查看您的广告主题，并屏蔽不想与网站分享的主题</translation>

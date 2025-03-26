@@ -584,12 +584,14 @@ source_set("ip_protection_probabilistic_reveal_token_direct_fetcher") {
   public_deps = [
     ":ip_protection_probabilistic_reveal_token_fetcher",
     "//base",
+    "//base/version_info:channel",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
   deps = [
     ":ip_protection_probabilistic_reveal_token_crypter",
     "//components/ip_protection:get_probabilistic_reveal_token_proto",
+    "//google_apis/common:request_util",
     "//net",
     "//third_party/abseil-cpp:absl",
   ]
@@ -604,6 +606,7 @@ source_set("ip_protection_probabilistic_reveal_token_direct_fetcher_unittest") {
     ":ip_protection_probabilistic_reveal_token_direct_fetcher",
     "//base",
     "//base/test:test_support",
+    "//base/version_info:channel",
     "//components/ip_protection:get_probabilistic_reveal_token_proto",
     "//net",
     "//services/network:test_support",

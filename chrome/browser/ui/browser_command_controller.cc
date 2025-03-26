@@ -661,9 +661,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_AUTOFILL_MANDATORY_REAUTH:
       ShowMandatoryReauthOptInPrompt(browser_);
       break;
-    case IDC_MIGRATE_LOCAL_CREDIT_CARD_FOR_PAGE:
-      MigrateLocalCards(browser_);
-      break;
     case IDC_SAVE_AUTOFILL_ADDRESS:
       SaveAutofillAddress(browser_);
       break;
@@ -1574,9 +1571,7 @@ void BrowserCommandController::UpdateCommandsForIncognitoAvailability() {
   // be done in UpdateSharedCommandsForIncognitoAvailability as the method is
   // static to also handle states for NSApplication where no browser window are
   // open.
-  if (auto* incognito_action = actions::ActionManager::Get().FindAction(
-          kActionNewIncognitoWindow,
-          browser_->GetActions()->root_action_item())) {
+  if (auto* const incognito_action = FindAction(kActionNewIncognitoWindow)) {
     incognito_action->SetEnabled(
         IncognitoModePrefs::IsIncognitoAllowed(profile()));
   }

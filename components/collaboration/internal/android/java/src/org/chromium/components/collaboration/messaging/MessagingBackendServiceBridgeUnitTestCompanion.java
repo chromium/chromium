@@ -154,11 +154,10 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         Assert.assertEquals(InstantNotificationType.CONFLICT_TAB_REMOVED, message.type);
         Assert.assertEquals(CollaborationEvent.TAB_REMOVED, message.collaborationEvent);
         Assert.assertEquals("Message content - single message", message.localizedMessage);
-        Assert.assertNotNull(message.attribution);
-        Assert.assertNull(message.aggregatedData);
 
         // MessageAttribution.
-        MessageAttribution attribution = message.attribution;
+        Assert.assertTrue(message.isSingleMessage());
+        MessageAttribution attribution = message.attributions.get(0);
         Assert.assertEquals("cf07d904-88d4-4bc9-989d-57a9ab9e17a7", attribution.id);
         Assert.assertEquals("my group", attribution.collaborationId);
         Assert.assertEquals(new GaiaId("affected"), attribution.affectedUser.gaiaId);
@@ -191,19 +190,18 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         Assert.assertEquals(InstantNotificationType.CONFLICT_TAB_REMOVED, message.type);
         Assert.assertEquals(CollaborationEvent.TAB_REMOVED, message.collaborationEvent);
         Assert.assertEquals("Message content - aggregated message", message.localizedMessage);
-        Assert.assertNull(message.attribution);
-        Assert.assertNotNull(message.aggregatedData);
-        Assert.assertEquals(2, message.aggregatedData.attributions.size());
+        Assert.assertFalse(message.isSingleMessage());
+        Assert.assertEquals(2, message.attributions.size());
 
         // Attribution 1.
-        MessageAttribution attribution1 = message.aggregatedData.attributions.get(0);
+        MessageAttribution attribution1 = message.attributions.get(0);
         Assert.assertEquals("cf07d904-88d4-4bc9-989d-57a9ab9e17a7", attribution1.id);
         Assert.assertEquals("my group", attribution1.collaborationId);
         Assert.assertEquals(new GaiaId("affected"), attribution1.affectedUser.gaiaId);
         Assert.assertEquals(new GaiaId("triggering"), attribution1.triggeringUser.gaiaId);
 
         // Attribution 2.
-        MessageAttribution attribution2 = message.aggregatedData.attributions.get(1);
+        MessageAttribution attribution2 = message.attributions.get(1);
         Assert.assertEquals("24ed7c34-41a3-47c2-aad4-5ea42a1765d5", attribution2.id);
         Assert.assertEquals("my group", attribution2.collaborationId);
         Assert.assertEquals(new GaiaId("affected 2"), attribution2.affectedUser.gaiaId);

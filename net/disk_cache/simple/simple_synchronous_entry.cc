@@ -243,11 +243,9 @@ int GetSimpleCacheTrailerPrefetchSize(int hint_size) {
 
 SimpleEntryStat::SimpleEntryStat(
     base::Time last_used,
-    base::Time last_modified,
     const std::array<int32_t, kSimpleEntryStreamCount>& data_size,
     const int32_t sparse_data_size)
     : last_used_(last_used),
-      last_modified_(last_modified),
       data_size_(data_size),
       sparse_data_size_(sparse_data_size) {}
 
@@ -757,7 +755,6 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
   RecordWriteResult(cache_type_, SYNC_WRITE_RESULT_SUCCESS);
   base::Time modification_time = Time::Now();
   out_entry_stat->set_last_used(modification_time);
-  out_entry_stat->set_last_modified(modification_time);
   out_write_result->result = buf_len;
 }
 
@@ -962,7 +959,6 @@ void SimpleSynchronousEntry::WriteSparseData(const SparseRequest& in_entry_op,
 
   base::Time modification_time = Time::Now();
   out_entry_stat->set_last_used(modification_time);
-  out_entry_stat->set_last_modified(modification_time);
   int32_t old_sparse_data_size = out_entry_stat->sparse_data_size();
   out_entry_stat->set_sparse_data_size(old_sparse_data_size + appended_so_far);
   *out_result = written_so_far;
@@ -1300,7 +1296,6 @@ bool SimpleSynchronousEntry::OpenFiles(BackendFileOperations* file_operations,
       continue;
     }
     out_entry_stat->set_last_used(file_info.last_accessed);
-    out_entry_stat->set_last_modified(file_info.last_modified);
 
     // Two things prevent from knowing the right values for |data_size|:
     // 1) The key might not be known, hence its length might be unknown.
@@ -1341,7 +1336,6 @@ bool SimpleSynchronousEntry::CreateFiles(BackendFileOperations* file_operations,
   have_open_files_ = true;
 
   base::Time creation_time = Time::Now();
-  out_entry_stat->set_last_modified(creation_time);
   out_entry_stat->set_last_used(creation_time);
   for (int i = 0; i < kSimpleEntryNormalFileCount; ++i)
     out_entry_stat->set_data_size(i, 0);

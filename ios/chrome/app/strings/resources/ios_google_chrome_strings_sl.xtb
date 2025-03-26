@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">Geslo bo shranjeno v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Odpiranje novega zavihka v Chromu</translation>
 <translation id="1166460004393506534">Brisanje podatkov brskanja v Chromu</translation>
-<translation id="1171255741903316750">Vklopite »Zaklepanje anonimnih zavihkov po zaprtju Chroma«</translation>
 <translation id="1179527450541388808">Hitreje dostopajte do Chroma iz vrstice Dock na začetnem zaslonu iPada.</translation>
 <translation id="1180362651362502943">Še naprej uporabljajte podatke v Chromu v računu Google.</translation>
 <translation id="1200396280085622191">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih in drugih aplikacijah.</translation>
@@ -178,6 +177,7 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="5716154293141027663">Odpiranje Chroma ob vsakem dotiku povezav v drugih aplikacijah.</translation>
 <translation id="5752489513673657785">Vir po meri, ki ga je za vas ustvaril Google</translation>
 <translation id="5772407442571703917">Tukaj prenesite Chrome.</translation>
+<translation id="5777468213129569553">Odpri Chrome</translation>
 <translation id="5779767936254214055">Zaklepanje anonimnih zavihkov, ko zapustite Chrome ali preklopite na drugo aplikacijo.</translation>
 <translation id="5808435672482059465">Ogled zgodovine v Chromu</translation>
 <translation id="5833027901704861726">Nekateri podatki v Chromu še niso shranjeni v računu <ph name="EMAIL" />.

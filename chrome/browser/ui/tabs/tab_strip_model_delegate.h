@@ -159,8 +159,9 @@ class TabStripModelDelegate {
   // Returns whether the delegate allows reloading of WebContents.
   virtual bool CanReload() const = 0;
 
-  // Adds the specified WebContents to read later.
-  virtual void AddToReadLater(content::WebContents* web_contents) = 0;
+  // Adds the vector of WebContents to read later.
+  virtual void AddToReadLater(
+      std::vector<content::WebContents*> web_contentses) = 0;
 
   // Returns whether the tabstrip supports the read later feature.
   virtual bool SupportsReadLater() = 0;

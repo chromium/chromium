@@ -86,7 +86,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
     gpu::ExportedSharedImage exported_shared_image,
     const gpu::SyncToken& sync_token,
     const gfx::Size& size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     sk_sp<SkColorSpace> sk_color_space,
     base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
@@ -118,8 +118,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
       shared_gpu_context, shared_image);
 
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, 0u, size,
-      viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type), alpha_type,
+      std::move(shared_image), sync_token, 0u, size, format, alpha_type,
       std::move(sk_color_space), ImageOrientationEnum::kDefault,
       shared_gpu_context, base::PlatformThreadRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),

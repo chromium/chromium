@@ -64,7 +64,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
             .AsBitmap());
   }
   return Java_Account_Constructor(
-      env, account->id, account->email, account->name, account->given_name,
+      env, account->id, account->display_identifier, account->display_name,
+      account->given_name,
       is_multi_idp ? std::make_optional<std::string>(
                          account->identity_provider->idp_for_display)
                    : std::nullopt,

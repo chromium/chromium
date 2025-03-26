@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -429,6 +430,51 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, NoDiscardPatterns) {
         break;
     }
   }
+}
+
+// Integration test verifying that discarding is disallowed for a tab which was
+// just discarded but still has a main frame.
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
+                       DiscardedTabCannotBeDiscarded) {
+  Graph* graph = PerformanceManager::GetGraph();
+  auto* helper = PageDiscardingHelper::GetFromGraph(graph);
+  auto* eligibility_policy = DiscardEligibilityPolicy::GetFromGraph(graph);
+  ASSERT_TRUE(helper);
+
+  OpenNewBackgroundPage();
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  base::WeakPtr<PageNode> page_to_discard = GetPageNodeAtIndex(1);
+
+  // Keep-alive the process hosting the background page's main frame, to prevent
+  // fast shutdown. This ensures that when the WebContentsDiscard feature is
+  // enabled, we test the code path in which a tab is discarded but still has a
+  // main frame (that situation cannot occur with the feature disabled).
+  page_to_discard->GetWebContents()
+      ->GetPrimaryMainFrame()
+      ->GetProcess()
+      ->IncrementPendingReuseRefCount();
+
+  // Discard a background page.
+  ASSERT_TRUE(page_to_discard);
+  EXPECT_EQ(CanDiscardResult::kEligible,
+            eligibility_policy->CanDiscard(
+                page_to_discard.get(), DiscardReason::URGENT,
+                /*minimum_time_in_background=*/base::TimeDelta()));
+  ASSERT_TRUE(helper->ImmediatelyDiscardMultiplePages({page_to_discard.get()},
+                                                      DiscardReason::URGENT));
+  ASSERT_EQ(GetParam(),
+            base::FeatureList::IsEnabled(::features::kWebContentsDiscard));
+  if (GetParam()) {
+    EXPECT_TRUE(page_to_discard->GetWebContents()->GetPrimaryMainFrame());
+  }
+
+  // The discarded page should no longer be eligible for discarding.
+  base::WeakPtr<PageNode> discarded_page = GetPageNodeAtIndex(1);
+  ASSERT_TRUE(discarded_page);
+  EXPECT_EQ(CanDiscardResult::kDisallowed,
+            eligibility_policy->CanDiscard(
+                discarded_page.get(), DiscardReason::URGENT,
+                /*minimum_time_in_background=*/base::TimeDelta()));
 }
 
 // Regression test for crbug.com/386801193. Ensure discarded tabs remain

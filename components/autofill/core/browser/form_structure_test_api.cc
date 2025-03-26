@@ -36,8 +36,6 @@ void FormStructureTestApi::SetFieldTypes(
       form_field->set_heuristic_type(source, type);
     form_field->set_server_predictions({server_types[i]});
   }
-
-  form_structure_->UpdateAutofillCount();
 }
 
 void FormStructureTestApi::SetFieldTypes(

@@ -163,7 +163,7 @@ using ::testing::Lt;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::ResultOf;
-using ::testing::UnorderedElementsAreArray;
+using ::testing::UnorderedElementsAre;
 using ::testing::Values;
 using ::testing::ValuesIn;
 
@@ -1487,15 +1487,23 @@ TEST_P(HeapProfilerControllerMultipleChildTest, EndToEnd) {
   // be profiled - the 5th is invisible to the profiler.
   EXPECT_THAT(
       received_profiles,
-      UnorderedElementsAreArray({
+      UnorderedElementsAre(
           sampled_profile_matches(metrics::Process::BROWSER_PROCESS, 0, 100, 1),
           sampled_profile_matches(metrics::Process::GPU_PROCESS, 1, 100, 1),
           sampled_profile_matches(metrics::Process::UTILITY_PROCESS, 2, 50, 1),
           // The first renderer should be skipped.
           sampled_profile_matches(metrics::Process::RENDERER_PROCESS, 0, 66, 3),
           sampled_profile_matches(metrics::Process::RENDERER_PROCESS, 4, 66, 3),
-          sampled_profile_matches(metrics::Process::RENDERER_PROCESS, 5, 66, 3),
-      }));
+          sampled_profile_matches(metrics::Process::RENDERER_PROCESS, 5, 66,
+                                  3)));
+
+  // Make sure both per-process and aggregate profiler stats are logged.
+  // Subprocess metrics aren't hooked up in this test, so `histogram_tester_`
+  // only sees the browser process histograms.
+  histogram_tester_.ExpectTotalCount(
+      "HeapProfiling.InProcess.SamplesPerSnapshot.Browser", 1);
+  histogram_tester_.ExpectTotalCount(
+      "HeapProfiling.InProcess.SamplesPerSnapshot", 1);
 }
 
 #endif  // ENABLE_MULTIPROCESS_TESTS

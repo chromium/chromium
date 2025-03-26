@@ -3489,8 +3489,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
           base::StrCat({kArbitraryPage, "#", url.spec()}));
 }
 
+// TODO(crbug.com/331650494): Very flaky on slower builds like memory sanitizer.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_CantInspectBlockedSubdomainHost \
+  DISABLED_CantInspectBlockedSubdomainHost
+#else
+#define MAYBE_CantInspectBlockedSubdomainHost CantInspectBlockedSubdomainHost
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
-                       CantInspectBlockedSubdomainHost) {
+                       MAYBE_CantInspectBlockedSubdomainHost) {
   GURL url(embedded_test_server()->GetURL("foo.example.com", kArbitraryPage));
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",

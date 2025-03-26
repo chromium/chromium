@@ -77,7 +77,7 @@ class FakeConnectionToClient : public ConnectionToClient {
   ClientStub* client_stub() override;
   void Disconnect(ErrorCode error,
                   std::string_view error_details,
-                  const base::Location& error_location) override;
+                  const SourceLocation& error_location) override;
 
   Session* session() override;
 

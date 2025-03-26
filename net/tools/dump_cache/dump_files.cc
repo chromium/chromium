@@ -377,9 +377,11 @@ void DumpRankings(disk_cache::CacheAddr addr,
 
   if (verbose) {
     printf("dirty: %d\n", rankings.dirty);
-    if (rankings.last_used != rankings.last_modified)
-      printf("used: %s\n", ToLocalTime(rankings.last_used).c_str());
-    printf("modified: %s\n", ToLocalTime(rankings.last_modified).c_str());
+    printf("used: %s\n", ToLocalTime(rankings.last_used).c_str());
+    if (rankings.last_used != rankings.no_longer_used_last_modified) {
+      printf("(removed) modified: %s\n",
+             ToLocalTime(rankings.no_longer_used_last_modified).c_str());
+    }
     printf("hash: 0x%x\n", rankings.self_hash);
     printf("----------\n\n");
   } else {

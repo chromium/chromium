@@ -160,10 +160,11 @@ class VotesUploader {
 
   // Tries to set all votes (e.g. autofill field types, generation vote) to
   // a |FormStructure| and upload it to the server. Returns true on success.
-  bool UploadPasswordVote(const PasswordForm& form_to_upload,
-                          const PasswordForm& submitted_form,
-                          const autofill::FieldType password_type,
-                          const std::string& login_form_signature);
+  bool UploadPasswordVote(
+      const PasswordForm& form_to_upload,
+      const PasswordForm& submitted_form,
+      const autofill::FieldType password_type,
+      std::optional<autofill::FormSignature> login_form_signature);
 
   // Sends USERNAME and PASSWORD votes, when a credential is used to login for
   // the first time. |form_to_upload| is the submitted login form.
@@ -307,7 +308,7 @@ class VotesUploader {
   std::vector<autofill::AutofillUploadContents> EncodeUploadRequest(
       autofill::FormStructure& form,
       const autofill::FieldTypeSet& available_field_types,
-      std::string_view login_form_signature,
+      std::optional<autofill::FormSignature> login_form_signature,
       std::optional<PasswordAttributesMetadata> password_attributes,
       bool should_set_passwords_were_revealed);
 
@@ -316,7 +317,7 @@ class VotesUploader {
   bool SendUploadRequest(
       autofill::FormStructure& form_to_upload,
       const autofill::FieldTypeSet& available_field_types,
-      const std::string& login_form_signature,
+      std::optional<autofill::FormSignature> login_form_signature,
       std::optional<PasswordAttributesMetadata> password_attributes,
       bool should_set_passwords_were_revealed);
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h"
 
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -67,7 +68,8 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
   }
 
   out->size = gfx::Size(image_info.width(), image_info.height());
-  out->sk_color_type = image_info.colorType();
+  out->format =
+      viz::SkColorTypeToSinglePlaneSharedImageFormat(image_info.colorType());
   out->alpha_type = image_info.alphaType();
   out->sk_color_space = image_info.refColorSpace();
 

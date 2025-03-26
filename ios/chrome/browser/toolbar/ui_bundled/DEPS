@@ -30,7 +30,7 @@ include_rules = [
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/lens/ui_bundled",
-  "+ios/chrome/browser/ui/popup_menu/public",
+  "+ios/chrome/browser/popup_menu/ui_bundled/public",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
 ];

@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
-#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 
 namespace autofill {
 
@@ -38,14 +37,6 @@ class FormDataImporterTestApi {
       std::unique_ptr<IbanSaveManager> iban_save_manager) {
     fdi_->iban_save_manager_ = std::move(iban_save_manager);
   }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void set_local_card_migration_manager(
-      std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager) {
-    fdi_->local_card_migration_manager_ =
-        std::move(local_card_migration_manager);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   FormDataImporter::CreditCardImportType credit_card_import_type() const {
     return fdi_->credit_card_import_type_;

@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -603,7 +604,7 @@ void text_input_activate(wl_client* client,
   for (const char* modifier : kModifierNames) {
     char* p =
         static_cast<char*>(wl_array_add(&modifiers, ::strlen(modifier) + 1));
-    ::strcpy(p, modifier);
+    UNSAFE_TODO(::strcpy(p, modifier));
   }
   zwp_text_input_v1_send_modifiers_map(resource, &modifiers);
   wl_array_release(&modifiers);

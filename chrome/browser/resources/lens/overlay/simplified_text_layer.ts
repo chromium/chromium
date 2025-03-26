@@ -43,7 +43,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   static override get properties() {
     return {
-      hasCopiedText: {type: Boolean, reflect: true},
+      hasActionedText: {type: Boolean, reflect: true},
       hideHighlightedLines: {type: Boolean, reflect: true},
       highlightedLines: {type: Array},
     };
@@ -57,9 +57,9 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     return getHtml.bind(this)();
   }
 
-  // Whether the user has copied text pertaining to the newest region selection
-  // made.
-  protected hasCopiedText: boolean = false;
+  // Whether the user has actioned on the text pertaining to the newest region
+  // selection made either by attempting to copy or translate.
+  protected hasActionedText: boolean = false;
   // Whether to hide the highlighted lines in the region. Starts off true so
   // highlighted lines can initially fade in.
   protected hideHighlightedLines: boolean = true;
@@ -75,6 +75,8 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   // this class needing to call getBoundingClientRect()
   private selectionOverlayRect: DOMRect;
   private listenerIds: number[] = [];
+  // Whether the user is in the middle of selecting a new region.
+  private isSelectingRegion: boolean = false;
   // Timeout for onTextReceived for the full image response text. The selected
   // region context menu should not be shown until either the text is received
   // or the timeout elapses.      ;
@@ -159,7 +161,8 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   onSelectionStart(): void {
-    this.hasCopiedText = false;
+    this.isSelectingRegion = true;
+    this.hasActionedText = false;
     // Hide highlighted lines but do not clear them in order to allow them to
     // fade out.
     this.hideHighlightedLines = true;
@@ -167,6 +170,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   onSelectionFinish(): void {
+    this.isSelectingRegion = false;
     // Clear the previous region selection text response as a new selection has
     // been made. Also clear any timeouts that also pertained to the last region
     // response.
@@ -180,6 +184,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   selectAndTranslateWords(startIndex: number, endIndex: number) {
     if (this.regionTextResponse) {
+      this.hasActionedText = true;
       translateWords(
           this.getRegionText(), this.regionTextResponse.contentLanguage, 0,
           this.regionTextResponse.receivedWords.length - 1, this.browserProxy);
@@ -188,6 +193,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
     assert(this.fullTextResponse);
     if (this.translateTimeout.timeoutElapsedOrCleared) {
+      this.hasActionedText = true;
       // This layer does not support selection of text. So just translate the
       // words.
       translateWords(
@@ -274,6 +280,12 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   private onRegionTextReceived(text: Text) {
+    // If the user is currently selecting a new region, ignore any text received
+    // for the old region.
+    if (this.isSelectingRegion) {
+      return;
+    }
+
     // If there was rendered text, log a text gleam render end event.
     if (this.regionTextResponse &&
         this.regionTextResponse.receivedWords.length > 0) {
@@ -398,7 +410,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     if (startIndex < 0 || endIndex < 0) {
       return;
     }
-    this.hasCopiedText = true;
+    this.hasActionedText = true;
 
     if (this.regionTextResponse) {
       callback(/*textStartIndex=*/ 0,
@@ -523,6 +535,10 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   getElementForTesting(): Element {
     return this;
+  }
+
+  getHasActionedTextForTesting(): boolean {
+    return this.hasActionedText;
   }
 
   setSelectionOverlayRectForTesting(rect: DOMRect): void {

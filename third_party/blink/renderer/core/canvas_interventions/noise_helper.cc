@@ -118,56 +118,50 @@ void NoisePixels(const NoiseHash& token_hash,
   CHECK_EQ(pixels.size(),
            static_cast<size_t>(width * height * kChannelsPerPixel));
 
-  // |unnoised_previous_pixels| contains the unnoised pixels from the current
-  // row in the range [0, x-2] and the previous row in the range [x-1, width-1]
-  // at the beginning of the loop.
-  std::vector<uint32_t> unnoised_previous_pixels;
-  uint32_t unnoised_left_pixel;
-  unnoised_previous_pixels.resize(width);
+  const size_t row_size = width * kChannelsPerPixel;
+  std::vector<uint8_t> row1(row_size);
+  std::vector<uint8_t> row2(row_size);
+  base::span<uint8_t> unnoised_previous_row(row1);
+  base::span<uint8_t> unnoised_current_row(row2);
 
   for (int y = 0; y < height; ++y) {
+    unnoised_current_row.copy_from(pixels.subspan(y * row_size, row_size));
     for (int x = 0; x < width; ++x) {
-      auto cur_pixel = GetPixelAt(x, y, width, pixels);
-      if (cur_pixel == kEmptyPixel) {
+      auto pixel = GetPixelAt(x, y, width, pixels);
+      if (pixel == kEmptyPixel) {
         continue;
       }
-      uint32_t cur_pixel_val = base::U32FromLittleEndian(cur_pixel);
-      bool copied_prev_pixel = false;
-      // top-left
-      if ((y > 0 && x > 0 &&
-           unnoised_previous_pixels[x - 1] == cur_pixel_val)) {
-        CopyPixelValue(GetPixelAt(x - 1, y - 1, width, pixels), cur_pixel);
-        copied_prev_pixel = true;
-        // top
-      } else if (y > 0 && unnoised_previous_pixels[x] == cur_pixel_val) {
-        CopyPixelValue(GetPixelAt(x, y - 1, width, pixels), cur_pixel);
-        copied_prev_pixel = true;
-        // top-right
+      if (y > 0 && x > 0 &&
+          GetPixelAt(x - 1, 0, width, unnoised_previous_row) == pixel) {
+        // same top-left pixel, copy.
+        CopyPixelValue(GetPixelAt(x - 1, y - 1, width, pixels), pixel);
+      } else if (y > 0 &&
+                 GetPixelAt(x, 0, width, unnoised_previous_row) == pixel) {
+        // same top pixel, copy.
+        CopyPixelValue(GetPixelAt(x, y - 1, width, pixels), pixel);
       } else if (y > 0 && x < width - 1 &&
-                 unnoised_previous_pixels[x + 1] == cur_pixel_val) {
-        CopyPixelValue(GetPixelAt(x + 1, y - 1, width, pixels), cur_pixel);
-        copied_prev_pixel = true;
-        // left
-      } else if (x > 0 && unnoised_left_pixel == cur_pixel_val) {
-        CopyPixelValue(GetPixelAt(x - 1, y, width, pixels), cur_pixel);
-        copied_prev_pixel = true;
+                 GetPixelAt(x + 1, 0, width, unnoised_previous_row) == pixel) {
+        // same top-right pixel, copy.
+        CopyPixelValue(GetPixelAt(x + 1, y - 1, width, pixels), pixel);
+      } else if (x > 0 &&
+                 GetPixelAt(x - 1, 0, width, unnoised_current_row) == pixel) {
+        // same left pixel, copy.
+        CopyPixelValue(GetPixelAt(x - 1, y, width, pixels), pixel);
+      } else {
+        // otherwise, noise the pixel.
+        NoiseHash hash_copy = token_hash;
+        hash_copy.Update(base::U32FromLittleEndian(pixel));
+        // GetRandomPixelLocations consumes at most 46 bits from hash.
+        const std::pair<PixelLocation, PixelLocation> other_pixels =
+            GetRandomPixelLocations(hash_copy, {x, y}, width, height);
+        hash_copy.Update(
+            GetValueFromPixelLocations(other_pixels, pixels, width));
+        // NoisePixel consumes 12 bits from hash
+        NoisePixel(pixel, hash_copy);
       }
-      if (x > 0) {
-        unnoised_previous_pixels[x - 1] = unnoised_left_pixel;
-      }
-      unnoised_left_pixel = cur_pixel_val;
-      if (copied_prev_pixel) {
-        continue;
-      }
-      NoiseHash hash_copy = token_hash;
-      hash_copy.Update(cur_pixel_val);
-      // GetRandomPixelLocations consumes at most 46 bits from hash.
-      const std::pair<PixelLocation, PixelLocation> other_pixels =
-          GetRandomPixelLocations(hash_copy, {x, y}, width, height);
-      hash_copy.Update(GetValueFromPixelLocations(other_pixels, pixels, width));
-      // NoisePixel consumes 12 bits from hash
-      NoisePixel(cur_pixel, hash_copy);
     }
+    // Previous can be overwritten (new current). Current is the now previous.
+    std::swap(unnoised_previous_row, unnoised_current_row);
   }
 }
 

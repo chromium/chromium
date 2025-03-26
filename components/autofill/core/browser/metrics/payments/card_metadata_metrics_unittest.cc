@@ -469,27 +469,23 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
 }
 
 // Params:
-// 1) Whether card product name feature flag is enabled.
-// 2) Whether card metadata (both product name and card art image) are provided.
-// 3) Whether the card has linked virtual card (only card art is provided).
+// 1) Whether card metadata (both product name and card art image) are provided.
+// 2) Whether the card has linked virtual card (only card art is provided).
 class CardMetadataLatencyMetricsTest
     : public AutofillMetricsBaseTest,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   CardMetadataLatencyMetricsTest() = default;
   ~CardMetadataLatencyMetricsTest() override = default;
 
-  bool card_product_name_enabled() { return std::get<0>(GetParam()); }
-  bool card_metadata_available() { return std::get<1>(GetParam()); }
-  bool card_has_static_art_image() { return std::get<2>(GetParam()); }
+  bool card_metadata_available() { return std::get<0>(GetParam()); }
+  bool card_has_static_art_image() { return std::get<1>(GetParam()); }
 
   FormData form() { return form_; }
 
   void SetUp() override {
     SetUpHelper();
-    feature_list_card_product_name_.InitWithFeatureState(
-        features::kAutofillEnableCardProductName, card_product_name_enabled());
     // Set up the form data. Reset form action to skip the IsFormMixedContent
     // check.
     form_ =
@@ -530,7 +526,6 @@ class CardMetadataLatencyMetricsTest
 INSTANTIATE_TEST_SUITE_P(All,
                          CardMetadataLatencyMetricsTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool()));
 
 // Test to ensure that we log card metadata related metrics only when card
@@ -555,18 +550,13 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
       "Autofill.CreditCard.SelectionLatencySinceShown.";
 
   std::string latency_histogram_suffix;
-  // Card product name is shown when card_metadata_available() and
-  // card_product_name_enabled() both return true.
+  // Card product name is shown when card_metadata_available() return true.
   // Card art image is shown when 1. card_has_linked_virtual_card() or
   // 2. card_metadata_available() returns true.
   // TODO(crbug.com/387391138): Determine appropriate cases and modify test
   // coverage accordingly.
   if (card_metadata_available()) {
-    if (card_product_name_enabled()) {
-      latency_histogram_suffix = kProductNameAndArtImageBothShownSuffix;
-    } else {
-      latency_histogram_suffix = kArtImageShownOnlySuffix;
-    }
+    latency_histogram_suffix = kProductNameAndArtImageBothShownSuffix;
   } else {
     latency_histogram_suffix = kProductNameAndArtImageNotShownSuffix;
   }
@@ -1222,10 +1212,9 @@ TEST_P(CardBenefitFormEventMetricsTest,
                      Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-      BucketsInclude(
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
-              1)));
+      BucketsInclude(Bucket(
+          FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
+          1)));
 }
 
 // Tests that when a form is submitted after a masked server card with a

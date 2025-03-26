@@ -151,8 +151,7 @@ class ExtensionsMetricsProviderTest : public testing::Test {
   void TearDown() override { profile_manager_.DeleteAllTestingProfiles(); }
 
   Profile* CreateTestingProfile(const std::string& test_email) {
-    Profile* profile = profile_manager_.CreateTestingProfile(
-        test_email, /* is_main_profile= */ true);
+    Profile* profile = profile_manager_.CreateTestingProfile(test_email);
     profiles::SetLastUsedProfile(profile->GetBaseName());
     return profile;
   }

@@ -10,4 +10,8 @@ specific_include_rules = {
     # content/browser/gpu to avoid this rule.
     "+content/gpu/in_process_gpu_thread.h"
   ],
+  "gpu_process_host\.cc": [
+    # TODO(crbug.com/371609830): Remove include on experiment end.
+    "+ash/constants/ash_switches.h"
+  ],
 }

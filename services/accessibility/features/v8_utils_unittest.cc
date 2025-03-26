@@ -49,6 +49,7 @@ class V8ValueConverterTest : public testing::Test,
 
  protected:
   void SetUp() override {
+    v8::Isolate::Scope isolate_scope(isolate_);
     v8::HandleScope handle_scope(isolate_);
     v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate_);
     context_.Reset(isolate_, v8::Context::New(isolate_, nullptr, global));
@@ -74,6 +75,7 @@ TEST_F(V8ValueConverterTest, DictWithBasicTypes) {
   dict.Set("double", 2.0f);
   dict.Set("string", "hello world");
 
+  v8::Isolate::Scope isolate_scope(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context = GetContext();
   v8::Context::Scope context_scope(context);
@@ -123,6 +125,7 @@ TEST_F(V8ValueConverterTest, ConvertsList) {
   list.Append(true);
   list.Append(2);
 
+  v8::Isolate::Scope isolate_scope(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context = GetContext();
   v8::Context::Scope context_scope(context);
@@ -143,6 +146,7 @@ TEST_F(V8ValueConverterTest, ConvertsList) {
 TEST_F(V8ValueConverterTest, ConvertsBlogStorage) {
   base::Value::BlobStorage storage({1u, 2u});
 
+  v8::Isolate::Scope isolate_scope(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context = GetContext();
   v8::Context::Scope context_scope(context);

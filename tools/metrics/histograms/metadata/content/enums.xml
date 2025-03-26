@@ -148,16 +148,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Reverse Chronological"/>
 </enum>
 
-<enum name="FeedControlsActions">
-  <int value="0" label="Clicked on My activity"/>
-  <int value="1" label="Clicked on Manage interests"/>
-  <int value="2" label="Clicked on Learn more"/>
-  <int value="3" label="Toggled the feed"/>
-  <int value="4" label="Clicked on the feed menu button"/>
-  <int value="5" label="Clicked on autoplay"/>
-  <int value="6" label="Clicked on Manage"/>
-</enum>
-
 <enum name="FeedEngagementType">
   <int value="0" label="Engaged">
     Visit - user scrolled an inch or interacted

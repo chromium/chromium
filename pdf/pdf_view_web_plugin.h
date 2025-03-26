@@ -258,6 +258,16 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 #endif
   };
 
+  struct SaveDataBlock {
+    SaveDataBlock();
+    SaveDataBlock(SaveDataBlock&& other) noexcept;
+    SaveDataBlock& operator=(SaveDataBlock&&) noexcept;
+    ~SaveDataBlock();
+
+    std::vector<uint8_t> block;
+    uint32_t total_file_size = 0;
+  };
+
   PdfViewWebPlugin(std::unique_ptr<Client> client,
                    mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
                    blink::WebPluginParams params);
@@ -488,6 +498,14 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
+  void SetMaxSaveBufferSizeForTesting(uint32_t max_save_buffer_size) {
+    max_save_buffer_size_ = max_save_buffer_size;
+  }
+
+  bool IsSaveDataBufferEmptyForTesting() const {
+    return save_data_buffer_.empty();
+  }
+
  private:
   // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
   // load the URL, and `result` is the result code for the load.
@@ -552,10 +570,13 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleGetNamedDestinationMessage(const base::Value::Dict& message);
   void HandleGetPageBoundingBoxMessage(const base::Value::Dict& message);
   void HandleGetPasswordCompleteMessage(const base::Value::Dict& message);
+  void HandleGetSaveDataBlockMessage(const base::Value::Dict& message);
   void HandleGetSelectedTextMessage(const base::Value::Dict& message);
+  void HandleGetSuggestedFileName(const base::Value::Dict& message);
   void HandleGetThumbnailMessage(const base::Value::Dict& message);
   void HandleHighlightTextFragmentsMessage(const base::Value::Dict& message);
   void HandlePrintMessage(const base::Value::Dict& /*message*/);
+  void HandleReleaseSaveInBlockBuffers(const base::Value::Dict& /*message*/);
   void HandleRotateClockwiseMessage(const base::Value::Dict& /*message*/);
   void HandleRotateCounterclockwiseMessage(
       const base::Value::Dict& /*message*/);
@@ -570,6 +591,26 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   void SaveToBuffer(SaveRequestType request_type, const std::string& token);
   void SaveToFile(const std::string& token);
+
+  // Returns `block_size` bytes to save the PDF with `request_type`, starting
+  // from location `offset`. Since the caller may not know the exact file size,
+  // the first request (when `offset` is 0) can be called with `block_size` 0
+  // and in that case, the entire file data, capped at 16MB limit is returned.
+  // The function also returns the total file size.
+  // Note that it only handles files less than INT_MAX size, and if the file is
+  // larger than that, it returns 0 as file size and no data.
+  SaveDataBlock SaveBlockToBuffer(SaveRequestType request_type,
+                                  uint32_t offset,
+                                  uint32_t block_size);
+
+  // For a call to `SaveBlockToBuffer`, ensures `offset` and `block_size` have
+  // expected values and returns the effective `block_size`.
+  uint32_t VerifyParamsAndGetSaveBlockSize(uint32_t total_file_size,
+                                           uint32_t offset,
+                                           uint32_t block_size);
+
+  // Release buffered data for saving.
+  void ReleaseSaveBuffer();
 
   // Sets whether the plugin can and should handle the save by using `pdf_host_`
   // to notify the browser. Prevents duplicate notifications to the browser if
@@ -945,6 +986,16 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   // Queue of available preview pages to load next.
   base::queue<PreviewPageInfo> preview_pages_info_;
+
+  // Buffer for saving data by Web UI.
+  // `SaveBlockToBuffer` allocates this variable when WebUI requests saving the
+  // PDF by getting the content in blocks, and the content needs to be buffered
+  // during the save process. It is released when saving is finished or
+  // canceled.
+  std::vector<uint8_t> save_data_buffer_;
+
+  // Maximum size of save data in each block.
+  uint32_t max_save_buffer_size_;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   bool show_searchify_in_progress_ = false;

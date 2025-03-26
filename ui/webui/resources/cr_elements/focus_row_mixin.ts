@@ -83,6 +83,8 @@ export const FocusRowMixin = dedupingMixin(
         declare private row_: VirtualFocusRow|null;
         declare private mouseFocused_: boolean;
 
+        declare id: string;
+
         // For notifying when the row is in focus.
         declare isFocused: boolean;
 

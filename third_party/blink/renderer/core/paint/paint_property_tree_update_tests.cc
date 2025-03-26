@@ -1770,8 +1770,11 @@ TEST_P(PaintPropertyTreeUpdateTest, InlineFilterReferenceBoxChange) {
   const auto* properties = PaintPropertiesForElement("span");
   ASSERT_TRUE(properties);
   ASSERT_TRUE(properties->Filter());
+  ASSERT_TRUE(properties->Filter()->Filter());
   EXPECT_EQ(gfx::PointF(0, 20),
-            properties->Filter()->Filter().ReferenceBox().origin());
+            properties->Filter()->Filter()->ReferenceBox().origin());
+  EXPECT_EQ(gfx::Point(-3, 17),
+            properties->Filter()->FilterOutputBounds().origin());
 
   GetDocument()
       .getElementById(AtomicString("spacer"))
@@ -1780,7 +1783,9 @@ TEST_P(PaintPropertyTreeUpdateTest, InlineFilterReferenceBoxChange) {
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(properties, PaintPropertiesForElement("span"));
   EXPECT_EQ(gfx::PointF(0, 100),
-            properties->Filter()->Filter().ReferenceBox().origin());
+            properties->Filter()->Filter()->ReferenceBox().origin());
+  EXPECT_EQ(gfx::Point(-3, 97),
+            properties->Filter()->FilterOutputBounds().origin());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, StartSVGAnimation) {

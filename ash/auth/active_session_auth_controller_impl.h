@@ -120,7 +120,8 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
 
   // Tracks the authentication flow for the active session.
   enum class ActiveSessionAuthState {
-    kWaitForInit,            // Initial state, awaiting session start.
+    kOnIdle,                 // Initial state, waiting for request.
+    kWaitForInit,            // Waiting session start.
     kInitialized,            // Session started, ready for user input.
     kPasswordAuthStarted,    // User submitted password, awaiting verification.
     kPasswordAuthSucceeded,  // Successful password authentication.
@@ -158,6 +159,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   // of the UI. Validates the transitions.
   void SetState(ActiveSessionAuthState state);
 
+  bool IsPreInitializedState() const;
   bool IsSucceedState() const;
 
   // Internal methods for authentication.
@@ -198,7 +200,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   std::unique_ptr<UserContext> user_context_;
 
   AuthFactorSet available_factors_;
-  ActiveSessionAuthState state_ = ActiveSessionAuthState::kWaitForInit;
+  ActiveSessionAuthState state_ = ActiveSessionAuthState::kOnIdle;
 
   std::unique_ptr<AuthRequest> auth_request_;
 

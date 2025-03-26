@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <deque>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -358,6 +359,7 @@ void PopulateRandomizedFieldMetadata(
 // Helper function for EncodeUploadRequest().
 void EncodeFormFieldsForUpload(
     const FormStructure& form,
+    base::optional_ref<RandomizedEncoder> encoder,
     const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
         format_strings,
     base::span<AutofillField*> upload_fields,
@@ -417,9 +419,9 @@ void EncodeFormFieldsForUpload(
       added_field->set_properties_mask(field->properties_mask());
     }
 
-    if (form.randomized_encoder().has_value()) {
+    if (encoder.has_value()) {
       PopulateRandomizedFieldMetadata(
-          *form.randomized_encoder(), form, *field,
+          *encoder, form, *field,
           added_field->mutable_randomized_field_metadata());
     }
 
@@ -686,11 +688,12 @@ base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
 
 std::vector<AutofillUploadContents> EncodeUploadRequest(
     const FormStructure& form,
-    const FieldTypeSet& available_field_types,
-    std::string_view login_form_signature,
-    bool observed_submission,
+    base::optional_ref<RandomizedEncoder> encoder,
     const std::map<FieldGlobalId, base::flat_set<std::u16string>>&
-        format_strings) {
+        format_strings,
+    const FieldTypeSet& available_field_types,
+    std::optional<FormSignature> login_form_signature,
+    bool observed_submission) {
   DCHECK_EQ(FirstNonCapturedType(form, available_field_types),
             MAX_VALID_FIELD_TYPE);
 
@@ -704,8 +707,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   upload.set_autofill_used(false);
   upload.set_data_present(data_present);
   upload.set_has_form_tag(form.is_form_element());
-  if (!form.current_page_language()->empty() &&
-      form.randomized_encoder().has_value()) {
+  if (!form.current_page_language()->empty() && encoder.has_value()) {
     upload.set_language(form.current_page_language().value());
   }
 
@@ -732,26 +734,24 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
       static_cast<AutofillUploadContents_SubmissionIndicatorEvent>(
           triggering_event));
 
-  if (!login_form_signature.empty()) {
-    uint64_t login_sig;
-    if (base::StringToUint64(login_form_signature, &login_sig)) {
-      upload.set_login_form_signature(login_sig);
-    }
+  if (login_form_signature.has_value()) {
+    upload.set_login_form_signature(login_form_signature->value());
   }
 
   if (IsMalformed(form)) {
     return {};  // Malformed form, skip it.
   }
 
-  if (form.randomized_encoder().has_value()) {
-    PopulateRandomizedFormMetadata(*form.randomized_encoder(), form,
+  if (encoder.has_value()) {
+    PopulateRandomizedFormMetadata(*encoder, form,
                                    upload.mutable_randomized_form_metadata());
   }
 
   std::vector<AutofillField*> upload_fields(form.fields().size());
   std::ranges::transform(form.fields(), upload_fields.begin(),
                          &std::unique_ptr<AutofillField>::get);
-  EncodeFormFieldsForUpload(form, format_strings, upload_fields, &upload);
+  EncodeFormFieldsForUpload(form, encoder, format_strings, upload_fields,
+                            &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};
 
   // Build AutofillUploadContents for the renderer forms that have been
@@ -783,7 +783,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
                               (*subform_begin)->renderer_form_id();
                      });
     // SAFETY: The iterators are from the same container.
-    EncodeFormFieldsForUpload(form, format_strings,
+    EncodeFormFieldsForUpload(form, encoder, format_strings,
                               UNSAFE_BUFFERS({subform_begin, subform_end}),
                               &uploads.back());
     subform_begin = subform_end;
@@ -938,7 +938,6 @@ void ProcessServerPredictionsQueryResponse(
         form->fields(), [](FieldType t) { return t != NO_SERVER_DATA; },
         &AutofillField::server_type));
 
-    form->UpdateAutofillCount();
     form->RationalizeFormStructure(log_manager);
 
     AssignSections(form->fields());

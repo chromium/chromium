@@ -220,9 +220,9 @@ chrome.test.runTests([
           target: {
             tabId: tab.id,
           },
-          files: ['css_file.js', 'css_file.js'],
+          files: ['css_file.css', 'css_file.css'],
         }),
-        `Error: Duplicate file specified: 'css_file.js'.`);
+        `Error: Duplicate file specified: 'css_file.css'.`);
 
     // Try again with a preceding slash.
     await chrome.test.assertPromiseRejects(
@@ -230,9 +230,9 @@ chrome.test.runTests([
           target: {
             tabId: tab.id,
           },
-          files: ['css_file.js', '/css_file.js'],
+          files: ['css_file.css', '/css_file.css'],
         }),
-        `Error: Duplicate file specified: '/css_file.js'.`);
+        `Error: Duplicate file specified: '/css_file.css'.`);
     chrome.test.succeed();
   },
 

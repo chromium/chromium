@@ -74,7 +74,8 @@ The general installation flow of an externally managed app is:
 
 1. A call to [`ExternallyManagedAppProvider::SynchronizeInstalledApps`][16]
 1. Finding all apps that need to be uninstalled and uninstalling them, find all apps that need to be installed and:
-1. Queue an `ExternallyManagedAppInstallTask` to install each app sequentially.
+1. Enqueue an `ExternalAppResolutionCommand` for each app to start resolving what the final behavior
+should be.
 1. Each task loads the url for the app.
 1. If the url is successfully loaded, then use [`ExternallyManagedInstallCommand`][14], and continue installation on the normal pipeline (described above, and [flowchart][17] above).
 1. If the url fails to fully load (usually a redirect if the user needs to sign in or corp credentials are not installed), and the external app manager specified a [placeholder app was required][18] then:

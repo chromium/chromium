@@ -149,6 +149,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1455242230282523554">Mostrar los ajustes de idioma</translation>
 <translation id="1459693405370120464">Información meteorológica</translation>
 <translation id="1460620680449458626">El volumen está silenciado.</translation>
+<translation id="1462439140224375968">Documento de Google creado</translation>
 <translation id="14648076227129703">Esto permite que accedan a la cámara <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas aplicaciones y sitios web con el permiso de cámara</translation>
 <translation id="1467432559032391204">Izquierda</translation>
 <translation id="146902737843070955">Tu administrador ha solicitado este cambio</translation>
@@ -593,6 +594,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar en <ph name=
 <translation id="301584155502740476">Mostrar detalles del punto de acceso. Punto de acceso desactivado.</translation>
 <translation id="3017079585324758401">Fondo</translation>
 <translation id="3018135054368884502">Avanzar rápidamente el contenido multimedia</translation>
+<translation id="3026897869154397692">Añadido al calendario</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir archivos</translation>
@@ -1013,6 +1015,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4351244548802238354">Cerrar cuadro de diálogo</translation>
 <translation id="4356872429719185452">Muestra detalles del punto de acceso. El punto de acceso se está activando.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Grabando</translation>
+<translation id="4368227575116094370">Crear hoja de cálculo de Google</translation>
 <translation id="4371348193907997655">Configuración de envío</translation>
 <translation id="4371834685492830207">El PIN solo puede contener caracteres válidos</translation>
 <translation id="4375482231364171368">Buscar en la barra de direcciones</translation>
@@ -1482,6 +1485,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> más</translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Buscar con Google</translation>
 <translation id="5841296711770970362">Ir a la siguiente pista</translation>
 <translation id="5842553299352339114">El punto de acceso de <ph name="DEVICE_NAME" /> está activado. No hay dispositivos conectados.</translation>
 <translation id="584525477304726060">Mantén pulsado para maximizar</translation>
@@ -1895,6 +1899,7 @@ Nueva instalación</translation>
 <translation id="7228968829656641943">Selecciona para buscar en mi pantalla. Pulsa Tabulador y, a continuación, la barra espaciadora para desplazarte por el teclado.</translation>
 <translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | Memoria total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Ambos botones del ratón</translation>
+<translation id="7240636904654154599">Hoja de cálculo de Google creada</translation>
 <translation id="7244725679040769470">Queda un <ph name="PERCENTAGE" /> % de batería. Conecta tu dispositivo a la corriente.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. El Chromebook debe reiniciarse para aplicar una actualización. Este proceso puede tardar hasta 1 minuto.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2410,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8921624153894383499">El Asistente de Google no habla este idioma.</translation>
 <translation id="8926951137623668982">La estantería está siempre oculta</translation>
 <translation id="8929566928381252430">¿Estás intentando usar Bloq Mayús? Usa</translation>
+<translation id="8929623844713377237">Contacto creado</translation>
 <translation id="8934418770423095813">Crear un documento de Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 archivo}other{# archivos}}</translation>
 <translation id="8936501819958976551">desactivado</translation>

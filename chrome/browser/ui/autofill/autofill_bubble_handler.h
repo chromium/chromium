@@ -21,7 +21,6 @@ class SaveOrUpdateAutofillAiDataController;
 namespace autofill {
 class AutofillProfile;
 class AutofillBubbleBase;
-class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
 class SaveAddressBubbleController;
 class UpdateAddressBubbleController;
@@ -51,11 +50,6 @@ class AutofillBubbleHandler {
   virtual AutofillBubbleBase* ShowSaveCreditCardBubble(
       content::WebContents* web_contents,
       SaveCardBubbleController* controller,
-      bool is_user_gesture) = 0;
-
-  virtual AutofillBubbleBase* ShowLocalCardMigrationBubble(
-      content::WebContents* web_contents,
-      LocalCardMigrationBubbleController* controller,
       bool is_user_gesture) = 0;
 
   virtual AutofillBubbleBase* ShowIbanBubble(content::WebContents* web_contents,

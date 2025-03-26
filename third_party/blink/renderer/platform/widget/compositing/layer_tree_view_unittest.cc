@@ -128,7 +128,8 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
  public:
   LayerTreeViewWithFrameSinkTracking(FakeLayerTreeViewDelegate* delegate,
                                      PageScheduler& scheduler)
-      : LayerTreeView(delegate, scheduler.CreateWidgetScheduler()),
+      : LayerTreeView(delegate,
+                      scheduler.CreateWidgetScheduler(/*delegate=*/nullptr)),
         delegate_(delegate) {}
   LayerTreeViewWithFrameSinkTracking(
       const LayerTreeViewWithFrameSinkTracking&) = delete;
@@ -300,7 +301,8 @@ class VisibilityTestLayerTreeView : public LayerTreeView {
  public:
   VisibilityTestLayerTreeView(StubLayerTreeViewDelegate* delegate,
                               PageScheduler& scheduler)
-      : LayerTreeView(delegate, scheduler.CreateWidgetScheduler()) {}
+      : LayerTreeView(delegate,
+                      scheduler.CreateWidgetScheduler(/*delegate=*/nullptr)) {}
 
   void RequestNewLayerTreeFrameSink() override {
     LayerTreeView::RequestNewLayerTreeFrameSink();
@@ -373,8 +375,9 @@ TEST(LayerTreeViewTest, RunPresentationCallbackOnSuccess) {
   std::unique_ptr<PageScheduler> dummy_page_scheduler =
       scheduler::CreateDummyPageScheduler();
   StubLayerTreeViewDelegate layer_tree_view_delegate;
-  LayerTreeView layer_tree_view(&layer_tree_view_delegate,
-                                dummy_page_scheduler->CreateWidgetScheduler());
+  LayerTreeView layer_tree_view(
+      &layer_tree_view_delegate,
+      dummy_page_scheduler->CreateWidgetScheduler(/*delegate=*/nullptr));
 
   layer_tree_view.Initialize(
       cc::LayerTreeSettings(),
@@ -420,7 +423,8 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
   LayerTreeViewDelegateChangeTest()
       : dummy_page_scheduler_(scheduler::CreateDummyPageScheduler()),
         layer_tree_view_(&old_layer_tree_view_delegate_,
-                         dummy_page_scheduler_->CreateWidgetScheduler()) {
+                         dummy_page_scheduler_->CreateWidgetScheduler(
+                             /*delegate=*/nullptr)) {
     cc::LayerTreeSettings settings;
     settings.single_thread_proxy_scheduler = false;
     layer_tree_view_.Initialize(
@@ -437,7 +441,7 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
   void SwapDelegate() {
     layer_tree_view_.ClearPreviousDelegateAndReattachIfNeeded(
         &new_layer_tree_view_delegate_,
-        dummy_page_scheduler_->CreateWidgetScheduler());
+        dummy_page_scheduler_->CreateWidgetScheduler(/*delegate=*/nullptr));
   }
 
  protected:

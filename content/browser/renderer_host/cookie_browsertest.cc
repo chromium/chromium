@@ -416,12 +416,13 @@ class RestrictedCookieManagerInterceptor
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
       bool get_version_shared_memory,
+      bool is_ad_tagged,
       bool apply_devtools_overrides,
       const std::string& cookie,
       SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
         URLToUse(url), site_for_cookies, top_frame_origin,
-        storage_access_api_status, get_version_shared_memory,
+        storage_access_api_status, get_version_shared_memory, is_ad_tagged,
         apply_devtools_overrides, std::move(cookie), std::move(callback));
   }
 

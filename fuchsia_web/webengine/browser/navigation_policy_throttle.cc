@@ -5,6 +5,7 @@
 #include "fuchsia_web/webengine/browser/navigation_policy_throttle.h"
 
 #include "content/public/browser/navigation_handle.h"
+#include "fuchsia_web/webengine/browser/navigation_controller_impl.h"
 #include "fuchsia_web/webengine/browser/navigation_policy_handler.h"
 
 namespace {
@@ -41,8 +42,9 @@ NavigationPolicyThrottle::NavigationPolicyThrottle(
 }
 
 NavigationPolicyThrottle::~NavigationPolicyThrottle() {
-  if (policy_handler_)
+  if (policy_handler_) {
     policy_handler_->RemoveNavigationThrottle(this);
+  }
 }
 
 void NavigationPolicyThrottle::OnNavigationPolicyProviderDisconnected(
@@ -69,6 +71,11 @@ void NavigationPolicyThrottle::OnRequestedNavigationEvaluated(
       // the NavigationHandle that owns this NavigationThrottle.
       break;
     case fuchsia::web::NavigationDecision::kAbort:
+      // Mark the request as aborted so it can be handled by the
+      // `NavigationControllerImpl` properly.
+      navigation_handle()->SetUserData(
+          NavigationControllerImpl::kAbortedRequestKey,
+          std::make_unique<base::SupportsUserData::Data>());
       CancelDeferredNavigation(content::NavigationThrottle::CANCEL);
       // DO NOT ADD CODE after this. The callback above will destroy the
       // NavigationHandle that owns this NavigationThrottle.
@@ -120,8 +127,9 @@ NavigationPolicyThrottle::HandleNavigationPhase(
   policy_handler_->EvaluateRequestedNavigation(
       ToRequestedNavigation(navigation_handle_, phase),
       [weak_this = weak_factory_.GetWeakPtr()](auto decision) {
-        if (weak_this)
+        if (weak_this) {
           weak_this->OnRequestedNavigationEvaluated(std::move(decision));
+        }
       });
 
   is_paused_ = true;

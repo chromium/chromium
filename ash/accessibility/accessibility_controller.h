@@ -101,6 +101,8 @@ enum class A11yNotificationType {
   kDicationOnlyPumpkinDownloaded,
   // Shown when the SODA DLC (but no other DLCs) have downloaded.
   kDictationOnlySodaDownloaded,
+  // Shown when FaceGaze is active.
+  kFaceGazeActive,
   // Shown when the facegaze-assets DLC has successfully downloaded.
   kFaceGazeAssetsDownloaded,
   // Shown when the facegaze-assets DLC failed to download.
@@ -215,9 +217,11 @@ class ASH_EXPORT AccessibilityController
   struct A11yNotificationWrapper {
     A11yNotificationWrapper();
     A11yNotificationWrapper(A11yNotificationType type_in,
+                            const std::string& notification_id_in,
                             std::vector<std::u16string> replacements_in);
     A11yNotificationWrapper(
         A11yNotificationType type_in,
+        const std::string& notification_id_in,
         std::vector<std::u16string> replacements_in,
         std::optional<base::RepeatingCallback<void(std::optional<int>)>>
             callback_in);
@@ -225,6 +229,7 @@ class ASH_EXPORT AccessibilityController
     A11yNotificationWrapper(const A11yNotificationWrapper&);
 
     A11yNotificationType type = A11yNotificationType::kNone;
+    std::string notification_id;
     std::vector<std::u16string> replacements;
     std::optional<base::RepeatingCallback<void(std::optional<int>)>> callback;
   };
@@ -368,6 +373,7 @@ class ASH_EXPORT AccessibilityController
 
   bool IsTouchpadDisabled();
 
+  void OnFaceGazeActiveNotificationClicked(std::optional<int> button_index);
   void OnTouchpadNotificationClicked(std::optional<int> button_index);
 
   // Switch access may be disabled in prefs but still running when the disable

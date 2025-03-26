@@ -34,7 +34,8 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
-using base::Time;
+using ::base::Time;
+using ::country_codes::CountryId;
 
 namespace features {
 BASE_FEATURE(kKeywordTableHashVerification,
@@ -327,15 +328,15 @@ bool KeywordTable::ClearBuiltinKeywordMilestone() {
   return meta_table()->DeleteKey(kBuiltinKeywordMilestone);
 }
 
-bool KeywordTable::SetBuiltinKeywordCountry(int country_id) {
-  return meta_table()->SetValue(kBuiltinKeywordCountry, country_id);
+bool KeywordTable::SetBuiltinKeywordCountry(CountryId country_id) {
+  return meta_table()->SetValue(kBuiltinKeywordCountry, country_id.Serialize());
 }
 
-int KeywordTable::GetBuiltinKeywordCountry() {
+CountryId KeywordTable::GetBuiltinKeywordCountry() {
   int country_id = 0;
   return meta_table()->GetValue(kBuiltinKeywordCountry, &country_id)
-             ? country_id
-             : 0;
+             ? CountryId::Deserialize(country_id)
+             : CountryId();
 }
 
 bool KeywordTable::SetStarterPackKeywordVersion(int version) {

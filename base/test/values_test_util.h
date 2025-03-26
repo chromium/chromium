@@ -42,8 +42,6 @@ void ExpectDictValue(const Value& expected_value,
                      const Value::Dict& dict,
                      std::string_view path);
 
-void ExpectStringValue(const std::string& expected_str, const Value& actual);
-
 namespace test {
 
 namespace internal {
@@ -56,8 +54,8 @@ inline constexpr int kDefaultJsonParseOptions =
 
 class DictionaryHasValueMatcher {
  public:
-  explicit DictionaryHasValueMatcher(std::string key,
-                                     const base::Value& expected_value);
+  DictionaryHasValueMatcher(std::string key, const base::Value& expected_value);
+  DictionaryHasValueMatcher(std::string key, Value&& expected_value);
 
   DictionaryHasValueMatcher(const DictionaryHasValueMatcher&);
   DictionaryHasValueMatcher& operator=(const DictionaryHasValueMatcher&);
@@ -83,6 +81,7 @@ class DictionaryHasValueMatcher {
 class DictionaryHasValuesMatcher {
  public:
   explicit DictionaryHasValuesMatcher(const base::Value::Dict& template_value);
+  explicit DictionaryHasValuesMatcher(Value::Dict&& template_value);
 
   DictionaryHasValuesMatcher(const DictionaryHasValuesMatcher&);
   DictionaryHasValuesMatcher& operator=(const DictionaryHasValuesMatcher&);
@@ -104,6 +103,37 @@ class DictionaryHasValuesMatcher {
   base::Value::Dict template_value_;
 };
 
+class IsSupersetOfValueMatcher {
+ public:
+  explicit IsSupersetOfValueMatcher(const base::Value& template_value);
+  explicit IsSupersetOfValueMatcher(const base::Value::Dict& template_value);
+  explicit IsSupersetOfValueMatcher(const base::Value::List& template_value);
+  explicit IsSupersetOfValueMatcher(base::Value&& template_value);
+  explicit IsSupersetOfValueMatcher(base::Value::Dict&& template_value);
+  explicit IsSupersetOfValueMatcher(base::Value::List&& template_value);
+
+  IsSupersetOfValueMatcher(const IsSupersetOfValueMatcher&);
+  IsSupersetOfValueMatcher& operator=(const IsSupersetOfValueMatcher&);
+  IsSupersetOfValueMatcher(IsSupersetOfValueMatcher&&) = default;
+  IsSupersetOfValueMatcher& operator=(IsSupersetOfValueMatcher&&) = default;
+
+  ~IsSupersetOfValueMatcher();
+
+  bool MatchAndExplain(const base::Value& value,
+                       testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value::Dict& value,
+                       testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value::List& value,
+                       testing::MatchResultListener* listener) const;
+
+  void DescribeTo(std::ostream* os) const;
+
+  void DescribeNegationTo(std::ostream* os) const;
+
+ private:
+  base::Value template_value_;
+};
+
 // A custom GMock matcher.  For details, see
 // https://github.com/google/googletest/blob/644319b9f06f6ca9bf69fe791be399061044bc3d/googlemock/docs/CookBook.md#writing-new-polymorphic-matchers
 class IsJsonMatcher {
@@ -112,6 +142,9 @@ class IsJsonMatcher {
   explicit IsJsonMatcher(const base::Value& value);
   explicit IsJsonMatcher(const base::Value::Dict& value);
   explicit IsJsonMatcher(const base::Value::List& value);
+  explicit IsJsonMatcher(Value&& value);
+  explicit IsJsonMatcher(Value::Dict&& value);
+  explicit IsJsonMatcher(Value::List&& value);
 
   IsJsonMatcher(const IsJsonMatcher& other);
   IsJsonMatcher& operator=(const IsJsonMatcher& other);
@@ -137,18 +170,30 @@ class IsJsonMatcher {
 
 // A custom GMock matcher which matches if a `base::Value` or
 // `base::Value::Dict` has a key `key` that is equal to `value`.
+template <typename T>
 inline testing::PolymorphicMatcher<internal::DictionaryHasValueMatcher>
-DictionaryHasValue(std::string key, const base::Value& expected_value) {
-  return testing::MakePolymorphicMatcher(
-      internal::DictionaryHasValueMatcher(key, expected_value));
+DictionaryHasValue(std::string key, T&& expected_value) {
+  return testing::MakePolymorphicMatcher(internal::DictionaryHasValueMatcher(
+      key, std::forward<T>(expected_value)));
 }
 
 // A custom GMock matcher which matches if a `base::Value` or
 // `base::Value::Dict` contains all key/value pairs from `template_value`.
+template <typename T>
 inline testing::PolymorphicMatcher<internal::DictionaryHasValuesMatcher>
-DictionaryHasValues(const base::Value::Dict& template_value) {
+DictionaryHasValues(T&& template_value) {
   return testing::MakePolymorphicMatcher(
-      internal::DictionaryHasValuesMatcher(template_value));
+      internal::DictionaryHasValuesMatcher(std::forward<T>(template_value)));
+}
+
+// Matches when a `base::Value` or `base::Value::Dict` or `base::Value::List` is
+// a superset of `template_value`, ignoring unexpected Dict keys and list items.
+// Uses `testing::DoubleEq` when comparing doubles.
+template <typename T>
+inline testing::PolymorphicMatcher<internal::IsSupersetOfValueMatcher>
+IsSupersetOfValue(T&& template_value) {
+  return testing::MakePolymorphicMatcher(
+      internal::IsSupersetOfValueMatcher(std::forward<T>(template_value)));
 }
 
 // Creates a GMock matcher for testing equivalence of JSON values represented as
@@ -160,9 +205,9 @@ DictionaryHasValues(const base::Value::Dict& template_value) {
 // are both base::Value objects, there is no advantage in that case to using
 // this matcher in place of GMock's normal equality semantics.
 template <typename T>
-inline testing::PolymorphicMatcher<internal::IsJsonMatcher> IsJson(
-    const T& value) {
-  return testing::MakePolymorphicMatcher(internal::IsJsonMatcher(value));
+inline testing::PolymorphicMatcher<internal::IsJsonMatcher> IsJson(T&& value) {
+  return testing::MakePolymorphicMatcher(
+      internal::IsJsonMatcher(std::forward<T>(value)));
 }
 
 // Parses `json` as JSON, using the provided `options`, and returns the

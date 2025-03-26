@@ -9,20 +9,20 @@
 
 namespace regional_capabilities {
 
+using ::country_codes::CountryId;
+
 // Sanity check the list.
 TEST(RegionalCapabilitiesUtilsTest, IsEeaCountry) {
-  using country_codes::CountryCharsToCountryID;
+  EXPECT_TRUE(IsEeaCountry(CountryId("DE")));
+  EXPECT_TRUE(IsEeaCountry(CountryId("FR")));
+  EXPECT_TRUE(IsEeaCountry(CountryId("VA")));
+  EXPECT_TRUE(IsEeaCountry(CountryId("AX")));
+  EXPECT_TRUE(IsEeaCountry(CountryId("YT")));
+  EXPECT_TRUE(IsEeaCountry(CountryId("NC")));
 
-  EXPECT_TRUE(IsEeaCountry(CountryCharsToCountryID('D', 'E')));
-  EXPECT_TRUE(IsEeaCountry(CountryCharsToCountryID('F', 'R')));
-  EXPECT_TRUE(IsEeaCountry(CountryCharsToCountryID('V', 'A')));
-  EXPECT_TRUE(IsEeaCountry(CountryCharsToCountryID('A', 'X')));
-  EXPECT_TRUE(IsEeaCountry(CountryCharsToCountryID('Y', 'T')));
-  EXPECT_TRUE(IsEeaCountry(CountryCharsToCountryID('N', 'C')));
-
-  EXPECT_FALSE(IsEeaCountry(CountryCharsToCountryID('U', 'S')));
-  EXPECT_FALSE(IsEeaCountry(CountryCharsToCountryID('J', 'P')));
-  EXPECT_FALSE(IsEeaCountry(country_codes::kCountryIDUnknown));
+  EXPECT_FALSE(IsEeaCountry(CountryId("US")));
+  EXPECT_FALSE(IsEeaCountry(CountryId("JP")));
+  EXPECT_FALSE(IsEeaCountry(CountryId()));
 }
 
 }  // namespace regional_capabilities

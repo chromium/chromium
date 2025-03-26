@@ -172,18 +172,6 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
     AddHistoryEmbeddingsScopePromoIphMatch();
   }
 
-  if (input.IsZeroSuggest() ||
-      (input.type() == metrics::OmniboxInputType::EMPTY)) {
-    if (OmniboxFieldTrial::IsStarterPackPageEnabled()) {
-      if (TemplateURL* page_turl =
-              template_url_service_->FindStarterPackTemplateURL(
-                  TemplateURLStarterPackData::kPage)) {
-        AddStarterPackMatch(*page_turl, input);
-      }
-    }
-    return;
-  }
-
   AddFeaturedKeywordMatches(input);
 }
 

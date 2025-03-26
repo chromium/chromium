@@ -398,12 +398,6 @@ suite('HistoryClustersFocusTest', () => {
     clustersElement.scrollTarget = scrollTarget;
     clustersElement.setScrollDebounceForTest(1);
     scrollTarget.appendChild(clustersElement);
-    // Set item size estimate to measured size of items - the amount they are
-    // allowed to overflow (i.e.  'overflow-clip-margin' * 2). This means that
-    // the estimated scroll height should not change significantly on scroll,
-    // which is important when trying to scroll to specific px values to trigger
-    // or not trigger cluster loading.
-    clustersElement.$.clusters.itemSize = 141 - 16;
 
     const query = (await handler.whenCalled('startQueryClusters'))[0];
     assertEquals(query, '');
@@ -496,27 +490,38 @@ suite('HistoryClustersFocusTest', () => {
       canLoadMore: true,
       isContinuation: false,
     });
+    await microtasksFinished();
     await new Promise(resolve => requestIdleCallback(resolve));
 
     const scrollTarget = document.body.querySelector('div');
     assertTrue(!!scrollTarget);
-    // This check ensures the line below actually scrolls.
-    assertGT(scrollTarget.scrollHeight, scrollTarget.offsetHeight + 600);
-    // Scroll to just under the threshold to make sure more clusters don't load.
-    scrollTarget.scrollTop =
-        scrollTarget.scrollHeight - scrollTarget.offsetHeight - 600;
-    // Wait longer than scroll debounce and for the clusters to be rendered.
-    await Promise.all([
-      new Promise(resolve => setTimeout(resolve, 10)),
-      eventToPromise('viewport-filled', clustersElement),
-    ]);
-    await microtasksFinished();
+
+    // Scrolls the scrollTarget until there is lowerPx amount of space left to
+    // scroll. Scrolling itself can cause cr-lazy-list to render items and cause
+    // changes in scroll height, so this recursively scrolls until the lowerPx
+    // is stable.
+    const scrollUntilLower = async (lowerPx: number) => {
+      assertGT(
+          scrollTarget?.scrollHeight, scrollTarget.offsetHeight + lowerPx,
+          'Scroll target is not tall enough.');
+      const prevScrollHeight = scrollTarget.scrollHeight;
+      scrollTarget.scrollTop =
+          scrollTarget.scrollHeight - scrollTarget.offsetHeight - lowerPx;
+      await eventToPromise('items-rendered', clustersElement);
+      await microtasksFinished();
+      if (scrollTarget.scrollHeight !== prevScrollHeight) {
+        await scrollUntilLower(lowerPx);
+      }
+    };
+
+    await scrollUntilLower(600);
+    // Wait longer than scroll debounce in history-clusters.
+    await new Promise(resolve => setTimeout(resolve, 10));
     assertEquals(0, handler.getCallCount('loadMoreClusters'));
 
     // Scroll to within 500px of the scroll height. More clusters should be
     // requested.
-    scrollTarget.scrollTop =
-        scrollTarget.scrollHeight - scrollTarget.offsetHeight - 400;
+    await scrollUntilLower(490);
     await handler.whenCalled('loadMoreClusters');
 
     // Simulate more clusters loaded.
@@ -538,8 +543,7 @@ suite('HistoryClustersFocusTest', () => {
         scrollTarget.offsetHeight + scrollTarget.scrollTop + 500);
     clustersElement.isActive = false;
     await microtasksFinished();
-    scrollTarget.scrollTop =
-        scrollTarget.scrollHeight - scrollTarget.offsetHeight - 400;
+    await scrollUntilLower(490);
     // Wait longer than scroll debounce.
     await new Promise(resolve => setTimeout(resolve, 10));
     assertEquals(0, handler.getCallCount('loadMoreClusters'));

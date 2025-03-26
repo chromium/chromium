@@ -95,7 +95,7 @@ ClientStub* FakeConnectionToClient::client_stub() {
 
 void FakeConnectionToClient::Disconnect(ErrorCode disconnect_error,
                                         std::string_view error_details,
-                                        const base::Location& error_location) {
+                                        const SourceLocation& error_location) {
   CHECK(is_connected_);
 
   is_connected_ = false;

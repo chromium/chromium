@@ -95,7 +95,6 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="328933489847748230">{count,plural, =1{Nu visas 1 Chromium-fönster}other{Nu visas {count} Chromium-fönster}}</translation>
 <translation id="3344973607274501920">Chromium kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="3366305173356742781">Chromium-data i ditt konto</translation>
-<translation id="33788334537425157">Aktivera Lås inkognitoflikar när du stänger Chromium</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Detta kan innefatta historik och autofyll.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Detta kan innefatta historik och autofyll.}}</translation>
 <translation id="3410395242749598859">Viss Chromium-data har inte sparats i <ph name="EMAIL" /> ännu.
 Testa att vänta några minuter innan du byter konto. Om du byter konto nu raderas denna data.</translation>

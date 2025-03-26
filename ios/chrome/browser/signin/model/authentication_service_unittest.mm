@@ -780,8 +780,6 @@ TEST_P(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   // Sign in.
   authentication_service()->SignIn(identity(0),
                                    signin_metrics::AccessPoint::kUnknown);
-  authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
   // Set the account restriction.

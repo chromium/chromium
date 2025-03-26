@@ -5,7 +5,7 @@
 GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 
 /** Test fixture for the point scan manager. */
-SwitchAccessPointScanManagerTest = class extends SwitchAccessE2ETest {
+SwitchAccessMV2PointScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -14,7 +14,8 @@ SwitchAccessPointScanManagerTest = class extends SwitchAccessE2ETest {
 };
 
 AX_TEST_F(
-    'SwitchAccessPointScanManagerTest', 'PointScanLeftClick', async function() {
+    'SwitchAccessMV2PointScanManagerTest', 'PointScanLeftClick',
+    async function() {
       const website =
           '<input type=checkbox style="width: 800px; height: 800px;">';
       const rootWebArea = await this.runWithLoadedTree(website);
@@ -41,7 +42,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'SwitchAccessPointScanManagerTest', 'PointScanRightClick',
+    'SwitchAccessMV2PointScanManagerTest', 'PointScanRightClick',
     async function() {
       const website = '<p>Kittens r cute</p>';
       const rootWebArea = await this.runWithLoadedTree(website);
@@ -71,7 +72,7 @@ AX_TEST_F(
 // Verifies that chrome.accessibilityPrivate.setFocusRings() is not called when
 // point scanning is running.
 AX_TEST_F(
-    'SwitchAccessPointScanManagerTest', 'PointScanNoFocusRings',
+    'SwitchAccessMV2PointScanManagerTest', 'PointScanNoFocusRings',
     async function() {
       const sleep = () => {
         return new Promise(resolve => setTimeout(resolve, 2 * 1000));

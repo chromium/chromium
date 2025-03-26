@@ -95,7 +95,6 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="328933489847748230">{count,plural, =1{Tani po shfaqet 1 dritare e Chromium}other{Tani po shfaqen {count} dritare të Chromium}}</translation>
 <translation id="3344973607274501920">Chromium nuk mund t'i kontrollonte fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="3366305173356742781">Të dhënat e Chromium në llogarinë tënde</translation>
-<translation id="33788334537425157">Aktivizo "Kyç skedat 'e fshehta' kur mbyll Chromium"</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minutë. Kjo mund të përfshijë historikun dhe plotësimin automatik.}other{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minuta. Kjo mund të përfshijë historikun dhe plotësimin automatik.}}</translation>
 <translation id="3410395242749598859">Disa nga të dhënat e tua të Chromium nuk janë ruajtur ende në <ph name="EMAIL" />.
 Provo të presësh për disa minuta para se të ndërrosh llogaritë. Nëse i ndërron llogaritë tani, këto të dhëna do të fshihen.</translation>

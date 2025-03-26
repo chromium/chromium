@@ -56,7 +56,7 @@ class WebApps final : public apps::AppPublisher,
   WebApps& operator=(const WebApps&) = delete;
   ~WebApps() override;
 
-  virtual void Shutdown();
+  void Shutdown();
 
  protected:
   const WebApp* GetWebApp(const webapps::AppId& app_id) const;

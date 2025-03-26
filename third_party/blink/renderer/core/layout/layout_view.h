@@ -110,7 +110,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
-  void InvalidateSvgRootsWithRelativeLengthDescendents();
   LayoutUnit ComputeMinimumWidth();
 
   // Based on LocalFrameView::LayoutSize, but:

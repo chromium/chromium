@@ -215,8 +215,6 @@ struct ExpectedReportWaiter {
 
   GURL expected_url;
   base::Value::Dict expected_body;
-  std::string source_debug_key;
-  std::string trigger_debug_key;
   std::unique_ptr<net::test_server::ControllableHttpResponse> response;
 
   bool HasRequest() { return !!response->http_request(); }
@@ -249,17 +247,9 @@ struct ExpectedReportWaiter {
 
     EXPECT_TRUE(body.FindDouble("randomized_trigger_rate"));
 
-    if (source_debug_key.empty()) {
-      EXPECT_FALSE(body.FindString("source_debug_key"));
-    } else {
-      base::ExpectDictStringValue(source_debug_key, body, "source_debug_key");
-    }
+    EXPECT_FALSE(body.FindString("source_debug_key"));
 
-    if (trigger_debug_key.empty()) {
-      EXPECT_FALSE(body.FindString("trigger_debug_key"));
-    } else {
-      base::ExpectDictStringValue(trigger_debug_key, body, "trigger_debug_key");
-    }
+    EXPECT_FALSE(body.FindString("trigger_debug_key"));
 
     // Clear the port as it is assigned by the EmbeddedTestServer at runtime.
     replace_host.SetPortStr("");

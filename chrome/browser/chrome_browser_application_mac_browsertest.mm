@@ -274,15 +274,16 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserAppMacBrowserTest,
 
   // The user activates VoiceOver.
   SetVoiceOverEnabled(YES);
-
   // Requests for AccessibilityRole when VoiceOver is active should not
   // downgrade the AX level.
   RequestAppAccessibilityRole();
   EXPECT_TRUE(BrowserIsInCompleteAccessibilityMode());
 
+  // After VoiceOver is deactivated, the AXMode is returned to its
+  // previous value.
   SetVoiceOverEnabled(NO);
   WaitThreeSeconds();
-  EXPECT_TRUE(BrowserAccessibilityDisabled());
+  EXPECT_TRUE(BrowserIsInNativeAPIAccessibilityMode());
 
   EnableEnhancedUserInterface(YES);
   WaitThreeSeconds();

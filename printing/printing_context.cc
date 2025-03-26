@@ -167,11 +167,6 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
 
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
       job_settings.FindInt(kSettingPrinterType).value());
-  if (printer_type == mojom::PrinterType::kPrivetDeprecated ||
-      printer_type == mojom::PrinterType::kCloudDeprecated) {
-    NOTREACHED();
-  }
-
   bool open_in_external_preview =
       job_settings.contains(kSettingOpenPDFInPreview);
 

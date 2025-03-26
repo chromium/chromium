@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,7 +78,13 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new TabGroupListBottomSheetCoordinator(
-                        context, mProfile, ignored -> {}, mFilter, mBottomSheetController, true);
+                        context,
+                        mProfile,
+                        ignored -> {},
+                        mFilter,
+                        mBottomSheetController,
+                        true,
+                        false);
     }
 
     @Test
@@ -90,7 +97,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
 
     @Test
     public void testDelegateRequestShowContent() {
-        TabGroupListBottomSheetCoordinatorDelegate delegate = mCoordinator.createDelegate();
+        TabGroupListBottomSheetCoordinatorDelegate delegate = mCoordinator.createDelegate(false);
         delegate.requestShowContent();
         verify(mBottomSheetController)
                 .requestShowContent(any(TabGroupListBottomSheetView.class), eq(true));
@@ -98,12 +105,25 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
 
     @Test
     public void testHide() {
-        TabGroupListBottomSheetCoordinatorDelegate delegate = mCoordinator.createDelegate();
+        TabGroupListBottomSheetCoordinatorDelegate delegate = mCoordinator.createDelegate(false);
         delegate.hide(StateChangeReason.INTERACTION_COMPLETE);
         verify(mBottomSheetController)
                 .hideContent(
                         any(TabGroupListBottomSheetView.class),
                         eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testDestroyOnHide() {
+        mCoordinator = spy(mCoordinator);
+        TabGroupListBottomSheetCoordinatorDelegate delegate = mCoordinator.createDelegate(true);
+        delegate.hide(StateChangeReason.INTERACTION_COMPLETE);
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(TabGroupListBottomSheetView.class),
+                        eq(true),
+                        eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mCoordinator).destroy();
     }
 }

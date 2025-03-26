@@ -15,8 +15,7 @@ namespace autofill {
 bool ShouldShowCardMetadata(const CreditCard& card) {
   // The product name and the art image must both be valid.
   return !card.product_description().empty() &&
-         card.card_art_url().is_valid() &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
+         card.card_art_url().is_valid();
 }
 
 bool DidDisplayBenefitForCard(const CreditCard& card,

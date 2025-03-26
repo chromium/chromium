@@ -1937,8 +1937,8 @@ const char* ToString(ax::mojom::StringListAttribute string_list_attribute) {
       return "none";
     case ax::mojom::StringListAttribute::kAriaNotificationAnnouncements:
       return "ariaNotificationAnnouncements";
-    case ax::mojom::StringListAttribute::kAriaNotificationIds:
-      return "ariaNotificationIds";
+    case ax::mojom::StringListAttribute::kAriaNotificationTypes:
+      return "ariaNotificationTypes";
     case ax::mojom::StringListAttribute::kCustomActionDescriptions:
       return "customActionDescriptions";
   }

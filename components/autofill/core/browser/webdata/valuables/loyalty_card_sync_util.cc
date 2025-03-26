@@ -16,7 +16,7 @@ AutofillLoyaltyCardSpecifics CreateSpecificsFromLoyaltyCard(
     const LoyaltyCard& card) {
   AutofillLoyaltyCardSpecifics specifics =
       sync_pb::AutofillLoyaltyCardSpecifics();
-  specifics.set_id(card.id());
+  specifics.set_id(card.id().value());
   specifics.set_merchant_name(card.merchant_name());
   specifics.set_program_name(card.program_name());
   specifics.set_program_logo(card.program_logo().possibly_invalid_spec());
@@ -34,7 +34,7 @@ std::optional<LoyaltyCard> CreateAutofillLoyaltyCardFromSpecifics(
   if (!AreAutofillLoyaltyCardSpecificsValid(specifics)) {
     return std::nullopt;
   }
-  return LoyaltyCard(specifics.id(), specifics.merchant_name(),
+  return LoyaltyCard(ValuableId(specifics.id()), specifics.merchant_name(),
                      specifics.program_name(), GURL(specifics.program_logo()),
                      specifics.loyalty_card_suffix());
 }

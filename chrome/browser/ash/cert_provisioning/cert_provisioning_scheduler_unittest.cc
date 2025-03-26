@@ -572,6 +572,63 @@ TEST_F(CertProvisioningSchedulerTest, DeserializeWorkers) {
   ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 }
 
+// Test that the scheduler removes deserialized workers if the cert for them
+// already exists.
+TEST_F(CertProvisioningSchedulerTest, DeserializeWorkerForExistingCert) {
+  const CertScope kCertScope = CertScope::kUser;
+
+  CertProfile cert_profile(kCertProfileId, kCertProfileName,
+                           kCertProfileVersion, KeyType::kRsa,
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
+
+  // Add 1 certificate profile to the policy (the values are the same as
+  // in |cert_profile|).
+  base::Value cert_profiles = ParseJson(
+      R"([{"name": "Certificate Profile 1",
+           "cert_profile_id":"cert_profile_id_1",
+           "policy_version": "cert_profile_version_1",
+           "key_algorithm":"rsa"}])");
+  pref_service_.Set(GetPrefNameForCertProfiles(kCertScope), cert_profiles);
+  // Add 1 serialized worker for the profile.
+  base::Value saved_worker = ParseJson(
+      R"({
+          "cert_profile": {
+            "policy_version": "cert_profile_version_1",
+            "profile_id": "cert_profile_1"
+          },
+          "cert_scope": 0,
+          "invalidation_topic": "",
+          "public_key": "fake_public_key_1",
+          "state": 1
+        })");
+  base::Value::Dict all_saved_workers;
+  all_saved_workers.Set("cert_profile_1", saved_worker.Clone());
+
+  pref_service_.SetDict(GetPrefNameForSerialization(kCertScope),
+                        std::move(all_saved_workers));
+
+  MockCertProvisioningWorker* worker =
+      mock_factory_.ExpectDeserializeReturnMock(kCertScope, saved_worker);
+  worker->SetExpectations(/*do_step_times=*/Exactly(0),
+                          /*is_waiting=*/true, kCertProvId, cert_profile,
+                          /*failure_message=*/"");
+  EXPECT_CALL(*worker, Stop(CertProvisioningWorkerState::kSucceeded));
+
+  // Add an existing cert for the profile id.
+  certificate_helper_->AddCert(kCertScope, kCertProfileId);
+
+  CertProvisioningSchedulerImpl scheduler(
+      kCertScope, GetProfile(), &pref_service_,
+      std::make_unique<MockCertProvisioningClient>(), &platform_keys_service_,
+      network_state_test_helper_.network_state_handler(),
+      MakeFakeInvalidationFactory());
+
+  // Give the scheduler some time to process the worker. The expectations will
+  // be verified at the end of the test.
+  FastForwardBy(base::Seconds(1));
+}
+
 TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
   const CertScope kCertScope = CertScope::kDevice;
 

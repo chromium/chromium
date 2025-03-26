@@ -5,14 +5,14 @@
 GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 
 /** Test fixture for the node wrapper type. */
-SwitchAccessBasicNodeTest = class extends SwitchAccessE2ETest {
+SwitchAccessMV2BasicNodeTest = class extends SwitchAccessE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     globalThis.MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
   }
 };
 
-AX_TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', async function() {
+AX_TEST_F('SwitchAccessMV2BasicNodeTest', 'AsRootNode', async function() {
   const website = `<div aria-label="outer">
                      <div aria-label="inner">
                        <input type="range">
@@ -45,7 +45,7 @@ AX_TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', async function() {
       'Final child should be the back button');
 });
 
-TEST_F('SwitchAccessBasicNodeTest', 'Equals', function() {
+TEST_F('SwitchAccessMV2BasicNodeTest', 'Equals', function() {
   this.runWithLoadedDesktop(desktop => {
     const desktopNode = DesktopNode.build(desktop);
 
@@ -115,7 +115,7 @@ TEST_F('SwitchAccessBasicNodeTest', 'Equals', function() {
   });
 });
 
-AX_TEST_F('SwitchAccessBasicNodeTest', 'Actions', async function() {
+AX_TEST_F('SwitchAccessMV2BasicNodeTest', 'Actions', async function() {
   const website = `<input type="text">
                    <div role="button" aria-label="group">
                      <button>A</button>

@@ -43,8 +43,7 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateLanguageModel(
-      std::optional<std::vector<blink::mojom::AILanguageCodePtr>>
-          expected_input_languages,
+      blink::mojom::AILanguageModelCreateOptionsPtr options,
       CanCreateLanguageModelCallback callback) override;
   void CreateLanguageModel(
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>

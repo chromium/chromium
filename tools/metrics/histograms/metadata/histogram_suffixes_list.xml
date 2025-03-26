@@ -29,14 +29,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="KeyboardAccessory.AccessorySheetTriggered"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ActivityType" separator=".">
-  <suffix name="CustomTabs" label="CustomTabs"/>
-  <suffix name="TabbedMode" label="TabbedMode"/>
-  <suffix name="WebApk" label="WebApk"/>
-  <suffix name="WebApp" label="WebApp"/>
-  <affected-histogram name="MobileStartup.IntentToCreationTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AdapterDecision" separator="." ordering="prefix,2">
   <suffix name="BrightnessChange" label=""/>
   <suffix name="NoBrightnessChange" label=""/>
@@ -411,17 +403,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.CertVerifier.NameNormalizationPrivateRoots"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeActivityName" separator=".">
-  <suffix name="ChromeTabbedActivity"
-      label="Activity launched in TABBED mode on Android"/>
-  <suffix name="CustomTabActivity"
-      label="Activity launched with a CUSTOM TAB on Android"/>
-  <suffix name="DocumentActivity"
-      label="Activity launched in DOCUMENT mode (Tabs and apps together) on
-             Android"/>
-  <affected-histogram name="MobileStartup.ToolbarInflationTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ChromeOS_USBDeviceClass" separator=".">
   <suffix name="App"
       label="A device with only the application specific interface class."/>
@@ -674,17 +655,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Download.NetworkConnectionType.StartNew"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="DriveCommonTimings" separator=".">
-  <suffix name="FailTime" label=""/>
-  <suffix name="SuccessTime" label=""/>
-  <affected-histogram name="DriveCommon.Lifecycle.MountTime"/>
-  <affected-histogram name="DriveCommon.LocalSearch.OfflineSearchTime"/>
-  <affected-histogram name="DriveCommon.LocalSearch.SharedSearchTime"/>
-  <affected-histogram name="DriveCommon.LocalSearch.TextSearchTime"/>
-  <affected-histogram name="DriveCommon.RemoteSearch.SharedSearchTime"/>
-  <affected-histogram name="DriveCommon.RemoteSearch.TextSearchTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="EncryptionLevel" separator=".">
   <suffix name="0RTT" label="Packets sent at 0-RTT encryption only."/>
   <suffix name="ForwardSecure"
@@ -778,13 +748,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="InputMethod.Commit.Index.US"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="IMEMajorNames" separator=".">
-  <suffix name="FR" label="The French keyboard input method"/>
-  <suffix name="Pinyin" label="The Chinse Pinyin input method"/>
-  <suffix name="US" label="The US keyboard input method"/>
-  <affected-histogram name="InputMethod.Commit.Index"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="IOMode" separator=".">
   <suffix name="Asynchronous" label=""/>
   <suffix name="Synchronous" label=""/>
@@ -805,12 +768,6 @@ chromium-metrics-reviews@google.com.
       name="PasswordManager.LeakDetection.DialogDismissalReason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MacAudioInputVariants" separator="_">
-  <suffix name="HighLatency"
-      label="Measures the standard Mac audio driver (i.e. not low-latency)."/>
-  <affected-histogram name="Media.Audio.InputStartupSuccessMac"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ManifestProperties" separator=".">
   <suffix name="description" label=""/>
   <suffix name="display" label=""/>
@@ -824,225 +781,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="short_name" label=""/>
   <suffix name="start_url" label=""/>
   <affected-histogram name="Manifest.HasProperty"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MediaAudioInputControllerTime" separator=".">
-  <suffix name="CloseTime" label="Measures the time taken for DoClose()."/>
-  <suffix name="CreateTime" label="Measures the time taken for DoCreate()."/>
-  <suffix name="RecordTime" label="Measures the time taken for DoRecord()."/>
-  <affected-histogram name="Media.AudioInputController"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MediaControlsElements" separator=".">
-  <suffix name="CastButton" label="Cast button"/>
-  <suffix name="CastOverflowButton" label="Cast overflow button"/>
-  <suffix name="CastOverlayButton" label="Cast overlay button"/>
-  <suffix name="ClosedCaptionButton" label="Closed caption button"/>
-  <suffix name="ClosedCaptionOverflowButton"
-      label="Closed caption overflow button"/>
-  <suffix name="DisplayCutoutFullscreenButton"
-      label="Display cutout fullscreen button"/>
-  <suffix name="DownloadButton" label="Download button"/>
-  <suffix name="DownloadOverflowButton" label="Download overflow button"/>
-  <suffix name="FullscreenButton" label="Fullscreen button"/>
-  <suffix name="FullscreenOverflowButton" label="Fullscreen overflow button"/>
-  <suffix name="MuteButton" label="Mute button"/>
-  <suffix name="MuteOverflowButton" label="Mute overflow button"/>
-  <suffix name="OverflowButton" label="Overflow button"/>
-  <suffix name="PictureInPictureButton" label="Picture-in-Picture button"/>
-  <suffix name="PictureInPictureOverflowButton"
-      label="Picture-in-Picture overflow button"/>
-  <suffix name="PlaybackSpeedButton" label="Playback speed button"/>
-  <suffix name="PlaybackSpeedOverflowButton"
-      label="Playback speed overlay button"/>
-  <suffix name="PlayOverlayButton" label="Play overlay button"/>
-  <suffix name="PlayPauseButton" label="Play/pause button"/>
-  <suffix name="PlayPauseOverflowButton" label="Play/pause overflow button"/>
-  <suffix name="TimelineSlider" label="Timeline slider"/>
-  <suffix name="VolumeSlider" label="Volume slider"/>
-  <affected-histogram name="Media.Controls.CTR"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MediaRebufferingCategories" separator=".">
-  <suffix name="Audio.EME" label="Metric for EME media with an audio track."/>
-  <suffix name="Audio.MSE" label="Metric for MSE media with an audio track."/>
-  <suffix name="Audio.SRC" label="Metric for SRC media with an audio track."/>
-  <suffix name="AudioVideo.EME"
-      label="Metric for EME media with both an audio and video track."/>
-  <suffix name="AudioVideo.MSE"
-      label="Metric for MSE media with both an audio and video track."/>
-  <suffix name="AudioVideo.SRC"
-      label="Metric for SRC media with both an audio and video track."/>
-  <affected-histogram name="Media.MeanTimeBetweenRebuffers"/>
-  <affected-histogram name="Media.RebuffersCount"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MediaRouteProvider" separator=".">
-  <suffix name="AndroidCaf"
-      label="Cast Application Framework (CAF) base MRPs on Clank"/>
-  <suffix name="Cast" label="Native Cast MRP"/>
-  <suffix name="DIAL" label="Native DIAL MRP"/>
-  <suffix name="WiredDisplay" label="Wired Display MRP"/>
-  <affected-histogram name="MediaRouter.Provider.CreateRoute.Result"/>
-  <affected-histogram name="MediaRouter.Provider.JoinRoute.Result"/>
-  <affected-histogram name="MediaRouter.Provider.TerminateRoute.Result"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MediaRouterSuccess" separator=".">
-  <suffix name="Failure" label="Failure"/>
-  <suffix name="Success" label="Success"/>
-  <affected-histogram name="MediaRouter.Cast.App.Availability"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MediaWatchTimeCategories" separator=".">
-  <suffix name="Audio.AC"
-      label="Watch time for all media with only an audio track on AC power."/>
-  <suffix name="Audio.All"
-      label="Watch time for all media with only an audio track."/>
-  <suffix name="Audio.Background.AC"
-      label="Background watch time for all media with only an audio track on
-             AC power."/>
-  <suffix name="Audio.Background.All"
-      label="Background watch time for all media with only an audio track."/>
-  <suffix name="Audio.Background.Battery"
-      label="Background watch time for all media with only an audio track on
-             battery power."/>
-  <suffix name="Audio.Background.EmbeddedExperience"
-      label="Background watch time for downloaded media on Android with only
-             an audio track."/>
-  <suffix name="Audio.Background.EME"
-      label="Background watch time for EME media with only an audio track."/>
-  <suffix name="Audio.Background.MSE"
-      label="Background watch time for MSE media with only an audio track."/>
-  <suffix name="Audio.Background.SRC"
-      label="Background watch time for SRC media with only an audio track."/>
-  <suffix name="Audio.Battery"
-      label="Watch time for all media with only an audio track on battery
-             power."/>
-  <suffix name="Audio.Discarded.EME"
-      label="Watch time less than 7 seconds for EME media with only an audio
-             track."/>
-  <suffix name="Audio.Discarded.MSE"
-      label="Watch time less than 7 seconds for MSE media with only an audio
-             track."/>
-  <suffix name="Audio.Discarded.SRC"
-      label="Watch time less than 7 seconds for SRC media with only an audio
-             track."/>
-  <suffix name="Audio.EmbeddedExperience"
-      label="Watch time for downloaded media on Android with only an audio
-             track."/>
-  <suffix name="Audio.EME"
-      label="Watch time for EME media with only an audio track."/>
-  <suffix name="Audio.MSE"
-      label="Watch time for MSE media with only an audio track."/>
-  <suffix name="Audio.NativeControlsOff"
-      label="Watch time for all media with only an audio track not using
-             native controls."/>
-  <suffix name="Audio.NativeControlsOn"
-      label="Watch time for all media with only an audio track using native
-             controls."/>
-  <suffix name="Audio.SRC"
-      label="Watch time for SRC media with only an audio track."/>
-  <suffix name="AudioVideo.AC"
-      label="Watch time for all media with both an audio and video track on
-             AC power."/>
-  <suffix name="AudioVideo.All"
-      label="Watch time for all media with both an audio and video track."/>
-  <suffix name="AudioVideo.Background.AC"
-      label="Background watch time for all media with both an audio and video
-             track on AC power."/>
-  <suffix name="AudioVideo.Background.All"
-      label="Background watch time for all media with both an audio and video
-             track."/>
-  <suffix name="AudioVideo.Background.Battery"
-      label="Background watch time for all media with both an audio and video
-             track on battery power."/>
-  <suffix name="AudioVideo.Background.EmbeddedExperience"
-      label="Background watch time for downloaded media on Android with both
-             an audio and video track."/>
-  <suffix name="AudioVideo.Background.EME"
-      label="Background watch time for EME media with both an audio and video
-             track."/>
-  <suffix name="AudioVideo.Background.MSE"
-      label="Background watch time for MSE media with both an audio and video
-             track."/>
-  <suffix name="AudioVideo.Background.SRC"
-      label="Background watch time for SRC media with both an audio and video
-             track."/>
-  <suffix name="AudioVideo.Battery"
-      label="Watch time for all media with both an audio and video track on
-             battery power."/>
-  <suffix name="AudioVideo.Discarded.EME"
-      label="Watch time less than 7 seconds for EME media with only with both
-             an audio and video track."/>
-  <suffix name="AudioVideo.Discarded.MSE"
-      label="Watch time less than 7 seconds for MSE media with only with both
-             an audio and video track."/>
-  <suffix name="AudioVideo.Discarded.SRC"
-      label="Watch time less than 7 seconds for SRC media with with both an
-             audio and video track."/>
-  <suffix name="AudioVideo.DisplayFullscreen"
-      label="Watch time for all media with both an audio and video track
-             displayed in fullscreen."/>
-  <suffix name="AudioVideo.DisplayInline"
-      label="Watch time for all media with both an audio and video track
-             displayed inline."/>
-  <suffix name="AudioVideo.DisplayPictureInPicture"
-      label="Watch time for all media with both an audio and video track
-             displayed in picture-in-picture."/>
-  <suffix name="AudioVideo.EmbeddedExperience"
-      label="Watch time for downloaded media on Android with both an audio
-             and video track."/>
-  <suffix name="AudioVideo.EME"
-      label="Watch time for EME media with both an audio and video track."/>
-  <suffix name="AudioVideo.MediaFoundation.All"
-      label="MediaFoundations renderer watch time for all media with both an
-             audio and video track."/>
-  <suffix name="AudioVideo.MediaFoundation.Eme"
-      label="MediaFoundations renderer watch time for EME media with both an
-             audio and video track."/>
-  <suffix name="AudioVideo.MSE"
-      label="Watch time for MSE media with both an audio and video track."/>
-  <suffix name="AudioVideo.Muted.All"
-      label="Muted watch time for all media with both an audio and video
-             track."/>
-  <suffix name="AudioVideo.Muted.EME"
-      label="Muted watch time for EME media with both an audio and video
-             track."/>
-  <suffix name="AudioVideo.Muted.MSE"
-      label="Muted watch time for MSE media with both an audio and video
-             track."/>
-  <suffix name="AudioVideo.Muted.SRC"
-      label="Muted watch time for SRC media with both an audio and video
-             track."/>
-  <suffix name="AudioVideo.NativeControlsOff"
-      label="Watch time for all media with both an audio and video track not
-             using native controls."/>
-  <suffix name="AudioVideo.NativeControlsOn"
-      label="Watch time for all media with both an audio and video track
-             using native controls."/>
-  <suffix name="AudioVideo.SRC"
-      label="Watch time for SRC media with both an audio and video track."/>
-  <affected-histogram name="Media.WatchTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Memory_Pressure_TransitionType" separator=".">
-  <suffix name="CriticalToModerate" label="Critical to Moderate transition."/>
-  <suffix name="CriticalToNone" label="Critical to None transition."/>
-  <suffix name="ModerateToCritical" label="Moderate to Critical transition."/>
-  <suffix name="ModerateToNone" label="Moderate to None transition."/>
-  <affected-histogram name="Memory.PressureWindowDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes
-    name="MemoryRendererHighestPrivateMemoryFootprintAfterFirstNavigationStart"
-    separator=".">
-  <suffix name="0to2min" label=""/>
-  <suffix name="2to4min" label=""/>
-  <suffix name="4to8min" label=""/>
-  <suffix name="8to16min" label=""/>
-  <affected-histogram
-      name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="MixedContentDownloadDownloadSecurity" separator=".">
@@ -1067,45 +805,6 @@ chromium-metrics-reviews@google.com.
   <suffix base="true" name="InitiatorSecure" label=""/>
   <suffix base="true" name="InitiatorUnknown" label=""/>
   <affected-histogram name="Download.InsecureBlocking.Extensions"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Mobile_DefaultBrowser_SystemDefaultBrowser_Type"
-    separator=".">
-  <suffix name="ChromeNotSystem"
-      label="Chrome is not a system installed browser."/>
-  <suffix name="ChromeSystem" label="Chrome is a system installed browser."/>
-  <affected-histogram name="Mobile.DefaultBrowser.SystemBrowserCount"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Mobile_DefaultBrowser_Type" separator=".">
-  <suffix name="ChromeDefault" label="Chrome is the default browser."/>
-  <suffix name="NoDefault" label="There is no default browser."/>
-  <suffix name="OtherDefault" label="Another browser is the default browser."/>
-  <affected-histogram name="Mobile.DefaultBrowser.BrowserCount"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Mobile_Messages_Confirm_Type" separator=".">
-  <suffix name="ConfirmInfobarTypeBlockPopups"
-      label="Recorded for Block Popups Confirm Messages."/>
-  <suffix name="ConfirmInfobarTypeRestore"
-      label="Recorded for Restore Tabs Confirm Messages."/>
-  <affected-histogram name="Mobile.Messages.Confirm.Accept.Time"/>
-  <affected-histogram name="Mobile.Messages.Confirm.Event"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="Mobile_Messages_Password_Type" separator=".">
-  <suffix name="InfobarTypePasswordSave" label=""/>
-  <suffix name="InfobarTypePasswordUpdate" label=""/>
-  <affected-histogram name="Mobile.Messages.Passwords.Modal.Dismiss"/>
-  <affected-histogram name="Mobile.Messages.Passwords.Modal.Event"/>
-  <affected-histogram name="Mobile.Messages.Passwords.Modal.Present"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="MobileFreFragmentInflationVsAppRestriction"
-    separator=".">
-  <suffix name="FasterThanAppRestriction" label=""/>
-  <suffix name="SlowerThanAppRestriction" label=""/>
-  <affected-histogram name="MobileFre.FragmentInflationSpeed"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NavigationFrameType" separator=".">
@@ -1912,6 +1611,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="KeyboardAndPointerLock"
       label="Keyboard and pointer lock permission"/>
   <suffix name="KeyboardLock" label="Keyboard lock permission"/>
+  <suffix name="LocalNetworkAccess" label="Local network access permission"/>
   <suffix name="MidiSysEx" label="Midi SysEx permission"/>
   <suffix name="MultipleDownload" label="Multiple downloads permission"/>
   <suffix name="Nfc" label="NFC permission"/>
@@ -1952,6 +1652,8 @@ chromium-metrics-reviews@google.com.
       label="Keyboard and pointer lock permission"/>
   <suffix name="KeyboardLock" label="Keyboard lock permission"/>
   <suffix name="LocalFonts" label="Local fonts permission actions"/>
+  <suffix name="LocalNetworkAccess"
+      label="Local network access permission actions"/>
   <suffix name="MidiSysEx" label="Midi SysEx permsision actions"/>
   <suffix name="Nfc" label="Nfc permsision actions"/>
   <suffix name="Notifications" label="Notification permission actions"/>
@@ -2956,22 +2658,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.URLRequest.ReferrerPolicyForRequest"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="RemotingSessionDuration" separator=".">
-  <suffix name="Duration0To100MilliSec"
-      label="remoting sessions have duration in (0, 0.1] seconds"/>
-  <suffix name="Duration1To3Sec"
-      label="remoting sessions have duration in (1, 3] seconds"/>
-  <suffix name="Duration3To5Sec"
-      label="remoting sessions have duration in (3, 5] seconds"/>
-  <suffix name="Duration5To10Sec"
-      label="remoting sessions have duration in (5, 10] seconds"/>
-  <suffix name="Duration10To15Sec"
-      label="remoting sessions have duration in (10, 15] seconds"/>
-  <suffix name="Duration100MilliSecTo1Sec"
-      label="remoting sessions have duration in (0.1, 1] seconds"/>
-  <affected-histogram name="Media.Remoting.SessionStopTrigger"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="RendererThreadType" separator=".">
   <suffix name="Compositor"
       label="Measurement taken on the compositor thread."/>
@@ -3193,18 +2879,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.LoadTime.ProcessCreateToApplicationStart"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SystemNotificationAgeType" separator=".">
-  <suffix name="ClickToCall" label="Click To Call"/>
-  <suffix name="PriceDropChromeManaged"
-      label="Chrome Managed Price Drop Alerts"/>
-  <suffix name="PriceDropUserManaged" label="User Managed Price Drop Alerts"/>
-  <suffix name="SendTabToSelf" label="Send Tab To Self"/>
-  <suffix name="SharedClipboard" label="Shared Clipboard"/>
-  <affected-histogram name="Mobile.SystemNotification.Action.Click.Age"/>
-  <affected-histogram name="Mobile.SystemNotification.Content.Click.Age"/>
-  <affected-histogram name="Mobile.SystemNotification.Dismiss.Age"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="TabletOrClamshellMode" separator=".">
   <suffix name="ClamshellMode" label="Clamshell Mode Enabled"/>
   <suffix name="TabletMode" label="Tablet Mode Enabled"/>
@@ -3277,29 +2951,6 @@ chromium-metrics-reviews@google.com.
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Success"/>
   <affected-histogram name="Net.TrustTokens.OperationOutcome"/>
   <affected-histogram name="Net.TrustTokens.RequestHelperFactoryOutcome"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="UnPackConsumer" separator="_">
-  <suffix name="ChromeArchivePatch"
-      label="compressed patch: chrome_patch.packed.7z holding
-             chrome_patch.diff (small)."/>
-  <suffix name="CompressedChromeArchive"
-      label="compressed archive: chrome.packed.7z holding chrome.7z (big)."/>
-  <suffix name="SetupExePatch"
-      label="compressed patch: setup_patch.packed.7z holding setup_patch.diff
-             (small)."/>
-  <suffix name="UncompressedChromeArchive"
-      label="uncompressed archive: chrome.7z holding install dir (big)."/>
-  <affected-histogram name="Setup.Install.LzmaUnPackStatus"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="VideoFrameRateRange" separator=".">
-  <suffix name="24fps" label="24 fps"/>
-  <suffix name="25fps" label="25 fps"/>
-  <suffix name="30fps" label="30 fps"/>
-  <suffix name="50fps" label="50 fps"/>
-  <suffix name="60fps" label="60 fps"/>
-  <affected-histogram name="Media.Video.Roughness"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="WebAppSystemAppInternalName" separator=".">

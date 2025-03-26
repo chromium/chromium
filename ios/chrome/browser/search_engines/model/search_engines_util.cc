@@ -17,7 +17,7 @@ void UpdateSearchEngineCountryCodeIfNeeded(PrefService* preferences) {
   }
   int old_country_id =
       preferences->GetInteger(country_codes::kCountryIDAtInstall);
-  int country_id = country_codes::GetCurrentCountryID();
+  int country_id = country_codes::GetCurrentCountryID().Serialize();
   if (country_id == old_country_id) {
     // User's locale did not change, just return.
     return;

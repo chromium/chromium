@@ -43,9 +43,9 @@ class ExtensionCache;
 class ExtensionPrefs;
 class ExtensionRegistrar;
 class ExtensionRegistry;
-class ExtensionServiceInterface;
 class ExtensionSet;
 struct ExtensionUpdateCheckParams;
+class ExtensionUpdaterDelegate;
 class ExtensionUpdaterTest;
 
 // A class for doing auto-updates of installed Extensions. Used like this:
@@ -113,10 +113,10 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
     ~ScopedSkipScheduledCheckForTest();
   };
 
-  // Holds a pointer to the passed |service|, using it for querying installed
-  // extensions and installing updated ones. The |frequency_seconds| parameter
-  // controls how often update checks are scheduled.
-  ExtensionUpdater(ExtensionServiceInterface* service,
+  // Holds a pointer to the passed `delegate`, using it for installing updated
+  // extensions. The `frequency_seconds` parameter controls how often update
+  // checks are scheduled.
+  ExtensionUpdater(ExtensionUpdaterDelegate* delegate,
                    ExtensionPrefs* extension_prefs,
                    PrefService* prefs,
                    Profile* profile,
@@ -315,8 +315,8 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   // Whether Start() has been called but not Stop().
   bool alive_ = false;
 
-  // Pointer back to the service that owns this ExtensionUpdater.
-  raw_ptr<ExtensionServiceInterface> service_ = nullptr;
+  // Delegate used for extension installs.
+  raw_ptr<ExtensionUpdaterDelegate> delegate_ = nullptr;
 
   // A closure passed into the ExtensionUpdater to teach it how to construct
   // new ExtensionDownloader instances.

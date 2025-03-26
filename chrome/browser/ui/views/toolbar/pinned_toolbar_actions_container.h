@@ -95,10 +95,19 @@ class PinnedToolbarActionsContainer
   bool IsActionPinned(const actions::ActionId& id);
   bool IsActionPoppedOut(const actions::ActionId& id);
   bool IsActionPinnedOrPoppedOut(const actions::ActionId& id);
+
+  // Returns the button associated with `id`. This does not return permanent
+  // buttons which are currently invisible, an accessor for these can be
+  // obtained on creation via `CreatePermanentButtonFor`.
   PinnedActionToolbarButton* GetButtonFor(const actions::ActionId& id);
 
   // Removes the popped out button if it should no longer remain in the toolbar.
   void MaybeRemovePoppedOutButtonFor(const actions::ActionId& id);
+
+  // Ensures that if `id` is unpinned, the associated button object will not
+  // get destroyed. This is useful for features which need to maintain a
+  // persistent reference to the button.
+  PinnedActionToolbarButton* CreatePermanentButtonFor(actions::ActionId id);
 
   const std::vector<actions::ActionId>& PinnedActionIds() const override;
 
@@ -139,6 +148,9 @@ class PinnedToolbarActionsContainer
       ui::mojom::DragOperation& output_drag_op,
       std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
+  std::unique_ptr<PinnedActionToolbarButton> CreateOrGetButtonForAction(
+      actions::ActionId id);
+
   // Performs clean up after dragging.
   void DragDropCleanup(const actions::ActionId& dragged_action_id);
 
@@ -152,6 +164,7 @@ class PinnedToolbarActionsContainer
       pinned_buttons_;
   std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
       popped_out_buttons_;
+  std::vector<std::unique_ptr<PinnedActionToolbarButton>> permanent_buttons_;
   raw_ptr<views::View> toolbar_divider_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 

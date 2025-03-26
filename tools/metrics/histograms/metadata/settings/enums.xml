@@ -110,6 +110,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Site not disruptive"/>
   <int value="7" label="Revoke notification"/>
   <int value="8" label="Notification not revoked because of default block"/>
+  <int value="9" label="Previously marked as false positive"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h:RevocationResult) -->

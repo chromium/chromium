@@ -7159,7 +7159,7 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeFilter) {
   auto* properties = PaintPropertiesForElement("target");
   ASSERT_TRUE(properties);
   ASSERT_TRUE(properties->Filter());
-  EXPECT_TRUE(properties->Filter()->Filter().IsEmpty());
+  EXPECT_FALSE(properties->Filter()->Filter());
   EXPECT_TRUE(properties->Filter()->RequiresCompositingForWillChangeFilter());
 
   // will-change:filter should not cause transform or effect node.
@@ -7176,7 +7176,7 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeFilterWithTransformAndOpacity) {
   auto* properties = PaintPropertiesForElement("target");
   ASSERT_TRUE(properties);
   ASSERT_TRUE(properties->Filter());
-  EXPECT_TRUE(properties->Filter()->Filter().IsEmpty());
+  EXPECT_FALSE(properties->Filter()->Filter());
   EXPECT_TRUE(properties->Filter()->RequiresCompositingForWillChangeFilter());
 
   // will-change:filter should not add compositing reason for the transform or

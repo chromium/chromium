@@ -287,7 +287,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   bool GetSortOnPaint() const;
   void SetSortOnPaint(bool sort_on_paint);
 
-  // TODO(crbug.com/388086397): Experimental, do not use in prod until bug is
+  // TODO(crbug.com/406294165): Experimental, do not use in prod until bug is
   // fixed. If enabled, hovering over a row causes the row's background color to
   // change.
   void SetMouseHoveringEnabled(bool enabled);

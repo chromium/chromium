@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -74,6 +75,14 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
     return Do([this]() {
       glic_controller_->Show(mojom::InvocationSource::kOsButtonMenu);
     });
+  }
+
+  auto ForceInvalidateAccount() {
+    return Do([this]() { InvalidateAccount(window_controller().profile()); });
+  }
+
+  auto ForceReauthAccount() {
+    return Do([this]() { ReauthAccount(window_controller().profile()); });
   }
 
  private:
@@ -420,6 +429,40 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                    mojom::WebUiState::kUnresponsive),
       // Client should show error after showing the unresponsive UI for 5s.
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kError));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       AttachedWidgetOpensAfterReauth) {
+  RunTestSequence(
+      ForceInvalidateAccount(), PressButton(kGlicButtonElementId),
+      ObserveState(test::internal::kLogInAndOpenState,
+                   std::ref(window_controller())),
+      WaitForState(test::internal::kLogInAndOpenState,
+                   GlicWindowController::LogInAndOpen::State::kLogIn),
+      CheckControllerHasWidget(false), ForceReauthAccount(),
+      WaitForState(test::internal::kLogInAndOpenState,
+                   GlicWindowController::LogInAndOpen::State::kPostLogIn),
+      ObserveState(test::internal::kGlicWindowControllerState,
+                   std::ref(window_controller())),
+      WaitForState(test::internal::kGlicWindowControllerState,
+                   GlicWindowController::State::kOpen));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       DetachedWidgetOpensAfterReauth) {
+  RunTestSequence(
+      ForceInvalidateAccount(), SimulateGlicHotkey(),
+      ObserveState(test::internal::kLogInAndOpenState,
+                   std::ref(window_controller())),
+      WaitForState(test::internal::kLogInAndOpenState,
+                   GlicWindowController::LogInAndOpen::State::kLogIn),
+      CheckControllerHasWidget(false), ForceReauthAccount(),
+      WaitForState(test::internal::kLogInAndOpenState,
+                   GlicWindowController::LogInAndOpen::State::kPostLogIn),
+      ObserveState(test::internal::kGlicWindowControllerState,
+                   std::ref(window_controller())),
+      WaitForState(test::internal::kGlicWindowControllerState,
+                   GlicWindowController::State::kOpen));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest

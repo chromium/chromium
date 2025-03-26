@@ -144,6 +144,7 @@ ADDITIONAL_PATHS = (
     os.path.join('chrome', 'test', 'chromeos', 'autotest'),
     os.path.join('chrome', 'test', 'data'),
     os.path.join('native_client'),
+    os.path.join('third_party', 'android_deps', 'autorolled'),
     os.path.join('third_party', 'boringssl', 'src', 'third_party', 'fiat'),
     os.path.join('third_party', 'devtools-frontend', 'src', 'front_end',
                  'third_party'),

@@ -200,9 +200,20 @@ bool ExecuteCodeFunction::LoadFile(const std::string& file,
     *error = kNoCodeOrFileToExecuteError;
     return false;
   }
+
+  bool is_css_injection = ShouldInsertCSS() || ShouldRemoveCSS();
+
+  if (!script_parsing::ValidateMimeTypeFromFileExtension(
+          resource.relative_path(),
+          is_css_injection ? script_parsing::ContentScriptType::kCss
+                           : script_parsing::ContentScriptType::kJs,
+          error)) {
+    return false;
+  }
+
   script_url_ = extension()->GetResourceURL(file);
 
-  bool might_require_localization = ShouldInsertCSS() || ShouldRemoveCSS();
+  bool might_require_localization = is_css_injection;
 
   std::string relative_path = resource.relative_path().AsUTF8Unsafe();
   LoadAndLocalizeResources(

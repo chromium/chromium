@@ -42,11 +42,12 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     private final SnackbarManager mSnackbarManager;
     private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
     private final BottomSheetController mBottomSheetController;
-    private final ObservableSupplier<Boolean> mPriceTrackingCurrentTabStateSupplier;
+    private final ObservableSupplier<PriceTrackingState> mPriceTrackingCurrentTabStateSupplier;
     private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final BottomSheetObserver mBottomSheetObserver;
-    private final Callback<Boolean> mPriceTrackingStateChangedCallback = this::updateButtonIcon;
+    private final Callback<PriceTrackingState> mPriceTrackingStateChangedCallback =
+            this::updateButtonIcon;
     private final ButtonSpec mFilledButtonSpec;
     private final ButtonSpec mEmptyButtonSpec;
     private boolean mIsCurrentTabPriceTracked;
@@ -61,7 +62,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
             Supplier<TabBookmarker> tabBookmarkerSupplier,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
-            ObservableSupplier<Boolean> priceTrackingCurrentTabStateSupplier) {
+            ObservableSupplier<PriceTrackingState> priceTrackingCurrentTabStateSupplier) {
         super(
                 tabSupplier,
                 modalDialogManager,
@@ -112,10 +113,10 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
         mPriceTrackingCurrentTabStateSupplier.addObserver(mPriceTrackingStateChangedCallback);
     }
 
-    private void updateButtonIcon(boolean isCurrentTabPriceTracked) {
-        mIsCurrentTabPriceTracked = isCurrentTabPriceTracked;
+    private void updateButtonIcon(PriceTrackingState priceTrackingState) {
+        mIsCurrentTabPriceTracked = priceTrackingState == PriceTrackingState.TRACKED;
         ButtonSpec buttonSpecForCurrentTab =
-                isCurrentTabPriceTracked ? mFilledButtonSpec : mEmptyButtonSpec;
+                mIsCurrentTabPriceTracked ? mFilledButtonSpec : mEmptyButtonSpec;
         if (!Objects.equals(mButtonData.getButtonSpec(), buttonSpecForCurrentTab)) {
             mButtonData.setButtonSpec(buttonSpecForCurrentTab);
             notifyObservers(mButtonData.canShow());

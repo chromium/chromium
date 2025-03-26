@@ -9,7 +9,7 @@
 #include <string>
 #include <string_view>
 
-#include "base/location.h"
+#include "remoting/base/source_location.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport.h"
@@ -98,7 +98,7 @@ class Session {
   // |error_location| denotes where the error occurs in the code.
   virtual void Close(ErrorCode error,
                      std::string_view error_details,
-                     const base::Location& error_location) = 0;
+                     const SourceLocation& error_location) = 0;
 
   // Adds a SessionPlugin to handle attachments. To ensure plugin attachments
   // are processed correctly for session-initiate message, this function must be

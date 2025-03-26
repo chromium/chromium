@@ -85,7 +85,9 @@ class TestingProfileWithPermissionManager : public TestingProfile {
 class PersistentNotificationHandlerTest : public ::testing::Test {
  public:
   PersistentNotificationHandlerTest()
-      : display_service_tester_(&profile_), origin_(kExampleOrigin) {}
+      : profile_(std::make_unique<TestingProfileWithPermissionManager>()),
+        display_service_tester_(profile_.get()),
+        origin_(kExampleOrigin) {}
   PersistentNotificationHandlerTest(const PersistentNotificationHandlerTest&) =
       delete;
   PersistentNotificationHandlerTest& operator=(
@@ -100,23 +102,28 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
              safe_browsing::kShowWarningsForSuspiciousNotifications});
 
     HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, HistoryServiceFactory::GetDefaultFactory());
+        profile_.get(), HistoryServiceFactory::GetDefaultFactory());
 
     mock_logger_ = static_cast<MockNotificationMetricsLogger*>(
         NotificationMetricsLoggerFactory::GetInstance()
             ->SetTestingFactoryAndUse(
-                &profile_,
+                profile_.get(),
                 base::BindRepeating(
                     &MockNotificationMetricsLogger::FactoryForTests)));
 
-    PlatformNotificationServiceFactory::GetForProfile(&profile_)
+    PlatformNotificationServiceFactory::GetForProfile(profile_.get())
         ->ClearClosedNotificationsForTesting();
+  }
+
+  void TearDown() override {
+    mock_logger_ = nullptr;
+    profile_.reset();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileWithPermissionManager profile_;
+  std::unique_ptr<TestingProfileWithPermissionManager> profile_;
   NotificationDisplayServiceTester display_service_tester_;
 
   // The origin for which these tests are being run.
@@ -128,12 +135,12 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
 
 TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {
   EXPECT_CALL(*mock_logger_, LogPersistentNotificationClickWithoutPermission());
-  profile_.SetNotificationPermissionStatus(PermissionStatus::DENIED);
+  profile_->SetNotificationPermissionStatus(PermissionStatus::DENIED);
 
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
 
-  handler->OnClick(&profile_, origin_, kExampleNotificationId,
+  handler->OnClick(profile_.get(), origin_, kExampleNotificationId,
                    std::nullopt /* action_index */, std::nullopt /* reply */,
                    base::DoNothing());
 }
@@ -147,7 +154,7 @@ TEST_F(PersistentNotificationHandlerTest,
 
     EXPECT_CALL(*mock_logger_, LogPersistentNotificationShown());
 
-    PlatformNotificationServiceFactory::GetForProfile(&profile_)
+    PlatformNotificationServiceFactory::GetForProfile(profile_.get())
         ->DisplayPersistentNotification(
             kExampleNotificationId, origin_ /* service_worker_scope */, origin_,
             blink::PlatformNotificationData(), blink::NotificationResources());
@@ -158,7 +165,7 @@ TEST_F(PersistentNotificationHandlerTest,
   ASSERT_TRUE(display_service_tester_.GetNotification(kExampleNotificationId));
 
   // Revoke permission for any origin to display notifications.
-  profile_.SetNotificationPermissionStatus(PermissionStatus::DENIED);
+  profile_->SetNotificationPermissionStatus(PermissionStatus::DENIED);
 
   // Now simulate a click on the notification. It should be automatically closed
   // by the PersistentNotificationHandler.
@@ -180,7 +187,7 @@ TEST_F(PersistentNotificationHandlerTest, OnClose_ByUser) {
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
 
-  handler->OnClose(&profile_, origin_, kExampleNotificationId,
+  handler->OnClose(profile_.get(), origin_, kExampleNotificationId,
                    /* by_user= */ true, base::DoNothing());
 }
 
@@ -190,13 +197,13 @@ TEST_F(PersistentNotificationHandlerTest, OnClose_Programmatically) {
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
 
-  handler->OnClose(&profile_, origin_, kExampleNotificationId,
+  handler->OnClose(profile_.get(), origin_, kExampleNotificationId,
                    /* by_user= */ false, base::DoNothing());
 }
 
 TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   std::unique_ptr<NotificationPermissionContext> permission_context =
-      std::make_unique<NotificationPermissionContext>(&profile_);
+      std::make_unique<NotificationPermissionContext>(profile_.get());
 
   ASSERT_EQ(permission_context
                 ->GetPermissionStatus(nullptr /* render_frame_host */, origin_,
@@ -206,7 +213,7 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
 
   // Set `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to true for
   // `origin_`.
-  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_.get());
   hcsm->SetWebsiteSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(origin_),
       ContentSettingsPattern::Wildcard(),
@@ -216,7 +223,7 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
 
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
-  handler->DisableNotifications(&profile_, origin_);
+  handler->DisableNotifications(profile_.get(), origin_);
 
   // Disabling the permission should set
   // `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to false.
@@ -256,23 +263,28 @@ class PersistentNotificationHandlerWithNotificationContentDetection
                safe_browsing::kShowWarningsForSuspiciousNotifications});
     }
     if (IsSafeBrowsingEnabled()) {
-      profile_.GetTestingPrefService()->SetManagedPref(
+      profile_->GetTestingPrefService()->SetManagedPref(
           prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
     } else {
-      profile_.GetTestingPrefService()->SetManagedPref(
+      profile_->GetTestingPrefService()->SetManagedPref(
           prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(false));
     }
     mock_notification_content_detection_service_ = static_cast<
         safe_browsing::MockNotificationContentDetectionService*>(
         safe_browsing::NotificationContentDetectionServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
-                &profile_,
+                profile_.get(),
                 base::BindRepeating(
                     &safe_browsing::MockNotificationContentDetectionService::
                         FactoryForTests,
                     &model_observer_tracker_,
                     base::ThreadPool::CreateSequencedTaskRunner(
                         {base::MayBlock()}))));
+  }
+
+  void TearDown() override {
+    mock_notification_content_detection_service_ = nullptr;
+    PersistentNotificationHandlerTest::TearDown();
   }
 
   bool IsSafeBrowsingEnabled() { return std::get<0>(GetParam()); }
@@ -292,16 +304,8 @@ INSTANTIATE_TEST_SUITE_P(
     PersistentNotificationHandlerWithNotificationContentDetection,
     testing::Combine(testing::Bool(), testing::Bool()));
 
-// TODO(crbug.com/378566914): Test fails on Linux MSAN
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_PerformNotificationContentDetectionWhenEnabled \
-  DISABLED_PerformNotificationContentDetectionWhenEnabled
-#else
-#define MAYBE_PerformNotificationContentDetectionWhenEnabled \
-  PerformNotificationContentDetectionWhenEnabled
-#endif
 TEST_P(PersistentNotificationHandlerWithNotificationContentDetection,
-       MAYBE_PerformNotificationContentDetectionWhenEnabled) {
+       PerformNotificationContentDetectionWhenEnabled) {
   base::RunLoop run_loop;
   display_service_tester_.SetNotificationAddedClosure(run_loop.QuitClosure());
 
@@ -313,7 +317,7 @@ TEST_P(PersistentNotificationHandlerWithNotificationContentDetection,
               MaybeCheckNotificationContentDetectionModel(_, _, _, _))
       .Times(expected_number_of_calls);
 
-  PlatformNotificationServiceFactory::GetForProfile(&profile_)
+  PlatformNotificationServiceFactory::GetForProfile(profile_.get())
       ->DisplayPersistentNotification(
           kExampleNotificationId, origin_ /* service_worker_scope */, origin_,
           blink::PlatformNotificationData(), blink::NotificationResources());

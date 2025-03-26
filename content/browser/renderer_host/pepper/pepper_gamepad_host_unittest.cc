@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -54,7 +55,7 @@ class PepperGamepadHostTest : public testing::Test,
 
 TEST_F(PepperGamepadHostTest, WaitForReply) {
   device::Gamepads default_data;
-  memset(&default_data, 0, sizeof(device::Gamepads));
+  UNSAFE_TODO(memset(&default_data, 0, sizeof(device::Gamepads)));
   default_data.items[0].connected = true;
   default_data.items[0].buttons_length = 1;
   ConstructService(default_data);

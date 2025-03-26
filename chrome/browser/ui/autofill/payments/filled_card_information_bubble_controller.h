@@ -115,6 +115,9 @@ class FilledCardInformationBubbleController {
 
   // Returns the image to display in the description view of the bubble.
   virtual gfx::Image GetCardImageForDescriptionView() const = 0;
+
+  // Returns whether the educational body includes a learn more link.
+  virtual bool EducationalBodyHasLearnMoreLink() const = 0;
 };
 
 }  // namespace autofill

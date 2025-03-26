@@ -22,13 +22,6 @@
 
 namespace {
 
-// List of ConsentLevel in order of consideration when getting the gaia
-// id of the signed-in identity.
-constexpr signin::ConsentLevel kConsentLevels[] = {
-    signin::ConsentLevel::kSync,
-    signin::ConsentLevel::kSignin,
-};
-
 // Stores PushNotificationClientId and the associated histogram name for
 // use by the IOSPushNotificationsMetricsProvider.
 struct PushNotificationReportInfo {
@@ -90,12 +83,10 @@ GaiaId GetSignedInGaiaId(ProfileIOS* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
-  for (signin::ConsentLevel consent_level : kConsentLevels) {
-    if (!identity_manager->HasPrimaryAccount(consent_level)) {
-      continue;
-    }
-
-    return identity_manager->GetPrimaryAccountInfo(consent_level).gaia;
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager
+        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+        .gaia;
   }
 
   return GaiaId();

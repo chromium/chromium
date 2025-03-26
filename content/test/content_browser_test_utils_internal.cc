@@ -1197,10 +1197,22 @@ void LoadingStartObserver::DidStartLoading() {
 LoadingStopObserver::LoadingStopObserver(WebContents* web_contents,
                                          Callback callback)
     : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
 LoadingStopObserver::~LoadingStopObserver() = default;
 
 void LoadingStopObserver::DidStopLoading() {
   callback_.Run();
+}
+
+LoadFinishObserver::LoadFinishObserver(WebContents* web_contents,
+                                       Callback callback)
+    : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+LoadFinishObserver::~LoadFinishObserver() = default;
+
+void LoadFinishObserver::DidFinishLoad(RenderFrameHost* render_frame_host,
+                                       const GURL& validated_url) {
+  callback_.Run(render_frame_host, validated_url);
 }
 
 }  // namespace content

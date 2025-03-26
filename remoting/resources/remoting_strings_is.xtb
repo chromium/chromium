@@ -40,6 +40,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="2758123043070977469">Vandamál kom upp við að auðkenna, skráðu þig inn aftur.</translation>
 <translation id="2803375539583399270">Sláðu inn PIN-númer</translation>
 <translation id="2919669478609886916">Þú ert að deila þessari vél með öðrum notanda. Viltu halda áfram að deila?</translation>
+<translation id="2929683002824598593">Deila tæki</translation>
 <translation id="2939145106548231838">Auðkenning fyrir hýsli</translation>
 <translation id="3027681561976217984">Snertistilling</translation>
 <translation id="3106379468611574572">Fjartengda tölvan svarar ekki tengingarbeiðnum. Gakktu úr skugga um að hún sé nettengd og reyndu aftur.</translation>
@@ -117,10 +118,12 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="6178645564515549384">Hýsill innri samskipta fyrir fjaraðstoð</translation>
 <translation id="618120821413932081">Uppfæra upplausn fjartengda skjáborðsins svo að það passi í gluggann</translation>
 <translation id="6223301979382383752">Opna stillingar skjáupptöku</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> bað um að sjá skjáinn þinn og stjórna lyklaborðinu og músinni. Viltu deila tækinu þínu?</translation>
 <translation id="6284412385303060032">Slökkt hefur verið á hýsli sem keyrir á skjá skipanalínuraka til að styðja felustillingu með því að skipta yfir í hýsil sem keyrir í sérstakri lotu notanda.</translation>
 <translation id="6542902059648396432">Tilkynna vandamál…</translation>
 <translation id="6583902294974160967">Aðstoð</translation>
 <translation id="6612717000975622067">Senda Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Ef ekkert er gert mun tækið þitt sjálfkrafa hefja deilingu eftir # sekúndu.}one{Ef ekkert er gert mun tækið þitt sjálfkrafa hefja deilingu eftir # sekúndu.}other{Ef ekkert er gert mun tækið þitt sjálfkrafa hefja deilingu eftir # sekúndur.}}</translation>
 <translation id="6654753848497929428">Deila</translation>
 <translation id="677755392401385740">Hýsill ræstur fyrir notanda: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Hjálparaforrit til að opna vefslóð á biðlara <ph name="PRODUCT_NAME" /></translation>

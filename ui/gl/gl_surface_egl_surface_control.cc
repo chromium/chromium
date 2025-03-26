@@ -565,7 +565,8 @@ void GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks() {
   }
 }
 
-void GLSurfaceEGLSurfaceControl::SetFrameRate(float frame_rate) {
+void GLSurfaceEGLSurfaceControl::SetFrameRate(
+    gfx::SurfaceControlFrameRate frame_rate) {
   if (frame_rate_ == frame_rate)
     return;
 

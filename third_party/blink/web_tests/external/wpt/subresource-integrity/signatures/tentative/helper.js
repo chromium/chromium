@@ -53,15 +53,12 @@ const kAcceptSignature = "accept-signature";
 // Given `{ digest: "...", body: "...", cors: true, type: "..." }`, generates
 // the URL to a script resource that has the given characteristics.
 let counter = 0;
-function resourceURL(data, host) {
+function resourceURL(data, server_origin) {
   counter++;
   data.type ??= "application/javascript";
   data.counter = counter;
   let params = new URLSearchParams(data);
-  let result = new URL("/subresource-integrity/signatures/resource.py?" + params.toString(), self.location);
-  if (host) {
-    result.host = host;
-  }
+  let result = new URL("/subresource-integrity/signatures/resource.py?" + params.toString(), server_origin ?? self.location.origin);
   return result.href;
 }
 
@@ -92,10 +89,12 @@ async function signSignatureBase(signatureBase, privateKeyJWK) {
 
 function generate_fetch_test(request_data, options, expectation, description) {
   promise_test(test => {
-    const url = resourceURL(request_data, options.host);
+    const url = resourceURL(request_data, options.origin);
     let fetch_options = {};
     if (options.mode) {
       fetch_options.mode = options.mode;
+    } else if (options.origin) {
+      fetch_options.mode = "cors";
     }
     if (options.integrity) {
       fetch_options.integrity = options.integrity;

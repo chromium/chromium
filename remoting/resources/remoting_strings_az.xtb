@@ -40,6 +40,7 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="2758123043070977469">Doğrulama zamanı xəta baş verdi, yenidən daxil olun.</translation>
 <translation id="2803375539583399270">PİN daxil edin</translation>
 <translation id="2919669478609886916">Hazırda bu cihazı başqa istifadəçi ilə paylaşırsınız. Paylaşmağa davam etmək istəyirsiniz?</translation>
+<translation id="2929683002824598593">Cihaz paylaşın</translation>
 <translation id="2939145106548231838">Yerləşdirmək üçün doğrulayın</translation>
 <translation id="3027681561976217984">Toxunuş rejimi</translation>
 <translation id="3106379468611574572">Kənar kompüter qoşulma sorğularına cavab vermir. Onlayn olmasını doğrulayın və yenidən cəhd edin.</translation>
@@ -117,10 +118,12 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="6178645564515549384">Kənardan yardım üçün mesajlaşma hostu</translation>
 <translation id="618120821413932081">Uzaqdan ölçünü pəncərəyə uyğun şəkildə yeniləyin</translation>
 <translation id="6223301979382383752">Ekran Yazma Tərcihlərini Açın</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ekranınızı görmək, klaviatura və mausa nəzarət etmək üçün giriş tələb edir. Cihazınızı paylaşmaq istərdiniz?</translation>
 <translation id="6284412385303060032">Konsol məntiqi ekranını işlədən host kəsildi ki, istifadəçiyə aid sessiyada işləyən hosta keçid etməklə pərdə rejimini dəstəkləsin.</translation>
 <translation id="6542902059648396432">Problemi xəbər verin...</translation>
 <translation id="6583902294974160967">Dəstək</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del göndərin</translation>
+<translation id="6625262630437221505">{0,plural, =1{Tədbir görməsəniz, cihazınız # saniyə sonra avtomatik paylaşmağa başlayacaq.}other{Tədbir görməsəniz, cihazınız # saniyə sonra avtomatik paylaşmağa başlayacaq.}}</translation>
 <translation id="6654753848497929428">Paylaşın</translation>
 <translation id="677755392401385740">Host istifadəçi üçün başladı: <ph name="HOST_USERNAME" /> .</translation>
 <translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> müştəri cihazında keçidi açmaq üçün yardımçı tətbiq</translation>

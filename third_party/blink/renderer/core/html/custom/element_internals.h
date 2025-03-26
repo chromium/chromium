@@ -44,7 +44,7 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   void setFormValue(const V8ControlValue* value,
                     const V8ControlValue* state,
                     ExceptionState& exception_state);
-  HTMLFormElement* form(ExceptionState& exception_state) const;
+  HTMLElement* formForBinding(ExceptionState& exception_state) const;
   void setValidity(ValidityStateFlags* flags, ExceptionState& exception_state);
   void setValidity(ValidityStateFlags* flags,
                    const String& message,

@@ -29,7 +29,9 @@ class CONTENT_EXPORT BrowserTaskExecutor {
   // owns a BrowserUIThreadScheduler. This facilitates posting tasks to a
   // BrowserThread via //base/task/post_task.h.
   // TODO(crbug.com/40108370): Clean this up now that post_task.h is deprecated.
-  // All BrowserThread::UI task queues except best effort ones are also enabled.
+  // By default, BrowserThread::UI task queues except best effort ones are also
+  // enabled. The ContentBrowserClient may decide to defer enabling the task
+  // queues.
   // TODO(carlscab): These queues should be enabled in
   // BrowserMainLoop::InitializeMainThread() but some Android tests fail if we
   // do so.
@@ -133,6 +135,8 @@ class CONTENT_EXPORT BrowserTaskExecutor {
       BrowserThread::ID identifier);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BrowserTaskExecutorWithCustomSchedulerTest,
+                           OnlyDefaultTaskRunnerActiveAfterCreationForIO);
   friend class BrowserIOThreadDelegate;
 
   static void CreateInternal(

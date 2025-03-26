@@ -34,12 +34,6 @@
 
 namespace ash::enrollment {
 
-namespace {
-
-// Default width/height of the dialog.
-const int kDefaultWidth = 350;
-const int kDefaultHeight = 100;
-
 ////////////////////////////////////////////////////////////////////////////////
 // Dialog for certificate enrollment. This displays the content from the
 // certificate enrollment URI.
@@ -142,11 +136,13 @@ void EnrollmentDialogView::WindowClosing() {
 
 gfx::Size EnrollmentDialogView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(kDefaultWidth, kDefaultHeight);
+  return gfx::Size(350, 100);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Handler for certificate enrollment.
+
+namespace {
 
 // Find the first usable URL from `enrollment_uri_list`, then show the "enroll a
 // client certificate for `network_name`" dialog which will offer to open that

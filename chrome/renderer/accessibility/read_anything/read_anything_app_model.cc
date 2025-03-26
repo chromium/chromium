@@ -44,6 +44,28 @@ base::TimeDelta kTimeElapsedSincePageLoadForDataCollection = base::Seconds(30);
 base::TimeDelta kTimeElapsedSinceTreeChangedForDataCollection =
     base::Seconds(30);
 
+const ui::AXNode* GetUnignoredParentForSelection(const ui::AXNode* node) {
+  const ui::AXNode* parent = node;
+  while (const ui::AXNode* ancestor =
+             parent->GetUnignoredParentCrossingTreeBoundary()) {
+    static constexpr auto should_skip = [](const ui::AXNode* node) {
+      // When a link is highlighted, the start node has an "inline" display; the
+      // common parent of all siblings is the first ancestor which has a "block"
+      // display. Also skip over "list-item" so all items in a list are
+      // displayed as siblings, to avoid misnumbering.
+      const std::string_view display =
+          node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
+      return base::Contains(display, "inline") ||
+             base::Contains(display, "list-item");
+    };
+    if (!should_skip(ancestor)) {
+      return ancestor;
+    }
+    parent = ancestor;
+  }
+  return parent == node ? nullptr : parent;
+}
+
 void SetTreeInfoUrlInformation(ReadAnythingAppModel::AXTreeInfo& tree_info) {
   // If the url information has already been set for this tree, do nothing.
   if (tree_info.is_url_information_set) {
@@ -95,17 +117,25 @@ void RecordHeuristicMetric(ReadAnythingHeuristics heuristic) {
 
 }  // namespace
 
-ReadAnythingAppModel::ReadAnythingAppModel() {
-  ResetTextSize();
-}
-
-ReadAnythingAppModel::~ReadAnythingAppModel() = default;
-
 ReadAnythingAppModel::AXTreeInfo::AXTreeInfo(
     std::unique_ptr<ui::AXTreeManager> manager)
     : manager(std::move(manager)) {}
 
 ReadAnythingAppModel::AXTreeInfo::~AXTreeInfo() = default;
+
+ReadAnythingAppModel::SelectionEndpoint::SelectionEndpoint(
+    const ui::AXSelection& selection,
+    Source source)
+    : id(source == Source::kAnchor ? selection.anchor_object_id
+                                   : selection.focus_object_id),
+      offset(source == Source::kAnchor ? selection.anchor_offset
+                                       : selection.focus_offset) {}
+
+ReadAnythingAppModel::ReadAnythingAppModel() {
+  ResetTextSize();
+}
+
+ReadAnythingAppModel::~ReadAnythingAppModel() = default;
 
 void ReadAnythingAppModel::InsertIdIfNotIgnored(
     ui::AXNodeID id,
@@ -174,150 +204,104 @@ void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
 
 void ReadAnythingAppModel::ResetSelection() {
   selection_node_ids_.clear();
-  start_node_id_ = ui::kInvalidAXNodeID;
-  end_node_id_ = ui::kInvalidAXNodeID;
-  start_offset_ = -1;
-  end_offset_ = -1;
-  has_selection_ = false;
+  start_ = SelectionEndpoint();
+  end_ = SelectionEndpoint();
 }
 
 bool ReadAnythingAppModel::PostProcessSelection() {
-  DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
-  DCHECK(ContainsTree(active_tree_id_));
+  CHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
+  const auto it = tree_infos_.find(active_tree_id_);
+  CHECK(it != tree_infos_.end());
 
-  bool was_empty = is_empty();
   requires_post_process_selection_ = false;
 
-  // If the new selection came from the side panel, we never need to draw
+  // If the new selection came from the side panel, we don't need to draw
   // anything in the side panel, since whatever was being selected had to have
   // been drawn already.
-  // If there is no previous selection, we never need to check whether it was
+  // If there is no previous selection, we don't need to check whether it was
   // inside the distilled content. In this case, we will only draw if the new
-  // selection is outside the distilled content. See [1] below.
+  // selection is outside the distilled content.
   // If there was a previous selection outside the distilled content, we always
   // redraw. This will be either a) the new selected content or b) the original
   // distilled content if the new selection is inside that or was cleared.
-  bool need_to_draw = !selection_from_action_ && has_selection_ &&
-                      !SelectionInsideDisplayNodes();
+  const auto selection_in_distilled_content = [&] {
+    return display_node_ids_.contains(start_.id) &&
+           display_node_ids_.contains(end_.id);
+  };
+  const bool need_to_draw = !selection_from_action_ && has_selection() &&
+                            !selection_in_distilled_content();
+  const bool was_empty = is_empty();
 
-  // Save the current selection
-  UpdateSelection();
+  // Update selection.
+  ResetSelection();
+  if (const ui::AXSelection selection =
+          GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
+      selection.anchor_object_id != ui::kInvalidAXNodeID &&
+      selection.focus_object_id != ui::kInvalidAXNodeID &&
+      !selection.IsCollapsed()) {
+    // Identify the start and end node ids and offsets. The start node comes
+    // earlier than end node in the tree order. We need to send the selection to
+    // JS in forward order. If they are sent as backward selections, JS will
+    // collapse the selection so no selection will be rendered in Read Anything.
+    auto source_start = SelectionEndpoint::Source::kAnchor,
+         source_end = SelectionEndpoint::Source::kFocus;
+    if (selection.is_backward) {
+      std::swap(source_start, source_end);
+    }
+    start_ = SelectionEndpoint(selection, source_start);
+    end_ = SelectionEndpoint(selection, source_end);
+  }
 
-  if (has_selection_ && was_empty) {
+  if (!has_selection()) {
+    return need_to_draw;
+  }
+
+  if (was_empty) {
     base::UmaHistogramEnumeration(kEmptyStateHistogramName,
                                   EmptyState::kShownWithSelectionAfter);
-    tree_infos_.at(active_tree_id_)->num_selections++;
+    ++it->second->num_selections;
   }
 
-  // [1] If the main panel selection contains content outside of the distilled
-  // content, we need to find the selected nodes to display instead of the
-  // distilled content.
-  if (has_selection_ && !SelectionInsideDisplayNodes()) {
-    ComputeSelectionNodeIds();
-    return true;
+  if (selection_in_distilled_content()) {
+    return need_to_draw;
   }
 
-  return need_to_draw;
-}
+  // The main panel selection contains content outside of the distilled content.
+  // Find the selected nodes to display instead of the distilled content.
+  if (const ui::AXNode *node = GetAXNode(start_.id), *end = GetAXNode(end_.id);
+      !node->IsInvisibleOrIgnored() && !end->IsInvisibleOrIgnored()) {
+    // Add all ancestor ids of start node, including the start node itself.
+    for (base::queue<ui::AXNode*> ancestors =
+             node->GetAncestorsCrossingTreeBoundaryAsQueue();
+         !ancestors.empty(); ancestors.pop()) {
+      InsertIdIfNotIgnored(ancestors.front()->id(), selection_node_ids_);
+    }
 
-void ReadAnythingAppModel::UpdateSelection() {
-  ResetSelection();
-  ui::AXSelection selection =
-      GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
-  has_selection_ = selection.anchor_object_id != ui::kInvalidAXNodeID &&
-                   selection.focus_object_id != ui::kInvalidAXNodeID &&
-                   !selection.IsCollapsed();
-
-  if (!has_selection_) {
-    return;
+    // Find the parent of the start and end nodes so we can look at nearby
+    // sibling nodes. Since the start and end nodes might be in different
+    // section of the tree, get the parents for start and end separately.
+    // Otherwise, the end selection might not render.
+    node = GetUnignoredParentForSelection(node);
+    end = GetUnignoredParentForSelection(end);
+    if (end) {
+      end = end->GetDeepestLastUnignoredDescendantCrossingTreeBoundary();
+      if (node && end) {
+        // Traverse the tree from the first sibling node to the last sibling
+        // node, inclusive. This ensures that when select-to-distill is used to
+        // distill non-distillable content (such as Gmail), text outside of the
+        // selected portion but on the same line is still distilled, even if
+        // there's special formatting.
+        // TODO(crbug.com/40802192): Consider using ax_position.h here to better
+        // manage selection.
+        for (node = node->GetFirstUnignoredChildCrossingTreeBoundary();
+             node && node->CompareTo(*end).value_or(1) <= 0;
+             node = node->GetNextUnignoredInTreeOrder()) {
+          InsertIdIfNotIgnored(node->id(), selection_node_ids_);
+        }
+      }
+    }
   }
-
-  // Identify the start and end node ids and offsets. The start node comes
-  // earlier than end node in the tree order. We need to send the selection to
-  // JS in forward order. If they are sent as backward selections, JS will
-  // collapse the selection so no selection will be rendered in Read Anything.
-  start_node_id_ = selection.is_backward ? selection.focus_object_id
-                                         : selection.anchor_object_id;
-  end_node_id_ = selection.is_backward ? selection.anchor_object_id
-                                       : selection.focus_object_id;
-  start_offset_ =
-      selection.is_backward ? selection.focus_offset : selection.anchor_offset;
-  end_offset_ =
-      selection.is_backward ? selection.anchor_offset : selection.focus_offset;
-}
-
-void ReadAnythingAppModel::ComputeSelectionNodeIds() {
-  DCHECK(has_selection_);
-  DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
-  DCHECK(ContainsTree(active_tree_id_));
-
-  ui::AXNode* start_node = GetAXNode(start_node_id_);
-  DCHECK(start_node);
-  ui::AXNode* end_node = GetAXNode(end_node_id_);
-  DCHECK(end_node);
-
-  if (!start_node || !end_node) {
-    return;
-  }
-
-  // If start node or end node is invisible or ignored, the selection was
-  // invalid.
-  if (start_node->IsInvisibleOrIgnored() || end_node->IsInvisibleOrIgnored()) {
-    return;
-  }
-
-  // Selection nodes are the nodes which will be displayed by the rendering
-  // algorithm of Read Anything app.ts if there is a selection that contains
-  // content outside of the distilled content. We wish to create a subtree which
-  // stretches from start node to end node with tree root as the root.
-
-  // Add all ancestor ids of start node, including the start node itself. This
-  // does a first walk down to start node.
-  base::queue<ui::AXNode*> ancestors =
-      start_node->GetAncestorsCrossingTreeBoundaryAsQueue();
-  while (!ancestors.empty()) {
-    ui::AXNodeID ancestor_id = ancestors.front()->id();
-    ancestors.pop();
-    InsertIdIfNotIgnored(ancestor_id, selection_node_ids_);
-  }
-
-  // Find the parent of the start and end nodes so we can look at nearby sibling
-  // nodes. Since the start and end nodes might be in different section of the
-  // tree, get the parents for start and end separately. Otherwise, the end
-  // selection might not render.
-  ui::AXNode* start_parent = a11y::GetParentForSelection(start_node);
-  ui::AXNode* end_parent = a11y::GetParentForSelection(end_node);
-
-  // If either parent is missing, selection is invalid and we should return
-  // early.
-  if (start_parent == nullptr || end_parent == nullptr) {
-    return;
-  }
-
-  ui::AXNode* first_sibling_node =
-      start_parent->GetFirstUnignoredChildCrossingTreeBoundary();
-  ui::AXNode* deepest_last_descendant =
-      end_parent->GetDeepestLastUnignoredDescendantCrossingTreeBoundary();
-
-  // If the last sibling node is null, selection is invalid and we should
-  // return early.
-  if (deepest_last_descendant == nullptr) {
-    return;
-  }
-
-  // TODO(crbug.com/40802192): Consider using ax_position.h here to better
-  // manage selection.
-  // Traverse the tree from and including the first sibling node to the last
-  // last sibling node, inclusive. This ensures that when select-to-distill
-  // is used to distill non-distillable content (such as Gmail), text
-  // outside of the selected portion but on the same line is still
-  // distilled, even if there's special formatting.
-  while (first_sibling_node &&
-         first_sibling_node->CompareTo(*deepest_last_descendant).value_or(1) <=
-             0) {
-    InsertIdIfNotIgnored(first_sibling_node->id(), selection_node_ids_);
-    first_sibling_node = first_sibling_node->GetNextUnignoredInTreeOrder();
-  }
+  return true;
 }
 
 bool ReadAnythingAppModel::ContentNodesOnlyContainHeadings() {
@@ -430,18 +414,6 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
 
     RecordHeuristicMetric(ReadAnythingHeuristics::kNone);
   }
-}
-
-bool ReadAnythingAppModel::IsCurrentSelectionEmpty() {
-  return (start_node_id_ != ui::kInvalidAXNodeID) &&
-         (end_node_id_ != ui::kInvalidAXNodeID) &&
-         (start_node_id_ == end_node_id_) && (start_offset_ == end_offset_);
-}
-
-bool ReadAnythingAppModel::SelectionInsideDisplayNodes() {
-  return IsCurrentSelectionEmpty() ||
-         (base::Contains(display_node_ids_, start_node_id_) &&
-          base::Contains(display_node_ids_, end_node_id_));
 }
 
 ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
@@ -724,15 +696,11 @@ void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {
   if (ContainsTree(active_tree_id_)) {
     ui::AXSelection selection =
         GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
-    is_click_and_drag_selection =
-        (selection.anchor_object_id == start_node_id_ &&
-         selection.anchor_offset == start_offset_ &&
-         (selection.focus_object_id != end_node_id_ ||
-          selection.focus_offset != end_offset_)) ||
-        (selection.anchor_object_id == end_node_id_ &&
-         selection.anchor_offset == end_offset_ &&
-         (selection.focus_object_id != start_node_id_ ||
-          selection.focus_offset != start_offset_));
+    const SelectionEndpoint anchor(selection,
+                                   SelectionEndpoint::Source::kAnchor);
+    const SelectionEndpoint focus(selection, SelectionEndpoint::Source::kFocus);
+    is_click_and_drag_selection = (anchor == start_ && focus != end_) ||
+                                  (anchor == end_ && focus != start_);
   }
   if (event_from == ax::mojom::EventFrom::kUser ||
       event_from == ax::mojom::EventFrom::kAction ||

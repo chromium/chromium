@@ -449,7 +449,7 @@ void LoginOnUff() {
   [ChromeEarlGrey waitForJavaScriptCondition:filledFieldCondition];
 }
 
-// Tests that password generation is offered for signed in not syncing users.
+// Tests that password generation is offered for signed in users.
 - (void)testPasswordGenerationForSignedInAccount {
   [SigninEarlGrey signinAndWaitForSyncTransportStateActive:[FakeSystemIdentity
                                                                fakeIdentity1]];
@@ -483,8 +483,8 @@ void LoginOnUff() {
       performAction:grey_tap()];
 }
 
-// Tests that password generation is not offered for signed in not syncing users
-// with passwords toggle disabled.
+// Tests that password generation is not offered for signed in users with
+// passwords toggle disabled.
 // TODO(crbug.com/371189341): Test fails on device.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testPasswordGenerationWhileSignedInWithPasswordsDisabled \
@@ -527,8 +527,8 @@ void LoginOnUff() {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that password generation is not offered for signed in not syncing users
-// with an encryption error; missing passphrase.
+// Tests that password generation is not offered for signed in users with an
+// encryption error; missing passphrase.
 // TODO(crbug.com/371189341): Test fails on device.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testPasswordGenerationWhileSignedInWithError \

@@ -802,6 +802,14 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   }
 #endif  // BUILDFLAG(IS_WIN)
 
+  void IsHappyEyeballsV3Enabled(
+      IsHappyEyeballsV3EnabledCallback callback) override {
+    const bool enabled = network::NetworkService::GetNetworkServiceForTesting()
+                             ->host_resolver_manager()
+                             ->IsHappyEyeballsV3Enabled();
+    std::move(callback).Run(enabled);
+  }
+
  private:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {

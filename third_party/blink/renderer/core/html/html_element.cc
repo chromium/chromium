@@ -2489,9 +2489,17 @@ void HTMLElement::setDir(const AtomicString& value) {
   setAttribute(html_names::kDirAttr, value);
 }
 
+HTMLElement* HTMLElement::formForBinding() const {
+  if (const auto* internals = GetElementInternals()) {
+    return internals->RetargetedForm();
+  }
+  return nullptr;
+}
+
 HTMLFormElement* HTMLElement::formOwner() const {
-  if (const auto* internals = GetElementInternals())
+  if (const auto* internals = GetElementInternals()) {
     return internals->Form();
+  }
   return nullptr;
 }
 

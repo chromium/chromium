@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -106,12 +107,16 @@ HTMLElement* HTMLLabelElement::Control() const {
   return control;
 }
 
-HTMLFormElement* HTMLLabelElement::form() const {
-  if (HTMLElement* control = Control()) {
-    if (auto* form_control_element = DynamicTo<HTMLFormControlElement>(control))
-      return form_control_element->Form();
-    if (control->IsFormAssociatedCustomElement())
-      return control->EnsureElementInternals().Form();
+HTMLElement* HTMLLabelElement::formForBinding() const {
+  HTMLElement* control = Control();
+  if (!control) {
+    return nullptr;
+  }
+  if (auto* form_control_element = DynamicTo<HTMLFormControlElement>(control)) {
+    return form_control_element->RetargetedForm();
+  }
+  if (control->IsFormAssociatedCustomElement()) {
+    return control->EnsureElementInternals().RetargetedForm();
   }
   return nullptr;
 }

@@ -3218,28 +3218,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that the save passwords in account section is hidden when syncing.
-- (void)testSavePasswordsInAccountHiddenWhenSyncing {
-  SavePasswordFormToProfileStore();
-
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
-
-  OpenPasswordManager();
-  OpenSettingsSubmenu();
-
-  // Ensure module is hidden.
-  CheckSavePasswordsInAccountSectionHidden();
-
-  // Close password manager settings.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(SettingsDoneButton(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-}
-
 // Tests that the save passwords in account section is hidden when not
 // signed-in.
 - (void)testSavePasswordsInAccountHiddenWhenNotSignedIn {

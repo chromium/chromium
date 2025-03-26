@@ -113,7 +113,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 #endif
   gfx::Rect GetCurrentFramebufferDamage() const override;
 #if BUILDFLAG(IS_ANDROID)
-  void SetFrameRate(float frame_rate) override;
+  void SetFrameRate(gfx::SurfaceControlFrameRate frame_rate) override;
 #endif
   void SetNeedsMeasureNextDrawLatency() override;
 

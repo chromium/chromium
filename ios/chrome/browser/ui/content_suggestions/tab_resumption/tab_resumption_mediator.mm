@@ -509,13 +509,6 @@ class TabResumptionMediatorProxy {
   _sessionTag = "";
   _tabId = SessionID::InvalidValue();
 
-  // If sync is enabled and `GetOpenTabsUIDelegate()` returns nullptr, that
-  // means the `_sessionSyncService` is not fully operational.
-  if (_syncService->IsSyncFeatureEnabled() &&
-      !_sessionSyncService->GetOpenTabsUIDelegate()) {
-    return;
-  }
-
   std::optional<base::Time> mostRecentTabOpenedTime;
   std::optional<base::Time> lastSyncedTabSyncedTime;
 

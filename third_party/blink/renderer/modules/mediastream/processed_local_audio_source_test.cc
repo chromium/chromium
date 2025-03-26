@@ -216,7 +216,12 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   EXPECT_CALL(*mock_audio_capturer_source(),
               Initialize(_, capture_source_callback()))
       .WillOnce(WithArg<0>(Invoke(this, &ThisTest::CheckSourceFormatMatches)));
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_CALL(*mock_audio_capturer_source(), SetAutomaticGainControl(true));
+#else
+  EXPECT_CALL(*mock_audio_capturer_source(),
+              SetAutomaticGainControl(properties.auto_gain_control));
+#endif
   EXPECT_CALL(*mock_audio_capturer_source(), Start())
       .WillOnce(Invoke(
           capture_source_callback(),

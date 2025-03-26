@@ -424,7 +424,7 @@ suite('CrLitElement', function() {
     const events = await whenFired1;
     for (const event of events) {
       assertFalse(event.bubbles);
-      assertTrue(event.composed);
+      assertFalse(event.composed);
       assertDeepEquals({value: false}, event.detail);
     }
 
@@ -433,14 +433,14 @@ suite('CrLitElement', function() {
     element.prop1 = true;
     let event = await whenFired2;
     assertFalse(event.bubbles);
-    assertTrue(event.composed);
+    assertFalse(event.composed);
     assertDeepEquals({value: true}, event.detail);
 
     whenFired2 = eventToPromise('prop-four-changed', element);
     element.propFour = true;
     event = await whenFired2;
     assertFalse(event.bubbles);
-    assertTrue(event.composed);
+    assertFalse(event.composed);
     assertDeepEquals({value: true}, event.detail);
   });
 

@@ -69,12 +69,12 @@ export class PermissionItemElement extends CrLitElement {
     };
   }
 
-  app: App = createDummyApp();
-  permissionLabel: string = '';
-  permissionType: PermissionTypeIndex = 'kUnknown';
-  icon: string = '';
-  private syncPermissionManually: boolean = false;
-  protected available_: boolean = false;
+  accessor app: App = createDummyApp();
+  accessor permissionLabel: string = '';
+  accessor permissionType: PermissionTypeIndex = 'kUnknown';
+  accessor icon: string = '';
+  private accessor syncPermissionManually: boolean = false;
+  protected accessor available_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

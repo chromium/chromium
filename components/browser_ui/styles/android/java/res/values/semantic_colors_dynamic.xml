@@ -45,6 +45,10 @@ found in the LICENSE file.
 
     <macro name="progress_bar_bg_color" tools:ignore="UnusedResources">?attr/colorSurfaceContainerHighest</macro>
 
+    <macro name="sheet_bg_color" tools:ignore="UnusedResources">?attr/colorSurface</macro>
+    <macro name="sheet_container_bg_color" tools:ignore="UnusedResources">?attr/colorSurfaceContainer</macro>
+    <macro name="sheet_chrome_icon_bg" tools:ignore="UnusedResources">?attr/colorSurfaceContainerHigh</macro>
+
     <!-- Gated by full dynamic colors param, no fallback needed. -->
     <macro name="circular_progress_icon_color_small_large">?attr/colorPrimary</macro>
     <macro name="circular_progress_outer_circle_progress_color_small">?attr/colorPrimary</macro>

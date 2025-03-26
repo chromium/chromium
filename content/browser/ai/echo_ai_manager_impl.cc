@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
@@ -65,14 +66,25 @@ void EchoAIManagerImpl::Create(
 }
 
 void EchoAIManagerImpl::CanCreateLanguageModel(
-    std::optional<std::vector<blink::mojom::AILanguageCodePtr>>
-        expected_input_languages,
+    blink::mojom::AILanguageModelCreateOptionsPtr options,
     CanCreateLanguageModelCallback callback) {
-  if (expected_input_languages.has_value() &&
-      !IsLanguagesSupported(expected_input_languages.value())) {
-    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
-                                kUnavailableUnsupportedLanguage);
-    return;
+  if (options->expected_inputs.has_value()) {
+    for (const auto& expected_input : options->expected_inputs.value()) {
+      if (expected_input->type !=
+              blink::mojom::AILanguageModelPromptType::kText &&
+          !base::FeatureList::IsEnabled(
+              blink::features::kAIPromptAPIMultimodalInput)) {
+        std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                    kUnavailableModelAdaptationNotAvailable);
+        return;
+      }
+      if (expected_input->languages.has_value() &&
+          !IsLanguagesSupported(expected_input->languages.value())) {
+        std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                    kUnavailableUnsupportedLanguage);
+        return;
+      }
+    }
   }
 
   std::move(callback).Run(
@@ -220,11 +232,11 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<EchoAILanguageModel>(model_sampling_params->Clone()),
       language_model.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(std::move(language_model),
-                          blink::mojom::AILanguageModelInstanceInfo::New(
-                              kMaxContextSizeInTokens,
-                              /*current_tokens=*/0,
-                              std::move(model_sampling_params), std::nullopt));
+  client_remote->OnResult(
+      std::move(language_model),
+      blink::mojom::AILanguageModelInstanceInfo::New(
+          kMaxContextSizeInTokens,
+          /*current_tokens=*/0, std::move(model_sampling_params)));
 }
 
 void EchoAIManagerImpl::ReturnAISummarizerCreationResult(

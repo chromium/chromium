@@ -168,6 +168,12 @@ void GlicEnabling::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  // Check that the account info here is the same as the primary account, and
+  // ignore all events that are not about the primary account.
+  if (identity_manager_observation_.GetSource()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin) != account_info) {
+    return;
+  }
   UpdateEnabledStatus();
 }
 

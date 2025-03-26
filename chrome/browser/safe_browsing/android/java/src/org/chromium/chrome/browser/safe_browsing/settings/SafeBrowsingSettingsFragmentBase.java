@@ -9,10 +9,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -20,12 +21,13 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /** The base fragment class for Safe Browsing settings fragments. */
+@NullMarked
 public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSettingsFragment {
     private SafeBrowsingBridge mSafeBrowsingBridge;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         SettingsUtils.addPreferencesFromResource(this, getPreferenceResource());
         mPageTitle.set(getString(R.string.prefs_section_safe_browsing_title));
 
@@ -39,8 +41,9 @@ public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSetting
         return mPageTitle;
     }
 
+    @Initializer
     @Override
-    public void setProfile(@NonNull Profile profile) {
+    public void setProfile(Profile profile) {
         super.setProfile(profile);
         mSafeBrowsingBridge = new SafeBrowsingBridge(profile);
     }
@@ -78,7 +81,7 @@ public abstract class SafeBrowsingSettingsFragmentBase extends ChromeBaseSetting
      * If the child class needs to handle specific logic during preference creation, it can override
      * this method.
      */
-    protected void onCreatePreferencesInternal(Bundle bundle, String s) {}
+    protected void onCreatePreferencesInternal(@Nullable Bundle bundle, @Nullable String s) {}
 
     /**
      * @return The resource id of the preference.

@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -63,7 +63,8 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                         shareDelegateSupplier),
                 tabModelSupplier,
                 tabGroupSyncService,
-                collaborationService);
+                collaborationService,
+                windowAndroid.getActivity().get());
         mTabModelSupplier = tabModelSupplier;
         mWindowAndroid = windowAndroid;
     }
@@ -185,8 +186,11 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
     }
 
     @Override
-    protected @DimenRes int getMenuWidth() {
-        return R.dimen.tab_strip_group_context_menu_max_width; // TODO(crbug.com/397247439): Fix.
+    protected int getMenuWidth(int anchorViewWidthPx) {
+        return MathUtils.clamp(
+                anchorViewWidthPx,
+                getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
+                getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width));
     }
 
     @Nullable

@@ -19,6 +19,7 @@
 #include "content/shell/browser/shell.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
+#include "media/cdm/clear_key_cdm_common.h"
 
 namespace {
 
@@ -34,6 +35,15 @@ constexpr std::string_view kMediaSourceString = "media-source";
 constexpr std::string_view kWebRtcString = "webrtc";
 constexpr std::string_view kInvalid = "INVALID";
 
+constexpr std::string_view kSrgb = "srgb";
+constexpr std::string_view kP3 = "p3";
+constexpr std::string_view kRec2020 = "rec2020";
+constexpr std::string_view kPq = "pq";
+constexpr std::string_view kHlg = "hlg";
+constexpr std::string_view kSmpteSt2086 = "smpteSt2086";
+constexpr std::string_view kSmpteSt2094_10 = "smpteSt2094-10";
+constexpr std::string_view kSmpteSt2094_40 = "smpteSt2094-40";
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 constexpr std::string_view kPropSupported = kSupported;
 #else
@@ -45,7 +55,8 @@ enum StreamType {
   kVideo,
   kAudioWithSpatialRendering,
   kVideoWithHdrMetadata,
-  kVideoWithoutHdrMetadata
+  kVideoWithoutHdrMetadata,
+  kVideoWithHdrMetadataAndKeySystem
 };
 
 enum ConfigType { kFile, kMediaSource, kWebRtc };
@@ -98,13 +109,27 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
                      color_gamut, transfer_function);
   }
 
+  std::string CanDecodeVideoWithHdrMetadataAndKeySystem(
+      std::string_view config_type,
+      std::string_view content_type,
+      std::string_view color_gamut,
+      std::string_view transfer_function,
+      std::string_view hdr_metadata_type,
+      std::string_view key_system) {
+    return CanDecode(config_type, content_type,
+                     StreamType::kVideoWithHdrMetadataAndKeySystem,
+                     /* spatialRendering */ false, hdr_metadata_type,
+                     color_gamut, transfer_function, key_system);
+  }
+
   std::string CanDecode(std::string_view config_type,
                         std::string_view content_type,
                         StreamType stream_type,
                         bool spatial_rendering = false,
                         std::string_view hdr_metadata_type = "",
                         std::string_view color_gamut = "",
-                        std::string_view transfer_function = "") {
+                        std::string_view transfer_function = "",
+                        std::string_view key_system = "") {
     std::string command;
     if (stream_type == StreamType::kAudio) {
       base::StringAppendF(&command, "testAudioConfig(");
@@ -121,6 +146,14 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
     } else if (stream_type == StreamType::kVideoWithoutHdrMetadata) {
       command.append("testVideoConfigWithoutHdrMetadata(");
       for (auto x : {color_gamut, transfer_function}) {
+        DCHECK(!x.empty());
+        base::StringAppendF(&command, "\"%.*s\",", static_cast<int>(x.size()),
+                            x.data());
+      }
+    } else if (stream_type == StreamType::kVideoWithHdrMetadataAndKeySystem) {
+      command.append("testVideoConfigWithHdrMetadataAndKeySystem(");
+      for (auto x :
+           {hdr_metadata_type, color_gamut, transfer_function, key_system}) {
         DCHECK(!x.empty());
         base::StringAppendF(&command, "\"%.*s\",", static_cast<int>(x.size()),
                             x.data());
@@ -379,15 +412,6 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 // Cover basic HDR support.
 IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                        VideoTypesWithDynamicRange) {
-  constexpr std::string_view kSrgb = "srgb";
-  constexpr std::string_view kP3 = "p3";
-  constexpr std::string_view kRec2020 = "rec2020";
-  constexpr std::string_view kPq = "pq";
-  constexpr std::string_view kHlg = "hlg";
-  constexpr std::string_view kSmpteSt2086 = "smpteSt2086";
-  constexpr std::string_view kSmpteSt2094_10 = "smpteSt2094-10";
-  constexpr std::string_view kSmpteSt2094_40 = "smpteSt2094-40";
-
   base::FilePath file_path =
       media::GetTestDataFilePath(std::string(kDecodeTestFile));
 
@@ -446,6 +470,38 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                                           "'video/mp4; codecs=\"avc1.42101E\"'",
                                           /* colorGamut */ kSrgb,
                                           /* transferFunction */ kSrgb));
+}
+
+// This is to test setting both MediaCapabilities and the KeySystem to verify
+// that MediaCapabilities does not support configurations when KeySystem is
+// specified.
+IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
+                       VideoTypeWithHdrMetadataAndKeySystem) {
+  if (GetParam() == kWebRtc) {
+    GTEST_SKIP() << "The keySystemConfiguration object cannot be set for "
+                    "webrtc MediaDecodingType.";
+  }
+
+  base::FilePath file_path =
+      media::GetTestDataFilePath(std::string(kDecodeTestFile));
+
+  const auto config_type = GetTypeString();
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), content::GetFileUrlWithQuery(file_path, "")));
+
+  // This HDR metadata is supported.
+  EXPECT_EQ(kSupported,
+            CanDecodeVideoWithHdrMetadataAndKeySystem(
+                config_type, "'video/webm; codecs=\"vp8\"'", kRec2020, kPq,
+                kSmpteSt2086, media::kClearKeyKeySystem));
+
+  // This HDR metadata is unsupported, so no matter the key system, Chromium
+  // should return unsupported.
+  EXPECT_EQ(kUnsupported,
+            CanDecodeVideoWithHdrMetadataAndKeySystem(
+                config_type, "'video/webm; codecs=\"vp8\"'", kRec2020, kPq,
+                kSmpteSt2094_10, media::kClearKeyKeySystem));
 }
 
 INSTANTIATE_TEST_SUITE_P(File,

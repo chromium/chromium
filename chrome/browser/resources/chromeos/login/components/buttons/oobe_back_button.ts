@@ -68,7 +68,7 @@ export class OobeBackButton extends OobeBaseButton {
     };
   }
 
-  textKey: string;
+  override textKey: string;
 }
 
 declare global {

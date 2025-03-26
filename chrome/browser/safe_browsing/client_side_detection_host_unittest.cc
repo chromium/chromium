@@ -354,8 +354,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
     // Inject service classes.
     csd_service_ = std::make_unique<MockClientSideDetectionService>();
-    database_manager_ = new StrictMock<MockSafeBrowsingDatabaseManager>();
-    ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>();
+    database_manager_ = new NiceMock<MockSafeBrowsingDatabaseManager>();
+    ui_manager_ = new NiceMock<MockSafeBrowsingUIManager>();
 
     identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                    signin::ConsentLevel::kSync);
@@ -371,7 +371,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&safe_browsing::SyncUtils::IsPrimaryAccountSignedIn,
                             identity_test_env_.identity_manager()));
     auto token_fetcher =
-        std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
+        std::make_unique<NiceMock<MockSafeBrowsingTokenFetcher>>();
     raw_token_fetcher_ = token_fetcher.get();
     csd_host_->set_token_fetcher_for_testing(std::move(token_fetcher));
     auto delegate =
@@ -488,11 +488,10 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
  protected:
   std::unique_ptr<ClientSideDetectionHost> csd_host_;
   std::unique_ptr<MockClientSideDetectionService> csd_service_;
-  scoped_refptr<StrictMock<MockSafeBrowsingUIManager> > ui_manager_;
-  scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager>> database_manager_;
+  scoped_refptr<NiceMock<MockSafeBrowsingUIManager>> ui_manager_;
+  scoped_refptr<NiceMock<MockSafeBrowsingDatabaseManager>> database_manager_;
   FakePhishingDetector fake_phishing_detector_;
-  raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ =
-      nullptr;
+  raw_ptr<NiceMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ = nullptr;
   raw_ptr<MockClientSideDetectionHostDelegate> raw_delegate_ = nullptr;
   base::SimpleTestTickClock clock_;
   const bool is_incognito_;

@@ -224,6 +224,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Mid"/>
   <int value="26" label="PayloadTypes"/>
   <int value="27" label="Ssrcs"/>
+  <int value="28" label="IceOptionsRenomination"/>
   <int value="40" label="RtpHeaderExtensionsRemoved"/>
   <int value="41" label="RtpHeaderExtensionsAdded"/>
   <int value="42" label="RtpHeaderExtensionsModified"/>
@@ -239,6 +240,7 @@ chromium-metrics-reviews@google.com.
   <int value="69" label="AudioCodecsFmtpOpusDtx"/>
   <int value="70" label="AudioCodecsFmtp"/>
   <int value="71" label="AudioCodecsRtcpFb"/>
+  <int value="72" label="AudioCodecsRtcpFbRrtr"/>
   <int value="80" label="VideoCodecsRemoved"/>
   <int value="81" label="VideoCodecsAdded"/>
   <int value="82" label="VideoCodecsReordered"/>

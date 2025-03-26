@@ -59,6 +59,10 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   const HTMLElement& ToHTMLElement() const;
   HTMLElement& ToHTMLElement();
 
+  // Returns the associated form element or its host element if the form is
+  // associated through reference target.
+  HTMLElement* RetargetedForm() const;
+  // Returns the associated form element.
   HTMLFormElement* Form() const { return form_.Get(); }
   ValidityState* validity();
 

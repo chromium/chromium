@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 
 using collaboration::messaging::MessagingBackendServiceFactory;
 
@@ -191,6 +192,7 @@ void CollaborationMessagingObserver::DispatchMessage(
       HandleChip(message, display);
       break;
     case PersistentNotificationType::TOMBSTONED:
+    case PersistentNotificationType::INSTANT_MESSAGE:
     case PersistentNotificationType::UNDEFINED:
       // These notifications have no associated UI on Desktop.
       // Ignore gracefully.
@@ -249,9 +251,9 @@ void CollaborationMessagingObserver::ReopenTabForCurrentInstantMessage() {
 
   const InstantMessage& message =
       instant_message_queue_processor_.GetCurrentMessage();
-  CHECK(message.attribution.has_value());
-  auto tab_metadata = message.attribution->tab_metadata;
-  auto tab_group_metadata = message.attribution->tab_group_metadata;
+  const auto& attribution = message.attributions[0];
+  auto tab_metadata = attribution.tab_metadata;
+  auto tab_group_metadata = attribution.tab_group_metadata;
   if (!tab_metadata || !tab_group_metadata) {
     return;
   }
@@ -279,8 +281,7 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
 
   const InstantMessage& message =
       instant_message_queue_processor_.GetCurrentMessage();
-  CHECK(message.attribution.has_value());
-  auto tab_group_metadata = message.attribution->tab_group_metadata;
+  auto tab_group_metadata = message.attributions[0].tab_group_metadata;
   if (!tab_group_metadata) {
     return;
   }
@@ -298,17 +299,17 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
     auto* tab_group_service =
         TabGroupSyncServiceFactory::GetForProfile(profile_);
     CHECK(tab_group_service);
-    tab_group_service->OpenTabGroup(
-        sync_tab_group_id.value(),
-        std::make_unique<TabGroupActionContextDesktop>(
-            current_browser_window_interface->GetBrowserForMigrationOnly(),
-            OpeningSource::kOpenedFromToastAction));
-    auto save_group = tab_group_service->GetGroup(sync_tab_group_id.value());
-    if (!save_group) {
+    std::optional<LocalTabGroupID> opened_group_id =
+        tab_group_service->OpenTabGroup(
+            sync_tab_group_id.value(),
+            std::make_unique<TabGroupActionContextDesktop>(
+                current_browser_window_interface->GetBrowserForMigrationOnly(),
+                OpeningSource::kOpenedFromToastAction));
+    if (!opened_group_id) {
       return;
     }
-    CHECK(save_group->local_group_id());
-    group_id = save_group->local_group_id();
+
+    group_id = opened_group_id;
   }
 
   if (Browser* browser =

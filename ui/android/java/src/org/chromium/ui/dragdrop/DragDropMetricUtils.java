@@ -57,7 +57,8 @@ public class DragDropMetricUtils {
         int UNKNOWN = 0;
         int LINK = 1;
         int TAB_IN_STRIP = 2;
-        int NUM_ENTRIES = 3;
+        int TAB_GROUP_IN_STRIP = 3;
+        int NUM_ENTRIES = 4;
     }
 
     /**

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
 namespace variations {
@@ -45,13 +46,13 @@ class RegionalCapabilitiesServiceClient
 
   ~RegionalCapabilitiesServiceClient() override;
 
-  int GetFallbackCountryId() override;
+  country_codes::CountryId GetFallbackCountryId() override;
 
   void FetchCountryId(CountryIdCallback country_id_fetched_callback) override;
 
  private:
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  const int variations_country_id_;
+  const country_codes::CountryId variations_country_id_;
 #endif
 };
 

@@ -88,6 +88,9 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
   mojo::Remote<mojom::GeolocationControl> geolocation_control_;
   mojo::Remote<mojom::GeolocationContext> geolocation_context_;
   mojo::Remote<mojom::Geolocation> geolocation_;
+#if BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -102,6 +105,15 @@ TEST_F(GeolocationServiceUnitTest, UrlWithApiKey) {
   fake_geolocation_system_permission_manager_->SetSystemPermission(
       LocationSystemPermissionStatus::kAllowed);
 #endif
+
+// crrev.com/c/6378263 enabled the platform location provider by default on
+// macOS. This explicit feature flag configuration ensures network location
+// provider tests remain unaffected.
+#if BUILDFLAG(IS_MAC)
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kLocationProviderManager,
+      {{"LocationProviderManagerMode", "NetworkOnly"}});
+#endif  // BUILDFLAG(IS_MAC)
 
   base::RunLoop loop;
   test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(

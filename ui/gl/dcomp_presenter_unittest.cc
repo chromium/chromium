@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
@@ -114,7 +115,8 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> CreateNV12Texture(
 
   std::vector<char> image_data(size.width() * size.height() * 3 / 2);
   // Y, U, and V should all be 160. Output color should be pink.
-  memset(&image_data[0], 160, size.width() * size.height() * 3 / 2);
+  UNSAFE_TODO(
+      memset(&image_data[0], 160, size.width() * size.height() * 3 / 2));
 
   D3D11_SUBRESOURCE_DATA data = {};
   data.pSysMem = (const void*)&image_data[0];

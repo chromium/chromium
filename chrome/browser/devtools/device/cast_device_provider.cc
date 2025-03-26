@@ -98,7 +98,7 @@ class CastDeviceProvider::DeviceListerDelegate final
                        scoped_refptr<base::SingleThreadTaskRunner> runner)
       : provider_(provider), runner_(runner) {}
 
-  virtual ~DeviceListerDelegate() = default;
+  ~DeviceListerDelegate() = default;
 
   void StartDiscovery() {
     // This must be called on the UI thread; ServiceDiscoverySharedClient and

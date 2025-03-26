@@ -147,34 +147,15 @@ class TabHoverCardInteractiveUiTest
   }
 
   auto HoverTabAt(int index) {
-#if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/358199067): Fix for mac
-    return Steps(Do(base::BindLambdaForTesting(
-        [=, this]() { SimulateHoverTab(browser(), index); })));
-#else
     const char kTabToHover[] = "Tab to hover";
     return Steps(
         FinishTabstripAnimations(),
         NameDescendantViewByType<Tab>(kTabStripElementId, kTabToHover, index),
         MoveMouseTo(kTabToHover));
-#endif
   }
 
   auto UnhoverTab() {
-#if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/358199067): Fix for mac
-    return Steps(Do(base::BindLambdaForTesting([=, this]() {
-      TabStrip* const tab_strip = GetTabStrip(browser());
-      HoverCardDestroyedWaiter waiter(tab_strip);
-      ui::MouseEvent stop_hover_event(ui::EventType::kMouseExited, gfx::Point(),
-                                      gfx::Point(), base::TimeTicks(),
-                                      ui::EF_NONE, 0);
-      static_cast<views::View*>(tab_strip)->OnMouseExited(stop_hover_event);
-      waiter.Wait();
-    })));
-#else
     return Steps(MoveMouseTo(kNewTabButtonElementId));
-#endif
   }
 
   StepBuilder CheckHovercardIsOpen() {

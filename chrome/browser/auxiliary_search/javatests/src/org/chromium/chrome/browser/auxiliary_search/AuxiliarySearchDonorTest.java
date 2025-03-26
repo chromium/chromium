@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -49,6 +50,8 @@ public final class AuxiliarySearchDonorTest {
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
+    @Mock private AuxiliarySearchHooks mHooks;
+
     private int[] mIds;
     private String[] mUrls;
     private String[] mTitles;
@@ -59,6 +62,8 @@ public final class AuxiliarySearchDonorTest {
 
     @Before
     public void setUp() {
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(mHooks);
+
         mActivityTestRule.launchActivity(null);
         mAuxiliarySearchDonor = AuxiliarySearchDonor.getInstance();
 

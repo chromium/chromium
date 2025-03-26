@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -14,7 +15,7 @@ namespace autofill {
 // Represents a loyalty card coming from the Google Wallet.
 class LoyaltyCard final {
  public:
-  LoyaltyCard(std::string loyalty_card_id,
+  LoyaltyCard(ValuableId loyalty_card_id,
               std::string merchant_name,
               std::string program_name,
               GURL program_logo,
@@ -27,8 +28,8 @@ class LoyaltyCard final {
 
   ~LoyaltyCard();
 
-  const std::string& id() const { return id_; }
-  void set_id(const std::string& id) { id_ = id; }
+  const ValuableId& id() const { return id_; }
+  void set_id(const ValuableId& id) { id_ = id; }
 
   const std::string& merchant_name() const { return merchant_name_; }
   void set_merchant_name(const std::string& merchant_name) {
@@ -62,8 +63,7 @@ class LoyaltyCard final {
  private:
   // A unique identifier coming from the server, which is used as a primary key
   // for storing loyalty cards in the database.
-  std::string id_;
-
+  ValuableId id_;
   // The merchant name e.g. "Deutsche Bahn".
   std::string merchant_name_;
 

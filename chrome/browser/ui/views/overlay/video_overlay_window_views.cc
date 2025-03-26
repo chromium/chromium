@@ -942,6 +942,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   std::unique_ptr<HangUpButton> hang_up_button;
   std::unique_ptr<global_media_controls::MediaProgressView> progress_view;
   std::unique_ptr<views::Label> timestamp;
+  std::unique_ptr<views::Label> live_status;
 
   if (Use2024UI()) {
     play_pause_controls_view->SetSize(
@@ -1063,6 +1064,14 @@ void VideoOverlayWindowViews::SetUpViews() {
     timestamp->SetEnabledColor(ui::kColorSysOnSurfaceSubtle);
     timestamp->SetBackgroundColor(SK_ColorTRANSPARENT);
     timestamp->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    live_status = std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_LIVE_STATUS_TEXT),
+        views::style::CONTEXT_LABEL, views::style::STYLE_CAPTION_BOLD);
+    live_status->SetEnabledColor(ui::kColorSysTonalContainer);
+    live_status->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 4)));
+    live_status->SetBackground(
+        views::CreateRoundedRectBackground(ui::kColorSysOnTonalContainer, 4));
+    live_status->SetVisible(false);
   } else {
     back_to_tab_label_button =
         std::make_unique<BackToTabLabelButton>(base::BindRepeating(
@@ -1236,6 +1245,10 @@ void VideoOverlayWindowViews::SetUpViews() {
     timestamp->SetPaintToLayer(ui::LAYER_TEXTURED);
     timestamp->layer()->SetFillsBoundsOpaquely(false);
     timestamp->layer()->SetName("Timestamp");
+
+    live_status->SetPaintToLayer(ui::LAYER_TEXTURED);
+    live_status->layer()->SetFillsBoundsOpaquely(false);
+    live_status->layer()->SetName("LiveStatus");
   } else {
     // views::View that holds the skip-ad label button.
     // -------------------------
@@ -1322,6 +1335,9 @@ void VideoOverlayWindowViews::SetUpViews() {
         controls_container_view->AddChildView(std::move(progress_view));
 
     timestamp_ = controls_container_view->AddChildView(std::move(timestamp));
+
+    live_status_ =
+        controls_container_view->AddChildView(std::move(live_status));
   }
 
   next_track_controls_view_ = controls_container_view->AddChildView(
@@ -1547,13 +1563,23 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
         {bounds.width() - (2 * kPreviousNextTrackWidthPlusHorizontalMargins),
          kProgressBarHeight});
 
-    timestamp_->SetPosition(
-        {bottom_controls_bounds.x() + kTimestampHorizontalMargin,
-         bottom_controls_bounds.y() + bottom_controls_bounds.height() -
-             kTimestampVerticalMargin - kTimestampHeight});
-    timestamp_->SetSize(
-        {bottom_controls_bounds.width() - (2 * kTimestampHorizontalMargin),
+    gfx::Point timestamp_position(
+        bottom_controls_bounds.x() + kTimestampHorizontalMargin,
+        bottom_controls_bounds.y() + bottom_controls_bounds.height() -
+            kTimestampVerticalMargin - kTimestampHeight);
+    const int max_timestamp_width =
+        bottom_controls_bounds.width() - (2 * kTimestampHorizontalMargin);
+    timestamp_->SetPosition(timestamp_position);
+    timestamp_->SetSize({max_timestamp_width, kTimestampHeight});
+    timestamp_->SetVisible(!is_live_);
+
+    live_status_->SetPosition(timestamp_position);
+    live_status_->SetMaximumWidthSingleLine(max_timestamp_width);
+    live_status_->SetSize(
+        {live_status_->GetPreferredSize({max_timestamp_width, kTimestampHeight})
+             .width(),
          kTimestampHeight});
+    live_status_->SetVisible(is_live_);
 
     // The play/pause button and replay/forward 10 seconds buttons should not be
     // visible while dragging the progress bar.
@@ -2234,6 +2260,10 @@ views::Label* VideoOverlayWindowViews::timestamp_for_testing() const {
   return timestamp_;
 }
 
+views::Label* VideoOverlayWindowViews::live_status_for_testing() const {
+  return live_status_;
+}
+
 views::ImageView* VideoOverlayWindowViews::favicon_view_for_testing() const {
   return favicon_view_;
 }
@@ -2336,9 +2366,17 @@ void VideoOverlayWindowViews::OnProgressViewUpdateCurrentTime(
 
 void VideoOverlayWindowViews::UpdateTimestampLabel(base::TimeDelta current_time,
                                                    base::TimeDelta duration) {
-  timestamp_->SetText(base::StrCat(
-      {global_media_controls::GetFormattedDuration(current_time), u" / ",
-       global_media_controls::GetFormattedDuration(duration)}));
+  bool was_live = is_live_;
+  is_live_ = duration.is_max();
+
+  if (!is_live_) {
+    timestamp_->SetText(base::StrCat(
+        {global_media_controls::GetFormattedDuration(current_time), u" / ",
+         global_media_controls::GetFormattedDuration(duration)}));
+  }
+  if (was_live != is_live_) {
+    OnUpdateControlsBounds();
+  }
 }
 
 void VideoOverlayWindowViews::OnFaviconReceived(const SkBitmap& image) {

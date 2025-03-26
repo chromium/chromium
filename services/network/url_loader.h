@@ -917,6 +917,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const bool include_request_cookies_with_response_ = false;
   net::cookie_util::ParsedRequestCookies request_cookies_;
 
+  // Specifies that the response head should include load timing internal info.
+  const bool include_load_timing_internal_info_with_response_;
+
   std::vector<network::mojom::CookieAccessDetailsPtr> cookie_access_details_;
 
   const bool provide_data_use_updates_;

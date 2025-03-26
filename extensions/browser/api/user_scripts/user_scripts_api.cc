@@ -726,7 +726,8 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
     // JS files don't require localization.
     constexpr bool kRequiresLocalization = false;
     scripting::CheckAndLoadFiles(
-        std::move(file_sources), *extension(), kRequiresLocalization,
+        std::move(file_sources), script_parsing::ContentScriptType::kJs,
+        *extension(), kRequiresLocalization,
         base::BindOnce(&UserScriptsExecuteFunction::DidLoadResources, this,
                        script_executor, frame_scope, std::move(frame_ids),
                        std::move(sources)),

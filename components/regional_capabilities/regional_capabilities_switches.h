@@ -26,7 +26,7 @@ inline constexpr char kDefaultListCountryOverride[] = "DEFAULT_EEA";
 inline constexpr char kEeaListCountryOverride[] = "EEA_ALL";
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-// When the `country_codes::kCountryIDUnknown` is stored in prefs and this
+// When an invalid `country_codes::CountryId` is stored in prefs and this
 // feature is enabled the pref will be cleared allowing a valid country to be
 // set again.
 BASE_DECLARE_FEATURE(kClearPrefForUnknownCountry);

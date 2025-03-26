@@ -4,16 +4,17 @@
 
 #include "media/renderers/win/media_foundation_texture_pool.h"
 
+#include <d3d11.h>
+#include <dxgi1_2.h>
+#include <wrl/client.h>
+
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
 #include "media/base/win/test_utils.h"
-
-#include <d3d11.h>
-#include <dxgi1_2.h>
-#include <wrl/client.h>
 
 using Microsoft::WRL::ComPtr;
 
@@ -92,8 +93,8 @@ class MockD3D11Texture2D final : public ID3D11Texture2D {
  private:
   MockD3D11Texture2D(const D3D11_TEXTURE2D_DESC* texture_description)
       : resource_(new MockD3D11Resource()) {
-    memcpy(&texture_description_, texture_description,
-           sizeof(D3D11_TEXTURE2D_DESC));
+    UNSAFE_TODO(memcpy(&texture_description_, texture_description,
+                       sizeof(D3D11_TEXTURE2D_DESC)));
   }
 
  public:
@@ -151,7 +152,7 @@ class MockD3D11Texture2D final : public ID3D11Texture2D {
 
   // ID3D11Texture2D
   void STDMETHODCALLTYPE GetDesc(D3D11_TEXTURE2D_DESC* description) override {
-    memset(description, 0, sizeof(D3D11_TEXTURE2D_DESC));
+    UNSAFE_TODO(memset(description, 0, sizeof(D3D11_TEXTURE2D_DESC)));
   }
 
   // ID3D11Resource

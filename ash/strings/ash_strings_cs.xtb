@@ -149,6 +149,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1455242230282523554">Zobrazit jazykové nastavení</translation>
 <translation id="1459693405370120464">Počasí</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
+<translation id="1462439140224375968">Byl vytvořen dokument Google</translation>
 <translation id="14648076227129703">Umožňuje přístup k fotoaparátu aplikacím <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všem aplikacím a webům s příslušným oprávněním</translation>
 <translation id="1467432559032391204">Doleva</translation>
 <translation id="146902737843070955">Váš administrátor požádal o tuto změnu</translation>
@@ -593,6 +594,7 @@ Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> z
 <translation id="301584155502740476">Zobrazit podrobnosti o hotspotu. Hotspot je vypnutý.</translation>
 <translation id="3017079585324758401">Pozadí</translation>
 <translation id="3018135054368884502">Přetočit médium vpřed</translation>
+<translation id="3026897869154397692">Přidáno do kalendáře</translation>
 <translation id="3033545621352269033">Zapnuto</translation>
 <translation id="3033912566804961911">Sloučit s plochou <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Otevřít soubory</translation>
@@ -1481,6 +1483,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5825969630400862129">Nastavení připojených zařízení</translation>
 <translation id="5830180081891717894">Další: <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Hledat na Googlu</translation>
 <translation id="5841296711770970362">Přejít na další skladbu</translation>
 <translation id="5842553299352339114">Hotspot zařízení <ph name="DEVICE_NAME" /> je zapnutý, nejsou připojena žádná zařízení</translation>
 <translation id="584525477304726060">Podržením maximalizujete</translation>
@@ -1893,6 +1896,7 @@ Nová instalace</translation>
 <translation id="7228968829656641943">Výběrem aktivujete vyhledávání na obrazovce. Stisknutím tabulátoru a poté mezerníku aktivujete procházení pomocí klávesnice.</translation>
 <translation id="7229029500464092426">Paměť: <ph name="AVAILABLE_MEMORY" /> | celkem <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Obě tlačítka myši</translation>
+<translation id="7240636904654154599">Byla vytvořena tabulka Google</translation>
 <translation id="7244725679040769470">Stav baterie: <ph name="PERCENTAGE" />. Připojte zařízení k napájení.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kvůli použití aktualizace je třeba Chromebook restartovat. Může to trvat až minutu.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2402,6 +2406,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8921624153894383499">Tímto jazykem Asistent Google nehovoří.</translation>
 <translation id="8926951137623668982">Polička je vždy skrytá</translation>
 <translation id="8929566928381252430">Pokoušíte se použít klávesu Caps Lock? Použijte</translation>
+<translation id="8929623844713377237">Byl vytvořen kontakt</translation>
 <translation id="8934418770423095813">Vytvořit Dokument Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="8936501819958976551">deaktivovala</translation>

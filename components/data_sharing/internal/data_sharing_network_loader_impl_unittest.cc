@@ -82,6 +82,7 @@ TEST_F(DataSharingNetworkLoaderImplTest, BadHttpStatusCode) {
                       DataSharingNetworkLoader::NetworkLoaderStatus::
                           kTransientFailure);
             ASSERT_TRUE(response->result_bytes.empty());
+            ASSERT_EQ(response->network_error_code, 400);
             run_loop->Quit();
           },
           &run_loop));

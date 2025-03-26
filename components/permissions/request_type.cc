@@ -98,6 +98,9 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kKeyboardLockIcon;
     case RequestType::kLocalFonts:
       return vector_icons::kFontDownloadChromeRefreshIcon;
+    case RequestType::kLocalNetworkAccess:
+      // TODO(crbug.com/400455013): Replace with final icon.
+      return vector_icons::kDevicesIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicChromeRefreshIcon;
     case RequestType::kMidiSysex:
@@ -157,6 +160,9 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kHandTracking:
       return vector_icons::kHandGestureOffIcon;
     case RequestType::kIdleDetection:
+      return vector_icons::kDevicesOffIcon;
+    case RequestType::kLocalNetworkAccess:
+      // TODO(crbug.com/400455013): Replace with final icon.
       return vector_icons::kDevicesOffIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicOffChromeRefreshIcon;
@@ -239,6 +245,9 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
 #if !BUILDFLAG(IS_ANDROID)
     case ContentSettingsType::WINDOW_MANAGEMENT:
       return RequestType::kWindowManagement;
+    // TODO(crbug.com/400455013): Enable on Android.
+    case ContentSettingsType::LOCAL_NETWORK_ACCESS:
+      return RequestType::kLocalNetworkAccess;
 #endif
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       return RequestType::kTopLevelStorageAccess;
@@ -291,6 +300,8 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #if !BUILDFLAG(IS_ANDROID)
     case RequestType::kLocalFonts:
       return ContentSettingsType::LOCAL_FONTS;
+    case RequestType::kLocalNetworkAccess:
+      return ContentSettingsType::LOCAL_NETWORK_ACCESS;
 #endif
     case RequestType::kGeolocation:
       return ContentSettingsType::GEOLOCATION;
@@ -412,6 +423,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
       return "keyboard_lock";
     case permissions::RequestType::kLocalFonts:
       return "local_fonts";
+    case permissions::RequestType::kLocalNetworkAccess:
+      return "local_network_access";
 #endif
     case permissions::RequestType::kMicStream:
       return "mic_stream";

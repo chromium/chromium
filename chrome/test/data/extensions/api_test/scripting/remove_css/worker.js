@@ -14,7 +14,7 @@ const INJECTED_COLOR = 'rgb(0, 128, 0)';  // green
 // between the original and first injected color).
 const INJECTED_COLOR2 = 'rgb(255, 255, 0)';  // yellow
 
-// CSS to inject, corresopnding to `INJECTED_COLOR`.
+// CSS to inject, corresponding to `INJECTED_COLOR`.
 const CSS = '#main { color: green !important; }';
 // CSS to inject, corresponding to `INJECTED_COLOR2`.
 const CSS2 = CSS.replace('green', 'yellow');
@@ -279,7 +279,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   async function noSuchFile() {
-    const noSuchFile = 'no_such_file.js';
+    const noSuchFile = 'no_such_file.css';
     // Edge case: When removing inserted files, we don't actually read
     // the file content (because it's unnecessary, and would be wasteful).
     // We also don't fire an error when there was no matching CSS inserted

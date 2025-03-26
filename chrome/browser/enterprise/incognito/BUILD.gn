@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("incognito") {
+  sources = [
+    "incognito_navigation_throttle.cc",
+    "incognito_navigation_throttle.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/browser",
+    "//ui/base",
+    "//ui/strings:ui_strings_grit",
+  ]
+}

@@ -261,7 +261,9 @@ bool VisitSegmentDatabase::UpdateSegmentVisitCount(SegmentID segment_id,
 std::vector<std::unique_ptr<PageUsageData>>
 VisitSegmentDatabase::QuerySegmentUsage(
     int max_result_count,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter) {
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+    const std::optional<std::string>& recency_factor_name,
+    std::optional<size_t> recency_window_days) {
   // Phase 1: Gather all segments and compute scores.
   std::vector<std::unique_ptr<PageUsageData>> segments;
   base::Time now = base::Time::Now();
@@ -276,7 +278,8 @@ VisitSegmentDatabase::QuerySegmentUsage(
   SegmentVisitor segment_visitor(&statement);
   SegmentInfo segment_info;
   std::unique_ptr<SegmentScorer> scorer =
-      SegmentScorer::CreateFromFeatureFlags();
+      recency_factor_name ? SegmentScorer::Create(recency_factor_name.value())
+                          : SegmentScorer::CreateFromFeatureFlags();
   while (segment_visitor.Step(&segment_info)) {
     DCHECK(!segment_info.time_slots.empty());
     DCHECK_EQ(segment_info.time_slots.size(), segment_info.visit_counts.size());
@@ -288,7 +291,8 @@ VisitSegmentDatabase::QuerySegmentUsage(
     segment->SetVisitCount(std::accumulate(segment_info.visit_counts.begin(),
                                            segment_info.visit_counts.end(), 0));
     segment->SetScore(scorer->Compute(segment_info.time_slots,
-                                      segment_info.visit_counts, now));
+                                      segment_info.visit_counts, now,
+                                      recency_window_days));
     segments.push_back(std::move(segment));
   }
 

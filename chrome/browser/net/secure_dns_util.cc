@@ -25,21 +25,23 @@
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 
+using ::country_codes::CountryId;
+
 namespace chrome_browser_net::secure_dns {
 
 namespace {
 
 const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
 
-bool EntryIsForCountry(const net::DohProviderEntry* entry, int country_id) {
+bool EntryIsForCountry(const net::DohProviderEntry* entry,
+                       CountryId country_id) {
   if (entry->display_globally) {
     return true;
   }
   const auto& countries = entry->display_countries;
   bool matches = std::ranges::any_of(
       countries, [country_id](const std::string& country_code) {
-        return country_codes::CountryStringToCountryID(country_code) ==
-               country_id;
+        return CountryId(country_code) == country_id;
       });
   if (matches) {
     DCHECK(!entry->ui_name.empty());
@@ -77,7 +79,7 @@ void MigrateProbesSettingToOrFromBackup(PrefService* prefs) {
 
 net::DohProviderEntry::List ProvidersForCountry(
     const net::DohProviderEntry::List& providers,
-    int country_id) {
+    CountryId country_id) {
   net::DohProviderEntry::List local_providers;
   std::ranges::copy_if(providers, std::back_inserter(local_providers),
                        [country_id](const net::DohProviderEntry* entry) {

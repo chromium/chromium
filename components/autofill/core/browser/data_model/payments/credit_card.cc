@@ -1048,8 +1048,7 @@ std::u16string CreditCard::CardNameForAutofillDisplay(
   if (HasNonEmptyValidNickname() || !customized_nickname.empty()) {
     return customized_nickname.empty() ? nickname_ : customized_nickname;
   }
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName) &&
-      !product_description_.empty()) {
+  if (!product_description_.empty()) {
     return product_description_;
   }
   return NetworkForDisplay();

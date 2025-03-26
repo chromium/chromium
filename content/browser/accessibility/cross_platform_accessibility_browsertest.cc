@@ -3134,7 +3134,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
       }
       function otherNotify(clickedElement) {
         clickedElement.ariaNotify("world", {"interrupt": "pending",
-                                            "notificationId": "test",
+                                            "type": "test",
                                             "priority": "high"});
       }
       </script>)HTML");
@@ -3161,7 +3161,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(std::vector<std::string>{""},
               button->GetStringListAttribute(
-                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+                  ax::mojom::StringListAttribute::kAriaNotificationTypes));
 
     EXPECT_EQ(
         std::vector<int32_t>{
@@ -3192,11 +3192,11 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
         button->GetStringListAttribute(
             ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
 
-    // For v1 of the feature, notificationId should have a default value of
+    // For v1 of the feature, type should have a default value of
     // empty string.
     EXPECT_EQ(std::vector<std::string>{""},
               button->GetStringListAttribute(
-                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+                  ax::mojom::StringListAttribute::kAriaNotificationTypes));
 
     // For v1 of the feature, interrupt should have a default value of none.
     EXPECT_EQ(
@@ -3248,7 +3248,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(std::vector<std::string>{""},
               button->GetStringListAttribute(
-                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+                  ax::mojom::StringListAttribute::kAriaNotificationTypes));
 
     EXPECT_EQ(
         std::vector<int32_t>{
@@ -3268,7 +3268,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
   }
 }
 
-// For v1 of the feature, notificationId should have a default value of empty
+// For v1 of the feature, type should have a default value of empty
 // string and interrupt should have the default value of none.
 IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
                        TestConsecutiveAriaNotifications) {
@@ -3279,10 +3279,10 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
       </div>
       <script>
       function notify(clickedElement) {
-        clickedElement.ariaNotify("one", {"notificationId": "kOne",
+        clickedElement.ariaNotify("one", {"type": "kOne",
                                           "interrupt": "all"});
         clickedElement.ariaNotify("two", {"priority": "high"});
-        clickedElement.ariaNotify("three", {"notificationId": "kThree",
+        clickedElement.ariaNotify("three", {"type": "kThree",
                                             "interrupt": "pending"});
       }
       </script>)HTML");
@@ -3318,7 +3318,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(std::vector<std::string>({"", "", ""}),
               button->GetStringListAttribute(
-                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+                  ax::mojom::StringListAttribute::kAriaNotificationTypes));
 
     EXPECT_EQ(
         std::vector<int32_t>(
@@ -3367,7 +3367,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyV2CrossPlatformAccessibilityBrowserTest,
       }
       function otherNotify(clickedElement) {
         clickedElement.ariaNotify("world", {"interrupt": "pending",
-                                            "notificationId": "test",
+                                            "type": "test",
                                             "priority": "high"});
       }
       </script>)HTML");
@@ -3394,7 +3394,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyV2CrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(std::vector<std::string>{""},
               button->GetStringListAttribute(
-                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+                  ax::mojom::StringListAttribute::kAriaNotificationTypes));
 
     EXPECT_EQ(
         std::vector<int32_t>{
@@ -3427,7 +3427,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyV2CrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(std::vector<std::string>{"test"},
               button->GetStringListAttribute(
-                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+                  ax::mojom::StringListAttribute::kAriaNotificationTypes));
 
     EXPECT_EQ(
         std::vector<int32_t>{
@@ -3443,7 +3443,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyV2CrossPlatformAccessibilityBrowserTest,
   }
 }
 
-// For v2 of the feature, notificationId and interrupt should have their given
+// For v2 of the feature, type and interrupt should have their given
 // values.
 IN_PROC_BROWSER_TEST_F(AriaNotifyV2CrossPlatformAccessibilityBrowserTest,
                        TestConsecutiveAriaNotificationsV2) {
@@ -3459,10 +3459,10 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyV2CrossPlatformAccessibilityBrowserTest,
       </div>
       <script>
       function notify(clickedElement) {
-        clickedElement.ariaNotify("one", {"notificationId": "kOne",
+        clickedElement.ariaNotify("one", {"type": "kOne",
                                           "interrupt": "all"});
         clickedElement.ariaNotify("two", {"priority": "high"});
-        clickedElement.ariaNotify("three", {"notificationId": "kThree",
+        clickedElement.ariaNotify("three", {"type": "kThree",
                                             "interrupt": "pending"});
       }
       </script>)HTML");
@@ -3489,7 +3489,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyV2CrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(std::vector<std::string>({"kOne", "", "kThree"}),
               button->GetStringListAttribute(
-                  ax::mojom::StringListAttribute::kAriaNotificationIds));
+                  ax::mojom::StringListAttribute::kAriaNotificationTypes));
 
     EXPECT_EQ(
         std::vector<int32_t>(

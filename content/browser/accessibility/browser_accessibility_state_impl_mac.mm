@@ -16,9 +16,23 @@
 
 namespace content {
 
-namespace {
+class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
+ public:
+  BrowserAccessibilityStateImplMac();
+  ~BrowserAccessibilityStateImplMac() override {}
 
-void SetUpAccessibilityNotifications() {
+ protected:
+  void SetScreenReaderAppActive(bool is_active) override;
+};
+
+BrowserAccessibilityStateImplMac::BrowserAccessibilityStateImplMac() {
+  // Set up accessibility notifications.
+
+  // Skip this in tests that don't set up a task runner on the main thread.
+  if (!base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    return;
+  }
+
   // We need to call into gfx::Animation and WebContentsImpl on the UI thread,
   // so ensure that we setup the notification on the correct thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -35,8 +49,7 @@ void SetUpAccessibilityNotifications() {
                    queue:nil
               usingBlock:^(NSNotification* notification) {
                 gfx::Animation::UpdatePrefersReducedMotion();
-                BrowserAccessibilityStateImpl::GetInstance()
-                    ->NotifyWebContentsPreferencesChanged();
+                NotifyWebContentsPreferencesChanged();
               }];
 
   // Set up KVO monitoring of VoiceOver state changes. KVO best practices
@@ -44,30 +57,11 @@ void SetUpAccessibilityNotifications() {
   // static variable within the class". This allows observers to disambiguate
   // notifications (where a class and its superclass, say, are observing the
   // same property). We'll use the global accessibility object.
-  [[NSWorkspace sharedWorkspace]
-      addObserver:NSApp
-       forKeyPath:@"voiceOverEnabled"
-          options:(NSKeyValueObservingOptionInitial |
-                   NSKeyValueObservingOptionNew)
-          context:BrowserAccessibilityStateImpl::GetInstance()];
-}
-}  // namespace
-
-class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
- public:
-  BrowserAccessibilityStateImplMac() = default;
-  ~BrowserAccessibilityStateImplMac() override {}
-
- protected:
-  void InitBackgroundTasks() override;
-  void SetScreenReaderAppActive(bool is_active) override;
-};
-
-void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
-  BrowserAccessibilityStateImpl::InitBackgroundTasks();
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SetUpAccessibilityNotifications));
+  [[NSWorkspace sharedWorkspace] addObserver:NSApp
+                                  forKeyPath:@"voiceOverEnabled"
+                                     options:(NSKeyValueObservingOptionInitial |
+                                              NSKeyValueObservingOptionNew)
+                                     context:this];
 }
 
 void BrowserAccessibilityStateImplMac::SetScreenReaderAppActive(

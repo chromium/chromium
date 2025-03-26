@@ -1343,8 +1343,8 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorStagingParams[] = {
      "862721868538/locations/global/collections/default_collection/engines/"
      "teamfood-v11/completionConfig:completeQuery"}};
 const FeatureEntry::FeatureParam kOmniboxSearchAggregatorAlternateParams[] = {
-    {"name", "Agentspace (alternate)"},
-    {"shortcut", "agentspace"},
+    {"name", "NeuraVibe"},
+    {"shortcut", "neura"},
     {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
     {"search_url",
      "https://vertexaisearch.cloud.google.com/home/cid/"
@@ -1836,6 +1836,107 @@ const FeatureEntry::FeatureVariation kOrganicRepeatableQueriesVariations[] = {
     {"12+ uses, once in last 7d", kRepeatableQueries_12Searches_7Days,
      std::size(kRepeatableQueries_12Searches_7Days), nullptr},
 };
+
+const FeatureEntry::FeatureParam kNtpZps0RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumNtpZpsRecentSearches.name, "0"}};
+const FeatureEntry::FeatureParam kNtpZps5RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumNtpZpsRecentSearches.name, "5"}};
+const FeatureEntry::FeatureParam kNtpZps10RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumNtpZpsRecentSearches.name, "10"}};
+const FeatureEntry::FeatureParam kNtpZps15RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumNtpZpsRecentSearches.name, "15"}};
+const FeatureEntry::FeatureVariation kNumNtpZpsRecentSearches[] = {
+    {"No recents", kNtpZps0RecentSearches, std::size(kNtpZps0RecentSearches)},
+    {"5 recents", kNtpZps5RecentSearches, std::size(kNtpZps5RecentSearches)},
+    {"10 recents", kNtpZps10RecentSearches, std::size(kNtpZps10RecentSearches)},
+    {"15 recents", kNtpZps15RecentSearches, std::size(kNtpZps15RecentSearches)},
+};
+const FeatureEntry::FeatureParam kNtpZps0TrendingSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumNtpZpsTrendingSearches.name, "0"}};
+const FeatureEntry::FeatureParam kNtpZps5TrendingSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumNtpZpsTrendingSearches.name, "5"}};
+const FeatureEntry::FeatureVariation kNumNtpZpsTrendingSearches[] = {
+    {"No trends", kNtpZps0TrendingSearches,
+     std::size(kNtpZps0TrendingSearches)},
+    {"5 trends", kNtpZps5TrendingSearches, std::size(kNtpZps5TrendingSearches)},
+};
+const FeatureEntry::FeatureParam kWebZps0RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsRecentSearches.name, "0"}};
+const FeatureEntry::FeatureParam kWebZps5RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsRecentSearches.name, "5"}};
+const FeatureEntry::FeatureParam kWebZps10RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsRecentSearches.name, "10"}};
+const FeatureEntry::FeatureParam kWebZps15RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsRecentSearches.name, "15"}};
+const FeatureEntry::FeatureVariation kNumWebZpsRecentSearches[] = {
+    {"No recents", kWebZps0RecentSearches, std::size(kWebZps0RecentSearches)},
+    {"5 recents", kWebZps5RecentSearches, std::size(kWebZps5RecentSearches)},
+    {"10 recents", kWebZps10RecentSearches, std::size(kWebZps10RecentSearches)},
+    {"15 recents", kWebZps15RecentSearches, std::size(kWebZps15RecentSearches)},
+};
+const FeatureEntry::FeatureParam kWebZps0RelatedSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsRelatedSearches.name, "0"}};
+const FeatureEntry::FeatureParam kWebZps5RelatedSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsRelatedSearches.name, "5"}};
+const FeatureEntry::FeatureParam kWebZps10RelatedSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsRelatedSearches.name, "10"}};
+const FeatureEntry::FeatureParam kWebZps15RelatedSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsRelatedSearches.name, "15"}};
+const FeatureEntry::FeatureVariation kNumWebZpsRelatedSearches[] = {
+    {"No related", kWebZps0RelatedSearches, std::size(kWebZps0RelatedSearches)},
+    {"5 related", kWebZps5RelatedSearches, std::size(kWebZps5RelatedSearches)},
+    {"10 related", kWebZps10RelatedSearches,
+     std::size(kWebZps10RelatedSearches)},
+    {"15 related", kWebZps15RelatedSearches,
+     std::size(kWebZps15RelatedSearches)},
+};
+const FeatureEntry::FeatureParam kWebZps0MostVisitedUrls[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsMostVisitedUrls.name, "0"}};
+const FeatureEntry::FeatureParam kWebZps5MostVisitedUrls[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsMostVisitedUrls.name, "5"}};
+const FeatureEntry::FeatureParam kWebZps10MostVisitedUrls[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsMostVisitedUrls.name, "10"}};
+const FeatureEntry::FeatureParam kWebZps15MostVisitedUrls[] = {
+    {OmniboxFieldTrial::kOmniboxNumWebZpsMostVisitedUrls.name, "15"}};
+const FeatureEntry::FeatureVariation kNumWebZpsMostVisitedUrls[] = {
+    {"No related", kWebZps0MostVisitedUrls, std::size(kWebZps0MostVisitedUrls)},
+    {"5 related", kWebZps5MostVisitedUrls, std::size(kWebZps5MostVisitedUrls)},
+    {"10 related", kWebZps10MostVisitedUrls,
+     std::size(kWebZps10MostVisitedUrls)},
+    {"15 related", kWebZps15MostVisitedUrls,
+     std::size(kWebZps15MostVisitedUrls)},
+};
+const FeatureEntry::FeatureParam kSrpZps0RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumSrpZpsRecentSearches.name, "0"}};
+const FeatureEntry::FeatureParam kSrpZps5RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumSrpZpsRecentSearches.name, "5"}};
+const FeatureEntry::FeatureParam kSrpZps10RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumSrpZpsRecentSearches.name, "10"}};
+const FeatureEntry::FeatureParam kSrpZps15RecentSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumSrpZpsRecentSearches.name, "15"}};
+const FeatureEntry::FeatureVariation kNumSrpZpsRecentSearches[] = {
+    {"No recents", kSrpZps0RecentSearches, std::size(kSrpZps0RecentSearches)},
+    {"5 recents", kSrpZps5RecentSearches, std::size(kSrpZps5RecentSearches)},
+    {"10 recents", kSrpZps10RecentSearches, std::size(kSrpZps10RecentSearches)},
+    {"15 recents", kSrpZps15RecentSearches, std::size(kSrpZps15RecentSearches)},
+};
+const FeatureEntry::FeatureParam kSrpZps0RelatedSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumSrpZpsRelatedSearches.name, "0"}};
+const FeatureEntry::FeatureParam kSrpZps5RelatedSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumSrpZpsRelatedSearches.name, "5"}};
+const FeatureEntry::FeatureParam kSrpZps10RelatedSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumSrpZpsRelatedSearches.name, "10"}};
+const FeatureEntry::FeatureParam kSrpZps15RelatedSearches[] = {
+    {OmniboxFieldTrial::kOmniboxNumSrpZpsRelatedSearches.name, "15"}};
+const FeatureEntry::FeatureVariation kNumSrpZpsRelatedSearches[] = {
+    {"No related", kSrpZps0RelatedSearches, std::size(kSrpZps0RelatedSearches)},
+    {"5 related", kSrpZps5RelatedSearches, std::size(kSrpZps5RelatedSearches)},
+    {"10 related", kSrpZps10RelatedSearches,
+     std::size(kSrpZps10RelatedSearches)},
+    {"15 related", kSrpZps15RelatedSearches,
+     std::size(kSrpZps15RelatedSearches)},
+};
+
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingPinned[] = {
     {tabs::kMinimumTabWidthFeatureParameterName, "54"}};
@@ -2706,11 +2807,28 @@ const FeatureEntry::FeatureParam
     kAndroidAppIntegrationMultiDataSource_UseSchemaV1[] = {
         {"use_schema_v1", "true"}};
 
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck[] = {
+        {"multi_data_source_skip_device_check", "true"}};
+
+const FeatureEntry::FeatureParam
+    kAndroidAppIntegrationMultiDataSource_UseSchemaV1AndSkipDeviceCheck[] = {
+        {"multi_data_source_skip_device_check", "true"},
+        {"use_schema_v1", "true"}};
+
 const FeatureEntry::FeatureVariation
     kAndroidAppIntegrationMultiDataSourceVariations[] = {
         {"Force to use schema v1",
          kAndroidAppIntegrationMultiDataSource_UseSchemaV1,
-         std::size(kAndroidAppIntegrationMultiDataSource_UseSchemaV1),
+         std::size(kAndroidAppIntegrationMultiDataSource_UseSchemaV1), nullptr},
+        {"Skip device check",
+         kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck,
+         std::size(kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck),
+         nullptr},
+        {"Force to use schema v1 and skip device check",
+         kAndroidAppIntegrationMultiDataSource_UseSchemaV1AndSkipDeviceCheck,
+         std::size(
+             kAndroidAppIntegrationMultiDataSource_UseSchemaV1AndSkipDeviceCheck),
          nullptr}};
 
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
@@ -6697,6 +6815,49 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOrganicRepeatableQueriesVariations,
                                     "OrganicRepeatableQueries")},
 
+    {"omnibox-num-ntp-zps-recent-searches",
+     flag_descriptions::kOmniboxNumNtpZpsRecentSearchesName,
+     flag_descriptions::kOmniboxNumNtpZpsRecentSearchesDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kNumNtpZpsRecentSearches,
+                                    kNumNtpZpsRecentSearches,
+                                    "PowerTools")},
+    {"omnibox-num-ntp-zps-trending-searches",
+     flag_descriptions::kOmniboxNumNtpZpsTrendingSearchesName,
+     flag_descriptions::kOmniboxNumNtpZpsTrendingSearchesDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kNumNtpZpsTrendingSearches,
+                                    kNumNtpZpsTrendingSearches,
+                                    "PowerTools")},
+    {"omnibox-num-web-zps-recent-searches",
+     flag_descriptions::kOmniboxNumWebZpsRecentSearchesName,
+     flag_descriptions::kOmniboxNumWebZpsRecentSearchesDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kNumWebZpsRecentSearches,
+                                    kNumWebZpsRecentSearches,
+                                    "PowerTools")},
+    {"omnibox-num-web-zps-related-searches",
+     flag_descriptions::kOmniboxNumWebZpsRelatedSearchesName,
+     flag_descriptions::kOmniboxNumWebZpsRelatedSearchesDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kNumWebZpsRelatedSearches,
+                                    kNumWebZpsRelatedSearches,
+                                    "PowerTools")},
+    {"omnibox-num-web-zps-most-visited-urls",
+     flag_descriptions::kOmniboxNumWebZpsMostVisitedUrlsName,
+     flag_descriptions::kOmniboxNumWebZpsMostVisitedUrlsDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kNumWebZpsMostVisitedUrls,
+                                    kNumWebZpsMostVisitedUrls,
+                                    "PowerTools")},
+    {"omnibox-num-srp-zps-recent-searches",
+     flag_descriptions::kOmniboxNumSrpZpsRecentSearchesName,
+     flag_descriptions::kOmniboxNumSrpZpsRecentSearchesDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kNumSrpZpsRecentSearches,
+                                    kNumSrpZpsRecentSearches,
+                                    "PowerTools")},
+    {"omnibox-num-srp-zps-related-searches",
+     flag_descriptions::kOmniboxNumSrpZpsRelatedSearchesName,
+     flag_descriptions::kOmniboxNumSrpZpsRelatedSearchesDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kNumSrpZpsRelatedSearches,
+                                    kNumSrpZpsRelatedSearches,
+                                    "PowerTools")},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     {"history-embeddings", flag_descriptions::kHistoryEmbeddingsName,
@@ -7365,11 +7526,6 @@ const FeatureEntry kFeatureEntries[] = {
          kTabSwitcherColorBlendAnimateVariations,
          "TabSwitcherColorBlendAnimateVariations")},
 
-    {"tab-switcher-context-menu-android",
-     flag_descriptions::kTabSwitcherContextMenuAndroidName,
-     flag_descriptions::kTabSwitcherContextMenuAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabSwitcherContextMenuAndroid)},
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"show-warnings-for-suspicious-notifications",
@@ -8036,6 +8192,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3EnhancedNetworkTts)},
 
+    {"enable-accessibility-manifest-v3-switch-access",
+     flag_descriptions::kAccessibilityManifestV3SwitchAccessName,
+     flag_descriptions::kAccessibilityManifestV3SwitchAccessDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityManifestV3SwitchAccess)},
+
     {"enable-accessibility-mousekeys",
      flag_descriptions::kAccessibilityMouseKeysName,
      flag_descriptions::kAccessibilityMouseKeysDescription, kOsCrOS,
@@ -8331,11 +8493,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseWallpaperStagingUrlDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kUseWallpaperStagingUrl)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-    {"autofill-enable-card-product-name",
-     flag_descriptions::kAutofillEnableCardProductNameName,
-     flag_descriptions::kAutofillEnableCardProductNameDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardProductName)},
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW) && BUILDFLAG(IS_ANDROID)
     {"paint-preview-demo", flag_descriptions::kPaintPreviewDemoName,
@@ -8827,6 +8984,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(optimization_guide::features::kPushNotifications)},
 #endif
+
+    {"fedcm-alternative-identifiers",
+     flag_descriptions::kFedCmAlternativeIdentifiersName,
+     flag_descriptions::kFedCmAlternativeIdentifiersDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmAlternativeIdentifiers)},
 
     {"fedcm-authz", flag_descriptions::kFedCmAuthzName,
      flag_descriptions::kFedCmAuthzDescription, kOsAll,
@@ -11346,12 +11508,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)},
 
-    {"autofill-disable-local-card-migration",
-     flag_descriptions::kAutofillDisableLocalCardMigrationName,
-     flag_descriptions::kAutofillDisableLocalCardMigrationDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillDisableLocalCardMigration)},
     {"predictable-reported-quota",
      flag_descriptions::kPredictableReportedQuotaName,
      flag_descriptions::kPredictableReportedQuotaDescription, kOsAll,
@@ -11925,6 +12081,15 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROME_OS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"notebook-lm-app-preinstall",
+     flag_descriptions::kNotebookLmAppPreinstallName,
+     flag_descriptions::kNotebookLmAppPreinstallDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kNotebookLmAppPreinstall)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+    // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

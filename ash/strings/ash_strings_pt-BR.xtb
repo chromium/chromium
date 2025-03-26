@@ -149,6 +149,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1455242230282523554">Mostrar configurações de idioma</translation>
 <translation id="1459693405370120464">Clima</translation>
 <translation id="1460620680449458626">O som está desativado.</translation>
+<translation id="1462439140224375968">Documento Google criado</translation>
 <translation id="14648076227129703">Dá acesso à câmera para os apps <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e a todos os apps e sites com essa permissão</translation>
 <translation id="1467432559032391204">À esquerda</translation>
 <translation id="146902737843070955">O administrador solicitou essa mudança</translation>
@@ -593,6 +594,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="301584155502740476">Consulte detalhes do ponto de acesso. O ponto de acesso está desativado.</translation>
 <translation id="3017079585324758401">Plano de fundo</translation>
 <translation id="3018135054368884502">Avançar mídia</translation>
+<translation id="3026897869154397692">Conteúdo adicionado à Agenda</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3033912566804961911">Combinar com <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Abrir arquivos</translation>
@@ -1481,6 +1483,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5825969630400862129">Configurações de dispositivos conectados</translation>
 <translation id="5830180081891717894">Mais <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> para <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Pesquisar com o Google</translation>
 <translation id="5841296711770970362">Ir para a próxima faixa</translation>
 <translation id="5842553299352339114">O ponto de acesso do <ph name="DEVICE_NAME" /> está ativado. Nenhum dispositivo conectado</translation>
 <translation id="584525477304726060">Para maximizar a janela, mantenha-a pressionada</translation>
@@ -1894,6 +1897,7 @@ Nova instalação</translation>
 <translation id="7228968829656641943">Selecione para pesquisar na tela. Pressione a tecla Tab e, em seguida, a barra de espaço para ativar a navegação pelo teclado.</translation>
 <translation id="7229029500464092426">Memória usada: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Os dois botões do mouse</translation>
+<translation id="7240636904654154599">Planilha Google criada</translation>
 <translation id="7244725679040769470">Tempo restante: cerca de <ph name="PERCENTAGE" /> (%). Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este Chromebook precisa ser reiniciado para que uma atualização seja aplicada. Isso pode demorar até um minuto.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8921624153894383499">O Google Assistente não fala esse idioma.</translation>
 <translation id="8926951137623668982">Estante sempre oculta</translation>
 <translation id="8929566928381252430">Quer usar a tecla Caps Lock? Use</translation>
+<translation id="8929623844713377237">Contato criado</translation>
 <translation id="8934418770423095813">Criar um arquivo do Documentos Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="8936501819958976551">desativado</translation>

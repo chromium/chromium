@@ -40,6 +40,16 @@ const int kIconSourceSize = 48;
 
 using ArcAppConfirmCallback = base::OnceCallback<void(bool accept)>;
 
+std::unique_ptr<ArcAppListPrefs::AppInfo> GetArcAppInfo(
+    Profile* profile,
+    const std::string& app_id) {
+  ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile);
+  DCHECK(arc_prefs);
+  return arc_prefs->GetApp(app_id);
+}
+
+}  // namespace
+
 class ArcAppDialogView : public views::DialogDelegateView,
                          public AppIconLoaderDelegate {
   METADATA_HEADER(ArcAppDialogView, views::DialogDelegateView)
@@ -201,16 +211,6 @@ void ArcAppDialogView::OnAppImageUpdated(
 
 BEGIN_METADATA(ArcAppDialogView)
 END_METADATA
-
-std::unique_ptr<ArcAppListPrefs::AppInfo> GetArcAppInfo(
-    Profile* profile,
-    const std::string& app_id) {
-  ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile);
-  DCHECK(arc_prefs);
-  return arc_prefs->GetApp(app_id);
-}
-
-}  // namespace
 
 void ShowUsbScanDeviceListPermissionDialog(Profile* profile,
                                            const std::string& app_id,

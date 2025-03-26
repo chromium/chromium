@@ -469,6 +469,7 @@ TEST_F(DefaultBrowserBannerPromoAppAgentTest,
   GetWebStateList(scene_state_2)->ActivateWebStateAt(0);
 
   [agent_ appState:app_state_ sceneConnected:scene_state_2];
+  scene_state_2.profileState = profile_state_;
 
   scene_state_2.activationLevel = SceneActivationLevelForegroundActive;
 

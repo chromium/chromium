@@ -146,6 +146,9 @@ void DiffNavigationEntries(const fuchsia::web::NavigationState& old_entry,
 
 }  // namespace
 
+const void* const NavigationControllerImpl::kAbortedRequestKey =
+    &NavigationControllerImpl::kAbortedRequestKey;
+
 NavigationControllerImpl::NavigationControllerImpl(
     content::WebContents* web_contents,
     void* parent_for_trace_flow)
@@ -468,8 +471,15 @@ void NavigationControllerImpl::DidFinishNavigation(
   }
 
   active_navigation_ = nullptr;
+
+  // Page load may be aborted by the `NavigationPolicyProvider`. It's not
+  // reported as an error.
+  bool cancelled_by_navigation_policy_handler =
+      !!navigation_handle->GetUserData(kAbortedRequestKey);
   uncommitted_load_error_ = !navigation_handle->HasCommitted() &&
-                            navigation_handle->GetNetErrorCode() != net::OK;
+                            navigation_handle->GetNetErrorCode() != net::OK &&
+                            !cancelled_by_navigation_policy_handler;
+
   last_error_code_ = navigation_handle->GetNetErrorCode();
 
   OnNavigationEntryChanged();

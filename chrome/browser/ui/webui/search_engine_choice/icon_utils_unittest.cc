@@ -16,6 +16,8 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::country_codes::CountryId;
+
 class IconUtilsTest : public ::testing::Test {
  public:
   ~IconUtilsTest() override = default;
@@ -38,9 +40,10 @@ TEST_F(IconUtilsTest, GetSearchEngineGeneratedIconPath) {
   ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kSearchEngineChoiceCountry));
 
-  for (int country_id : regional_capabilities::kEeaChoiceCountriesIds) {
+  for (CountryId country_id : regional_capabilities::kEeaChoiceCountriesIds) {
     search_engine_choice_service()->ClearCountryIdCacheForTesting();
-    pref_service()->SetInteger(country_codes::kCountryIDAtInstall, country_id);
+    pref_service()->SetInteger(country_codes::kCountryIDAtInstall,
+                               country_id.Serialize());
     std::vector<std::unique_ptr<TemplateURLData>> urls =
         prepopulate_data_resolver().GetPrepopulatedEngines();
     for (const std::unique_ptr<TemplateURLData>& url : urls) {

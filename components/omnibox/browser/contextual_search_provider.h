@@ -22,8 +22,9 @@ class SimpleURLLoader;
 // Autocomplete provider for searches based on page context, which includes
 // page content, URL, possibly a screenshot, etc. Although some contextual
 // suggestions may be shown without additional query input, this is functionally
-// distinct from the ZeroSuggestProvider. It is meant to run only when
-// explicitly invoked via the '@page' keyword mode.
+// distinct from the ZeroSuggestProvider. It does its main work when explicitly
+// invoked via the '@page' keyword mode, and also surfaces action matches for
+// empty/zero inputs to help the user find their way into the '@page' scope.
 class ContextualSearchProvider : public BaseSearchProvider {
  public:
   ContextualSearchProvider(AutocompleteProviderClient* client,
@@ -59,6 +60,16 @@ class ContextualSearchProvider : public BaseSearchProvider {
   void ConvertSuggestResultsToAutocompleteMatches(
       const SearchSuggestionParser::Results& results,
       const AutocompleteInput& input);
+
+  // Populates `matches_` with special matches that help the user find their
+  // way into the '@page' scope.
+  void AddPageSearchActionMatches();
+
+  // Adds a placeholder match that can keep the omnibox in '@page' keyword mode.
+  void AddPlaceholderMatch(std::u16string_view contents);
+
+  // Keyword taken from most recently started autocomplete input.
+  std::u16string input_keyword_;
 
   // Loader used to retrieve suggest results.
   std::unique_ptr<network::SimpleURLLoader> loader_;

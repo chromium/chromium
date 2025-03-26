@@ -16,11 +16,15 @@
   offer: [
     {
       protocol: [
-        "fuchsia.logger.LogSink",
         "fuchsia.sysinfo.SysInfo",
         "fuchsia.sysmem.Allocator",
         "fuchsia.sysmem2.Allocator",
       ],
+      from: "parent",
+      to: "#isolated_codec_factory",
+    },
+    {
+      dictionary: "diagnostics",
       from: "parent",
       to: "#isolated_codec_factory",
     },

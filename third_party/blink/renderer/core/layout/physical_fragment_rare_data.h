@@ -166,7 +166,7 @@ class PhysicalFragmentRareData
   Member<const TableColumnGeometries> table_column_geometries_;
   Member<const MathMLPaintInfo> mathml_paint_info_;
   Member<const HeapVector<Member<Node>>> reading_flow_nodes_;
-  Member<const GapFragmentData::GapGeometry> gap_geometry_;
+  Member<const GapGeometry> gap_geometry_;
 };
 
 }  // namespace blink

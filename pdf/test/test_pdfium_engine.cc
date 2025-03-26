@@ -53,8 +53,9 @@ uint32_t TestPDFiumEngine::GetLoadedByteSize() {
   return sizeof(kLoadedData);
 }
 
-bool TestPDFiumEngine::ReadLoadedBytes(base::span<uint8_t> buffer) {
-  buffer.copy_from(base::span(kLoadedData).first(buffer.size()));
+bool TestPDFiumEngine::ReadLoadedBytes(uint32_t offset,
+                                       base::span<uint8_t> buffer) {
+  buffer.copy_from(base::span(kLoadedData).subspan(offset, buffer.size()));
   return true;
 }
 

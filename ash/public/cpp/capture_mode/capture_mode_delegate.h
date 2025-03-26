@@ -33,10 +33,6 @@ namespace media::mojom {
 class AudioStreamFactory;
 }  // namespace media::mojom
 
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
-
 namespace recording::mojom {
 class RecordingService;
 }  // namespace recording::mojom
@@ -257,22 +253,17 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void DetectTextInImage(const SkBitmap& image,
                                  OnTextDetectionComplete callback) = 0;
 
-  // Gets the OAuth2 access token for the active user's primary account, used
-  // for making a Lens Web API POST request.
-  virtual void GetPrimaryAccountAccessToken(
-      base::RepeatingCallback<void(const std::string& access_token)>
-          callback) = 0;
-
-  // Gets the POST request URL for a Lens Web API image search, and encodes the
-  // `image` data into `post_content` to be used as the body of the request.
-  // Other URL parameters may need to be appended to the returned GURL.
-  virtual GURL GetBaseSearchURLAndPostContent(
+  // Sends the captured `image` to the Lens Web API for image search and text
+  // detection (if enabled). Invokes `search_callback` when the image search
+  // response is fetched, then `text_callback` when the text detection response
+  // is fetched. Invokes `error_callback` if an error occurs or an unexpected
+  // response is received.
+  virtual void SendLensWebRegionSearch(
       const gfx::Image& image,
-      gfx::Size image_original_size,
-      TemplateURLRef::PostContent* post_content) = 0;
-
-  virtual scoped_refptr<network::SharedURLLoaderFactory>
-  GetSharedURLLoaderFactory() const = 0;
+      const bool is_standalone_session,
+      OnSearchUrlFetchedCallback search_callback,
+      OnTextDetectionComplete text_callback,
+      base::OnceCallback<void()> error_callback) = 0;
 
   // Sends the captured `region` and `image` to the backend. Invokes `callback`
   // when the response is fetched.

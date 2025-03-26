@@ -273,76 +273,31 @@ void DedicatedWorker::Start() {
   // calling into the debugger can cause a breakpoint.
   v8_stack_trace_id_ = ThreadDebugger::From(GetExecutionContext()->GetIsolate())
                            ->StoreCurrentStackTrace("Worker Created");
-  if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink.worker",
-                                      "PlzDedicatedWorker Specific Setup",
-                                      TRACE_ID_LOCAL(this));
-    // For classic script, always use "same-origin" credentials mode.
-    // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
-    // For module script, respect the credentials mode specified by
-    // WorkerOptions.
-    // https://html.spec.whatwg.org/C/#workeroptions
-    auto credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
-    if (options_->type() == script_type_names::kModule) {
-      credentials_mode = Request::V8RequestCredentialsToCredentialsMode(
-          options_->credentials().AsEnum());
-    }
 
-    mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
-    if (script_request_url_.ProtocolIs("blob")) {
-      GetExecutionContext()->GetPublicURLManager().ResolveAsBlobURLToken(
-          script_request_url_, blob_url_token.InitWithNewPipeAndPassReceiver(),
-          /*is_top_level_navigation=*/false);
-    }
-
-    factory_client_->CreateWorkerHost(
-        token_, script_request_url_, credentials_mode,
-        WebFetchClientSettingsObject(*outside_fetch_client_settings_object_),
-        std::move(blob_url_token),
-        GetExecutionContext()->GetStorageAccessApiStatus());
-    // Continue in OnScriptLoadStarted() or OnScriptLoadStartFailed().
-    return;
+  // For classic script, always use "same-origin" credentials mode.
+  // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
+  // For module script, respect the credentials mode specified by
+  // WorkerOptions.
+  // https://html.spec.whatwg.org/C/#workeroptions
+  auto credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
+  if (options_->type() == script_type_names::kModule) {
+    credentials_mode = Request::V8RequestCredentialsToCredentialsMode(
+        options_->credentials().AsEnum());
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink.worker",
-                                    "LegacyDedicatedWorker Specific Setup",
-                                    TRACE_ID_LOCAL(this));
-  mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-      blob_url_loader_factory;
+  mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
   if (script_request_url_.ProtocolIs("blob")) {
-    GetExecutionContext()->GetPublicURLManager().Resolve(
-        script_request_url_,
-        blob_url_loader_factory.InitWithNewPipeAndPassReceiver());
+    GetExecutionContext()->GetPublicURLManager().ResolveAsBlobURLToken(
+        script_request_url_, blob_url_token.InitWithNewPipeAndPassReceiver(),
+        /*is_top_level_navigation=*/false);
   }
 
-  // Calculate the origin on the renderer side when PlzDedicatedWorker is not
-  // enabled, as the starting of the worker will not wait for the browser side
-  // host creation and origin calculation. This follows the existing logic at
-  // worker_global_scope.cc, so see the comments there for details.
-  if (script_request_url_.ProtocolIsData()) {
-    origin_ =
-        GetExecutionContext()->GetSecurityOrigin()->DeriveNewOpaqueOrigin();
-  } else {
-    origin_ = GetExecutionContext()->GetSecurityOrigin()->IsolatedCopy();
-  }
-
-  if (GetExecutionContext()->GetSecurityOrigin()->IsLocal()) {
-    // Local resources always have empty COEP, and Worker creation
-    // from a blob URL in a local resource cannot work with
-    // asynchronous OnHostCreated call, so we call it directly here.
-    // See https://crbug.com/1101603#c8.
-    factory_client_->CreateWorkerHostDeprecated(token_, script_request_url_,
-                                                WebSecurityOrigin(origin_),
-                                                base::DoNothing());
-    OnHostCreated(std::move(blob_url_loader_factory),
-                  network::CrossOriginEmbedderPolicy(), mojo::NullRemote());
-    return;
-  }
-
-  factory_client_->CreateWorkerHostDeprecated(
-      token_, script_request_url_, WebSecurityOrigin(origin_),
-      WTF::BindOnce(&DedicatedWorker::OnHostCreated, WrapWeakPersistent(this),
-                    std::move(blob_url_loader_factory)));
+  factory_client_->CreateWorkerHost(
+      token_, script_request_url_, credentials_mode,
+      WebFetchClientSettingsObject(*outside_fetch_client_settings_object_),
+      std::move(blob_url_token),
+      GetExecutionContext()->GetStorageAccessApiStatus());
+  // Continue in OnScriptLoadStarted() or OnScriptLoadStartFailed().
 }
 
 void DedicatedWorker::OnHostCreated(

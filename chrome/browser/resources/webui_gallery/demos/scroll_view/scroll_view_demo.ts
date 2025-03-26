@@ -38,7 +38,7 @@ export class ScrollViewDemoElement extends ScrollViewDemoElementBase {
     };
   }
 
-  protected items_: number[] = [0, 1, 2, 3];
+  protected accessor items_: number[] = [0, 1, 2, 3];
 
   protected onItemsLengthChanged_() {
     const length = this.$.itemsLengthSlider.value;

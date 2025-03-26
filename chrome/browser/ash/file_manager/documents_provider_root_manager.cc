@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
@@ -78,8 +79,8 @@ class BitmapWrapper {
     if (size1 != size2) {
       return size1 < size2;
     }
-    return memcmp(bitmap_->getAddr32(0, 0), other.bitmap_->getAddr32(0, 0),
-                  size1) < 0;
+    return UNSAFE_TODO(memcmp(bitmap_->getAddr32(0, 0),
+                              other.bitmap_->getAddr32(0, 0), size1)) < 0;
   }
 
  private:

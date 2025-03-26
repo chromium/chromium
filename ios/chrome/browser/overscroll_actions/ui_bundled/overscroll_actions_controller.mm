@@ -128,7 +128,6 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 @property(nonatomic, assign) CGPoint contentOffset;
 @property(nonatomic, assign) UIEdgeInsets scrollIndicatorInsets;
 @property(nonatomic, readonly) UIPanGestureRecognizer* panGestureRecognizer;
-@property(nonatomic, readonly) BOOL isZooming;
 
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated;
 - (void)addGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer;

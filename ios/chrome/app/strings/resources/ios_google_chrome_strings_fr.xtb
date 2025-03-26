@@ -6,7 +6,6 @@
 <translation id="1143896152279775643">Votre mot de passe sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">Ouvrir un nouvel onglet dans Chrome</translation>
 <translation id="1166460004393506534">Supprimer les données de navigation dans Chrome</translation>
-<translation id="1171255741903316750">Activez "Verrouiller les onglets de navigation privée lorsque vous fermez Chrome"</translation>
 <translation id="1179527450541388808">Accédez plus rapidement à Chrome depuis le dock de l'écran d'accueil de votre iPad.</translation>
 <translation id="1180362651362502943">Continuez d'utiliser les données Chrome de votre compte Google.</translation>
 <translation id="1200396280085622191">Utilisez Chrome chaque fois que vous appuyez sur des liens dans des messages et d'autres applis.</translation>
@@ -178,6 +177,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="5716154293141027663">Chrome s'ouvrira chaque fois que vous appuierez sur des liens dans d'autres applis</translation>
 <translation id="5752489513673657785">Un flux personnalisé pour vous par Google</translation>
 <translation id="5772407442571703917">Téléchargez Chrome ici.</translation>
+<translation id="5777468213129569553">Ouvrir Chrome</translation>
 <translation id="5779767936254214055">Verrouillez vos onglets de navigation privée lorsque vous quittez Chrome ou passez à une autre appli.</translation>
 <translation id="5808435672482059465">Afficher votre historique Chrome</translation>
 <translation id="5833027901704861726">Certaines de vos données Chrome n'ont pas encore été enregistrées dans <ph name="EMAIL" />.

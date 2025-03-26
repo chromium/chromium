@@ -304,14 +304,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 + (instancetype)
     savePasswordsControllerForBrowser:(Browser*)browser
                              delegate:(id<SettingsNavigationControllerDelegate>)
-                                          delegate
-                     showCancelButton:(BOOL)showCancelButton {
+                                          delegate {
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-  [navigationController showSavedPasswordsAndShowCancelButton:showCancelButton];
+  [navigationController showSavedPasswords];
 
   return navigationController;
 }
@@ -819,18 +818,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.manageSyncSettingsCoordinator = nil;
 }
 
-// Shows the saved passwords. If `showCancelButton` is true, adds a cancel
-// button as the left navigation item.
-- (void)showSavedPasswordsAndShowCancelButton:(BOOL)showCancelButton {
+// Shows the saved passwords.
+- (void)showSavedPasswords {
   self.savedPasswordsCoordinator = [[PasswordsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
   self.savedPasswordsCoordinator.delegate = self;
   [self.savedPasswordsCoordinator start];
-  if (showCancelButton) {
-    [self.savedPasswordsCoordinator.viewController navigationItem]
-        .leftBarButtonItem = [self cancelButton];
-  }
 }
 
 - (void)showPasswordManagerSearchPage {
@@ -1140,9 +1134,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // TODO(crbug.com/41352590) : Do not pass `baseViewController` through
 // dispatcher.
 - (void)showSavedPasswordsSettingsFromViewController:
-            (UIViewController*)baseViewController
-                                    showCancelButton:(BOOL)showCancelButton {
-  [self showSavedPasswordsAndShowCancelButton:showCancelButton];
+    (UIViewController*)baseViewController {
+  [self showSavedPasswords];
 }
 
 - (void)showAddressDetails:(const autofill::AutofillProfile)address

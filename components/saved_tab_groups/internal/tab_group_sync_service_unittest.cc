@@ -130,7 +130,7 @@ class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
   MockTabGroupSyncCoordinator() = default;
   ~MockTabGroupSyncCoordinator() override = default;
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(std::optional<LocalTabGroupID>,
               HandleOpenTabGroupRequest,
               (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
   MOCK_METHOD(void,

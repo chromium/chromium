@@ -24,7 +24,7 @@ class EmptyTabGroupSyncDelegate : public TabGroupSyncDelegate {
       delete;
 
   // TabGroupSyncDelegate implementation.
-  void HandleOpenTabGroupRequest(
+  std::optional<LocalTabGroupID> HandleOpenTabGroupRequest(
       const base::Uuid& sync_tab_group_id,
       std::unique_ptr<TabGroupActionContext> context) override;
   std::unique_ptr<ScopedLocalObservationPauser>

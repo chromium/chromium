@@ -8,9 +8,9 @@
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/mock_preview_server_proxy.h"
-#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -109,7 +109,7 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
   CHECK(IsTabGroupSyncEnabled());
   for (NSInteger i = 0; i < numberOfGroups; i++) {
     NSString* collaborationID =
-        [NSString stringWithFormat:@"CollaborationIDd%ld", i];
+        [NSString stringWithFormat:@"CollaborationID%ld", i];
 
     // Create a shared tab group in the fake server. The user (`fakeIdentity1`)
     // will join the group as a member.
@@ -124,7 +124,14 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
   std::vector<tab_groups::SavedTabGroup> groups =
       GetTabGroupSyncService()->GetAllGroups();
   tab_groups::SavedTabGroup groupToRemove = groups[index];
-  chrome_test_util::DeleteTabOrGroupFromFakeServer(groupToRemove.saved_guid());
+
+  if (groupToRemove.is_shared_tab_group()) {
+    chrome_test_util::DeleteSharedGroupFromFakeServer(
+        groupToRemove.saved_guid());
+  } else {
+    chrome_test_util::DeleteTabOrGroupFromFakeServer(
+        groupToRemove.saved_guid());
+  }
 
   chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
 }
@@ -134,8 +141,8 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 
   std::vector<tab_groups::SavedTabGroup> groups =
       GetTabGroupSyncService()->GetAllGroups();
-  for (const tab_groups::SavedTabGroup& group : groups) {
-    chrome_test_util::DeleteTabOrGroupFromFakeServer(group.saved_guid());
+  for (unsigned int i = 0; i < groups.size(); i++) {
+    [self removeAtIndex:i];
   }
 
   chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);

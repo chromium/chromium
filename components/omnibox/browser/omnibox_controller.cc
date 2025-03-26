@@ -161,13 +161,6 @@ void OmniboxController::ClearPopupKeywordMode() const {
   }
 }
 
-void OmniboxController::OnStarterPackKeywordModeEntered(
-    TemplateURLStarterPackData::StarterPackID id) const {
-  if (id == TemplateURLStarterPackData::StarterPackID::kPage) {
-    autocomplete_controller_->autocomplete_provider_client()->OpenLensOverlay();
-  }
-}
-
 std::u16string OmniboxController::GetHeaderForSuggestionGroup(
     omnibox::GroupId suggestion_group_id) const {
   return autocomplete_controller_->result().GetHeaderForSuggestionGroup(

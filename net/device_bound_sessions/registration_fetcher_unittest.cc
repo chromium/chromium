@@ -1186,8 +1186,8 @@ TEST_F(RegistrationTest, RetriesOnKeyFailure) {
       .WillRepeatedly(Invoke(
           &unexportable_key_service(),
           &unexportable_keys::UnexportableKeyService::GetSubjectPublicKeyInfo));
-  EXPECT_CALL(mock_service, SignSlowlyAsync(_, _, _, _))
-      .WillOnce(base::test::RunOnceCallback<3>(
+  EXPECT_CALL(mock_service, SignSlowlyAsync(_, _, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<4>(
           base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)))
       .WillOnce(
           Invoke(&unexportable_key_service(),
@@ -1224,8 +1224,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
       .WillRepeatedly(Invoke(
           &unexportable_key_service(),
           &unexportable_keys::UnexportableKeyService::GetSubjectPublicKeyInfo));
-  EXPECT_CALL(mock_service, SignSlowlyAsync(_, _, _, _))
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
+  EXPECT_CALL(mock_service, SignSlowlyAsync(_, _, _, _, _))
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<4>(
           base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
 
   TestRegistrationCallback callback;
@@ -1261,8 +1261,8 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
       .WillRepeatedly(Invoke(
           &unexportable_key_service(),
           &unexportable_keys::UnexportableKeyService::GetSubjectPublicKeyInfo));
-  EXPECT_CALL(mock_service, SignSlowlyAsync(_, _, _, _))
-      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
+  EXPECT_CALL(mock_service, SignSlowlyAsync(_, _, _, _, _))
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<4>(
           base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
 
   TestRegistrationCallback callback;

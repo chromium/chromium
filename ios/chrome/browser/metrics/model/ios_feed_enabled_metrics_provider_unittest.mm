@@ -45,9 +45,6 @@ std::string PrintToString(const DisabledPref& config) {
   if (config.name == prefs::kArticlesForYouEnabled) {
     return "PrefArticlesForYouDisabled";
   }
-  if (config.name == feed::prefs::kArticlesListVisible) {
-    return "PrefArticlesListVisibleDisabled";
-  }
   if (config.name == prefs::kNTPContentSuggestionsEnabled) {
     return "PrefNTPContentSuggestionsDisabled";
   }
@@ -145,7 +142,6 @@ INSTANTIATE_TEST_SUITE_P(
         FeedAblationEnabled{},
         FeedAblationDisabled{},
         FeedAblationDisabled{DisabledPref{prefs::kArticlesForYouEnabled}},
-        FeedAblationDisabled{DisabledPref{feed::prefs::kArticlesListVisible}},
         FeedAblationDisabled{
             DisabledPref{prefs::kNTPContentSuggestionsEnabled}}),
     ::testing::PrintToStringParamName());

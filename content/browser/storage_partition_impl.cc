@@ -2208,6 +2208,71 @@ void StoragePartitionImpl::OnPrivateNetworkAccessPermissionRequired(
                               std::move(callback));
 }
 
+void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
+    OnLocalNetworkAccessPermissionRequiredCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks) &&
+      !network::features::kLocalNetworkAccessChecksWarn.Get()) {
+    // If LNA checks are not enabled, just allow the request by default.
+    std::move(callback).Run(true);
+    return;
+  }
+
+  if (url_loader_network_observers_.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  const URLLoaderNetworkContext& context =
+      url_loader_network_observers_.current_context();
+
+  // Currently requesting the Local Network Access permission is restricted to
+  // document contexts (subresource requests).
+  // TODO(crbug.com/404887282): Add support for allowing requests from workers
+  // if the user has previously granted the permission.
+  // TODO(crbug.com/404887285): Add support for having subframe navigation
+  // requests query and trigger the permission prompt.
+  if (context.type() != ContextType::kRenderFrameHostContext ||
+      !context.navigation_or_document()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  RenderFrameHost* rfh = context.navigation_or_document()->GetDocument();
+  if (!rfh) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  PermissionController* permission_controller =
+      browser_context_->GetPermissionController();
+  DCHECK(permission_controller);
+
+  auto status = permission_controller->GetPermissionStatusForCurrentDocument(
+      blink::PermissionType::LOCAL_NETWORK_ACCESS, rfh);
+  if (status == blink::mojom::PermissionStatus::GRANTED) {
+    std::move(callback).Run(true);
+    return;
+  } else if (status == blink::mojom::PermissionStatus::DENIED) {
+    std::move(callback).Run(false);
+    return;
+  } else {
+    // PermissionStatus is ASK, so request the permission. Converts the result
+    // into a boolean to pass back to `callback`, capturing whether the
+    // permission is granted or not.
+    permission_controller->RequestPermissionFromCurrentDocument(
+        rfh,
+        PermissionRequestDescription(
+            blink::PermissionType::LOCAL_NETWORK_ACCESS),
+        base::BindOnce(
+            [](OnLocalNetworkAccessPermissionRequiredCallback cb,
+               PermissionStatus status) {
+              std::move(cb).Run(status ==
+                                blink::mojom::PermissionStatus::GRANTED);
+            },
+            std::move(callback)));
+    return;
+  }
+}
+
 void StoragePartitionImpl::OnCertificateRequested(
     const std::optional<base::UnguessableToken>& window_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,

@@ -12286,11 +12286,91 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Settings.Geolocation.Disabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user disables geolocation in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.Geolocation.Enabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user enables geolocation in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.Microphone.Disabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user disables microphone in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.Microphone.Enabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user enables microphone in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.TabContext.Disabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user disables tab context in glic settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.TabContext.Enabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if the user enables tab context in glic settings.
+  </description>
+</action>
+
 <action name="Glic.Unpinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <description>
     Logged anytime glic is unpinned from the tabstrip, regardless of source.
+  </description>
+</action>
+
+<action name="GlicLocationPermissionDisabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks when glic location permission is disabled from the web client.
+  </description>
+</action>
+
+<action name="GlicLocationPermissionEnabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks when glic location permission is enabled from the web client.
+  </description>
+</action>
+
+<action name="GlicMicrophonePermissionDisabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks when glic microphone permission is disabled from the web client.
+  </description>
+</action>
+
+<action name="GlicMicrophonePermissionEnabled">
+  <owner>tommasin@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Tracks when glic microphone permission is enabled from the web client.
   </description>
 </action>
 
@@ -12435,14 +12515,16 @@ should be able to be added at any place in this file.
   <owner>erikchen@chromium.org</owner>
   <owner>pauladedeji@google.com</owner>
   <description>
-    Tracks when glic tab context permission is disabled.
+    Tracks when glic tab context permission is disabled from the web client.
   </description>
 </action>
 
 <action name="GlicTabContextPermissionEnabled">
   <owner>erikchen@chromium.org</owner>
   <owner>pauladedeji@google.com</owner>
-  <description>Tracks when glic tab context permission is enabled.</description>
+  <description>
+    Tracks when glic tab context permission is enabled from the web client.
+  </description>
 </action>
 
 <action name="GlicWebClientSessionEnd">
@@ -14834,6 +14916,17 @@ should be able to be added at any place in this file.
   <description>
     Reported when the ShopCard Price Tracking cell is toggled from the Magic
     Stack page in the Home Customization menu.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.MagicStackPage.ShopCardReviews.Toggled">
+  <owner>davidjm@chromium.org</owner>
+  <owner>gloriafang@google.com</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Reported when the ShopCard Reviews cell is toggled from the Magic Stack page
+    in the Home Customization menu.
   </description>
 </action>
 
@@ -24164,6 +24257,23 @@ should be able to be added at any place in this file.
   <description>User opened the app menu.</description>
 </action>
 
+<action name="MobileMenuShow.OverviewModeMenu">
+  <owner>ckitagawa@chromium.org</owner>
+  <description>
+    User opened the app menu in overview mode (AKA the hub or tab switcher).
+  </description>
+</action>
+
+<action name="MobileMenuShow.PageMenu">
+  <owner>ckitagawa@chromium.org</owner>
+  <description>User opened the app menu on a tab.</description>
+</action>
+
+<action name="MobileMenuShow.TabletEmptyModeMenu">
+  <owner>ckitagawa@chromium.org</owner>
+  <description>User opened the app menu in the empty tablet mode.</description>
+</action>
+
 <action name="MobileMenuSiteInformation">
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Site Information' in the app menu.</description>
@@ -28438,51 +28548,6 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
-<action name="NoticeQueue.PrivacySandboxNotice.QueueOnStartup">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is required on startup and added to
-    the queue.
-  </description>
-</action>
-
-<action name="NoticeQueue.PrivacySandboxNotice.QueueOnThOrNav">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is required on tab helper creation or
-    user navigation and added to the queue.
-  </description>
-</action>
-
-<action name="NoticeQueue.PrivacySandboxNotice.ReleaseOnDMA">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is suppressed for the rest of the
-    session after a DMA notice and removed from the queue.
-  </description>
-</action>
-
-<action name="NoticeQueue.PrivacySandboxNotice.ReleaseOnShown">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is successfully shown and removed
-    from the queue.
-  </description>
-</action>
-
-<action name="NoticeQueue.PrivacySandboxNotice.ReleaseOnThOrNav">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <description>
-    Recorded when a Privacy Sandbox notice is not required on tab helper
-    creation or user navigation and removed from the queue.
-  </description>
-</action>
-
 <action name="Notifications.Mute">
   <owner>dewittj@chromium.org</owner>
   <description>
@@ -31570,6 +31635,14 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>
   <description>Cookies subpage opened from PageInfo.</description>
+</action>
+
+<action name="PageInfo.CookiesSubpage.RwsSiteSettingsOpened">
+  <owner>mjenn@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Opened the RWS site settings page for a website from PageInfo.
+  </description>
 </action>
 
 <action name="PageInfo.CookiesSubpage.SettingsLinkClicked">
@@ -47765,6 +47838,8 @@ should be able to be added at any place in this file.
       label="For AutofillDisabledVirtualCardSuggestion feature."/>
   <suffix name="AutofillExternalAccountProfileSuggestion"
       label="For AutofillExternalAccountProfileSuggestion feature."/>
+  <suffix name="AutofillHomeWorkProfileSuggestion"
+      label="For AutofillHomeWorkProfileSuggestion feature."/>
   <suffix name="AutofillVirtualCardCVCSuggestion"
       label="For autofill suggestion of virtual cards."/>
   <suffix name="AutofillVirtualCardSuggestion"
@@ -48324,6 +48399,7 @@ should be able to be added at any place in this file.
 
 <action-suffix separator="." ordering="suffix">
   <suffix name="DownloadItem" label="Download a suggested item."/>
+  <suffix name="EditItem" label="Open a modal dialog to edit a custom item."/>
   <suffix name="LearnMore" label="Open the learn more link for product help."/>
   <suffix name="OpenItemInIncognitoTab"
       label="Open a suggested item in an incognito tab."/>
@@ -48332,8 +48408,10 @@ should be able to be added at any place in this file.
       label="Open a suggested item in a new tab in group."/>
   <suffix name="OpenItemInNewWindow"
       label="Open a suggested item in a new window."/>
+  <suffix name="PinItem" label="Convert a suggested item to a custom item."/>
   <suffix name="RemoveItem" label="Remove a suggested item."/>
   <suffix name="Shown" label="Context menu is opened."/>
+  <suffix name="UnpinItem" label="Remove a custom item."/>
   <affected-action name="ContextualSuggestions.ContextMenu"/>
   <affected-action name="ExploreSites.ContextMenu"/>
   <affected-action name="Suggestions.ContextMenu"/>
@@ -48903,6 +48981,7 @@ should be able to be added at any place in this file.
       label="Show read anything side panel action"/>
   <suffix name="kActionSidePanelShowReadingList"
       label="Show reading list side panel action"/>
+  <suffix name="kActionTabSearch" label="Tab search action"/>
   <suffix name="kActionTaskManager" label="Task manager action"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned"/>
   <affected-action name="Actions.PinnedToolbarButton.Pinned.ByContextMenu"/>

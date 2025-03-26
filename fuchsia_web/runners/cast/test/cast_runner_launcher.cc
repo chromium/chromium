@@ -35,6 +35,7 @@
 #include "media/fuchsia/audio/fake_audio_device_enumerator_local_component.h"
 
 using ::component_testing::ChildRef;
+using ::component_testing::Dictionary;
 using ::component_testing::Directory;
 using ::component_testing::DirectoryContents;
 using ::component_testing::FrameworkRef;
@@ -134,7 +135,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
               Protocol{"fuchsia.hwinfo.Product"},
               Protocol{fuchsia::intl::PropertyProvider::Name_},
               Protocol{fuchsia::kernel::VmexResource::Name_},
-              Protocol{"fuchsia.logger.LogSink"},
+              Dictionary{"diagnostics"},
               Protocol{fuchsia::media::ProfileProvider::Name_},
               Protocol{"fuchsia.scheduler.RoleManager"},
               Protocol{fuchsia::memorypressure::Provider::Name_},

@@ -197,6 +197,7 @@ void BnplManager::OnVcnDetailsFetched(
     credit_card.set_cvc(base::UTF8ToUTF16(response_details.cvv));
     credit_card.set_issuer_id(ongoing_flow_state_->issuer.issuer_id());
     credit_card.set_is_bnpl_card(true);
+    credit_card.SetNickname(ongoing_flow_state_->issuer.GetDisplayName());
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
         .Run(credit_card);
   } else {

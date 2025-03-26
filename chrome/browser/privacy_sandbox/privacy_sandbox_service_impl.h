@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -28,8 +29,6 @@
 #include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
-
-DECLARE_REQUIRED_NOTICE_IDENTIFIER(kPrivacySandboxNotice);
 
 class Browser;
 class PrefService;
@@ -77,13 +76,8 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   void PromptOpenedForBrowser(Browser* browser, views::Widget* widget) override;
   void PromptClosedForBrowser(Browser* browser) override;
   bool IsPromptOpenForBrowser(Browser* browser) override;
-  void HoldQueueHandle(user_education::RequiredNoticePriorityHandle
-                           messaging_priority_handle) override;
-  bool IsNoticeQueued() override;
-  void MaybeUnqueueNotice(NoticeQueueState unqueue_source) override;
-  void MaybeQueueNotice(NoticeQueueState queue_source) override;
-  bool IsHoldingHandle() override;
-  void SetSuppressQueue(bool suppress_queue) override;
+  privacy_sandbox::PrivacySandboxQueueManager&
+  GetPrivacySandboxNoticeQueueManager() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ForceChromeBuildForTests(bool force_chrome_build) override;
   bool IsPrivacySandboxRestricted() override;
@@ -357,9 +351,8 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   // to the Widget for that prompt.
   std::map<Browser*, raw_ptr<views::Widget, CtnExperimental>>
       browsers_to_open_prompts_;
-
-  // Returns instance of product messaging controller.
-  user_education::ProductMessagingController* GetProductMessagingController();
+  // Instance of queue manager used to manage queue states.
+  std::unique_ptr<privacy_sandbox::PrivacySandboxQueueManager> queue_manager_;
 #endif
 
   // Fake implementation for current and blocked topics.
@@ -445,9 +438,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
 
   bool force_chrome_build_for_tests_ = false;
   bool should_emit_dark_launch_startup_metrics_ = true;
-  // Temporary flag signifying not to requeue if the prompt has been suppressed.
-  // TODO(crbug.com/370804492): When we add DMA notice to queue, remove this.
-  bool suppress_queue_ = false;
 
   base::WeakPtrFactory<PrivacySandboxServiceImpl> weak_factory_{this};
 };

@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.image_descriptions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -27,12 +31,13 @@ import org.chromium.ui.widget.Toast;
  * Singleton class to control the Image Descriptions feature. This class can be used to initiate the
  * user flow, to turn the feature on/off and to update settings as needed.
  */
+@NullMarked
 public class ImageDescriptionsController {
     // We display a "Don't ask again" choice if the user has selected the Just Once option 3 times.
     public static final int DONT_ASK_AGAIN_DISPLAY_LIMIT = 3;
 
     // Static instance of this singleton, lazily initialized during first getInstance() call.
-    private static ImageDescriptionsController sInstance;
+    private static @Nullable ImageDescriptionsController sInstance;
 
     private ImageDescriptionsControllerDelegate mDelegate;
 
@@ -117,7 +122,7 @@ public class ImageDescriptionsController {
      */
     public void onImageDescriptionsMenuItemSelected(
             Context context, ModalDialogManager modalDialogManager, WebContents webContents) {
-        Profile profile = Profile.fromWebContents(webContents).getOriginalProfile();
+        Profile profile = assumeNonNull(Profile.fromWebContents(webContents)).getOriginalProfile();
         boolean enabledBeforeMenuItemSelected = imageDescriptionsEnabled(profile);
 
         if (enabledBeforeMenuItemSelected) {

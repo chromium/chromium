@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
-#include "crypto/symmetric_key.h"
 #include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 

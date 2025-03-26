@@ -1583,7 +1583,6 @@ TEST_F(FormFillerTest, FillPassportEntity) {
   set_format_string(4, "M/YY");
   set_server_type(5, PASSPORT_EXPIRATION_DATE);
   set_format_string(5, "DD/MM/YYYY");
-  form_structure->UpdateAutofillCount();
 
   EntityInstance passport = test::GetPassportEntityInstance();
 

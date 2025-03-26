@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -79,6 +80,8 @@ MojoActionForChromeAction(actions::ActionId action_id) {
       return side_panel::customize_chrome::mojom::ActionId::kShowChromeLabs;
     case kActionCopyUrl:
       return side_panel::customize_chrome::mojom::ActionId::kCopyLink;
+    case kActionTabSearch:
+      return side_panel::customize_chrome::mojom::ActionId::kTabSearch;
     default:
       return std::nullopt;
   }
@@ -133,6 +136,8 @@ std::optional<actions::ActionId> ChromeActionForMojoAction(
       return kActionShowChromeLabs;
     case side_panel::customize_chrome::mojom::ActionId::kCopyLink:
       return kActionCopyUrl;
+    case side_panel::customize_chrome::mojom::ActionId::kTabSearch:
+      return kActionTabSearch;
     default:
       return std::nullopt;
   }
@@ -264,6 +269,10 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   add_action(kActionClearBrowsingData,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
 
+  if (features::HasTabSearchToolbarButton()) {
+    add_action(kActionTabSearch,
+               side_panel::customize_chrome::mojom::CategoryId::kTools);
+  }
   add_action(kActionPrint,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionSidePanelShowLensOverlayResults,

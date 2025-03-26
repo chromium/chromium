@@ -40,9 +40,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
-using base::ASCIIToUTF16;
-using TemplateURLPrepopulateData::BuiltinKeywordsMetadata;
-using TemplateURLPrepopulateData::kCurrentDataVersion;
+using ::base::ASCIIToUTF16;
+using ::country_codes::CountryId;
+using ::TemplateURLPrepopulateData::BuiltinKeywordsMetadata;
+using ::TemplateURLPrepopulateData::kCurrentDataVersion;
 
 namespace TemplateURLPrepopulateData {
 bool operator==(const BuiltinKeywordsMetadata& lhs,
@@ -53,7 +54,7 @@ bool operator==(const BuiltinKeywordsMetadata& lhs,
 
 std::ostream& operator<<(std::ostream& os,
                          const BuiltinKeywordsMetadata& value) {
-  return os << "{country_id=" << value.country_id.GetForTesting()
+  return os << "{country_id=" << value.country_id.GetForTesting().Serialize()
             << ", data_version=" << value.data_version << "}";
 }
 
@@ -71,50 +72,70 @@ std::string GetHostFromTemplateURLData(const TemplateURLData& data) {
   return TemplateURL(data).url_ref().GetHost(SearchTermsData());
 }
 
-// Helper function creating a country code from string literal.
-// Input string literal includes trailing \0, thus is 3 characters long.
-// TODO(b:404850650): migrate this to strict CountryId when ready.
-constexpr int Cc(const char (&cc)[3]) {
-  return cc[0] << 8 | cc[1];
-}
-
-const int kAllCountryIds[] = {
-    Cc("AD"), Cc("AE"), Cc("AF"), Cc("AG"), Cc("AI"), Cc("AL"), Cc("AM"),
-    Cc("AN"), Cc("AO"), Cc("AQ"), Cc("AR"), Cc("AS"), Cc("AT"), Cc("AU"),
-    Cc("AW"), Cc("AX"), Cc("AZ"), Cc("BA"), Cc("BB"), Cc("BD"), Cc("BE"),
-    Cc("BF"), Cc("BG"), Cc("BH"), Cc("BI"), Cc("BJ"), Cc("BL"), Cc("BM"),
-    Cc("BN"), Cc("BO"), Cc("BR"), Cc("BS"), Cc("BT"), Cc("BV"), Cc("BW"),
-    Cc("BY"), Cc("BZ"), Cc("CA"), Cc("CC"), Cc("CD"), Cc("CF"), Cc("CG"),
-    Cc("CH"), Cc("CI"), Cc("CK"), Cc("CL"), Cc("CM"), Cc("CN"), Cc("CO"),
-    Cc("CQ"), Cc("CR"), Cc("CU"), Cc("CV"), Cc("CX"), Cc("CY"), Cc("CZ"),
-    Cc("DE"), Cc("DJ"), Cc("DK"), Cc("DM"), Cc("DO"), Cc("DZ"), Cc("EA"),
-    Cc("EC"), Cc("EE"), Cc("EG"), Cc("EH"), Cc("ER"), Cc("ES"), Cc("ET"),
-    Cc("FI"), Cc("FJ"), Cc("FK"), Cc("FM"), Cc("FO"), Cc("FR"), Cc("GA"),
-    Cc("GB"), Cc("GD"), Cc("GE"), Cc("GF"), Cc("GG"), Cc("GH"), Cc("GI"),
-    Cc("GL"), Cc("GM"), Cc("GN"), Cc("GP"), Cc("GQ"), Cc("GR"), Cc("GS"),
-    Cc("GT"), Cc("GU"), Cc("GW"), Cc("GY"), Cc("HK"), Cc("HM"), Cc("HN"),
-    Cc("HR"), Cc("HT"), Cc("HU"), Cc("IC"), Cc("ID"), Cc("IE"), Cc("IL"),
-    Cc("IM"), Cc("IN"), Cc("IO"), Cc("IQ"), Cc("IR"), Cc("IS"), Cc("IT"),
-    Cc("JE"), Cc("JM"), Cc("JO"), Cc("JP"), Cc("KE"), Cc("KG"), Cc("KH"),
-    Cc("KI"), Cc("KM"), Cc("KN"), Cc("KP"), Cc("KR"), Cc("KW"), Cc("KY"),
-    Cc("KZ"), Cc("LA"), Cc("LB"), Cc("LC"), Cc("LI"), Cc("LK"), Cc("LR"),
-    Cc("LS"), Cc("LT"), Cc("LU"), Cc("LV"), Cc("LY"), Cc("MA"), Cc("MC"),
-    Cc("MD"), Cc("ME"), Cc("MF"), Cc("MG"), Cc("MH"), Cc("MK"), Cc("ML"),
-    Cc("MM"), Cc("MN"), Cc("MO"), Cc("MP"), Cc("MQ"), Cc("MR"), Cc("MS"),
-    Cc("MT"), Cc("MU"), Cc("MV"), Cc("MW"), Cc("MX"), Cc("MY"), Cc("MZ"),
-    Cc("NA"), Cc("NC"), Cc("NE"), Cc("NF"), Cc("NG"), Cc("NI"), Cc("NL"),
-    Cc("NO"), Cc("NP"), Cc("NR"), Cc("NU"), Cc("NZ"), Cc("OM"), Cc("PA"),
-    Cc("PE"), Cc("PF"), Cc("PG"), Cc("PH"), Cc("PK"), Cc("PL"), Cc("PM"),
-    Cc("PN"), Cc("PR"), Cc("PS"), Cc("PT"), Cc("PW"), Cc("PY"), Cc("QA"),
-    Cc("RE"), Cc("RO"), Cc("RS"), Cc("RU"), Cc("RW"), Cc("SA"), Cc("SB"),
-    Cc("SC"), Cc("SD"), Cc("SE"), Cc("SG"), Cc("SH"), Cc("SI"), Cc("SJ"),
-    Cc("SK"), Cc("SL"), Cc("SM"), Cc("SN"), Cc("SO"), Cc("SR"), Cc("ST"),
-    Cc("SV"), Cc("SY"), Cc("SZ"), Cc("TC"), Cc("TD"), Cc("TF"), Cc("TG"),
-    Cc("TH"), Cc("TJ"), Cc("TK"), Cc("TL"), Cc("TM"), Cc("TN"), Cc("TO"),
-    Cc("TR"), Cc("TT"), Cc("TV"), Cc("TW"), Cc("TZ"), Cc("UA"), Cc("UG"),
-    Cc("UM"), Cc("US"), Cc("UY"), Cc("UZ"), Cc("VA"), Cc("VC"), Cc("VE"),
-    Cc("VG"), Cc("VI"), Cc("VN"), Cc("VU"), Cc("WF"), Cc("WS"), Cc("YE"),
-    Cc("YT"), Cc("ZA"), Cc("ZM"), Cc("ZW"), Cc("ZZ")};
+const CountryId kAllCountryIds[] = {
+    CountryId("AD"), CountryId("AE"), CountryId("AF"), CountryId("AG"),
+    CountryId("AI"), CountryId("AL"), CountryId("AM"), CountryId("AN"),
+    CountryId("AO"), CountryId("AQ"), CountryId("AR"), CountryId("AS"),
+    CountryId("AT"), CountryId("AU"), CountryId("AW"), CountryId("AX"),
+    CountryId("AZ"), CountryId("BA"), CountryId("BB"), CountryId("BD"),
+    CountryId("BE"), CountryId("BF"), CountryId("BG"), CountryId("BH"),
+    CountryId("BI"), CountryId("BJ"), CountryId("BL"), CountryId("BM"),
+    CountryId("BN"), CountryId("BO"), CountryId("BR"), CountryId("BS"),
+    CountryId("BT"), CountryId("BV"), CountryId("BW"), CountryId("BY"),
+    CountryId("BZ"), CountryId("CA"), CountryId("CC"), CountryId("CD"),
+    CountryId("CF"), CountryId("CG"), CountryId("CH"), CountryId("CI"),
+    CountryId("CK"), CountryId("CL"), CountryId("CM"), CountryId("CN"),
+    CountryId("CO"), CountryId("CQ"), CountryId("CR"), CountryId("CU"),
+    CountryId("CV"), CountryId("CX"), CountryId("CY"), CountryId("CZ"),
+    CountryId("DE"), CountryId("DJ"), CountryId("DK"), CountryId("DM"),
+    CountryId("DO"), CountryId("DZ"), CountryId("EA"), CountryId("EC"),
+    CountryId("EE"), CountryId("EG"), CountryId("EH"), CountryId("ER"),
+    CountryId("ES"), CountryId("ET"), CountryId("FI"), CountryId("FJ"),
+    CountryId("FK"), CountryId("FM"), CountryId("FO"), CountryId("FR"),
+    CountryId("GA"), CountryId("GB"), CountryId("GD"), CountryId("GE"),
+    CountryId("GF"), CountryId("GG"), CountryId("GH"), CountryId("GI"),
+    CountryId("GL"), CountryId("GM"), CountryId("GN"), CountryId("GP"),
+    CountryId("GQ"), CountryId("GR"), CountryId("GS"), CountryId("GT"),
+    CountryId("GU"), CountryId("GW"), CountryId("GY"), CountryId("HK"),
+    CountryId("HM"), CountryId("HN"), CountryId("HR"), CountryId("HT"),
+    CountryId("HU"), CountryId("IC"), CountryId("ID"), CountryId("IE"),
+    CountryId("IL"), CountryId("IM"), CountryId("IN"), CountryId("IO"),
+    CountryId("IQ"), CountryId("IR"), CountryId("IS"), CountryId("IT"),
+    CountryId("JE"), CountryId("JM"), CountryId("JO"), CountryId("JP"),
+    CountryId("KE"), CountryId("KG"), CountryId("KH"), CountryId("KI"),
+    CountryId("KM"), CountryId("KN"), CountryId("KP"), CountryId("KR"),
+    CountryId("KW"), CountryId("KY"), CountryId("KZ"), CountryId("LA"),
+    CountryId("LB"), CountryId("LC"), CountryId("LI"), CountryId("LK"),
+    CountryId("LR"), CountryId("LS"), CountryId("LT"), CountryId("LU"),
+    CountryId("LV"), CountryId("LY"), CountryId("MA"), CountryId("MC"),
+    CountryId("MD"), CountryId("ME"), CountryId("MF"), CountryId("MG"),
+    CountryId("MH"), CountryId("MK"), CountryId("ML"), CountryId("MM"),
+    CountryId("MN"), CountryId("MO"), CountryId("MP"), CountryId("MQ"),
+    CountryId("MR"), CountryId("MS"), CountryId("MT"), CountryId("MU"),
+    CountryId("MV"), CountryId("MW"), CountryId("MX"), CountryId("MY"),
+    CountryId("MZ"), CountryId("NA"), CountryId("NC"), CountryId("NE"),
+    CountryId("NF"), CountryId("NG"), CountryId("NI"), CountryId("NL"),
+    CountryId("NO"), CountryId("NP"), CountryId("NR"), CountryId("NU"),
+    CountryId("NZ"), CountryId("OM"), CountryId("PA"), CountryId("PE"),
+    CountryId("PF"), CountryId("PG"), CountryId("PH"), CountryId("PK"),
+    CountryId("PL"), CountryId("PM"), CountryId("PN"), CountryId("PR"),
+    CountryId("PS"), CountryId("PT"), CountryId("PW"), CountryId("PY"),
+    CountryId("QA"), CountryId("RE"), CountryId("RO"), CountryId("RS"),
+    CountryId("RU"), CountryId("RW"), CountryId("SA"), CountryId("SB"),
+    CountryId("SC"), CountryId("SD"), CountryId("SE"), CountryId("SG"),
+    CountryId("SH"), CountryId("SI"), CountryId("SJ"), CountryId("SK"),
+    CountryId("SL"), CountryId("SM"), CountryId("SN"), CountryId("SO"),
+    CountryId("SR"), CountryId("ST"), CountryId("SV"), CountryId("SY"),
+    CountryId("SZ"), CountryId("TC"), CountryId("TD"), CountryId("TF"),
+    CountryId("TG"), CountryId("TH"), CountryId("TJ"), CountryId("TK"),
+    CountryId("TL"), CountryId("TM"), CountryId("TN"), CountryId("TO"),
+    CountryId("TR"), CountryId("TT"), CountryId("TV"), CountryId("TW"),
+    CountryId("TZ"), CountryId("UA"), CountryId("UG"), CountryId("UM"),
+    CountryId("US"), CountryId("UY"), CountryId("UZ"), CountryId("VA"),
+    CountryId("VC"), CountryId("VE"), CountryId("VG"), CountryId("VI"),
+    CountryId("VN"), CountryId("VU"), CountryId("WF"), CountryId("WS"),
+    CountryId("YE"), CountryId("YT"), CountryId("ZA"), CountryId("ZM"),
+    CountryId("ZW"), CountryId("ZZ")};
 
 void CheckUrlIsEmptyOrSecure(const std::string url) {
   ASSERT_TRUE(url.empty() || url.starts_with("{google:") ||
@@ -149,12 +170,11 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
 
   void SetupForChoiceScreenDisplay() {
     // Pick any EEA country
-    const int kFranceCountryId =
-        country_codes::CountryCharsToCountryID('F', 'R');
+    const CountryId kFranceCountryId("FR");
     OverrideCountryId(kFranceCountryId);
   }
 
-  void OverrideCountryId(int country_id) {
+  void OverrideCountryId(CountryId country_id) {
     OverrideCountryCommandLine(
         country_codes::CountryIDToCountryString(country_id));
   }
@@ -177,7 +197,7 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
 // Verifies the set of prepopulate data doesn't contain entries with duplicate
 // ids.
 TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
-  for (int country_id : kAllCountryIds) {
+  for (CountryId country_id : kAllCountryIds) {
     OverrideCountryId(country_id);
     std::vector<std::unique_ptr<TemplateURLData>> urls =
         prepopulate_data_resolver().GetPrepopulatedEngines();
@@ -197,7 +217,7 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
   const size_t kMinEea = 8;
   const size_t kMinRow = 3;
 
-  for (int country_id : kAllCountryIds) {
+  for (CountryId country_id : kAllCountryIds) {
     OverrideCountryId(country_id);
 
     const size_t kNumberOfSearchEngines =
@@ -224,7 +244,7 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
 }
 
 TEST_F(TemplateURLPrepopulateDataTest, EntriesPerCountryConsistency) {
-  for (int country_id : kAllCountryIds) {
+  for (CountryId country_id : kAllCountryIds) {
     if (!regional_capabilities::IsEeaCountry(country_id)) {
       // "unhandled" countries can cause some issues when inheriting a config
       // from an EEA country. Covering them via
@@ -385,7 +405,7 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
 }
 
 TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
-  OverrideCountryId(country_codes::kCountryIDUnknown);
+  OverrideCountryId(CountryId());
   pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
                               std::make_unique<base::Value>(1));
 
@@ -438,7 +458,7 @@ TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
 // Verifies that built-in search providers are processed correctly.
 TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrepopulated) {
   // Use United States.
-  OverrideCountryId(country_codes::CountryCharsToCountryID('U', 'S'));
+  OverrideCountryId(CountryId("US"));
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
       prepopulate_data_resolver().GetPrepopulatedEngines();
 
@@ -478,7 +498,7 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrepopulated) {
 // Verifies that all built-in search providers available across all countries
 // use https urls.
 TEST_F(TemplateURLPrepopulateDataTest, PrepopulatedAreHttps) {
-  for (int country_id : kAllCountryIds) {
+  for (CountryId country_id : kAllCountryIds) {
     OverrideCountryId(country_id);
 
     std::vector<std::unique_ptr<TemplateURLData>> t_urls =
@@ -536,13 +556,6 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
   for (const char* yahoo_url : kYahooURLs) {
     EXPECT_EQ(SEARCH_ENGINE_YAHOO, GetEngineType(yahoo_url));
   }
-
-  // URLs for engines not present in country-specific lists.
-  EXPECT_EQ(SEARCH_ENGINE_NIGMA,
-            GetEngineType("http://nigma.ru/?s={searchTerms}&arg1=value1"));
-  // Also test matching against alternate URLs (and TLD+1 matching).
-  EXPECT_EQ(SEARCH_ENGINE_SOFTONIC,
-            GetEngineType("http://test.softonic.com.br/?{searchTerms}"));
 
   // Search URL for which no prepopulated search provider exists.
   EXPECT_EQ(SEARCH_ENGINE_OTHER,
@@ -634,7 +647,7 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleAsFallback) {
   std::unique_ptr<TemplateURLData> fallback_url;
 
   // Google is first in US, so confirm index 0.
-  int us_country_id = country_codes::CountryCharsToCountryID('U', 'S');
+  CountryId us_country_id("US");
   OverrideCountryId(us_country_id);
   EXPECT_EQ(
       TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
@@ -650,7 +663,7 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleAsFallback) {
   // If Google ever does reach top in China, this test will need to be adjusted:
   // check template_url_prepopulate_data.cc reference orders (engines_CN, etc.)
   // to find a suitable country and index.
-  int cn_country_id = country_codes::CountryCharsToCountryID('C', 'N');
+  CountryId cn_country_id("CN");
   OverrideCountryId(cn_country_id);
   fallback_url = prepopulate_data_resolver().GetFallbackSearch();
   EXPECT_NE(
@@ -667,7 +680,7 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleAsFallback) {
 TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
   // Ensure that we use the default set of search engines, which is google,
   // bing, yahoo.
-  OverrideCountryId(country_codes::kCountryIDUnknown);
+  OverrideCountryId(CountryId());
   ASSERT_EQ(prepopulate_data_resolver().GetPrepopulatedEngines().size(), 3u);
 
   // `GetPrepopulatedEngine()` only looks in the profile country's prepopulated
@@ -687,8 +700,7 @@ TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
   constexpr char sample_country[] = "US";
-  OverrideCountryId(country_codes::CountryCharsToCountryID(sample_country[0],
-                                                           sample_country[1]));
+  OverrideCountryId(CountryId(sample_country));
 
   // For a given country, the output from `GetLocalPrepopulatedEngines`
   // should match the template URLs obtained from `GetPrepopulatedEngines`.
@@ -714,11 +726,9 @@ TEST_F(TemplateURLPrepopulateDataTest, GeneratedDataAgreesWithExistingData) {
   ASSERT_EQ(std::size(kAllCountryIds),
             TemplateURLPrepopulateData::kRegionalSettings.size());
 
-  for (const int country_code : kAllCountryIds) {
-    std::string country = country_codes::CountryIDToCountryString(country_code);
-
+  for (CountryId country_code : kAllCountryIds) {
     const auto new_settings_iter =
-        TemplateURLPrepopulateData::kRegionalSettings.find(country);
+        TemplateURLPrepopulateData::kRegionalSettings.find(country_code);
     ASSERT_NE(new_settings_iter,
               TemplateURLPrepopulateData::kRegionalSettings.end());
 
@@ -800,7 +810,8 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .db_country = "DE",
             .db_version = kCurrentDataVersion,
             .profile_country = "FR",
-            .expected_output = BuildMetadata("FR", kCurrentDataVersion),
+            .expected_output =
+                BuildMetadata(CountryId("FR"), kCurrentDataVersion),
         },
         {
             .test_case_name = "DbCountryMissing",
@@ -814,8 +825,7 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .db_country = "DE",
             .db_version = kCurrentDataVersion,
             .profile_country = switches::kEeaListCountryOverride,
-            .expected_output = BuildMetadata(country_codes::kCountryIDUnknown,
-                                             kCurrentDataVersion),
+            .expected_output = BuildMetadata(CountryId(), kCurrentDataVersion),
         },
         {
             .test_case_name = "DbMoreRecent",
@@ -829,7 +839,8 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .db_country = "DE",
             .db_version = kCurrentDataVersion - 1,
             .profile_country = "DE",
-            .expected_output = BuildMetadata("DE", kCurrentDataVersion),
+            .expected_output =
+                BuildMetadata(CountryId("DE"), kCurrentDataVersion),
         },
         {
             .test_case_name = "PrefOverride",
@@ -837,7 +848,8 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .db_version = kCurrentDataVersion,
             .profile_country = "DE",
             .pref_override_version = kCurrentDataVersion + 42,
-            .expected_output = BuildMetadata("DE", kCurrentDataVersion + 42),
+            .expected_output =
+                BuildMetadata(CountryId("DE"), kCurrentDataVersion + 42),
         },
     });
   }
@@ -847,17 +859,12 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
     return info.param.test_case_name;
   }
 
-  static BuiltinKeywordsMetadata BuildMetadata(int country_id, int version) {
+  static BuiltinKeywordsMetadata BuildMetadata(CountryId country_id,
+                                               int version) {
     return {
         .country_id = regional_capabilities::CountryIdHolder(country_id),
         .data_version = version,
     };
-  }
-
-  static BuiltinKeywordsMetadata BuildMetadata(const std::string& country_code,
-                                               int version) {
-    return BuildMetadata(country_codes::CountryStringToCountryID(country_code),
-                         version);
   }
 };
 
@@ -869,8 +876,7 @@ TEST_P(TemplateURLPrepopulateDataUpdateRequirementsTest,
       GetParam().db_country.empty()
           ? std::nullopt
           : std::optional(regional_capabilities::CountryIdHolder(
-                country_codes::CountryStringToCountryID(
-                    GetParam().db_country)));
+                country_codes::CountryId(GetParam().db_country)));
 
   std::optional<BuiltinKeywordsMetadata> out =
       prepopulate_data_resolver().ComputeDatabaseUpdateRequirements(
@@ -889,7 +895,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class TemplateURLPrepopulateDataListTest
     : public TemplateURLPrepopulateDataTest,
-      public testing::WithParamInterface<int> {
+      public testing::WithParamInterface<CountryId> {
  public:
   // The data type for prepopulate IDs
   // (`TemplateURLPrepopulateData::PrepopulatedEngine::id`), declared explicitly
@@ -897,7 +903,7 @@ class TemplateURLPrepopulateDataListTest
   using prepopulate_id_t = int;
 
   static std::string ParamToTestSuffix(
-      const ::testing::TestParamInfo<int>& info) {
+      const ::testing::TestParamInfo<CountryId>& info) {
     return country_codes::CountryIDToCountryString(info.param);
   }
 
@@ -1019,11 +1025,11 @@ class TemplateURLPrepopulateDataListTest
 
  private:
   // TODO(b/341047036): Investigate how to not have to skip this here.
-  static inline const std::set<int> kSkippedCountries = {
-      country_codes::CountryCharsToCountryID('B', 'L'),  // St. Barthélemy
-      country_codes::CountryCharsToCountryID('E', 'A'),  // Ceuta & Melilla
-      country_codes::CountryCharsToCountryID('I', 'C'),  // Canary Islands
-      country_codes::CountryCharsToCountryID('M', 'F'),  // St. Martin
+  static inline const std::set<CountryId> kSkippedCountries = {
+      CountryId("BL"),  // St. Barthélemy
+      CountryId("EA"),  // Ceuta & Melilla
+      CountryId("IC"),  // Canary Islands
+      CountryId("MF"),  // St. Martin
   };
 
   static constexpr size_t kEeaChoiceScreenItemCount = 8u;
@@ -1056,7 +1062,7 @@ class TemplateURLPrepopulateDataListTest
     return row_string;
   }
 
-  const int country_id_;
+  const CountryId country_id_;
   const std::string country_code_;
   base::flat_map<int,
                  raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>

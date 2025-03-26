@@ -90,6 +90,10 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::AUTOMATIC_FULLSCREEN,
           network::mojom::PermissionsPolicyFeature::kFullscreen);
+  permission_contexts[ContentSettingsType::LOCAL_NETWORK_ACCESS] =
+      std::make_unique<FakePermissionContext>(
+          browser_context, ContentSettingsType::LOCAL_NETWORK_ACCESS,
+          network::mojom::PermissionsPolicyFeature::kNotFound);
   return permission_contexts;
 }
 

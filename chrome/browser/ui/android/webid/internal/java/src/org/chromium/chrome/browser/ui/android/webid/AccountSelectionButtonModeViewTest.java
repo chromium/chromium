@@ -216,8 +216,8 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
         assertEquals(View.VISIBLE, mContentView.getVisibility());
         View accountChip = mContentView.findViewById(R.id.account_chip);
         assertTrue(accountChip.isShown());
-        TextView email = accountChip.findViewById(R.id.description);
-        assertEquals(mAnaAccount.getEmail(), email.getText());
+        TextView displayIdentifier = accountChip.findViewById(R.id.description);
+        assertEquals(mAnaAccount.getDisplayIdentifier(), displayIdentifier.getText());
     }
 
     @Test

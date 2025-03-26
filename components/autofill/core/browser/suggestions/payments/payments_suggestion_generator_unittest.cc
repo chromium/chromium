@@ -337,7 +337,6 @@ class AutofillCreditCardBenefitsLabelTest
         /*enabled_features=*/
         {features::kAutofillEnableCardBenefitsForAmericanExpress,
          features::kAutofillEnableCardBenefitsForBmo,
-         features::kAutofillEnableCardProductName,
          features::kAutofillEnableCardBenefitsIph},
         /*disabled_features=*/{});
 
@@ -2109,11 +2108,8 @@ class AutofillCreditCardSuggestionContentTest
     : public PaymentsSuggestionGeneratorTest {
  public:
   AutofillCreditCardSuggestionContentTest() {
-    feature_list_metadata_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableCardProductName,
-                              features::
-                                  kAutofillEnableVcnGrayOutForMerchantOptOut},
-        /*disabled_features=*/{});
+    feature_list_metadata_.InitAndEnableFeature(
+        features::kAutofillEnableVcnGrayOutForMerchantOptOut);
   }
 
   ~AutofillCreditCardSuggestionContentTest() override = default;
@@ -2660,27 +2656,18 @@ TEST_P(
 
 class PaymentsSuggestionGeneratorTestForMetadata
     : public PaymentsSuggestionGeneratorTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
-  PaymentsSuggestionGeneratorTestForMetadata() {
-    feature_list_card_product_description_.InitWithFeatureState(
-        features::kAutofillEnableCardProductName, std::get<0>(GetParam()));
-  }
+  PaymentsSuggestionGeneratorTestForMetadata() = default;
 
   ~PaymentsSuggestionGeneratorTestForMetadata() override = default;
 
-  bool card_product_description_enabled() const {
-    return std::get<0>(GetParam());
-  }
-  bool card_has_capital_one_icon() const { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList feature_list_card_product_description_;
+  bool card_has_capital_one_icon() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PaymentsSuggestionGeneratorTestForMetadata,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
        CreateCreditCardSuggestion_ServerCard) {
@@ -2832,8 +2819,8 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
     EXPECT_TRUE(
         summary.metadata_logging_context.instruments_with_metadata_available
             .contains(server_card_with_metadata.instrument_id()));
-    EXPECT_EQ(summary.metadata_logging_context.card_product_description_shown,
-              card_product_description_enabled());
+    EXPECT_TRUE(
+        summary.metadata_logging_context.card_product_description_shown);
     EXPECT_TRUE(summary.metadata_logging_context.card_art_image_shown);
 
     // Verify that a record is added that a Capital One card suggestion
@@ -2933,10 +2920,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // card has card linked offer available.
 TEST_P(PaymentsSuggestionGeneratorTestForOffer,
        CreateCreditCardSuggestion_ServerCardWithOffer) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCardProductName},
-      /*disabled_features=*/{});
   // Create a server card.
   CreditCard server_card1 =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
@@ -3097,7 +3080,6 @@ TEST_F(
 TEST_F(
     PaymentsSuggestionGeneratorTest,
     GetCreditCardOrCvcFieldSuggestions_GetVirtualCreditCardsForStandaloneCvcField) {
-
   // Set up virtual card usage data and credit cards.
   payments_data().ClearCreditCards();
   CreditCard masked_server_card = test::GetVirtualCard();

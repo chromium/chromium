@@ -9,11 +9,14 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Fragment containing enhanced protection settings. */
+@NullMarked
 public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFragmentBase {
     @VisibleForTesting static final String PREF_LEARN_MORE = "learn_more";
     @VisibleForTesting static final String PREF_BULLET_FIVE = "bullet_five";
@@ -27,7 +30,7 @@ public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFrag
     }
 
     @Override
-    protected void onCreatePreferencesInternal(Bundle bundle, String s) {
+    protected void onCreatePreferencesInternal(@Nullable Bundle bundle, @Nullable String s) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_LEAK_TOGGLE_MOVE)) {
             findPreference(PREF_BULLET_FIVE).setVisible(false);
         }

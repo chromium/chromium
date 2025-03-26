@@ -40,6 +40,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -651,6 +652,7 @@ public class TabPersistentStoreTest {
     @SmallTest
     @Feature("TabPersistentStore")
     @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER + ":migrate_stale_tabs/true")
+    @DisabledTest(message = "crbug.com/406258165")
     public void testSaveStateNoFlatBufferPrior() throws Exception {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
         TabPersistentStore store = storeAndRestoredTabs.first;
@@ -678,9 +680,17 @@ public class TabPersistentStoreTest {
                 });
         helper.waitForCallback(0);
 
-        assertTrue("Legacy TabState File " + legacyFile + " should exist", legacyFile.exists());
-        assertFalse(
-                "FlatBuffer TabState File " + flatBufferFile + " should not exist",
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            legacyFile + " should not exist as it has been deprecated",
+                            legacyFile.exists(),
+                            Matchers.is(false));
+                });
+        assertTrue(
+                "FlatBuffer TabState File "
+                        + flatBufferFile
+                        + " should exist, as it is now the default",
                 flatBufferFile.exists());
     }
 
@@ -704,7 +714,6 @@ public class TabPersistentStoreTest {
                 });
         waitForAllSavesAndMigrations(store);
 
-        assertEquals(PREV_ROOT_ID, getRootIdFromLegacyTabStateFile(tabs[0]));
         assertEquals(PREV_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
 
         // Next save of tabs[0] should result in a legacy and FlatBuffer files with NEW_ROOT_ID
@@ -723,7 +732,6 @@ public class TabPersistentStoreTest {
         helper.waitForCallback(0);
         // There should be parity between legacy and FlatBuffer TabState files with respect
         // to the attribute change (in this case root id).
-        assertEquals(NEW_ROOT_ID, getRootIdFromLegacyTabStateFile(tabs[0]));
         assertEquals(NEW_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
     }
 
@@ -814,15 +822,6 @@ public class TabPersistentStoreTest {
                     Criteria.checkThat(
                             store.isSavingAndMigratingIdleForTesting(), Matchers.is(true));
                 });
-    }
-
-    private int getRootIdFromLegacyTabStateFile(Tab tab) {
-        return TabStateFileManager.restoreTabState(
-                        mMockDirectory.getDataDirectory(),
-                        tab.getId(),
-                        sCipherFactory,
-                        /* useFlatBuffer= */ false)
-                .rootId;
     }
 
     private int getRootIdFromFlatBufferTabStateFile(Tab tab) {

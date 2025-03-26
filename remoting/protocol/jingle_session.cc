@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/source_location.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/content_description.h"
 #include "remoting/protocol/errors.h"
@@ -400,7 +401,7 @@ void JingleSession::SendTransportInfo(
 
 void JingleSession::Close(protocol::ErrorCode error,
                           std::string_view error_details,
-                          const base::Location& error_location) {
+                          const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_session_active()) {
@@ -438,7 +439,7 @@ void JingleSession::Close(protocol::ErrorCode error,
     if (!error_details.empty()) {
       message->error_details = error_details;
     }
-    if (error_location.program_counter() != nullptr) {
+    if (!error_location.is_null()) {
       message->error_location = error_location.ToString();
     }
     if (error != ErrorCode::OK) {

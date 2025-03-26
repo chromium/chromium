@@ -20,6 +20,13 @@ class CommercePushNotificationClientTest;
 
 class Browser;
 
+// Holds the configuration information for a UNNNotificationRequest.
+struct ScheduledNotificationRequest {
+  NSString* identifier;
+  UNNotificationContent* content;
+  base::TimeDelta time_interval;
+};
+
 // The PushNotificationClient class is an abstract class that provides a
 // framework for implementing push notification support. Feature teams that
 // intend to support push notifications should create a class that inherits from
@@ -83,6 +90,12 @@ class PushNotificationClient {
       NSDictionary<NSString*, NSString*>* data,
       PushNotificationClientId clientId);
 
+  // Checks additional constraints before scheduling a notification `request`
+  // with `completion` callback.
+  void CheckRateLimitBeforeSchedulingNotification(
+      ScheduledNotificationRequest request,
+      base::OnceCallback<void(NSError*)> completion);
+
  protected:
   // The unique string that is used to associate incoming push notifications to
   // their destination feature. This identifier must match the identifier
@@ -117,10 +130,27 @@ class PushNotificationClient {
   // Stores the feedback payload to be sent with the notification feedback.
   NSDictionary<NSString*, NSString*>* feedback_data_ = nil;
 
+  base::WeakPtrFactory<PushNotificationClient> weak_ptr_factory_{this};
+
   // Loads a url in a new tab for a given browser.
   void LoadUrlInNewTab(const GURL& url,
                        Browser* browser,
                        base::OnceCallback<void(Browser*)> callback);
+
+  // Receives the result of getting all scheduled notifications as a part of
+  // scheduling notification `notif_request`.
+  void HandlePendingNotificationResult(
+      ScheduledNotificationRequest notification,
+      base::OnceCallback<void(NSError*)> completion,
+      NSArray<UNNotificationRequest*>* requests);
+
+  // Schedules a notification `request` `completion` upon finish.
+  void ScheduleNotification(ScheduledNotificationRequest request,
+                            base::OnceCallback<void(NSError*)> completion);
+
+  // Helper method to create a request for `notificationId` with `content` and a
+  // delay of `time_interval`.
+  UNNotificationRequest* CreateRequest(ScheduledNotificationRequest request);
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_H_

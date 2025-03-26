@@ -8,12 +8,14 @@
 #include <optional>
 #include <variant>
 
+#include "components/country_codes/country_codes.h"
+
 namespace regional_capabilities {
 
 // Returns whether `country_id` refers to a country member of the European
 // Economic Area.
 // See `//components/country_codes` for the Country ID format.
-bool IsEeaCountry(int country_id);
+bool IsEeaCountry(country_codes::CountryId country_id);
 
 // The state of the search engine choice country command line override.
 // See `switches::kSearchEngineChoiceCountry`.
@@ -25,7 +27,7 @@ enum class SearchEngineCountryListOverride {
 };
 
 using SearchEngineCountryOverride =
-    std::variant<int, SearchEngineCountryListOverride>;
+    std::variant<country_codes::CountryId, SearchEngineCountryListOverride>;
 
 // Gets the search engine country command line override.
 // Returns an int if the country id is passed to the command line or a

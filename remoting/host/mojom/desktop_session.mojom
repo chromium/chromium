@@ -576,18 +576,32 @@ enum ProtocolErrorCode {
   kInvalidArgument = 27,
 };
 
+// This struct mirrors remoting::SourceLocation.
+struct SourceLocation {
+  string? function_name;
+  string? file_name;
+  int32 line_number;
+};
+
 // Provides the desktop integration process with a mechanism for controlling the
 // client session owned by the network process.
 // The remote for this interface is owned in the high-privilege desktop
 // integration process and the receiver is bound in the low-privilege network
 // process.
 interface DesktopSessionStateHandler {
-  // Disconnects the remote client from the host machine, |error_code| is
-  // passed to the remote client as the reason for the disconnection. An example
-  // usage is when the 'disconnect' button is clicked on the local disconnect
-  // window. The desktop process should expect to be terminated shortly after
-  // calling this method.
-  DisconnectSession(ProtocolErrorCode error_code);
+  // Disconnects the remote client from the host machine. All arguments will
+  // be passed to the website client as the reason for the disconnection.
+  // `error_code` is the general error category, while `error_details` is a
+  // human readable string without PII that provides details for
+  // troubleshooting. `error_location` has information about where the
+  // disconnection was initiated.
+  // An example usage is when the 'disconnect' button is clicked on the local
+  // disconnect window. The desktop process should expect to be terminated
+  // shortly after calling this method.
+  DisconnectSession(
+    ProtocolErrorCode error_code,
+    string error_details,
+    SourceLocation error_location);
 };
 
 // Allows the worker process launcher to send messages to a child process.

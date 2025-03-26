@@ -181,6 +181,7 @@ export class TextLayerElement extends PolymerElement implements TextLayerBase {
   // The index of the word in renderedWords at the end of the current selection.
   // -1 if no current selection.
   private selectionEndIndex: number;
+  private debugMode: boolean;
   // Whether the user is currently selecting text.
   private isSelectingText: boolean;
   // The bounds of the parent element. This is updated by the parent to avoid

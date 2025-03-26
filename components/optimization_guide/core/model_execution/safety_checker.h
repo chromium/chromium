@@ -17,6 +17,7 @@
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -27,9 +28,9 @@ namespace optimization_guide {
 class TextSafetyClient {
  public:
   virtual ~TextSafetyClient() = 0;
-  virtual mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-  GetTextSafetyModelRemote(
-      const on_device_model::TextSafetyLoaderParams& params) = 0;
+  virtual void StartSession(
+      mojo::PendingReceiver<on_device_model::mojom::TextSafetySession>
+          session) = 0;
 };
 
 // Performs safety checks according to a config against a text safety model.
@@ -54,7 +55,6 @@ class SafetyChecker final {
   using ResultCallback = base::OnceCallback<void(Result)>;
 
   explicit SafetyChecker(base::WeakPtr<TextSafetyClient> client,
-                         on_device_model::TextSafetyLoaderParams params,
                          SafetyConfig safety_cfg);
   SafetyChecker(const SafetyChecker&);
   ~SafetyChecker();
@@ -82,7 +82,6 @@ class SafetyChecker final {
   mojo::Remote<on_device_model::mojom::TextSafetySession> session_;
 
   base::WeakPtr<TextSafetyClient> client_;
-  on_device_model::TextSafetyLoaderParams params_;
   SafetyConfig safety_cfg_;
   base::WeakPtrFactory<SafetyChecker> weak_ptr_factory_{this};
 };

@@ -12,6 +12,19 @@
 
 struct OmniboxLog;
 
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Keep up to date with
+// ClientSummarizedResultType in //tools/metrics/histograms/enums.xml.
+enum class ClientSummarizedResultType {
+  kUrl = 0,
+  kSearch = 1,
+  kApp = 2,
+  kContact = 3,
+  kOnDevice = 4,
+  kUnknown = 5,
+  kMaxValue = kUnknown
+};
+
 // OmniboxMetricsProvider is responsible for filling out the |omnibox_event|
 // section of the UMA proto.
 class OmniboxMetricsProvider : public metrics::MetricsProvider {
@@ -26,6 +39,9 @@ class OmniboxMetricsProvider : public metrics::MetricsProvider {
   void OnRecordingDisabled() override;
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
+
+  static ClientSummarizedResultType GetClientSummarizedResultType(
+      metrics::OmniboxEventProto::Suggestion::ResultType type);
 
  private:
   friend class OmniboxMetricsProviderTest;

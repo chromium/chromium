@@ -250,13 +250,10 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
     if (!group_id.has_value()) {
       // Open the group in this browser if it is closed.
-      tab_group_service->OpenTabGroup(
+      group_id = tab_group_service->OpenTabGroup(
           saved_group_id.value(),
           std::make_unique<tab_groups::TabGroupActionContextDesktop>(
               browser_, tab_groups::OpeningSource::kOpenedFromTabRestore));
-
-      group_id =
-          tab_group_service->GetGroup(saved_group_id.value())->local_group_id();
     } else {
       Browser* source_browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(

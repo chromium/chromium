@@ -88,8 +88,7 @@ class TabStrip : public views::View,
 
   // Returns the size needed for the specified views. This is invoked during
   // drag and drop to calculate offsets and positioning.
-  static int GetSizeNeededForViews(
-      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views);
+  static int GetSizeNeededForViews(const std::vector<TabSlotView*>& views);
 
   // Sets the observer to be notified of changes within this TabStrip.
   void SetTabStripObserver(TabStripObserver* observer);
@@ -180,7 +179,8 @@ class TabStrip : public views::View,
   // Destroys the views associated with a recently deleted tab group.
   void OnGroupClosed(const tab_groups::TabGroupId& group);
 
-  void AddTabToSplit(int split_index);
+  void SetSplit(int split_index,
+                std::optional<split_tabs::SplitTabId> split_id);
 
   // Returns whether or not strokes should be drawn around and under the tabs.
   bool ShouldDrawStrokes() const;

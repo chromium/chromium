@@ -21,8 +21,8 @@ import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
 import org.chromium.ui.listmenu.ListMenu;
-import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -49,7 +49,10 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         ContextMenuItemId.OPEN_IN_NEW_WINDOW,
         ContextMenuItemId.SAVE_FOR_OFFLINE,
         ContextMenuItemId.ADD_TO_MY_APPS,
-        ContextMenuItemId.REMOVE
+        ContextMenuItemId.REMOVE,
+        ContextMenuItemId.PIN_THIS_SHORTCUT,
+        ContextMenuItemId.EDIT_SHORTCUT,
+        ContextMenuItemId.UNPIN,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContextMenuItemId {
@@ -64,8 +67,11 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         int SAVE_FOR_OFFLINE = 5;
         int ADD_TO_MY_APPS = 6;
         int REMOVE = 7;
+        int PIN_THIS_SHORTCUT = 8;
+        int EDIT_SHORTCUT = 9;
+        int UNPIN = 10;
 
-        int NUM_ENTRIES = 8;
+        int NUM_ENTRIES = 11;
     }
 
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -88,9 +94,18 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
         /** Remove the current item. */
         void removeItem();
 
+        /** Pins the current item. */
+        void pinItem();
+
+        /** Unpins the current item. */
+        void unpinItem();
+
+        /** Edits the current item. */
+        void editItem();
+
         /**
          * @return the URL of the current item for saving offline, or null if the item can't be
-         *         saved offline.
+         *     saved offline.
          */
         GURL getUrl();
 
@@ -120,6 +135,15 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
 
         @Override
         public void removeItem() {}
+
+        @Override
+        public void pinItem() {}
+
+        @Override
+        public void unpinItem() {}
+
+        @Override
+        public void editItem() {}
 
         @Override
         public GURL getUrl() {
@@ -325,7 +349,10 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                     GURL itemUrl = delegate.getUrl();
                     return itemUrl != null && OfflinePageBridge.canSavePage(itemUrl);
                 }
-            case ContextMenuItemId.REMOVE:
+            case ContextMenuItemId.REMOVE: // Fall through.
+            case ContextMenuItemId.PIN_THIS_SHORTCUT: // Fall through.
+            case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
+            case ContextMenuItemId.UNPIN:
                 return true;
             case ContextMenuItemId.ADD_TO_MY_APPS:
                 return false;
@@ -352,6 +379,12 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                 return R.string.contextmenu_save_link;
             case ContextMenuItemId.REMOVE:
                 return R.string.remove;
+            case ContextMenuItemId.PIN_THIS_SHORTCUT:
+                return R.string.contextmenu_pin_this_shortcut;
+            case ContextMenuItemId.EDIT_SHORTCUT:
+                return R.string.contextmenu_edit_shortcut;
+            case ContextMenuItemId.UNPIN:
+                return R.string.contextmenu_unpin;
         }
         assert false;
         return 0;
@@ -388,6 +421,18 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
             case ContextMenuItemId.REMOVE:
                 delegate.removeItem();
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.RemoveItem");
+                return true;
+            case ContextMenuItemId.PIN_THIS_SHORTCUT:
+                delegate.pinItem();
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.PinItem");
+                return true;
+            case ContextMenuItemId.EDIT_SHORTCUT:
+                delegate.editItem();
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.EditItem");
+                return true;
+            case ContextMenuItemId.UNPIN:
+                delegate.unpinItem();
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.UnpinItem");
                 return true;
             default:
                 return false;

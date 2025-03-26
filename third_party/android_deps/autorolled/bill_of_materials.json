@@ -42,17 +42,17 @@
     {
         "name": "appsearch",
         "group": "androidx.appsearch",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.2.0-SNAPSHOT"
     },
     {
         "name": "appsearch-builtin-types",
         "group": "androidx.appsearch",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.2.0-SNAPSHOT"
     },
     {
         "name": "appsearch-platform-storage",
         "group": "androidx.appsearch",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.2.0-SNAPSHOT"
     },
     {
         "name": "core-common",
@@ -206,6 +206,16 @@
     },
     {
         "name": "runtime-android",
+        "group": "androidx.compose.runtime",
+        "version": "1.9.0-SNAPSHOT"
+    },
+    {
+        "name": "runtime-annotation",
+        "group": "androidx.compose.runtime",
+        "version": "1.9.0-SNAPSHOT"
+    },
+    {
+        "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
         "version": "1.9.0-SNAPSHOT"
     },

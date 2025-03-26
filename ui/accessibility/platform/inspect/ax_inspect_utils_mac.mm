@@ -20,9 +20,7 @@
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
 
-// error: 'accessibilityAttributeNames' is deprecated: first deprecated in
-// macOS 10.10 - Use the NSAccessibility protocol methods instead (see
-// NSAccessibilityProtocols.h
+// TODO(https://crbug.com/406190900): Remove this deprecation pragma.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 

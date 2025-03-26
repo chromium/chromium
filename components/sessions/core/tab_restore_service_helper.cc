@@ -234,16 +234,14 @@ void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
     window->tabs.push_back(std::move(tab));
   }
 
-  if (window->tabs.size() == 1 && window->app_name.empty() &&
-      window->user_title.empty()) {
-    // Short-circuit creating a Window if only 1 tab was present. This fixes
-    // http://crbug.com/56744.
-    AddEntry(std::move(window->tabs[0]), true, true);
-  } else if (!window->tabs.empty()) {
-    window->selected_tab_index = std::min(
-        static_cast<int>(window->tabs.size() - 1), window->selected_tab_index);
-    AddEntry(std::move(window), true, true);
+  if (window->tabs.empty()) {
+    // This can happen in tests.
+    return;
   }
+
+  window->selected_tab_index = std::min(
+      static_cast<int>(window->tabs.size() - 1), window->selected_tab_index);
+  AddEntry(std::move(window), true, true);
 }
 
 void TabRestoreServiceHelper::BrowserClosed(LiveTabContext* context) {

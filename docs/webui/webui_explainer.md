@@ -512,7 +512,7 @@ mojom() is the build rule used to generate mojo bindings. It can be set up as
 follows:
 
 **chrome/browser/ui/webui/donuts/BUILD.gn**
-```
+```python
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
@@ -673,7 +673,7 @@ added to the build and served from the root (e.g.
 `build_webui()`:
 
 **chrome/browser/resources/donuts/BUILD.gn**
-```
+```python
 import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
@@ -743,7 +743,7 @@ calling the method returns a promise. The promise will be resolved with the
 response from the browser.
 
 **chrome/browser/resources/donuts/donuts.ts**
-```js
+```ts
 import {BrowserProxyImpl} from './browser_proxy.js';
 
 let numDonutsBaked: number = 0;
@@ -864,7 +864,7 @@ void OvenHandler::OnPilotLightExtinguished() {
 This works by crafting a string to be evaluated in the renderer. Any arguments
 to the call are serialized to JSON and the parameter list is wrapped with
 
-```
+```c++
 // See WebUI::GetJavascriptCall() for specifics:
 "functionCallName(" + argumentsAsJson + ")"
 ```

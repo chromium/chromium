@@ -216,17 +216,31 @@ bool CheckAndSetPrefetchHoldbackStatus(
   }();
 
   // Normally PreloadingAttemptImpl::ShouldHoldback() eventually computes its
-  // `holdback_status_`, but we forcely set the status in two special cases
+  // `holdback_status_`, but we forcely set the status in some special cases
   // below, by calling PreloadingAttemptImpl::SetHoldbackStatus().
   // As its comment describes, this is expected to be called only once.
+  //
+  // Note that, alternatively, determining holdback status can be done in
+  // triggers, e.g. in `PreloadingAttemptImpl::ctor()`. For more details, see
+  // https://crbug.com/406123867
 
   if (devtools_client_exist) {
     // 1. When developers debug Speculation Rules Prefetch using DevTools,
     // always set status to kAllowed for developer experience.
     prefetch_container->preloading_attempt()->SetHoldbackStatus(
         PreloadingHoldbackStatus::kAllowed);
+  } else if (prefetch_container->IsLikelyAheadOfPrerender()) {
+    // 2. If PrefetchContainer is likely ahead of prerender, always set status
+    // to kAllowed as it is likely used for prerender.
+    //
+    // Note that we don't use `PrefetchContainer::overridden_holdback_status_`
+    // for this purpose because it can't handle a prefetch that was not ahead of
+    // prerender but another ahead of prerender one is migrated into it. We need
+    // to update migration if we'd like to do it.
+    prefetch_container->preloading_attempt()->SetHoldbackStatus(
+        PreloadingHoldbackStatus::kAllowed);
   } else if (prefetch_container->HasOverriddenHoldbackStatus()) {
-    // 2. If PrefetchContainer has custom overridden status, set that value.
+    // 3. If PrefetchContainer has custom overridden status, set that value.
     prefetch_container->preloading_attempt()->SetHoldbackStatus(
         prefetch_container->GetOverriddenHoldbackStatus());
   }

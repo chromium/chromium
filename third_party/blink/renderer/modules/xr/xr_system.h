@@ -188,7 +188,7 @@ class XRSystem final : public EventTarget,
     PendingRequestSessionQuery& operator=(const PendingRequestSessionQuery&) =
         delete;
 
-    virtual ~PendingRequestSessionQuery() = default;
+    ~PendingRequestSessionQuery() = default;
 
     // Resolves underlying promise with passed in XR session.
     // If metrics are to be recorded for this session, an
@@ -268,7 +268,7 @@ class XRSystem final : public EventTarget,
 
     uint64_t TraceId() const { return trace_id_; }
 
-    virtual void Trace(Visitor*) const;
+    void Trace(Visitor*) const;
 
    private:
     void ParseSensorRequirement();
@@ -317,7 +317,7 @@ class XRSystem final : public EventTarget,
     PendingSupportsSessionQuery& operator=(const PendingSupportsSessionQuery&) =
         delete;
 
-    virtual ~PendingSupportsSessionQuery() = default;
+    ~PendingSupportsSessionQuery() = default;
 
     // Resolves underlying promise.
     void Resolve(bool supported, ExceptionState* exception_state = nullptr);
@@ -352,7 +352,7 @@ class XRSystem final : public EventTarget,
 
     uint64_t TraceId() const { return trace_id_; }
 
-    virtual void Trace(Visitor*) const;
+    void Trace(Visitor*) const;
 
    private:
     Member<ScriptPromiseResolverBase> resolver_;

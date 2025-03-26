@@ -990,6 +990,33 @@ TEST_F(AutofillExternalDelegateTest,
                                           SuggestionPosition{.row = 0});
 }
 
+// Test that the Autofill delegate allows previewing `kLoyaltyCardEntry`
+// suggestions.
+TEST_F(AutofillExternalDelegateTest, ExternalDelegatePreviewsLoyalyCardEntry) {
+  IssueOnQuery();
+
+  EXPECT_CALL(client(),
+              ShowAutofillSuggestions(PopupOpenArgsAre(SuggestionVectorIdsAre(
+                                          SuggestionType::kLoyaltyCardEntry)),
+                                      _));
+  std::vector<Suggestion> suggestions;
+  const std::u16string loyalty_card_value = u"LOYALTYCARD1234";
+  suggestions.emplace_back(/*main_text=*/loyalty_card_value,
+                           SuggestionType::kLoyaltyCardEntry);
+  suggestions[0].main_text.value = loyalty_card_value;
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
+  EXPECT_CALL(
+      manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(),
+                         loyalty_card_value, SuggestionType::kLoyaltyCardEntry,
+                         std::optional(LOYALTY_MEMBERSHIP_ID)));
+  external_delegate().DidSelectSuggestion(suggestions[0]);
+}
+
 // Test that the Autofill delegate routes the merchant promo code suggestions
 // footer redirect logic correctly.
 TEST_F(AutofillExternalDelegateTest,
