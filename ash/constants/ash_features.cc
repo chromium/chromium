@@ -577,6 +577,12 @@ BASE_FEATURE(kDemoModeWallpaperUpdate,
              "DemoModeWallpaperUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether clean up local files between shopper session when demo mode
+// sign in is enable. No-op if demo mode sign in is disabled.
+BASE_FEATURE(kDemoModeSignInFileCleanup,
+             "DemoModeSignInFileCleanup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Toggle different display features based on user setting and power state
 BASE_FEATURE(kDisplayPerformanceMode,
              "DisplayPerformanceMode",
@@ -3515,6 +3521,10 @@ bool IsDemoModeSignInEnabled() {
 
 bool IsDemoModeWallpaperUpdateEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeWallpaperUpdate);
+}
+
+bool IsDemoModeSignInFileCleanupEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeSignInFileCleanup);
 }
 
 bool IsDeskTemplateSyncEnabled() {
