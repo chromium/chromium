@@ -31,6 +31,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,6 +52,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
@@ -366,7 +368,11 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     extensions::CRXFileInfo crx_info(path, extensions::GetTestVerifierFormat());
     crx_info.extension_id = extension->id();
 
-    auto installer = extension_service_->CreateUpdateInstaller(crx_info, true);
+    ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+    ExtensionUpdater updater(prefs, prefs->pref_service(), profile(),
+                             /*frequency_seconds=*/600, /*cache=*/nullptr,
+                             ExtensionDownloader::Factory());
+    auto installer = updater.CreateUpdateInstaller(crx_info, true);
     installer->AddInstallerCallback(base::BindOnce(
         &ExtensionGCMAppHandlerTest::InstallerDone, base::Unretained(this)));
     installer->InstallCrxFile(crx_info);

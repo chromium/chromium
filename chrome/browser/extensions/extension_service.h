@@ -30,7 +30,6 @@
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
 #include "chrome/browser/extensions/safe_browsing_verdict_handler.h"
-#include "chrome/browser/extensions/updater/extension_updater_delegate.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/sync/model/string_ordinal.h"
@@ -67,7 +66,6 @@ namespace extensions {
 class ChromeExtensionRegistrarDelegate;
 class ComponentLoader;
 class CorruptedExtensionReinstaller;
-class CrxInstaller;
 class DelayedInstallManager;
 class ExtensionActionStorageManager;
 class ExtensionAllowlist;
@@ -139,7 +137,6 @@ class ExtensionServiceInterface {
 // Manages installed and running Chromium extensions. An instance is shared
 // between normal and incognito profiles.
 class ExtensionService : public ExtensionServiceInterface,
-                         public ExtensionUpdaterDelegate,
                          public content::RenderProcessHostCreationObserver,
                          public content::RenderProcessHostObserver,
                          public Blocklist::Observer,
@@ -181,11 +178,6 @@ class ExtensionService : public ExtensionServiceInterface,
   void CheckManagementPolicy() override;
   void CheckForUpdatesSoon() override;
   base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() override;
-
-  // ExtensionUpdaterDelegate:
-  scoped_refptr<CrxInstaller> CreateUpdateInstaller(
-      const CRXFileInfo& file,
-      bool file_ownership_passed) override;
 
   // ExtensionManagement::Observer implementation:
   void OnExtensionManagementSettingsChanged() override;
@@ -379,8 +371,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   ComponentLoader* component_loader() { return component_loader_.get(); }
 
-  bool browser_terminating() const { return browser_terminating_; }
-
   SharedModuleService* shared_module_service() {
     return shared_module_service_.get();
   }
@@ -425,10 +415,6 @@ class ExtensionService : public ExtensionServiceInterface,
   }
 #endif
 
-  void set_browser_terminating_for_test(bool value) {
-    browser_terminating_ = value;
-  }
-
  private:
   // Loads extensions specified via a command line flag/switch.
   void LoadExtensionsFromCommandLineFlag(const char* switch_name);
@@ -440,8 +426,6 @@ class ExtensionService : public ExtensionServiceInterface,
   void OnExtensionHostRenderProcessGone(
       content::BrowserContext* browser_context,
       ExtensionHost* extension_host) override;
-
-  void OnAppTerminating();
 
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
@@ -544,19 +528,12 @@ class ExtensionService : public ExtensionServiceInterface,
   // Our extension updater, if updates are turned on.
   std::unique_ptr<ExtensionUpdater> updater_;
 
-  base::CallbackListSubscription on_app_terminating_subscription_;
-
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       host_observation_{this};
 
   // Keeps track of loading and unloading component extensions.
   std::unique_ptr<ComponentLoader> component_loader_;
-
-  // Set when the browser is terminating. Prevents us from installing or
-  // updating additional extensions and allows in-progress installations to
-  // decide to abort.
-  bool browser_terminating_ = false;
 
   // Set to true if this is the first time this ExtensionService has run.
   // Used for specially handling external extensions that are installed the

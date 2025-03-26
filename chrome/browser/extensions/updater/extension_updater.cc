@@ -29,9 +29,10 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
-#include "chrome/browser/extensions/updater/extension_updater_delegate.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,8 +68,11 @@
 
 using base::RandDouble;
 using base::UnguessableToken;
+using content::BrowserThread;
 using Error = extensions::ExtensionDownloaderDelegate::Error;
 using PingResult = extensions::ExtensionDownloaderDelegate::PingResult;
+
+namespace extensions {
 
 namespace {
 
@@ -121,8 +125,6 @@ std::string GetUpdateURLData(const extensions::ExtensionPrefs* prefs,
 
 }  // namespace
 
-namespace extensions {
-
 ExtensionUpdater::CheckParams::CheckParams() = default;
 
 ExtensionUpdater::CheckParams::~CheckParams() = default;
@@ -158,15 +160,13 @@ ExtensionUpdater::InProgressCheck::InProgressCheck() = default;
 ExtensionUpdater::InProgressCheck::~InProgressCheck() = default;
 
 ExtensionUpdater::ExtensionUpdater(
-    ExtensionUpdaterDelegate* delegate,
     ExtensionPrefs* extension_prefs,
     PrefService* prefs,
     Profile* profile,
     int frequency_seconds,
     ExtensionCache* cache,
     const ExtensionDownloader::Factory& downloader_factory)
-    : delegate_(delegate),
-      downloader_factory_(downloader_factory),
+    : downloader_factory_(downloader_factory),
       frequency_(base::Seconds(frequency_seconds)),
       extension_prefs_(extension_prefs),
       prefs_(prefs),
@@ -174,6 +174,8 @@ ExtensionUpdater::ExtensionUpdater(
       registry_(ExtensionRegistry::Get(profile)),
       registrar_(ExtensionRegistrar::Get(profile)),
       delayed_install_manager_(DelayedInstallManager::Get(profile)),
+      pending_extension_manager_(PendingExtensionManager::Get(profile)),
+      external_install_manager_(ExternalInstallManager::Get(profile)),
       extension_cache_(cache) {
   DCHECK_LE(frequency_seconds, kMaxUpdateFrequencySeconds);
 #if defined(NDEBUG)
@@ -182,6 +184,27 @@ ExtensionUpdater::ExtensionUpdater(
 #endif
   frequency_seconds = std::min(frequency_seconds, kMaxUpdateFrequencySeconds);
   frequency_ = base::Seconds(frequency_seconds);
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &ExtensionUpdater::OnAppTerminating, base::Unretained(this)));
+}
+
+// Constructor for test.
+ExtensionUpdater::ExtensionUpdater(
+    CrxInstallerFactoryForTest* crx_installer_factory,
+    ExtensionPrefs* extension_prefs,
+    PrefService* prefs,
+    Profile* profile,
+    int frequency_seconds,
+    ExtensionCache* cache,
+    const ExtensionDownloader::Factory& downloader_factory)
+    : ExtensionUpdater(extension_prefs,
+                       prefs,
+                       profile,
+                       frequency_seconds,
+                       cache,
+                       downloader_factory) {
+  crx_installer_factory_for_test_ = crx_installer_factory;
 }
 
 ExtensionUpdater::~ExtensionUpdater() {
@@ -201,7 +224,6 @@ void ExtensionUpdater::Start() {
   DCHECK(!alive_);
   // If these are NULL, then that means we've been called after Stop()
   // has been called.
-  DCHECK(delegate_);
   DCHECK(extension_prefs_);
   DCHECK(prefs_);
   DCHECK(profile_);
@@ -221,7 +243,6 @@ void ExtensionUpdater::Start() {
 void ExtensionUpdater::Stop() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   alive_ = false;
-  delegate_ = nullptr;
   extension_prefs_ = nullptr;
   prefs_ = nullptr;
   profile_ = nullptr;
@@ -809,8 +830,8 @@ void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
 
   // The delegate is now responsible for cleaning up the temp file at
   // `crx_file.info.path`.
-  scoped_refptr<CrxInstaller> installer = delegate_->CreateUpdateInstaller(
-      crx_file.info, crx_file.file_ownership_passed);
+  scoped_refptr<CrxInstaller> installer =
+      CreateUpdateInstaller(crx_file.info, crx_file.file_ownership_passed);
   if (installer) {
     // If the crx file passes the expectations from the update manifest, this
     // callback inserts an entry in the extension cache and deletes it, if
@@ -847,6 +868,105 @@ void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
 
   for (const int request_id : request_ids)
     NotifyIfFinished(request_id);
+}
+
+scoped_refptr<CrxInstaller> ExtensionUpdater::CreateUpdateInstaller(
+    const CRXFileInfo& file,
+    bool file_ownership_passed) {
+  // Allow tests to override the factory to supply fake CrxInstallers.
+  if (crx_installer_factory_for_test_) {
+    return crx_installer_factory_for_test_->CreateUpdateInstaller(
+        file, file_ownership_passed);
+  }
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  if (browser_terminating_) {
+    LOG(WARNING) << "Skipping UpdateExtension due to browser shutdown";
+    // Leak the temp file at extension_path. We don't want to add to the disk
+    // I/O burden at shutdown, we can't rely on the I/O completing anyway, and
+    // the file is in the OS temp directory which should be cleaned up for us.
+    return nullptr;
+  }
+
+  const std::string& id = file.extension_id;
+
+  const PendingExtensionInfo* pending_extension_info =
+      pending_extension_manager_->GetById(id);
+
+  const Extension* extension = registry_->GetInstalledExtension(id);
+  if (!pending_extension_info && !extension) {
+    LOG(WARNING) << "Will not update extension " << id
+                 << " because it is not installed or pending";
+    // Delete extension_path since we're not creating a CrxInstaller
+    // that would do it for us.
+    if (file_ownership_passed &&
+        !GetExtensionFileTaskRunner()->PostTask(
+            FROM_HERE, base::GetDeleteFileCallback(file.path))) {
+      NOTREACHED();
+    }
+
+    return nullptr;
+  }
+
+  // Either |pending_extension_info| or |extension| or both must not be null.
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile_));
+  installer->set_expected_id(id);
+  installer->set_expected_hash(file.expected_hash);
+  int creation_flags = Extension::NO_FLAGS;
+  if (pending_extension_info) {
+    installer->set_install_source(pending_extension_info->install_source());
+    installer->set_allow_silent_install(true);
+    // If the extension came in disabled due to a permission increase, then
+    // don't grant it all the permissions. crbug.com/484214
+    bool has_permissions_increase =
+        ExtensionPrefs::Get(profile_)->HasDisableReason(
+            id, disable_reason::DISABLE_PERMISSIONS_INCREASE);
+    const base::Version& expected_version = pending_extension_info->version();
+    if (has_permissions_increase || pending_extension_info->remote_install() ||
+        !expected_version.IsValid()) {
+      installer->set_grant_permissions(false);
+    } else {
+      installer->set_expected_version(expected_version,
+                                      false /* fail_install_if_unexpected */);
+    }
+    creation_flags = pending_extension_info->creation_flags();
+    // `external_install_manager_` may be null in tests.
+    if (external_install_manager_ &&
+        pending_extension_info->mark_acknowledged()) {
+      external_install_manager_->AcknowledgeExternalExtension(id);
+    }
+    // If the extension was installed from or has migrated to the webstore, or
+    // its auto-update URL is from the webstore, treat it as a webstore
+    // install. Note that we ignore some older extensions with blank
+    // auto-update URLs because we are mostly concerned with restrictions on
+    // NaCl extensions, which are newer.
+    if (!extension && extension_urls::IsWebstoreUpdateUrl(
+                          pending_extension_info->update_url())) {
+      creation_flags |= Extension::FROM_WEBSTORE;
+    }
+  } else {
+    // |extension| must not be null.
+    installer->set_install_source(extension->location());
+  }
+
+  if (extension) {
+    installer->InitializeCreationFlagsForUpdate(extension, creation_flags);
+    installer->set_do_not_sync(extension_prefs_->DoNotSync(id));
+  } else {
+    installer->set_creation_flags(creation_flags);
+  }
+
+  // If CRXFileInfo has a valid version from the manifest fetch result, it
+  // should take priority over the one in pending extension info.
+  base::Version crx_info_expected_version(file.expected_version);
+  if (crx_info_expected_version.IsValid()) {
+    installer->set_expected_version(crx_info_expected_version,
+                                    true /* fail_install_if_unexpected */);
+  }
+
+  installer->set_delete_source(file_ownership_passed);
+  installer->set_install_cause(extension_misc::INSTALL_CAUSE_UPDATE);
+
+  return installer;
 }
 
 void ExtensionUpdater::OnInstallerDone(
@@ -917,6 +1037,11 @@ void ExtensionUpdater::NotifyIfFinished(int request_id) {
   if (!request.callback.is_null())
     std::move(request.callback).Run();
   requests_in_progress_.erase(request_id);
+}
+
+void ExtensionUpdater::OnAppTerminating() {
+  // Shutdown has started. Don't start any more extension updates.
+  browser_terminating_ = true;
 }
 
 ExtensionUpdater::ScopedSkipScheduledCheckForTest::
