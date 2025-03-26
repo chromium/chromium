@@ -615,6 +615,11 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
         transition_state.subframe_snapshot_id, /*is_live_content_layer=*/false);
   }
 
+  for (auto& p : transition_state.id_to_auto_name_map) {
+    id_to_auto_name_map_.Set(AtomicString::FromUTF8(p.first),
+                             AtomicString::FromUTF8(p.second));
+  }
+
   // The aim of this flag is to serialize/deserialize SPA state using MPA
   // machinery. The intent is to use SPA tests to test MPA implementation as
   // well. To that end, if the flag is enabled we should invalidate styles and
@@ -752,10 +757,27 @@ AtomicString ViewTransitionStyleTracker::GenerateAutoName(
     bool allow_from_id) {
   // The flag should be checked much earlier than this, in the CSS parser.
   CHECK(RuntimeEnabledFeatures::CSSViewTransitionMatchElementEnabled());
+
+  // For "auto" we generate a random name that is consistent for the same id, so
+  // we store it in a map and look it up first.
   if (allow_from_id && element.HasID() && scope &&
       *scope == element.GetTreeScope()) {
-    return element.GetIdAttribute();
+    AtomicString id_attribute = element.GetIdAttribute();
+    auto it = id_to_auto_name_map_.find(id_attribute);
+    if (it != id_to_auto_name_map_.end()) {
+      return it->value;
+    }
+
+    StringBuilder builder;
+    builder.Append("-ua-auto-");
+    builder.Append(base::Token::CreateRandom().ToString().c_str());
+    AtomicString name = builder.ToAtomicString();
+    id_to_auto_name_map_.Set(id_attribute, name);
+
+    return name;
   }
+
+  // For match-element, use a stable per-element id.
   StringBuilder builder;
   builder.Append("-ua-auto-");
   if (token_.is_zero()) {
@@ -1948,6 +1970,13 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     transition_state.subframe_snapshot_id =
         subframe_snapshot_layer_->ViewTransitionResourceId();
   }
+
+  std::vector<std::pair<std::string, std::string>> id_to_auto_name_list;
+  for (auto& p : id_to_auto_name_map_) {
+    id_to_auto_name_list.emplace_back(p.key.Utf8(), p.value.Utf8());
+  }
+  transition_state.id_to_auto_name_map =
+      base::flat_map<std::string, std::string>(std::move(id_to_auto_name_list));
 
   state_extracted_ = true;
 

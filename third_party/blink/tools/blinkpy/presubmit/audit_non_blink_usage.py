@@ -2208,6 +2208,13 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/common/frame/view_transition_state_mojom_traits.h',
+            'third_party/blink/public/common/frame/view_transition_state.h',
+        ],
+        'allowed': ['base::flat_map'],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/',
         ],
         'allowed': ['ui::k200Percent'],
