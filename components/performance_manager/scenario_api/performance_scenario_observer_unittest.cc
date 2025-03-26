@@ -15,6 +15,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

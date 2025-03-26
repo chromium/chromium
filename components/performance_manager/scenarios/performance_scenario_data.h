@@ -11,7 +11,7 @@
 #include "base/memory/structured_shared_memory.h"
 #include "base/types/optional_util.h"
 #include "components/performance_manager/graph/node_inline_data.h"
-#include "components/performance_manager/scenario_api/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenario_memory_forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace base {
