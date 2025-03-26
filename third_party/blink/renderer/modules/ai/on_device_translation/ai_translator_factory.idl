@@ -5,13 +5,13 @@
 ]
 interface AITranslatorFactory {
   [
-    Measure,
+    MeasureAs=Translator_Availability,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AIAvailability> availability(AITranslatorCreateCoreOptions options);
   [
-    Measure,
+    MeasureAs=Translator_Create,
     CallWith=ScriptState,
     RaisesException
   ]

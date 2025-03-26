@@ -5,32 +5,32 @@
 ]
 interface AITranslator {
 [
-  Measure,
+  MeasureAs=Translator_Translate,
   CallWith=ScriptState,
   RaisesException
 ]
   Promise<DOMString> translate(DOMString input, optional AITranslatorTranslateOptions options = {});
 
 [
-  Measure,
+  MeasureAs=Translator_TranslateStreaming,
   CallWith=ScriptState,
   RaisesException
 ]
   ReadableStream translateStreaming(DOMString input, optional AITranslatorTranslateOptions options = {});
 
-  [Measure]
+  [MeasureAs=Translator_SourceLanguage]
   readonly attribute DOMString sourceLanguage;
-  [Measure]
+  [MeasureAs=Translator_TargetLanguage]
   readonly attribute DOMString targetLanguage;
 
 [
-  Measure,
+  MeasureAs=Translator_Destroy,
   CallWith=ScriptState
 ]
   undefined destroy();
 
 [
-  MeasureAs=Translator_MeasureInputUsage_Method,
+  MeasureAs=Translator_MeasureInputUsage,
   CallWith=ScriptState,
   RaisesException
 ]
@@ -38,7 +38,7 @@ interface AITranslator {
     DOMString input,
     optional AITranslatorTranslateOptions options = {}
   );
-  [MeasureAs=Translator_InputQuota_AttributeGetter]
+  [MeasureAs=Translator_InputQuota]
   readonly attribute unrestricted double inputQuota;
 };
 

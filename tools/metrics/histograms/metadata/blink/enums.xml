@@ -5616,9 +5616,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5044" label="OBSOLETE_V8AI_TextModelInfo_Method"/>
   <int value="5045" label="EventTimingSimulatedClickWithNoKeyboardInteraction"/>
   <int value="5046" label="ViewTransitionGroupNesting"/>
-  <int value="5047" label="V8LanguageDetector_Detect_Method"/>
-  <int value="5048" label="V8Translation_CanDetect_Method"/>
-  <int value="5049" label="V8Translation_CreateDetector_Method"/>
+  <int value="5047" label="OBSOLETE_V8LanguageDetector_Detect_Method"/>
+  <int value="5048" label="OBSOLETE_V8Translation_CanDetect_Method"/>
+  <int value="5049" label="OBSOLETE_V8Translation_CreateDetector_Method"/>
   <int value="5050" label="V8AI_Summarizer_AttributeGetter"/>
   <int value="5051" label="V8AISummarizer_Summarize_Method"/>
   <int value="5052" label="V8AISummarizer_SummarizeStreaming_Method"/>
@@ -5838,7 +5838,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5239" label="CanvasTextDirectionSetInherit"/>
   <int value="5240" label="TopicsAPIImg"/>
   <int value="5241" label="MediaSessionEnterPictureInPicture"/>
-  <int value="5242" label="V8AILanguageDetector_Detect_Method"/>
+  <int value="5242" label="OBSOLETE_V8AILanguageDetector_Detect_Method"/>
   <int value="5243" label="CharsetAutoDetection"/>
   <int value="5244" label="CharsetAutoDetectionISO2022JP"/>
   <int value="5245" label="RequestOTRMainFrame"/>
@@ -5849,14 +5849,16 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5249" label="AboutSrcdocToBeControlledByServiceWorker"/>
   <int value="5250"
       label="DisplayNoneComputedInContentVisibilityAutoLockedSubtree"/>
-  <int value="5251" label="V8AITranslator_SourceLanguage_AttributeGetter"/>
-  <int value="5252" label="V8AITranslator_TargetLanguage_AttributeGetter"/>
-  <int value="5253" label="V8AITranslator_Destroy_Method"/>
-  <int value="5254" label="V8AITranslator_Translate_Method"/>
-  <int value="5255" label="V8AITranslator_TranslateStreaming_Method"/>
-  <int value="5256" label="V8AITranslatorFactory_Create_Method"/>
-  <int value="5257" label="V8AILanguageDetectorFactory_Create_Method"/>
-  <int value="5258" label="V8AILanguageDetector_Destroy_Method"/>
+  <int value="5251"
+      label="OBSOLETE_V8AITranslator_SourceLanguage_AttributeGetter"/>
+  <int value="5252"
+      label="OBSOLETE_V8AITranslator_TargetLanguage_AttributeGetter"/>
+  <int value="5253" label="OBSOLETE_V8AITranslator_Destroy_Method"/>
+  <int value="5254" label="OBSOLETE_V8AITranslator_Translate_Method"/>
+  <int value="5255" label="OBSOLETE_V8AITranslator_TranslateStreaming_Method"/>
+  <int value="5256" label="OBSOLETE_V8AITranslatorFactory_Create_Method"/>
+  <int value="5257" label="OBSOLETE_V8AILanguageDetectorFactory_Create_Method"/>
+  <int value="5258" label="OBSOLETE_V8AILanguageDetector_Destroy_Method"/>
   <int value="5259" label="FetchLaterInvokeStatePending"/>
   <int value="5260" label="FetchLaterInvokeStateSent"/>
   <int value="5261" label="CSPWithUnsafeHashes"/>
@@ -5931,11 +5933,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5322" label="ColumnPseudoElement"/>
   <int value="5323" label="ScrollButtonPseudoElement"/>
   <int value="5324" label="ScrollMarkerPseudoElement"/>
-  <int value="5325" label="V8AITranslatorFactory_Availability_Method"/>
+  <int value="5325" label="OBSOLETE_V8AITranslatorFactory_Availability_Method"/>
   <int value="5326" label="GeolocationWouldSucceedWhenAdScriptInStack"/>
   <int value="5327" label="AdScriptInStackOnWatchGeoLocation"/>
   <int value="5328" label="DeviceBoundSessionRegistered"/>
-  <int value="5329" label="V8AILanguageDetectorFactory_Availability_Method"/>
+  <int value="5329"
+      label="OBSOLETE_V8AILanguageDetectorFactory_Availability_Method"/>
   <int value="5330" label="CrossPartitionSameOriginBlobURLFetch"/>
   <int value="5331" label="WebAppManifestUpdate"/>
   <int value="5332" label="CSSEnvironmentVariable_PreferredTextScale"/>
@@ -5988,8 +5991,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5378" label="FencedFrameDisableUntrustedNetwork"/>
   <int value="5379" label="FencedFrameNotifyEvent"/>
   <int value="5380" label="SharedStorageGetInFencedFrame"/>
-  <int value="5381" label="Translator_MeasureInputUsage_Method"/>
-  <int value="5382" label="Translator_InputQuota_AttributeGetter"/>
+  <int value="5381" label="OBSOLETE_Translator_MeasureInputUsage_Method"/>
+  <int value="5382" label="OBSOLETE_Translator_InputQuota_AttributeGetter"/>
   <int value="5383" label="AriaNotify"/>
   <int value="5384" label="LanguageDetector_MeasureInputUsage"/>
   <int value="5385" label="LanguageDetector_InputQuota"/>
@@ -6001,6 +6004,19 @@ Called by update_use_counter_feature_enum.py.-->
       label="CredentialsGetImmediateMediationWithWebAuthnAndPasswords"/>
   <int value="5391"
       label="NonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller"/>
+  <int value="5392" label="Translator_Create"/>
+  <int value="5393" label="Translator_Availability"/>
+  <int value="5394" label="Translator_SourceLanguage"/>
+  <int value="5395" label="Translator_TargetLanguage"/>
+  <int value="5396" label="Translator_Destroy"/>
+  <int value="5397" label="Translator_Translate"/>
+  <int value="5398" label="Translator_TranslateStreaming"/>
+  <int value="5399" label="Translator_MeasureInputUsage"/>
+  <int value="5400" label="Translator_InputQuota"/>
+  <int value="5401" label="LanguageDetector_Create"/>
+  <int value="5402" label="LanguageDetector_Availability"/>
+  <int value="5403" label="LanguageDetector_Detect"/>
+  <int value="5404" label="LanguageDetector_Destroy"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

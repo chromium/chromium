@@ -5,13 +5,13 @@
 ]
 interface AILanguageDetectorFactory {
     [
-    Measure,
+    MeasureAs=LanguageDetector_Availability,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AIAvailability> availability();
   [
-    Measure,
+    MeasureAs=LanguageDetector_Create,
     CallWith=ScriptState,
     RaisesException
   ]
