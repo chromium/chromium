@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 """Handles the download of the search engine favicons.
 
-For all search engines referenced in search_engine_countries-inc.cc,
+For all search engines referenced in regional_settings.json,
 downloads their Favicon, scales it and puts it as resource into the repository
 for display, e.g. in the search engine choice UI and settings.
 
-This should be run whenever search_engine_countries-inc.cc changes the list of
+This should be run whenever regional_settings.json changes the list of
 search engines used per country, or whenever prepopulated_engines.json changes
 a favicon.
 

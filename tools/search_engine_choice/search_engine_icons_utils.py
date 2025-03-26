@@ -7,9 +7,18 @@ import os
 import re
 import sys
 
+from typing import Any
+
+Json = dict[str, Any]
+
 config_file_path = 'tools/search_engine_choice/generate_search_engine_icons_config.json'
-search_engines_countries_src_path = 'components/search_engines/search_engine_countries-inc.cc'
+regional_settings_file_path = 'third_party/search_engines_data/resources/definitions/regional_settings.json'
 prepopulated_engines_file_path = 'third_party/search_engines_data/resources/definitions/prepopulated_engines.json'
+
+
+def _load_json(src_dir: str, file_name: str) -> Json:
+  with open(src_dir + file_name, 'r', encoding='utf-8') as json_file:
+    return json.loads(json_comment_eater.Nom(json_file.read()))
 
 
 def keyword_to_identifer(keyword):
@@ -41,45 +50,41 @@ def keyword_to_resource_name(keyword):
   return 'IDR_' + icon_filename.upper() + '_PNG'
 
 
-def get_used_engines(src_dir):
+def get_used_engines(src_dir) -> set[str]:
   """Returns the set of used engines.
 
   Returns the set of used engines. by checking which engines are used in
-  `search_engine_countries-inc.cc`.
+  `regional_settings.json`.
   """
   used_engines = set()
-  SE_NAME_REGEX = re.compile(r'.*SearchEngineTier::[A-Za-z]+, &(.+)},')
-  with open(src_dir + config_file_path, 'r',
-            encoding='utf-8') as config_json, open(
-                src_dir + search_engines_countries_src_path,
-                'r',
-                encoding='utf-8') as file:
-    config_data = json.loads(json_comment_eater.Nom(config_json.read()))
-    lines = file.readlines()
-    for line in lines:
-      match = SE_NAME_REGEX.match(line)
-      if match:
-        engine = match.group(1)
-        if not engine in config_data['ignored_engines']:
-          used_engines.add(engine)
-  return used_engines
+  settings = _load_json(src_dir, regional_settings_file_path)
+
+  for setting in settings['elements'].values():
+    search_engines = setting['search_engines']
+    used_engines.update(search_engines['top'])
+    used_engines.update(search_engines.get('remaining', []))
+
+  # Strip the reference from engine names.
+  used_engines = {engine.removeprefix('&') for engine in used_engines}
+
+  # Read the list of engines that should be excluded.
+  config = _load_json(src_dir, config_file_path)
+  ignored_engines = set(config['ignored_engines'])
+
+  return used_engines - ignored_engines
 
 
-def get_used_engines_with_keywords(src_dir):
+def get_used_engines_with_keywords(src_dir) -> set[(Json, str)]:
   """Returns the set of used engines with their keyword.
 
   Reads the keyword from `components/search_engines/prepopulated_engines.json`.
   Returns a set of pairs (engine, keyword).
   """
-  used_engines_with_keywords = set()
-  with open(src_dir + prepopulated_engines_file_path, 'r',
-            encoding='utf-8') as engines_json:
-    engine_data = json.loads(json_comment_eater.Nom(engines_json.read()))
-    used_engines = get_used_engines(src_dir)
-    for used_engine in used_engines:
-      used_engines_with_keywords.add(
-          (used_engine, engine_data['elements'][used_engine]['keyword']))
-  return used_engines_with_keywords
+  engine_data = _load_json(src_dir, prepopulated_engines_file_path)
+  used_engines = get_used_engines(src_dir)
+
+  return {(used_engine, engine_data['elements'][used_engine]['keyword'])
+          for used_engine in used_engines}
 
 
 current_file_path = os.path.dirname(__file__)
