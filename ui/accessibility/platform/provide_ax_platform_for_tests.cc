@@ -11,12 +11,16 @@ ProvideAXPlatformForTests::ProvideAXPlatformForTests() {
 }
 
 ProvideAXPlatformForTests::~ProvideAXPlatformForTests() {
-  ax_platform_.reset();
+  // exo::wayland tests call `RUN_ALL_TESTS()` from a different thread than the
+  // one that the bulk of the work is done on.
+  ax_platform_->DetachFromThread();
 }
 
 void ProvideAXPlatformForTests::OnTestEnd(
     const ::testing::TestInfo& test_info) {
-  ax_platform_.reset();
+  // exo::wayland tests call `RUN_ALL_TESTS()` from a different thread than the
+  // one that the bulk of the work is done on.
+  ax_platform_->DetachFromThread();
   ax_platform_.emplace();
 }
 
