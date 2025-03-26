@@ -31,11 +31,11 @@ import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GaiaId;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /** FakeAccountManagerFacade is an {@link AccountManagerFacade} stub intended for testing. */
@@ -104,7 +104,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         }
     }
 
-    private final List<AccountsChangeObserver> mObservers = new ArrayList<>();
+    private final List<AccountsChangeObserver> mObservers = new CopyOnWriteArrayList<>();
 
     // `mAccountHolders` can be read from non-UI threads (this is used by `getAccessToken`), but
     // should only be changed from the UI thread to guarantee the consistency of the observed state.
@@ -476,6 +476,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @MainThread
     private void fireOnAccountsChangedNotification() {
+        ThreadUtils.checkUiThread();
         for (AccountsChangeObserver observer : mObservers) {
             observer.onCoreAccountInfosChanged();
         }
