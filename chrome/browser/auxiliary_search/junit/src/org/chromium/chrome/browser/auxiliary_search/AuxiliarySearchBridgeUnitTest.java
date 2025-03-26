@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -24,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -37,6 +39,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -50,6 +53,8 @@ public final class AuxiliarySearchBridgeUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final int TAB_ID_1 = 1;
+    // Arbitrary non-0 value.
+    private static final long NATIVE_BRIDGE = 10L;
 
     @Mock private AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
     @Mock private Profile mProfile;
@@ -60,7 +65,7 @@ public final class AuxiliarySearchBridgeUnitTest {
     @Before
     public void setUp() {
         AuxiliarySearchBridgeJni.setInstanceForTesting(mMockAuxiliarySearchBridgeJni);
-        when(mMockAuxiliarySearchBridgeJni.getForProfile(mProfile)).thenReturn(10L);
+        when(mMockAuxiliarySearchBridgeJni.getForProfile(mProfile)).thenReturn(NATIVE_BRIDGE);
 
         doReturn(false).when(mProfile).isOffTheRecord();
         mBridge = new AuxiliarySearchBridge(mProfile);
@@ -98,33 +103,13 @@ public final class AuxiliarySearchBridgeUnitTest {
 
         verify(callback).onResult(eq(null));
         verify(mMockAuxiliarySearchBridgeJni, never())
-                .getNonSensitiveTabs(anyLong(), any(), eq(callback));
+                .getNonSensitiveTabs(eq(NATIVE_BRIDGE), any(), eq(callback));
     }
 
     @Test
     @SmallTest
     public void testAddDataEntry() {
-        List<AuxiliarySearchDataEntry> entryList = new ArrayList<>();
-
-        mDataEntry1 =
-                new AuxiliarySearchDataEntry(
-                        /* type= */ AuxiliarySearchEntryType.TAB,
-                        /* url= */ JUnitTestGURLs.URL_1,
-                        /* title= */ "Title 1",
-                        /* lastActiveTime= */ TimeUtils.uptimeMillis(),
-                        /* tabId= */ TAB_ID_1,
-                        /* appId= */ null,
-                        /* visitId= */ -1);
-
-        entryList.add(
-                AuxiliarySearchDataEntry.addDataEntry(
-                        mDataEntry1.type,
-                        mDataEntry1.url,
-                        mDataEntry1.title,
-                        mDataEntry1.lastActiveTime,
-                        mDataEntry1.tabId,
-                        mDataEntry1.appId,
-                        mDataEntry1.visitId));
+        List<AuxiliarySearchDataEntry> entryList = createEntryList();
 
         assertEquals(1, entryList.size());
 
@@ -149,7 +134,8 @@ public final class AuxiliarySearchBridgeUnitTest {
         Callback callback = mock(Callback.class);
         ThreadUtils.runOnUiThreadBlocking(() -> mBridge.getNonSensitiveHistoryData(callback));
 
-        verify(mMockAuxiliarySearchBridgeJni).getNonSensitiveHistoryData(anyLong(), eq(callback));
+        verify(mMockAuxiliarySearchBridgeJni)
+                .getNonSensitiveHistoryData(eq(NATIVE_BRIDGE), eq(callback));
     }
 
     @Test
@@ -163,6 +149,76 @@ public final class AuxiliarySearchBridgeUnitTest {
 
         verify(callback).onResult(eq(null));
         verify(mMockAuxiliarySearchBridgeJni, never())
-                .getNonSensitiveHistoryData(anyLong(), eq(callback));
+                .getNonSensitiveHistoryData(eq(NATIVE_BRIDGE), eq(callback));
+    }
+
+    @Test
+    @SmallTest
+    public void testSetObserver() {
+        AuxiliarySearchProvider.Observer observer = mock(AuxiliarySearchProvider.Observer.class);
+
+        mBridge.setObserver(observer);
+        assertEquals(observer, mBridge.getObserverForTesting());
+        verify(mMockAuxiliarySearchBridgeJni).setObserverAndTrigger(eq(NATIVE_BRIDGE), eq(mBridge));
+
+        Mockito.reset(mMockAuxiliarySearchBridgeJni);
+        mBridge.setObserver(null);
+        verify(mMockAuxiliarySearchBridgeJni, never())
+                .setObserverAndTrigger(anyLong(), any(AuxiliarySearchBridge.class));
+        assertNull(mBridge.getObserverForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetMostVisitedSites() {
+        mBridge.getMostVisitedSites();
+        verify(mMockAuxiliarySearchBridgeJni).getMostVisitedSites(eq(NATIVE_BRIDGE));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnMostVisitedSitesURLsAvailable() {
+        AuxiliarySearchProvider.Observer observer = mock(AuxiliarySearchProvider.Observer.class);
+        mBridge.setObserver(observer);
+
+        List<AuxiliarySearchDataEntry> entryList = createEntryList();
+        mBridge.onMostVisitedSitesURLsAvailable(entryList);
+        verify(observer).onSiteSuggestionsAvailable(eq(entryList));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnIconMadeAvailable() {
+        AuxiliarySearchProvider.Observer observer = mock(AuxiliarySearchProvider.Observer.class);
+        mBridge.setObserver(observer);
+
+        GURL url = JUnitTestGURLs.URL_1;
+        mBridge.onIconMadeAvailable(url);
+        verify(observer).onIconMadeAvailable(eq(url));
+    }
+
+    List<AuxiliarySearchDataEntry> createEntryList() {
+        List<AuxiliarySearchDataEntry> entryList = new ArrayList<>();
+
+        mDataEntry1 =
+                new AuxiliarySearchDataEntry(
+                        /* type= */ AuxiliarySearchEntryType.TAB,
+                        /* url= */ JUnitTestGURLs.URL_1,
+                        /* title= */ "Title 1",
+                        /* lastActiveTime= */ TimeUtils.uptimeMillis(),
+                        /* tabId= */ TAB_ID_1,
+                        /* appId= */ null,
+                        /* visitId= */ -1);
+
+        entryList.add(
+                AuxiliarySearchDataEntry.addDataEntry(
+                        mDataEntry1.type,
+                        mDataEntry1.url,
+                        mDataEntry1.title,
+                        mDataEntry1.lastActiveTime,
+                        mDataEntry1.tabId,
+                        mDataEntry1.appId,
+                        mDataEntry1.visitId));
+        return entryList;
     }
 }

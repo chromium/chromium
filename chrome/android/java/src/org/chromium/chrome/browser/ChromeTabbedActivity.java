@@ -2975,6 +2975,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 mTabModelProfileSupplier.get());
 
         mMultiInstanceManager.cleanupSyncedTabGroupsIfOnlyInstance(mTabModelSelector);
+
+        if (mAuxiliarySearchController != null) {
+            mAuxiliarySearchController.onDeferredStartup();
+        }
     }
 
     @Override

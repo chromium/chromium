@@ -64,4 +64,10 @@ public interface AuxiliarySearchController extends PauseResumeWithNativeObserver
             @NonNull Map<T, Bitmap> entryToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMs) {}
+
+    /**
+     * Called in ChromeTabbedActivity#onDeferredStartup() after critical initialization in cold
+     * startup.
+     */
+    default void onDeferredStartup() {}
 }

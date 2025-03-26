@@ -176,7 +176,18 @@ public class AuxiliarySearchControllerImplUnitTest {
 
     @Test
     public void testOnDestroy() {
-        assertEquals(1, AuxiliarySearchConfigManager.getInstance().getObserverListSizeForTesting());
+        int currentSize =
+                AuxiliarySearchConfigManager.getInstance().getObserverListSizeForTesting();
+
+        // Enables multiple data source and starts observing MVTs.
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
+        createController();
+        mAuxiliarySearchControllerImpl.onDeferredStartup();
+
+        assertEquals(
+                currentSize + 1,
+                AuxiliarySearchConfigManager.getInstance().getObserverListSizeForTesting());
         mAuxiliarySearchControllerImpl.register(mActivityLifecycleDispatcher);
 
         mAuxiliarySearchControllerImpl.destroy();
@@ -185,7 +196,10 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         verify(mFaviconHelper).destroy();
 
-        assertEquals(0, AuxiliarySearchConfigManager.getInstance().getObserverListSizeForTesting());
+        assertEquals(
+                currentSize,
+                AuxiliarySearchConfigManager.getInstance().getObserverListSizeForTesting());
+        verify(mAuxiliarySearchProvider).setObserver(eq(null));
     }
 
     @Test
@@ -472,6 +486,25 @@ public class AuxiliarySearchControllerImplUnitTest {
 
         mAuxiliarySearchControllerImpl.onConfigChanged(true);
         verify(mAuxiliarySearchDonor).onConfigChanged(eq(true), any(Callback.class));
+    }
+
+    @Test
+    public void testOnDeferredStartup() {
+        // Verifies case when multiple data source is disabled.
+        mAuxiliarySearchControllerImpl.onDeferredStartup();
+        verify(mAuxiliarySearchProvider, never()).setObserver(eq(mAuxiliarySearchControllerImpl));
+
+        // Enables multiple data source.
+        when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(true);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isMultiDataTypeEnabledOnDevice());
+        createController();
+
+        mAuxiliarySearchControllerImpl.onDeferredStartup();
+        verify(mAuxiliarySearchProvider).setObserver(eq(mAuxiliarySearchControllerImpl));
+
+        Mockito.reset(mAuxiliarySearchProvider);
+        mAuxiliarySearchControllerImpl.onDeferredStartup();
+        verify(mAuxiliarySearchProvider, never()).setObserver(eq(mAuxiliarySearchControllerImpl));
     }
 
     private void createController() {
