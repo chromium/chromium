@@ -6,7 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/testing/system_alert_handler.h"
 
 using base::test::ios::kWaitForPageLoadTimeout;

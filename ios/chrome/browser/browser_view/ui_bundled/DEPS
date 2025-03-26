@@ -115,6 +115,7 @@ include_rules = [
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
   "+ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h",
   "+ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h",
+  "+ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h",
 ]
 
 specific_include_rules = {

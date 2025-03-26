@@ -19,6 +19,7 @@ source_set("notifications") {
     "//components/sync_device_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
     "//ios/chrome/browser/push_notification/model:profile_service",
     "//ios/chrome/browser/push_notification/model:profile_service_factory",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
@@ -46,7 +47,6 @@ source_set("notifications") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
