@@ -312,6 +312,7 @@ config("compiler") {
     ":compiler_cpu_abi",
     ":compiler_codegen",
     ":compiler_deterministic",
+    ":clang_warning_suppression",
   ]
 
   # Here we enable -fno-delete-null-pointer-checks, which makes various nullptr
@@ -1647,6 +1648,31 @@ config("clang_revision") {
     # and build system rebuild things when their commandline changes). Nothing
     # should ever read this define.
     defines = [ "CR_CLANG_REVISION=\"$clang_revision\"" ]
+  }
+}
+
+# Controls the usage of a warning suppression mapping (WSM) file to suppress
+# warnings based on the path of the file they come from. It's controlled by the
+# `clang_warning_suppression_file` gn argument , which points to a text file
+# defining which warnings should be suppressed where.
+# See //build/config/warning_suppression.txt for an example file; this is the
+# file used by Chromium.
+#
+# To use a different file, or to use this functionality outside of chromium,
+# set the `clang_warning_suppression_file` argument to point to the new file,
+# e.g. by setting in the the project's .gn file.
+config("clang_warning_suppression") {
+  # Some build configs use older versions of clang that don't support WSMs
+  if (!is_nacl && default_toolchain != "//build/toolchain/cros:target" &&
+      !llvm_android_mainline && is_clang &&
+      clang_warning_suppression_file != "") {
+    from_build_root =
+        rebase_path(clang_warning_suppression_file, root_build_dir)
+    inputs = [ clang_warning_suppression_file ]
+    cflags = [
+      "-Xclang",
+      "--warning-suppression-mappings=" + from_build_root,
+    ]
   }
 }
 

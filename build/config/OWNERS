@@ -5,3 +5,8 @@ per-file cast.gni=file://build/config/chromecast/OWNERS
 
 per-file unsafe_buffers_paths.txt=arthursonzogni@chromium.org
 per-file unsafe_buffers_paths.txt=tsepez@chromium.org
+
+per-file warning_suppression.txt=dloehr@google.com
+per-file warning_suppression.txt=thakis@chromium.org
+per-file warning_suppression.txt=hans@chromium.org
+per-file warning_suppression.txt=tsepez@chromium.org
