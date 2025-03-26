@@ -1394,12 +1394,12 @@ RTCPeerConnectionHandler::AddTransceiverWithKind(
     const String& kind,
     const webrtc::RtpTransceiverInit& init) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  cricket::MediaType media_type;
+  webrtc::MediaType media_type;
   if (kind == webrtc::MediaStreamTrackInterface::kAudioKind) {
-    media_type = cricket::MEDIA_TYPE_AUDIO;
+    media_type = webrtc::MediaType::AUDIO;
   } else {
     DCHECK_EQ(kind, webrtc::MediaStreamTrackInterface::kVideoKind);
-    media_type = cricket::MEDIA_TYPE_VIDEO;
+    media_type = webrtc::MediaType::VIDEO;
   }
   blink::TransceiverStateSurfacer transceiver_state_surfacer(
       task_runner_, signaling_thread());
@@ -1435,7 +1435,7 @@ RTCPeerConnectionHandler::AddTransceiverWithKind(
 }
 
 void RTCPeerConnectionHandler::AddTransceiverWithMediaTypeOnSignalingThread(
-    cricket::MediaType media_type,
+    webrtc::MediaType media_type,
     webrtc::RtpTransceiverInit init,
     blink::TransceiverStateSurfacer* transceiver_state_surfacer,
     webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
@@ -1993,8 +1993,8 @@ RTCPeerConnectionHandler::FirstSessionDescription::FirstSessionDescription(
   for (const auto& content : sdesc->description()->contents()) {
     if (content.type == cricket::MediaProtocolType::kRtp) {
       const auto* mdesc = content.media_description();
-      audio = audio || (mdesc->type() == cricket::MEDIA_TYPE_AUDIO);
-      video = video || (mdesc->type() == cricket::MEDIA_TYPE_VIDEO);
+      audio = audio || (mdesc->type() == webrtc::MediaType::AUDIO);
+      video = video || (mdesc->type() == webrtc::MediaType::VIDEO);
       rtcp_mux = rtcp_mux || mdesc->rtcp_mux();
     }
   }

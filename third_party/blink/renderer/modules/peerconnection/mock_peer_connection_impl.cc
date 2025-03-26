@@ -144,9 +144,9 @@ uint32_t FakeRtpSender::ssrc() const {
   return 0;
 }
 
-cricket::MediaType FakeRtpSender::media_type() const {
+webrtc::MediaType FakeRtpSender::media_type() const {
   NOTIMPLEMENTED();
-  return cricket::MEDIA_TYPE_AUDIO;
+  return webrtc::MediaType::AUDIO;
 }
 
 std::string FakeRtpSender::id() const {
@@ -213,9 +213,9 @@ std::vector<std::string> FakeRtpReceiver::stream_ids() const {
   return stream_ids;
 }
 
-cricket::MediaType FakeRtpReceiver::media_type() const {
+webrtc::MediaType FakeRtpReceiver::media_type() const {
   NOTIMPLEMENTED();
-  return cricket::MEDIA_TYPE_AUDIO;
+  return webrtc::MediaType::AUDIO;
 }
 
 std::string FakeRtpReceiver::id() const {
@@ -249,7 +249,7 @@ std::vector<webrtc::RtpSource> FakeRtpReceiver::GetSources() const {
 }
 
 FakeRtpTransceiver::FakeRtpTransceiver(
-    cricket::MediaType media_type,
+    webrtc::MediaType media_type,
     rtc::scoped_refptr<FakeRtpSender> sender,
     rtc::scoped_refptr<FakeRtpReceiver> receiver,
     std::optional<std::string> mid,
@@ -276,7 +276,7 @@ void FakeRtpTransceiver::ReplaceWith(const FakeRtpTransceiver& other) {
   current_direction_ = other.current_direction_;
 }
 
-cricket::MediaType FakeRtpTransceiver::media_type() const {
+webrtc::MediaType FakeRtpTransceiver::media_type() const {
   return media_type_;
 }
 
@@ -396,9 +396,8 @@ MockPeerConnectionImpl::AddTrack(
       new rtc::RefCountedObject<FakeRtpReceiver>(dummy_receiver_track));
   rtc::scoped_refptr<FakeRtpTransceiver> transceiver(
       new rtc::RefCountedObject<FakeRtpTransceiver>(
-          cricket::MediaType::MEDIA_TYPE_AUDIO, sender, dummy_receiver,
-          std::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,
-          std::nullopt));
+          webrtc::MediaType::AUDIO, sender, dummy_receiver, std::nullopt, false,
+          webrtc::RtpTransceiverDirection::kSendRecv, std::nullopt));
   transceivers_.push_back(transceiver);
   return rtc::scoped_refptr<webrtc::RtpSenderInterface>(sender);
 }

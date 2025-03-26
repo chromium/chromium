@@ -266,9 +266,9 @@ void RTCRtpTransceiver::setCodecPreferences(
     }
     auto type = codec->mimeType().Left(slash_position);
     if (type == "video") {
-      webrtc_codec.kind = cricket::MEDIA_TYPE_VIDEO;
+      webrtc_codec.kind = webrtc::MediaType::VIDEO;
     } else if (type == "audio") {
-      webrtc_codec.kind = cricket::MEDIA_TYPE_AUDIO;
+      webrtc_codec.kind = webrtc::MediaType::AUDIO;
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError, "Invalid codec");

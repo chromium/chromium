@@ -153,13 +153,13 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
         state_(std::move(state)) {
     DCHECK(native_peer_connection_);
     DCHECK(state_.is_initialized());
-    if (webrtc_receiver_->media_type() == cricket::MEDIA_TYPE_AUDIO) {
+    if (webrtc_receiver_->media_type() == webrtc::MediaType::AUDIO) {
       encoded_audio_transformer_ =
           std::make_unique<RTCEncodedAudioStreamTransformer>(main_task_runner_);
       webrtc_receiver_->SetDepacketizerToDecoderFrameTransformer(
           encoded_audio_transformer_->Delegate());
     } else {
-      CHECK(webrtc_receiver_->media_type() == cricket::MEDIA_TYPE_VIDEO);
+      CHECK(webrtc_receiver_->media_type() == webrtc::MediaType::VIDEO);
       encoded_video_transformer_ =
           std::make_unique<RTCEncodedVideoStreamTransformer>(
               main_task_runner_, base::FeatureList::IsEnabled(
