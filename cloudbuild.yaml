@@ -71,6 +71,9 @@ steps:
             set -e
             cd /workspace/hopium
             /workspace/depot_tools/gclient sync -r $TAG_NAME
+    volumes:
+      - name: ssh
+        path: "/root/.ssh"
 
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
     id: 'checkout-branch'
@@ -83,6 +86,9 @@ steps:
             cd /workspace/hopium/src
             git checkout $TAG_NAME
             /workspace/depot_tools/gclient sync -D
+    volumes:
+      - name: ssh
+        path: "/root/.ssh"
 
   # 4. Configure & Build
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
