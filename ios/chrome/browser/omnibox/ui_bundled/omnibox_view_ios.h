@@ -29,7 +29,6 @@ class ProfileIOS;
 // iOS implementation of OmniBoxView.  Wraps a UITextField and
 // interfaces with the rest of the autocomplete system.
 class OmniboxViewIOS : public OmniboxView,
-                       public OmniboxTextChangeDelegate,
                        public OmniboxTextAcceptDelegate {
  public:
   // Retains `field`.
@@ -50,6 +49,10 @@ class OmniboxViewIOS : public OmniboxView,
   void SetOmniboxTextController(OmniboxTextController* controller) {
     omnibox_text_controller_ = controller;
   }
+
+  // Hide keyboard and call OnDidEndEditing.  This dismisses the keyboard and
+  // also finalizes the editing state of the omnibox.
+  void EndEditing();
 
   // OmniboxView implementation.
   std::u16string GetText() const override;
@@ -88,17 +91,30 @@ class OmniboxViewIOS : public OmniboxView,
   gfx::NativeView GetNativeView() const override;
   gfx::NativeView GetRelativeWindowForPopup() const override;
 
-  // OmniboxTextChangeDelegate methods
+  // OmniboxTextChange methods.
 
-  void OnDidBeginEditing() override;
-  bool OnWillChange(NSRange range, NSString* new_text) override;
-  void OnDidChange(bool processing_user_input) override;
-  void EndEditing() override;
-  void OnCopy() override;
-  void ClearText() override;
-  void WillPaste() override;
-  void OnDeleteBackward() override;
-  void OnAcceptAutocomplete() override;
+  // Called when the Omnibox text field starts editing
+  void OnDidBeginEditing();
+  // Called before the Omnibox text field changes. `new_text` will replace the
+  // text currently in `range`. This should return true if the text change
+  // should happen and false otherwise.
+  // See -textField:shouldChangeCharactersInRange:replacementString: for more
+  // details.
+  bool OnWillChange(NSRange range, NSString* new_text);
+  // Called after the Omnibox text field changes. `processing_user_input` holds
+  // whether the change was user-initiated or programmatic.
+  void OnDidChange(bool processing_user_input);
+  // Called when the Omnibox text field should copy.
+  void OnCopy();
+  // Clear the Omnibox text.
+  void ClearText();
+  // Called when the Omnibox text field should paste.
+  void WillPaste();
+  // Called when the backspace button is pressed in the Omnibox text field.
+  void OnDeleteBackward();
+  // Called when autocomplete text is accepted. (e.g. tap on autocomplete text,
+  // tap on left/right arrow key).
+  void OnAcceptAutocomplete();
 
   // OmniboxTextAcceptDelegate methods
   void OnAccept() override;
