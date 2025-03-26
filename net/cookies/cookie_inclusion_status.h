@@ -428,8 +428,9 @@ class NET_EXPORT CookieInclusionStatus {
   ExemptionReason exemption_reason_ = ExemptionReason::kNone;
 };
 
-NET_EXPORT inline std::ostream& operator<<(std::ostream& os,
-                                           const CookieInclusionStatus status) {
+NET_EXPORT inline std::ostream& operator<<(
+    std::ostream& os,
+    const CookieInclusionStatus& status) {
   return os << status.GetDebugString();
 }
 
