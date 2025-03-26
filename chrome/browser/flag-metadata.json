@@ -7698,6 +7698,21 @@
     "expiry_milestone": 145
   },
   {
+    "name": "reader-mode-distiller-heuristic-delay-string",
+    "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "reader-mode-distiller-heuristic-enabled",
+    "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 145
+  },
+  {
+    "name": "reader-mode-distiller-heuristic-sampling",
+    "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "reader-mode-heuristics",
     "owners": [ "mdjones@chromium.org", "wychen@chromium.org" ],
     // This flag is a utility for testing Reader Mode heuristics or force
