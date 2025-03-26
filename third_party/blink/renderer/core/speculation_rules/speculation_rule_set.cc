@@ -140,7 +140,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       const KURL& base_url,
                                       ExecutionContext* context,
                                       bool is_browser_injected,
-                                      std::optional<AtomicString> ruleset_tag,
+                                      WTF::String ruleset_tag,
                                       String* out_error,
                                       Vector<String>& out_warnings) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
@@ -434,7 +434,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
   }
 
-  std::optional<AtomicString> rule_tag;
+  AtomicString rule_tag;
   if (JSONValue* tag_value = input->Get("tag");
       tag_value &&
       RuntimeEnabledFeatures::SpeculationRulesTagEnabled(context)) {
@@ -646,7 +646,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
     result->AddWarnings(base::span_from_ref(duplicate_key_warning));
   }
 
-  std::optional<AtomicString> ruleset_tag;
+  WTF::String ruleset_tag;
   if (RuntimeEnabledFeatures::SpeculationRulesTagEnabled(context)) {
     JSONValue* tag_value = parsed->Get("tag");
     if (tag_value) {
@@ -658,7 +658,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
         result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
                          "Tag value is invalid: must be ASCII printable.");
       } else {
-        ruleset_tag = AtomicString(tag_str);
+        ruleset_tag = WTF::String(tag_str);
       }
     }
   }

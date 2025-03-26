@@ -182,7 +182,7 @@ MATCHER_P(HasTags, tags, "") {
 MATCHER_P(HasRulesetLevelTag,
           tag,
           "has ruleset level tag " + std::string(tag)) {
-  return arg->ruleset_tag().value() == tag;
+  return arg->ruleset_tag() == tag;
 }
 
 class SpeculationRuleSetTest : public ::testing::Test {

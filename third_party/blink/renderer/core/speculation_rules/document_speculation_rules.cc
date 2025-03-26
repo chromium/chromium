@@ -662,9 +662,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
         CHECK(!rule->requires_anonymous_client_ip_when_cross_origin() ||
               action == mojom::blink::SpeculationAction::kPrefetch);
 
-        // TODO(crbug.com/381687257): remove std::optional as null can be
-        // represented by AtomicString.
-        Vector<std::optional<AtomicString>> tags;
+        Vector<WTF::String> tags;
         if (rule->rule_tag()) {
           tags.push_back(rule->rule_tag());
         }
@@ -836,9 +834,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
               }
             }
 
-            // TODO(crbug.com/381687257): remove std::optional as null can be
-            // represented by AtomicString.
-            Vector<std::optional<AtomicString>> tags;
+            Vector<WTF::String> tags;
             if (rule->rule_tag()) {
               tags.push_back(rule->rule_tag());
             }
