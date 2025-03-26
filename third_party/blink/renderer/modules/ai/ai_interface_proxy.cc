@@ -32,6 +32,7 @@ AIInterfaceProxy* AIInterfaceProxy::From(ExecutionContext* execution_context) {
 void AIInterfaceProxy::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
   visitor->Trace(translation_manager_remote_);
+  visitor->Trace(language_detection_driver_);
 }
 
 // static
@@ -50,6 +51,26 @@ AIInterfaceProxy::GetTranslationManagerRemoteImpl(
         translation_manager_remote_.BindNewPipeAndPassReceiver(task_runner_));
   }
   return translation_manager_remote_;
+}
+
+// static
+HeapMojoRemote<
+    language_detection::mojom::blink::ContentLanguageDetectionDriver>&
+AIInterfaceProxy::GetLanguageDetectionDriverRemote(
+    ExecutionContext* execution_context) {
+  return From(execution_context)
+      ->GetLanguageDetectionDriverRemoteImpl(execution_context);
+}
+
+HeapMojoRemote<
+    language_detection::mojom::blink::ContentLanguageDetectionDriver>&
+AIInterfaceProxy::GetLanguageDetectionDriverRemoteImpl(
+    ExecutionContext* execution_context) {
+  if (!language_detection_driver_.is_bound()) {
+    execution_context->GetBrowserInterfaceBroker().GetInterface(
+        language_detection_driver_.BindNewPipeAndPassReceiver(task_runner_));
+  }
+  return language_detection_driver_;
 }
 
 }  // namespace blink

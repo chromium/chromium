@@ -37,10 +37,6 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
       AILanguageDetectorCreateOptions* options,
       ExceptionState& exception_state);
 
-  HeapMojoRemote<
-      language_detection::mojom::blink::ContentLanguageDetectionDriver>&
-  GetLanguageDetectionDriverRemote();
-
  private:
   void OnGotStatus(
       ScriptPromiseResolver<V8AIAvailability>* resolver,
@@ -48,10 +44,6 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   Member<LanguageDetectionModel> language_detection_model_;
-
-  HeapMojoRemote<
-      language_detection::mojom::blink::ContentLanguageDetectionDriver>
-      language_detection_driver_;
 };
 
 }  // namespace blink

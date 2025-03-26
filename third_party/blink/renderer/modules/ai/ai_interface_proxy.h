@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_INTERFACE_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_INTERFACE_PROXY_H_
 
+#include "components/language_detection/content/common/language_detection.mojom-blink.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -30,16 +31,28 @@ class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
   static HeapMojoRemote<mojom::blink::TranslationManager>&
   GetTranslationManagerRemote(ExecutionContext* execution_context);
 
+  static HeapMojoRemote<
+      language_detection::mojom::blink::ContentLanguageDetectionDriver>&
+  GetLanguageDetectionDriverRemote(ExecutionContext* execution_context);
+
  private:
   static AIInterfaceProxy* From(ExecutionContext* execution_context);
 
   HeapMojoRemote<mojom::blink::TranslationManager>&
   GetTranslationManagerRemoteImpl(ExecutionContext* execution_context);
 
+  HeapMojoRemote<
+      language_detection::mojom::blink::ContentLanguageDetectionDriver>&
+  GetLanguageDetectionDriverRemoteImpl(ExecutionContext* execution_context);
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   HeapMojoRemote<mojom::blink::TranslationManager> translation_manager_remote_{
       nullptr};
+
+  HeapMojoRemote<
+      language_detection::mojom::blink::ContentLanguageDetectionDriver>
+      language_detection_driver_{nullptr};
 };
 
 }  // namespace blink
