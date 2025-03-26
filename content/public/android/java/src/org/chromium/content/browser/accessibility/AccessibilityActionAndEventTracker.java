@@ -106,15 +106,18 @@ public class AccessibilityActionAndEventTracker {
      * For any events with significant info, we append this to the end of the string in square
      * braces. For example, for the TYPE_ANNOUNCEMENT events we append the announcement text.
      *
-     * @param event             AccessibilityEvent event to get a string for
-     * @return                  String representation of the given event
+     * @param event AccessibilityEvent event to get a string for
+     * @return String representation of the given event
      */
     private static @Nullable String eventToString(AccessibilityEvent event) {
         // Convert event type to a human readable String (except TYPE_WINDOW_CONTENT_CHANGED with no
-        // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag)
+        // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag or CONTENT_CHANGE_TYPE_PANE_TITLE flag)
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
                 && (event.getContentChangeTypes()
                                 & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
+                        == 0
+                && (event.getContentChangeTypes()
+                                & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE)
                         == 0) {
             return null;
         }

@@ -272,6 +272,13 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
         wcax->HandleStateDescriptionChanged(android_node->GetUniqueId());
       }
       break;
+    case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED: {
+      wcax->HandleDescriptionChangedSubtree(android_node->GetUniqueId());
+      if (android_node->GetRole() == ax::mojom::Role::kDialog) {
+        wcax->HandleDescriptionChangedPaneTitle(android_node->GetUniqueId());
+      }
+      break;
+    }
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
       ui::AXNodeID focus_id =
           ax_tree()->GetUnignoredSelection().focus_object_id;
@@ -366,7 +373,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
     case ui::AXEventGenerator::Event::DETAILS_CHANGED:
     case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
-    case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
     case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
     case ui::AXEventGenerator::Event::ENABLED_CHANGED:

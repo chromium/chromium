@@ -677,6 +677,28 @@ void WebContentsAccessibilityAndroid::HandleCheckStateChanged(
                                                             unique_id);
 }
 
+void WebContentsAccessibilityAndroid::HandleDescriptionChangedPaneTitle(
+    int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsAccessibilityImpl_handleDescriptionChangedPaneTitle(
+      env, obj, unique_id);
+}
+
+void WebContentsAccessibilityAndroid::HandleDescriptionChangedSubtree(
+    int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsAccessibilityImpl_handleDescriptionChangedSubtree(env, obj,
+                                                                    unique_id);
+}
+
 void WebContentsAccessibilityAndroid::HandleStateDescriptionChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
