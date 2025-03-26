@@ -201,12 +201,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
 
   void ReloadExtension(const extensions::ExtensionId& extension_id);
 
-  void UnloadExtension(const extensions::ExtensionId& extension_id);
-
-  void UninstallExtension(const extensions::ExtensionId& extension_id);
-
-  void EnableExtension(const extensions::ExtensionId& extension_id);
-
   // Wait for the number of visible page actions to change to |count|.
   bool WaitForPageActionVisibilityChangeTo(int count);
 
