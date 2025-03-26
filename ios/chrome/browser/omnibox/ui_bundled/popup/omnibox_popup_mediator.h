@@ -12,13 +12,13 @@
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/autocomplete_controller_observer_bridge.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/popup_debug_info_consumer.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/image_retriever.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_debug_info_consumer.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/remote_suggestions_service_observer_bridge.h"
 #import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;

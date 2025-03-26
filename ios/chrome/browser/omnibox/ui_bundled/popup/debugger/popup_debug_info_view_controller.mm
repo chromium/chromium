@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_debug_info_view_controller.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/popup_debug_info_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
