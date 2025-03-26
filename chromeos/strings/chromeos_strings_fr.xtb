@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">dimanche</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
 <translation id="4251839292699800785">Bureau élégant</translation>
+<translation id="4252261480746798874">Lorsque vous sélectionnez "Créer le vôtre", vous pouvez rédiger une requête personnalisée. Vous pouvez aussi sélectionner "Choisir un thème", puis sélectionner les mots soulignés pour personnaliser votre fond d'écran IA.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Sélectionnez "Trouver l'inspiration" pour obtenir des options d'images IA plus uniques et variées.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Lorsque vous créez votre propre fond d'écran, la requête est envoyée aux serveurs Google pour générer des images et améliorer le produit, conformément aux <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Conditions d'utilisation et aux Règles de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. N'incluez aucun élément personnel, sensible ou confidentiel.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Vérifiez les réponses de l'IA générative, car elle peut faire des erreurs, y compris sur des personnes. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />En savoir plus<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Latence HTTP</translation>
 <translation id="4266143281602681663">fil</translation>
 <translation id="4269815121975886860">Préférences de démarrage</translation>

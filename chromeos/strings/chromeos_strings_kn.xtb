@@ -11,6 +11,7 @@
 <translation id="102432830749687801">ನೀವು ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುವ ಮೊದಲು ನಿಮ್ಮ ಶಾಲೆಯ ಖಾತೆಯ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಖಾತೆಗೆ ಸರಿಸಲು Google ನಿಂದ ಕಂಟೆಂಟ್‌ ವರ್ಗಾವಣೆ ಆ್ಯಪ್‌ ಅನ್ನು ಬಳಸುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" ಗಾಗಿ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಲಾಗುತ್ತಿದೆ. ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ. ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿರಿ.</translation>
 <translation id="1030856839388844477">ಡೇಟಾ ಬಳಕೆಯನ್ನು ರೀಸೆಟ್‌ ಮಾಡಿ</translation>
+<translation id="1047095725494118091">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ಹೊಸ ಫೀಚರ್ ಲಭ್ಯವಿದೆ, ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಬಳಸಿ.</translation>
 <translation id="1049663189809099096">ಪೇಸ್ಟಲ್ ಹಳದಿ</translation>
@@ -26,6 +27,7 @@
 <translation id="1082009148392559545">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1094693127011229778">IP ವಿಳಾಸ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="1100902271996134409">ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> ಆಡಿಯೋ</translation>
 <translation id="1116694919640316211">ಕುರಿತು</translation>
 <translation id="1118572504348554005">ನೀವು ನಮಗೆ ವರದಿ ಮಾಡುವ ದೋಷಗಳು ಮತ್ತು ಇತರ ಸಮಸ್ಯೆಗಳನ್ನು ಟ್ರಬಲ್‌ಶೂಟ್ ಮಾಡಲು ನಮ್ಮ ಪಾಲುದಾರರೊಂದಿಗೆ ಈ ಫಾರ್ಮ್ ಮೂಲಕ ಸಲ್ಲಿಸಿದ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಾವು ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಪಾಸ್‌ವರ್ಡ್‌ಗಳಂತಹ ಸೂಕ್ಷ್ಮವಾದ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಬೇಡಿ.</translation>
 <translation id="1119403468619527527">ಸರಳಗೊಳಿಸಲು ತೀರಾ ಕಡಿಮೆ ಪದಗಳಿವೆ</translation>
@@ -292,6 +294,7 @@
 <translation id="2163937499206714165">ಕತ್ತಲೆ ಮೋಡ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2164131940279488868">ಆಡಿಯೊ ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಲು ಮೈಕ್ ಕನೆಕ್ಟ್ ಆಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="2173302385160625112">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="2176909213844392588"><ph name="LANGUAGE_NAME" /> ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಮಾಡೆಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="2180197493692062006">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಆ್ಯಪ್ ಅನ್ನು ಪುನಃ ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2189104374785738357">APN ವಿವರಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2195732836444333448">ಪ್ರಸ್ತುತ ಗರಿಷ್ಠ ಸಾಮರ್ಥ್ಯ. ಶೀಘ್ರದಲ್ಲೇ ಹಿಂತಿರುಗಿ.</translation>
@@ -480,6 +483,7 @@
 <translation id="3199982728237701504">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಎರಡು-ಬದಿಯದ್ದು)</translation>
 <translation id="3201315366910775591">ಹಂಚಿಕೊಂಡ ಆಲ್ಬಮ್‌ಗಳನ್ನು ಇತರ ಜನರು ಅಪ್‌ಡೇಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="3211671540163313381">ಕೀ ಮ್ಯಾಪಿಂಗ್ ಡಿ-ಪ್ಯಾಡ್</translation>
+<translation id="3217462202230355157">ನಿಮ್ಮ ಮೈಕ್ ಕನೆಕ್ಟ್ ಆಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="3226405216343213872">ಸ್ಕ್ಯಾನರ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3226657629376379887">ಲೇಔಟ್ ಕ್ರಿಯೆಗಳ ಮೆನು</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ನ ಮೌಲ್ಯವನ್ನು <ph name="CONVERSION_RATE" /> ಸಂಖ್ಯೆಯಿಂದ ಭಾಗಿಸಿ</translation>
@@ -515,6 +519,7 @@
 <translation id="3383623117265110236">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್</translation>
 <translation id="3404249063913988450">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3413935475507503304">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು, ಮುಂದಿನದು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
+<translation id="3416709353545797224"><ph name="DEVICE_TYPE" /> ನ ಎಲ್ಲಾ ಆಡಿಯೋವನ್ನು ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3428551088151258685">ಹೊರಾಂಗಣ</translation>
 <translation id="3428971106895559033">ಪೇಸ್ಟಲ್</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -678,6 +683,7 @@
 <translation id="4155551848414053977">ಸ್ಕ್ಯಾನರ್ ಆನ್ ಆಗಿದೆಯೆ ಮತ್ತು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಅಥವಾ ನೇರ ಕನೆಕ್ಷನ್ ಮೂಲಕ ಲಭ್ಯವಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4159238217853743776">ಭಾಗಶಃ</translation>
 <translation id="4159784952369912983">ನೇರಳೆ</translation>
+<translation id="416219735020840807">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಮಾಡೆಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="4170180284036919717">ಫೋಟೋ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="4170700058716978431">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4171077696775491955">ಪ್ರಖರತೆ ಕಡಿಮೆ ಮಾಡಿ</translation>
@@ -698,6 +704,16 @@
 <translation id="4249717042534905822">ಭಾನುವಾರದಂದು</translation>
 <translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
 <translation id="4251839292699800785">ಸ್ಟೈಲಿಶ್ ಆಫೀಸ್</translation>
+<translation id="4252261480746798874">ನೀವು "ನಿಮ್ಮದೇ ಆದದನ್ನು ರಚಿಸಿ" ಆಯ್ಕೆ ಮಾಡಿದಾಗ, ನೀವು ಕಸ್ಟಮ್ ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು ಬರೆಯಬಹುದು. ನೀವು "ಥೀಮ್ ಆಯ್ಕೆಮಾಡಿ" ಅನ್ನು ಸಹ ಆಯ್ಕೆ ಮಾಡಬಹುದು ಮತ್ತು ನಂತರ ನಿಮ್ಮ AI ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಲು ಅಂಡರ್‌ಲೈನ್ ಮಾಡಿದ ಪದಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ಇನ್ನಷ್ಟು ಅನನ್ಯ ಹಾಗೂ ವೈವಿಧ್ಯಮಯ AI ಚಿತ್ರಗಳ ಆಯ್ಕೆಗಳನ್ನು ಪಡೆಯಲು "ನನಗೆ ಸ್ಫೂರ್ತಿ ನೀಡಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ನೀವು ನಿಮ್ಮ ಸ್ವಂತ ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ರಚಿಸಿದಾಗ, ಚಿತ್ರಗಳನ್ನು ಜನರೇಟ್ ಮಾಡಲು ಹಾಗೂ ಉತ್ಪನ್ನವನ್ನು ಸುಧಾರಿಸಲು ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು Google AI ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ, ಅದು<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ನ ಸೇವಾ ನಿಯಮಗಳು ಮತ್ತು ಗೌಪ್ಯತಾ ನೀತಿಗೆ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ಒಳಪಟ್ಟಿರುತ್ತದೆ. ವೈಯಕ್ತಿಕ, ಸೂಕ್ಷ್ಮವಾದ ಅಥವಾ ಗೌಪ್ಯವಾದ ಯಾವುದೇ ಮಾಹಿತಿಯನ್ನೂ ಸೇರಿಸಬೇಡಿ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ಜನರೇಟಿವ್ AI ಜನರ ಬಗ್ಗೆ ಸೇರಿದಂತೆ ತಪ್ಪಾದ ಮಾಹಿತಿಯನ್ನು ನೀಡಬಹುದು, ಆದ್ದರಿಂದ ಅದನ್ನು ಡಬಲ್ ಚೆಕ್ ಮಾಡಿ. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP ವಿಳಂಬ</translation>
 <translation id="4266143281602681663">ನೂಲು</translation>
 <translation id="4269815121975886860">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ಆದ್ಯತೆಗಳು</translation>
@@ -942,6 +958,7 @@
 <translation id="5344619683981067131">ಆಯ್ಕೆ ಮಾಡಿದ ಪಠ್ಯವನ್ನು ಸಲಹೆಯೊಂದಿಗೆ ಬದಲಾಯಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5346687412805619883">ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="5358174242040570474">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ವಾಲ್‌ಪೇಪರ್ ಆಯ್ಕೆ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಪುನಃ ಆ್ಯಪ್ ತೆರೆಯಿರಿ.</translation>
+<translation id="5368228070728130240">ಸಾರಾಂಶ ಮತ್ತು ಶೀರ್ಷಿಕೆ ರಚನೆಗಾಗಿ ಮಾಡೆಲ್‌ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="5372659122375744710">ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="5376354385557966694">ಸ್ವಯಂಚಾಲಿತ ಬೆಳಕಿನ ಮೋಡ್</translation>
 <translation id="5378184552853359930">IP ಪ್ರಕಾರ</translation>
@@ -1247,6 +1264,7 @@
 <translation id="6766275201586212568">DNS ರೆಸಲ್ಯೂಷನ್‌ಗಳು ವಿಫಲವಾಗಿವೆ</translation>
 <translation id="6768237774506518020">ಅಧಿಕ DNS ರೆಸಲ್ಯೂಷನ್ ವೈಫಲ್ಯ ದರ</translation>
 <translation id="6786747875388722282">ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು</translation>
+<translation id="6789891265243243337"><ph name="DEVICE_TYPE" /> ಆಡಿಯೋ ಆನ್ ಆಗಿರುವಾಗ, ರೆಕಾರ್ಡರ್ ಈ ಸಾಧನದಲ್ಲಿ ಪ್ಲೇ ಆಗುತ್ತಿರುವ ಎಲ್ಲಾ ಆಡಿಯೋವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="6791471867139427246">ಕೀಬೋರ್ಡ್ ಲೈಟ್ ಬಣ್ಣ</translation>
 <translation id="6796229976413584781">ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6798678288485555829">ಪಠ್ಯದ ನ್ಯಾವಿಗೇಷನ್</translation>
@@ -1718,6 +1736,7 @@
 <translation id="8930622219860340959">ವೈರ್‌ಲೆಸ್</translation>
 <translation id="8933650076320258356"><ph name="DIRECTION" /> ಗಾಗಿ <ph name="KEYS" /> ಕೀ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">ಕ್ಲೈಂಟ್ IP ವಿಳಾಸ</translation>
+<translation id="8938606491880817721">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="8944651180182756621">ಲಾಂಚರ್ ಬಣ್ಣ</translation>
 <translation id="8945308580158685341">ಜೇನು ನೋಣಗಳು</translation>
 <translation id="894617464444543719">ಸಾಧನವು ಫೋನ್ ಆಗಿದೆ.</translation>

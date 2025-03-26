@@ -38,6 +38,7 @@
 <translation id="19085484004813472">हे नवीन वैशिष्‍ट्य आहे</translation>
 <translation id="2006524834898217237">हे डिव्हाइस इंटरनेटशी कनेक्ट केलेले असल्याची खात्री करा.</translation>
 <translation id="208586643495776849">कृपया पुन्हा प्रयत्न करा</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोडमध्ये अनुमती द्या<ph name="END_BOLD" /> सुरू करा</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1दि}other{#दि}}</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2168039046890040389">पेज अप</translation>
@@ -48,6 +49,7 @@
 <translation id="2289052229480071835">आपल्या स्क्रीनवरील लक्ष्यांना स्पर्श करा टॅप करा.</translation>
 <translation id="2295140143284145483">सर्वेक्षण</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> हा आयडी असलेले एक्स्टेंशन लोकेट करू शकत नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> हे आयडी असलेले एक्स्टेंशन लोकेट करू शकत नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.}}</translation>
 <translation id="2353636109065292463">तुमचे इंटरनेट कनेक्शन तपासत आहे</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2388990488038464401">तुमच्या फोनवरून या नंबरवर कॉल करायचा का?</translation>
@@ -70,6 +72,7 @@
 <translation id="2878511608894704031">सर्व हटवा</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{१दि मध्ये}other{#दि मध्ये}}</translation>
 <translation id="2922712708897119705">स्तंभ <ph name="COLUMN_NAME" /> हा उतरत्या क्रमाने लावला आहे.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{एक्स्टेंशन शोधू शकत नाही}other{एक्स्टेंशन शोधू शकत नाही}}</translation>
 <translation id="3036649622769666520">फाइल उघडा</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
@@ -82,6 +85,7 @@
 <translation id="3295886253693811851">यावरून कॉल करा</translation>
 <translation id="3306688585798492231">बिल्ट-इन डिस्प्ले</translation>
 <translation id="335581015389089642">भाषण</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />तपशील<ph name="END_BOLD" /> वर क्लिक करा</translation>
 <translation id="3389286852084373014">मजकूर खूप मोठा आहे</translation>
 <translation id="3406306243914553062">HTML आशय</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 दिवस शिल्लक}other{# दिवस शिल्लक}}</translation>
@@ -102,6 +106,7 @@
 <translation id="3994749195054421561">स्तंभ <ph name="COLUMN_NAME" /> हा चढत्या क्रमाने लावला आहे.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{एक न वाचलेली सूचना}other{# न वाचलेल्या सूचना}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{गुप्त मोडमध्ये पुढील एक्स्टेंशन सुरू करा:}other{गुप्त मोडमध्ये पुढील एक्स्टेंशन सुरू करा:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 महिन्यापूर्वी}other{# महिन्यांपूर्वी}}</translation>
 <translation id="4289300219472526559">बोलणे सुरू करा</translation>
 <translation id="4289540628985791613">विहंगावलोकन</translation>
@@ -113,6 +118,8 @@
 <translation id="4729257764711776855">नंबर</translation>
 <translation id="4746179598275229723">एक्स्टेंशन अनपिन केले</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 महिना राहिला}other{# महिने राहिले}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{गुप्त मोड वापरण्यासाठी, तुमच्या संस्थेला एक्स्टेंशनची आवश्यकता आहे}other{गुप्त मोड वापरण्यासाठी, तुमच्या संस्थेला काही एक्स्टेंशनची आवश्यकता आहे}}</translation>
+<translation id="482932175346970750">तुमच्या ब्राउझरमध्ये <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप करा</translation>
 <translation id="4888938634149558681">कॉल करा</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 सेकंद}other{# सेकंद}}</translation>
@@ -121,6 +128,7 @@
 <translation id="5076340679995252485">&amp;पेस्ट करा</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">पाठवता आले नाही</translation>
+<translation id="5283101102242354279">गुप्त मोडमध्ये एक्स्टेंशन सुरू करा:</translation>
 <translation id="528468243742722775">बंद करा</translation>
 <translation id="5329858601952122676">&amp;हटवा</translation>
 <translation id="5361107212971249203">मजकूर</translation>
@@ -176,6 +184,7 @@
 <translation id="7170202025028120564">तुमच्या अ‍ॅप्लिकेशनची डिस्प्ले सेटिंग्ज ते पुढील वेळी रीस्टार्ट केल्यावर लागू होतील.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 मिनिट शिल्लक}other{# मिनिटे शिल्लक}}</translation>
+<translation id="7252604552361840748">वर एक्स्टेंशन शोधा</translation>
 <translation id="7363164521834647158">उत्तर पाठवा</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>

@@ -689,6 +689,16 @@
 <translation id="4249717042534905822">të dielën</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
 <translation id="4251839292699800785">Zyra me stil</translation>
+<translation id="4252261480746798874">Kur zgjedh "Krijo tënden", mund të shkruash një kërkesë të personalizuar. Gjithashtu, mund të zgjedhësh "Zgjidh një temë" dhe më pas të zgjedhësh fjalët e nënvizuara për të personalizuar imazhin tënd të sfondit nga IA-ja.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Zgjidh "Më frymëzo" për të marrë opsione më të larmishme dhe më unike për imazhet nga IA-ja.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kur krijon imazhin tënd të sfondit, kërkesa dërgohet te serverët e Google për të gjeneruar imazhe dhe për të përmirësuar produktin, sipas <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />"Kushteve të privatësisë" dhe "Politikës së privatësisë" të Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Mos përfshi asgjë personale, delikate apo konfidenciale.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          IA-ja gjeneruese mund të bëjë gabime, duke përfshirë edhe për njerëzit, prandaj kontrolloje përsëri. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Mëso më shumë<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Vonesa e HTTP-së</translation>
 <translation id="4266143281602681663">fill</translation>
 <translation id="4269815121975886860">Preferencat për nisjen</translation>

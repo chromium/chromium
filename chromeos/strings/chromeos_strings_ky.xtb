@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">жекшембиде</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4251839292699800785">Стилдүү кеңсе</translation>
+<translation id="4252261480746798874">"Өзүңүздүкүн түзүңүз" дегенди тандасаңыз, жеке сурамды жаза аласыз. Ошондой эле, ЖИ тушкагазыңызды жекелештирүү үчүн "Тема тандоо" дегенди, андан кийин асты сызылган сөздөрдү тандасаңыз болот.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Өзгөчө жана түрдүү сүрөттөрдү алуу үчүн "Мени шыктандыр" дегенди тандаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Өзүңүздүн тушкагазыңызды түзсөңүз, сурам Google'дун серверлерине жөнөтүлүп, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'дун Тейлөө шарттарына жана Купуялык эрежелерине<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ылайык сүрөттөрдү түзүү жана кызматты жакшыртуу үчүн колдонулат. Жеке же купуя нерселерди кошпоңуз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жаратуучу жасалма интеллект адамдар жана башка нерселер тууралуу так эмес маалыматты көрсөтүшү мүмкүн, андыктан анын жоопторун тактаңыз. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Кеңири маалымат<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP күтүү убакыты</translation>
 <translation id="4266143281602681663">жип</translation>
 <translation id="4269815121975886860">Баштоо параметрлери</translation>

@@ -2572,6 +2572,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2751454300227269244">Move your mouth right</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> wants to learn the ID number of your security key. The site will know exactly which security key you're using.</translation>
 <translation id="275213133112113418">Your card is saved</translation>
+<translation id="2752805177271551234">Use input history</translation>
 <translation id="2754226775788136540">Looking for Fast Pair devices saved to <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Find the apps that you need, from productivity to entertainment, on the Google Play Store. You can install apps anytime.</translation>
 <translation id="2755349111255270002">Reset this <ph name="DEVICE_TYPE" /></translation>
@@ -2604,7 +2605,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2771816809568414714">Cheese</translation>
 <translation id="2772936498786524345">Sneaky</translation>
 <translation id="2773288106548584039">Legacy Browser Support</translation>
-<translation id="2773621783913034737">Make tabs inactive</translation>
 <translation id="2774876860084746535">Intellectual</translation>
 <translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> is saved only to this device. If you move this folder to <ph name="LOCAL_FOLDER" />, you'll no longer get it on your other devices.</translation>
 <translation id="2775104091073479743">Edit Fingerprints</translation>
@@ -4039,6 +4039,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3798632811625902122">Bluetooth device <ph name="DEVICE" /> would like permission to pair.</translation>
 <translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799128412641261490">Switch Access settings</translation>
+<translation id="3800764353337460026">Symbol style</translation>
 <translation id="3800828618615365228">Google Chrome and Chrome OS additional terms</translation>
 <translation id="3800898876950197674">To allow this extension, enter your password.</translation>
 <translation id="3801449494961771207">System text-to-speech voice</translation>
@@ -5346,6 +5347,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4735506354605317060">Circle pointer</translation>
 <translation id="4735793370946506039">Learn more about Enhanced Safe Browsing.</translation>
 <translation id="4735803855089279419">The system failed to determine device identifiers for this device.</translation>
+<translation id="4735819417216076266">Space input style</translation>
 <translation id="4735846817388402006">Click to allow '<ph name="EXTENSIONS_REQUESTING_ACCESS" />' on <ph name="ORIGIN" /></translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="473936925429402449">Selected; extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
@@ -6513,6 +6515,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5575528586625653441">A problem with demo registration request occurred.</translation>
 <translation id="557722062034137776">Resetting your device will not affect your Google accounts or any data synced to these accounts. However, all files saved locally on your device will be deleted.</translation>
 <translation id="5578059481725149024">Auto sign-in</translation>
+<translation id="5578387000057347457">Enter a custom prompt or highlight text to create an image</translation>
 <translation id="5581134892342029705">Translation to <ph name="LANGUAGE" /> complete</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
 <translation id="5581972110672966454">Can't join the device to the domain. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
@@ -6610,7 +6613,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5642508497713047">CRL Signer</translation>
 <translation id="5643191124441701136">Your security code is on the front of your card</translation>
 <translation id="5643321261065707929">Metered network</translation>
-<translation id="5643717184207603910">Keep performance speedy</translation>
 <translation id="5646376287012673985">Location</translation>
 <translation id="5646558797914161501">Businessman</translation>
 <translation id="5648021990716966815">Mic jack</translation>
@@ -6715,7 +6717,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5734362860645681824">Communications</translation>
 <translation id="5734697361979786483">Add file share</translation>
 <translation id="573520097779121706">Use the 7, 8, 9, u, o, j, k, l keys to move the cursor</translation>
-<translation id="5735513236153491131">Boost now</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{This data or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}=1{This file or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}other{These files don't meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}}</translation>
 <translation id="5738093759615225354">You need this passkey to sign in to your computer</translation>
 <translation id="5739017626473506901">Sign in to help <ph name="USER_NAME" /> add a school account</translation>
@@ -7921,7 +7922,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6611972847767394631">Find your tabs here</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6613267708691765962">Scanning for malware...</translation>
-<translation id="6614172284067813496">Page added to reading list</translation>
 <translation id="6615455863669487791">Show me</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Site can track your location</translation>
@@ -7941,6 +7941,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6628328486509726751">Uploaded <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Stronger security</translation>
+<translation id="6630452975878488444">Selection shortcut</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> wants permanent access to a certificate to authenticate itself on your behalf.</translation>
 <translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Leave group}other{Leave groups}}</translation>
 <translation id="6635362468090274700">No one can share with you until you make yourself visible.<ph name="BR" /><ph name="BR" />To make yourself visible temporarily, open the status area, then turn on Nearby visibility.</translation>
@@ -8631,7 +8632,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7114054701490058191">Passwords don't match</translation>
 <translation id="7114648273807173152">To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">No reachable contacts</translation>
-<translation id="7115731767122970828">Boost now</translation>
 <translation id="7116554090938189816">Printer SSL certificate is expired. Restart printer and try again.</translation>
 <translation id="7117228822971127758">Please try again later</translation>
 <translation id="7118268675952955085">screenshot</translation>
@@ -8657,6 +8657,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="713122686776214250">Add pa&amp;ge...</translation>
 <translation id="7131431455372521159">All TrackPoints have been disconnected</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, waiting</translation>
+<translation id="7132886488919643383">Use Google AI to get help reading, writing and creating</translation>
 <translation id="7134098520442464001">Make Text Smaller</translation>
 <translation id="7134951043985383439">Downloaded dangerous file</translation>
 <translation id="7135729336746831607">Turn on Bluetooth?</translation>
@@ -8799,7 +8800,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7243092385765551741">Delete passkey?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Best)</translation>
 <translation id="7246230585855757313">Reinsert your security key and try again</translation>
-<translation id="7248802599439396696">Make tabs inactive</translation>
 <translation id="7249197363678284330">Change this setting in the address bar.</translation>
 <translation id="7249764475759804559">Include this app as an option when opening files</translation>
 <translation id="7250616558727237648">The device that you're sharing with didn't respond. Try again.</translation>
@@ -9112,6 +9112,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7465777686629334728">Remove managed development environment (<ph name="SPECIFIC_NAME" />)</translation>
 <translation id="7465778193084373987">Netscape Certificate Revocation URL</translation>
 <translation id="7466431077154602932">Compact view</translation>
+<translation id="7466861475611330213">Punctuation style</translation>
 <translation id="746861123368584540">Extension loaded</translation>
 <translation id="7469612367552312334">On • Use everyday language to search your browsing history and find sites that you visited</translation>
 <translation id="7470131554696493512">Block Thunderbolt or USB4 accessories from accessing and sharing memory (RAM)</translation>
@@ -9353,6 +9354,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7646772052135772216">Password sync isn't working</translation>
 <translation id="7647403192093989392">No recent activities</translation>
 <translation id="7648023614017258011">Chrome is verifying the installation bundle</translation>
+<translation id="7648048654005891115">Keymap style</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7650141368285545431">Use passkey from another device</translation>
 <translation id="7650178491875594325">Restore local data</translation>
@@ -10566,7 +10568,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8466052016039127321">Can’t resume previous session</translation>
 <translation id="8467326454809944210">Choose another language</translation>
 <translation id="8468087214092422866">Not allowed to look for Bluetooth devices</translation>
-<translation id="8469863130477774813">Performance boost available</translation>
 <translation id="8470513973197838199">Saved passwords for <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Your passwords are unique}=1{{COUNT} reused password}other{{COUNT} reused passwords}}</translation>
@@ -11103,6 +11104,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8846163936679269230">Reset eSIM profiles</translation>
 <translation id="8846239054091760429">Mono audio, startup, Live Caption and more</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8848709220963126773">Shift-key mode switch</translation>
 <translation id="8849001918648564819">Hidden</translation>
 <translation id="8849219423513870962">Cancel removal of eSIM profile named <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> of <ph name="CHECKING" /></translation>
@@ -11686,6 +11688,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="953434574221655299">Allowed to know when you're actively using your device</translation>
 <translation id="954705236478705408">Set up a new profile</translation>
 <translation id="954749761428814584">Language and input method</translation>
+<translation id="956013912698841780">Right-click to summarise content, get definitions, write with more confidence, create images and more. Currently has limited availability.</translation>
 <translation id="956500788634395331">You're protected from potentially harmful extensions</translation>
 <translation id="957179356621191750">6-dot</translation>
 <translation id="957960681186851048">This site attempted to download multiple files automatically</translation>

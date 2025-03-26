@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">Pazar günü</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
 <translation id="4251839292699800785">Şık ofis</translation>
+<translation id="4252261480746798874">"Kendiniz oluşturun"u seçtiğinizde özel bir istem yazabilirsiniz. Dilerseniz "Tema seçin"i, ardından altı çizili kelimeleri seçerek yapay zeka duvar kağıdınızı kişiselleştirebilirsiniz.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Daha benzersiz ve çeşitli yapay zeka resim seçenekleri için "Bana ilham ver"i seçin.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Kendi duvar kağıdınızı oluşturduğunuzda istem, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'ın Hizmet Şartları ve Gizlilik Politikası<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />'na tabi olacak şekilde görsel üretmek ve ürünü iyileştirmek için Google sunucularına gönderilir. Kişisel, hassas veya gizli bilgiler eklemeyin.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Üretken yapay zeka, kişiler de dahil olmak üzere farklı konular hakkında yanlış bilgi verebildiğinden yanıtlarını doğrulayın. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Daha fazla bilgi edinin<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.</translation>
 <translation id="4258281355379922695">HTTP Gecikmesi</translation>
 <translation id="4266143281602681663">yumak</translation>
 <translation id="4269815121975886860">Başlangıç tercihleri</translation>

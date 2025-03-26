@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">রবিবারে</translation>
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="4251839292699800785">স্টাইলিশ অফিস</translation>
+<translation id="4252261480746798874">আপনি "নিজের জন্য তৈরি করুন" বিকল্প বেছে নেওয়ার সময়, কাস্টম প্রম্পট লিখতে পারবেন। এছাড়াও "কোনও থিম বেছে নিন" বেছে নিতে পারবেন এবং তারপর নিজের এআই (AI) ওয়ালপেপার পছন্দমতো সাজিয়ে নিতে আন্ডারলাইন করা শব্দ বেছে নিতে পারবেন।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI ছবি সংক্রান্ত আরও অনন্য ও বিভিন্ন বিকল্প পেতে "আমাকে অনুপ্রাণিত করো" বিকল্প বেছে নিন।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          আপনি নিজের ওয়ালপেপার তৈরি করার সময়, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-এর পরিষেবার শর্তাবলী ও গোপনীয়তা নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুযায়ী ছবি জেনারেট ও প্রোডাক্ট উন্নত করতে Google-এ প্রম্পট পাঠানো হয়েছে। ব্যক্তিগত, সংবেদনশীল, বা গোপনীয় তথ্য অন্তর্ভুক্ত করবেন না।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          জেনারেটিভ AI ভুল তথ্য দিতে পারে, এর মধ্যে লোকজন সম্পর্কিত তথ্যও অন্তর্ভুক্ত, তাই উত্তর ডবল-চেক করুন। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />আরও জানুন<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP লেটেন্সি</translation>
 <translation id="4266143281602681663">ইয়ার্ন</translation>
 <translation id="4269815121975886860">স্টার্টআপ সম্পর্কিত পছন্দ</translation>

@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">ngeSonto</translation>
 <translation id="4250229828105606438">Isithombe-skrini</translation>
 <translation id="4251839292699800785">Ihhovisi elisesitayeleni</translation>
+<translation id="4252261480746798874">Uma ukhetha okuthi "Sungula okwakho," ungabhala umyalelo ngokumuntu ngamunye. Ungaphinda ukhethe okuthi "Khetha itimu" bese ukhetha amagama adwetshelwe ukuze uqondanise nomuntu siqu iphepha langemuva le-AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Khetha okuthi "Ngikhuthaze" ukuze uthole imifanekiso ongakhetha kuyo ye-AI eyingqayizivele nehlukile.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Uma usungula isithombe sakho sangemuva, umyalelo uthunyelwa kumaseva eGoogle ukuze ukhiqize izithombe uphinde uthuthukise umkhiqizo, ngaphansi <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Kwemigomo Yesevisi yeGoogle Nenqubomgomo Yobumfihlo<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Ungafaki lutho lomuntu siqu, oluzwelayo, noma oluyimfihlo.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          I-AI ekhiqizayo ingenza amaphutha, okufaka okumayelana nabantu, ngakho ihlole ngokuphindiwe. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Funda kabanzi<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Ukubambezeleka kwe-HTTP</translation>
 <translation id="4266143281602681663">iwuli</translation>
 <translation id="4269815121975886860">Izintandokazi zokuqalisa</translation>

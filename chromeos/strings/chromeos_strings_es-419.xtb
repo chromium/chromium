@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">el domingo</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4251839292699800785">Oficina elegante</translation>
+<translation id="4252261480746798874">Cuando selecciones "Crea uno propio", puedes escribir una instrucción personalizada. También puedes seleccionar "Elige un tema" y, luego, seleccionar las palabras subrayadas para personalizar tu fondo de pantalla creado con IA.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Selecciona "Obtener inspiración" para ver más opciones de imágenes generadas por IA únicas y variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Cuando creas tu propio fondo de pantalla, la instrucción se envía a los servidores de Google para generar imágenes y mejorar el producto, sujeto a la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidad y las Condiciones del Servicio de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. No incluyas información personal, sensible ni confidencial.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          La IA generativa puede cometer errores, incluso sobre personas, así que verifica los resultados. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Obtén más información<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
 <translation id="4266143281602681663">lana</translation>
 <translation id="4269815121975886860">Preferencias de inicio</translation>

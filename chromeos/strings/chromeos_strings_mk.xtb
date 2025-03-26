@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">во недела</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4251839292699800785">Модерна канцеларија</translation>
+<translation id="4252261480746798874">Кога ќе изберете „Создајте своја“, може да напишете приспособено барање. Може да изберете и „Изберете тема“, па да ги изберете подвлечените зборови за да го персонализирате вашиот AI-тапет.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Изберете „Инспирирај ме“ за да добиете повеќе уникатни и разновидни опции за слики создадени од AI.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Кога создавате свој тапет, барањето се испраќа до серверите на Google за да се генерираат слики и да се подобрува производот, што подлежи на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Условите за користење“ и „Политиката за приватност“ на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. Не внесувајте лични, чувствителни или доверливи податоци.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Генеративната AI може да прави грешки, што опфаќа и грешки за луѓе, па проверувајте ги одговорите. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Дознајте повеќе<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">Латенција на HTTP</translation>
 <translation id="4266143281602681663">преѓа</translation>
 <translation id="4269815121975886860">Претпочитани поставки за стартување</translation>

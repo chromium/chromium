@@ -505,6 +505,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1846432862466000825">Plastic (archival)</translation>
 <translation id="1848640291751752317">downloads</translation>
 <translation id="1848982255014129637">Photo (high gloss)</translation>
+<translation id="1849438148665368129">Purchase must be under <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Virtual card enrollment closed</translation>
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1855370856221982654">Boxing</translation>
@@ -695,7 +696,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2187317261103489799">Detect (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="2194856509914051091">Things to consider</translation>
-<translation id="2198071643181968308">Learn more about <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="2200678913752027654">Thumbs-down button, press Enter to open a form for submitting detailed feedback on why you dislike this suggestion</translation>
 <translation id="2202627062836089804">back of your card</translation>
 <translation id="2204482073374652408">Finished updating!</translation>
@@ -1808,6 +1808,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4150099059797363385">Envelope Chinese no.4</translation>
 <translation id="4151403195736952345">Use global default (Detect)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}other{Page {COUNT}}}</translation>
+<translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="4154277373259957087">Chrome will now verify it's you before filling in payment methods. You can update this at any time in <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Add tab to comparison table</translation>
 <translation id="4159784952369912983">Purple</translation>
@@ -2166,6 +2167,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4796594887379589189">Job account ID</translation>
 <translation id="4798269756263412078">Get alerts if the price drops on any site. Alerts will be sent to your email.</translation>
 <translation id="4800132727771399293">Check your expiration date and CVC and try again</translation>
+<translation id="4800546479758254481">AR allowed</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Instructions from your device administrator:</translation>
 <translation id="4811450222531576619">Learn about its source and topic</translation>
@@ -2529,7 +2531,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
             <ph name="LIST_ITEM" />Information entered in forms
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
-<translation id="5445340838622821110">When you pay over time, a one-time virtual card number is filled. This number is only for this purchase. <ph name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5447235695608032700">Allow <ph name="SITE" /> to use info they've saved about you</translation>
 <translation id="5451331376824595378">When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages that you visit in Chrome, URLs of pages that you copied data from, file names or metadata, IP addresses, browser or tab crashes, and the username that you use to sign in to web-based applications, your device and Chrome.</translation>
 <translation id="5452270690849572955">This <ph name="HOST_NAME" /> page can’t be found</translation>
@@ -3026,6 +3027,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6327065120806001832">local network access</translation>
 <translation id="6328639280570009161">Try disabling network prediction</translation>
 <translation id="6335029926534404762">Trainers</translation>
+<translation id="6336948221660696475">VR not allowed</translation>
 <translation id="6337133576188860026">Frees up less than <ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="6337534724793800597">Filter policies by name</translation>
 <translation id="633770708279464947">The <ph name="SECURE_DNS_SALT" /> value is invalid and will not be used.</translation>
@@ -3069,6 +3071,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6391700400718590966">Secure payment credential no matching credential sheet is closed</translation>
 <translation id="6392799395081100092">Paper (vellum)</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>
+<translation id="6393310910507376797">Not supported by merchant</translation>
 <translation id="6393956493820063117">Pasting from <ph name="ORIGIN_NAME" /> to this location is blocked by administrator policy</translation>
 <translation id="6394852772105848029">This site wants to open the <ph name="APP_NAME" /> app</translation>
 <translation id="639673288733510393">Scooters and mopeds</translation>
@@ -3222,6 +3225,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6668389483194953109">Found paper size name 'custom', but the 'custom_size' property is empty or invalid.</translation>
 <translation id="6671169470640320959">Auto Financing</translation>
 <translation id="6671697161687535275">Remove form suggestion from Chromium?</translation>
+<translation id="6675846980676550611">AR not allowed</translation>
 <translation id="6677351035258626477">Fast Food</translation>
 <translation id="6679354743514146922">Chrome browser is trying to fill your password on <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC saved</translation>
@@ -3709,6 +3713,7 @@ Additional details:
 <translation id="7512685745044087310">This policy cannot be set to 'True' and be mandatory, therefore it was changed to recommended.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516123895971374904">VR allowed this time</translation>
 <translation id="7517201160922869406">Off-road vehicles</translation>
 <translation id="7517414872996418597">Envelope C10</translation>
 <translation id="7518003948725431193">No web page was found for the web address: <ph name="URL" /></translation>
@@ -3993,7 +3998,6 @@ Additional details:
 <translation id="8009460986924589054"><ph name="BEGIN_LINK" />Try deleting your cookies<ph name="END_LINK" /></translation>
 <translation id="8009843239480947060">10 in x 11 in</translation>
 <translation id="8012647001091218357">We could not reach your parents at the moment. Please try again.</translation>
-<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8022542098135319050">Travel Agencies and Services</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to set Chrome as the system's default browser</translation>
 <translation id="8027077570865220386">Tray 15</translation>
@@ -4606,6 +4610,7 @@ Additional details:
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9140198744651252040">Chrome browser would like to use fingerprint to autofill passwords</translation>
 <translation id="9141013498910525015">Manage addresses</translation>
+<translation id="9141672681283222114">AR allowed this time</translation>
 <translation id="9143898823728499852">You can autofill this card because your <ph name="CARD_ISSUER_NAME" /> account is linked to Google Pay</translation>
 <translation id="9144951720726881238">Expiry date:</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />Sign in<ph name="END_LINK" />
@@ -4663,6 +4668,7 @@ Additional details:
 <translation id="922152298093051471">Customise Chrome</translation>
 <translation id="9222403027701923763">Primary and Secondary Schooling (Key Stage 1-5)</translation>
 <translation id="93020190163435405">Internships</translation>
+<translation id="931598121743515856">Purchase must be over <ph name="CHECKOUT_AMOUNT_MINIMUM" /></translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Allow the <ph name="APP_NAME" /> app to set up Wi-Fi networks?</translation>
 <translation id="936602727769022409">You could lose access to your Google Account. Chromium recommends changing your password now. You'll be asked to sign in.</translation>
@@ -4678,6 +4684,7 @@ Additional details:
 <translation id="949314938206378263">You asked to visit this site. Your parent can reply in Family Link.</translation>
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="950926967802086924">Passkey • Google Password Manager</translation>
+<translation id="955429569736351433">VR allowed</translation>
 <translation id="95721182352849470">Yellow 2</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="961856697154696964">Delete browsing data</translation>

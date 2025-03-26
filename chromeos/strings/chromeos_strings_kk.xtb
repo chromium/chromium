@@ -698,6 +698,16 @@
 <translation id="4249717042534905822">жексенбі күні</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4251839292699800785">Стильді кеңсе</translation>
+<translation id="4252261480746798874">"Өзіңіздікін жасау" опциясын таңдасаңыз, арнаулы нұсқау жаза аласыз. Сондай-ақ AI тұсқағазын жекелендіру үшін "Тақырыпты таңдау" опциясын, содан кейін асты сызылған сөздерді таңдауға болады.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI суреттерінің бірегей әрі әртүрлі опцияларын алу үшін "Маған шабыт керек" опциясын таңдаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасанды интеллект көмегімен жеке тұсқағазды жасаған кезде, суреттер жасау және өнімді жақсарту үшін нұсқау <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-дың Құпиялық саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> сәйкес Google серверлеріне жіберіледі. Жеке, шетін не құпия деректерді қоспаңыз.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Жасампаз жасанды интеллект қателесуі (соның ішінде адамдар туралы) мүмкін, сол себепті жақсылап тексеріңіз. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Толық ақпарат<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
 <translation id="4258281355379922695">HTTP кідірісі</translation>
 <translation id="4266143281602681663">иірімжіп</translation>
 <translation id="4269815121975886860">Іске қосу параметрлері</translation>
