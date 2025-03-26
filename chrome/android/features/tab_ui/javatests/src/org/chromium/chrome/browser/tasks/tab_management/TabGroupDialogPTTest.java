@@ -4,17 +4,25 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.mockito.Mockito.when;
+
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -29,6 +37,8 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 
 /** Public transit tests for the Tab Group Dialog representing tab groups. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -36,11 +46,25 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 @Batch(Batch.PER_CLASS)
 // TODO(https://crbug.com/392634251): Fix line height when elegant text height is used with Roboto
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.
-@Features.DisableFeatures(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
+@DisableFeatures(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupDialogPTTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private ServiceStatus mServiceStatus;
+
+    @Before
+    public void setUp() {
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+    }
 
     @Test
     @MediumTest
