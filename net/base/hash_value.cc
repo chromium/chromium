@@ -59,7 +59,7 @@ bool HashValue::FromString(std::string_view value) {
     return false;
   }
   tag_ = HASH_VALUE_SHA256;
-  memcpy(data(), decoded->data(), size());
+  UNSAFE_TODO(memcpy(data(), decoded->data(), size()));
   return true;
 }
 
