@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/harfbuzz-ng/src/src/hb.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -467,6 +468,11 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   template <bool>
   void ComputePositionData() const;
   void RecalcCharacterPositions() const;
+
+  // Checks if the given script is a cursive script.
+  // Cursive scripts do not admit gaps between their letters for either
+  // justification or letter-spacing.
+  static bool IsCursiveScript(hb_script_t script);
 
   template <typename TextContainerType>
   float ApplySpacingImpl(ShapeResultSpacing<TextContainerType>&,
