@@ -139,7 +139,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     }
     if (std::optional<FormData> form = form_util::ExtractFormData(
             document, form_element, field_data_manager,
-            agent_->GetCallTimerState(kUpdateFormCache))) {
+            agent_->GetCallTimerState(kUpdateFormCache),
+            agent_->button_titles_cache())) {
       if (!ProcessForm(std::move(*form))) {
         stop_extracting_forms = true;
       }

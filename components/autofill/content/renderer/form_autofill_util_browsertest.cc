@@ -240,8 +240,9 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   std::optional<FormData> ExtractFormData(
       WebFormElement form,
       DenseSet<ExtractOption> extract_options = {}) {
-    return form_util::ExtractFormData(GetDocument(), form, field_data_manager(),
-                                      kCallTimerStateDummy, extract_options);
+    return form_util::ExtractFormData(
+        GetDocument(), form, field_data_manager(), kCallTimerStateDummy,
+        /*button_titles_cache=*/nullptr, extract_options);
   }
 
   std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
@@ -249,7 +250,8 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
       WebFormControlElement control,
       DenseSet<ExtractOption> extract_options = {}) {
     return form_util::FindFormAndFieldForFormControlElement(
-        control, field_data_manager(), kCallTimerStateDummy, extract_options,
+        control, field_data_manager(), kCallTimerStateDummy,
+        /*button_titles_cache=*/nullptr, extract_options,
         /*form_cache=*/{});
   }
 

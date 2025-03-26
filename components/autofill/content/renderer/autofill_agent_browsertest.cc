@@ -119,6 +119,11 @@ auto HasFormIdAttribute(std::u16string id_attribute) {
                   std::move(id_attribute));
 }
 
+auto HasButtonTitles(ButtonTitleList titles) {
+  return Property("FormFieldData::button_titles", &FormData::button_titles,
+                  std::move(titles));
+}
+
 auto HasFieldIdAttribute(std::u16string id_attribute) {
   return Property("FormFieldData::id_attribute", &FormFieldData::id_attribute,
                   std::move(id_attribute));
@@ -329,6 +334,46 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
   EXPECT_CALL(mock_callback, Run(true));
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
+}
+
+// Tests that button titles are extracted and reported to the browser.
+TEST_F(AutofillAgentTestWithFeatures, ButtonTitlesExtractedForForm) {
+  ButtonTitleInfo expected_button = {
+      u"Submit", mojom::ButtonTitleType::INPUT_ELEMENT_SUBMIT_TYPE};
+  EXPECT_CALL(
+      autofill_driver(),
+      FormsSeen(HasSingleElementWhich(HasFormIdAttribute(u"f1"),
+                                      HasFieldsWithIdAttributes(u"t1", u"t2"),
+                                      HasButtonTitles({expected_button})),
+                IsEmpty()));
+  LoadHTML(
+      R"(<body>
+         <form id="f1">
+           <input type="text" id="t1">
+           <input type="text" id="t2">
+           <input type="submit" value="Submit" id="b1">
+         </form>
+         </body>)");
+  WaitForFormsSeen();
+}
+
+// Tests that button titles are not extracted for fields that are not under a
+// <form> tag.
+TEST_F(AutofillAgentTestWithFeatures,
+       ButtonTitlesNotExtractedForFormlessFields) {
+  EXPECT_CALL(
+      autofill_driver(),
+      FormsSeen(HasSingleElementWhich(HasFormIdAttribute(u""),
+                                      HasFieldsWithIdAttributes(u"t1", u"t2"),
+                                      HasButtonTitles({})),
+                IsEmpty()));
+  LoadHTML(
+      R"(<body>
+         <input type="text" id="t1">
+         <input type="text" id="t2">
+         <input type="submit" id="b1">
+         </body>)");
+  WaitForFormsSeen();
 }
 
 using AutofillAgentShadowDomTest = AutofillAgentTestWithFeatures;
@@ -764,7 +809,8 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   ASSERT_EQ(1U, forms.size());
   FormData form = *form_util::ExtractFormData(
       forms[0].GetDocument(), forms[0],
-      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
+      /*button_titles_cache=*/nullptr);
   ASSERT_EQ(form.fields().size(), 1u);
   blink::WebFormControlElement field =
       GetWebElementById("text_id").DynamicTo<blink::WebFormControlElement>();
@@ -1012,7 +1058,8 @@ TEST_P(AutofillAgentSubmissionTest,
 
   FormData form = *form_util::ExtractFormData(
       form_element.GetDocument(), form_element,
-      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
+      /*button_titles_cache=*/nullptr);
 
   ASSERT_EQ(1u, form.fields().size());
   test_api(form).field(0).set_value(u"autofilled");
@@ -1235,7 +1282,7 @@ TEST_P(AutofillAgentSubmissionTest,
   ASSERT_TRUE(form_element);
   std::optional<FormData> form = form_util::ExtractFormData(
       GetDocument(), form_element, autofill_agent().field_data_manager(),
-      kCallTimerStateDummy);
+      kCallTimerStateDummy, /*button_titles_cache=*/nullptr);
   ASSERT_TRUE(form.has_value());
 
   std::vector<blink::WebFormControlElement> field_elements =
