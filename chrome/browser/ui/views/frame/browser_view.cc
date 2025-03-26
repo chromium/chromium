@@ -3788,6 +3788,20 @@ void BrowserView::OnSplitTabCreated(
   }
 }
 
+void BrowserView::OnSplitTabRemoved(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    SplitTabRemoveReason reason) {
+  const bool is_split_active = std::any_of(
+      tabs.begin(), tabs.end(), [](std::pair<tabs::TabInterface*, int>& tab) {
+        return tab.first->IsActivated();
+      });
+
+  if (is_split_active) {
+    HideSplitView();
+  }
+}
+
 void BrowserView::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

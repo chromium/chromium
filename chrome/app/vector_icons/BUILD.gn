@@ -182,6 +182,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "smartphone_refresh.icon",
     "speaker.icon",
     "speaker_group.icon",
+    "split_tab.icon",
     "submit_feedback.icon",
     "supervisor_account_circle.icon",
     "sync_chrome_refresh.icon",

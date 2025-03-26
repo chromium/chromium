@@ -1301,7 +1301,7 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
 
 void TabStrip::SetSplit(int split_index,
                         std::optional<split_tabs::SplitTabId> split_id) {
-  tab_at(split_index)->SetSplit(split_id.value());
+  tab_at(split_index)->SetSplit(split_id);
   InvalidateLayout();
   SchedulePaint();
 }
