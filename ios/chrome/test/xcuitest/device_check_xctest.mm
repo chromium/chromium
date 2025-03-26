@@ -45,7 +45,7 @@ using base::test::ios::kWaitForUIElementTimeout;
   XCTAssert(
       // verify chrome is not showing offline dino page
       ![[[app.webViews.firstMatch descendantsMatchingType:XCUIElementTypeAny]
-            matchingIdentifier:@"Dino game, play"]
+            matchingIdentifier:@"Dino game, tap to play"]
               .firstMatch
           waitForExistenceWithTimeout:kWaitForPageLoadTimeout.InSecondsF()],
       @"Showing chrome dino page!");
