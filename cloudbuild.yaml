@@ -19,6 +19,8 @@ steps:
   args:
       - '-c'
       - |
+          set -e
+          mkdir /workspace/hopium
           cd /workspace/hopium
           /workspace/depot_tools/gclient config --unmanaged --name src \
           --custom-var build_with_hopium=True \
@@ -32,6 +34,7 @@ steps:
   args:
       - '-c'
       - |
+          set -e
           cd /workspace/hopium
           /workspace/depot_tools/gclient sync -r $TAG_NAME
 
@@ -42,6 +45,7 @@ steps:
   args:
       - '-c'
       - |
+          set -e
           cd /workspace/hopium/src
           git checkout $TAG_NAME
           /workspace/depot_tools/gclient sync -D
@@ -54,6 +58,7 @@ steps:
   args:
       - '-c'
       - |
+          set -e
           cd /workspace/hopium/src
           gn args out/Debug <<EOF
           is_component_build = false
@@ -80,6 +85,7 @@ steps:
   args:
       - '-c'
       - |
+          set -e
           cd /workspace/hopium/src
           python3 hopium/tsec_branding/pre_rebrand.py -b totalbrowser
 
@@ -90,6 +96,7 @@ steps:
   args:
       - '-c'
       - |
+          set -e
           cd /workspace/hopium/src
           autoninja -C out/Debug chrome -j 32
 
@@ -101,6 +108,7 @@ steps:
   args:
       - '-c'
       - |
+          set -e
           ls -lh /workspace/hopium/src/out/Debug
 
 
