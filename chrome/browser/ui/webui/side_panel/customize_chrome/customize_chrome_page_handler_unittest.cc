@@ -162,7 +162,6 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
               SetMostVisitedSettings,
               (bool custom_links_enabled, bool visible));
   MOCK_METHOD(void, SetTheme, (side_panel::mojom::ThemePtr));
-  MOCK_METHOD(void, SetThemeEditable, (bool));
   MOCK_METHOD(void,
               ScrollToSection,
               (side_panel::mojom::CustomizeChromeSection));

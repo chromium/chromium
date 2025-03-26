@@ -6,9 +6,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {AppearanceElement} from './appearance.js';
 
-// TODO(crbug.com/399172460) For extension NTPs with 3P theme, show edit theme
-// buttons after hover buttons (thirdPartyThemeLinkButton and
-// thirdPartyManageLinkButton).
 export function getHtml(this: AppearanceElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
@@ -35,7 +32,7 @@ export function getHtml(this: AppearanceElement) {
     label="$i18n{yourSearchedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
-<div id="editButtonsContainer" ?hidden="${!this.showEditTheme_}">
+<div id="editButtonsContainer" ?hidden="${!this.isSourceTabFirstPartyNtp_}">
   <cr-button id="editThemeButton" @click="${this.onEditThemeClicked_}"
       class="floating-button">
     <div id="editThemeIcon" class="cr-icon edit-theme-icon" slot="prefix-icon"

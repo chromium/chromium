@@ -117,7 +117,6 @@ class CustomizeChromePageHandler
       ChooseLocalCustomBackgroundCallback callback) override;
   void RemoveBackgroundImage() override;
   void UpdateTheme() override;
-  void UpdateThemeEditable(bool is_theme_editable) override;
   void OpenChromeWebStore() override;
   void OpenThirdPartyThemePage(const std::string& theme_id) override;
   void OpenChromeWebStoreCategoryPage(
