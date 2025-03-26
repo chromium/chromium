@@ -57,7 +57,7 @@ class CombinedSelectorTextColumnView : public views::TableLayoutView {
 // |      |     ... more text (row by row)                      |      |
 // +-------------------------------------------------------------------+
 class CombinedSelectorRowView : public views::TableLayoutView {
-  METADATA_HEADER(CombinedSelectorRowView, views::View)
+  METADATA_HEADER(CombinedSelectorRowView, views::TableLayoutView)
  public:
   using RadioStatus = CombinedSelectorSheetModel::SelectionStatus;
 
@@ -75,6 +75,10 @@ class CombinedSelectorRowView : public views::TableLayoutView {
   void MaybeAddRadioButton(CombinedSelectorRadioButton::Delegate* delegate,
                            int index);
 
+  // views::TableLayoutView:
+  void RequestFocus() override;
+
+  raw_ptr<views::View> radio_button_;
   RadioStatus radio_status_;
   bool enabled_ = true;
 };
@@ -82,9 +86,19 @@ class CombinedSelectorRowView : public views::TableLayoutView {
 class CombinedSelectorListView : public views::View {
   METADATA_HEADER(CombinedSelectorListView, views::View)
  public:
+  static constexpr int kMaxRowHeight = 72;
+  static constexpr int kRowGap = 4;
+
   explicit CombinedSelectorListView(
       CombinedSelectorSheetModel* model,
       CombinedSelectorRadioButton::Delegate* delegate);
+  ~CombinedSelectorListView() override;
+
+ private:
+  // views::View:
+  void RequestFocus() override;
+
+  raw_ptr<views::View> selected_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_COMBINED_SELECTOR_VIEWS_H_
