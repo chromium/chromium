@@ -598,11 +598,14 @@ void VideoOverlayWindowViews::OnNativeWidgetMove() {
   // Update the positioning of some icons when the window is moved.
   WindowQuadrant quadrant =
       GetCurrentWindowQuadrant(GetBounds(), GetController());
-  close_controls_view_->SetPosition(GetBounds().size(), quadrant);
-  if (Use2024UI()) {
-    minimize_button_->SetPosition(GetBounds().size(), quadrant);
-    back_to_tab_button_->SetPosition(GetBounds().size(), quadrant);
+
+  // In the 2024 UI, there are icons on both sides of the top bar, so moving the
+  // close button doesn't make sense. Only move it when using the older
+  // controls.
+  if (!Use2024UI()) {
+    close_controls_view_->SetPosition(GetBounds().size(), quadrant);
   }
+
   UpdateResizeHandleBounds(quadrant);
 #endif
 
