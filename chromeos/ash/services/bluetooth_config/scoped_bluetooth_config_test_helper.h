@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/initializer.h"
 
+#include "components/session_manager/core/session_manager.h"
+
 namespace ash::bluetooth_config {
 
 class FakeAdapterStateController;
@@ -61,6 +63,10 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
     return fake_device_operation_handler_;
   }
 
+  session_manager::SessionManager* session_manager() {
+    return &session_manager_;
+  }
+
  private:
   // Initializer:
   std::unique_ptr<AdapterStateController> CreateAdapterStateController(
@@ -105,6 +111,7 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
       fake_discovery_session_manager_;
   raw_ptr<FakeDeviceOperationHandler, DanglingUntriaged>
       fake_device_operation_handler_;
+  session_manager::SessionManager session_manager_;
 };
 
 }  // namespace ash::bluetooth_config

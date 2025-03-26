@@ -46,9 +46,11 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   ArcProvisionNotificationServiceTest& operator=(
       const ArcProvisionNotificationServiceTest&) = delete;
 
-  void SetUp() override { SetUpInternal(); }
+  void SetUp() override {
+    SetUpInternal(/*should_create_session_manager=*/true);
+  }
 
-  void SetUpInternal() {
+  void SetUpInternal(bool should_create_session_manager) {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     SetArcAvailableCommandLineForTesting(
@@ -60,11 +62,14 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
         CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
 
+    if (should_create_session_manager) {
+      // SessionManager is created by
+      // |AshTestHelper::bluetooth_config_test_helper()|.
+      session_manager_ = session_manager::SessionManager::Get();
+    }
+
     // This creates |profile()|, so it has to come after the arc managers.
     BrowserWithTestWindowTest::SetUp();
-
-    // SessionManager is created in `BrowserWithTestWIndowTest::SetUp()`.
-    session_manager_ = session_manager::SessionManager::Get();
 
     arc_service_manager_->set_browser_context(profile());
     display_service_ =
@@ -84,7 +89,6 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     arc_session_manager_->Shutdown();
     display_service_.reset();
     arc_service_manager_->set_browser_context(nullptr);
-    session_manager_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
@@ -321,7 +325,8 @@ class ArcProvisionNotificationServiceOobeTest
   void SetUp() override {
     // SessionManager is created in FakeLoginDisplayHost. We should not create
     // another one here.
-    ArcProvisionNotificationServiceTest::SetUpInternal();
+    ArcProvisionNotificationServiceTest::SetUpInternal(
+        /*should_create_session_manager=*/false);
 
     CreateLoginDisplayHost();
   }

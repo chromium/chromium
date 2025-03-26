@@ -54,11 +54,9 @@
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
-#include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
-#include "components/session_manager/core/session_manager.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -253,9 +251,6 @@ void AshTestHelper::TearDown() {
     input_method::InputMethodManager::Shutdown();
     input_method_manager_ = nullptr;
   }
-
-  scoped_bluetooth_config_test_helper_.reset();
-  session_manager_.reset();
 }
 
 aura::Window* AshTestHelper::GetContext() {
@@ -294,14 +289,6 @@ void AshTestHelper::SetUp(InitParams init_params) {
       init_params.create_global_cras_audio_handler;
   create_quick_pair_mediator_ = init_params.create_quick_pair_mediator;
   destroy_screen_ = init_params.destroy_screen;
-
-  // SessionManager
-  if (init_params.create_session_manager) {
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
-  }
-
-  scoped_bluetooth_config_test_helper_ =
-      std::make_unique<bluetooth_config::ScopedBluetoothConfigTestHelper>();
 
   if (create_global_cras_audio_handler_) {
     // Create `CrasAudioHandler` for testing since `g_browser_process` is not

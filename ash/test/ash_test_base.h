@@ -296,14 +296,8 @@ class AshTestBase : public testing::Test {
     init_params_->create_quick_pair_mediator = create_quick_pair_mediator;
   }
 
-  void set_create_session_manager(bool create_session_manager) {
-    CHECK(init_params_)
-        << "create_session_manager must set before calling SetUp()";
-    init_params_->create_session_manager = create_session_manager;
-  }
-
   void set_shell_delegate(std::unique_ptr<ShellDelegate> shell_delegate) {
-    CHECK(init_params_) << "shell_delegate must set before calling SetUp()";
+    CHECK(init_params_) << "shell_delegate mustset before calling SetUp()";
     CHECK(!init_params_->delegate);
     init_params_->delegate = std::move(shell_delegate);
   }

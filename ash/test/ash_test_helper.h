@@ -22,6 +22,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/types/pass_key.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 #include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "ui/aura/test/aura_test_helper.h"
@@ -40,10 +41,6 @@ class SystemMonitor;
 namespace display {
 class Display;
 }  // namespace display
-
-namespace session_manager {
-class SessionManager;
-}  // namespace session_manager
 
 namespace ui {
 class ContextFactory;
@@ -64,10 +61,6 @@ class TestKeyboardControllerObserver;
 class TestNewWindowDelegate;
 class TestWallpaperControllerClient;
 class AshTestBase;
-
-namespace bluetooth_config {
-class ScopedBluetoothConfigTestHelper;
-}  // namespace bluetooth_config
 
 namespace floating_workspace {
 class FloatingWorkspaceServiceTest;
@@ -109,9 +102,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
     // True to auto create prefs services.
     bool auto_create_prefs_services = true;
-
-    // True to create session manager.
-    bool create_session_manager = true;
 
     // Whether or not to destroy the screen in the destructor.
     bool destroy_screen = true;
@@ -189,7 +179,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   bluetooth_config::ScopedBluetoothConfigTestHelper*
   bluetooth_config_test_helper() {
-    return scoped_bluetooth_config_test_helper_.get();
+    return &scoped_bluetooth_config_test_helper_;
   }
 
   SavedDeskTestHelper* saved_desk_test_helper() {
@@ -223,8 +213,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   class BluezDBusManagerInitializer;
   class FlossDBusManagerInitializer;
   class PowerPolicyControllerInitializer;
-
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
 
   // Must be constructed so that `base::SystemMonitor::Get()` returns a valid
   // instance.
@@ -263,7 +251,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
       cros_hotspot_config_test_helper_;
 
-  std::unique_ptr<bluetooth_config::ScopedBluetoothConfigTestHelper>
+  bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;
 
   // InputMethodManager is not owned by this class. It is stored in a

@@ -45,7 +45,6 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -66,10 +65,6 @@ void BrowserWithTestWindowTest::SetUp() {
   testing::Test::SetUp();
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
-#if BUILDFLAG(IS_CHROMEOS)
-  session_manager_ = std::make_unique<session_manager::SessionManager>();
-#endif
-
   if (!profile_manager_) {
     SetUpProfileManager();
   }
@@ -88,7 +83,6 @@ void BrowserWithTestWindowTest::SetUp() {
     ash::AshTestHelper::InitParams ash_init;
     ash_init.local_state = g_browser_process->local_state();
     ash_init.start_session = false;
-    ash_init.create_session_manager = false;
 
     // Do not auto create user pref service. PrefService will be created by
     // TestingProfile.
@@ -172,7 +166,6 @@ void BrowserWithTestWindowTest::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS)
   test_views_delegate_.reset();
   user_manager_.Reset();
-  session_manager_.reset();
   ash::disks::DiskMountManager::Shutdown();
   ash::CrosDisksClient::Shutdown();
 #elif defined(TOOLKIT_VIEWS)

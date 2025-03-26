@@ -86,14 +86,13 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
 
   // ChromeAshTestBase:
   void SetUp() override {
+    ChromeAshTestBase::SetUp();
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
-
-    ChromeAshTestBase::SetUp();
-
     testing_profile_ = ProfileManager::GetPrimaryUserProfile();
+
     soda_installer_ = std::make_unique<MockSodaInstaller>();
     ON_CALL(*soda_installer(), GetAvailableLanguages)
         .WillByDefault(
@@ -127,10 +126,8 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
     mock_app_client_.reset();
     mock_client_.reset();
     soda_installer_.reset();
-    testing_profile_ = nullptr;
 
     ChromeAshTestBase::TearDown();
-
     // ProfileManager is destroyed in OnHelperWillBeDestroyed()
     // invoked in ChromeAshTestBase::TearDown().
     EXPECT_FALSE(testing_profile_manager_.get());

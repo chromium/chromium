@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/services/bluetooth_config/fake_bluetooth_device_status_notifier.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
-#include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

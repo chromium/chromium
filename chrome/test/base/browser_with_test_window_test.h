@@ -57,10 +57,6 @@ class NavigationController;
 namespace crosapi {
 class CrosapiManager;
 }
-
-namespace session_manager {
-class SessionManager;
-}
 #endif
 
 class TestingProfileManager;
@@ -306,7 +302,6 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   std::unique_ptr<Browser> browser_;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
   ash::AshTestHelper ash_test_helper_;
   std::unique_ptr<views::TestViewsDelegate> test_views_delegate_ =
       std::make_unique<ChromeTestViewsDelegate<ash::AshTestViewsDelegate>>();
