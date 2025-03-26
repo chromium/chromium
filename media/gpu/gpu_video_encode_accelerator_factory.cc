@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -221,7 +222,7 @@ VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesInternal(
 }  // anonymous namespace
 
 // static
-MEDIA_GPU_EXPORT std::unique_ptr<VideoEncodeAccelerator>
+MEDIA_GPU_EXPORT EncoderStatus::Or<std::unique_ptr<VideoEncodeAccelerator>>
 GpuVideoEncodeAcceleratorFactory::CreateVEA(
     const VideoEncodeAccelerator::Config& config,
     VideoEncodeAccelerator::Client* client,
@@ -235,6 +236,8 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
   if (!media_log)
     media_log = std::make_unique<media::NullMediaLog>();
 
+  EncoderStatus initialization_err{
+      EncoderStatus::Codes::kEncoderInitializationError};
   for (const auto& create_vea :
        GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds, gpu_device)) {
     std::unique_ptr<VideoEncodeAccelerator> vea = create_vea.Run();
@@ -244,14 +247,16 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
       vea->SetCommandBufferHelperCB(get_command_buffer_helper_cb,
                                     gpu_task_runner);
     }
-    if (!vea->Initialize(config, client, media_log->Clone())) {
+    if (auto status = vea->Initialize(config, client, media_log->Clone());
+        !status.is_ok()) {
       DLOG(ERROR) << "VEA initialize failed (" << config.AsHumanReadableString()
-                  << ")";
+                  << "): " << status.message();
+      initialization_err = status;
       continue;
     }
     return vea;
   }
-  return nullptr;
+  return std::move(initialization_err);
 }
 
 // static

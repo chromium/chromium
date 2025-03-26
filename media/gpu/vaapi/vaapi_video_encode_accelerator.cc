@@ -36,6 +36,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "media/base/encoder_status.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -172,7 +173,7 @@ VaapiVideoEncodeAccelerator::~VaapiVideoEncodeAccelerator() {
   num_instances_.Decrement();
 }
 
-bool VaapiVideoEncodeAccelerator::Initialize(
+EncoderStatus VaapiVideoEncodeAccelerator::Initialize(
     const Config& config,
     Client* client,
     std::unique_ptr<MediaLog> media_log) {
@@ -181,13 +182,13 @@ bool VaapiVideoEncodeAccelerator::Initialize(
 
   if (!can_use_encoder_) {
     MEDIA_LOG(ERROR, media_log.get()) << "Too many encoders are allocated";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (AttemptedInitialization()) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Initialize() cannot be called more than once.";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
@@ -197,14 +198,14 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     if (config.output_profile != VideoCodecProfile::VP9PROFILE_PROFILE0) {
       MEDIA_LOG(ERROR, media_log.get())
           << "Spatial layers are only supported for VP9 encoding";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
 
     if (config.inter_layer_pred != SVCInterLayerPredMode::kOnKeyPic &&
         config.inter_layer_pred != SVCInterLayerPredMode::kOff) {
       MEDIA_LOG(ERROR, media_log.get())
           << "Only K-SVC and S mode encoding are supported.";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -212,7 +213,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
       if (config.inter_layer_pred == SVCInterLayerPredMode::kOff &&
           !base::FeatureList::IsEnabled(kVaapiVp9SModeHWEncoding)) {
         MEDIA_LOG(ERROR, media_log.get()) << "Vp9 S-mode encoding is disabled";
-        return false;
+        return {EncoderStatus::Codes::kEncoderInitializationError};
       }
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -227,7 +228,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
       MEDIA_LOG(ERROR, media_log.get())
           << "Doesn't support k-SVC encoding where spatial layers "
              "have the same resolution";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
   }
 
@@ -236,18 +237,18 @@ bool VaapiVideoEncodeAccelerator::Initialize(
       codec != VideoCodec::kVP9 && codec != VideoCodec::kAV1) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Unsupported profile: " << GetProfileName(config.output_profile);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (config.bitrate.mode() == Bitrate::Mode::kVariable) {
     if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding)) {
       MEDIA_LOG(ERROR, media_log.get()) << "Variable bitrate is disabled.";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
     if (codec != VideoCodec::kH264) {
       MEDIA_LOG(ERROR, media_log.get())
           << "Variable bitrate is only supported with H264 encoding.";
-      return false;
+      return {EncoderStatus::Codes::kEncoderInitializationError};
     }
   }
 
@@ -255,7 +256,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
       config.input_format != PIXEL_FORMAT_NV12) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Unsupported input format: " << config.input_format;
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   bool native_input_mode =
@@ -265,13 +266,13 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     MEDIA_LOG(ERROR, media_log.get())
         << "Unsupported format for native input mode: "
         << VideoPixelFormatToString(config.input_format);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (config.HasSpatialLayer() && !native_input_mode) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Spatial scalability is only supported for native input now";
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   const SupportedProfiles& profiles = GetSupportedProfiles();
@@ -283,7 +284,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
   if (profile == profiles.end()) {
     MEDIA_LOG(ERROR, media_log.get()) << "Unsupported output profile "
                                       << GetProfileName(config.output_profile);
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   if (config.input_visible_size.width() > profile->max_resolution.width() ||
@@ -291,14 +292,14 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     MEDIA_LOG(ERROR, media_log.get())
         << "Input size too big: " << config.input_visible_size.ToString()
         << ", max supported size: " << profile->max_resolution.ToString();
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
 
   // Finish remaining initialization on the encoder thread.
   encoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VaapiVideoEncodeAccelerator::InitializeTask,
                                 encoder_weak_this_, config));
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {

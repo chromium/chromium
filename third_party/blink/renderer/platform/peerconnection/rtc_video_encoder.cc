@@ -1156,10 +1156,12 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
       /*is_hardware_encoder=*/true,
       ToSVCScalabilityMode(vea_config.spatial_layers,
                            vea_config.inter_layer_pred));
-  if (!video_encoder_->Initialize(vea_config, this,
-                                  std::make_unique<media::NullMediaLog>())) {
-    NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderInitializationError,
-                       "Failed to initialize VideoEncodeAccelerator"});
+  if (auto status = video_encoder_->Initialize(
+          vea_config, this, std::make_unique<media::NullMediaLog>());
+      !status.is_ok()) {
+    NotifyErrorStatus(
+        {media::EncoderStatus::Codes::kEncoderInitializationError,
+         "Failed to initialize VideoEncodeAccelerator: " + status.message()});
     return;
   }
 

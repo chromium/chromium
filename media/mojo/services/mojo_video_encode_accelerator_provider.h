@@ -32,7 +32,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
   using GetCommandBufferHelperCB =
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>;
   using CreateAndInitializeVideoEncodeAcceleratorCallback =
-      base::RepeatingCallback<std::unique_ptr<::media::VideoEncodeAccelerator>(
+      base::RepeatingCallback<::media::EncoderStatus::Or<
+          std::unique_ptr<::media::VideoEncodeAccelerator>>(
           const ::media::VideoEncodeAccelerator::Config& config,
           VideoEncodeAccelerator::Client* client,
           const gpu::GpuPreferences& gpu_preferences,

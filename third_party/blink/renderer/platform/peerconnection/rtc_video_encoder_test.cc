@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
@@ -538,9 +539,10 @@ class RTCVideoEncoderTest {
   }
 
   // media::VideoEncodeAccelerator implementation.
-  bool Initialize(const media::VideoEncodeAccelerator::Config& config,
-                  media::VideoEncodeAccelerator::Client* client,
-                  std::unique_ptr<media::MediaLog> media_log) {
+  media::EncoderStatus Initialize(
+      const media::VideoEncodeAccelerator::Config& config,
+      media::VideoEncodeAccelerator::Client* client,
+      std::unique_ptr<media::MediaLog> media_log) {
     DVLOG(3) << __func__;
     config_ = config;
     client_ = client;
@@ -549,7 +551,7 @@ class RTCVideoEncoderTest {
     client_->RequireBitstreamBuffers(kNumInputBuffers,
                                      config.input_visible_size,
                                      config.input_visible_size.GetArea());
-    return true;
+    return {media::EncoderStatus::Codes::kOk};
   }
 
   void RegisterEncodeCompleteCallback(
