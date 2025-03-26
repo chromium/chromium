@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_BNPL_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_BNPL_METRICS_H_
 
+#include <string_view>
+
 namespace autofill::autofill_metrics {
 
 // Logs if the buy-now-pay-later preference is changed by the user through the
@@ -15,6 +17,9 @@ void LogBnplPrefToggled(bool enabled);
 
 // Logs the number of BNPL issuers synced at startup.
 void LogBnplIssuersSyncedCountAtStartup(int count);
+
+// Logs that the BNPL ToS dialog was shown.
+void LogBnplTosDialogShown(std::string_view issuer_id);
 
 }  // namespace autofill::autofill_metrics
 
