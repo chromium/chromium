@@ -7186,28 +7186,6 @@
             ]
         }
     ],
-    "DIPSOnHTTPCache": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AnyBounceTrigger",
-                    "params": {
-                        "triggering_action": "bounce"
-                    },
-                    "enable_features": [
-                        "DIPS"
-                    ]
-                }
-            ]
-        }
-    ],
     "DOMParserIncludeShadowRoots": [
         {
             "platforms": [
