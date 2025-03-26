@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.toolbar.back_button;
 
+import android.content.res.ColorStateList;
 import android.widget.ImageButton;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -25,10 +27,19 @@ public class BackButtonCoordinator {
      * @param onBackPressed a callback that is invoked on back button click event. Allows parent
      *     components to intercept click and navigate back in the history or hide custom UI
      *     components.
+     * @param themeColorProvider a provider that notifies about theme changes.
      */
-    public BackButtonCoordinator(ImageButton view, Runnable onBackPressed) {
-        final var model = new PropertyModel.Builder(BackButtonProperties.ALL_KEYS).build();
-        mMediator = new BackButtonMediator(model, onBackPressed);
+    public BackButtonCoordinator(
+            ImageButton view, Runnable onBackPressed, ThemeColorProvider themeColorProvider) {
+        final ColorStateList iconColorList =
+                themeColorProvider.getActivityFocusTint() == null
+                        ? view.getImageTintList()
+                        : themeColorProvider.getActivityFocusTint();
+        final var model =
+                new PropertyModel.Builder(BackButtonProperties.ALL_KEYS)
+                        .with(BackButtonProperties.TINT_COLOR_LIST, iconColorList)
+                        .build();
+        mMediator = new BackButtonMediator(model, onBackPressed, themeColorProvider);
         PropertyModelChangeProcessor.create(model, view, BackButtonViewBinder::bind);
     }
 

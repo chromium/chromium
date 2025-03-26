@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar.back_button;
 
+import android.content.res.ColorStateList;
+
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
@@ -15,10 +18,14 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 class BackButtonProperties {
     public static final WritableObjectPropertyKey<Runnable> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static WritableObjectPropertyKey<ColorStateList> TINT_COLOR_LIST =
+            new WritableObjectPropertyKey<>();
+    public static WritableIntPropertyKey BACKGROUND_HIGHLIGHT_RESOURCE =
+            new WritableIntPropertyKey();
 
     public static PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                CLICK_LISTENER,
+                CLICK_LISTENER, TINT_COLOR_LIST, BACKGROUND_HIGHLIGHT_RESOURCE,
             };
 
     private BackButtonProperties() {}

@@ -720,10 +720,6 @@ public final class ToolbarTabletUnitTest {
                 activityFocusTint.getDefaultColor(),
                 mHomeButton.getImageTintList().getDefaultColor());
         Assert.assertEquals(
-                "Back button tint is incorrect.",
-                activityFocusTint.getDefaultColor(),
-                mBackButton.getImageTintList().getDefaultColor());
-        Assert.assertEquals(
                 "Forward button tint is incorrect.",
                 activityFocusTint.getDefaultColor(),
                 mForwardButton.getImageTintList().getDefaultColor());

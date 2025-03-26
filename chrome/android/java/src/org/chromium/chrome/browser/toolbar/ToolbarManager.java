@@ -914,7 +914,8 @@ public class ToolbarManager
                                 setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
                                 final boolean isSuccess = mToolbarTabController.back();
                                 if (isSuccess) RecordUserAction.record("MobileToolbarBack");
-                            });
+                            },
+                            browsingModeThemeColorProvider);
         }
 
         mToolbarLongPressMenuHandler =

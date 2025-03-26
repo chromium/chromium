@@ -432,7 +432,6 @@ public class ToolbarTablet extends ToolbarLayout
             ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mHomeButton, activityFocusTint);
-        ImageViewCompat.setImageTintList(mBackButton, activityFocusTint);
         ImageViewCompat.setImageTintList(mForwardButton, activityFocusTint);
         // The tint of the |mSaveOfflineButton| should not be affected by an activity focus change.
         ImageViewCompat.setImageTintList(mSaveOfflineButton, tint);
@@ -484,7 +483,6 @@ public class ToolbarTablet extends ToolbarLayout
                         : R.drawable.omnibox_button_ripple;
 
         mHomeButton.setBackgroundResource(toolbarIconRippleId);
-        mBackButton.setBackgroundResource(toolbarIconRippleId);
         mForwardButton.setBackgroundResource(toolbarIconRippleId);
         getTabSwitcherButtonCoordinator()
                 .getContainerView()

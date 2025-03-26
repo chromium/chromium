@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.back_button;
 
 import android.widget.ImageButton;
 
+import androidx.core.widget.ImageViewCompat;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -34,6 +36,12 @@ class BackButtonViewBinder {
                             listener.run();
                         }
                     });
+        } else if (key == BackButtonProperties.TINT_COLOR_LIST) {
+            ImageViewCompat.setImageTintList(
+                    button, model.get(BackButtonProperties.TINT_COLOR_LIST));
+        } else if (key == BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE) {
+            button.setBackgroundResource(
+                    model.get(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE));
         } else {
             assert false : String.format("Unsupported property key %s", key.toString());
         }

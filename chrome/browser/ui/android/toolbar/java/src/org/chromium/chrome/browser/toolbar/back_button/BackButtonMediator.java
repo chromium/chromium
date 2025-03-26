@@ -4,7 +4,14 @@
 
 package org.chromium.chrome.browser.toolbar.back_button;
 
+import android.content.res.ColorStateList;
+
+import androidx.annotation.DrawableRes;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -12,9 +19,10 @@ import org.chromium.ui.modelutil.PropertyModel;
  * external classes and reflects all these changes on back button model.
  */
 @NullMarked
-class BackButtonMediator {
+class BackButtonMediator implements ThemeColorProvider.TintObserver {
 
     private final PropertyModel mModel;
+    private final ThemeColorProvider mThemeColorProvider;
 
     /**
      * Create an instance of {@link BackButtonMediator}.
@@ -23,11 +31,34 @@ class BackButtonMediator {
      * @param onBackPressed a callback that is invoked on back button click event. Allows parent
      *     components to intercept click and navigate back in the history or hide custom UI
      *     components.
+     * @param themeColorProvider a provider that notifies about theme changes.
      */
-    public BackButtonMediator(PropertyModel model, Runnable onBackPressed) {
+    public BackButtonMediator(
+            PropertyModel model, Runnable onBackPressed, ThemeColorProvider themeColorProvider) {
         mModel = model;
+        mThemeColorProvider = themeColorProvider;
 
         mModel.set(BackButtonProperties.CLICK_LISTENER, onBackPressed);
+
+        updateBackgroundHighlight(themeColorProvider.getBrandedColorScheme());
+        mThemeColorProvider.addTintObserver(this);
+    }
+
+    @Override
+    public void onTintChanged(
+            ColorStateList tint,
+            ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        mModel.set(BackButtonProperties.TINT_COLOR_LIST, activityFocusTint);
+        updateBackgroundHighlight(brandedColorScheme);
+    }
+
+    private void updateBackgroundHighlight(@BrandedColorScheme int brandedThemeColor) {
+        final @DrawableRes int backgroundRes =
+                brandedThemeColor == BrandedColorScheme.INCOGNITO
+                        ? R.drawable.toolbar_button_ripple_incognito
+                        : R.drawable.toolbar_button_ripple;
+        mModel.set(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE, backgroundRes);
     }
 
     /**
@@ -36,5 +67,6 @@ class BackButtonMediator {
      */
     public void destroy() {
         mModel.set(BackButtonProperties.CLICK_LISTENER, null);
+        mThemeColorProvider.removeTintObserver(this);
     }
 }
