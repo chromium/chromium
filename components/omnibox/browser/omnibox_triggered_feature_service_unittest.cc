@@ -95,7 +95,7 @@ TEST_F(OmniboxTriggeredFeatureServiceTest, RichAutocompletionTypeTriggered) {
   service_.FeatureTriggered(
       metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION);
   service_.RichAutocompletionTypeTriggered(
-      AutocompleteMatch::RichAutocompletionType::kTitleNonPrefix);
+      AutocompleteMatch::RichAutocompletionType::kShortcutTextPrefix);
   service_.RichAutocompletionTypeTriggered(
       AutocompleteMatch::RichAutocompletionType::kTitlePrefix);
   service_.RichAutocompletionTypeTriggered(
@@ -109,7 +109,7 @@ TEST_F(OmniboxTriggeredFeatureServiceTest, RichAutocompletionTypeTriggered) {
   histogram_.ExpectTotalCount("Omnibox.RichAutocompletion.Triggered", 3);
   histogram_.ExpectBucketCount(
       "Omnibox.RichAutocompletion.Triggered",
-      AutocompleteMatch::RichAutocompletionType::kTitleNonPrefix, 1);
+      AutocompleteMatch::RichAutocompletionType::kShortcutTextPrefix, 1);
   histogram_.ExpectBucketCount(
       "Omnibox.RichAutocompletion.Triggered",
       AutocompleteMatch::RichAutocompletionType::kTitlePrefix, 1);

@@ -112,7 +112,7 @@ class TestingOmniboxView : public OmniboxViewViews {
 
   using OmniboxView::OnInlineAutocompleteTextMaybeChanged;
 
-  using OmniboxViewViews::SetTextAndSelectedRanges;
+  using OmniboxViewViews::SetTextAndSelectedRange;
   using OmniboxViewViews::SkipDefaultKeyEventProcessing;
 
  protected:
@@ -636,7 +636,7 @@ TEST_F(OmniboxViewViewsTest,
   // Simulate the user focusing the omnibox and typing something. This is just
   // the test setup, not the actual focus event we are testing.
   omnibox_view()->SetFocus(/*is_user_initiated*/ true);
-  omnibox_view()->SetTextAndSelectedRanges(u"user text", {gfx::Range(9, 9)});
+  omnibox_view()->SetTextAndSelectedRange(u"user text", gfx::Range(9, 9));
   ASSERT_FALSE(omnibox_view()->IsSelectAll());
   ASSERT_TRUE(omnibox_view()->GetSelectionAtEnd());
 
@@ -747,8 +747,8 @@ TEST_F(OmniboxViewViewsTest, AccessibleTextSelectBoundTest) {
   ui::AXNodeData data;
   gfx::Range range(4, 10);
 
-  omnibox_view()->SetTextAndSelectedRanges(u"AccessibleTextSelectBoundTest",
-                                           {range});
+  omnibox_view()->SetTextAndSelectedRange(u"AccessibleTextSelectBoundTest",
+                                          range);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart), 4);
   EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd), 10);
@@ -948,25 +948,16 @@ TEST_F(OmniboxViewViewsTest, SetWindowTextAndCaretPos) {
 
 TEST_F(OmniboxViewViewsTest, OnInlineAutocompleteTextMaybeChanged) {
   // No selection, google.com|
-  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"google.com",
-                                                       {{10, 10}}, u"", u"");
+  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"google.com", u"");
   EXPECT_EQ(u"google.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{10, 10}}));
 
   // Single selection, gmai[l.com]
-  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"gmail.com", {{9, 4}},
-                                                       u"", u"l.com");
+  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"gmai", u"l.com");
   EXPECT_EQ(u"gmail.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{9, 4}}));
-
-  // Multiselection, [go]ogl[e.com]
-  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(
-      u"google.com", {{10, 5}, {0, 2}}, u"go", u"e.com");
-  EXPECT_EQ(u"google.com", omnibox_view()->GetText());
-  EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
-            (std::vector<Range>{{10, 5}, {0, 2}}));
 }
 
 TEST_F(OmniboxViewViewsTest, OverflowingAutocompleteText) {
@@ -978,9 +969,7 @@ TEST_F(OmniboxViewViewsTest, OverflowingAutocompleteText) {
 
   omnibox_textfield()->OnFocus();
   omnibox_view()->OnInlineAutocompleteTextMaybeChanged(
-      u"user text. Followed by very long autocompleted text that is unlikely "
-      u"to fit in |kOmniboxWidth|",
-      {{94, 10}}, u"",
+      u"user text.",
       u" Followed by very long autocompleted text that is unlikely to fit in "
       u"|kOmniboxWidth|");
 

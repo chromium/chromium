@@ -333,8 +333,7 @@ class OmniboxEditModel {
   //     `is_temporary_test` is false.
   //   `is_temporary_text` is true if invoked because of a temporary text change
   //     or false if `temporary_text` should be ignored.
-  //   `inline_autocompletion` and `prefix_autocompletion` are the
-  //     autocompletions.
+  //   `inline_autocompletion` is the autocompletion.
   //   `destination_for_temporary_text_change` is NULL (if temporary text should
   //     not change) or the pre-change destination URL (if temporary text should
   //     change) so we can save it off to restore later.
@@ -350,7 +349,6 @@ class OmniboxEditModel {
   virtual void OnPopupDataChanged(const std::u16string& temporary_text,
                                   bool is_temporary_text,
                                   const std::u16string& inline_autocompletion,
-                                  const std::u16string& prefix_autocompletion,
                                   const std::u16string& keyword,
                                   const std::u16string& keyword_placeholder,
                                   bool is_keyword_hint,
@@ -730,7 +728,6 @@ class OmniboxEditModel {
   // it to a normal selection, or change the edit entirely).
   bool just_deleted_text_;
   std::u16string inline_autocompletion_;
-  std::u16string prefix_autocompletion_;
 
   // Used by OnPopupDataChanged to keep track of whether there is currently a
   // temporary text.

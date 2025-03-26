@@ -103,21 +103,6 @@ bool WordMatchesURLContent(
   return false;
 }
 
-// Check if title, non-prefix, or shortcut rich autocompletion is possible. Both
-// must be true:
-// 1) Either the feature is enabled for all providers OR the suggestion is from
-//    the shortcut provider.
-// 2) The input is at least `min_char` long.
-bool RichAutocompletionApplicable(bool enabled_all_providers,
-                                  bool enabled_shortcut_provider,
-                                  size_t min_char,
-                                  bool shortcut_provider,
-                                  const std::u16string& input_text) {
-  return (enabled_all_providers ||
-          (shortcut_provider && enabled_shortcut_provider)) &&
-         input_text.size() >= min_char;
-}
-
 // Gives a basis for match comparison that prefers some providers over others
 // while remaining neutral with a default score of zero for most providers.
 int GetDeduplicationProviderPreferenceScore(
@@ -181,32 +166,12 @@ template struct ACMatchKeyHash<std::string,  // URL
 
 RichAutocompletionParams::RichAutocompletionParams()
     : enabled(OmniboxFieldTrial::IsRichAutocompletionEnabled()),
-      autocomplete_titles(
-          OmniboxFieldTrial::kRichAutocompletionAutocompleteTitles.Get()),
-      autocomplete_titles_shortcut_provider(
-          OmniboxFieldTrial::
-              kRichAutocompletionAutocompleteTitlesShortcutProvider.Get()),
       autocomplete_titles_min_char(
           OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar
               .Get()),
-      autocomplete_non_prefix_all(
-          OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAll.Get()),
-      autocomplete_non_prefix_shortcut_provider(
-          OmniboxFieldTrial::
-              kRichAutocompletionAutocompleteNonPrefixShortcutProvider.Get()),
-      autocomplete_non_prefix_min_char(
-          OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
-              .Get()),
-      autocomplete_shortcut_text(
-          OmniboxFieldTrial::kRichAutocompletionAutocompleteShortcutText.Get()),
       autocomplete_shortcut_text_min_char(
           OmniboxFieldTrial::kRichAutocompletionAutocompleteShortcutTextMinChar
-              .Get()),
-      counterfactual(
-          OmniboxFieldTrial::kRichAutocompletionCounterfactual.Get()),
-      autocomplete_prefer_urls_over_prefixes(
-          OmniboxFieldTrial::
-              kRichAutocompletionAutocompletePreferUrlsOverPrefixes.Get()) {}
+              .Get()) {}
 
 RichAutocompletionParams& RichAutocompletionParams::GetParams() {
   static RichAutocompletionParams params;
@@ -271,7 +236,6 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       additional_text(match.additional_text),
       inline_autocompletion(match.inline_autocompletion),
       rich_autocompletion_triggered(match.rich_autocompletion_triggered),
-      prefix_autocompletion(match.prefix_autocompletion),
       allowed_to_be_default_match(match.allowed_to_be_default_match),
       destination_url(match.destination_url),
       stripped_destination_url(match.stripped_destination_url),
@@ -345,7 +309,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   inline_autocompletion = std::move(match.inline_autocompletion);
   rich_autocompletion_triggered =
       std::move(match.rich_autocompletion_triggered);
-  prefix_autocompletion = std::move(match.prefix_autocompletion);
   allowed_to_be_default_match = std::move(match.allowed_to_be_default_match);
   destination_url = std::move(match.destination_url);
   stripped_destination_url = std::move(match.stripped_destination_url);
@@ -426,7 +389,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   additional_text = match.additional_text;
   inline_autocompletion = match.inline_autocompletion;
   rich_autocompletion_triggered = match.rich_autocompletion_triggered;
-  prefix_autocompletion = match.prefix_autocompletion;
   allowed_to_be_default_match = match.allowed_to_be_default_match;
   destination_url = match.destination_url;
   stripped_destination_url = match.stripped_destination_url;
@@ -729,15 +691,6 @@ bool AutocompleteMatch::BetterDuplicate(const AutocompleteMatch& match1,
     return true;
   if (!match1.allowed_to_be_default_match && match2.allowed_to_be_default_match)
     return false;
-
-  // Prefer URL autocompleted default matches if the appropriate param is true.
-  if (OmniboxFieldTrial::kRichAutocompletionAutocompletePreferUrlsOverPrefixes
-          .Get()) {
-    if (match1.additional_text.empty() && !match2.additional_text.empty())
-      return true;
-    if (!match1.additional_text.empty() && match2.additional_text.empty())
-      return false;
-  }
 
   // Prefer some providers above others according to score (default is zero).
   const int match1_score =
@@ -1764,7 +1717,7 @@ void AutocompleteMatch::SetAllowedToBeDefault(const AutocompleteInput& input) {
     // consider if more providers are updated to use of this method; then we
     // may want to avoid applying this rule when in keyword mode.
     allowed_to_be_default_match = false;
-  } else if (IsEmptyAutocompletion()) {
+  } else if (inline_autocompletion.empty()) {
     allowed_to_be_default_match = true;
   } else if (input.prevent_inline_autocomplete()) {
     allowed_to_be_default_match = false;
@@ -1797,7 +1750,6 @@ size_t AutocompleteMatch::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(fill_into_edit);
   res += base::trace_event::EstimateMemoryUsage(additional_text);
   res += base::trace_event::EstimateMemoryUsage(inline_autocompletion);
-  res += base::trace_event::EstimateMemoryUsage(prefix_autocompletion);
   res += base::trace_event::EstimateMemoryUsage(destination_url);
   res += base::trace_event::EstimateMemoryUsage(stripped_destination_url);
   res += base::trace_event::EstimateMemoryUsage(extra_headers);
@@ -1838,9 +1790,8 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
       fill_into_edit == duplicate_match.fill_into_edit &&
       duplicate_match.allowed_to_be_default_match) {
     allowed_to_be_default_match = true;
-    if (IsEmptyAutocompletion()) {
+    if (inline_autocompletion.empty()) {
       inline_autocompletion = duplicate_match.inline_autocompletion;
-      prefix_autocompletion = duplicate_match.prefix_autocompletion;
     }
   }
 
@@ -2177,9 +2128,9 @@ void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
 }
 
 bool AutocompleteMatch::TryRichAutocompletion(
+    const AutocompleteInput& input,
     const std::u16string& primary_text,
     const std::u16string& secondary_text,
-    const AutocompleteInput& input,
     const std::u16string& shortcut_text) {
   const auto& params = RichAutocompletionParams::GetParams();
 
@@ -2196,8 +2147,6 @@ bool AutocompleteMatch::TryRichAutocompletion(
   // Try matching the prefix of |primary_text|.
   if (base::StartsWith(primary_text_lower, input_text_lower,
                        base::CompareCase::SENSITIVE)) {
-    if (params.counterfactual)
-      return false;
     // This case intentionally doesn't set |rich_autocompletion_triggered| since
     // presumably non-rich autocompletion should also be able to handle this
     // case.
@@ -2207,69 +2156,20 @@ bool AutocompleteMatch::TryRichAutocompletion(
     return true;
   }
 
-  // Determine which types of rich AC are allowed. Depends on:
-  // - The input length.
-  // - Whether the input contains whitespaces.
-  // - Whether the match is from the shortcut provider.
-  // - Fieldtrial params.
-  const bool can_autocomplete_titles = RichAutocompletionApplicable(
-      params.autocomplete_titles, params.autocomplete_titles_shortcut_provider,
-      params.autocomplete_titles_min_char, !shortcut_text.empty(),
-      input.text());
-  const bool can_autocomplete_non_prefix = RichAutocompletionApplicable(
-      params.autocomplete_non_prefix_all,
-      params.autocomplete_non_prefix_shortcut_provider,
-      params.autocomplete_non_prefix_min_char, !shortcut_text.empty(),
-      input.text());
-  const bool can_autocomplete_shortcut_text =
-      RichAutocompletionApplicable(false, params.autocomplete_shortcut_text,
-                                   params.autocomplete_shortcut_text_min_char,
-                                   !shortcut_text.empty(), input.text());
-
-  // All else equal, prefer matching primary over secondary texts and prefixes
-  // over non-prefixes. |prefer_primary_non_prefix_over_secondary_prefix|
-  // determines whether to prefer matching primary text non-prefixes or
-  // secondary text prefixes.
-  bool prefer_primary_non_prefix_over_secondary_prefix =
-      params.autocomplete_prefer_urls_over_prefixes;
-
-  size_t find_index;
-
-  // A helper to avoid duplicate code. Depending on the
-  // |prefer_primary_non_prefix_over_secondary_prefix|, this may be invoked
-  // either before or after trying prefix secondary autocompletion.
-  auto NonPrefixPrimaryHelper = [&]() {
-    rich_autocompletion_triggered = RichAutocompletionType::kUrlNonPrefix;
-    if (params.counterfactual)
-      return false;
-    inline_autocompletion =
-        primary_text.substr(find_index + input_text_lower.length());
-    prefix_autocompletion = primary_text.substr(0, find_index);
-    allowed_to_be_default_match = true;
-    RecordAdditionalInfo("autocompletion", "primary & non-prefix");
-    return true;
-  };
-
-  // Try matching a non-prefix of |primary_text| if
-  // |prefer_primary_non_prefix_over_secondary_prefix| is true; otherwise, we'll
-  // try this only after tying to match the prefix of |secondary_text|.
-  if (prefer_primary_non_prefix_over_secondary_prefix &&
-      can_autocomplete_non_prefix &&
-      (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
-          std::u16string::npos) {
-    return NonPrefixPrimaryHelper();
+  // Only shortcuts are allowed to autocomplete `secondary_text` and
+  // `shortcut_text`.
+  if (shortcut_text.empty()) {
+    return false;
   }
 
   const std::u16string secondary_text_lower{
       base::i18n::ToLower(secondary_text)};
 
-  // Try matching the prefix of |secondary_text|.
-  if (can_autocomplete_titles &&
+  // Try matching the prefix of `secondary_text`.
+  if (input.text().size() >= params.autocomplete_titles_min_char &&
       base::StartsWith(secondary_text_lower, input_text_lower,
                        base::CompareCase::SENSITIVE)) {
     rich_autocompletion_triggered = RichAutocompletionType::kTitlePrefix;
-    if (params.counterfactual)
-      return false;
     additional_text = primary_text;
     inline_autocompletion = secondary_text.substr(input_text_lower.length());
     allowed_to_be_default_match = true;
@@ -2277,54 +2177,23 @@ bool AutocompleteMatch::TryRichAutocompletion(
     return true;
   }
 
-  // Try matching a non-prefix of |primary_text|. If
-  // |prefer_primary_non_prefix_over_secondary_prefix| is false; otherwise, this
-  // was already tried above.
-  if (!prefer_primary_non_prefix_over_secondary_prefix &&
-      can_autocomplete_non_prefix &&
-      (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
-          std::u16string::npos) {
-    return NonPrefixPrimaryHelper();
-  }
-
-  // Try matching a non-prefix of |secondary_text|.
-  if (can_autocomplete_non_prefix && can_autocomplete_titles &&
-      (find_index = FindAtWordbreak(secondary_text_lower, input_text_lower)) !=
-          std::u16string::npos) {
-    rich_autocompletion_triggered = RichAutocompletionType::kTitleNonPrefix;
-    if (params.counterfactual)
-      return false;
-    additional_text = primary_text;
-    inline_autocompletion =
-        secondary_text.substr(find_index + input_text_lower.length());
-    prefix_autocompletion = secondary_text.substr(0, find_index);
-    allowed_to_be_default_match = true;
-    RecordAdditionalInfo("autocompletion", "secondary & non-prefix");
-    return true;
-  }
-
   // Try matching the prefix of `shortcut_text`.
-  if (can_autocomplete_shortcut_text &&
+  if (input.text().size() >= params.autocomplete_shortcut_text_min_char &&
       base::StartsWith(base::i18n::ToLower(shortcut_text), input_text_lower,
                        base::CompareCase::SENSITIVE)) {
     rich_autocompletion_triggered = RichAutocompletionType::kShortcutTextPrefix;
-    if (params.counterfactual)
-      return false;
     additional_text = primary_text;
     inline_autocompletion = shortcut_text.substr(input_text_lower.length());
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "shortcut text & prefix");
     return true;
   }
+
   // Don't try matching a non-prefix of `shortcut_text`. Shortcut matches are
   // intended for repeated inputs, i.e. inputs that are prefixes of previous
   // inputs.
 
   return false;
-}
-
-bool AutocompleteMatch::IsEmptyAutocompletion() const {
-  return inline_autocompletion.empty() && prefix_autocompletion.empty();
 }
 
 void AutocompleteMatch::WriteIntoTrace(perfetto::TracedValue context) const {

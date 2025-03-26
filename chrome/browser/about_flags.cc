@@ -1253,51 +1253,30 @@ const FeatureEntry::FeatureVariation kRemotePageMetadataVariations[] = {
     BUILDFLAG(IS_WIN)
 
 // A limited number of combinations of the rich autocompletion params.
-const FeatureEntry::FeatureParam
-    kOmniboxRichAutocompletionConservativeModerate[] = {
-        {"RichAutocompletionAutocompleteTitles", "true"},
-        {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-        {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
-const FeatureEntry::FeatureParam
-    kOmniboxRichAutocompletionConservativeModerate2[] = {
-        {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
-        {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-        {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive1[] = {
+    {"RichAutocompletionAutocompleteTitlesMinChar", "1"},
+    {"RichAutocompletionAutocompleteShortcutTextMinChar", "1"}};
 const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive2[] = {
-    {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
     {"RichAutocompletionAutocompleteTitlesMinChar", "2"},
-    {"RichAutocompletionAutocompleteShortcutText", "true"},
     {"RichAutocompletionAutocompleteShortcutTextMinChar", "2"}};
 const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive3[] = {
-    {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
     {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-    {"RichAutocompletionAutocompleteShortcutText", "true"},
     {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
 const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive4[] = {
-    {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
     {"RichAutocompletionAutocompleteTitlesMinChar", "4"},
-    {"RichAutocompletionAutocompleteShortcutText", "true"},
     {"RichAutocompletionAutocompleteShortcutTextMinChar", "4"}};
 
 const FeatureEntry::FeatureVariation
     kOmniboxRichAutocompletionPromisingVariations[] = {
-        {"Conservative Moderate - Title, Shortcut Non-Prefix, min 3/5",
-         kOmniboxRichAutocompletionConservativeModerate,
-         std::size(kOmniboxRichAutocompletionConservativeModerate), nullptr},
-        {"Conservative Moderate 2 - Shortcut Title, Shortcut Non-Prefix, min "
-         "3/5",
-         kOmniboxRichAutocompletionConservativeModerate2,
-         std::size(kOmniboxRichAutocompletionConservativeModerate2), nullptr},
-        {"Aggressive 2 - Title Shortcut Title 2, Shortcut Text 2",
-         kOmniboxRichAutocompletionAggressive2,
+        {"Min input length 1 characters", kOmniboxRichAutocompletionAggressive1,
+         std::size(kOmniboxRichAutocompletionAggressive1), nullptr},
+        {"Min input length 2 characters", kOmniboxRichAutocompletionAggressive2,
          std::size(kOmniboxRichAutocompletionAggressive2), nullptr},
-        {"Aggressive 3 - Title Shortcut Title 3, Shortcut Text 3",
-         kOmniboxRichAutocompletionAggressive3,
+        {"Min input length 2 characters", kOmniboxRichAutocompletionAggressive2,
+         std::size(kOmniboxRichAutocompletionAggressive2), nullptr},
+        {"Min input length 3 characters", kOmniboxRichAutocompletionAggressive3,
          std::size(kOmniboxRichAutocompletionAggressive3), nullptr},
-        {"Aggressive 4 - Title Shortcut Title 4, Shortcut Text 4",
-         kOmniboxRichAutocompletionAggressive4,
+        {"Min input length 4 characters", kOmniboxRichAutocompletionAggressive4,
          std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
 };
 

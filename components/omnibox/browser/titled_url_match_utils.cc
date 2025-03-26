@@ -136,7 +136,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
                                    &inline_autocomplete_offset),
           scheme_classifier, &inline_autocomplete_offset);
 
-  if (match.TryRichAutocompletion(match.contents, match.description, input)) {
+  if (match.TryRichAutocompletion(input, match.contents, match.description)) {
     // If rich autocompletion applies, we skip trying the alternatives below.
   } else if (inline_autocomplete_offset != std::u16string::npos) {
     match.inline_autocompletion =

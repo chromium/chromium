@@ -129,8 +129,8 @@ struct OmniboxState : public base::SupportsUserData::Data {
   static const char kKey[];
 
   OmniboxState(const OmniboxEditModel::State& model_state,
-               const std::vector<gfx::Range> selection,
-               const std::vector<gfx::Range> saved_selection_for_focus_change);
+               const gfx::Range& selection,
+               const gfx::Range& saved_selection_for_focus_change);
 
   ~OmniboxState() override;
 
@@ -140,17 +140,16 @@ struct OmniboxState : public base::SupportsUserData::Data {
   // omnibox is not focused).  This allows us to properly handle cases like
   // selecting text, tabbing out of the omnibox, switching tabs away and back,
   // and tabbing back into the omnibox.
-  const std::vector<gfx::Range> selection;
-  const std::vector<gfx::Range> saved_selection_for_focus_change;
+  const gfx::Range selection;
+  const gfx::Range saved_selection_for_focus_change;
 };
 
 // static
 const char OmniboxState::kKey[] = "OmniboxState";
 
-OmniboxState::OmniboxState(
-    const OmniboxEditModel::State& model_state,
-    const std::vector<gfx::Range> selection,
-    const std::vector<gfx::Range> saved_selection_for_focus_change)
+OmniboxState::OmniboxState(const OmniboxEditModel::State& model_state,
+                           const gfx::Range& selection,
+                           const gfx::Range& saved_selection_for_focus_change)
     : model_state(model_state),
       selection(selection),
       saved_selection_for_focus_change(saved_selection_for_focus_change) {}
@@ -214,6 +213,7 @@ OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
                                    const gfx::FontList& font_list)
     : OmniboxView(std::move(client)),
       popup_window_mode_(popup_window_mode),
+      saved_selection_for_focus_change_(gfx::Range::InvalidRange()),
       location_bar_view_(location_bar_view),
       latency_histogram_state_(NOT_ACTIVE),
       friendly_suggestion_text_prefix_length_(0) {
@@ -326,10 +326,9 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
   // NOTE: GetStateForTabSwitch() may affect GetSelectedRange(), so order is
   // important.
   const OmniboxEditModel::State state = model()->GetStateForTabSwitch();
-  tab->SetUserData(
-      OmniboxState::kKey,
-      std::make_unique<OmniboxState>(state, GetRenderText()->GetAllSelections(),
-                                     saved_selection_for_focus_change_));
+  tab->SetUserData(OmniboxState::kKey, std::make_unique<OmniboxState>(
+                                           state, GetSelectedRange(),
+                                           saved_selection_for_focus_change_));
   UpdateAccessibleTextSelection();
 }
 
@@ -348,9 +347,9 @@ void OmniboxViewViews::OnTabChanged(const content::WebContents* web_contents) {
       // See comment in OmniboxEditModel::GetStateForTabSwitch() for details on
       // this.
       SelectAll(true);
-      saved_selection_for_focus_change_.clear();
+      saved_selection_for_focus_change_ = gfx::Range();
     } else {
-      SetSelectedRanges(state->selection);
+      SetSelectedRange(state->selection);
       saved_selection_for_focus_change_ =
           state->saved_selection_for_focus_change;
     }
@@ -424,7 +423,7 @@ std::u16string OmniboxViewViews::GetText() const {
 
 void OmniboxViewViews::SetUserText(const std::u16string& text,
                                    bool update_popup) {
-  saved_selection_for_focus_change_.clear();
+  saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
   OmniboxView::SetUserText(text, update_popup);
   UpdateAccessibleTextSelection();
 }
@@ -455,20 +454,12 @@ void OmniboxViewViews::GetSelectionBounds(
   *end = static_cast<size_t>(range.end());
 }
 
-size_t OmniboxViewViews::GetAllSelectionsLength() const {
-  size_t sum = 0;
-  for (auto s : GetRenderText()->GetAllSelections()) {
-    sum += s.length();
-  }
-  return sum;
-}
-
 void OmniboxViewViews::SelectAll(bool reversed) {
   views::Textfield::SelectAll(reversed);
 }
 
 void OmniboxViewViews::RevertAll() {
-  saved_selection_for_focus_change_.clear();
+  saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
   OmniboxView::RevertAll();
   UpdateAccessibleTextSelection();
 }
@@ -727,11 +718,8 @@ void OmniboxViewViews::ApplyStyle(gfx::TextStyle style,
   Textfield::ApplyStyle(style, value, range);
 }
 
-void OmniboxViewViews::SetTextAndSelectedRanges(
-    const std::u16string& text,
-    const std::vector<gfx::Range>& ranges) {
-  DCHECK(!ranges.empty());
-
+void OmniboxViewViews::SetTextAndSelectedRange(const std::u16string& text,
+                                               const gfx::Range& selection) {
   // Will try to fit as much of the text preceding the cursor as possible. If
   // possible, guarantees at least |kPadLeading| chars of the text preceding the
   // the cursor are visible. If possible given the prior guarantee, also
@@ -742,28 +730,15 @@ void OmniboxViewViews::SetTextAndSelectedRanges(
 
   // We use SetTextWithoutCaretBoundsChangeNotification() in order to avoid
   // triggering accessibility events multiple times.
-  SetTextWithoutCaretBoundsChangeNotification(text, ranges[0].end());
-  Scroll({0, std::min(ranges[0].end() + kPadTrailing, text.size()),
-          ranges[0].end() - std::min(kPadLeading, ranges[0].end())});
+  SetTextWithoutCaretBoundsChangeNotification(text, selection.end());
+  Scroll({0, std::min(selection.end() + kPadTrailing, text.size()),
+          selection.end() - std::min(kPadLeading, selection.end())});
   // Setting the primary selected range will also fire an appropriate final
   // accessibility event after the changes above.
-  SetSelectedRanges(ranges);
+  SetSelectedRange(selection);
 
   // Clear the additional text.
   SetAdditionalText(std::u16string());
-}
-
-void OmniboxViewViews::SetSelectedRanges(
-    const std::vector<gfx::Range>& ranges) {
-  // Even when no text is selected, |ranges| should have at least 1 (empty)
-  // Range representing the cursor.
-  DCHECK(!ranges.empty());
-
-  SetSelectedRange(ranges[0]);
-  for (size_t i = 1; i < ranges.size(); i++) {
-    AddSecondarySelectedRange(ranges[i]);
-  }
-  UpdateAccessibleTextSelection();
 }
 
 std::u16string_view OmniboxViewViews::GetSelectedText() const {
@@ -775,9 +750,9 @@ void OmniboxViewViews::UpdateAccessibleTextSelection() {
   std::u16string::size_type entry_start;
   std::u16string::size_type entry_end;
 
-  if (!saved_selection_for_focus_change_.empty()) {
-    entry_start = saved_selection_for_focus_change_[0].start();
-    entry_end = saved_selection_for_focus_change_[0].end();
+  if (saved_selection_for_focus_change_.IsValid()) {
+    entry_start = saved_selection_for_focus_change_.start();
+    entry_end = saved_selection_for_focus_change_.end();
   } else {
     GetSelectionBounds(&entry_start, &entry_end);
   }
@@ -838,7 +813,7 @@ void OmniboxViewViews::SetWindowTextAndCaretPos(const std::u16string& text,
                                                 bool update_popup,
                                                 bool notify_text_changed) {
   const gfx::Range range(caret_pos);
-  SetTextAndSelectedRanges(text, {range});
+  SetTextAndSelectedRange(text, range);
 
   if (update_popup) {
     UpdatePopup();
@@ -882,7 +857,7 @@ void OmniboxViewViews::OnTemporaryTextMaybeChanged(
     bool save_original_selection,
     bool notify_text_changed) {
   if (save_original_selection) {
-    saved_temporary_selection_ = GetRenderText()->GetAllSelections();
+    saved_temporary_selection_ = GetSelectedRange();
   }
 
   // SetWindowTextAndCaretPos will fire the accessibility notification,
@@ -895,18 +870,17 @@ void OmniboxViewViews::OnTemporaryTextMaybeChanged(
 }
 
 void OmniboxViewViews::OnInlineAutocompleteTextMaybeChanged(
-    const std::u16string& display_text,
-    std::vector<gfx::Range> selections,
-    const std::u16string& prefix_autocompletion,
+    const std::u16string& user_text,
     const std::u16string& inline_autocompletion) {
+  std::u16string display_text = user_text + inline_autocompletion;
   if (display_text == GetText()) {
     return;
   }
 
   if (!IsIMEComposing()) {
-    SetTextAndSelectedRanges(display_text, selections);
+    SetTextAndSelectedRange(display_text,
+                            {display_text.size(), user_text.length()});
   } else if (location_bar_view_) {
-    location_bar_view_->SetImePrefixAutocompletion(prefix_autocompletion);
     location_bar_view_->SetImeInlineAutocompletion(inline_autocompletion);
   }
 
@@ -916,7 +890,6 @@ void OmniboxViewViews::OnInlineAutocompleteTextMaybeChanged(
 void OmniboxViewViews::OnInlineAutocompleteTextCleared() {
   // Hide the inline autocompletion for IME users.
   if (location_bar_view_) {
-    location_bar_view_->SetImePrefixAutocompletion(std::u16string());
     location_bar_view_->SetImeInlineAutocompletion(std::u16string());
   }
 }
@@ -930,7 +903,7 @@ void OmniboxViewViews::OnRevertTemporaryText(const std::u16string& display_text,
   // However, it's important to notify accessibility that the value has changed,
   // otherwise the screen reader will use the old accessibility label text.
   SetAccessibilityLabel(display_text, match, true);
-  SetSelectedRanges(saved_temporary_selection_);
+  SetSelectedRange(saved_temporary_selection_);
 }
 
 void OmniboxViewViews::ClearAccessibilityLabel() {
@@ -1230,7 +1203,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
     // possible to later set select_all_on_mouse_release_ back to false, but
     // that happens for things like dragging, which are cases where having
     // invalidated this saved selection is still OK.
-    saved_selection_for_focus_change_.clear();
+    saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
     UpdateAccessibleTextSelection();
   }
 
@@ -1346,7 +1319,7 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
 
     // If we're trying to select all on tap, invalidate any saved selection lest
     // restoring it fights with the "select all" action.
-    saved_selection_for_focus_change_.clear();
+    saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
     UpdateAccessibleTextSelection();
   }
 
@@ -1401,9 +1374,9 @@ bool OmniboxViewViews::HandleAccessibleAction(
     return true;
   } else if (action_data.action == ax::mojom::Action::kReplaceSelectedText) {
     model()->SetInputInProgress(true);
-    if (!saved_selection_for_focus_change_.empty()) {
-      SetSelectedRanges(saved_selection_for_focus_change_);
-      saved_selection_for_focus_change_.clear();
+    if (saved_selection_for_focus_change_.IsValid()) {
+      SetSelectedRange(saved_selection_for_focus_change_);
+      saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
     }
     InsertOrReplaceText(base::UTF8ToUTF16(action_data.value));
     TextChanged();
@@ -1438,9 +1411,9 @@ void OmniboxViewViews::OnFocus() {
   // focus.
 
   // Restore the selection we saved in OnBlur() if it's still valid.
-  if (!saved_selection_for_focus_change_.empty()) {
-    SetSelectedRanges(saved_selection_for_focus_change_);
-    saved_selection_for_focus_change_.clear();
+  if (saved_selection_for_focus_change_.IsValid()) {
+    SetSelectedRange(saved_selection_for_focus_change_);
+    saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
     UpdateAccessibleTextSelection();
   }
 
@@ -1460,7 +1433,7 @@ void OmniboxViewViews::OnFocus() {
 
 void OmniboxViewViews::OnBlur() {
   // Save the user's existing selection to restore it later.
-  saved_selection_for_focus_change_ = GetRenderText()->GetAllSelections();
+  saved_selection_for_focus_change_ = GetSelectedRange();
 
   // If the view is showing text that's not user-text, revert the text to the
   // permanent display text. This usually occurs if Steady State Elisions is on

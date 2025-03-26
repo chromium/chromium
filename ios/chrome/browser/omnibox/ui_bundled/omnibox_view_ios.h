@@ -65,9 +65,7 @@ class OmniboxViewIOS : public OmniboxView,
                                    bool save_original_selection,
                                    bool notify_text_changed) override;
   void OnInlineAutocompleteTextMaybeChanged(
-      const std::u16string& display_text,
-      std::vector<gfx::Range> selections,
-      const std::u16string& prefix_autocompletion,
+      const std::u16string& user_text,
       const std::u16string& inline_autocompletion) override;
   void OnBeforePossibleChange() override;
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
@@ -81,7 +79,6 @@ class OmniboxViewIOS : public OmniboxView,
   bool IsSelectAll() const override;
   void GetSelectionBounds(std::u16string::size_type* start,
                           std::u16string::size_type* end) const override;
-  size_t GetAllSelectionsLength() const override;
   void SelectAll(bool reversed) override {}
   void SetFocus(bool is_user_initiated) override {}
   void ApplyCaretVisibility() override {}

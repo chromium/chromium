@@ -6788,7 +6788,7 @@
   {
     "name": "omnibox-rich-autocompletion-promising",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-search-client-prefetch",

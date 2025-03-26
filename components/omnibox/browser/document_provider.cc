@@ -825,8 +825,9 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
                                  match.description_for_shortcuts);
     }
 
-    match.TryRichAutocompletion(base::UTF8ToUTF16(match.destination_url.spec()),
-                                match.contents, input_);
+    match.TryRichAutocompletion(input_,
+                                base::UTF8ToUTF16(match.destination_url.spec()),
+                                match.contents);
     match.transition = ui::PAGE_TRANSITION_GENERATED;
     match.RecordAdditionalInfo("owned", is_owned);
     match.RecordAdditionalInfo("completely matched in title and owner",
@@ -848,8 +849,8 @@ void DocumentProvider::CopyCachedMatchesToMatches() {
       [this](auto match) {
         match.allowed_to_be_default_match = false;
         match.TryRichAutocompletion(
-            base::UTF8ToUTF16(match.destination_url.spec()), match.contents,
-            input_);
+            input_, base::UTF8ToUTF16(match.destination_url.spec()),
+            match.contents);
         match.contents_class =
             DocumentProvider::Classify(match.contents, input_.text());
         match.RecordAdditionalInfo("from cache", "true");

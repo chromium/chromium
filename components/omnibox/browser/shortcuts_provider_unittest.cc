@@ -281,18 +281,7 @@ ShortcutsProviderTest::ShortcutsProviderTest() {
   // `scoped_feature_list_` needs to be initialized as early as possible, to
   // avoid data races caused by tasks on other threads accessing it.
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      // Even though these are enabled by default on desktop, they aren't
-      // enabled by default on mobile. To avoid having 2 sets of tests around,
-      // explicitly enable them for all platforms for tests.
-      {{omnibox::kRichAutocompletion,
-        {{"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
-         {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-         {"RichAutocompletionAutocompleteShortcutText", "true"},
-         {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}}},
-       {omnibox::kLogUrlScoringSignals, {}}},
-      {});
-  RichAutocompletionParams::ClearParamsForTesting();
+  scoped_feature_list_.InitAndEnableFeature(omnibox::kLogUrlScoringSignals);
 }
 
 void ShortcutsProviderTest::SetUp() {
