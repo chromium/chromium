@@ -556204,7 +556204,7 @@
      ]
     ],
     "interactionid-keyboard-event-simulated-click-button-space.html": [
-     "d3ab5437f8e533a32fad8d327e5e1dd58d210574",
+     "b7a7675f3244835a4074827868f5a1423c1f0b24",
      [
       null,
       {
@@ -556213,7 +556213,7 @@
      ]
     ],
     "interactionid-keyboard-event-simulated-click-checkbox-space.html": [
-     "3dd8e21e784d7d8970e2fdfba4d4e146ce32f968",
+     "e2582259e1557106cfa587ab7d12465773561519",
      [
       null,
       {
@@ -556222,7 +556222,7 @@
      ]
     ],
     "interactionid-keyboard-event-simulated-click-link-enter.html": [
-     "6945d2ff771976ea1a17ba66f427e51d840268d5",
+     "9e1f4ee3761d2f7808ccb7221e426af7ab240a4a",
      [
       null,
       {
@@ -642215,13 +642215,6 @@
         ],
         "option-color-inheritance.html": [
          "d96124d008c50be1f62a7b2f4c3ddf153c62bdd6",
-         [
-          null,
-          {}
-         ]
-        ],
-        "option-computed-style.tentative.html": [
-         "ba2861a5c6181b72c3b8abc3e077a9f414f2cd99",
          [
           null,
           {}
