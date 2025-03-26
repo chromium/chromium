@@ -19,11 +19,11 @@ class CreateTranslatorClient
     : public GarbageCollected<CreateTranslatorClient>,
       public mojom::blink::TranslationManagerCreateTranslatorClient,
       public ExecutionContextClient,
-      public AIContextObserver<AITranslator> {
+      public AIContextObserver<Translator> {
  public:
   CreateTranslatorClient(ScriptState* script_state,
-                         AITranslatorCreateOptions* options,
-                         ScriptPromiseResolver<AITranslator>* resolver);
+                         TranslatorCreateOptions* options,
+                         ScriptPromiseResolver<Translator>* resolver);
   ~CreateTranslatorClient() override;
 
   CreateTranslatorClient(const CreateTranslatorClient&) = delete;

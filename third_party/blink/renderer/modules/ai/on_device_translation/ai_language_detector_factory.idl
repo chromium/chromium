@@ -15,10 +15,10 @@ interface AILanguageDetectorFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AILanguageDetector> create(optional AILanguageDetectorCreateOptions options = {});
+  Promise<LanguageDetector> create(optional LanguageDetectorCreateOptions options = {});
 };
 
-dictionary AILanguageDetectorCreateOptions {
+dictionary LanguageDetectorCreateOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
 };

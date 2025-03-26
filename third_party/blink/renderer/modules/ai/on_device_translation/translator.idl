@@ -3,20 +3,20 @@
     Exposed=(Window,Worker),
     SecureContext
 ]
-interface AITranslator {
+interface Translator {
 [
   MeasureAs=Translator_Translate,
   CallWith=ScriptState,
   RaisesException
 ]
-  Promise<DOMString> translate(DOMString input, optional AITranslatorTranslateOptions options = {});
+  Promise<DOMString> translate(DOMString input, optional TranslatorTranslateOptions options = {});
 
 [
   MeasureAs=Translator_TranslateStreaming,
   CallWith=ScriptState,
   RaisesException
 ]
-  ReadableStream translateStreaming(DOMString input, optional AITranslatorTranslateOptions options = {});
+  ReadableStream translateStreaming(DOMString input, optional TranslatorTranslateOptions options = {});
 
   [MeasureAs=Translator_SourceLanguage]
   readonly attribute DOMString sourceLanguage;
@@ -36,12 +36,12 @@ interface AITranslator {
 ]
   Promise<double> measureInputUsage(
     DOMString input,
-    optional AITranslatorTranslateOptions options = {}
+    optional TranslatorTranslateOptions options = {}
   );
   [MeasureAs=Translator_InputQuota]
   readonly attribute unrestricted double inputQuota;
 };
 
-dictionary AITranslatorTranslateOptions {
+dictionary TranslatorTranslateOptions {
   AbortSignal signal;
 };

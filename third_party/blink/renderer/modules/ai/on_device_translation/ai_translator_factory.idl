@@ -9,21 +9,21 @@ interface AITranslatorFactory {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AIAvailability> availability(AITranslatorCreateCoreOptions options);
+  Promise<AIAvailability> availability(TranslatorCreateCoreOptions options);
   [
     MeasureAs=Translator_Create,
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<AITranslator> create(AITranslatorCreateOptions options);
+  Promise<Translator> create(TranslatorCreateOptions options);
 };
 
-dictionary AITranslatorCreateCoreOptions {
+dictionary TranslatorCreateCoreOptions {
   required DOMString sourceLanguage;
   required DOMString targetLanguage;
 };
 
-dictionary AITranslatorCreateOptions : AITranslatorCreateCoreOptions {
+dictionary TranslatorCreateOptions : TranslatorCreateCoreOptions {
   AbortSignal signal;
   AICreateMonitorCallback monitor;
 };

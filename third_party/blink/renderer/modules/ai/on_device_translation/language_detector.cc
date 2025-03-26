@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/language_detector.h"
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -10,21 +10,21 @@
 
 namespace blink {
 
-AILanguageDetector::AILanguageDetector(
+LanguageDetector::LanguageDetector(
     LanguageDetectionModel* language_detection_model,
     scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : task_runner_(task_runner),
       language_detection_model_(language_detection_model) {}
 
-void AILanguageDetector::Trace(Visitor* visitor) const {
+void LanguageDetector::Trace(Visitor* visitor) const {
   visitor->Trace(language_detection_model_);
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptPromise<IDLSequence<LanguageDetectionResult>> AILanguageDetector::detect(
+ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
     ScriptState* script_state,
     const WTF::String& input,
-    AILanguageDetectorDetectOptions* options,
+    LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -38,24 +38,24 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> AILanguageDetector::detect(
   }
 
   auto* resolver = MakeGarbageCollected<
-      AIResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>>(
+      ResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>>(
       script_state, signal);
 
   language_detection_model_->DetectLanguage(
       task_runner_, input,
-      WTF::BindOnce(AILanguageDetector::OnDetectComplete,
+      WTF::BindOnce(LanguageDetector::OnDetectComplete,
                     WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
-void AILanguageDetector::destroy(ScriptState*) {
+void LanguageDetector::destroy(ScriptState*) {
   // TODO(crbug.com/349927087): Implement the function.
 }
 
-ScriptPromise<IDLDouble> AILanguageDetector::measureInputUsage(
+ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
     ScriptState* script_state,
     const WTF::String& input,
-    AILanguageDetectorDetectOptions* options,
+    LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
   // https://webmachinelearning.github.io/writing-assistance-apis/#measure-ai-model-input-usage
   //
@@ -80,23 +80,23 @@ ScriptPromise<IDLDouble> AILanguageDetector::measureInputUsage(
     return EmptyPromise();
   }
 
-  AIResolverWithAbortSignal<IDLDouble>* resolver =
-      MakeGarbageCollected<AIResolverWithAbortSignal<IDLDouble>>(script_state,
-                                                                 signal);
+  ResolverWithAbortSignal<IDLDouble>* resolver =
+      MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(script_state,
+                                                               signal);
 
   task_runner_->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&AIResolverWithAbortSignal<IDLDouble>::Resolve<double>,
+      WTF::BindOnce(&ResolverWithAbortSignal<IDLDouble>::Resolve<double>,
                     WrapPersistent(resolver), 0));
 
   return resolver->Promise();
 }
 
-double AILanguageDetector::inputQuota() const {
+double LanguageDetector::inputQuota() const {
   return std::numeric_limits<double>::infinity();
 }
 
-HeapVector<Member<LanguageDetectionResult>> AILanguageDetector::ConvertResult(
+HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
     WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions) {
   HeapVector<Member<LanguageDetectionResult>> result;
   for (const auto& prediction : predictions) {
@@ -108,8 +108,8 @@ HeapVector<Member<LanguageDetectionResult>> AILanguageDetector::ConvertResult(
   return result;
 }
 
-void AILanguageDetector::OnDetectComplete(
-    AIResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>* resolver,
+void LanguageDetector::OnDetectComplete(
+    ResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>* resolver,
     base::expected<WTF::Vector<LanguageDetectionModel::LanguagePrediction>,
                    DetectLanguageError> result) {
   if (resolver->aborted()) {

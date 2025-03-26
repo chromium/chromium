@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_translator.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/translator.h"
 
 #include <limits>
 
@@ -17,8 +17,8 @@
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
-#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/create_translator_client.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -32,7 +32,7 @@ const char kExceptionMessageTranslatorDestroyed[] =
 
 }  // namespace
 
-AITranslator::AITranslator(
+Translator::Translator(
     mojo::PendingRemote<mojom::blink::Translator> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     String source_language,
@@ -43,21 +43,21 @@ AITranslator::AITranslator(
   translator_remote_.Bind(std::move(pending_remote), task_runner_);
 }
 
-void AITranslator::Trace(Visitor* visitor) const {
+void Translator::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(translator_remote_);
 }
 
-String AITranslator::sourceLanguage() const {
+String Translator::sourceLanguage() const {
   return source_language_;
 }
-String AITranslator::targetLanguage() const {
+String Translator::targetLanguage() const {
   return target_language_;
 }
 
-ScriptPromise<V8AIAvailability> AITranslator::availability(
+ScriptPromise<V8AIAvailability> Translator::availability(
     ScriptState* script_state,
-    AITranslatorCreateCoreOptions* options,
+    TranslatorCreateCoreOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
@@ -90,10 +90,9 @@ ScriptPromise<V8AIAvailability> AITranslator::availability(
   return promise;
 }
 
-ScriptPromise<AITranslator> AITranslator::create(
-    ScriptState* script_state,
-    AITranslatorCreateOptions* options,
-    ExceptionState& exception_state) {
+ScriptPromise<Translator> Translator::create(ScriptState* script_state,
+                                             TranslatorCreateOptions* options,
+                                             ExceptionState& exception_state) {
   // If `sourceLanguage` and `targetLanguage` are not passed, A TypeError should
   // be thrown before we get here.
   CHECK(options && options->sourceLanguage() && options->targetLanguage());
@@ -110,7 +109,7 @@ ScriptPromise<AITranslator> AITranslator::create(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AITranslator>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<Translator>>(script_state);
 
   CreateTranslatorClient* create_translator_client =
       MakeGarbageCollected<CreateTranslatorClient>(script_state, options,
@@ -127,10 +126,10 @@ ScriptPromise<AITranslator> AITranslator::create(
   return resolver->Promise();
 }
 
-ScriptPromise<IDLString> AITranslator::translate(
+ScriptPromise<IDLString> Translator::translate(
     ScriptState* script_state,
     const WTF::String& input,
-    AITranslatorTranslateOptions* options,
+    TranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
@@ -168,10 +167,10 @@ ScriptPromise<IDLString> AITranslator::translate(
   return promise;
 }
 
-ReadableStream* AITranslator::translateStreaming(
+ReadableStream* Translator::translateStreaming(
     ScriptState* script_state,
     const WTF::String& input,
-    AITranslatorTranslateOptions* options,
+    TranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
@@ -206,14 +205,14 @@ ReadableStream* AITranslator::translateStreaming(
   return readable_stream;
 }
 
-void AITranslator::destroy(ScriptState*) {
+void Translator::destroy(ScriptState*) {
   translator_remote_.reset();
 }
 
-ScriptPromise<IDLDouble> AITranslator::measureInputUsage(
+ScriptPromise<IDLDouble> Translator::measureInputUsage(
     ScriptState* script_state,
     const WTF::String& input,
-    AITranslatorTranslateOptions* options,
+    TranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
   // https://webmachinelearning.github.io/writing-assistance-apis/#measure-ai-model-input-usage
   //
@@ -238,19 +237,19 @@ ScriptPromise<IDLDouble> AITranslator::measureInputUsage(
     return EmptyPromise();
   }
 
-  AIResolverWithAbortSignal<IDLDouble>* resolver =
-      MakeGarbageCollected<AIResolverWithAbortSignal<IDLDouble>>(script_state,
-                                                                 signal);
+  ResolverWithAbortSignal<IDLDouble>* resolver =
+      MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(script_state,
+                                                               signal);
 
   task_runner_->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&AIResolverWithAbortSignal<IDLDouble>::Resolve<double>,
+      WTF::BindOnce(&ResolverWithAbortSignal<IDLDouble>::Resolve<double>,
                     WrapPersistent(resolver), 0));
 
   return resolver->Promise();
 }
 
-double AITranslator::inputQuota() const {
+double Translator::inputQuota() const {
   return std::numeric_limits<double>::infinity();
 }
 

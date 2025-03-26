@@ -8,14 +8,14 @@ dictionary LanguageDetectionResult {
     Exposed=(Window, Worker),
     SecureContext
 ]
-interface AILanguageDetector {
+interface LanguageDetector {
   [
     MeasureAs=LanguageDetector_Detect,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<sequence<LanguageDetectionResult>> detect(DOMString input,
-    optional AILanguageDetectorDetectOptions options = {});
+    optional LanguageDetectorDetectOptions options = {});
 
   [
     MeasureAs=LanguageDetector_Destroy,
@@ -30,12 +30,12 @@ interface AILanguageDetector {
 ]
   Promise<double> measureInputUsage(
     DOMString input,
-    optional AILanguageDetectorDetectOptions options = {}
+    optional LanguageDetectorDetectOptions options = {}
   );
   [MeasureAs=LanguageDetector_InputQuota]
   readonly attribute unrestricted double inputQuota;
 };
 
-dictionary AILanguageDetectorDetectOptions {
+dictionary LanguageDetectorDetectOptions {
   AbortSignal signal;
 };

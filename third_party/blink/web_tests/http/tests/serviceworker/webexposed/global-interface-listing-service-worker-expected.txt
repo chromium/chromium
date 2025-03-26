@@ -13,13 +13,6 @@ interface AICreateMonitor : EventTarget
     getter ondownloadprogress
     method constructor
     setter ondownloadprogress
-interface AILanguageDetector
-    attribute @@toStringTag
-    getter inputQuota
-    method constructor
-    method destroy
-    method detect
-    method measureInputUsage
 interface AILanguageDetectorFactory
     attribute @@toStringTag
     method availability
@@ -92,16 +85,6 @@ interface AISummarizerFactory
     method availability
     method constructor
     method create
-interface AITranslator
-    attribute @@toStringTag
-    getter inputQuota
-    getter sourceLanguage
-    getter targetLanguage
-    method constructor
-    method destroy
-    method measureInputUsage
-    method translate
-    method translateStreaming
 interface AITranslatorFactory
     attribute @@toStringTag
     method availability
@@ -1273,6 +1256,13 @@ interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
     method constructor
+interface LanguageDetector
+    attribute @@toStringTag
+    getter inputQuota
+    method constructor
+    method destroy
+    method detect
+    method measureInputUsage
 interface Lock
     attribute @@toStringTag
     getter mode
@@ -2108,6 +2098,16 @@ interface TransformStreamDefaultController
     method enqueue
     method error
     method terminate
+interface Translator
+    attribute @@toStringTag
+    getter inputQuota
+    getter sourceLanguage
+    getter targetLanguage
+    method constructor
+    method destroy
+    method measureInputUsage
+    method translate
+    method translateStreaming
 interface TrustedHTML
     static method fromLiteral
     attribute @@toStringTag

@@ -1654,9 +1654,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
         iframe.src = location.href;
         document.body.appendChild(iframe);
         await loadPromise;
-        const iframeAITranslator = iframe.contentWindow.ai.translator;
+        const iframeTranslator = iframe.contentWindow.ai.translator;
         document.body.removeChild(iframe);
-        await iframeAITranslator.availability({
+        await iframeTranslator.availability({
           sourceLanguage: "en",
           targetLanguage: "es"
         });

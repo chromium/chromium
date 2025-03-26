@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_AI_TRANSLATOR_FACTORY_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_translator_create_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_translator_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_availability.h"
-#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_translator.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/translator.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -24,12 +24,12 @@ class AITranslatorFactory final : public ScriptWrappable {
 
   ScriptPromise<V8AIAvailability> availability(
       ScriptState* script_state,
-      AITranslatorCreateCoreOptions* options,
+      TranslatorCreateCoreOptions* options,
       ExceptionState& exception_state);
 
-  ScriptPromise<AITranslator> create(ScriptState* script_state,
-                                     AITranslatorCreateOptions* options,
-                                     ExceptionState& exception_state);
+  ScriptPromise<Translator> create(ScriptState* script_state,
+                                   TranslatorCreateOptions* options,
+                                   ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override;
 };

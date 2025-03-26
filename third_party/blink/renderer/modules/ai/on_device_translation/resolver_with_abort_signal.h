@@ -2,8 +2,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_AI_RESOLVER_WITH_ABORT_SIGNAL_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_AI_RESOLVER_WITH_ABORT_SIGNAL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_RESOLVER_WITH_ABORT_SIGNAL_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_RESOLVER_WITH_ABORT_SIGNAL_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -18,12 +18,11 @@ namespace blink {
 // `ScriptPromiseResolver` if the AbortSignal is aborted, and `Resolve` becomes
 // a no-op.
 template <typename T>
-class AIResolverWithAbortSignal final
-    : public GarbageCollected<AIResolverWithAbortSignal<T>>,
+class ResolverWithAbortSignal final
+    : public GarbageCollected<ResolverWithAbortSignal<T>>,
       public ContextLifecycleObserver {
  public:
-  AIResolverWithAbortSignal(ScriptState* script_state,
-                            AbortSignal* abort_signal)
+  ResolverWithAbortSignal(ScriptState* script_state, AbortSignal* abort_signal)
       : script_state_(script_state),
         resolver_(MakeGarbageCollected<ScriptPromiseResolver<T>>(script_state)),
         abort_signal_(abort_signal) {
@@ -31,13 +30,12 @@ class AIResolverWithAbortSignal final
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
       abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
-          &AIResolverWithAbortSignal<T>::OnAborted, WrapWeakPersistent(this)));
+          &ResolverWithAbortSignal<T>::OnAborted, WrapWeakPersistent(this)));
     }
   }
-  ~AIResolverWithAbortSignal() override = default;
-  AIResolverWithAbortSignal(const AIResolverWithAbortSignal&) = delete;
-  AIResolverWithAbortSignal& operator=(const AIResolverWithAbortSignal&) =
-      delete;
+  ~ResolverWithAbortSignal() override = default;
+  ResolverWithAbortSignal(const ResolverWithAbortSignal&) = delete;
+  ResolverWithAbortSignal& operator=(const ResolverWithAbortSignal&) = delete;
 
   // `GarbageCollectedMixin` implementation
   void Trace(Visitor* visitor) const override {
@@ -111,4 +109,4 @@ class AIResolverWithAbortSignal final
   Member<AbortSignal> abort_signal_;
 };
 }  // namespace blink
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_AI_RESOLVER_WITH_ABORT_SIGNAL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_RESOLVER_WITH_ABORT_SIGNAL_H_

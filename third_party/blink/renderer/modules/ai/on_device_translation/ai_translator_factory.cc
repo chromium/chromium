@@ -10,16 +10,16 @@ AITranslatorFactory::AITranslatorFactory(ExecutionContext* context) {}
 
 ScriptPromise<V8AIAvailability> AITranslatorFactory::availability(
     ScriptState* script_state,
-    AITranslatorCreateCoreOptions* options,
+    TranslatorCreateCoreOptions* options,
     ExceptionState& exception_state) {
-  return AITranslator::availability(script_state, options, exception_state);
+  return Translator::availability(script_state, options, exception_state);
 }
 
-ScriptPromise<AITranslator> AITranslatorFactory::create(
+ScriptPromise<Translator> AITranslatorFactory::create(
     ScriptState* script_state,
-    AITranslatorCreateOptions* options,
+    TranslatorCreateOptions* options,
     ExceptionState& exception_state) {
-  return AITranslator::create(script_state, options, exception_state);
+  return Translator::create(script_state, options, exception_state);
 }
 
 void AITranslatorFactory::Trace(Visitor* visitor) const {

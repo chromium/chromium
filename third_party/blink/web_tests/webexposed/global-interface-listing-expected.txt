@@ -17,13 +17,6 @@ interface AICreateMonitor : EventTarget
     getter ondownloadprogress
     method constructor
     setter ondownloadprogress
-interface AILanguageDetector
-    attribute @@toStringTag
-    getter inputQuota
-    method constructor
-    method destroy
-    method detect
-    method measureInputUsage
 interface AILanguageDetectorFactory
     attribute @@toStringTag
     method availability
@@ -96,16 +89,6 @@ interface AISummarizerFactory
     method availability
     method constructor
     method create
-interface AITranslator
-    attribute @@toStringTag
-    getter inputQuota
-    getter sourceLanguage
-    getter targetLanguage
-    method constructor
-    method destroy
-    method measureInputUsage
-    method translate
-    method translateStreaming
 interface AITranslatorFactory
     attribute @@toStringTag
     method availability
@@ -5789,6 +5772,13 @@ interface KeyframeEffect : AnimationEffect
     setter composite
     setter pseudoElement
     setter target
+interface LanguageDetector
+    attribute @@toStringTag
+    getter inputQuota
+    method constructor
+    method destroy
+    method detect
+    method measureInputUsage
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element
@@ -10187,6 +10177,16 @@ interface TransitionEvent : Event
     getter propertyName
     getter pseudoElement
     method constructor
+interface Translator
+    attribute @@toStringTag
+    getter inputQuota
+    getter sourceLanguage
+    getter targetLanguage
+    method constructor
+    method destroy
+    method measureInputUsage
+    method translate
+    method translateStreaming
 interface TreeWalker
     attribute @@toStringTag
     getter currentNode

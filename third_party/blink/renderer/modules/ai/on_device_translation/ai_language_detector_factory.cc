@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
-#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/language_detector.h"
 #include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 
 namespace blink {
@@ -21,7 +21,7 @@ namespace blink {
 namespace {
 
 void RejectModelNotAvailable(
-    ScriptPromiseResolver<AILanguageDetector>* resolver) {
+    ScriptPromiseResolver<LanguageDetector>* resolver) {
   resolver->Reject("Model not available");
 }
 
@@ -65,14 +65,14 @@ base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver) {
 class LanguageDetectorCreateTask
     : public GarbageCollected<LanguageDetectorCreateTask>,
       public ExecutionContextClient,
-      public AIContextObserver<AILanguageDetector> {
+      public AIContextObserver<LanguageDetector> {
  public:
   LanguageDetectorCreateTask(
       ScriptState* script_state,
       scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      ScriptPromiseResolver<AILanguageDetector>* resolver,
+      ScriptPromiseResolver<LanguageDetector>* resolver,
       LanguageDetectionModel* model,
-      const AILanguageDetectorCreateOptions* options)
+      const LanguageDetectorCreateOptions* options)
       : ExecutionContextClient(ExecutionContext::From(script_state)),
         AIContextObserver(script_state,
                           this,
@@ -126,7 +126,7 @@ class LanguageDetectorCreateTask
                                            kNormalizedDownloadProgressMax);
       }
       resolver_->Resolve(
-          MakeGarbageCollected<AILanguageDetector>(model, task_runner_));
+          MakeGarbageCollected<LanguageDetector>(model, task_runner_));
     } else {
       switch (maybe_model.error()) {
         case DetectLanguageError::kUnavailable:
@@ -140,7 +140,7 @@ class LanguageDetectorCreateTask
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   Member<AICreateMonitor> monitor_;
-  Member<ScriptPromiseResolver<AILanguageDetector>> resolver_;
+  Member<ScriptPromiseResolver<LanguageDetector>> resolver_;
   Member<LanguageDetectionModel> language_detection_model_;
 };
 
@@ -195,9 +195,9 @@ void AILanguageDetectorFactory::OnGotStatus(
   resolver->Resolve(AIAvailabilityToV8(availability));
 }
 
-ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
+ScriptPromise<LanguageDetector> AILanguageDetectorFactory::create(
     ScriptState* script_state,
-    AILanguageDetectorCreateOptions* options,
+    LanguageDetectorCreateOptions* options,
     ExceptionState& exception_state) {
   // TODO(crbug.com/349927087): Take `options` into account.
   if (!script_state->ContextIsValid() || !GetExecutionContext()) {
@@ -213,7 +213,7 @@ ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<AILanguageDetector>>(
+      MakeGarbageCollected<ScriptPromiseResolver<LanguageDetector>>(
           script_state);
   LanguageDetectorCreateTask* create_task =
       MakeGarbageCollected<LanguageDetectorCreateTask>(

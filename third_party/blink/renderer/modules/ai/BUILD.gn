@@ -45,17 +45,17 @@ blink_modules_sources("ai") {
     "exception_helpers.h",
     "model_execution_responder.cc",
     "model_execution_responder.h",
-    "on_device_translation/ai_language_detector.cc",
-    "on_device_translation/ai_language_detector.h",
     "on_device_translation/ai_language_detector_factory.cc",
     "on_device_translation/ai_language_detector_factory.h",
-    "on_device_translation/ai_resolver_with_abort_signal.h",
-    "on_device_translation/ai_translator.cc",
-    "on_device_translation/ai_translator.h",
     "on_device_translation/ai_translator_factory.cc",
     "on_device_translation/ai_translator_factory.h",
     "on_device_translation/create_translator_client.cc",
     "on_device_translation/create_translator_client.h",
+    "on_device_translation/language_detector.cc",
+    "on_device_translation/language_detector.h",
+    "on_device_translation/resolver_with_abort_signal.h",
+    "on_device_translation/translator.cc",
+    "on_device_translation/translator.h",
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
