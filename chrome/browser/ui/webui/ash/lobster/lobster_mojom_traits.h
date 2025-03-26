@@ -36,7 +36,9 @@ struct EnumTraits<lobster::mojom::StatusCode, ash::LobsterErrorCode> {
              {ash::LobsterErrorCode::kUnsupportedLanguage,
               lobster::mojom::StatusCode::kUnsupportedLanguage},
              {ash::LobsterErrorCode::kRestrictedRegion,
-              lobster::mojom::StatusCode::kRestrictedRegion}});
+              lobster::mojom::StatusCode::kRestrictedRegion},
+             {ash::LobsterErrorCode::kContainsPeople,
+              lobster::mojom::StatusCode::kContainsPeople}});
     return lobster_status_code_map.at(error_code);
   }
 
@@ -66,6 +68,9 @@ struct EnumTraits<lobster::mojom::StatusCode, ash::LobsterErrorCode> {
         return true;
       case lobster::mojom::StatusCode::kRestrictedRegion:
         *out = ash::LobsterErrorCode::kRestrictedRegion;
+        return true;
+      case lobster::mojom::StatusCode::kContainsPeople:
+        *out = ash::LobsterErrorCode::kContainsPeople;
         return true;
       case lobster::mojom::StatusCode::kOk:
         LOG(ERROR) << "Can not convert Lobster mojom OK status code into "

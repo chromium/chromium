@@ -67,6 +67,7 @@ enum class ASH_PUBLIC_EXPORT LobsterErrorCode {
   kBackendFailure,
   kUnsupportedLanguage,
   kRestrictedRegion,
+  kContainsPeople,
 };
 
 }  // namespace ash

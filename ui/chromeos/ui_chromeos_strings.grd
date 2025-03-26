@@ -1322,6 +1322,11 @@
         Urdu
       </message>
 
+      <!-- Lobster Strings -->
+      <message name="IDS_CHROMEOS_LOBSTER_CONTAINS_PERSON_ERROR_RESPONSE" desc="The error message displayed when Lobster image candidates contain people and are filtered out.">
+        For now, results with people won't be shown. Try another prompt.
+      </message>
+
       <!-- Network error strings -->
       <message name="IDS_CHROMEOS_NETWORK_ERROR_UNKNOWN" desc="Network error details in notifications: UNKNOWN">
         Unknown network error
