@@ -34,6 +34,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 
+import java.util.Collections;
 import java.util.concurrent.Callable;
 
 /** Test suite for AwContentsClientCallbackHelper. */
@@ -200,9 +201,14 @@ public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
         OnReceivedErrorHelper receivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
 
         int onReceivedErrorCount = receivedErrorHelper.getCallCount();
-        AwWebResourceRequest request = new AwWebResourceRequest();
-        request.url = TEST_URL;
-        request.isOutermostMainFrame = true;
+        AwWebResourceRequest request =
+                new AwWebResourceRequest(
+                        TEST_URL,
+                        /* isOutermostMainFrame= */ true,
+                        /* hasUserGesture= */ false,
+                        /* isRedirect= */ false,
+                        "GET",
+                        Collections.emptyMap());
         AwContentsClient.AwWebResourceError error = new AwContentsClient.AwWebResourceError();
         error.errorCode = ERROR_CODE;
         error.description = ERROR_MESSAGE;

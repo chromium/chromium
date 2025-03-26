@@ -15,6 +15,7 @@
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/devtools_instrumentation.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_callback.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/containers/flat_set.h"
@@ -444,55 +445,38 @@ AwContentsIoThreadClient::CacheMode AwContentsIoThreadClient::GetCacheMode()
       Java_AwContentsIoThreadClient_getCacheMode(env, java_object_));
 }
 
-using CallbackMap =
-    std::map<jint,
-             AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback>;
 
 namespace {
 
-CallbackMap* GetCallbacks() {
-  static CallbackMap instance;
-  return &instance;
-}
-
-jint GetNextRequestId() {
-  static jint ctr = 1;
-  CHECK(ctr < std::numeric_limits<int32_t>::max());
-  return ctr++;
-}
-
-base::Lock* GetLock() {
-  static base::Lock instance;
-  return &instance;
-}
-
-std::optional<AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback>
-LookupAndRemove(jint request_id) {
-  base::AutoLock lock(*GetLock());
-  CallbackMap* callbacks = GetCallbacks();
-  auto callback_iter = callbacks->find(request_id);
-  if (callback_iter != callbacks->end()) {
-    AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback =
-        std::move(callback_iter->second);
-    DCHECK(callback);
-    callbacks->erase(callback_iter);
-    return callback;
-  }
-
-  return std::nullopt;
-}
-
-jint AddCallback(
-    AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback) {
-  DCHECK(callback);
-  base::AutoLock lock(*GetLock());
-  jint request_id = GetNextRequestId();
-  GetCallbacks()->insert(std::make_pair(request_id, std::move(callback)));
-  return request_id;
-}
-
 AwContentsIoThreadClient::InterceptResponseData NoInterceptRequest() {
   return AwContentsIoThreadClient::InterceptResponseData();
+}
+
+void OnShouldInterceptCallback(
+    AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback,
+    AwWebResourceInterceptResponse java_response) {
+  JNIEnv* env = AttachCurrentThread();
+  bool has_response = java_response.HasResponse(env);
+  UMA_HISTOGRAM_BOOLEAN(
+      "Android.WebView.ShouldInterceptRequest.IsRequestIntercepted",
+      has_response);
+  AwContentsIoThreadClient::InterceptResponseData response_data;
+  // Grab the input stream now as an optimization to avoid thread hopping later.
+  if (base::FeatureList::IsEnabled(
+          embedder_support::features::kInputStreamOptimizations) &&
+      has_response) {
+    auto response = java_response.GetResponse(env);
+    if (response->HasInputStream(env)) {
+      // Only transfer the input stream if it exists since
+      // GetInputStream() can only be called once, even for null input
+      // streams.
+      response_data.input_stream = response->GetInputStream(env);
+    }
+  }
+  response_data.response =
+      std::make_unique<AwWebResourceInterceptResponse>(java_response);
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(response_data)));
 }
 
 void StartShouldInterceptRequest(
@@ -516,64 +500,16 @@ void StartShouldInterceptRequest(
     return;
   }
 
-  jint request_id = AddCallback(std::move(callback));
-  AwWebResourceRequest::AwJavaWebResourceRequest java_web_resource_request;
-  AwWebResourceRequest::ConvertToJava(env, request, &java_web_resource_request);
-
   devtools_instrumentation::ScopedEmbedderCallbackTask embedder_callback(
       "shouldInterceptRequest");
   Java_ShouldInterceptRequestMediator_shouldInterceptRequestFromNative(
-      env, obj, java_web_resource_request.jurl, request.is_outermost_main_frame,
-      request.has_user_gesture, java_web_resource_request.jmethod,
-      java_web_resource_request.jheader_names,
-      java_web_resource_request.jheader_values, request_id);
+      env, obj, request,
+      base::android::ToJniCallback(
+          env,
+          base::BindOnce(&OnShouldInterceptCallback, std::move(callback))));
 }
 
 }  // namespace
-
-// static
-// Returns status to indicate whether callback was successfully
-// fetched from the map.
-jboolean JNI_AwContentsIoThreadClient_FinishShouldInterceptRequest(
-    JNIEnv*,
-    jint request_id,
-    const base::android::JavaParamRef<jobject>& java_ref) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  std::optional<
-      AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback>
-      callback = LookupAndRemove(request_id);
-  if (!callback) {
-    return false;
-  }
-
-  DCHECK(java_ref)
-      << "shouldInterceptRequest from Java should return non-null value";
-  auto web_resource_intercept_response =
-      std::make_unique<AwWebResourceInterceptResponse>(java_ref);
-
-  bool has_response = web_resource_intercept_response->HasResponse(env);
-  UMA_HISTOGRAM_BOOLEAN(
-      "Android.WebView.ShouldInterceptRequest.IsRequestIntercepted",
-      has_response);
-  AwContentsIoThreadClient::InterceptResponseData response_data;
-  // Grab the input stream now as an optimization to avoid thread hopping later.
-  if (base::FeatureList::IsEnabled(
-          embedder_support::features::kInputStreamOptimizations) &&
-      has_response) {
-    auto response = web_resource_intercept_response->GetResponse(env);
-    if (response->HasInputStream(env)) {
-      // Only transfer the input stream if it exists since
-      // GetInputStream() can only be called once, even for null input
-      // streams.
-      response_data.input_stream = response->GetInputStream(env);
-    }
-  }
-  response_data.response = std::move(web_resource_intercept_response);
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(*callback), std::move(response_data)));
-  return true;
-}
 
 AwContentsIoThreadClient::InterceptResponseData::InterceptResponseData() =
     default;
@@ -590,21 +526,22 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
     ShouldInterceptRequestResponseCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> url = ConvertUTF8ToJavaString(env, request.url);
   ScopedJavaLocalRef<jobject> mediator =
       Java_AwContentsIoThreadClient_getShouldInterceptRequestMediator(
-          env, java_object_, url);
+          env, java_object_, request.url);
 
   UMA_HISTOGRAM_BOOLEAN(
       "Android.WebView.ShouldInterceptRequest.IsRequestSkipped", !mediator);
 
   if (mediator) {
+    // The mediator is kept alive on the Java side.
     sequenced_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&StartShouldInterceptRequest,
                                   std::move(request), std::move(callback),
                                   JavaObjectWeakGlobalRef(env, mediator)));
   } else {
-    Java_AwContentsIoThreadClient_onLoadResource(env, java_object_, url);
+    Java_AwContentsIoThreadClient_onLoadResource(env, java_object_,
+                                                 request.url);
     // We are already on the IOThread. Just call the callback directly here.
     std::move(callback).Run(NoInterceptRequest());
   }
