@@ -31,6 +31,7 @@ dictionary AIRewriterCreateOptions : AIRewriterCreateCoreOptions {
 ]
 interface AIRewriterFactory {
   [
+    MeasureAs=Rewriter_Availability,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -38,7 +39,7 @@ interface AIRewriterFactory {
     optional AIRewriterCreateCoreOptions options = {}
   );
   [
-    Measure,
+    MeasureAs=Rewriter_Create,
     CallWith=ScriptState,
     RaisesException
   ]

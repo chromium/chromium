@@ -16,7 +16,7 @@ dictionary AISummarizerSummarizeOptions {
 ]
 interface AISummarizer {
   [
-    Measure,
+    MeasureAs=Summarizer_Summarize,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -26,7 +26,7 @@ interface AISummarizer {
   );
 
   [
-    Measure,
+    MeasureAs=Summarizer_SummarizeStreaming,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -36,7 +36,7 @@ interface AISummarizer {
   );
 
   [
-    Measure,
+    MeasureAs=Summarizer_MeasureInputUsage,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -46,26 +46,26 @@ interface AISummarizer {
   );
 
   [
-    Measure,
+    MeasureAs=Summarizer_Destroy,
     CallWith=ScriptState,
     RaisesException
   ]
   void destroy();
 
-  [Measure]
+  [MeasureAs=Summarizer_SharedContext]
   readonly attribute DOMString sharedContext;
-  [Measure]
+  [MeasureAs=Summarizer_Type]
   readonly attribute AISummarizerType type;
-  [Measure]
+  [MeasureAs=Summarizer_Format]
   readonly attribute AISummarizerFormat format;
-  [Measure]
+  [MeasureAs=Summarizer_Length]
   readonly attribute AISummarizerLength length;
-  [Measure]
+  [MeasureAs=Summarizer_ExpectedInputLanguages]
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
-  [Measure]
+  [MeasureAs=Summarizer_ExpectedContextLanguages]
   readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
-  [Measure]
+  [MeasureAs=Summarizer_OutputLanguage]
   readonly attribute DOMString? outputLanguage;
-  [Measure]
+  [MeasureAs=Summarizer_InputQuota]
   readonly attribute unrestricted double inputQuota;
 };

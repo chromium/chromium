@@ -31,14 +31,14 @@ dictionary AISummarizerCreateOptions : AISummarizerCreateCoreOptions {
 ]
 interface AISummarizerFactory {
   [
-    Measure,
+    MeasureAs=Summarizer_Create,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AISummarizer> create(optional AISummarizerCreateOptions options = {});
 
   [
-    Measure,
+    MeasureAs=Summarizer_Availability,
     CallWith=ScriptState,
     RaisesException
   ]

@@ -5620,11 +5620,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5048" label="OBSOLETE_V8Translation_CanDetect_Method"/>
   <int value="5049" label="OBSOLETE_V8Translation_CreateDetector_Method"/>
   <int value="5050" label="V8AI_Summarizer_AttributeGetter"/>
-  <int value="5051" label="V8AISummarizer_Summarize_Method"/>
-  <int value="5052" label="V8AISummarizer_SummarizeStreaming_Method"/>
-  <int value="5053" label="V8AISummarizer_Destroy_Method"/>
-  <int value="5054" label="V8AISummarizerFactory_Capabilities_Method"/>
-  <int value="5055" label="V8AISummarizerFactory_Create_Method"/>
+  <int value="5051" label="OBSOLETE_V8AISummarizer_Summarize_Method"/>
+  <int value="5052" label="OBSOLETE_V8AISummarizer_SummarizeStreaming_Method"/>
+  <int value="5053" label="OBSOLETE_V8AISummarizer_Destroy_Method"/>
+  <int value="5054" label="OBSOLETE_V8AISummarizerFactory_Capabilities_Method"/>
+  <int value="5055" label="OBSOLETE_V8AISummarizerFactory_Create_Method"/>
   <int value="5056" label="SharedStorageWriteFromBidderGenerateBid"/>
   <int value="5057" label="SharedStorageWriteFromBidderReportWin"/>
   <int value="5058" label="SharedStorageWriteFromSellerScoreAd"/>
@@ -5632,24 +5632,25 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5060" label="OBSOLETE_CSSInsetAreaProperty"/>
   <int value="5061" label="StructuredCloneMethod"/>
   <int value="5062" label="V8AI_Writer_AttributeGetter"/>
-  <int value="5063" label="V8AIWriterFactory_Create_Method"/>
-  <int value="5064" label="V8AIWriter_Write_Method"/>
-  <int value="5065" label="V8AIWriter_WriteStreaming_Method"/>
-  <int value="5066" label="V8AIWriter_Destroy_Method"/>
+  <int value="5063" label="OBSOLETE_V8AIWriterFactory_Create_Method"/>
+  <int value="5064" label="OBSOLETE_V8AIWriter_Write_Method"/>
+  <int value="5065" label="OBSOLETE_V8AIWriter_WriteStreaming_Method"/>
+  <int value="5066" label="OBSOLETE_V8AIWriter_Destroy_Method"/>
   <int value="5067" label="V8AI_Rewriter_AttributeGetter"/>
-  <int value="5068" label="V8AIRewriterFactory_Create_Method"/>
-  <int value="5069" label="V8AIRewriter_Rewrite_Method"/>
-  <int value="5070" label="V8AIRewriter_RewriteStreaming_Method"/>
-  <int value="5071" label="V8AIRewriter_Destroy_Method"/>
+  <int value="5068" label="OBSOLETE_V8AIRewriterFactory_Create_Method"/>
+  <int value="5069" label="OBSOLETE_V8AIRewriter_Rewrite_Method"/>
+  <int value="5070" label="OBSOLETE_V8AIRewriter_RewriteStreaming_Method"/>
+  <int value="5071" label="OBSOLETE_V8AIRewriter_Destroy_Method"/>
   <int value="5072" label="FencedFrameCanLoadOpaqueURL"/>
   <int value="5073"
       label="V8Performance_Memory_AttributeGetter_NotLockedToSite"/>
   <int value="5074" label="PartitionedPopin_OpenAttempt"/>
   <int value="5075" label="PartitionedPopin_Opened"/>
-  <int value="5076" label="V8AISummarizer_SharedContext_AttributeGetter"/>
-  <int value="5077" label="V8AISummarizer_Type_AttributeGetter"/>
-  <int value="5078" label="V8AISummarizer_Format_AttributeGetter"/>
-  <int value="5079" label="V8AISummarizer_Length_AttributeGetter"/>
+  <int value="5076"
+      label="OBSOLETE_V8AISummarizer_SharedContext_AttributeGetter"/>
+  <int value="5077" label="OBSOLETE_V8AISummarizer_Type_AttributeGetter"/>
+  <int value="5078" label="OBSOLETE_V8AISummarizer_Format_AttributeGetter"/>
+  <int value="5079" label="OBSOLETE_V8AISummarizer_Length_AttributeGetter"/>
   <int value="5080"
       label="OBSOLETE_V8AIAssistantCapabilities_Available_AttributeGetter"/>
   <int value="5081"
@@ -5723,26 +5724,28 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5136" label="CssValueWritingModeVerticalLr"/>
   <int value="5137" label="CssValueWritingModeSidewaysRl"/>
   <int value="5138" label="CssValueWritingModeSidewaysLr"/>
-  <int value="5139" label="V8AILanguageModel_TopK_AttributeGetter"/>
-  <int value="5140" label="V8AILanguageModel_Temperature_AttributeGetter"/>
-  <int value="5141" label="V8AILanguageModel_Clone_Method"/>
-  <int value="5142" label="V8AILanguageModel_Destroy_Method"/>
-  <int value="5143" label="V8AILanguageModel_Prompt_Method"/>
-  <int value="5144" label="V8AILanguageModel_PromptStreaming_Method"/>
+  <int value="5139" label="OBSOLETE_V8AILanguageModel_TopK_AttributeGetter"/>
+  <int value="5140"
+      label="OBSOLETE_V8AILanguageModel_Temperature_AttributeGetter"/>
+  <int value="5141" label="OBSOLETE_V8AILanguageModel_Clone_Method"/>
+  <int value="5142" label="OBSOLETE_V8AILanguageModel_Destroy_Method"/>
+  <int value="5143" label="OBSOLETE_V8AILanguageModel_Prompt_Method"/>
+  <int value="5144" label="OBSOLETE_V8AILanguageModel_PromptStreaming_Method"/>
   <int value="5145"
       label="OBSOLETE_V8AILanguageModel_CountPromptTokens_Method"/>
   <int value="5146"
-      label="V8AILanguageModelCapabilities_LanguageAvailable_Method"/>
+      label="OBSOLETE_V8AILanguageModelCapabilities_LanguageAvailable_Method"/>
   <int value="5147"
-      label="V8AILanguageModelCapabilities_Available_AttributeGetter"/>
+      label="OBSOLETE_V8AILanguageModelCapabilities_Available_AttributeGetter"/>
   <int value="5148"
-      label="V8AILanguageModelCapabilities_DefaultTopK_AttributeGetter"/>
+      label="OBSOLETE_V8AILanguageModelCapabilities_DefaultTopK_AttributeGetter"/>
   <int value="5149"
-      label="V8AILanguageModelCapabilities_MaxTopK_AttributeGetter"/>
+      label="OBSOLETE_V8AILanguageModelCapabilities_MaxTopK_AttributeGetter"/>
   <int value="5150"
-      label="V8AILanguageModelCapabilities_DefaultTemperature_AttributeGetter"/>
-  <int value="5151" label="V8AILanguageModelFactory_Capabilities_Method"/>
-  <int value="5152" label="V8AILanguageModelFactory_Create_Method"/>
+      label="OBSOLETE_V8AILanguageModelCapabilities_DefaultTemperature_AttributeGetter"/>
+  <int value="5151"
+      label="OBSOLETE_V8AILanguageModelFactory_Capabilities_Method"/>
+  <int value="5152" label="OBSOLETE_V8AILanguageModelFactory_Create_Method"/>
   <int value="5153"
       label="OBSOLETE_V8AILanguageModel_MaxTokens_AttributeGetter"/>
   <int value="5154"
@@ -5845,7 +5848,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5246" label="MixedContentOnLocalhost"/>
   <int value="5247" label="MixedFrameEmbeddedByLocalhost"/>
   <int value="5248"
-      label="V8AILanguageModelCapabilities_MaxTemperature_AttributeGetter"/>
+      label="OBSOLETE_V8AILanguageModelCapabilities_MaxTemperature_AttributeGetter"/>
   <int value="5249" label="AboutSrcdocToBeControlledByServiceWorker"/>
   <int value="5250"
       label="DisplayNoneComputedInContentVisibilityAutoLockedSubtree"/>
@@ -5862,23 +5865,26 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5259" label="FetchLaterInvokeStatePending"/>
   <int value="5260" label="FetchLaterInvokeStateSent"/>
   <int value="5261" label="CSPWithUnsafeHashes"/>
-  <int value="5262" label="V8AIRewriter_SharedContext_AttributeGetter"/>
-  <int value="5263" label="V8AIRewriter_Tone_AttributeGetter"/>
-  <int value="5264" label="V8AIRewriter_Format_AttributeGetter"/>
-  <int value="5265" label="V8AIRewriter_Length_AttributeGetter"/>
+  <int value="5262"
+      label="OBSOLETE_V8AIRewriter_SharedContext_AttributeGetter"/>
+  <int value="5263" label="OBSOLETE_V8AIRewriter_Tone_AttributeGetter"/>
+  <int value="5264" label="OBSOLETE_V8AIRewriter_Format_AttributeGetter"/>
+  <int value="5265" label="OBSOLETE_V8AIRewriter_Length_AttributeGetter"/>
   <int value="5266"
-      label="V8AIRewriter_ExpectedInputLanguages_AttributeGetter"/>
+      label="OBSOLETE_V8AIRewriter_ExpectedInputLanguages_AttributeGetter"/>
   <int value="5267"
-      label="V8AIRewriter_ExpectedContextLanguages_AttributeGetter"/>
-  <int value="5268" label="V8AIRewriter_OutputLanguage_AttributeGetter"/>
-  <int value="5269" label="V8AIWriter_SharedContext_AttributeGetter"/>
-  <int value="5270" label="V8AIWriter_Tone_AttributeGetter"/>
-  <int value="5271" label="V8AIWriter_Format_AttributeGetter"/>
-  <int value="5272" label="V8AIWriter_Length_AttributeGetter"/>
-  <int value="5273" label="V8AIWriter_ExpectedInputLanguages_AttributeGetter"/>
+      label="OBSOLETE_V8AIRewriter_ExpectedContextLanguages_AttributeGetter"/>
+  <int value="5268"
+      label="OBSOLETE_V8AIRewriter_OutputLanguage_AttributeGetter"/>
+  <int value="5269" label="OBSOLETE_V8AIWriter_SharedContext_AttributeGetter"/>
+  <int value="5270" label="OBSOLETE_V8AIWriter_Tone_AttributeGetter"/>
+  <int value="5271" label="OBSOLETE_V8AIWriter_Format_AttributeGetter"/>
+  <int value="5272" label="OBSOLETE_V8AIWriter_Length_AttributeGetter"/>
+  <int value="5273"
+      label="OBSOLETE_V8AIWriter_ExpectedInputLanguages_AttributeGetter"/>
   <int value="5274"
-      label="V8AIWriter_ExpectedContextLanguages_AttributeGetter"/>
-  <int value="5275" label="V8AIWriter_OutputLanguage_AttributeGetter"/>
+      label="OBSOLETE_V8AIWriter_ExpectedContextLanguages_AttributeGetter"/>
+  <int value="5275" label="OBSOLETE_V8AIWriter_OutputLanguage_AttributeGetter"/>
   <int value="5276" label="GridAutoFlowColumnDense"/>
   <int value="5277" label="GridAutoFlowRowDense"/>
   <int value="5278" label="SchedulerPostTaskAbortBeforeRunning"/>
@@ -5905,14 +5911,16 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5299" label="HTMLImageElementNaturalSizeDiffersForSvgImage"/>
   <int value="5300" label="WindowProxyIndexedGetter"/>
   <int value="5301" label="WindowProxyNamedGetter"/>
-  <int value="5302" label="V8AILanguageModelFactory_Availability_Method"/>
-  <int value="5303" label="V8AILanguageModelFactory_Params_Method"/>
-  <int value="5304" label="V8AISummarizerFactory_Availability_Method"/>
+  <int value="5302"
+      label="OBSOLETE_V8AILanguageModelFactory_Availability_Method"/>
+  <int value="5303" label="OBSOLETE_V8AILanguageModelFactory_Params_Method"/>
+  <int value="5304" label="OBSOLETE_V8AISummarizerFactory_Availability_Method"/>
   <int value="5305"
-      label="V8AISummarizer_ExpectedInputLanguages_AttributeGetter"/>
+      label="OBSOLETE_V8AISummarizer_ExpectedInputLanguages_AttributeGetter"/>
   <int value="5306"
-      label="V8AISummarizer_ExpectedContextLanguages_AttributeGetter"/>
-  <int value="5307" label="V8AISummarizer_OutputLanguage_AttributeGetter"/>
+      label="OBSOLETE_V8AISummarizer_ExpectedContextLanguages_AttributeGetter"/>
+  <int value="5307"
+      label="OBSOLETE_V8AISummarizer_OutputLanguage_AttributeGetter"/>
   <int value="5308" label="NestedScrollMarkers"/>
   <int value="5309" label="V8GeolocationCoordinates_Latitude_AttributeGetter"/>
   <int value="5310" label="V8GeolocationCoordinates_Longitude_AttributeGetter"/>
@@ -5924,7 +5932,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5315" label="V8GeolocationCoordinates_Speed_AttributeGetter"/>
   <int value="5316" label="CSSEnvironmentVariable_SafeAreaMaxInsetBottom"/>
   <int value="5317"
-      label="V8AILanguageModel_ExpectedInputLanguages_AttributeGetter"/>
+      label="OBSOLETE_V8AILanguageModel_ExpectedInputLanguages_AttributeGetter"/>
   <int value="5318" label="V8AnimationTrigger_Constructor"/>
   <int value="5319"
       label="PrivateNetworkAccessInsecureResourceNotKnownPrivate"/>
@@ -5976,12 +5984,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5363" label="CrossOriginOwnerInterestGroupSubframeCheckFailed"/>
   <int value="5364" label="PreferredAudioOutputDevices"/>
   <int value="5365" label="SharedStorageAPI_SelectURL_Method_CalledWithOneURL"/>
-  <int value="5366" label="V8AIRewriter_MeasureInputUsage_Method"/>
-  <int value="5367" label="V8AIRewriter_InputQuota_AttributeGetter"/>
-  <int value="5368" label="V8AISummarizer_MeasureInputUsage_Method"/>
-  <int value="5369" label="V8AISummarizer_InputQuota_AttributeGetter"/>
-  <int value="5370" label="V8AIWriter_MeasureInputUsage_Method"/>
-  <int value="5371" label="V8AIWriter_InputQuota_AttributeGetter"/>
+  <int value="5366" label="OBSOLETE_V8AIRewriter_MeasureInputUsage_Method"/>
+  <int value="5367" label="OBSOLETE_V8AIRewriter_InputQuota_AttributeGetter"/>
+  <int value="5368" label="OBSOLETE_V8AISummarizer_MeasureInputUsage_Method"/>
+  <int value="5369" label="OBSOLETE_V8AISummarizer_InputQuota_AttributeGetter"/>
+  <int value="5370" label="OBSOLETE_V8AIWriter_MeasureInputUsage_Method"/>
+  <int value="5371" label="OBSOLETE_V8AIWriter_InputQuota_AttributeGetter"/>
   <int value="5372" label="SpeculationRulesTargetHintBlank"/>
   <int value="5373" label="InterestTarget"/>
   <int value="5374" label="TextAutoSizingDisabledOnFlexbox"/>
@@ -5996,9 +6004,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5383" label="AriaNotify"/>
   <int value="5384" label="LanguageDetector_MeasureInputUsage"/>
   <int value="5385" label="LanguageDetector_InputQuota"/>
-  <int value="5386" label="V8AILanguageModel_InputUsage_AttributeGetter"/>
-  <int value="5387" label="V8AILanguageModel_InputQuota_AttributeGetter"/>
-  <int value="5388" label="V8AILanguageModel_MeasureInputUsage_Method"/>
+  <int value="5386"
+      label="OBSOLETE_V8AILanguageModel_InputUsage_AttributeGetter"/>
+  <int value="5387"
+      label="OBSOLETE_V8AILanguageModel_InputQuota_AttributeGetter"/>
+  <int value="5388"
+      label="OBSOLETE_V8AILanguageModel_MeasureInputUsage_Method"/>
   <int value="5389" label="CredentialsGetImmediateMediationWithWebAuthnOnly"/>
   <int value="5390"
       label="CredentialsGetImmediateMediationWithWebAuthnAndPasswords"/>
@@ -6017,6 +6028,60 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5402" label="LanguageDetector_Availability"/>
   <int value="5403" label="LanguageDetector_Detect"/>
   <int value="5404" label="LanguageDetector_Destroy"/>
+  <int value="5405" label="LanguageModel_Create"/>
+  <int value="5406" label="LanguageModel_Availability"/>
+  <int value="5407" label="LanguageModel_Prompt"/>
+  <int value="5408" label="LanguageModel_PromptStreaming"/>
+  <int value="5409" label="LanguageModel_Destroy"/>
+  <int value="5410" label="LanguageModel_Clone"/>
+  <int value="5411" label="LanguageModel_MeasureInputUsage"/>
+  <int value="5412" label="LanguageModel_InputUsage"/>
+  <int value="5413" label="LanguageModel_InputQuota"/>
+  <int value="5414" label="LanguageModel_Params"/>
+  <int value="5415" label="LanguageModel_Temperature"/>
+  <int value="5416" label="LanguageModel_TopK"/>
+  <int value="5417" label="Writer_Create"/>
+  <int value="5418" label="Writer_Availability"/>
+  <int value="5419" label="Writer_Write"/>
+  <int value="5420" label="Writer_WriteStreaming"/>
+  <int value="5421" label="Writer_Destroy"/>
+  <int value="5422" label="Writer_MeasureInputUsage"/>
+  <int value="5423" label="Writer_ExpectedContextLanguages"/>
+  <int value="5424" label="Writer_ExpectedInputLanguages"/>
+  <int value="5425" label="Writer_Format"/>
+  <int value="5426" label="Writer_InputQuota"/>
+  <int value="5427" label="Writer_Length"/>
+  <int value="5428" label="Writer_OutputLanguage"/>
+  <int value="5429" label="Writer_SharedContext"/>
+  <int value="5430" label="Writer_Tone"/>
+  <int value="5431" label="Rewriter_Create"/>
+  <int value="5432" label="Rewriter_Availability"/>
+  <int value="5433" label="Rewriter_Rewrite"/>
+  <int value="5434" label="Rewriter_RewriteStreaming"/>
+  <int value="5435" label="Rewriter_Destroy"/>
+  <int value="5436" label="Rewriter_MeasureInputUsage"/>
+  <int value="5437" label="Rewriter_ExpectedContextLanguages"/>
+  <int value="5438" label="Rewriter_ExpectedInputLanguages"/>
+  <int value="5439" label="Rewriter_Format"/>
+  <int value="5440" label="Rewriter_InputQuota"/>
+  <int value="5441" label="Rewriter_Length"/>
+  <int value="5442" label="Rewriter_OutputLanguage"/>
+  <int value="5443" label="Rewriter_SharedContext"/>
+  <int value="5444" label="Rewriter_Tone"/>
+  <int value="5445" label="Summarizer_Create"/>
+  <int value="5446" label="Summarizer_Availability"/>
+  <int value="5447" label="Summarizer_Summarize"/>
+  <int value="5448" label="Summarizer_SummarizeStreaming"/>
+  <int value="5449" label="Summarizer_Destroy"/>
+  <int value="5450" label="Summarizer_MeasureInputUsage"/>
+  <int value="5451" label="Summarizer_ExpectedContextLanguages"/>
+  <int value="5452" label="Summarizer_ExpectedInputLanguages"/>
+  <int value="5453" label="Summarizer_Format"/>
+  <int value="5454" label="Summarizer_InputQuota"/>
+  <int value="5455" label="Summarizer_Length"/>
+  <int value="5456" label="Summarizer_OutputLanguage"/>
+  <int value="5457" label="Summarizer_SharedContext"/>
+  <int value="5458" label="Summarizer_Type"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -17,7 +17,7 @@ dictionary AIRewriterRewriteOptions {
 ]
 interface AIRewriter {
   [
-    Measure,
+    MeasureAs=Rewriter_Rewrite,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -27,7 +27,7 @@ interface AIRewriter {
   );
 
   [
-    Measure,
+    MeasureAs=Rewriter_RewriteStreaming,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -37,7 +37,7 @@ interface AIRewriter {
   );
 
   [
-    Measure,
+    MeasureAs=Rewriter_MeasureInputUsage,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -47,26 +47,26 @@ interface AIRewriter {
   );
 
   [
-    Measure,
+    MeasureAs=Rewriter_Destroy,
     CallWith=ScriptState,
     RaisesException
   ]
   void destroy();
 
-  [Measure]
+  [MeasureAs=Rewriter_SharedContext]
   readonly attribute DOMString sharedContext;
-  [Measure]
+  [MeasureAs=Rewriter_Tone]
   readonly attribute AIRewriterTone tone;
-  [Measure]
+  [MeasureAs=Rewriter_Format]
   readonly attribute AIRewriterFormat format;
-  [Measure]
+  [MeasureAs=Rewriter_Length]
   readonly attribute AIRewriterLength length;
-  [Measure]
+  [MeasureAs=Rewriter_ExpectedInputLanguages]
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
-  [Measure]
+  [MeasureAs=Rewriter_ExpectedContextLanguages]
   readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
-  [Measure]
+  [MeasureAs=Rewriter_OutputLanguage]
   readonly attribute DOMString? outputLanguage;
-  [Measure]
+  [MeasureAs=Rewriter_InputQuota]
   readonly attribute unrestricted double inputQuota;
 };

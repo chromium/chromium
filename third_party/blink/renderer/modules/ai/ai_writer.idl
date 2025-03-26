@@ -17,7 +17,7 @@ dictionary AIWriterWriteOptions {
 ]
 interface AIWriter {
   [
-    Measure,
+    MeasureAs=Writer_Write,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -26,7 +26,7 @@ interface AIWriter {
     optional AIWriterWriteOptions options = {});
 
   [
-    Measure,
+    MeasureAs=Writer_WriteStreaming,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -36,7 +36,7 @@ interface AIWriter {
   );
 
   [
-    Measure,
+    MeasureAs=Writer_MeasureInputUsage,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -46,26 +46,26 @@ interface AIWriter {
   );
 
   [
-    Measure,
+    MeasureAs=Writer_Destroy,
     CallWith=ScriptState,
     RaisesException
   ]
   void destroy();
 
-  [Measure]
+  [MeasureAs=Writer_SharedContext]
   readonly attribute DOMString sharedContext;
-  [Measure]
+  [MeasureAs=Writer_Tone]
   readonly attribute AIWriterTone tone;
-  [Measure]
+  [MeasureAs=Writer_Format]
   readonly attribute AIWriterFormat format;
-  [Measure]
+  [MeasureAs=Writer_Length]
   readonly attribute AIWriterLength length;
-  [Measure]
+  [MeasureAs=Writer_ExpectedInputLanguages]
   readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
-  [Measure]
+  [MeasureAs=Writer_ExpectedContextLanguages]
   readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
-  [Measure]
+  [MeasureAs=Writer_OutputLanguage]
   readonly attribute DOMString? outputLanguage;
-  [Measure]
+  [MeasureAs=Writer_InputQuota]
   readonly attribute unrestricted double inputQuota;
 };

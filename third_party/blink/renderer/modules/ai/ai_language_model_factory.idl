@@ -11,7 +11,7 @@
 ]
 interface AILanguageModelFactory {
   [
-    Measure,
+    MeasureAs=LanguageModel_Create,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -19,7 +19,7 @@ interface AILanguageModelFactory {
     optional AILanguageModelCreateOptions options = {}
   );
   [
-    Measure,
+    MeasureAs=LanguageModel_Availability,
     CallWith=ScriptState,
     RaisesException
   ]
@@ -27,7 +27,7 @@ interface AILanguageModelFactory {
     optional AILanguageModelCreateCoreOptions options = {}
   );
   [
-    Measure,
+    MeasureAs=LanguageModel_Params,
     CallWith=ScriptState,
     RaisesException
   ]
