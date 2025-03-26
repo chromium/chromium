@@ -15,51 +15,61 @@ Events: [
     [0] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : clear
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
         }
-        type : headerClear
+        scope : header
     }
     [1] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : true
             key : a
             value : b
         }
-        type : headerSet
+        scope : header
     }
     [2] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : set
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             ignoreIfPresent : false
             key : hello
             value : world
         }
-        type : headerSet
+        scope : header
     }
     [3] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : append
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             key : hello
             value : friend
         }
-        type : headerAppend
+        scope : header
     }
     [4] : {
         accessTime : <number>
         mainFrameId : <string>
+        method : delete
         ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
         params : {
             key : a
         }
-        type : headerDelete
+        scope : header
     }
 ]
 
