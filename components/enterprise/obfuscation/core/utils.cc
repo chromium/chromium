@@ -38,12 +38,13 @@ HeaderData::~HeaderData() = default;
 
 namespace {
 
-// Generates a random 256 bit AES key.
-base::span<const uint8_t> GetSymmetricKey() {
-  static const base::NoDestructor<std::vector<uint8_t>> kSymmetricKey(
-      crypto::RandBytesAsVector(kKeySize));
+// Generates a random base key, which will be combined with a file-specific salt
+// to generate a file obfuscation key. The base key is kept for the lifetime of
+// the browser process, so after a restart files can no longer be deobfuscated.
+base::span<const uint8_t, kKeySize> GetBaseKey() {
+  static const auto key = crypto::RandBytesAsArray<kKeySize>();
 
-  return base::span(*kSymmetricKey);
+  return key;
 }
 
 // Computes nonce. The structure is: noncePrefix | counter (4 bytes) | b (1
@@ -95,8 +96,8 @@ base::expected<std::vector<uint8_t>, Error> CreateHeader(
   header.insert(header.end(), salt.begin(), salt.end());
 
   // Generate file-specific key.
-  *derived_key = crypto::HkdfSha256<kKeySize>(GetSymmetricKey(), salt,
-                                              base::span<uint8_t>());
+  *derived_key =
+      crypto::HkdfSha256<kKeySize>(GetBaseKey(), salt, base::span<uint8_t>());
 
   // Generate nonce prefix.
   *nonce_prefix = crypto::RandBytesAsVector(kNoncePrefixSize);
@@ -176,7 +177,7 @@ base::expected<HeaderData, Error> GetHeaderData(
 
   // Generate file-specific key.
   std::array<uint8_t, kKeySize> derived_key =
-      crypto::HkdfSha256<kKeySize>(GetSymmetricKey(), salt, {});
+      crypto::HkdfSha256<kKeySize>(GetBaseKey(), salt, {});
 
   return base::ok(
       HeaderData(std::move(derived_key), base::ToVector(nonce_prefix)));
