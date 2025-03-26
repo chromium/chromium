@@ -4726,6 +4726,12 @@ const char kNavBarColorMatchesTabBackgroundDescription[] =
     "Matches the OS navigation bar color to the background color of the "
     "active tab.";
 
+const char kNavigationCaptureRefactorAndroidName[] =
+    "Navigation Capture refactoring for Chrome on Android";
+const char kNavigationCaptureRefactorAndroidDescription[] =
+    "Enables opening links from Chrome in an installed PWA."
+    "Currently under refactoring.";
+
 const char kNotificationOneTapUnsubscribeName[] =
     "Notification one-tap unsubscribe";
 const char kNotificationOneTapUnsubscribeDescription[] =

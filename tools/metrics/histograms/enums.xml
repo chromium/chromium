@@ -15850,6 +15850,7 @@ from previous Chrome versions.
   <int value="656779919" label="OsFeedbackJelly:enabled"/>
   <int value="656864700" label="FillOnAccountSelectHttp:disabled"/>
   <int value="657832926" label="SwipeToMoveCursor:enabled"/>
+  <int value="658047641" label="NavigationCaptureRefactorAndroid:enabled"/>
   <int value="658127191" label="ReadAnything:enabled"/>
   <int value="658725396" label="PowerBookmarkBackend:disabled"/>
   <int value="658983252" label="enable-features"/>
@@ -18604,6 +18605,7 @@ from previous Chrome versions.
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>
   <int value="1708689134" label="PWAsDefaultOfflinePage:disabled"/>
   <int value="1709255374" label="DragAndDropAndroid:enabled"/>
+  <int value="1710590340" label="NavigationCaptureRefactorAndroid:disabled"/>
   <int value="1710663404" label="CastForceEnableRemotingQuery:disabled"/>
   <int value="1711037950"
       label="AutofillVisualImprovementsForSuggestionUi:disabled"/>

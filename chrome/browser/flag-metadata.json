@@ -3601,6 +3601,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-navigation-capture-refactor-android",
+    "owners": [ "muratori@google.org", "cros-web-apps-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-network-and-issuer-icons-for-secure-payment-confirmation",
     "owners": [ "smcgruer@chromium.org", "chrome-payments-team@google.com" ],
     "expiry_milestone": 143

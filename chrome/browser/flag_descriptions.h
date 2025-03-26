@@ -2780,6 +2780,9 @@ extern const char kNavBarColorAnimationDescription[];
 extern const char kNavBarColorMatchesTabBackgroundName[];
 extern const char kNavBarColorMatchesTabBackgroundDescription[];
 
+extern const char kNavigationCaptureRefactorAndroidName[];
+extern const char kNavigationCaptureRefactorAndroidDescription[];
+
 extern const char kNotificationOneTapUnsubscribeName[];
 extern const char kNotificationOneTapUnsubscribeDescription[];
 
