@@ -650,7 +650,6 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
     return;
   }
 
-  CHECK(!CanUseExistingQuicSession());
   DCHECK(!HasAvailableSpdySession());
 
   MaybeAttemptConnection(/*exclude_ip_endpoint=*/std::nullopt,
@@ -839,7 +838,15 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
     return false;
   }
 
-  if (CanUseExistingQuicSession() || HasAvailableSpdySession()) {
+  if (CanUseExistingQuicSession()) {
+    // There could be a matching QUIC session if an existing QUIC session
+    // receives an HTTP/3 Origin frame while `this` is attempting QUIC session
+    // establishment. In such case, QuicSessionAttempt will close the new
+    // session later. See QuicSessionAttempt::DoConfirmConnection().
+    return false;
+  }
+
+  if (HasAvailableSpdySession()) {
     CHECK_EQ(PendingPreconnectCount(), 0u);
     return false;
   }
