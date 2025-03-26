@@ -13,6 +13,14 @@ namespace commerce {
 class ShoppingService;
 }  // namespace commerce
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
+namespace image_fetcher {
+class ImageDataFetcher;
+}  // namespace image_fetcher
+
 // Category for exposing internal state for testing.
 @interface ShopCardMediator (ForTesting)
 

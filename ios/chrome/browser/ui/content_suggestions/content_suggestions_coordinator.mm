@@ -425,9 +425,14 @@ using segmentation_platform::TipIdentifier;
     _shopCardMediator = [[ShopCardMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
                                     profile)
-                    prefService:prefs];
-    _shopCardMediator.shopCardActionDelegate = self;
+                    prefService:prefs
+                  bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
+                                    profile)
+                   imageFetcher:std::make_unique<
+                                    image_fetcher::ImageDataFetcher>(
+                                    profile->GetSharedURLLoaderFactory())];
     [moduleMediators addObject:_shopCardMediator];
+    _shopCardMediator.shopCardActionDelegate = self;
   }
 
   if (IsSafetyCheckMagicStackEnabled()) {

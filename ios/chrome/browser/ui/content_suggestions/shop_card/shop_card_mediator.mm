@@ -4,11 +4,24 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_mediator.h"
 
+#import <optional>
+
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/price_tracking_utils.h"
+#import "components/commerce/core/shopping_service.h"
+#import "components/payments/core/currency_formatter.h"
+#import "components/power_bookmarks/core/power_bookmark_utils.h"
+#import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_action_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
@@ -19,19 +32,28 @@
 
 @implementation ShopCardMediator {
   raw_ptr<commerce::ShoppingService> _shoppingService;
+  raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
+  bool _shoppingDataForShopCardFound;
+  std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
+
   ShopCardItem* _shopCardItem;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   raw_ptr<PrefService> _prefService;
   PrefChangeRegistrar _prefChangeRegistrar;
 }
 
-- (instancetype)initWithShoppingService:
-                    (commerce::ShoppingService*)shoppingService
-                            prefService:(PrefService*)prefService {
+- (instancetype)
+    initWithShoppingService:(commerce::ShoppingService*)shoppingService
+                prefService:(PrefService*)prefService
+              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+               imageFetcher:
+                   (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher {
   self = [super init];
   if (self) {
     _shoppingService = shoppingService;
     _prefService = prefService;
+    _bookmarkModel = bookmarkModel;
+    _imageFetcher = std::move(fetcher);
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
     _prefChangeRegistrar.Init(prefService);
     _prefObserverBridge->ObserveChangesForPreference(
@@ -46,6 +68,8 @@
 
 - (void)disconnect {
   _shoppingService = nil;
+  _bookmarkModel = nil;
+  _imageFetcher = nil;
 }
 
 - (void)reset {
@@ -72,18 +96,121 @@
   }
   // Populate the item if it is not already initialized.
   _shopCardItem = [[ShopCardItem alloc] init];
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
-    _shopCardItem.shouldShowSeeMore = YES;
-  }
-
-  _shopCardItem.shopCardData = [[ShopCardData alloc] init];
 
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
-    _shopCardItem.shopCardData.shopCardItemType =
-        ShopCardItemType::kPriceDropForTrackedProducts;
+    _shoppingDataForShopCardFound = false;
+    __weak ShopCardMediator* weakSelf = self;
+
+    GetAllPriceTrackedBookmarks(
+        _shoppingService, _bookmarkModel,
+        base::BindOnce(
+            ^(std::vector<const bookmarks::BookmarkNode*> subscriptions) {
+              ShopCardMediator* strongSelf = weakSelf;
+              if (!strongSelf || !strongSelf.delegate) {
+                return;
+              }
+              [strongSelf onPriceTrackedBookmarksReceived:subscriptions];
+            }));
   } else if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) {
-    _shopCardItem.shopCardData.shopCardItemType = ShopCardItemType::kReviews;
+    // TODO(crbug.com/392971752): populate for card 2.
+    _shopCardItem = [[ShopCardItem alloc] init];
   }
+}
+
+- (void)onPriceTrackedBookmarksReceived:
+    (std::vector<const bookmarks::BookmarkNode*>)subscriptions {
+  // Iterate through all subscriptions, find the first recent one with a drop
+  // populate item.
+  for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+        power_bookmarks::GetNodePowerBookmarkMeta(_bookmarkModel, bookmark);
+    if (!meta || !meta->has_shopping_specifics()) {
+      continue;
+    }
+    const power_bookmarks::ShoppingSpecifics specifics =
+        meta->shopping_specifics();
+
+    if (!specifics.previous_price().has_amount_micros() ||
+        specifics.previous_price().amount_micros() == 0) {
+      continue;
+    }
+
+    [self populateShopCardItem:specifics bookmark:bookmark];
+
+    GURL productImageUrl = GURL(meta->lead_image().url());
+    __weak ShopCardMediator* weakSelf = self;
+    _imageFetcher->FetchImageData(
+        productImageUrl,
+        base::BindOnce(^(const std::string& imageData,
+                         const image_fetcher::RequestMetadata& metadata) {
+          ShopCardMediator* strongSelf = weakSelf;
+          if (!strongSelf || !strongSelf.delegate) {
+            return;
+          }
+          [strongSelf onProductImageFetchedResult:imageData
+                                  productImageUrl:productImageUrl];
+        }),
+        NO_TRAFFIC_ANNOTATION_YET);
+
+    break;
+  }
+}
+
+- (void)populateShopCardItem:(const power_bookmarks::ShoppingSpecifics)specifics
+                    bookmark:(const bookmarks::BookmarkNode*)bookmark {
+  _shopCardItem = [[ShopCardItem alloc] init];
+  _shopCardItem.shopCardData = [[ShopCardData alloc] init];
+  _shopCardItem.commandHandler = self;
+  _shopCardItem.shopCardData.shopCardItemType =
+      ShopCardItemType::kPriceDropForTrackedProducts;
+  PriceDrop priceDrop;
+
+  std::unique_ptr<payments::CurrencyFormatter> formatter =
+      std::make_unique<payments::CurrencyFormatter>(
+          specifics.previous_price().currency_code(),
+          GetApplicationContext()->GetApplicationLocale());
+
+  float current_price_micros =
+      static_cast<float>(specifics.current_price().amount_micros());
+  float previous_price_micros =
+      static_cast<float>(specifics.previous_price().amount_micros());
+
+  priceDrop.current_price = [self GetFormattedPrice:formatter.get()
+                                       price_micros:current_price_micros];
+  priceDrop.previous_price = [self GetFormattedPrice:formatter.get()
+                                        price_micros:previous_price_micros];
+  _shopCardItem.shopCardData.priceDrop = priceDrop;
+  _shopCardItem.shopCardData.productURL = bookmark->url();
+  _shopCardItem.shopCardData.productTitle =
+      [NSString stringWithUTF8String:specifics.title().c_str()];
+}
+
+- (NSString*)GetFormattedPrice:(payments::CurrencyFormatter*)formatter
+                  price_micros:(long)price_micros {
+  float price = static_cast<float>(price_micros) /
+                static_cast<float>(commerce::kToMicroCurrency);
+  formatter->SetMaxFractionalDigits(price >= 10.0 ? 0 : 2);
+  return base::SysUTF16ToNSString(
+      formatter->Format(base::NumberToString(price)));
+}
+
+- (void)onProductImageFetchedResult:(const std::string&)imageData
+                    productImageUrl:(const GURL&)productImageUrl {
+  if (!_shopCardItem) {
+    _shopCardItem = [[ShopCardItem alloc] init];
+  }
+  if (!_shopCardItem.shopCardData) {
+    _shopCardItem.shopCardData = [[ShopCardData alloc] init];
+  }
+  NSData* data = [NSData dataWithBytes:imageData.data()
+                                length:imageData.size()];
+  if (data) {
+    self->_shopCardItem.shopCardData.productImage = data;
+  }
+  // TODO(crbug.com/392970898): fetch favicon here or inside the data, using
+  // product url.
+
+  [self.delegate insertShopCard];
 }
 
 - (ShopCardItem*)shopCardItemToShow {

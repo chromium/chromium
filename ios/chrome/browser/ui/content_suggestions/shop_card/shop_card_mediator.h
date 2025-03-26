@@ -7,7 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_commands.h"
+
+namespace bookmarks {
+class BookmarkModel;
+}
 
 namespace commerce {
 class ShoppingService;
@@ -21,10 +26,10 @@ class PrefService;
 // Delegate to communicate events back to owner of ShopCardMediator.
 @protocol ShopCardMediatorDelegate
 
-// Add ShopCard to the magic stack.
+// Remove ShopCard from the magic stack.
 - (void)removeShopCard;
 
-// Remove ShopCard from the magic stack.
+// Add ShopCard to the magic stack.
 - (void)insertShopCard;
 
 @end
@@ -32,9 +37,12 @@ class PrefService;
 @interface ShopCardMediator : NSObject <ShopCardCommands>
 
 // Default initializer.
-- (instancetype)initWithShoppingService:
-                    (commerce::ShoppingService*)shoppingService
-                            prefService:(PrefService*)prefService
+- (instancetype)
+    initWithShoppingService:(commerce::ShoppingService*)shoppingService
+                prefService:(PrefService*)prefService
+              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+               imageFetcher:
+                   (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

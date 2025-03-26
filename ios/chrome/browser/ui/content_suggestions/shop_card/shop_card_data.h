@@ -28,6 +28,8 @@ enum class ShopCardItemType {
   kPriceTrackableProductOnTab,
 };
 
+class GURL;
+
 // Data object for ShopCard, including card type and card-specific data.
 @interface ShopCardData : NSObject
 
@@ -40,8 +42,17 @@ enum class ShopCardItemType {
 // Describes contents of the ShopCard for accessibility.
 @property(nonatomic, copy) NSString* accessibilityString;
 
+// Title of Product.
+@property(nonatomic, copy) NSString* productTitle;
+
 // Merchant url for product.
 @property(nonatomic, assign) const GURL& productURL;
+
+// Product favicon image.
+@property(nonatomic, assign) UIImage* faviconImage;
+
+// Product image.
+@property(nonatomic, strong) NSData* productImage;
 
 @end
 
