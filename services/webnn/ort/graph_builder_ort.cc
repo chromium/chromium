@@ -338,6 +338,38 @@ GraphBuilderOrt::CreateOrReshapeBias(const std::optional<uint32_t>& bias_id,
   return bias;
 }
 
+std::string GraphBuilderOrt::ConvertRznToZrn(std::string_view weight_or_bias) {
+  // Use Split operator to split the weight/bias into 3 (r, z, n) slices.
+  std::string r_gate = GenerateNextOperandName();
+  std::string z_gate = GenerateNextOperandName();
+  std::string n_gate = GenerateNextOperandName();
+  std::vector<ScopedOrtOpAttr> split_attrs;
+  split_attrs.reserve(2);
+  split_attrs.push_back(
+      model_editor_.CreateAttribute("axis", static_cast<int64_t>(1)));
+  split_attrs.push_back(
+      model_editor_.CreateAttribute("num_outputs", static_cast<int64_t>(3)));
+  std::array<const char*, 1> split_inputs = {weight_or_bias.data()};
+  std::array<const char*, 3> split_outputs = {r_gate.c_str(), z_gate.c_str(),
+                                              n_gate.c_str()};
+  model_editor_.AddNode(kOpTypeSplit, GenerateNextOperationName("split"),
+                        split_inputs, split_outputs, std::move(split_attrs));
+
+  // Use Concat operator to concatenate the slices in the order of z, r, n.
+  std::string new_weight_or_bias = GenerateNextOperandName();
+  std::vector<ScopedOrtOpAttr> concat_attrs;
+  concat_attrs.reserve(1);
+  concat_attrs.push_back(
+      model_editor_.CreateAttribute("axis", static_cast<int64_t>(1)));
+  std::array<const char*, 3> concat_inputs = {z_gate.c_str(), r_gate.c_str(),
+                                              n_gate.c_str()};
+  std::array<const char*, 1> concat_outputs = {new_weight_or_bias.c_str()};
+  model_editor_.AddNode(kOpTypeConcat, GenerateNextOperationName("concat"),
+                        concat_inputs, concat_outputs, std::move(concat_attrs));
+
+  return new_weight_or_bias;
+}
+
 template <typename DataType>
   requires internal::IsSupportedTensorType<DataType>
 base::expected<std::string, mojom::ErrorPtr> GraphBuilderOrt::CreateInitializer(
@@ -1727,6 +1759,10 @@ GraphBuilderOrt::AddGruOperation(const GruType& gru) {
         PrependReshape(recurrent_weight, {1, recurrent_weight_shape[0],
                                           recurrent_weight_shape[1]}));
   }
+  if (gru.layout == mojom::GruWeightLayout::kRzn) {
+    weight = ConvertRznToZrn(weight);
+    recurrent_weight = ConvertRznToZrn(recurrent_weight);
+  }
   std::vector<const char*> inputs = {input.c_str(), weight.c_str(),
                                      recurrent_weight.c_str()};
 
@@ -1750,11 +1786,16 @@ GraphBuilderOrt::AddGruOperation(const GruType& gru) {
     const OperandDataType input_data_type =
         GetOperand(gru.input_operand_id).descriptor.data_type();
     ASSIGN_OR_RETURN(
-        const std::string bias,
+        std::string bias,
         CreateOrReshapeBias(gru.bias_operand_id, input_data_type, bias_dims));
-    ASSIGN_OR_RETURN(const std::string recurrent_bias,
+    ASSIGN_OR_RETURN(std::string recurrent_bias,
                      CreateOrReshapeBias(gru.recurrent_bias_operand_id,
                                          input_data_type, bias_dims));
+
+    if (gru.layout == mojom::GruWeightLayout::kRzn) {
+      bias = ConvertRznToZrn(bias);
+      recurrent_bias = ConvertRznToZrn(recurrent_bias);
+    }
     // Concat bias and recurrent_bias
     concatenated_bias = GenerateNextOperandName();
     std::array<const char*, 2> bias_inputs = {bias.c_str(),
@@ -1815,12 +1856,6 @@ GraphBuilderOrt::AddGruOperation(const GruType& gru) {
 
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"hidden_size", base::checked_cast<int64_t>(hidden_size)));
-
-  // TODO(https://github.com/shiyi9801/chromium/issues/190): Support rzn layout.
-  if (gru.layout != mojom::GruWeightLayout::kZrn) {
-    return NewNotSupportedError(
-        "[WebNN] The gru weight layout (rzn) is not supported.");
-  }
 
   int64_t linear_before_reset = static_cast<int64_t>(gru.reset_after);
   attributes.push_back(model_editor_.CreateAttribute(

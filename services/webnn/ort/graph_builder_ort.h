@@ -156,6 +156,9 @@ class GraphBuilderOrt {
                       OperandDataType input_data_type,
                       const std::vector<uint32_t>& bias_dims);
 
+  // A helper function used to convert the weight or bias from Rzn to Zrn.
+  std::string ConvertRznToZrn(std::string_view weight_or_bias);
+
   std::string PrependTranspose(std::string_view input,
                                base::span<const uint32_t> permutation);
 
