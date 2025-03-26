@@ -8,7 +8,9 @@
 
 #include "third_party/webrtc/p2p/base/basic_packet_socket_factory.h"
 #include "third_party/webrtc/p2p/base/fake_port_allocator.h"
+#include "third_party/webrtc/p2p/base/p2p_constants.h"
 #include "third_party/webrtc/p2p/base/port.h"
+#include "third_party/webrtc/rtc_base/net_helper.h"
 #include "third_party/webrtc_overrides/rtc_base/fake_socket_factory.h"
 
 namespace blink {
