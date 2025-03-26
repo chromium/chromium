@@ -957,8 +957,10 @@ void URLLoader::ConfigureRequest(
   url_request_->cookie_setting_overrides() = cookie_setting_overrides;
   url_request_->SetLoadFlags(request_load_flags);
   SetRequestCredentials(url);
-  url_request_->set_storage_access_status(
-      url_request_->CalculateStorageAccessStatus());
+  if (request_credentials_mode_ == mojom::CredentialsMode::kInclude) {
+    url_request_->set_storage_access_status(
+        url_request_->CalculateStorageAccessStatus());
+  }
 
   SetFetchMetadataHeaders(url_request_.get(), request_mode_,
                           has_user_activation_, request_destination_, nullptr,
@@ -1462,8 +1464,12 @@ void URLLoader::FollowRedirect(
   // `CalculateStorageAccessStatus` depends on
   // `url_request->cookie_setting_overrides()`. `SetFetchMetadataHeaders`
   // depends on `url_request_->storage_access_status()`.
-  url_request_->set_storage_access_status(
-      url_request_->CalculateStorageAccessStatus());
+  if (request_credentials_mode_ == mojom::CredentialsMode::kInclude) {
+    url_request_->set_storage_access_status(
+        url_request_->CalculateStorageAccessStatus());
+  } else {
+    url_request_->reset_storage_access_status();
+  }
 
   // We may need to clear out old Sec- prefixed request headers. We'll attempt
   // to do this before we re-add any.

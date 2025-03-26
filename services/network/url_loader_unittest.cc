@@ -5020,12 +5020,15 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
                           kStorageAccessRedirectLoadPath)) {
       return nullptr;
     }
+    std::string destination =
+        base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_content_type("text/plain");
     http_response->AddCustomHeader("Activate-Storage-Access", "load");
     http_response->set_code(net::HTTP_PERMANENT_REDIRECT);
-    http_response->AddCustomHeader("Location", "/empty.html");
+    http_response->AddCustomHeader(
+        "Location", destination.empty() ? "/empty.html" : destination);
     return http_response;
   }
 };
@@ -5233,6 +5236,96 @@ TEST_F(StorageAccessHeaderURLLoaderTest, RedirectWithLoad) {
   // The redirect response included the `load` header, but the final response
   // did not, so the URLLoader should not propagate it.
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+}
+
+// `URLLoader::ConfigureRequest` only calls
+// `net::URLRequest::set_storage_access_status` if the request's credentials
+// mode is `kInclude` but `URLLoader::ShouldSetLoadWithStorageAccess` calculates
+// it anyway if the `Activate-Storage-Access: load` header is present. Once with
+// the initial URL during `OnReceivedRedirect` and once more with the final URL
+// during `FollowRedirect`. This test makes sure that the final response's
+// `load_with_storage_access` is set properly when the request's credentials
+// mode is NOT `kInclude` and a redirect is involved with `load` on both, but
+// with different storage access status calculated for each request.
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       OmitCredentials_RedirectWithLoadActive_DestinationLoadNone) {
+  base::RunLoop delete_run_loop;
+
+  GURL destination_url =
+      test_server_.GetURL("/set-header?Activate-Storage-Access: load");
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL(base::StrCat(
+                 {kStorageAccessRedirectLoadPath, "?",
+                  base::EscapeQueryParamValue(destination_url.spec(), true)})));
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
+  test_network_delegate()->set_is_storage_access_header_enabled(true);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  EXPECT_TRUE(client()->response_head()->load_with_storage_access);
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kNone);
+  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+}
+
+// `URLLoader::ConfigureRequest` only calls
+// `net::URLRequest::set_storage_access_status` if the request's credentials
+// mode is `kInclude` but `URLLoader::ShouldSetLoadWithStorageAccess` calculates
+// it anyway if the `Activate-Storage-Access: load` header is present. Once with
+// the initial URL during `OnReceivedRedirect` and once more with the final URL
+// during `FollowRedirect`. This test makes sure that the final response's
+// `load_with_storage_access` is set properly when the request's credentials
+// mode is NOT `kInclude` and a redirect is involved with `load` on both, but
+// with different storage access status calculated for each request.
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       OmitCredentials_RedirectWithLoadNone_DestinationLoadActive) {
+  base::RunLoop delete_run_loop;
+
+  GURL destination_url =
+      test_server_.GetURL("/set-header?Activate-Storage-Access: load");
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL(base::StrCat(
+                 {kStorageAccessRedirectLoadPath, "?",
+                  base::EscapeQueryParamValue(destination_url.spec(), true)})));
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kNone);
+  test_network_delegate()->set_is_storage_access_header_enabled(true);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
+  url_loader->FollowRedirect({}, {}, {}, std::nullopt);
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_TRUE(client()->response_head()->load_with_storage_access);
 }
 
 TEST_F(StorageAccessHeaderURLLoaderTest, NoLoadWhenHeaderNotEnabled) {
