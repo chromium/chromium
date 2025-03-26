@@ -1186,7 +1186,7 @@ def create_proto_modules(blueprint, gn, target):
         target: gn_utils.Target object.
 
     Returns:
-        The source_genrule module.
+        The .h and .cc genrule modules.
     """
   assert (target.type == 'proto_library')
 
@@ -1297,7 +1297,7 @@ def create_proto_modules(blueprint, gn, target):
   header_module.allow_rebasing = True
   header_module.build_file_path = target.build_file_path
   source_module.build_file_path = target.build_file_path
-  return source_module
+  return (header_module, source_module)
 
 
 def create_gcc_preprocess_modules(blueprint, target):
@@ -2434,11 +2434,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
   elif target.type == 'shared_library':
     modules = (Module('cc_library_shared', bp_module_name, gn_target_name), )
   elif target.type == 'proto_library':
-    # TODO: change create_proto_modules() to return both modules.
-    module = create_proto_modules(blueprint, gn, target)
-    if module is None:
+    modules = create_proto_modules(blueprint, gn, target)
+    if modules is None:
       return ()
-    modules = (module, )
   elif target.type == "rust_bindgen":
     modules = (create_bindgen_module(blueprint, target, bp_module_name), )
   elif target.type == 'action':
