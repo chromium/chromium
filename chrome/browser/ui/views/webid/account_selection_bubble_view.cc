@@ -64,9 +64,9 @@ namespace webid {
 namespace {
 
 constexpr int kSingleIdpUseOtherAccountButtonIconMargin = 5;
-constexpr int kMaxExpandableAccountsScrollViewHeight = 350;
 constexpr int kLoginButtonSeparatorLeftMargin = 64;
 constexpr int kLoginButtonSeparatorRightMargin = 15;
+constexpr float kNumVisibleRows = 2.5f;
 
 // views::MdTextButton which:
 // - Uses the passed-in `brand_background_color` based on whether the button
@@ -609,13 +609,11 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   // as a scrollbar showing 2 accounts plus half of the third one. Note that
   // this is an estimate if there are multiple IDPs, as IDP rows are not the
   // same height. That said, calling GetPreferredSize() is expensive so we are
-  // ok with this estimate. And in this case, we prefer to use 3.5 as there will
-  // be at least one IDP row at the beginning. Note that `num_account_rows` can
-  // be 0 if everything is an IDP mismatch.
-  float num_visible_rows = is_multi_idp ? 1.5f : 2.5f;
+  // ok with this estimate.
+  float num_visible_rows = kNumVisibleRows;
   const int first_row_size =
       scroller_content->children()[0]->GetPreferredSize().height();
-  int clipped_size = static_cast<int>(first_row_size * num_visible_rows);
+  int clipped_size = static_cast<int>(first_row_size * kNumVisibleRows);
   // When there are account rows but not enough to cover the visible rows, add
   // the mismatch size so that the scroller does not end awkwardly.
   if (0 < accounts.size() && accounts.size() < num_visible_rows &&
@@ -633,14 +631,6 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
     scroll_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         is_multi_idp ? kVerticalSpacing - kTopBottomPadding : kVerticalSpacing,
         0, 0, 0)));
-  }
-  if (is_multi_idp) {
-    expandable_account_scroll_view_ = scroll_view.get();
-    on_contents_scrolled_subscription_ =
-        expandable_account_scroll_view_->AddContentsScrolledCallback(
-            base::BindRepeating(
-                &AccountSelectionBubbleView::OnExpandableAccountsScrolled,
-                base::Unretained(this)));
   }
 
   // We use a container for most of the contents here. If there is a scroller at
@@ -686,19 +676,6 @@ void AccountSelectionBubbleView::AddAccounts(
         CreateAccountRow(account, /*clickable_position=*/out_position++,
                          /*should_include_idp=*/true, /*is_modal_dialog=*/false,
                          /*additional_vertical_padding=*/0, last_used_string));
-  }
-}
-
-void AccountSelectionBubbleView::OnExpandableAccountsScrolled() {
-  float current_offset = expandable_account_scroll_view_->CurrentOffset().y();
-  if (current_offset > max_offset_) {
-    int current_height =
-        expandable_account_scroll_view_->GetVisibleRect().height();
-    expandable_account_scroll_view_->ClipHeightTo(
-        0, std::min(kMaxExpandableAccountsScrollViewHeight,
-                    current_height +
-                        static_cast<int>(current_offset - max_offset_)));
-    max_offset_ = current_offset;
   }
 }
 
@@ -774,9 +751,6 @@ void AccountSelectionBubbleView::UpdateHeader(const gfx::Image& idp_image,
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
-  expandable_account_scroll_view_ = nullptr;
-  on_contents_scrolled_subscription_ = base::CallbackListSubscription();
-  max_offset_ = 0.f;
   const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
       children();
   for (views::View* child_view : child_views) {

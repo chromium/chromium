@@ -145,13 +145,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // View containing the bubble title.
   raw_ptr<views::Label> title_label_ = nullptr;
 
-  raw_ptr<views::ScrollView> expandable_account_scroll_view_ = nullptr;
-
-  // Subscription to notify of scrolling events from the expandable accounts
-  // scroller.
-  base::CallbackListSubscription on_contents_scrolled_subscription_;
-  float max_offset_ = 0.f;
-
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.
   base::WeakPtrFactory<AccountSelectionBubbleView> weak_ptr_factory_{this};

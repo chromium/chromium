@@ -843,22 +843,6 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   // Check the second IDP.
   CheckHoverableAccountRows(accounts, kAccountSuffixes2, accounts_index,
                             /*expect_idp=*/true);
-
-  views::ScrollView* accounts_scroller =
-      static_cast<views::ScrollView*>(accounts_container->children()[1]);
-  int initial_height = accounts_scroller->GetVisibleRect().height();
-  // Scrolling increases the size of the view.
-  accounts_scroller->ScrollByOffset(gfx::PointF(0, 50));
-  // Using GetPreferredSize() since the visible rect does not seem to be updated
-  // right away.
-  int new_height = accounts_scroller->GetPreferredSize().height();
-  EXPECT_GT(new_height, initial_height);
-  // Scrolling back does not shrink it.
-  accounts_scroller->ScrollToOffset(gfx::PointF());
-  EXPECT_EQ(accounts_scroller->GetPreferredSize().height(), new_height);
-  // Scrolling more increases the size more.
-  accounts_scroller->ScrollByOffset(gfx::PointF(0, 200));
-  EXPECT_GT(accounts_scroller->GetPreferredSize().height(), new_height);
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
