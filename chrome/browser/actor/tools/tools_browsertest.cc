@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -25,7 +26,6 @@ using base::test::ScopedFeatureList;
 using base::test::TestFuture;
 using content::WebContents;
 using optimization_guide::proto::BrowserAction;
-using optimization_guide::proto::ClickAction;
 using tabs::TabInterface;
 
 namespace actor {
@@ -70,11 +70,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, BasicSmokeTest) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  BrowserAction action;
-  ClickAction* click = action.add_action_information()->mutable_click();
-  click->mutable_target()->set_content_node_id(123);
-  click->set_click_type(ClickAction::LEFT);
-  click->set_click_count(ClickAction::SINGLE);
+  BrowserAction action = MakeClick(/*content_node_id=*/123);
 
   TabInterface& tab = *active_tab();
 

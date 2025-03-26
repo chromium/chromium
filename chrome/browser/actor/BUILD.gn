@@ -38,11 +38,24 @@ source_set("actor") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "actor_test_util.cc",
+    "actor_test_util.h",
+  ]
+  deps = [ ":actor" ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "site_policy_unittest.cc" ]
+  sources = [
+    "actor_coordinator_unittest.cc",
+    "site_policy_unittest.cc",
+  ]
   deps = [
     ":actor",
+    ":test_support",
     "//base/test:test_support",
     "//chrome/test:test_support",
     "//testing/gtest",
@@ -58,6 +71,7 @@ source_set("browser_tests") {
   ]
   deps = [
     ":actor",
+    ":test_support",
     "//base/test:test_support",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui",
