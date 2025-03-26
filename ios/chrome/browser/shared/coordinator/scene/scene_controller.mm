@@ -3221,6 +3221,11 @@ using UserFeedbackDataCallback =
   if (self.sceneState.activationLevel == SceneActivationLevelDisconnected) {
     return;
   }
+  // During startup, there may be no current interface. Do nothing in that
+  // case.
+  if (!self.currentInterface) {
+    return;
+  }
 
   // Immediately hide modals from the provider (alert views, action sheets,
   // popovers). They will be ultimately dismissed by their owners, but at least,
@@ -3481,7 +3486,7 @@ using UserFeedbackDataCallback =
 // Asks the respective Snapshot helper to update the snapshot for the active
 // WebState.
 - (void)updateActiveWebStateSnapshot {
-  // Durinhg startup, there may be no current interface. Do nothing in that
+  // During startup, there may be no current interface. Do nothing in that
   // case.
   if (!self.currentInterface) {
     return;
