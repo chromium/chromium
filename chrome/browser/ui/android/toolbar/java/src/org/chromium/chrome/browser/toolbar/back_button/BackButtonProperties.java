@@ -1,0 +1,25 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.toolbar.back_button;
+
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+/**
+ * A set of back button properties to reflect its state.
+ *
+ * @see PropertyKey
+ */
+class BackButtonProperties {
+    public static final WritableObjectPropertyKey<Runnable> CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    public static PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                CLICK_LISTENER,
+            };
+
+    private BackButtonProperties() {}
+}

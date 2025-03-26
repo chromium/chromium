@@ -182,7 +182,6 @@ public class ToolbarTablet extends ToolbarLayout
                     }
                 });
 
-        mBackButton.setOnClickListener(this);
         mBackButton.setLongClickable(true);
         mBackButton.setOnKeyListener(
                 new KeyboardNavigationListener() {
@@ -318,12 +317,6 @@ public class ToolbarTablet extends ToolbarLayout
         if (mHomeButton == v) {
             recordHomeModuleClickedIfNTPVisible();
             openHomepage();
-        } else if (mBackButton == v) {
-            boolean isEnabled = mBackButton.isEnabled();
-            boolean success = back();
-            assert success && isEnabled
-                    : "Back button should not be enabled if page can no longer be navigated back.";
-            if (success) RecordUserAction.record("MobileToolbarBack");
         } else if (mForwardButton == v) {
             forward();
             RecordUserAction.record("MobileToolbarForward");
