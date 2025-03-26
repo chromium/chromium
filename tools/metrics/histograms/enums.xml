@@ -10354,6 +10354,7 @@ from previous Chrome versions.
   <int value="-1491417046" label="enable-fullscreen-toolbar-reveal"/>
   <int value="-1491304576" label="ProgressBarThrottle:disabled"/>
   <int value="-1490827023" label="EnableCbdSignOut:disabled"/>
+  <int value="-1490669772" label="EnableHistorySyncOptin:disabled"/>
   <int value="-1490298774" label="enable-captive-portal-bypass-proxy-option"/>
   <int value="-1490048536"
       label="PageVisibilityPageContentAnnotations:disabled"/>
@@ -13319,6 +13320,7 @@ from previous Chrome versions.
   <int value="-338606027" label="TrimOnMemoryPressure:disabled"/>
   <int value="-338572425" label="AccessibilityMouseKeys:disabled"/>
   <int value="-338277966" label="DecoupleSyncFromAndroidMasterSync:enabled"/>
+  <int value="-338233111" label="EnableHistorySyncOptin:enabled"/>
   <int value="-337722581" label="AssistantConsentV2:enabled"/>
   <int value="-337655793" label="OmniboxRedoCurrentMatch:enabled"/>
   <int value="-337308250" label="AutofillMoreProminentPopup:enabled"/>
