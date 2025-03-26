@@ -927,3 +927,6 @@
 	path = webkit/data/test_shell/plugins
 	url = https://chrome-internal.googlesource.com/chrome/data/webkit_plugin_tests
 	gclient-condition = checkout_src_internal
+[submodule "third_party/compiler-rt/src"]
+	path = third_party/compiler-rt/src
+	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/compiler-rt

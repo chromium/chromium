@@ -520,6 +520,10 @@ vars = {
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
   'llvm_libc_revision':    '0976d379acfde4f2af3693bf5273ae053ce2fe49',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling llvm-libc
+  # and whatever else without interference from each other.
+  'compiler_rt_revision': 'bc2b30185219a2defe3c8a3b45f95a11386a7f6f',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -1149,6 +1153,10 @@ deps = {
       'condition': 'checkout_chrome_release_scripts',
   },
 
+  'src/third_party/compiler-rt/src':
+    Var('chromium_git') +
+    '/external/github.com/llvm/llvm-project/compiler-rt.git' + '@' +
+    Var('compiler_rt_revision'),
   'src/third_party/libc++/src':
     Var('chromium_git') +
     '/external/github.com/llvm/llvm-project/libcxx.git' + '@' +
