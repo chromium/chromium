@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -362,21 +361,15 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     public CaptureReadinessResult isReadyForTextureCapture() {
-        if (ToolbarFeatures.shouldSuppressCaptures()) {
-            if (urlHasFocus()) {
-                return CaptureReadinessResult.notReady(
-                        TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS);
-            } else if (mIsInTabSwitcherMode) {
-                return CaptureReadinessResult.notReady(
-                        TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE);
-            } else if (mButtonVisibilityAnimators != null) {
-                return CaptureReadinessResult.notReady(
-                        TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS);
-            } else {
-                return getReadinessStateWithSuppression();
-            }
+        if (urlHasFocus()) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS);
+        } else if (mIsInTabSwitcherMode) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE);
+        } else if (mButtonVisibilityAnimators != null) {
+            return CaptureReadinessResult.notReady(
+                    TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS);
         } else {
-            return CaptureReadinessResult.unknown(!urlHasFocus());
+            return getReadinessStateWithSuppression();
         }
     }
 
@@ -395,18 +388,13 @@ public class ToolbarTablet extends ToolbarLayout
         UrlBarData urlBarData;
         final @DrawableRes int securityIconResource;
 
-        if (ToolbarFeatures.shouldSuppressCaptures()) {
-            urlBarData = mLocationBar.getUrlBarData();
-            if (urlBarData == null) urlBarData = getToolbarDataProvider().getUrlBarData();
-            StatusCoordinator statusCoordinator = mLocationBar.getStatusCoordinator();
-            securityIconResource =
-                    statusCoordinator == null
-                            ? getToolbarDataProvider().getSecurityIconResource(false)
-                            : statusCoordinator.getSecurityIconResource();
-        } else {
-            urlBarData = getToolbarDataProvider().getUrlBarData();
-            securityIconResource = getToolbarDataProvider().getSecurityIconResource(false);
-        }
+        urlBarData = mLocationBar.getUrlBarData();
+        if (urlBarData == null) urlBarData = getToolbarDataProvider().getUrlBarData();
+        StatusCoordinator statusCoordinator = mLocationBar.getStatusCoordinator();
+        securityIconResource =
+                statusCoordinator == null
+                        ? getToolbarDataProvider().getSecurityIconResource(false)
+                        : statusCoordinator.getSecurityIconResource();
 
         VisibleUrlText visibleUrlText =
                 new VisibleUrlText(

@@ -7490,11 +7490,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabStateFlatBufferVariations,
                                     "TabStateFlatBuffer")},
 
-    {"suppress-toolbar-captures",
-     flag_descriptions::kSuppressToolbarCapturesName,
-     flag_descriptions::kSuppressToolbarCapturesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kSuppressToolbarCaptures)},
-
     {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
      commerce::flag_descriptions::kPriceInsightsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(commerce::kPriceInsights)},

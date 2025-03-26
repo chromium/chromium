@@ -2129,9 +2129,6 @@ extern const char kStrictOriginIsolationDescription[];
 extern const char kSupportToolScreenshot[];
 extern const char kSupportToolScreenshotDescription[];
 
-extern const char kSuppressToolbarCapturesName[];
-extern const char kSuppressToolbarCapturesDescription[];
-
 extern const char kSystemKeyboardLockName[];
 extern const char kSystemKeyboardLockDescription[];
 

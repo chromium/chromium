@@ -3707,10 +3707,6 @@ const char kSupportToolScreenshotDescription[] =
     "Enables the Support Tool to capture and include a screenshot in the "
     "exported packet.";
 
-const char kSuppressToolbarCapturesName[] = "Suppress Toolbar Captures";
-const char kSuppressToolbarCapturesDescription[] =
-    "Suppress Toolbar Captures except when certain properties change.";
-
 const char kSyncAutofillWalletCredentialDataName[] =
     "Sync Autofill Wallet Credential Data";
 const char kSyncAutofillWalletCredentialDataDescription[] =

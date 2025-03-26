@@ -34,11 +34,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -152,7 +150,6 @@ public class ChromeMessageQueueMediatorTest {
 
     /** Test the runnable by #onStartShow is reset correctly. */
     @Test
-    @EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES})
     public void testResetOnStartShowRunnable() {
         when(mBrowserControlsManager.getBrowserControlHiddenRatio()).thenReturn(0.5f);
         OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
@@ -196,7 +193,6 @@ public class ChromeMessageQueueMediatorTest {
 
     /** Test whether #IsReadyForShowing returns correct value. */
     @Test
-    @EnableFeatures({ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES})
     public void testIsReadyForShowing() {
         final ArgumentCaptor<ChromeMessageQueueMediator.BrowserControlsObserver>
                 observerArgumentCaptor =

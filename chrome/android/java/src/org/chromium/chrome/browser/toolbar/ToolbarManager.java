@@ -382,10 +382,6 @@ public class ToolbarManager
         private ObservableSupplier<Integer> mCurrentConstraintDelegate;
 
         void onTabSwitched(Tab newTab) {
-            if (!ToolbarFeatures.shouldSuppressCaptures()) {
-                return;
-            }
-
             if (mCurrentConstraintDelegate != null) {
                 mCurrentConstraintDelegate.removeObserver(this);
                 mCurrentConstraintDelegate = null;

@@ -332,7 +332,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShareCustomActionsInCCT,
     &kSkipIsolatedSplitPreload,
     &kSmallerTabStripTitleLimit,
-    &kSuppressToolbarCaptures,
     &kSuppressToolbarCapturesAtGestureEnd,
     &kTabGroupParityBottomSheetAndroid,
     &kToolbarPhoneCleanup,
@@ -1094,10 +1093,6 @@ BASE_FEATURE(kSkipIsolatedSplitPreload,
 
 BASE_FEATURE(kSmallerTabStripTitleLimit,
              "SmallerTabStripTitleLimit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSuppressToolbarCaptures,
-             "SuppressToolbarCaptures",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd,

@@ -533,7 +533,6 @@ public abstract class ChromeFeatureList {
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
     public static final String STOP_APP_INDEXING_REPORT = "StopAppIndexingReport";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
-    public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
     public static final String SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END =
             "SuppressToolbarCapturesAtGestureEnd";
     public static final String ENABLE_BATCH_UPLOAD_FROM_SETTINGS = "EnableBatchUploadFromSettings";
@@ -1035,8 +1034,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SAFETY_HUB_FOLLOWUP, true);
     public static final MutableFlagWithSafeDefault sShowNewTabAnimations =
             newMutableFlagWithSafeDefault(SHOW_NEW_TAB_ANIMATIONS, false);
-    public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
-            newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
     public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
     public static final MutableFlagWithSafeDefault sTabGroupParityBottomSheetAndroid =
@@ -1472,8 +1469,6 @@ public abstract class ChromeFeatureList {
 
     // Mutable*ParamWithSafeDefault instances.
     /* Alphabetical: */
-    public static final MutableBooleanParamWithSafeDefault sShouldBlockCapturesForFullscreenParam =
-            sSuppressionToolbarCaptures.newBooleanParam("block_for_fullscreen", false);
     public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterArchiveEnabled =
             sAndroidTabDeclutter.newBooleanParam("android_tab_declutter_archive_enabled", true);
     public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterArchiveTimeDeltaHours =
