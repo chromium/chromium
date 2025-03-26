@@ -186,8 +186,9 @@ void BrowserFeaturePromoController25::AddPreconditionProviders(
             // certain requirements.
             const auto info =
                 controller->session_policy()->GetPromoPriorityInfo(spec);
-            if (info.priority == Priority::kLow &&
-                info.weight == PromoWeight::kHeavy) {
+            if ((info.priority == Priority::kLow &&
+                 info.weight == PromoWeight::kHeavy) ||
+                spec.focus_on_show_override() == false) {
               // Since heavyweight promos steal keyboard focus, try not to show
               // them when the user is typing.
               maybe_add_shared_precondition(kUserNotActivePrecondition);

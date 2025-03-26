@@ -23007,6 +23007,8 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="All profiles in sync error (not used)"/>
 </enum>
 
+<!-- LINT.IfChange(promo_failure_enum) -->
+
 <enum name="PromoFailure">
   <int value="0" label="Canceled"/>
   <int value="1" label="Error"/>
@@ -23025,7 +23027,13 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="BlockedByReshowDelay"/>
   <int value="15" label="TimedOut"/>
   <int value="16" label="AlreadyQueued"/>
+  <int value="17" label="AnchorNotVisible"/>
+  <int value="18" label="AnchorSurfaceNotActive"/>
+  <int value="19" label="WindowTooSmall"/>
+  <int value="20" label="BlockedByUserActivity"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/user_education/common/feature_promo/feature_promo_result.h:failure_enum) -->
 
 <enum name="PromoSubtype">
   <int value="0" label="Normal"/>

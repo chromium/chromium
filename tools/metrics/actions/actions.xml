@@ -45355,6 +45355,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.MessageNotShown.AnchorNotVisible">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user because the designated anchor element was
+    not visible in the UI.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.AnchorSurfaceNotActive">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user because the designated anchor element was
+    not in the active window/the anchor window was not active.
+  </description>
+</action>
+
 <action name="UserEducation.MessageNotShown.BlockedByConfig">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
@@ -45419,6 +45437,16 @@ should be able to be added at any place in this file.
   <owner>frizzle-team@google.com</owner>
   <description>
     An IPH was not shown to the user due to being blocked by UI.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.BlockedByUserActivity">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user because the user was engaged in some
+    activity (typically typing) that would have been interrupted by the promo.
+    This only happens to heavyweight promos.
   </description>
 </action>
 
@@ -45493,6 +45521,16 @@ should be able to be added at any place in this file.
     An IPH was not shown to the user because it was not eligible to show for a
     significant period of time after being requested to show, and was therefore
     discarded.
+  </description>
+</action>
+
+<action name="UserEducation.MessageNotShown.WindowTooSmall">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user because the window it would have been shown
+    in was small enough that the UI was collapsed, which could lead to a bad IPH
+    experience.
   </description>
 </action>
 

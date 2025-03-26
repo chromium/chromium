@@ -137,7 +137,8 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext, std::optional<int>()))
       .WillOnce(testing::Return(nullptr));
-  EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition(data));
+  EXPECT_EQ(FeaturePromoResult::kAnchorNotVisible,
+            precond.CheckPrecondition(data));
   EXPECT_EQ(nullptr, data.Get(AnchorElementPrecondition::kAnchorElement).get());
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext, std::optional<int>()))
@@ -153,7 +154,8 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
   EXPECT_CALL(provider, GetAnchorElement(kTestContext, std::make_optional(2)))
       .WillOnce(testing::Return(nullptr));
   EXPECT_CALL(provider, GetNextValidIndex(1)).WillOnce(testing::Return(2));
-  EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition(data));
+  EXPECT_EQ(FeaturePromoResult::kAnchorNotVisible,
+            precond.CheckPrecondition(data));
   EXPECT_EQ(nullptr, data.Get(AnchorElementPrecondition::kAnchorElement).get());
 }
 
@@ -212,7 +214,8 @@ TEST(CommonPreconditionsTest,
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext, std::optional<int>()))
       .WillOnce(testing::Return(nullptr));
-  EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition(cd));
+  EXPECT_EQ(FeaturePromoResult::kAnchorNotVisible,
+            precond.CheckPrecondition(cd));
 
   precond.ExtractCachedData(coll);
   auto* const data = internal::PreconditionData::Get(
