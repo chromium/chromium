@@ -9,7 +9,6 @@ chromium::import! {
 use log::Level::{Debug, Error, Info, Trace, Warn};
 use log::{LevelFilter, Metadata, Record};
 use log_severity::logging::{LOGGING_ERROR, LOGGING_INFO, LOGGING_WARNING};
-use std::ffi::CString;
 use std::pin::Pin;
 
 struct RustLogger;
@@ -22,29 +21,23 @@ impl log::Log for RustLogger {
     }
 
     fn log(&self, record: &Record) {
-        // TODO(thiruak1024@gmail.com): Rather than using heap allocation to pass |msg|
-        // and |file|, we should return a pointer and size object to leverage the
-        // string_view object in C++. https://crbug.com/371112531
-        let file = CString::new(record.file().unwrap())
-            .expect("CString::new failed to create the log file name!");
+        let file = record.file().unwrap_or("<unknown>");
         let wrapped_args = RustFmtArguments(*record.args());
-        unsafe {
-            ffi::print_rust_log(
-                &wrapped_args,
-                file.as_ptr(),
-                record.line().unwrap() as i32,
-                match record.metadata().level() {
-                    Error => LOGGING_ERROR,
-                    Warn => LOGGING_WARNING,
-                    Info => LOGGING_INFO,
-                    // Note that Debug and Trace level logs are dropped at
-                    // compile time at the macro call-site when DCHECK_IS_ON()
-                    // is false. This is done through a Cargo feature.
-                    Debug | Trace => LOGGING_INFO,
-                },
-                record.metadata().level() == Trace,
-            )
-        }
+        ffi::print_rust_log(
+            &wrapped_args,
+            file,
+            record.line().unwrap() as i32,
+            match record.metadata().level() {
+                Error => LOGGING_ERROR,
+                Warn => LOGGING_WARNING,
+                Info => LOGGING_INFO,
+                // Note that Debug and Trace level logs are dropped at
+                // compile time at the macro call-site when DCHECK_IS_ON()
+                // is false. This is done through a Cargo feature.
+                Debug | Trace => LOGGING_INFO,
+            },
+            record.metadata().level() == Trace,
+        )
     }
     fn flush(&self) {}
 }
@@ -91,9 +84,9 @@ mod ffi {
 
         /// Emit a log message to the C++-managed logger. `msg` is passed back
         /// to `format_to_wrapped_message` to be stringified.
-        unsafe fn print_rust_log(
+        fn print_rust_log(
             msg: &RustFmtArguments,
-            file: *const c_char,
+            file: &str,
             line: i32,
             severity: i32,
             verbose: bool,
