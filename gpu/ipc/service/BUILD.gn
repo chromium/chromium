@@ -89,6 +89,7 @@ component("service") {
     "//gpu/config",
     "//gpu/vulkan:buildflags",
     "//mojo/public/cpp/bindings",
+    "//services/webnn:buildflags",
     "//ui/base:ozone_buildflags",
   ]
   libs = []
