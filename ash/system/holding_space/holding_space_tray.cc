@@ -663,8 +663,9 @@ void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
   // so that we don't attempt to destroy the bubble widget before the associated
   // drag event has been fully initialized.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&HoldingSpaceTray::CloseBubble,
-                                weak_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&HoldingSpaceTray::CloseBubble, weak_factory_.GetWeakPtr(),
+                     TrayBackgroundView::CloseReason::kUnspecified));
 }
 
 void HoldingSpaceTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
