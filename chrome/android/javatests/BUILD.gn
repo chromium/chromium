@@ -229,6 +229,7 @@ chrome_test_java_helper_deps = [
   "//components/browsing_data/content/android:java",
   "//components/browsing_data/core:java",
   "//components/collaboration/public:core_java",
+  "//components/collaboration/public:java",
   "//components/commerce/core:proto_java",
   "//components/commerce/core/android:core_java",
   "//components/content_relationship_verification:java",
