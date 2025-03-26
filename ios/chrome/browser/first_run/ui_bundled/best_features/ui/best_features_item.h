@@ -38,6 +38,8 @@ enum class BestFeaturesItemType {
 @property(nonatomic, copy) UIColor* iconBackgroundColor;
 // Best Features item animation name.
 @property(nonatomic, copy) NSString* animationName;
+// Best Features item animation text provider for localization.
+@property(nonatomic, copy) NSDictionary* textProvider;
 // Best Features item instruction steps.
 @property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
 
