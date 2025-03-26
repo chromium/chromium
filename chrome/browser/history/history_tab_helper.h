@@ -60,7 +60,9 @@ class HistoryTabHelper
   FRIEND_TEST_ALL_PREFIXES(HistoryTabHelperTest,
                            CreateAddPageArgsHasOpenerWebContentsFirstPage);
   FRIEND_TEST_ALL_PREFIXES(HistoryTabHelperTest,
-                           CreateAddPageArgsHasOpenerWebContentseNotFirstPage);
+                           CreateAddPageArgsHasLiveOriginalOpenerChain);
+  FRIEND_TEST_ALL_PREFIXES(HistoryTabHelperTest,
+                           CreateAddPageArgsHasOpenerWebContentsNotFirstPage);
   FRIEND_TEST_ALL_PREFIXES(HistoryFencedFrameBrowserTest,
                            FencedFrameDoesNotAffectLoadingState);
 
