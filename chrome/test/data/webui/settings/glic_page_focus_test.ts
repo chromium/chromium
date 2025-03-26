@@ -138,10 +138,9 @@ suite('GlicPageFocusTest', function() {
       metricsBrowserProxy.reset();
 
       // Act.
-      shortcutInput.$.edit.click();
-      await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
-      await flushTasks();
       glicBrowserProxy.setGlicShortcutResponse('');
+      shortcutInput.$.edit.click();
+      await flushTasks();
       keyDownOn(field, 27);  // Escape key.
       await flushTasks();
       assertEquals('', field.value);
@@ -174,10 +173,9 @@ suite('GlicPageFocusTest', function() {
       metricsBrowserProxy.reset();
 
       // Act.
+      glicBrowserProxy.setGlicShortcutResponse('⌃A');
       shortcutInput.$.edit.click();
-      await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
       await flushTasks();
-      glicBrowserProxy.setGlicShortcutResponse('Ctrl + A');
       keyDownOn(field, 65, ['ctrl']);
       await flushTasks();
 
