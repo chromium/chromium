@@ -128,9 +128,6 @@ class PLATFORM_EXPORT ContouredRect {
     constexpr Corner Inverse() const {
       return Corner({Start(), Center(), End(), Outer()}, 1 / Curvature());
     }
-    constexpr Corner ToConvex() const {
-      return IsConcave() ? Inverse() : *this;
-    }
 
     constexpr gfx::Vector2dF v1() const { return Outer() - Start(); }
     constexpr gfx::Vector2dF v2() const { return End() - Outer(); }
@@ -144,8 +141,6 @@ class PLATFORM_EXPORT ContouredRect {
     }
 
     static float CurvatureForHalfCorner(float half_corner);
-
-    gfx::PointF HullPoint() const;
 
     constexpr gfx::PointF MapPoint(
         const gfx::Vector2dF& normalized_point) const {
