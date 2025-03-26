@@ -141,7 +141,6 @@ crbug.com/371802469 [ angle-opengl bigsur graphite-disabled no-asan nvidia-0xfe9
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 # Same with prefer-hardware
-crbug.com/371802469 [ mac intel ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
 crbug.com/389978730 [ win11 nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
