@@ -328,6 +328,13 @@ bool ManifestParser::Parse() {
   manifest_->id = id;
   manifest_->has_custom_id = id_parse_result == ParseIdResultType::kSucceed;
 
+  manifest_->update_token =
+      ParseUpdateToken(root_object.get(), manifest_->has_custom_id);
+  if (!manifest_->update_token.IsNull()) {
+    UseCounter::CountWebDXFeature(execution_context_,
+                                  WebDXFeature::kWebAppManifestUpdateToken);
+  }
+
   manifest_->scope = ParseScope(root_object.get(), manifest_->start_url);
   manifest_->display = ParseDisplay(root_object.get());
   if (manifest_->display != mojom::blink::DisplayMode::kUndefined) {
@@ -2513,6 +2520,13 @@ ManifestParser::MaybeCreatePatternInit(const JSONObject* pattern_object) {
 
 String ManifestParser::ParseVersion(const JSONObject* object) {
   return ParseString(object, "version", Trim(false)).value_or(String());
+}
+
+String ManifestParser::ParseUpdateToken(const JSONObject* object,
+                                        bool has_id_in_manifest) {
+  return has_id_in_manifest ? ParseString(object, "update_token", Trim(false))
+                                  .value_or(String())
+                            : String();
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,
