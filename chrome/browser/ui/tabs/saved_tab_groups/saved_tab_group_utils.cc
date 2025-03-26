@@ -60,16 +60,6 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-namespace {
-void KeepGroups(TabStripModel* model,
-                std::vector<tab_groups::TabGroupId> groups_to_keep) {
-  for (tab_groups::TabGroupId id : groups_to_keep) {
-    // Add a tab to the group so it's kept when the other tabs are closed.
-    model->delegate()->AddTabAt(GURL(), -1, false, id);
-  }
-}
-}  // namespace
-
 namespace tab_groups {
 
 // static
@@ -342,16 +332,17 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
 
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
       saved_group.collaboration_id()) {
-    if (tab_groups::SavedTabGroupUtils::IsOwnerOfSharedTabGroup(
-            browser->profile(), saved_group.saved_guid())) {
-      dialog_type =
-          DeletionDialogController::DialogType::CloseTabAndKeepOrDeleteGroup;
-    } else {
-      dialog_type =
-          DeletionDialogController::DialogType::CloseTabAndKeepOrLeaveGroup;
-    }
-    keep_callback =
-        base::BindOnce(&KeepGroups, browser->tab_strip_model(), group_ids);
+    collaboration::CollaborationService* collaboration_service =
+        collaboration::CollaborationServiceFactory::GetForProfile(
+            browser->profile());
+    auto delegate = std::make_unique<CollaborationControllerDelegateDesktop>(
+        const_cast<Browser*>(browser), data_sharing::FlowType::kClose);
+    collaboration_service->StartShareOrManageFlow(
+        std::move(delegate), saved_group.saved_guid(),
+        collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+    // TODO(crbug.com/403286093): Create a new tab and close current tab to
+    // respect the close action.
+    return;
   }
 
   DeletionDialogController::DialogMetadata dialog_metadata(
