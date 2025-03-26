@@ -2359,7 +2359,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, false);
             return false;
         }
-        mMultiInstanceManager.moveTabToWindow(this, tab, 0);
+        mMultiInstanceManager.moveTabToWindow(this, tab, /* atIndex= */ 0);
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, true);
         DragDropMetricUtils.recordTabDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
@@ -2372,7 +2372,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
     private boolean maybeLaunchDraggedTabGroupInWindow(@NonNull TabGroupMetadata tabGroupMetadata) {
         if (mMultiInstanceManager == null) return false;
 
-        mMultiInstanceManager.moveTabGroupToWindow(this, tabGroupMetadata, 0);
+        mMultiInstanceManager.moveTabGroupToWindow(
+                this, tabGroupMetadata, /* atIndex= */ 0, /* onFinishedRunnable= */ null);
         return true;
     }
 
