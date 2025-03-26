@@ -86,8 +86,8 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   void set_ipc_priority(IpcPriority p) { ipc_priority_ = p; }
 
   // Requests that the result callback be run as a task posted to the given
-  // |task_runner|. If this is not set, the result callback could be run from
-  // any context.
+  // |task_runner|. If this is not set, the result callback will be run on the
+  // thread that the `CopyOutputRequest` was created on.
   void set_result_task_runner(
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
     result_task_runner_ = std::move(task_runner);
