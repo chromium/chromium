@@ -1436,4 +1436,10 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_DELETE_IN_MINUTES_BUTTON" desc="Label for the dialog button to ackowledge that the deletion of local files will start at the scheduled time, in some number of minutes.">
     Delete files in <ph name="MINUTES">$1<ex>36</ex></ph> min
   </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_COMPLETED_TITLE" desc="The title for the notification informing the user that their local files were removed due to SkyVault policy.">
+    Files were successfully deleted
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_COMPLETED_MESSAGE" desc="The message for the notification informing the user that their local files were removed due to SkyVault policy.">
+    From now on, save your files to cloud storage
+  </message>
 </grit-part>
