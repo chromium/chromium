@@ -196,11 +196,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
       case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
-            std::make_optional(SpeculationRulesParams(
-                blink::mojom::SpeculationTargetHint::kNoHint,
-                eagerness.value_or(blink::mojom::SpeculationEagerness::kEager),
-                SpeculationRulesTags())),
-            Referrer(),
+            blink::mojom::SpeculationTargetHint::kNoHint, Referrer(), eagerness,
             /*no_vary_search_hint=*/std::nullopt, rfh, contents()->GetWeakPtr(),
             ui::PAGE_TRANSITION_LINK,
             /*should_warm_up_compositor=*/false,
@@ -212,7 +208,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
       case PreloadingTriggerType::kEmbedder:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
-            /*speculation_rules_params=*/std::nullopt, Referrer(),
+            /*target_hint=*/std::nullopt, Referrer(),
+            /*eagerness=*/std::nullopt,
             /*no_vary_search_hint=*/std::nullopt,
             /*initiator_render_frame_host=*/nullptr, contents()->GetWeakPtr(),
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |

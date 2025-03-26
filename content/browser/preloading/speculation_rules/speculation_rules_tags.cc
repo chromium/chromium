@@ -13,17 +13,12 @@ SpeculationRulesTags::SpeculationRulesTags() = default;
 SpeculationRulesTags::SpeculationRulesTags(
     std::vector<std::optional<std::string>> tags)
     : tags_(std::move(tags)) {}
+SpeculationRulesTags::SpeculationRulesTags(SpeculationRulesTags&& tags) =
+    default;
+SpeculationRulesTags::SpeculationRulesTags(const SpeculationRulesTags& tags) =
+    default;
 
 SpeculationRulesTags::~SpeculationRulesTags() = default;
-
-SpeculationRulesTags::SpeculationRulesTags(const SpeculationRulesTags&) =
-    default;
-SpeculationRulesTags& SpeculationRulesTags::operator=(
-    const SpeculationRulesTags&) = default;
-SpeculationRulesTags::SpeculationRulesTags(
-    SpeculationRulesTags&& tags) noexcept = default;
-SpeculationRulesTags& SpeculationRulesTags::operator=(
-    SpeculationRulesTags&&) noexcept = default;
 
 net::structured_headers::List
 SpeculationRulesTags::ConvertStringToStructuredHeader() {

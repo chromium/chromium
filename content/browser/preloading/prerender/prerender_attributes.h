@@ -9,7 +9,6 @@
 #include <string>
 
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
-#include "content/browser/preloading/speculation_rules/speculation_rules_params.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/preload_pipeline_info.h"
@@ -21,6 +20,7 @@
 #include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -42,8 +42,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
-      std::optional<SpeculationRulesParams> speculation_rules_params,
+      std::optional<blink::mojom::SpeculationTargetHint> target_hint,
       Referrer referrer,
+      std::optional<blink::mojom::SpeculationEagerness> eagerness,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       RenderFrameHost* initiator_render_frame_host,
       base::WeakPtr<WebContents> initiator_web_contents,
@@ -58,17 +59,12 @@ struct CONTENT_EXPORT PrerenderAttributes {
       scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info);
 
   ~PrerenderAttributes();
-
-  // Copyable and movable.
   PrerenderAttributes(const PrerenderAttributes&);
   PrerenderAttributes& operator=(const PrerenderAttributes&);
-  PrerenderAttributes(PrerenderAttributes&&) noexcept;
-  PrerenderAttributes& operator=(PrerenderAttributes&&) noexcept;
+  PrerenderAttributes(PrerenderAttributes&&);
+  PrerenderAttributes& operator=(PrerenderAttributes&&);
 
   bool IsBrowserInitiated() const { return !initiator_origin.has_value(); }
-
-  std::optional<blink::mojom::SpeculationTargetHint> GetTargetHint() const;
-  std::optional<blink::mojom::SpeculationEagerness> GetEagerness() const;
 
   GURL prerendering_url;
 
@@ -78,10 +74,15 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // to content/. Only used for metrics.
   std::string embedder_histogram_suffix;
 
+  // Records the target hint of the corresponding speculation rule.
   // This is std::nullopt when prerendering is initiated by browser.
-  std::optional<SpeculationRulesParams> speculation_rules_params;
+  std::optional<blink::mojom::SpeculationTargetHint> target_hint;
 
   Referrer referrer;
+
+  // Records the eagerness of the corresponding speculation rule.
+  // This is std::nullopt when prerendering is initiated by the browser.
+  std::optional<blink::mojom::SpeculationEagerness> eagerness;
 
 #if BUILDFLAG(IS_ANDROID)
   // Additional headers to be attached to prerendering navigation. Currently

@@ -559,9 +559,6 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
 
   FrameTreeNodeId frame_tree_node_id;
 
-  std::optional<blink::mojom::SpeculationEagerness> eagerness =
-      attributes.GetEagerness();
-
   {
     RenderFrameHostImpl* initiator_rfh =
         attributes.IsBrowserInitiated()
@@ -758,14 +755,15 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
     // when the number reaches the limit.
     if (!initiator_web_contents.GetPrerenderHostRegistry()
              ->IsAllowedToStartPrerenderingForTrigger(attributes.trigger_type,
-                                                      eagerness)) {
+                                                      attributes.eagerness)) {
       // The reason we don't consider limit exceeded as an ineligibility
       // reason is because we can't replicate the behavior in our other
       // experiment groups for analysis. To prevent this we set
       // TriggeringOutcome to kFailure and look into the failure reason to
       // learn more.
       PrerenderFinalStatus final_status;
-      switch (GetPrerenderLimitGroup(attributes.trigger_type, eagerness)) {
+      switch (GetPrerenderLimitGroup(attributes.trigger_type,
+                                     attributes.eagerness)) {
         case PrerenderLimitGroup::kSpeculationRulesEager:
           final_status =
               PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded;
@@ -791,7 +789,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHost(
     prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
         std::move(prerender_host);
 
-    if (GetPrerenderLimitGroup(attributes.trigger_type, eagerness) ==
+    if (GetPrerenderLimitGroup(attributes.trigger_type, attributes.eagerness) ==
         PrerenderLimitGroup::kSpeculationRulesNonEager) {
       non_eager_prerender_host_id_by_arrival_order_.push_back(
           frame_tree_node_id);
@@ -866,8 +864,7 @@ FrameTreeNodeId PrerenderHostRegistry::CreateAndStartHostForNewTab(
   prerender_new_tab_handle_by_frame_tree_node_id_[prerender_host_id] =
       std::move(handle);
 
-  if (GetPrerenderLimitGroup(attributes.trigger_type,
-                             attributes.GetEagerness()) ==
+  if (GetPrerenderLimitGroup(attributes.trigger_type, attributes.eagerness) ==
       PrerenderLimitGroup::kSpeculationRulesNonEager) {
     non_eager_prerender_host_id_by_arrival_order_.push_back(prerender_host_id);
   }

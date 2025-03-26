@@ -1667,8 +1667,6 @@ source_set("browser") {
     "preloading/prerenderer_impl.h",
     "preloading/speculation_rules/speculation_host_impl.cc",
     "preloading/speculation_rules/speculation_host_impl.h",
-    "preloading/speculation_rules/speculation_rules_params.cc",
-    "preloading/speculation_rules/speculation_rules_params.h",
     "preloading/speculation_rules/speculation_rules_tags.cc",
     "preloading/speculation_rules/speculation_rules_tags.h",
     "presentation/presentation_service_impl.cc",

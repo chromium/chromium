@@ -284,7 +284,9 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     RenderFrameHostImpl* rfh = contents()->GetPrimaryMainFrame();
     return PrerenderAttributes(
         url, PreloadingTriggerType::kSpeculationRule,
-        /*embedder_histogram_suffix=*/"", SpeculationRulesParams(), Referrer(),
+        /*embedder_histogram_suffix=*/"",
+        blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
+        blink::mojom::SpeculationEagerness::kEager,
         /*no_vary_search_hint=*/std::nullopt, rfh, contents()->GetWeakPtr(),
         ui::PAGE_TRANSITION_LINK,
         /*should_warm_up_compositor=*/false,
