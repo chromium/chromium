@@ -58,6 +58,7 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/verbatim_match.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_type.h"
@@ -1169,6 +1170,12 @@ void OmniboxEditModel::OnSetFocus(bool control_down) {
 
   if (user_input_in_progress_ || !in_revert_)
     controller_->client()->OnInputStateChanged();
+
+  if (omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
+          Get()
+              .enabled) {
+    controller_->client()->MaybeShowOnFocusHatsSurvey();
+  }
 }
 
 void OmniboxEditModel::StartZeroSuggestRequest(

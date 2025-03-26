@@ -293,4 +293,22 @@ OmniboxUrlSuggestionsOnFocus& OmniboxUrlSuggestionsOnFocus::operator=(
     const OmniboxUrlSuggestionsOnFocus&) = default;
 
 OmniboxUrlSuggestionsOnFocus::~OmniboxUrlSuggestionsOnFocus() = default;
+
+BASE_FEATURE(HappinessTrackingSurveyForOmniboxOnFocusZps::
+                 kHappinessTrackingSurveyForOmniboxOnFocusZps,
+             "HappinessTrackingSurveyForOmniboxOnFocusZps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+HappinessTrackingSurveyForOmniboxOnFocusZps::
+    HappinessTrackingSurveyForOmniboxOnFocusZps() {
+  enabled = base::FeatureList::IsEnabled(
+      kHappinessTrackingSurveyForOmniboxOnFocusZps);
+  focus_threshold =
+      base::FeatureParam<size_t>(&kHappinessTrackingSurveyForOmniboxOnFocusZps,
+                                 "FocusThreshold", 5)
+          .Get();
+  survey_delay =
+      base::FeatureParam<size_t>(&kHappinessTrackingSurveyForOmniboxOnFocusZps,
+                                 "SurveyDelay", 7000)
+          .Get();
+}
 }  // namespace omnibox_feature_configs

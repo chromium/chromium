@@ -31,6 +31,9 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -39,6 +42,7 @@
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/focused_node_details.h"
@@ -69,6 +73,8 @@
 
 using gfx::Range;
 using metrics::OmniboxEventProto;
+using ::testing::_;
+using ::testing::Return;
 
 class TestingOmniboxView;
 
@@ -326,6 +332,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   TestLocationBarModel* location_bar_model() { return &location_bar_model_; }
   CommandUpdaterImpl* command_updater() { return &command_updater_; }
   TestingOmniboxView* omnibox_view() const { return omnibox_view_; }
+  MockHatsService* mock_hats_service() { return mock_hats_service_.get(); }
 
   // TODO(tommycli): These base class accessors exist because Textfield and
   // OmniboxView both hide member functions that were public in base classes.
@@ -393,6 +400,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
+  raw_ptr<MockHatsService> mock_hats_service_;
   std::unique_ptr<TemplateURLServiceFactoryTestUtil> util_;
   CommandUpdaterImpl command_updater_;
   TestLocationBarModel location_bar_model_;
@@ -458,6 +466,10 @@ void OmniboxViewViewsTest::SetUp() {
   AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
       profile_.get(),
       base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
+  mock_hats_service_ = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+  ON_CALL(*mock_hats_service_, CanShowAnySurvey(_)).WillByDefault(Return(true));
   auto omnibox_view = std::make_unique<TestingOmniboxView>(
       std::make_unique<ChromeOmniboxClient>(&location_bar_, browser(),
                                             profile()),
@@ -475,6 +487,7 @@ void OmniboxViewViewsTest::TearDown() {
 
   location_bar()->set_omnibox_view(nullptr);
   omnibox_view_ = nullptr;
+  mock_hats_service_ = nullptr;
   browser_->tab_strip_model()->CloseAllTabs();
   browser_ = nullptr;
   browser_window_ = nullptr;
@@ -1120,6 +1133,27 @@ TEST_F(OmniboxViewViewsTest, AccessibleValue) {
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ("https://permanent-text.com/",
             node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+}
+
+TEST_F(OmniboxViewViewsTest, ShowHatsSurvey) {
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps>
+      survey_config;
+  survey_config.Get().enabled = true;
+  survey_config.Get().survey_delay = 0;
+
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      suggest_config;
+  suggest_config.Get().enabled = true;
+
+  EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurvey(_, _, _, _)).Times(1);
+
+  location_bar_model()->set_url(GURL("https://test.com/"));
+  for (int i = 0; i < 5; i++) {
+    omnibox_textfield()->OnFocus();
+    omnibox_textfield()->OnBlur();
+  }
 }
 
 class OmniboxViewViewsClipboardTest
