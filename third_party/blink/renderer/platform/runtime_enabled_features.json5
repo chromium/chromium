@@ -1777,10 +1777,6 @@
     {
       name: "DOMPartsAPIMinimal",
     },
-    {
-      name: "DragImageNoNodeId",
-      status: "stable",
-    },
     // Dynamically change the safe area insets based on the bottom browser
     // controls visibility.
     {
