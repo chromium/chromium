@@ -8816,6 +8816,9 @@ crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failu
 # Flaky Test Disable 2024-10-31
 crbug.com/376675482 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-permissions-policy-default.tentative.https.sub.html [ Failure Pass ]
 
+# Flaky Test Disable
+crbug.com/402252192 [ Mac ] external/wpt/css/css-overflow/scroll-marker-focus-visible.html [ Failure Pass ]
+
 # Fails on linux-win-cross-rel
 crbug.com/377507247 [ Win10.20h2 ] external/wpt/webidl/ecmascript-binding/window-named-properties-object.html [ Failure ]
 
