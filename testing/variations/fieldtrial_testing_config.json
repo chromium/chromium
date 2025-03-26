@@ -12997,24 +12997,6 @@
             ]
         }
     ],
-    "InitImageDecodeLastUseTime": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InitImageDecodeLastUseTime"
-                    ]
-                }
-            ]
-        }
-    ],
     "InlineFullscreenPerfExperiment": [
         {
             "platforms": [
