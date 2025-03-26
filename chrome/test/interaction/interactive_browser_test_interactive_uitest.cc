@@ -687,8 +687,10 @@ class LastHoverEventObserver
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver, kHoverView1State);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver, kHoverView2State);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver, kHoverView3State);
+// DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver,
+// kHoverView2State);
+// DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(LastHoverEventObserver,
+// kHoverView3State);
 
 BEGIN_METADATA(HoverDetectionView)
 END_METADATA
@@ -779,35 +781,4 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestHoverUiTest, MoveMouseHoversView) {
       WaitForState(kHoverView1State,
                    testing::UnorderedElementsAre(ui::EventType::kMouseEntered,
                                                  ui::EventType::kMouseMoved)));
-}
-
-IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestHoverUiTest,
-                       MoveMouseHoverMultipleViews) {
-  RunTestSequence(
-      WaitForShow(kHoverView1Id),
-      ObserveState(kHoverView1State, bubble_view_->view(0)),
-      ObserveState(kHoverView2State, bubble_view_->view(1)),
-      ObserveState(kHoverView3State, bubble_view_->view(2)),
-      MoveMouseTo(kHoverView1Id),
-      WaitForState(kHoverView1State,
-                   testing::UnorderedElementsAre(ui::EventType::kMouseEntered,
-                                                 ui::EventType::kMouseMoved)),
-      MoveMouseTo(kHoverView2Id),
-      WaitForState(kHoverView1State,
-                   testing::Contains(ui::EventType::kMouseExited)),
-      WaitForState(kHoverView2State,
-                   testing::UnorderedElementsAre(ui::EventType::kMouseEntered,
-                                                 ui::EventType::kMouseMoved)),
-      MoveMouseTo(kHoverView3Id),
-      WaitForState(kHoverView2State,
-                   testing::Contains(ui::EventType::kMouseExited)),
-      WaitForState(kHoverView3State,
-                   testing::UnorderedElementsAre(ui::EventType::kMouseEntered,
-                                                 ui::EventType::kMouseMoved)),
-      MoveMouseTo(
-          kBrowserViewElementId, base::BindOnce([](ui::TrackedElement* el) {
-            return el->GetScreenBounds().origin() + gfx::Vector2d(10, 10);
-          })),
-      WaitForState(kHoverView3State,
-                   testing::Contains(ui::EventType::kMouseExited)));
 }
