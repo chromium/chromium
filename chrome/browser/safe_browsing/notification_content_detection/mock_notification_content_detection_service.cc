@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/mock_notification_content_detection_service.h"
+#include "chrome/browser/safe_browsing/notification_content_detection/mock_notification_content_detection_service.h"
 
 #include "base/memory/ptr_util.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
+#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_service_factory.h"
 
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"

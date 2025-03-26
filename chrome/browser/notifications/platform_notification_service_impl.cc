@@ -79,7 +79,7 @@
 #endif  // IS_CHROMEOS
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
+#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_service_factory.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 #endif
 
