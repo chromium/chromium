@@ -83,8 +83,6 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
       mojo::PendingRemote<
           blink::mojom::TranslationManagerCreateTranslatorClient> client,
       blink::mojom::TranslatorCreateOptionsPtr options) override;
-  void GetTranslatorAvailabilityInfo(
-      GetTranslatorAvailabilityInfoCallback callback) override;
 
   void TranslationAvailable(blink::mojom::TranslatorLanguageCodePtr source_lang,
                             blink::mojom::TranslatorLanguageCodePtr target_lang,

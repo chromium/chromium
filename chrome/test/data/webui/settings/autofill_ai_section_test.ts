@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsAutofillAiAddOrEditDialogElement, SettingsSimpleConfirmationDialogElement, SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
 import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
@@ -420,5 +420,63 @@ suite('AutofillAiSectionUiTest', function() {
     assertTrue(
         isVisible(section.shadowRoot!.querySelector('#entries')),
         'With the toggle disabled, the entries should be visible');
+  });
+});
+
+suite('AutofillAiSectionLongLabelsUiTest', function() {
+  let section: SettingsAutofillAiSectionElement;
+
+  setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const entityDataManager = new TestEntityDataManagerProxy();
+    EntityDataManagerProxyImpl.setInstance(entityDataManager);
+
+    const testEntityInstancesWithLabels:
+        chrome.autofillPrivate.EntityInstanceWithLabels[] = [
+      {
+        guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
+        entityInstanceLabel: 'Label'.repeat(100),
+        entityInstanceSubLabel: 'Car',
+      },
+      {
+        guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
+        entityInstanceLabel: 'John Doe',
+        entityInstanceSubLabel: 'Sublabel'.repeat(100),
+      },
+      {
+        guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
+        entityInstanceLabel: 'Mark Donald',
+        entityInstanceSubLabel: 'Passport',
+      },
+    ];
+    entityDataManager.setLoadEntityInstancesResponse(
+        testEntityInstancesWithLabels);
+
+    section = document.createElement('settings-autofill-ai-section');
+    document.body.appendChild(section);
+    await flushTasks();
+  });
+
+  test('testLongLabelsHaveHiddenOverflow', function() {
+    // Contains all labels and sublabels, in order.
+    const labels =
+        section.shadowRoot!.querySelectorAll<HTMLElement>('.ellipses');
+
+    assertEquals(6, labels.length, '3 labels + 3 sublabels should be loaded');
+
+    assertTrue(labels[0]!.textContent!.includes('Label'));
+    assertGE(labels[0]!.scrollWidth, labels[0]!.offsetWidth);
+    assertTrue(labels[1]!.textContent!.includes('Car'));
+    assertEquals(labels[1]!.scrollWidth, labels[1]!.offsetWidth);
+
+    assertTrue(labels[2]!.textContent!.includes('John Doe'));
+    assertEquals(labels[2]!.scrollWidth, labels[2]!.offsetWidth);
+    assertTrue(labels[3]!.textContent!.includes('Sublabel'));
+    assertGE(labels[3]!.scrollWidth, labels[3]!.offsetWidth);
+
+    assertTrue(labels[4]!.textContent!.includes('Mark Donald'));
+    assertEquals(labels[4]!.scrollWidth, labels[4]!.offsetWidth);
+    assertTrue(labels[5]!.textContent!.includes('Passport'));
+    assertEquals(labels[5]!.scrollWidth, labels[5]!.offsetWidth);
   });
 });

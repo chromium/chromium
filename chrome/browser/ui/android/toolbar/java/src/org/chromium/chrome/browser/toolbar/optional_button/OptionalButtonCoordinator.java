@@ -43,7 +43,7 @@ import java.util.function.BooleanSupplier;
 public class OptionalButtonCoordinator {
     private final OptionalButtonMediator mMediator;
     private final OptionalButtonView mView;
-    private final UserEducationHelper mUserEducationHelper;
+    private final Supplier<UserEducationHelper> mUserEducationHelper;
     private final Supplier<Tracker> mFeatureEngagementTrackerSupplier;
     private Callback<Integer> mTransitionFinishedCallback;
     private IphCommandBuilder mIphCommandBuilder;
@@ -77,7 +77,7 @@ public class OptionalButtonCoordinator {
      */
     public OptionalButtonCoordinator(
             View view,
-            UserEducationHelper userEducationHelper,
+            Supplier<UserEducationHelper> userEducationHelper,
             ViewGroup transitionRoot,
             BooleanSupplier isAnimationAllowedPredicate,
             Supplier<Tracker> featureEngagementTrackerSupplier) {
@@ -272,7 +272,7 @@ public class OptionalButtonCoordinator {
         }
 
         if (mIphCommandBuilder != null) {
-            mUserEducationHelper.requestShowIph(mIphCommandBuilder.build());
+            mUserEducationHelper.get().requestShowIph(mIphCommandBuilder.build());
             mIphCommandBuilder = null;
         }
     }

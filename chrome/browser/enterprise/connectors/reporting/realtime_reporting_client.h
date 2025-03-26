@@ -57,6 +57,7 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
   // RealtimeReportingClientBase overrides:
   std::string GetProfileUserName() override;
   base::WeakPtr<RealtimeReportingClientBase> AsWeakPtr() override;
+  std::optional<ReportingSettings> GetReportingSettings() override;
 
   base::WeakPtr<RealtimeReportingClient> AsWeakPtrImpl() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -71,12 +72,6 @@ class RealtimeReportingClient : public RealtimeReportingClientBase {
 
   // policy::CloudPolicyClient::Observer overrides:
   void OnClientError(policy::CloudPolicyClient* client) override;
-
-  // Determines if the real-time reporting feature is enabled.
-  // Obtain settings to apply to a reporting event from ConnectorsService.
-  // std::nullopt represents that reporting should not be done.
-  // Declared virtual for tests.
-  std::optional<ReportingSettings> virtual GetReportingSettings();
 
   // Report safe browsing event through real-time reporting channel, if enabled.
   // Declared as virtual for tests.

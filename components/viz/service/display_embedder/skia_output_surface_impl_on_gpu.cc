@@ -1876,7 +1876,8 @@ void SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID(int64_t display_id) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void SkiaOutputSurfaceImplOnGpu::SetFrameRate(float frame_rate) {
+void SkiaOutputSurfaceImplOnGpu::SetFrameRate(
+    gfx::SurfaceControlFrameRate frame_rate) {
   if (presenter_) {
     presenter_->SetFrameRate(frame_rate);
   }

@@ -167,31 +167,8 @@
                                 signin_metrics::AccessPoint::kSettings);
 }
 
-+ (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity {
-  [self signinWithFakeIdentity:identity];
-
-  // "Upgrade" the account to ConsentLevel::kSync.
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CoreAccountId coreAccountId =
-      identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  CHECK(!coreAccountId.empty());
-  signin::PrimaryAccountMutator::PrimaryAccountError error =
-      identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          coreAccountId, signin::ConsentLevel::kSync,
-          signin_metrics::AccessPoint::kSettings);
-  CHECK_EQ(error, signin::PrimaryAccountMutator::PrimaryAccountError::kNoError);
-
-  // Mark Sync-the-feature setup as complete, so it can start up.
-  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
-  syncService->SetSyncFeatureRequested();
-  syncService->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-}
-
 + (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {
-  chrome_test_util::SignInWithoutSync(identity);
+  chrome_test_util::SignIn(identity);
 }
 
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {

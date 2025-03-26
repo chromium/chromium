@@ -14,7 +14,7 @@
   ],
   offer: [
     {
-      protocol: "fuchsia.logger.LogSink",
+      dictionary: "diagnostics",
       from: "parent",
       to: [
         "#isolated_a11y_manager",

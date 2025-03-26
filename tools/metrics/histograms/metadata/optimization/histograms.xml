@@ -294,6 +294,10 @@ chromium-metrics-reviews@google.com.
   <variant name="GlicContextualCueing"
       summary="Provides information about whether a page is eligible to cue
                for GLIC."/>
+  <variant name="GlicZeroStateSuggestions"
+      summary="Provides information about whether a page is eligible for zero
+               state suggestions for GLIC, and the contextual suggestions if
+               eligible."/>
   <variant name="HistoryClusters"
       summary="This optimization provides information for whether a page
                should be included in a history cluster."/>

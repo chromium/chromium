@@ -404,6 +404,7 @@ public class PartnerBrowserCustomizations {
 
     private void destroyInternal() {
         mInitializeAsyncCallbacks.clear();
+        mPartnerCustomizationsUma = null;
         mListener = null;
     }
 

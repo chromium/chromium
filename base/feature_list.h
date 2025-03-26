@@ -104,6 +104,11 @@ enum FeatureState {
 //
 // It should *not* be defined in header files; do not use this macro in header
 // files.
+//
+// WARNING: If the feature is not enabled, the parameter is not set, or set to
+// an invalid value (per the param type), then Get() will return the default
+// value passed to this C++ macro. In particular this will typically return the
+// default value regardless of the server-side config in control groups.
 #define BASE_FEATURE_PARAM(T, feature_object_name, feature, name,       \
                            default_value)                               \
   namespace field_trial_params_internal {                               \

@@ -473,7 +473,7 @@ void MailboxVideoFrameConverter::UnregisterSharedImage(
   DVLOGF(4);
 
   auto it = shared_images_.find(origin_frame_id);
-  CHECK(it != shared_images_.end(), base::NotFatalUntil::M130);
+  CHECK(it != shared_images_.end());
   DCHECK(it->second == scoped_shared_image.get());
   shared_images_.erase(it);
 }

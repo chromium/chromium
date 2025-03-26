@@ -6,7 +6,7 @@
 
 #include <set>
 
-#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "content/public/browser/render_frame_host.h"
@@ -105,8 +105,9 @@ InspectableViewsFinder::ViewList InspectableViewsFinder::GetViewsForExtension(
     const Extension& extension,
     bool is_enabled) {
   ViewList result;
-  if (!ChromeDevToolsManagerDelegate::AllowInspection(profile_, &extension))
+  if (!IsInspectionAllowed(profile_, &extension)) {
     return result;
+  }
   GetViewsForExtensionForProfile(
       extension, profile_, is_enabled, false, &result);
   if (profile_->HasPrimaryOTRProfile()) {

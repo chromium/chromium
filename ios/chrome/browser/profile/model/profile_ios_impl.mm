@@ -493,9 +493,7 @@ void ProfileIOSImpl::PrefsInitStage2(InitInfo init_info, bool success) {
   if (!init_info.is_new_profile) {
     MigrateObsoleteProfilePrefs(prefs_.get());
 
-    // TODO(crbug.com/369296278): Remove ~one year after the full launch of
-    // kForceMigrateSyncingUserToSignedIn (also remove the corresponding
-    // tests and -signinAndEnableLegacySyncFeature: test helper).
+    // TODO(crbug.com/369296278): Remove on 12/2025.
     //
     // MaybeMigrateSyncingUserToSignedIn(...) may perform disk IO which is
     // not permitted if the Profile is loaded asynchronously.

@@ -118,18 +118,14 @@ public class PdfCoordinator {
 
         @Override
         public void onLoadDocumentSuccess() {
-            long duration = SystemClock.elapsedRealtime() - mDocumentLoadStartTimestamp;
-            PdfUtils.recordPdfLoadTime(duration);
-            PdfUtils.recordPdfLoadResult(true);
             if (mDocumentLoadStartTimestamp <= 0) {
                 return;
             }
-            PdfUtils.recordPdfLoadTimePaired(duration);
-            PdfUtils.recordPdfLoadResultPaired(true);
             // There should be only one success callback for each pdf. Add this confidence check to
             // be consistent with the error callback.
             if (!mIsLoadDocumentSuccess) {
-                PdfUtils.recordPdfLoadTimeFirstPaired(duration);
+                PdfUtils.recordPdfLoadTimeFirstPaired(
+                        SystemClock.elapsedRealtime() - mDocumentLoadStartTimestamp);
                 PdfUtils.recordPdfLoadResultDetail(PdfLoadResult.SUCCESS);
             }
             mIsLoadDocumentSuccess = true;
@@ -137,11 +133,9 @@ public class PdfCoordinator {
 
         @Override
         public void onLoadDocumentError(Throwable throwable) {
-            PdfUtils.recordPdfLoadResult(false);
             if (mDocumentLoadStartTimestamp <= 0) {
                 return;
             }
-            PdfUtils.recordPdfLoadResultPaired(false);
             // Only record the first error emitted.
             if (!mIsLoadDocumentError) {
                 PdfUtils.recordPdfLoadResultDetail(PdfLoadResult.ERROR);

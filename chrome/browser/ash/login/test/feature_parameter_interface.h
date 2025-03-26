@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -172,9 +173,9 @@ bool FeatureAsParameterInterface<N>::IsFeatureEnabledInThisTestCase(
     const base::Feature& feature) {
   const FeatureStateArray<N> feature_state_array = InterfaceType::GetParam();
   for (const FeatureState& feature_state : feature_state_array) {
-    if (strcmp(feature_state.feature->name, feature.name) != 0)
+    if (UNSAFE_TODO(strcmp(feature_state.feature->name, feature.name)) != 0) {
       continue;
-
+    }
     return feature_state.is_enabled;
   }
 

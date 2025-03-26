@@ -77,8 +77,7 @@ def ProcessArgs(args, parser=None):
 
   if test_class:
     rest_args_filtered.extend([
-        '--test-name-prefix=%s.%s.' % (test_class.__module__,
-                                       test_class.__name__)
+        f'--test-name-prefix={test_class.__module__}.{test_class.__name__}.',
     ])
 
   if not any(arg.startswith('--retry-limit') for arg in rest_args_filtered):

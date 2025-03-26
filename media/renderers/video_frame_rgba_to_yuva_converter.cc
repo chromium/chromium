@@ -44,7 +44,9 @@ std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
     return std::nullopt;
   }
 
-  ri->WaitSyncTokenCHROMIUM(acquire_sync_token.GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      src_shared_image->BeginRasterAccess(ri, acquire_sync_token,
+                                          /*readonly=*/true);
 
   auto dst_sync_token = dst_video_frame->acquire_sync_token();
   auto dst_mailbox = dst_video_frame->shared_image()->mailbox();
@@ -67,8 +69,8 @@ std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
   // Make access to the `dst_video_frame` wait on copy completion. We also
   // update the ReleaseSyncToken here since it's used when the underlying
   // GpuMemoryBuffer and SharedImage resources are returned to the pool.
-  gpu::SyncToken completion_sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
+  gpu::SyncToken completion_sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   SimpleSyncTokenClient simple_client(completion_sync_token);
   dst_video_frame->UpdateAcquireSyncToken(completion_sync_token);
   dst_video_frame->UpdateReleaseSyncToken(&simple_client);

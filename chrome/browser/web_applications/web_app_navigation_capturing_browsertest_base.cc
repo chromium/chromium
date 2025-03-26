@@ -96,21 +96,4 @@ void WebAppNavigationCapturingBrowserTestBase::WaitForLaunchParams(
   }));
 }
 
-std::vector<GURL> WebAppNavigationCapturingBrowserTestBase::GetLaunchParams(
-    content::WebContents* contents,
-    const std::string& params) {
-  std::vector<GURL> launch_params;
-  content::EvalJsResult launchParamsResults =
-      content::EvalJs(contents->GetPrimaryMainFrame(),
-                      "'" + params + "' in window ? " + params + " : []");
-  EXPECT_THAT(launchParamsResults, content::EvalJsResult::IsOk());
-  base::Value::List launchParamsTargetUrls = launchParamsResults.ExtractList();
-  if (!launchParamsTargetUrls.empty()) {
-    for (const base::Value& url : launchParamsTargetUrls) {
-      launch_params.push_back(GURL(url.GetString()));
-    }
-  }
-  return launch_params;
-}
-
 }  // namespace web_app

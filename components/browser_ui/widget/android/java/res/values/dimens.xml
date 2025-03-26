@@ -15,7 +15,6 @@ found in the LICENSE file.
     <dimen name="card_rounded_corner_radius">16dp</dimen>
     <dimen name="card_rounded_corner_small_radius">4dp</dimen>
     <dimen name="dialog_corner_radius">24dp</dimen>
-    <dimen name="sheet_background_elev">@dimen/default_elevation_0</dimen>
 
     <!-- DualControlLayout -->
     <dimen name="dual_control_margin_between_items">8dp</dimen>
@@ -205,7 +204,6 @@ found in the LICENSE file.
     <!-- New Tab Page -->
     <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_2</dimen>
     <item name="home_surface_search_box_background_alpha" format="float" type="dimen">0.15</item>
-    <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_0</dimen>
     <dimen name="home_surface_ui_background_radius">24dp</dimen>
     <dimen name="home_surface_search_box_background_radius">100dp</dimen>
 
@@ -230,5 +228,4 @@ found in the LICENSE file.
     <!-- Loading Fullscreen dimens -->
     <dimen name="left_right_padding">16dp</dimen>
     <dimen name="top_bottom_padding">18dp</dimen>
-    <dimen name="text_bottom_padding">30dp</dimen>
 </resources>

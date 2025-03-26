@@ -720,19 +720,17 @@ void DiskCacheEntryTest::GetTimes(int stream_index) {
 
   Time t1 = Time::Now();
   ASSERT_THAT(CreateEntry(key, &entry), IsOk());
-  EXPECT_TRUE(entry->GetLastModified() >= t1);
-  EXPECT_TRUE(entry->GetLastModified() == entry->GetLastUsed());
+  EXPECT_TRUE(entry->GetLastUsed() >= t1);
 
   AddDelay();
   Time t2 = Time::Now();
   EXPECT_TRUE(t2 > t1);
   EXPECT_EQ(0, WriteData(entry, stream_index, 200, nullptr, 0, false));
   if (type_ == net::APP_CACHE) {
-    EXPECT_TRUE(entry->GetLastModified() < t2);
+    EXPECT_TRUE(entry->GetLastUsed() < t2);
   } else {
-    EXPECT_TRUE(entry->GetLastModified() >= t2);
+    EXPECT_TRUE(entry->GetLastUsed() >= t2);
   }
-  EXPECT_TRUE(entry->GetLastModified() == entry->GetLastUsed());
 
   AddDelay();
   Time t3 = Time::Now();
@@ -742,13 +740,10 @@ void DiskCacheEntryTest::GetTimes(int stream_index) {
   EXPECT_EQ(kSize, ReadData(entry, stream_index, 0, buffer.get(), kSize));
   if (type_ == net::APP_CACHE) {
     EXPECT_TRUE(entry->GetLastUsed() < t2);
-    EXPECT_TRUE(entry->GetLastModified() < t2);
   } else if (type_ == net::SHADER_CACHE) {
     EXPECT_TRUE(entry->GetLastUsed() < t3);
-    EXPECT_TRUE(entry->GetLastModified() < t3);
   } else {
     EXPECT_TRUE(entry->GetLastUsed() >= t3);
-    EXPECT_TRUE(entry->GetLastModified() < t3);
   }
   entry->Close();
 }
@@ -1498,7 +1493,6 @@ void DiskCacheEntryTest::DoomedEntry(int stream_index) {
   EXPECT_EQ(2000, ReadData(entry, stream_index, 0, buffer2.get(), 2000));
   EXPECT_EQ(0, memcmp(buffer1->data(), buffer2->data(), kSize1));
   EXPECT_EQ(key, entry->GetKey());
-  EXPECT_TRUE(initial < entry->GetLastModified());
   EXPECT_TRUE(initial < entry->GetLastUsed());
 
   entry->Close();
@@ -4266,8 +4260,8 @@ TEST_F(DiskCacheEntryTest, SimpleCacheStream1SizeChanges) {
 
   auto data_size = std::to_array<int32_t>({kSize, stream1_size, 0});
   int sparse_data_size = 0;
-  disk_cache::SimpleEntryStat entry_stat(
-      base::Time::Now(), base::Time::Now(), data_size, sparse_data_size);
+  disk_cache::SimpleEntryStat entry_stat(base::Time::Now(), data_size,
+                                         sparse_data_size);
   int eof_offset = entry_stat.GetEOFOffsetInFile(key.size(), 0);
   disk_cache::SimpleFileEOF eof_record;
   ASSERT_EQ(static_cast<int>(sizeof(eof_record)),

@@ -85,7 +85,7 @@ void DataSharingNetworkLoaderImpl::OnDownloadComplete(
   }
   std::move(callback).Run(
       std::make_unique<DataSharingNetworkLoader::LoadResult>(
-          std::move(response->response), status));
+          std::move(response->response), status, response->http_status_code));
 }
 
 const net::NetworkTrafficAnnotationTag&

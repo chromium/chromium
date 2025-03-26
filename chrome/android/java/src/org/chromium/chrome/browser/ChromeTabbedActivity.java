@@ -94,6 +94,7 @@ import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHan
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.bookmarks.BookmarkPane;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -743,7 +744,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                             mTabModelSelector
                                     .getTabGroupModelFilterProvider()
                                     .getTabGroupModelFilter(false));
-            mHistoricalTabModelObserver.addSecodaryTabModelSupplier(
+            mHistoricalTabModelObserver.addSecondaryTabModelSupplier(
                     ArchivedTabModelOrchestrator.getForProfile(profile)::getTabModel);
 
             // Defer creation of this helper so it triggers after TabGroupModelFilter observers.
@@ -1842,12 +1843,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             mInactivityTracker.register(this.getLifecycleDispatcher());
             boolean isIntentWithEffect = false;
             boolean isMainIntentFromLauncher = false;
-            boolean isLaunchingDraggedTab = false;
+            boolean isLaunchingDraggedTabOrGroup = false;
             if (getSavedInstanceState() == null && intent != null) {
                 if (!shouldIgnoreIntent()) {
-                    isLaunchingDraggedTab = maybeLaunchDraggedTabInWindow(intent);
-                    // If launching tab drag was successful, ignore handling url intent.
-                    isIntentWithEffect = isLaunchingDraggedTab || maybeHandleUrlIntent(intent);
+                    isLaunchingDraggedTabOrGroup = maybeLaunchDraggedTabOrGroupInWindow(intent);
+                    // If launching tab or group drag was successful, ignore handling url intent
+                    isIntentWithEffect =
+                            isLaunchingDraggedTabOrGroup || maybeHandleUrlIntent(intent);
                 }
 
                 if (IntentUtils.isMainIntentFromLauncher(intent)) {
@@ -1868,7 +1870,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             boolean hasTabWaitingForReparenting =
                     (AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()
                                     && getSavedInstanceState() == null)
-                            || isLaunchingDraggedTab;
+                            || isLaunchingDraggedTabOrGroup;
             mCreatedTabOnStartup =
                     getCurrentTabModel().getCount() > 0
                             || mTabModelOrchestrator.getRestoredTabCount() > 0
@@ -2331,8 +2333,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                         });
     }
 
-    private boolean maybeLaunchDraggedTabInWindow(Intent intent) {
+    private boolean maybeLaunchDraggedTabOrGroupInWindow(Intent intent) {
         if (!TabUiFeatureUtilities.isTabDragToCreateInstanceSupported()) return false;
+        @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
+        return tabGroupMetadata != null
+                ? maybeLaunchDraggedTabGroupInWindow(tabGroupMetadata)
+                : maybeLaunchDraggedTabInWindow(intent);
+    }
+
+    private boolean maybeLaunchDraggedTabInWindow(Intent intent) {
         int draggedTabId =
                 IntentUtils.safeGetIntExtra(
                         intent, IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID);
@@ -2357,6 +2366,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
                 AppHeaderUtils.isAppInDesktopWindow(
                         mRootUiCoordinator.getDesktopWindowStateManager()));
+        return true;
+    }
+
+    // TODO(crbug.com/384979079): record metrics for tab group drop.
+    private boolean maybeLaunchDraggedTabGroupInWindow(@NonNull TabGroupMetadata tabGroupMetadata) {
+        if (mMultiInstanceManager == null) return false;
+
+        mMultiInstanceManager.moveTabGroupToWindow(this, tabGroupMetadata, 0);
         return true;
     }
 
@@ -3253,6 +3270,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 getToolbarManager()
                         .setUrlBarFocus(true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
             }
+        } else if (id == R.id.focus_and_clear_url_bar) {
+            boolean isUrlBarVisible =
+                    !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
+            if (isUrlBarVisible) {
+                getToolbarManager()
+                        .setUrlBarFocusAndText(
+                                true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION, "");
+            }
         } else if (id == R.id.downloads_menu_id) {
             OtrProfileId otrProfileId = null;
             if (currentTab != null) {
@@ -3299,6 +3324,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         } else if (id == R.id.ntp_customization_id) {
             new NtpCustomizationCoordinator(this, mRootUiCoordinator.getBottomSheetController())
                     .showBottomSheet();
+        } else if (id == R.id.toggle_bookmark_bar) {
+            BookmarkBarUtils.toggleSettingEnabled(this, getProfileProviderSupplier());
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }
@@ -3675,9 +3702,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             mUndoBarPopupController = null;
         }
 
-        if (mStartupPaintPreviewHelperSupplier != null) {
-            mStartupPaintPreviewHelperSupplier.destroy();
+        StartupPaintPreviewHelper startupPaintPreviewHelper =
+                mStartupPaintPreviewHelperSupplier.get();
+        if (startupPaintPreviewHelper != null) {
+            startupPaintPreviewHelper.destroy();
         }
+        mStartupPaintPreviewHelperSupplier.destroy();
 
         if (mModuleRegistrySupplier.hasValue()) {
             mModuleRegistrySupplier.get().destroy();

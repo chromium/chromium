@@ -140,10 +140,12 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -580,7 +582,7 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
       form_structure, form_data,
       client.GetPersonalDataManager().address_data_manager());
 
-  if (!autofill_ai_shows_bubble && form_structure.IsAutofillable()) {
+  if (!autofill_ai_shows_bubble) {
     // Update Personal Data with the form's submitted data.
     client.GetFormDataImporter()->ImportAndProcessFormData(
         form_structure, client.IsAutofillProfileEnabled(),
@@ -2134,9 +2136,20 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
       return;
     }
 
-    LOG_AF(log_manager()) << LoggingScope::kAutofillAi
-                          << "Requesting model run for form." << Br{} << *form;
-    model_executor->GetPredictions(form->ToFormData());
+    if (features::kAutofillAiServerModelSendPageContent.Get()) {
+      LOG_AF(log_manager())
+          << LoggingScope::kAutofillAi
+          << "Requesting page page content for model run for form." << Br{}
+          << *form;
+      client().GetAiPageContent(
+          base::BindOnce(&AutofillAiModelExecutor::GetPredictions,
+                         model_executor->GetWeakPtr(), form->ToFormData()));
+    } else {
+      LOG_AF(log_manager())
+          << LoggingScope::kAutofillAi << "Requesting model run for form."
+          << Br{} << *form;
+      model_executor->GetPredictions(form->ToFormData(), {});
+    }
   }
 }
 
@@ -2537,11 +2550,6 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
                              &autofill_field)) {
     return nullptr;
   }
-
-  if (!form_structure->IsAutofillable()) {
-    return nullptr;
-  }
-
   return autofill_field;
 }
 

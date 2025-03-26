@@ -414,10 +414,8 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     const VideoFrame* const frame,
     gfx::BufferUsage buffer_usage,
     gpu::TestSharedImageInterface* test_sii) {
-  gfx::GpuMemoryBufferHandle gmb_handle;
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  gmb_handle = CreateGpuMemoryBufferHandle(frame);
-#endif
+  gfx::GpuMemoryBufferHandle gmb_handle = CreateGpuMemoryBufferHandle(frame);
   if (gmb_handle.is_null() || gmb_handle.type != gfx::NATIVE_PIXMAP) {
     LOG(ERROR) << "Failed to create native GpuMemoryBufferHandle";
     return nullptr;
@@ -454,6 +452,9 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
   video_frame->metadata().tracking_token = base::UnguessableToken::Create();
 
   return video_frame;
+#else
+  return nullptr;
+#endif
 }
 
 scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {

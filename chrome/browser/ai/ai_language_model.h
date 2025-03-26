@@ -153,7 +153,6 @@ class AILanguageModel : public AIContextBoundObject,
       mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote,
       AIContextBoundObjectSet& session_set,
       AIManager& ai_manager,
-      AIUtils::LanguageCodes expected_input_languages,
       const std::optional<const Context>& context = std::nullopt);
   AILanguageModel(const AILanguageModel&) = delete;
   AILanguageModel& operator=(const AILanguageModel&) = delete;
@@ -172,9 +171,9 @@ class AILanguageModel : public AIContextBoundObject,
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           client) override;
   void Destroy() override;
-  void CountPromptTokens(
+  void MeasureInputUsage(
       const std::string& input,
-      mojo::PendingRemote<blink::mojom::AILanguageModelCountPromptTokensClient>
+      mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
           client) override;
 
   // Format the initial prompts, gets the token count, updates the session,
@@ -200,10 +199,6 @@ class AILanguageModel : public AIContextBoundObject,
                                            CreateLanguageModelCallback callback,
                                            std::optional<uint32_t> result);
 
-  // Returns the copy of `expected_input_languages_` for the
-  // `AILanguageModelInstanceInfo` or cloning.
-  AIUtils::LanguageCodes GetExpectedInputLanguagesCopy();
-
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session_;
@@ -218,7 +213,6 @@ class AILanguageModel : public AIContextBoundObject,
   base::raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
   base::raw_ref<AIManager> ai_manager_;
 
-  AIUtils::LanguageCodes expected_input_languages_;
   bool is_on_device_session_streaming_chunk_by_chunk_;
   // The accumulated current response to simulate the old streaming behavior
   // that always returns all the response generated so far.

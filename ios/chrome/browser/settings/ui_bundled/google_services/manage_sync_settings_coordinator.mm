@@ -123,12 +123,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   SettingsNavigationController* _navigationControllerInModalView;
   // The coordinator for the Personalize Google Services view.
   PersonalizeGoogleServicesCoordinator* _personalizeGoogleServicesCoordinator;
-  // Prevents any data from syncing while the UI is open.
-  // TODO(crbug.com/40066949): This is currently needed for syncing users,
-  // otherwise accidentally touching a toggle immediately uploads existing data.
-  // For non-syncing users that's not true. So remove this after the syncing
-  // state is gone on iOS.
-  std::unique_ptr<syncer::SyncSetupInProgressHandle> _syncSetupInProgressHandle;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -200,8 +194,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self interruptAccountMenuCoordinator];
   self.mediator = nil;
   self.viewController = nil;
-  // Unblock any sync data type changes.
-  _syncSetupInProgressHandle.reset();
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
   [_syncEncryptionTableViewController settingsWillBeDismissed];

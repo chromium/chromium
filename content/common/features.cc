@@ -137,12 +137,6 @@ BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              "ExperimentalContentSecurityPolicyFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Support usernames and phone numbers to identify users, instead of
-// (or in addition to) names and emails.
-BASE_FEATURE(kFedCmAlternativeIdentifiers,
-             "FedCmAlternativeIdentifiers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Allow specifying subsets of "name", "picture", "email" in the fields API.
 // Requires FedCmAuthz to be enabled.
 BASE_FEATURE(kFedCmFlexibleFields,

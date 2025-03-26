@@ -1481,7 +1481,7 @@ bool Display::OutputSurfaceSupportsSetFrameRate() {
 void Display::SetFrameIntervalOnOutputSurface(base::TimeDelta interval) {
   float interval_s = interval.InSecondsF();
   float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
-  output_surface_->SetFrameRate(frame_rate);
+  output_surface_->SetFrameRate({.frame_rate = frame_rate});
 }
 
 base::ScopedClosureRunner Display::GetCacheBackBufferCb() {

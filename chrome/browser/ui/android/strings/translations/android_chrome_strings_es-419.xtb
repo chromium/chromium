@@ -459,7 +459,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Más detalles</translation>
 <translation id="3123734510202723619">Anuncios</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> modificó la pestaña “<ph name="TAB_NAME" />”</translation>
 <translation id="3148237711805373460">Ir ahora</translation>
 <translation id="314939179385989105">Página principal de Chrome</translation>
 <translation id="3158667104057012316">Ordenados manualmente</translation>
@@ -840,14 +839,12 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4910889077668685004">Apps de pago</translation>
 <translation id="4912413785358399818">Mover pestaña</translation>
 <translation id="4913169188695071480">Detener actualización</translation>
-<translation id="4918086044614829423">Aceptar</translation>
 <translation id="4925120120285606924">Captura de pantalla del <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Se exportarán tus contraseñas y se descargarán como un archivo de texto. Las personas y las apps que tengan acceso a la carpeta de destino podrán ver estas contraseñas.</translation>
 <translation id="4926901776383726965">Puedes guardar imágenes y archivos para verlos sin conexión o compartirlos en otras apps</translation>
 <translation id="4932247056774066048">Estás saliendo de una cuenta administrada por <ph name="DOMAIN_NAME" />. Se borrarán tus datos de Chrome de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
 <translation id="4943703118917034429">Realidad virtual</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
-<translation id="4953833914914492602">El grupo de pestañas “<ph name="TAB_GROUP_NAME" />” ya no está disponible</translation>
 <translation id="4957722034734105353">Más información...</translation>
 <translation id="4961107849584082341">Traducir esta página a cualquier idioma</translation>
 <translation id="4964614743143953889">Chrome te advierte sobre descargas y sitios no seguros</translation>
@@ -966,7 +963,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5526281268548144413">No se pueden cerrar en varias ventanas</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Hace # min}other{Hace # min}}</translation>
 <translation id="5548606607480005320">Verificación de seguridad</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> se unió al grupo de pestañas “<ph name="TAB_GROUP_NAME" />”</translation>
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te advierte si se publicó en línea. Cuando lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="5555525474779371165">Elige tu protección de Navegación segura</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
@@ -987,7 +983,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5626134646977739690">Nombre:</translation>
 <translation id="5628604359369369630">Sin leer - Disponible sin conexión</translation>
 <translation id="5631483240431073854">Administrar pestañas abiertas</translation>
-<translation id="5641456720590409793">Es posible que el <ph name="BEGIN_LINK1" />historial de búsqueda<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />otras formas de actividad<ph name="END_LINK2" /> se guarden en tu Cuenta de Google.</translation>
+<translation id="5641456720590409793">Es posible que el <ph name="BEGIN_LINK1" />historial de búsqueda<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />otras formas de actividad<ph name="END_LINK2" /> se guarden en tu Cuenta de Google</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5655963694829536461">Buscar tus descargas</translation>
 <translation id="5657871969392618475">Tu información está protegida con un bloqueo de perfil</translation>
@@ -1183,7 +1179,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6481963882741794338">Vincula Chrome y otros servicios de Google para la personalización y otros fines</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> no se pudo descargar debido a la falta de espacio de almacenamiento.</translation>
 <translation id="6486420406192123355">Este archivo PDF proviene de un sitio que usa una conexión no segura</translation>
-<translation id="6495590690749880440">¿Quieres abrir el grupo de pestañas?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Archivo descargado}other{Se completaron # descargas}}</translation>
 <translation id="6508722015517270189">Reinicia Chrome.</translation>
 <translation id="6518133107902771759">Verificar</translation>
@@ -1617,7 +1612,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8282297628636750033">Aplica el Tema oscuro para sitios (de ser posible)</translation>
 <translation id="8282950411412455249">Ir a la configuración de seguridad</translation>
 <translation id="8306751933352925837">Las contraseñas dejarán de funcionar pronto en este dispositivo. Para seguir usando tus contraseñas, actualiza los Servicios de Google Play. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> quitó la pestaña “<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Las contraseñas dejarán de funcionar pronto</translation>
 <translation id="831192587911042850">Agrega el sitio web actual a la lista de sitios web que sigues.</translation>
 <translation id="8320212361750431956">Actividad reciente</translation>

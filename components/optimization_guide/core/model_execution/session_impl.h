@@ -82,6 +82,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
       MultimodalMessageReadView request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) override;
   const SamplingParams GetSamplingParams() const override;
+  on_device_model::Capabilities GetCapabilities() const override;
   std::unique_ptr<Session> Clone() override;
 
   // Returns true if the on-device model should be used.
@@ -117,6 +118,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
 
   // Params used to control output sampling for the on device model.
   const SamplingParams sampling_params_;
+
+  // Capabilities for this session of the on device model.
+  on_device_model::Capabilities capabilities_;
 
   base::WeakPtrFactory<SessionImpl> weak_ptr_factory_{this};
 };

@@ -152,4 +152,16 @@ public class ChromeColors {
         ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(context);
         return elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(elevation);
     }
+
+    /**
+     * Returns the drag handlebar color.
+     *
+     * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
+     * @return the {@link ColorInt} for the drag handle bar.
+     */
+    // LINT.IfChange(DragHandleBar)
+    public static @ColorInt int getDragHandleBarColor(Context context) {
+        return SemanticColorUtils.getColorSurfaceContainerHighest(context);
+    }
+    // LINT.ThenChange(//components/browser_ui/widget/android/java/res/drawable/drag_handlebar.xml)
 }

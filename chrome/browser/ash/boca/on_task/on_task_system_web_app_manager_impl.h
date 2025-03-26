@@ -57,6 +57,8 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
  private:
   LockedSessionWindowTracker* GetWindowTracker();
 
+  void DisableCommandsForDevTools(SessionID window_id);
+
   raw_ptr<Profile> profile_;
 
   raw_ptr<LockedSessionWindowTracker> window_tracker_for_testing_;

@@ -46,6 +46,7 @@ export abstract class OobeBaseButton extends OobeBaseButtonBase {
     };
   }
 
+  textKey: string;
   disabled: boolean;
   labelForAria: string;
   private labelForAria_: string;

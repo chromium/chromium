@@ -13,6 +13,7 @@
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_capability_type.h"
 #include "url/gurl.h"
 
@@ -74,6 +75,8 @@ class PageLiveStateDecorator
   static void OnIsCapturingDisplayChanged(content::WebContents* contents,
                                           bool is_capturing_display);
 
+  static void SetIsDiscarded(content::WebContents* contents, bool is_discarded);
+
   // Set the auto discardable property. This defaults to true, and can be set
   // to false by the chrome.tabs.autoDiscardable extension API to prevent a
   // tab from being discarded during an intervention. The tab can still be
@@ -103,6 +106,7 @@ class PageLiveStateDecorator
   static bool IsBeingMirrored(content::WebContents* contents);
   static bool IsCapturingWindow(content::WebContents* contents);
   static bool IsCapturingDisplay(content::WebContents* contents);
+  static bool IsDiscarded(content::WebContents* contents);
   static bool IsAutoDiscardable(content::WebContents* contents);
   static bool IsActiveTab(content::WebContents* contents);
   static bool IsPinnedTab(content::WebContents* contents);
@@ -151,6 +155,7 @@ class PageLiveStateDecorator::Data {
   virtual bool IsBeingMirrored() const = 0;
   virtual bool IsCapturingWindow() const = 0;
   virtual bool IsCapturingDisplay() const = 0;
+  virtual bool IsDiscarded() const = 0;
   virtual bool IsAutoDiscardable() const = 0;
   virtual bool IsActiveTab() const = 0;
   virtual bool IsPinnedTab() const = 0;
@@ -172,6 +177,7 @@ class PageLiveStateDecorator::Data {
   virtual void SetIsBeingMirroredForTesting(bool value) = 0;
   virtual void SetIsCapturingWindowForTesting(bool value) = 0;
   virtual void SetIsCapturingDisplayForTesting(bool value) = 0;
+  virtual void SetIsDiscardedForTesting(bool value) = 0;
   virtual void SetIsAutoDiscardableForTesting(bool value) = 0;
   virtual void SetIsActiveTabForTesting(bool value) = 0;
   virtual void SetIsPinnedTabForTesting(bool value) = 0;

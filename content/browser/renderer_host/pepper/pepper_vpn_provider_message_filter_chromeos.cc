@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/pepper/pepper_vpn_provider_message_filter_chromeos.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
@@ -320,7 +321,8 @@ void PepperVpnProviderMessageFilter::DoPacketReceived(
   DCHECK_GT(packet_size, 0U);
 
   const void* packet_pointer = &packet.front();
-  memcpy(recv_packet_buffer_->GetBuffer(id), packet_pointer, packet_size);
+  UNSAFE_TODO(
+      memcpy(recv_packet_buffer_->GetBuffer(id), packet_pointer, packet_size));
 
   if (resource_host()) {
     resource_host()->host()->SendUnsolicitedReply(

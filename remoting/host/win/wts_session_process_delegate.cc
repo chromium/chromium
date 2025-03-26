@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -204,7 +205,7 @@ bool WtsSessionProcessDelegate::Core::Initialize(uint32_t session_id) {
     // process performing elevation and the worker process itself) and make sure
     // that all processes will be killed once the job object is destroyed.
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION info;
-    memset(&info, 0, sizeof(info));
+    UNSAFE_TODO(memset(&info, 0, sizeof(info)));
     info.BasicLimitInformation.LimitFlags =
         JOB_OBJECT_LIMIT_ACTIVE_PROCESS | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
     info.BasicLimitInformation.ActiveProcessLimit = 2;

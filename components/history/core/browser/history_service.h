@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -289,15 +290,6 @@ class HistoryService : public KeyedService,
 
   // Querying ------------------------------------------------------------------
 
-  // Returns the most recent visit associated with each url. Similar to
-  // QueryURL but it sends a vector of visits to the caller instead of a
-  // QueryResult.
-  // Note: Virtual needed for mocking.
-  virtual base::CancelableTaskTracker::TaskId GetMostRecentVisitForEachURL(
-      const std::vector<GURL>& urls,
-      base::OnceCallback<void(std::map<GURL, VisitRow>)> callback,
-      base::CancelableTaskTracker* tracker);
-
   // Returns the information about the requested URL. If the URL is found,
   // success will be true and the information will be in the URLRow parameter.
   // On success, the visits, if requested, will be sorted by date. If they have
@@ -382,7 +374,9 @@ class HistoryService : public KeyedService,
   virtual base::CancelableTaskTracker::TaskId QueryMostVisitedURLs(
       int result_count,
       QueryMostVisitedURLsCallback callback,
-      base::CancelableTaskTracker* tracker);
+      base::CancelableTaskTracker* tracker,
+      const std::optional<std::string>& recency_factor_name = std::nullopt,
+      std::optional<size_t> recency_window_days = std::nullopt);
 
   // Request `result_count` of the most repeated queries for the given keyword.
   // Used by TopSites.

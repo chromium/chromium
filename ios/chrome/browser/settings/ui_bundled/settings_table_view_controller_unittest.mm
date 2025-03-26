@@ -19,7 +19,8 @@
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/sync/test/mock_sync_service.h"
+#import "components/sync/test/test_sync_service.h"
+#import "components/sync/test/test_sync_user_settings.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_client.h"
 #import "components/variations/synthetic_trial_registry.h"
@@ -48,7 +49,6 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
-#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -162,8 +162,12 @@ class SettingsTableViewControllerTest
     scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -181,7 +185,7 @@ class SettingsTableViewControllerTest
     // Prepare mocks for PushNotificationClient dependency
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    sync_service_mock_ = static_cast<syncer::MockSyncService*>(
+    sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));
 
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
@@ -199,6 +203,7 @@ class SettingsTableViewControllerTest
     system_identity_manager->AddIdentity(fake_identity_);
     auth_service_->SignIn(fake_identity_,
                           signin_metrics::AccessPoint::kUnknown);
+    sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
     // Make sure there is no pre-existing policy present.
     [[NSUserDefaults standardUserDefaults]
@@ -289,7 +294,7 @@ class SettingsTableViewControllerTest
 
   FakeSystemIdentity* fake_identity_ = nullptr;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
-  raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
+  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
   scoped_refptr<password_manager::TestPasswordStore> password_store_mock_;
 
   raw_ptr<TestProfileIOS> profile_;
@@ -312,13 +317,11 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
                                          SettingsSectionIdentifierSignIn]);
 }
 
-// Verifies that for a signed-in non-syncing user, the account section shows 2
-// items: the one with the name/email, and the "Google Services" one.
-TEST_F(SettingsTableViewControllerTest, AccountSectionIfSignedInNonSyncing) {
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(Return(false));
+// Verifies that for a signed-in user, the account section shows 2 items: the
+// one with the name/email, and the "Google Services" one.
+TEST_F(SettingsTableViewControllerTest, AccountSectionIfSignedIn) {
   auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   CreateController();
   CheckController();
@@ -364,11 +367,9 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
 // error.
 TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
   // Set account error.
-  ON_CALL(*sync_service_mock_, GetUserActionableError())
-      .WillByDefault(
-          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
-
   auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service_->GetUserSettings()->SetPassphraseRequired();
 
   CreateController();
   CheckController();
@@ -388,11 +389,10 @@ TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
 // error is resolved. Triggers the model update by firing a Sync State change.
 TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
   // Set account error to resolve.
-  ON_CALL(*sync_service_mock_, GetUserActionableError())
-      .WillByDefault(
-          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
-
   auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  const char kSyncPassphrase[] = "passphrase";
+  sync_service_->GetUserSettings()->SetPassphraseRequired(kSyncPassphrase);
 
   CreateController();
   CheckController();
@@ -408,8 +408,7 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
   ASSERT_TRUE(identityAccountItem.shouldDisplayError);
 
   // Resolve the account error.
-  ON_CALL(*sync_service_mock_, GetUserActionableError())
-      .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
+  sync_service_->GetUserSettings()->SetDecryptionPassphrase(kSyncPassphrase);
 
   // Verify that the account item is not in an error state when the error was
   // resolved and the data model reloaded.
@@ -428,10 +427,8 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
 // Storage error when there is no error.
 TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
   // Set no account error state.
-  ON_CALL(*sync_service_mock_, GetUserActionableError())
-      .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
-
   auth_service_->SignIn(fake_identity_, signin_metrics::AccessPoint::kUnknown);
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   CreateController();
   CheckController();

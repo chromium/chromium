@@ -352,11 +352,6 @@ class FakeWebDedicatedWorkerHostFactoryClient
     : public WebDedicatedWorkerHostFactoryClient {
  public:
   // Implements WebDedicatedWorkerHostFactoryClient.
-  void CreateWorkerHostDeprecated(
-      const DedicatedWorkerToken& dedicated_worker_token,
-      const WebURL& script_url,
-      const WebSecurityOrigin& origin,
-      CreateWorkerHostCallback callback) override {}
   void CreateWorkerHost(
       const DedicatedWorkerToken& dedicated_worker_token,
       const WebURL& script_url,

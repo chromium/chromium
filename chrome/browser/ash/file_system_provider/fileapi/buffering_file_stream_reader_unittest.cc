@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -65,7 +66,7 @@ class FakeFileStreamReader : public storage::FileStreamReader {
     }
 
     const std::string fake_data(buf_len, 'X');
-    memcpy(buf->data(), fake_data.c_str(), buf_len);
+    UNSAFE_TODO(memcpy(buf->data(), fake_data.c_str(), buf_len));
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), buf_len));

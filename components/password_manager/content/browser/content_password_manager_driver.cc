@@ -578,33 +578,22 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
         "form.fields.size()!");
   }
 
-  last_triggering_field_id_ = request.element_id;
+  last_triggering_field_id_ = request.field.element_id;
 
-  base::OnceClosure show_with_autofill_manager_cb = base::BindOnce(
-      &PasswordAutofillManager::OnShowPasswordSuggestions,
-      GetPasswordAutofillManager()->GetWeakPtr(), request.element_id,
-      request.trigger_source, request.text_direction, request.typed_username,
-      ShowWebAuthnCredentials(request.show_webauthn_credentials),
-      TransformToRootCoordinates(render_frame_host_, request.bounds));
 #if !BUILDFLAG(IS_ANDROID)
-  std::move(show_with_autofill_manager_cb).Run();
+  ShowPasswordSuggestionsForField(request.field);
 #else
-  client_->ShowKeyboardReplacingSurface(
-      this,
-      PasswordFillingParams(request.form_data, request.username_field_index,
-                            request.password_field_index, request.element_id),
-      request.show_webauthn_credentials,
-      base::BindOnce(
-          [](base::OnceClosure cb, bool shown) {
-            if (shown) {
-              // UI shown by `client_`, all done.
-              return;
-            }
-            // Otherwise, show with PasswordAutofillManager.
-            std::move(cb).Run();
-          },
-          std::move(show_with_autofill_manager_cb)));
+  client_->ShowKeyboardReplacingSurface(this, request);
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ContentPasswordManagerDriver::ShowPasswordSuggestionsForField(
+    const autofill::TriggeringField& triggering_field) {
+  GetPasswordAutofillManager()->OnShowPasswordSuggestions(
+      triggering_field.element_id, triggering_field.trigger_source,
+      triggering_field.text_direction, triggering_field.typed_username,
+      ShowWebAuthnCredentials(triggering_field.show_webauthn_credentials),
+      TransformToRootCoordinates(render_frame_host_, triggering_field.bounds));
 }
 
 void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(

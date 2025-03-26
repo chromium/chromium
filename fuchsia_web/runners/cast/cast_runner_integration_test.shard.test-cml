@@ -25,7 +25,6 @@
         "fuchsia.hwinfo.Product",
         // "fuchsia.intl.PropertyProvider" is provided by #intl_property_manager.
         "fuchsia.kernel.VmexResource",
-        "fuchsia.logger.LogSink",
         "fuchsia.media.ProfileProvider",
         "fuchsia.scheduler.RoleManager",
         "fuchsia.memorypressure.Provider",
@@ -54,6 +53,11 @@
         // TODO(crbug.com/42050521) Remove once not needed to avoid log spam.
         "fuchsia.tracing.perfetto.ProducerConnector",
       ],
+      from: "parent",
+      to: "#realm_builder",
+    },
+    {
+      dictionary: "diagnostics",
       from: "parent",
       to: "#realm_builder",
     },

@@ -510,7 +510,6 @@ if (!is_android) {
       "existing_comparison_table_sub_menu_model_unittest.cc",
       "existing_tab_group_sub_menu_model_unittest.cc",
       "existing_window_sub_menu_model_unittest.cc",
-      "pinned_tab_service_unittest.cc",
       "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",
       "tab_group_deletion_dialog_controller_unittest.cc",

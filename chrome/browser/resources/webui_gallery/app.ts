@@ -46,7 +46,7 @@ export class WebuiGalleryAppElement extends CrLitElement {
     };
   }
 
-  protected demos_: Demo[] = [
+  protected accessor demos_: Demo[] = [
     {
       name: 'Accessibility Live Regions',
       path: 'a11y',

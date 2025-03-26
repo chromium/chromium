@@ -47,8 +47,8 @@ class SyncStorageBackend final : public syncer::SyncableService {
 
   ~SyncStorageBackend() override;
 
-  virtual value_store::ValueStore* GetStorage(const ExtensionId& extension_id);
-  virtual void DeleteStorage(const ExtensionId& extension_id);
+  value_store::ValueStore* GetStorage(const ExtensionId& extension_id);
+  void DeleteStorage(const ExtensionId& extension_id);
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;

@@ -44,7 +44,6 @@ class Iban;
 class IbanAccessManager;
 class IbanManager;
 class MerchantPromoCodeManager;
-class MigratableCreditCard;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 class PaymentsDataManager;
@@ -214,18 +213,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
     std::u16string expiration_date_year;
   };
 
-  // Callback to run if user presses the Save button in the migration dialog.
-  // Will pass a vector of GUIDs of cards that the user selected to upload to
-  // LocalCardMigrationManager.
-  using LocalCardMigrationCallback =
-      base::OnceCallback<void(const std::vector<std::string>&)>;
-
-  // Callback to run if the user presses the trash can button in the
-  // action-required dialog. Will pass to LocalCardMigrationManager a
-  // string of GUID of the card that the user selected to delete from local
-  // storage.
-  using MigrationDeleteCardCallback =
-      base::RepeatingCallback<void(const std::string&)>;
   // Callback to run after local/upload IBAN save is offered. The callback runs
   // with `user_decision` indicating whether the prompt was accepted, declined,
   // or ignored. `nickname` is optionally provided by the user when IBAN local
@@ -266,33 +253,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual AutofillSaveCardBottomSheetBridge*
   GetOrCreateAutofillSaveCardBottomSheetBridge();
 #elif !BUILDFLAG(IS_IOS)
-  // Runs `show_migration_dialog_closure` if the user accepts the card
-  // migration offer. This causes the card migration dialog to be shown.
-  virtual void ShowLocalCardMigrationDialog(
-      base::OnceClosure show_migration_dialog_closure);
-
-  // Shows a dialog with the given `legal_message_lines` and the `user_email`.
-  // Runs `start_migrating_cards_callback` if the user would like the selected
-  // cards in the `migratable_credit_cards` to be uploaded to cloud.
-  virtual void ConfirmMigrateLocalCardToCloud(
-      const LegalMessageLines& legal_message_lines,
-      const std::string& user_email,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      LocalCardMigrationCallback start_migrating_cards_callback);
-
-  // Will show a dialog containing a error message if `has_server_error`
-  // is true, or the migration results for cards in
-  // `migratable_credit_cards` otherwise. If migration succeeds the dialog will
-  // contain a `tip_message`. `migratable_credit_cards` will be used when
-  // constructing the dialog. The dialog is invoked when the migration process
-  // is finished. Runs `delete_local_card_callback` if the user chose to delete
-  // one invalid card from local storage.
-  virtual void ShowLocalCardMigrationResults(
-      bool has_server_error,
-      const std::u16string& tip_message,
-      const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      MigrationDeleteCardCallback delete_local_card_callback);
-
   // TODO(crbug.com/40639086): Find a way to merge these two functions.
   // Shouldn't use WebauthnDialogState as that state is a purely UI state
   // (should not be accessible for managers?), and some of the states

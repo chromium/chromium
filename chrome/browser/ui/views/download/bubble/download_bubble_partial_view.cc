@@ -283,6 +283,11 @@ void DownloadBubblePartialView::OnInteracted() {
 
 void DownloadBubblePartialView::OnWillChangeFocus(views::View* before,
                                                   views::View* now) {
+  // Check 'before' to make sure this is not the first focus change.
+  // This will happen when the bubble is first shown inside Mac PWA.
+  if (!before) {
+    return;
+  }
   if (now && Contains(now)) {
     OnInteracted();
   }

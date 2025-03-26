@@ -43,6 +43,21 @@ public class SuggestionEventObserver {
                         boolean markedForSelection) {
                     mGroupSuggestionsService.didAddTab(tab.getId(), type);
                 }
+
+                @Override
+                public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                    mGroupSuggestionsService.willCloseTab(tab.getId());
+                }
+
+                @Override
+                public void tabClosureUndone(Tab tab) {
+                    mGroupSuggestionsService.tabClosureUndone(tab.getId());
+                }
+
+                @Override
+                public void tabClosureCommitted(Tab tab) {
+                    mGroupSuggestionsService.tabClosureCommitted(tab.getId());
+                }
             };
 
     private @Nullable ObservableSupplier<Boolean> mHubVisibilitySupplier;

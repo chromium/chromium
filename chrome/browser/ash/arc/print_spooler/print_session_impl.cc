@@ -29,6 +29,7 @@
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
 #include "chromeos/ash/experiences/arc/mojom/print_common.mojom.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/c/system/types.h"
@@ -207,6 +208,18 @@ bool IsPdfPluginLoaded(content::WebContents* web_contents) {
 
   if (!plugin_frame->IsDocumentOnLoadCompletedInMainFrame()) {
     VLOG(1) << "Plugin frame still loading.";
+    return false;
+  }
+
+  // The plugin has loaded.  Now make sure it finished loading the document.
+  auto* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+  if (!pdf_helper) {
+    VLOG(1) << "PDFDocumentHelper not ready yet.";
+    return false;
+  }
+  if (!pdf_helper->IsDocumentLoadComplete()) {
+    VLOG(1) << "PDFDocumentHelper has not finished loading yet.";
     return false;
   }
 

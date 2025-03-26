@@ -236,16 +236,12 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process) {
 }
 
 size_t GetSystemCommitCharge() {
-  // Get the System Page Size.
-  SYSTEM_INFO system_info;
-  GetSystemInfo(&system_info);
-
   PERFORMANCE_INFORMATION info;
-  if (!GetPerformanceInfo(&info, sizeof(info))) {
+  if (!::GetPerformanceInfo(&info, sizeof(info))) {
     DLOG(ERROR) << "Failed to fetch internal performance info.";
     return 0;
   }
-  return (info.CommitTotal * system_info.dwPageSize) / 1024;
+  return (info.CommitTotal * info.PageSize) / 1024;
 }
 
 // This function uses the following mapping between MEMORYSTATUSEX and

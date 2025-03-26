@@ -149,6 +149,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1455242230282523554">Taalinstellingen bekijken</translation>
 <translation id="1459693405370120464">Weer</translation>
 <translation id="1460620680449458626">Volume staat uit.</translation>
+<translation id="1462439140224375968">Google-document gemaakt</translation>
 <translation id="14648076227129703">Hiermee geef je <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camerarechten toegang tot de camera</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="146902737843070955">Je beheerder heeft deze wijziging aangevraagd</translation>
@@ -593,6 +594,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="301584155502740476">Toon de hotspotdetails. Hotspot staat uit.</translation>
 <translation id="3017079585324758401">Achtergrond</translation>
 <translation id="3018135054368884502">Media vooruitspoelen</translation>
+<translation id="3026897869154397692">Toegevoegd aan Agenda</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3033912566804961911">Combineren met <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Bestanden openen</translation>
@@ -1012,6 +1014,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4351244548802238354">Dialoogvenster sluiten</translation>
 <translation id="4356872429719185452">Toon de hotspotdetails. Hotspot wordt aangezet.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> opnemen</translation>
+<translation id="4368227575116094370">Google-spreadsheet maken</translation>
 <translation id="4371348193907997655">Cast-instellingen</translation>
 <translation id="4371834685492830207">Pincode mag alleen geldige tekens bevatten</translation>
 <translation id="4375482231364171368">Zoeken via adresbalk</translation>
@@ -1481,6 +1484,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
 <translation id="5830180081891717894">Nog <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
+<translation id="5840658767386246331">Zoeken met Google</translation>
 <translation id="5841296711770970362">Naar de volgende track gaan</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-hotspot staat aan, geen apparaten verbonden</translation>
 <translation id="584525477304726060">Vasthouden om te maximaliseren</translation>
@@ -1894,6 +1898,7 @@ Nieuwe installatie</translation>
 <translation id="7228968829656641943">Selecteer om mijn scherm te doorzoeken. Druk op Tab en daarna op de spatiebalk voor toetsenbordnavigatie.</translation>
 <translation id="7229029500464092426">Geheugen <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (totaal)</translation>
 <translation id="7239814253344511868">Beide muistoetsen</translation>
+<translation id="7240636904654154599">Google-spreadsheet gemaakt</translation>
 <translation id="7244725679040769470">Nog <ph name="PERCENTAGE" />% batterijlading. Sluit je apparaat aan op een voeding.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Deze Chromebook moet opnieuw worden opgestart om een update uit te voeren. Dit kan ongeveer één minuut duren.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2409,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8921624153894383499">De Google Assistent spreekt deze taal niet.</translation>
 <translation id="8926951137623668982">Plank altijd verborgen</translation>
 <translation id="8929566928381252430">Probeer je Caps Lock te gebruiken? Gebruik</translation>
+<translation id="8929623844713377237">Contact gemaakt</translation>
 <translation id="8934418770423095813">Google-document maken</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 bestand}other{# bestanden}}</translation>
 <translation id="8936501819958976551">gedeactiveerd</translation>

@@ -8,6 +8,11 @@
     display: flex;
     justify-content: space-between;
   }
+
+  .button-container {
+    display: flex;
+    gap: 8px;
+  }
 </style>
 
 <cr-expand-button expanded="{{expanded_}}" class="cr-row">
@@ -19,7 +24,7 @@
     label="Dictionary name"
     type="text"
     on-change="saveName_"></cr-input>
-    <div>
+    <div class="button-container">
       <cr-icon-button class="delete-icon"
         iron-icon="cr:delete"
         on-click="deleteDictionary_"

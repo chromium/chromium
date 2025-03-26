@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">הצגת הגדרות השפה</translation>
 <translation id="1459693405370120464">מזג אוויר</translation>
 <translation id="1460620680449458626">צלילים מושתקים.</translation>
+<translation id="1462439140224375968">‏נוצר מסמך Google Docs</translation>
 <translation id="14648076227129703">הפעולה הזו מאפשרת גישה למצלמה לאפליקציות <ph name="APP1_NAME" /> וגם <ph name="APP2_NAME" />, ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="1467432559032391204">שמאלה</translation>
 <translation id="146902737843070955">האדמין שלך ביקש את השינוי הזה</translation>
@@ -215,6 +216,7 @@
 <translation id="1679841710523778799">הגברת הבהירות</translation>
 <translation id="1680659827022803830">לחצנים לשיחות וידאו</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">אפשר להשבית את התכונה הזו בכל שלב בהגדרות. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">טיימר של <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">‏כתובת IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">החלון הפעיל מוצמד לצד ימין.</translation>
@@ -592,6 +594,7 @@
 <translation id="301584155502740476">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). נקודת האינטרנט כבויה.</translation>
 <translation id="3017079585324758401">רקע</translation>
 <translation id="3018135054368884502">הרצת המדיה קדימה</translation>
+<translation id="3026897869154397692">האירוע נוסף ליומן</translation>
 <translation id="3033545621352269033">מופעל</translation>
 <translation id="3033912566804961911">שילוב עם <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">פתיחת קבצים</translation>
@@ -967,6 +970,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, אפליקציה מותקנת, מושהית</translation>
 <translation id="4228078597006700451">הפקדים לא הוגדרו</translation>
 <translation id="4230560241506423345">פריט חדש</translation>
+<translation id="4236726631849783264">תזכורת לגבי הצעות לפעולות</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">מצב סקירה כללית</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
@@ -1010,6 +1014,7 @@
 <translation id="4351244548802238354">סגירת תיבת הדו-שיח</translation>
 <translation id="4356872429719185452">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). מתבצעת הפעלה של הנקודה לשיתוף אינטרנט.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ההקלטה מתבצעת</translation>
+<translation id="4368227575116094370">‏יצירת גיליון אלקטרוני ב-Google Sheets</translation>
 <translation id="4371348193907997655">‏הגדרות של הפעלת Cast</translation>
 <translation id="4371834685492830207">קוד האימות חייב להכיל תווים תקפים בלבד</translation>
 <translation id="4375482231364171368">חיפוש בסרגל הכתובות</translation>
@@ -1043,6 +1048,7 @@
 <translation id="4471354919263203780">‏מתבצעת הורדה של קובצי זיהוי דיבור… ‎<ph name="PERCENT" />%‎</translation>
 <translation id="4471432286288241507">{0,plural, =0{עליך לעדכן את המכשיר עכשיו}=1{עליך לעדכן את המכשיר תוך שנייה אחת}one{עליך לעדכן את המכשיר תוך # שניות}two{עליך לעדכן את המכשיר תוך # שניות}other{עליך לעדכן את המכשיר תוך # שניות}}</translation>
 <translation id="4472575034687746823">תחילת העבודה</translation>
+<translation id="4473489370276014885">‏אנשי קשר מחשבון Google</translation>
 <translation id="4477350412780666475">הטראק הבא</translation>
 <translation id="4477751544736611934">עשויים לחול חיובים על שימוש בחבילת הגלישה.
 מכשיר אחד מחובר.</translation>
@@ -1069,6 +1075,7 @@
 <translation id="4545950850562423083">שמירת הדף הנוכחי כסימנייה</translation>
 <translation id="4548482551627849548">העברת החלון הפעיל לשולחן העבודה הווירטואלי שבצד שמאל</translation>
 <translation id="4552748006424994716">כדי למנוע הד, אפשר להאזין למה שאומרים במיקרופון רק באמצעות אוזניות חוטיות.</translation>
+<translation id="4556953949326137018">‏כשמשתמשים בהצעות לפעולות כמו "הוספה ליומן" או "יצירת מסמך ב-Google Docs", התוכן מהאזור שנבחר נשלח לשרתים של Google כדי להציע פעולות, בכפוף לתנאים של <ph name="LINK_TO_SERVICE_TERMS" />. חשוב לא לכלול מידע אישי, רגיש או סודי.</translation>
 <translation id="4560576029703263363">מופעל</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">הסתרת סיסמה</translation>
@@ -1152,6 +1159,7 @@
 <translation id="481455355267255546">האירועים הבאים</translation>
 <translation id="481749895090480684">רשימת משימות: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">מצלמה ומיקרופון</translation>
+<translation id="4828935196674083554">ההוספה מתבצעת...</translation>
 <translation id="482908187605862807">‏אפליקציות שזמינות בחנות Play</translation>
 <translation id="4831034276697007977">הקליקים האוטומטיים יושבתו. האם להמשיך?</translation>
 <translation id="4835677468087803981">הסתרת קוד האימות</translation>
@@ -1476,6 +1484,7 @@
 <translation id="5825969630400862129">הגדרות של מכשירים מחוברים</translation>
 <translation id="5830180081891717894">עוד <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">‏חיפוש באמצעות Google</translation>
 <translation id="5841296711770970362">מעבר לטראק הבא</translation>
 <translation id="5842553299352339114">‏הנקודה לשיתוף אינטרנט (Hotspot) של <ph name="DEVICE_NAME" /> פועלת, אין מכשירים מחוברים</translation>
 <translation id="584525477304726060">כדי להגדיל, צריך ללחוץ לחיצה ארוכה</translation>
@@ -1649,6 +1658,7 @@
 <translation id="641817663353603351">‏מקש Page Up</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ניקוי כל ההודעות</translation>
+<translation id="6426905245930183644">בתהליך יצירה…</translation>
 <translation id="6430225033895752525">הצגת ההגדרות של מצב הריכוז</translation>
 <translation id="643147933154517414">הפעולה הושלמה</translation>
 <translation id="6431865393913628856">הקלטת המסך</translation>
@@ -1888,6 +1898,7 @@
 <translation id="7228968829656641943">‏בחירה כדי לחפש במסך שלי. כדי לנווט באמצעות המקלדת, מקישים על מקש Tab ואז על מקש הרווח.</translation>
 <translation id="7229029500464092426">זיכרון פנוי: <ph name="AVAILABLE_MEMORY" /> | סה"כ: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">שני לחצני העכבר</translation>
+<translation id="7240636904654154599">‏נוצר גיליון אלקטרוני ב-Google Sheets</translation>
 <translation id="7244725679040769470">רמת הטעינה שנותרה בסוללה: %<ph name="PERCENTAGE" />. צריך לחבר את המכשיר למקור חשמל.</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. יש להפעיל את ה-Chromebook מחדש כדי להחיל עדכון. התהליך עשוי להימשך עד דקה אחת.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2400,6 +2411,7 @@
 <translation id="8921624153894383499">‏Google Assistant לא מדברת בשפה הזאת.</translation>
 <translation id="8926951137623668982">המדף תמיד מוסתר</translation>
 <translation id="8929566928381252430">‏רוצה להשתמש במקש Caps Lock? שימוש במקש</translation>
+<translation id="8929623844713377237">איש הקשר נוצר</translation>
 <translation id="8934418770423095813">‏יצירה של מסמך Google Docs</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{קובץ אחד}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="8936501819958976551">מושבתת</translation>

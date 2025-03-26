@@ -227,6 +227,8 @@ void ToastController::ShowToast(ToastParams params) {
   CHECK_EQ(current_toast_spec->has_menu(), !!params.menu_model);
   CHECK(current_toast_spec->body_string_id() != 0 ||
         params.body_string_override.has_value());
+  CHECK(params.body_string_replacement_params.empty() ||
+        !params.body_string_cardinality_param.has_value());
 
   currently_showing_toast_id_ = params.toast_id;
   const bool is_actionable =
@@ -269,7 +271,8 @@ void ToastController::CreateToast(ToastParams params,
       params.body_string_override.has_value()
           ? params.body_string_override.value()
           : FormatString(spec->body_string_id(),
-                         params.body_string_replacement_params);
+                         params.body_string_replacement_params,
+                         params.body_string_cardinality_param);
   auto toast_view = std::make_unique<toasts::ToastView>(
       anchor_view, body_string, spec->icon(), image_override,
       ShouldRenderToastOverWebContents(),
@@ -283,7 +286,8 @@ void ToastController::CreateToast(ToastParams params,
   if (spec->action_button_string_id().has_value()) {
     toast_view->AddActionButton(
         FormatString(spec->action_button_string_id().value(),
-                     params.action_button_string_replacement_params),
+                     params.action_button_string_replacement_params,
+                     std::nullopt),
         spec->action_button_callback().Then(base::BindRepeating(
             &RecordToastActionButtonClicked, params.toast_id)));
   }
@@ -325,8 +329,13 @@ void ToastController::CreateToast(ToastParams params,
 
 std::u16string ToastController::FormatString(
     int string_id,
-    std::vector<std::u16string> replacements) {
-  return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
+    std::vector<std::u16string> replacements,
+    std::optional<int> cardinality) {
+  if (cardinality.has_value()) {
+    return l10n_util::GetPluralStringFUTF16(string_id, cardinality.value());
+  } else {
+    return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
+  }
 }
 
 void ToastController::OnFullscreenStateChanged() {

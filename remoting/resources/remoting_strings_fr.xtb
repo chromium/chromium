@@ -40,6 +40,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="2758123043070977469">Une erreur s'est produite lors de l'authentification. Veuillez vous connecter à nouveau.</translation>
 <translation id="2803375539583399270">Saisir le code</translation>
 <translation id="2919669478609886916">Vous partagez actuellement cette machine avec un autre utilisateur. Voulez-vous continuer ce partage ?</translation>
+<translation id="2929683002824598593">Partager l'appareil</translation>
 <translation id="2939145106548231838">S'authentifier auprès de l'hôte</translation>
 <translation id="3027681561976217984">Mode Écran tactile</translation>
 <translation id="3106379468611574572">L'ordinateur à distance ne répond pas aux demandes de connexion. Veuillez vérifier qu'il est connecté, puis réessayer.</translation>
@@ -117,10 +118,12 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="6178645564515549384">Hôte de messagerie native pour l'assistance à distance</translation>
 <translation id="618120821413932081">Modifier la résolution distante pour l'ajuster à la fenêtre</translation>
 <translation id="6223301979382383752">Ouvrir les préférences d'enregistrement de l'écran</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> demande à voir votre écran et à contrôler votre clavier et votre souris. Voulez-vous partager votre appareil ?</translation>
 <translation id="6284412385303060032">L'exécution de l'hôte sur l'écran de connexion de la console s'est arrêtée pour accepter le mode Rideau en passant à une exécution d'hôte dans une session propre à l'utilisateur.</translation>
 <translation id="6542902059648396432">Signaler un problème…</translation>
 <translation id="6583902294974160967">Assistance</translation>
 <translation id="6612717000975622067">Envoyer Ctrl-Alt-Suppr</translation>
+<translation id="6625262630437221505">{0,plural, =1{Si vous ne faites rien, le partage de votre appareil commencera automatiquement dans # seconde.}one{Si vous ne faites rien, le partage de votre appareil commencera automatiquement dans # seconde.}other{Si vous ne faites rien, le partage de votre appareil commencera automatiquement dans # secondes.}}</translation>
 <translation id="6654753848497929428">Partager</translation>
 <translation id="677755392401385740">Hôte démarré pour l'utilisateur "<ph name="HOST_USERNAME" />"</translation>
 <translation id="6902524959760471898">Application d'assistance pour ouvrir une URL sur le client <ph name="PRODUCT_NAME" /></translation>

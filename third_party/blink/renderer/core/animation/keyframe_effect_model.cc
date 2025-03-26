@@ -73,17 +73,9 @@ const PropertyHandleSet& KeyframeEffectModelBase::EnsureDynamicProperties() cons
 
   dynamic_properties_ = std::make_unique<PropertyHandleSet>();
   EnsureKeyframeGroups();
-  if (!RuntimeEnabledFeatures::StaticAnimationOptimizationEnabled()) {
-    // Unless the static optimization is enabled, all properties are considered
-    // dynamic.
-    for (const auto& entry : *keyframe_groups_) {
+  for (const auto& entry : *keyframe_groups_) {
+    if (!entry.value->IsStatic()) {
       dynamic_properties_->insert(entry.key);
-    }
-  } else {
-    for (const auto& entry : *keyframe_groups_) {
-      if (!entry.value->IsStatic()) {
-        dynamic_properties_->insert(entry.key);
-      }
     }
   }
 
@@ -482,25 +474,23 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
 
   for (const auto& entry : *keyframe_groups_) {
     const PropertySpecificKeyframeVector& keyframes = entry.value->Keyframes();
-    if (RuntimeEnabledFeatures::StaticAnimationOptimizationEnabled()) {
-      // Skip cross-fade interpolations in the static property optimization to
-      // avoid introducing a side-effect in serialization of the computed value.
-      // cross-fade(A 50%, A 50%) is visually equivalent to rendering A, but at
-      // present, we expect the computed style to reflect an explicit
-      // cross-fade.
-      PropertyHandle handle = entry.key;
-      if (entry.value->IsStatic() && handle.IsCSSProperty() &&
-          handle.GetCSSProperty().PropertyID() !=
-              CSSPropertyID::kListStyleImage) {
-        // All keyframes have the same property value.
-        // Create an interpolation from starting keyframe to starting keyframe.
-        // The resulting interpolation record will be marked as static and can
-        // short-circuit the local fraction calculation.
-        CHECK(keyframes.size());
-        interpolation_effect_->AddStaticValuedInterpolation(entry.key,
-                                                            *keyframes[0]);
-        continue;
-      }
+    // Skip cross-fade interpolations in the static property optimization to
+    // avoid introducing a side-effect in serialization of the computed value.
+    // cross-fade(A 50%, A 50%) is visually equivalent to rendering A, but at
+    // present, we expect the computed style to reflect an explicit
+    // cross-fade.
+    PropertyHandle handle = entry.key;
+    if (entry.value->IsStatic() && handle.IsCSSProperty() &&
+        handle.GetCSSProperty().PropertyID() !=
+            CSSPropertyID::kListStyleImage) {
+      // All keyframes have the same property value.
+      // Create an interpolation from starting keyframe to starting keyframe.
+      // The resulting interpolation record will be marked as static and can
+      // short-circuit the local fraction calculation.
+      CHECK(keyframes.size());
+      interpolation_effect_->AddStaticValuedInterpolation(entry.key,
+                                                          *keyframes[0]);
+      continue;
     }
     for (wtf_size_t i = 0; i < keyframes.size() - 1; i++) {
       wtf_size_t start_index = i;

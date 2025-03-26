@@ -49,6 +49,12 @@ export interface ComposeAppState {
   isEditingSubmittedInput?: boolean;
 }
 
+interface ModifierOption {
+  value: StyleModifier;
+  label: string;
+  isDefault: boolean;
+}
+
 export interface ComposeAppElement {
   $: {
     firstRunDialog: HTMLElement,
@@ -295,8 +301,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private isEditSubmitEnabled_: boolean;
   private isSubmitEnabled_: boolean;
   private loading_: boolean;
+  private loadingIndicatorShown_: boolean;
   private response_: ComposeResponse|null;
   private partialResponse_: PartialComposeResponse|undefined;
+  private showInputModes_: boolean;
   private saveAppStateDebouncer_: Debouncer;
   private scrollCheckDebouncer_: Debouncer;
   private updateResultCompleteDebouncer_: Debouncer;
@@ -314,6 +322,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private outputComplete_: boolean = true;
   private hasOutput_: boolean = false;
   private displayedText_: string;
+  private modifierOptions_: ModifierOption[];
   private responseText_: string;
   private userResponseText_: string|undefined;
 

@@ -134,7 +134,7 @@ class GlicMetricsTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetStatusTray(
         std::make_unique<MockStatusTray>());
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
-    profile_ = testing_profile_manager_->CreateTestingProfile("profile", true);
+    profile_ = testing_profile_manager_->CreateTestingProfile("profile");
     ForceSigninAndModelExecutionCapability(profile_);
   }
 

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 
 class AggregationKind(Enum):
@@ -16,9 +17,10 @@ class AggregationKind(Enum):
 class AggregationDetails:
   """Aggregation rules, if specified by the processed JSON file."""
   kind: AggregationKind
-  name: str
+  name: Optional[str]
   export_items: bool
   elements: dict[str, str]
+  map_key_type: Optional[str]
 
   def GetSortedArrayElements(self) -> list[str]:
     """Returns sorted list of names of all elements."""
@@ -50,6 +52,8 @@ def GetAggregationDetails(description) -> AggregationDetails:
       - `map_aliases` (dict[str, str]) - if the aggregation `type` is set to
         `"map"`, this field allows specifying additional aliases - elements
         pointing to already defined structures.
+      - `map_key_type` (str) - the type representing the map key. Must be a
+        constexpr-constructible from const char[].
 
   **Default Behavior:**
       - If the `aggregation` descriptor is missing, the function defaults to:
@@ -72,13 +76,15 @@ def GetAggregationDetails(description) -> AggregationDetails:
     return AggregationDetails(kind=AggregationKind.ARRAY,
                               name=generate_array.get('array_name'),
                               export_items=True,
-                              elements={})
+                              elements={},
+                              map_key_type=None)
 
   aggregation = description.get('aggregation', {})
   kind = AggregationKind(aggregation.get('type', 'none'))
   name = aggregation.get('name', None)
   export_items = aggregation.get('export_items', True)
   map_aliases = aggregation.get('map_aliases', {})
+  map_key_type = None
 
   if kind != AggregationKind.NONE and not name:
     raise Exception("Aggregation container needs a `name`.")
@@ -89,6 +95,7 @@ def GetAggregationDetails(description) -> AggregationDetails:
 
   confirmed_aliases = {}
   if kind == AggregationKind.MAP:
+    map_key_type = aggregation.get('map_key_type', 'std::string_view')
     for alias, element in map_aliases.items():
       # Confirmation check for duplicate entries.
       # Note: we do not need to verify duplicate aliases, because `map_aliases`
@@ -103,4 +110,4 @@ def GetAggregationDetails(description) -> AggregationDetails:
       confirmed_aliases.update({alias: element})
     elements.update(confirmed_aliases)
 
-  return AggregationDetails(kind, name, export_items, elements)
+  return AggregationDetails(kind, name, export_items, elements, map_key_type)

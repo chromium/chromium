@@ -177,6 +177,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override {
     auto test_image_backing = std::make_unique<TestImageBacking>(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,

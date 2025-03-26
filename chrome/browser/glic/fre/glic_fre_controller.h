@@ -76,6 +76,9 @@ class GlicFreController {
   // Closes the FRE dialog.
   void DismissFre();
 
+  // Re-sync cookies to FRE webview.
+  void PrepareForClient(base::OnceCallback<void(bool)> callback);
+
   // Notify FRE controller that the user clicked on a link.
   void OnLinkClicked(const GURL& url);
 

@@ -83,15 +83,15 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
     };
   }
 
-  app: App = createDummyApp();
-  apps: AppMap = {};
-  override hidden: boolean = false;
-  protected disabled_: boolean = false;
-  protected overlappingAppsWarning_: string = '';
-  protected overlappingAppIds_: string[] = [];
-  protected showOverlappingAppsDialog_: boolean = false;
-  protected showOverlappingAppsWarning_: boolean = false;
-  protected showSupportedLinksDialog_: boolean = false;
+  accessor app: App = createDummyApp();
+  accessor apps: AppMap = {};
+  override accessor hidden: boolean = false;
+  protected accessor disabled_: boolean = false;
+  protected accessor overlappingAppsWarning_: string = '';
+  protected accessor overlappingAppIds_: string[] = [];
+  protected accessor showOverlappingAppsDialog_: boolean = false;
+  protected accessor showOverlappingAppsWarning_: boolean = false;
+  protected accessor showSupportedLinksDialog_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

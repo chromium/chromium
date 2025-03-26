@@ -163,15 +163,15 @@ bool CanBookmarkCurrentTab(const Browser* browser);
 void BookmarkAllTabs(Browser* browser);
 bool CanBookmarkAllTabs(const Browser* browser);
 bool CanMoveActiveTabToReadLater(Browser* browser);
-bool MoveCurrentTabToReadLater(Browser* browser);
-bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents);
+void MoveCurrentTabToReadLater(Browser* browser);
+void MoveTabsToReadLater(Browser* browser,
+                         std::vector<content::WebContents*> web_contentses);
 bool MarkCurrentTabAsReadInReadLater(Browser* browser);
 bool IsCurrentTabUnreadInReadLater(Browser* browser);
 void ShowOffersAndRewardsForPage(Browser* browser);
 void SaveCreditCard(Browser* browser);
 void SaveIban(Browser* browser);
 void ShowMandatoryReauthOptInPrompt(Browser* browser);
-void MigrateLocalCards(Browser* browser);
 void SaveAutofillAddress(Browser* browser);
 void ShowFilledCardInformationBubble(Browser* browser);
 void ShowVirtualCardEnrollBubble(Browser* browser);

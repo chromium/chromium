@@ -48,9 +48,9 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
     };
   }
 
-  app: App = createDummyApp();
-  showOverflowDialog: boolean = false;
-  override hidden: boolean = false;
+  accessor app: App = createDummyApp();
+  accessor showOverflowDialog: boolean = false;
+  override accessor hidden: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -95,7 +95,6 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="328933489847748230">{count,plural, =1{A mostrar 1 janela do Chromium agora}other{A mostrar {count} janelas do Chromium agora}}</translation>
 <translation id="3344973607274501920">O Chromium não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
-<translation id="33788334537425157">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chromium"</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto. Estas informações podem incluir o histórico e o preenchimento automático.}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos. Estas informações podem incluir o histórico e o preenchimento automático.}}</translation>
 <translation id="3410395242749598859">Alguns dos seus dados do Chromium ainda não foram guardados na conta <ph name="EMAIL" />.
 Experimente aguardar alguns minutos antes de mudar de conta. Se mudar de conta agora, estes dados vão ser eliminados.</translation>

@@ -15,6 +15,7 @@ import androidx.fragment.app.DialogFragment;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -63,7 +64,9 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new FullscreenAlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder =
+                new FullscreenAlertDialog.Builder(
+                        getActivity(), EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         ScreenshotShareSheetView screenshotShareSheetView =
                 (ScreenshotShareSheetView)
                         getActivity()

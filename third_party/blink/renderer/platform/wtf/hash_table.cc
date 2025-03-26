@@ -45,7 +45,8 @@ void HashTableStats::copy(const HashTableStats* other) {
 
   maxCollisions = other->maxCollisions;
   numCollisions = other->numCollisions;
-  memcpy(collisionGraph, other->collisionGraph, sizeof(collisionGraph));
+  memcpy(collisionGraph.data(), other->collisionGraph.data(),
+         sizeof(collisionGraph));
 }
 
 void HashTableStats::recordCollisionAtCount(int count) {

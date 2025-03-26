@@ -30,6 +30,12 @@ struct LastVisitTimeCompare {
 }  // namespace lcpp
 struct PreconnectPrediction;
 
+bool RecordLcpElementLocatorHistogramForTesting(
+    int sliding_window_size,
+    int max_histogram_buckets,
+    const std::string& lcp_element_locator,
+    LcppStat& stat);
+
 // Converts LcppStat to LCPCriticalPathPredictorNavigationTimeHint
 // so that it can be passed to the renderer via the navigation handle.
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>

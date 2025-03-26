@@ -556,7 +556,7 @@ test("gpu_unittests") {
     sources += [ "ipc/service/image_decode_accelerator_stub_unittest.cc" ]
   }
 
-  if (is_apple) {
+  if (is_mac) {
     sources += [
       "ipc/common/gpu_memory_buffer_impl_io_surface_unittest.cc",
       "ipc/service/gpu_memory_buffer_factory_io_surface_unittest.cc",

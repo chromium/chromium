@@ -54,6 +54,7 @@ class PlusAddressCreationViewAndroid {
   void ShowInit(gfx::NativeView native_view,
                 TabModel* tab_model,
                 const std::string& primary_email_address,
+                const std::u16string& origin_for_display,
                 bool refresh_supported,
                 bool has_accepted_notice);
   void TryAgainToReservePlusAddress(

@@ -322,7 +322,14 @@ BtmServiceImpl::BtmServiceImpl(base::PassKey<BrowserContextImpl>,
     }
   }
 
-  storage_ = base::SequenceBound<BtmStorage>(CreateTaskRunner(), path_to_use);
+  if (path_to_use.has_value()) {
+    // If opening a persisted database, use `CreateTaskRunnerForResource()` to
+    // avoid race condition during profile re-loading.
+    storage_ = base::SequenceBound<BtmStorage>(
+        CreateTaskRunnerForResource(path_to_use.value()), path_to_use);
+  } else {
+    storage_ = base::SequenceBound<BtmStorage>(CreateTaskRunner(), path_to_use);
+  }
 
   repeating_timer_ = CreateTimer();
   repeating_timer_->Start();
@@ -363,6 +370,18 @@ scoped_refptr<base::SequencedTaskRunner> BtmServiceImpl::CreateTaskRunner() {
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::ThreadPolicy::PREFER_BACKGROUND});
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+BtmServiceImpl::CreateTaskRunnerForResource(const base::FilePath& path) {
+  if (base::FeatureList::IsEnabled(kDipsOnForegroundSequence)) {
+    return base::ThreadPool::CreateSequencedTaskRunnerForResource(
+        {base::MayBlock()}, path);
+  }
+  return base::ThreadPool::CreateSequencedTaskRunnerForResource(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::ThreadPolicy::PREFER_BACKGROUND},
+      path);
 }
 
 BtmCookieMode BtmServiceImpl::GetCookieMode() const {

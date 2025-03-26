@@ -30,6 +30,7 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/trusted_signals.h"
@@ -1400,6 +1401,89 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
   EXPECT_FALSE(error_msg3);
   ASSERT_TRUE(signals3);
   EXPECT_EQ(R"({"key3":"3"})", ExtractBiddingSignals(signals3.get(), kKeys3));
+}
+
+TEST_F(TrustedSignalsRequestManagerTest,
+       SellerSignalsRequestsOneAtATimeEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kFledgeSellerSignalsRequestsOneAtATime);
+  const GURL kRenderUrl1 = GURL("https://foo.test/");
+  const std::vector<std::string> kAdComponentRenderUrls1{
+      "https://foosub.test/", "https://bazsub.test/"};
+
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/?hostname=publisher"
+           "&renderUrls=https%3A%2F%2Ffoo.test%2F"
+           "&adComponentRenderUrls="
+           "https%3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub.test%2F"),
+      kBaseScoringJson);
+
+  const GURL kRenderUrl2 = GURL("https://bar.test/");
+  const std::vector<std::string> kAdComponentRenderUrls2{
+      "https://barsub.test/", "https://bazsub.test/"};
+
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/?hostname=publisher"
+           "&renderUrls=https%3A%2F%2Fbar.test%2F"
+           "&adComponentRenderUrls="
+           "https%3A%2F%2Fbarsub.test%2F,https%3A%2F%2Fbazsub.test%2F"),
+      kBaseScoringJson);
+
+  // Create a new scoring request manager.
+  TrustedSignalsRequestManager request_manager(
+      TrustedSignalsRequestManager::Type::kScoringSignals, &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(),
+      /*automatically_send_requests=*/true,
+      url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"", /*public_key=*/nullptr,
+      /*send_creative_scanning_metadata=*/false, v8_helper_.get());
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+  auto request1 = scoring_request_manager_.RequestScoringSignals(
+      ToCreativeInfo(kRenderUrl1), ToCreativeInfo(kAdComponentRenderUrls1),
+      /*max_trusted_scoring_signals_url_length=*/0,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+  run_loop1.Run();
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_.RequestScoringSignals(
+      ToCreativeInfo(kRenderUrl2), ToCreativeInfo(kAdComponentRenderUrls2),
+      /*max_trusted_scoring_signals_url_length=*/0,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+  run_loop2.Run();
+
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals1.get(), kRenderUrl1,
+                                  kAdComponentRenderUrls1));
+
+  EXPECT_FALSE(error_msg2) << *error_msg2;
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":[2]},)"
+            R"("renderUrl":{"https://bar.test/":[2]},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals2.get(), kRenderUrl2,
+                                  kAdComponentRenderUrls2));
 }
 
 TEST_F(TrustedSignalsRequestManagerTest,

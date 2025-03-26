@@ -155,7 +155,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/collaboration/messaging/ActivityLogItem.java",
       "android/java/src/org/chromium/components/collaboration/messaging/ActivityLogQueryParams.java",
-      "android/java/src/org/chromium/components/collaboration/messaging/AggregatedMessageData.java",
       "android/java/src/org/chromium/components/collaboration/messaging/InstantMessage.java",
       "android/java/src/org/chromium/components/collaboration/messaging/MessageAttribution.java",
       "android/java/src/org/chromium/components/collaboration/messaging/MessageUtils.java",

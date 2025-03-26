@@ -7,6 +7,7 @@
 #include <numbers>
 
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -52,48 +53,58 @@ Corner ContouredRect::Corner::AlignedToOrigin(Corner origin) const {
     offset.Scale(-1);
   }
 
-  float curvature = origin.Curvature();
-
   CHECK(!origin.IsConcave());
 
-  if (curvature > 2 && !origin.IsStraight()) {
-    // For high curvatures, we change the target curvature to match a
-    // superellipse whose distance from the original corner's mid-point is the
-    // desired offset.
-    const float target_length = DiagonalLength();
-    const float origin_length = origin.DiagonalLength();
-    const float adjusted_length =
-        (target_length - origin_length) / std::numbers::sqrt2;
-
-    curvature = CurvatureForHalfCorner(
-        (HalfCornerForCurvature(curvature) * origin_length + adjusted_length) /
-        target_length);
-  } else if (curvature < 2) {
-    // When 1<=curvature<2, the distance at the edge is greater than the border
-    // thickness, and needs to be scaled by a number between 1 and sqrt(2).
-    // This formula computes this number by computing the offset that would
-    // result in a superellipse whose 45deg point has a distance of 1 from
-    // this superellipse.
-    offset.Scale(std::pow(2, 1 / curvature - 0.5));
+  // When 1<=curvature<2, the distance at the edge is greater than the border
+  // thickness, and needs to be scaled by a number between 1 and sqrt(2).
+  // This formula computes this number by computing the offset that would
+  // result in a superellipse whose 45deg point has a distance of 1 from
+  // this superellipse.
+  if (origin.Curvature() < 2) {
+    offset.Scale(std::pow(2, 1 / origin.Curvature() - 0.5));
   }
-
-  // For curvature === 2 (round) and straight there is no adjustment to be made.
 
   const gfx::Vector2dF adjusted_offset_start =
       gfx::ScaleVector2d(gfx::NormalizeVector2d(origin.v4()), offset.x());
   const gfx::Vector2dF adjusted_offset_end =
       gfx::ScaleVector2d(gfx::NormalizeVector2d(origin.v1()), offset.y());
 
-  return Corner({origin.Start() + adjusted_offset_start,
-                 origin.Outer() + adjusted_offset_start + adjusted_offset_end,
-                 origin.End() + adjusted_offset_end, origin.Center()},
-                curvature);
+  Corner target_corner(
+      {origin.Start() + adjusted_offset_start,
+       origin.Outer() + adjusted_offset_start + adjusted_offset_end,
+       origin.End() + adjusted_offset_end, origin.Center()},
+      origin.Curvature());
+
+  if (origin.Curvature() <= 2 || target_corner.IsStraight()) {
+    return target_corner;
+  }
+
+  // For highly concave or convex curvatures (>2 or <0.5), we adjust the target
+  // curvature to a value that would generate a half-corner point whose distance
+  // from the origin half-corner point is consistent with the thickness.
+  float origin_length = origin.DiagonalLength();
+  float target_length = target_corner.DiagonalLength();
+  const float adjusted_length =
+      (target_length - origin_length) / std::numbers::sqrt2;
+  target_corner.curvature_ = Corner::CurvatureForHalfCorner(
+      (Corner::HalfCornerForCurvature(origin.Curvature()) * origin_length +
+       adjusted_length) /
+      target_length);
+
+  return target_corner;
+}
+
+// static
+float ContouredRect::Corner::CurvatureForHalfCorner(float half_corner) {
+  return half_corner >= 1   ? ContouredRect::CornerCurvature::kStraight
+         : half_corner <= 0 ? ContouredRect::CornerCurvature::kNotch
+                            : std::log(0.5) / std::log(half_corner);
 }
 
 gfx::PointF ContouredRect::Corner::HullPoint() const {
   // This is the x of the hull of the superellipse.
-  const float normalized_control_point =
-      2 * Corner::HalfCornerForCurvature(curvature_) - 0.5;
+  const float normalized_control_point = ClampTo<float>(
+      2 * Corner::HalfCornerForCurvature(curvature_) - 0.5, 0, 1);
   return MapPoint(
       gfx::Vector2dF(normalized_control_point, normalized_control_point));
 }

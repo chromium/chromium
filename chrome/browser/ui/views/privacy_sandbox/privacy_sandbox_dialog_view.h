@@ -32,7 +32,7 @@ class PrivacySandboxDialogView : public views::View {
   void Close();
 
  private:
-  friend class PrivacySandboxQueueTestHelper;
+  friend class PrivacySandboxQueueTestNotice;
 
   void AdsDialogNoArgsCallback(
       PrivacySandboxService::AdsDialogCallbackNoArgsEvents event);
@@ -43,6 +43,7 @@ class PrivacySandboxDialogView : public views::View {
   friend class PrivacySandboxDialogViewPrivacyPolicyBrowserTest;
   friend class
       PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest;
+  friend class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest;
   content::WebContents* GetWebContentsForTesting();
 
   raw_ptr<views::WebView> web_view_;

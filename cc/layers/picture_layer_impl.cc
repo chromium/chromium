@@ -957,9 +957,10 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile) {
   }
 
   if (layer_tree_impl()->settings().UseLayerContextForDisplay() &&
-      !IsActive()) {
-    // Accumulate tile changes on the pending tree only. These are pushed to the
-    // active tree in PushPropertiesTo().
+      (!IsActive() || layer_tree_impl()->settings().commit_to_active_tree)) {
+    // Tiles for the tree currently being committed to (Pending or Active)
+    // are pushed to the display during UpdateDisplayTree. Accumulate those
+    // changes. These are pushed to the active tree in PushPropertiesTo().
     updated_tiles_[tile->contents_scale_key()].emplace(tile->tiling_i_index(),
                                                        tile->tiling_j_index());
   }
@@ -1788,6 +1789,15 @@ bool PictureLayerImpl::CalculateRasterTranslation(
   // No need to use raster translation if there is no text.
   if (!raster_source_ || !raster_source_->GetDisplayItemList() ||
       !raster_source_->GetDisplayItemList()->has_draw_text_ops()) {
+    return false;
+  }
+
+  // Besides the RasterScalesApproximatelyEqual() condition for
+  // ScreenSpaceTransform() and DrawTransform() in PixelAlignmentOffset(),
+  // here we also check if the scale of DrawTransform() approximately equals
+  // raster_contents_scale_.
+  if (!draw_property_utils::RasterScalesApproximatelyEqual(
+          DrawTransform().To2dScale(), raster_contents_scale_)) {
     return false;
   }
 

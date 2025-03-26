@@ -15,6 +15,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -100,9 +101,10 @@ const uint8_t kTestFontTableData[kTestFontTableDataLength] = {
 const wchar_t* kTestFontFamilyInvalid = L"InvalidFont";
 
 void InitLogFont(LOGFONTW* logfont, const wchar_t* fontname) {
-  size_t length = std::min(sizeof(logfont->lfFaceName),
-                           (wcslen(fontname) + 1) * sizeof(wchar_t));
-  memcpy(logfont->lfFaceName, fontname, length);
+  size_t length =
+      std::min(sizeof(logfont->lfFaceName),
+               (UNSAFE_TODO(wcslen(fontname)) + 1) * sizeof(wchar_t));
+  UNSAFE_TODO(memcpy(logfont->lfFaceName, fontname, length));
 }
 
 content::GdiFontPatchData* SetupTest() {
@@ -275,7 +277,7 @@ TEST_F(GDIFontEmulationTest, GetFontDataDataSuccess) {
   std::vector<char> data(data_size);
   DWORD size = GetFontData(hdc, kTestFontTableTag, 0, &data[0], data.size());
   EXPECT_EQ(size, data_size);
-  EXPECT_EQ(memcmp(&data[0], kTestFontTableData, data.size()), 0);
+  EXPECT_EQ(UNSAFE_TODO(memcmp(&data[0], kTestFontTableData, data.size())), 0);
   EXPECT_TRUE(DeleteObject(font));
   EXPECT_TRUE(DeleteDC(hdc));
 }

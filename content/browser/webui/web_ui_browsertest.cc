@@ -16,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -52,7 +51,6 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/base_event_utils.h"
@@ -1101,23 +1099,6 @@ class WebUIWorkerTest : public ContentBrowserTest {
       &factory_};
 };
 
-class WebUIDedicatedWorkerTest : public WebUIWorkerTest,
-                                 public testing::WithParamInterface<bool> {
- public:
-  WebUIDedicatedWorkerTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(blink::features::kPlzDedicatedWorker);
-    } else {
-      feature_list_.InitAndDisableFeature(blink::features::kPlzDedicatedWorker);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, WebUIDedicatedWorkerTest, testing::Bool());
-
 // TODO(crbug.com/40290702): Shared workers are not available on Android.
 #if !BUILDFLAG(IS_ANDROID)
 // Verify that we can create SharedWorker with scheme "chrome://" under
@@ -1262,7 +1243,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that we can create a Worker with scheme "chrome://" under WebUI page.
-IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
+IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
                        CanCreateWebUIDedicatedWorkerForWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(true,
@@ -1274,7 +1255,7 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
 
 // Verify that pages with scheme other than "chrome://" cannot create a Worker
 // with scheme "chrome://".
-IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
+IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
                        CannotCreateWebUIDedicatedWorkerForNonWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EvalJsResult result = RunWorkerTest(
@@ -1288,7 +1269,7 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
 }
 
 // Test that we can start a Worker from a chrome-untrusted:// iframe.
-IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
+IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
                        CanCreateDedicatedWorkerFromUntrustedIframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = shell()->web_contents();
@@ -1330,8 +1311,8 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
 }
 
 // Test that we can create a Worker from a chrome-untrusted:// main frame.
-IN_PROC_BROWSER_TEST_P(
-    WebUIDedicatedWorkerTest,
+IN_PROC_BROWSER_TEST_F(
+    WebUIWorkerTest,
     CanCreateUntrustedWebUIDedicatedWorkerForUntrustedWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
   SetUntrustedWorkerSrcToWebUIConfig(/*allow_embedded_frame=*/false);
@@ -1345,8 +1326,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Verify that chrome:// pages cannot create a Worker with scheme
 // "chrome-untrusted://".
-IN_PROC_BROWSER_TEST_P(
-    WebUIDedicatedWorkerTest,
+IN_PROC_BROWSER_TEST_F(
+    WebUIWorkerTest,
     CannotCreateUntrustedWebUIDedicatedWorkerFromTrustedWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EvalJsResult result = RunWorkerTest(
@@ -1363,7 +1344,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Verify that pages with scheme other than "chrome-untrusted://" cannot create
 // a Worker with scheme "chrome-untrusted://".
-IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
+IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
                        CannotCreateUntrustedWebUIDedicatedWorkerForWebURL) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EvalJsResult result = RunWorkerTest(
@@ -1381,7 +1362,7 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
 
 // Verify that pages with scheme "chrome-untrusted://" cannot create a Worker
 // with scheme "chrome://".
-IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
+IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
                        CannotCreateWebUIDedicatedWorkerForUntrustedPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   SetUntrustedWorkerSrcToWebUIConfig(/*allow_embedded_frame=*/false);

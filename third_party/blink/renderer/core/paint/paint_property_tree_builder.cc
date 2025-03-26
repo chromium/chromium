@@ -2062,13 +2062,14 @@ static bool NeedsFilter(const LayoutObject& object,
   return false;
 }
 
-static void UpdateFilterEffect(const LayoutObject& object,
-                               const EffectPaintPropertyNode* effect_node,
-                               CompositorFilterOperations& filter) {
+static void UpdateFilterEffect(
+    const LayoutObject& object,
+    const EffectPaintPropertyNode* effect_node,
+    EffectPaintPropertyNode::FilterInfo& filter_info) {
   if (object.HasLayer()) {
     // Try to use the cached filter.
-    if (effect_node) {
-      filter = effect_node->Filter();
+    if (effect_node && effect_node->Filter()) {
+      filter_info.operations = *effect_node->Filter();
     }
     PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
 #if DCHECK_IS_ON()
@@ -2077,7 +2078,9 @@ static void UpdateFilterEffect(const LayoutObject& object,
     layer->UpdateFilterReferenceBox();
     DCHECK_EQ(reference_box, layer->FilterReferenceBox());
 #endif
-    layer->UpdateCompositorFilterOperationsForFilter(filter);
+    layer->UpdateCompositorFilterOperationsForFilter(filter_info.operations);
+    filter_info.output_bounds = filter_info.operations.MapRect(
+        ToEnclosingRect(layer->FilterReferenceBox()));
     return;
   }
   if (object.IsSVGChild() && !object.IsText()) {
@@ -2087,9 +2090,12 @@ static void UpdateFilterEffect(const LayoutObject& object,
     if (!object.StyleRef().HasFilter())
       return;
     // Try to use the cached filter.
-    if (effect_node)
-      filter = effect_node->Filter();
-    client->UpdateFilterData(filter);
+    if (effect_node && effect_node->Filter()) {
+      filter_info.operations = *effect_node->Filter();
+    }
+    client->UpdateFilterData(filter_info.operations);
+    filter_info.output_bounds = filter_info.operations.MapRect(
+        gfx::ToEnclosingRect(object.VisualRectInLocalSVGCoordinates()));
   }
 }
 
@@ -2099,8 +2105,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
     if (NeedsFilter(object_, full_context_)) {
       EffectPaintPropertyNode::State state;
       state.local_transform_space = context_.current.transform;
-
-      UpdateFilterEffect(object_, properties_->Filter(), state.filter);
+      EffectPaintPropertyNode::FilterInfo filter_info;
+      UpdateFilterEffect(object_, properties_->Filter(), filter_info);
+      if (!filter_info.operations.IsEmpty()) {
+        state.filter_info =
+            std::make_unique<EffectPaintPropertyNode::FilterInfo>(
+                std::move(filter_info));
+      }
 
       // The CSS filter spec didn't specify how filters interact with overflow
       // clips. The implementation here mimics the old Blink/WebKit behavior for
@@ -2140,20 +2151,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       state.self_or_ancestor_participates_in_view_transition =
           context_.self_or_ancestor_participates_in_view_transition;
 
-      // This must be computed before std::move(state) below.
-      bool needs_pixel_moving_filter_clip_expander =
-          (state.direct_compositing_reasons &
-           (CompositingReason::kWillChangeFilter |
-            CompositingReason::kActiveFilterAnimation)) ||
-          state.filter.HasFilterThatMovesPixels();
-
       EffectPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_filter_animation_on_compositor =
           object_.StyleRef().IsRunningFilterAnimationOnCompositor();
       OnUpdateEffect(properties_->UpdateFilter(
           *context_.current_effect, std::move(state), animation_state));
 
-      if (needs_pixel_moving_filter_clip_expander) {
+      if (properties_->Filter()->NeedsPixelMovingFilterClipExpander()) {
         OnUpdateClip(properties_->UpdatePixelMovingFilterClipExpander(
             *context_.current.clip,
             ClipPaintPropertyNode::State(*context_.current.transform,

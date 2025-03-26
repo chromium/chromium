@@ -38,6 +38,7 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   using InitStatus = SharedStorageDatabase::InitStatus;
   using SetBehavior = SharedStorageDatabase::SetBehavior;
   using OperationResult = SharedStorageDatabase::OperationResult;
+  using BatchUpdateResult = SharedStorageDatabase::BatchUpdateResult;
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
   using TimeResult = SharedStorageDatabase::TimeResult;
@@ -98,6 +99,11 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   void Clear(url::Origin context_origin,
              base::OnceCallback<void(OperationResult)> callback,
              DataClearSource source) override;
+  void BatchUpdate(
+      url::Origin context_origin,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      base::OnceCallback<void(BatchUpdateResult)> callback) override;
   void Length(url::Origin context_origin,
               base::OnceCallback<void(int)> callback) override;
   void Keys(url::Origin context_origin,

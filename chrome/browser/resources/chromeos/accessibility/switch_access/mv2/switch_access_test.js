@@ -5,7 +5,7 @@
 GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 
 /** Test fixture for the SwitchAccess class. */
-SwitchAccessSwitchAccessTest = class extends SwitchAccessE2ETest {
+SwitchAccessMV2SwitchAccessTest = class extends SwitchAccessE2ETest {
   async waitForCallback() {
     return new Promise(resolve => this.promiseCallback = resolve);
   }
@@ -17,7 +17,7 @@ function resetState() {
 }
 
 AX_TEST_F(
-    'SwitchAccessSwitchAccessTest', 'NoFocusDefersInit', async function() {
+    'SwitchAccessMV2SwitchAccessTest', 'NoFocusDefersInit', async function() {
       await this.runWithLoadedTree('');
       // Build a new SwitchAccess instance with hooks.
       let initCount = 0;

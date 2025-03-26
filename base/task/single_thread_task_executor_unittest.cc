@@ -423,7 +423,7 @@ class TestIOHandler : public MessagePumpForIO::IOHandler {
 
 TestIOHandler::TestIOHandler(const wchar_t* name, HANDLE signal)
     : MessagePumpForIO::IOHandler(FROM_HERE), signal_(signal) {
-  memset(buffer_, 0, sizeof(buffer_));
+  UNSAFE_TODO(memset(buffer_, 0, sizeof(buffer_)));
 
   file_.Set(CreateFile(name, GENERIC_READ, 0, NULL, OPEN_EXISTING,
                        FILE_FLAG_OVERLAPPED, NULL));

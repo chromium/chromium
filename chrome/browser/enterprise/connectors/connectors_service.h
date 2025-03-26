@@ -50,8 +50,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
       AnalysisConnector connector);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  bool IsConnectorEnabled(AnalysisConnector connector) const override;
-
   bool DelayUntilVerdict(AnalysisConnector connector);
 
   // Gets custom message if set by the admin.
@@ -76,13 +74,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
       AnalysisConnector connector);
 
-  std::optional<std::string> GetBrowserDmToken() const;
-
-  // Obtain a ClientMetadata instance corresponding to the current
-  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
-  // based service provider and false when using a local service provider.
-  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud);
-
   // Returns the profile email if real-time URL check is set for the profile,
   // the device ID if it is set for the device, or an empty string if it is
   // unset.
@@ -98,6 +89,11 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
 
   // Observe if reporting policies have changed to include telemetry event.
   void ObserveTelemetryReporting(base::RepeatingCallback<void()> callback);
+
+  // ConnectorsServiceBase:
+  bool IsConnectorEnabled(AnalysisConnector connector) const override;
+  std::optional<std::string> GetBrowserDmToken() const override;
+  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceProfileTypeBrowserTest, IsEnabled);

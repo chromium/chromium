@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +28,8 @@ import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
@@ -49,19 +48,15 @@ import org.chromium.ui.base.DeviceFormFactor;
 @Batch(Batch.PER_CLASS)
 @ImportantFormFactors(DeviceFormFactor.TABLET)
 public class TabSwitcherPanePublicTransitTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Test
     @MediumTest
     public void testSwitchTabModel_ScrollToSelectedTab() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
 
         PageStation page = firstPage;
         for (int i = 1; i < 10; i++) {
@@ -92,7 +87,7 @@ public class TabSwitcherPanePublicTransitTest {
     @Test
     @MediumTest
     public void testTabListEditor_EnterAndExit() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
 
         RegularTabSwitcherStation regularTabSwitcher = firstPage.openRegularTabSwitcher();
         TabSwitcherListEditorFacility listEditor =
@@ -107,8 +102,8 @@ public class TabSwitcherPanePublicTransitTest {
     @Test
     @MediumTest
     public void testEmptyStateView() {
-        WebPageStation firstPage = mInitialStateRule.startOnBlankPage();
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
 
         IncognitoNewTabPageStation incognitoNtp = firstPage.openNewIncognitoTabFast();
         assertTrue(cta.getCurrentTabModel().isIncognito());

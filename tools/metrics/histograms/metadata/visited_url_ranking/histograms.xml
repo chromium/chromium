@@ -25,7 +25,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits.InOutPercentage"
-    units="%" expires_after="2025-03-22">
+    units="%" expires_after="2025-08-22">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="VisitedURLRanking.Fetch.{Fetcher}.Success"
-    enum="BooleanSuccess" expires_after="2025-03-22">
+    enum="BooleanSuccess" expires_after="2025-08-22">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="VisitedURLRanking.Rank.NumVisits" units="counts"
-    expires_after="2025-03-22">
+    expires_after="2025-08-22">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="VisitedURLRanking.Request.Step.{Step}.Status"
-    enum="VisitedURLRankingRequestStepStatus" expires_after="2025-03-22">
+    enum="VisitedURLRankingRequestStepStatus" expires_after="2025-08-22">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="VisitedURLRanking.TransformType.{URLVisitAggregatesTransformType}.Latency"
-    units="ms" expires_after="2025-03-22">
+    units="ms" expires_after="2025-08-22">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>

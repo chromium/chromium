@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 
+#include <string>
+
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
@@ -36,6 +38,7 @@ using base::android::ScopedJavaLocalRef;
 
 ScopedJavaLocalRef<jobject> GetNormatStateUiInfo(
     const std::string& primary_email_address,
+    const std::u16string& origin_for_display,
     bool has_accepted_notice) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -50,8 +53,9 @@ ScopedJavaLocalRef<jobject> GetNormatStateUiInfo(
     title = l10n_util::GetStringUTF16(
         IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_ANDROID);
 
-    formatted_description = l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_ANDROID);
+    formatted_description = l10n_util::GetStringFUTF16(
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_ANDROID,
+        origin_for_display);
 
     formatted_notice =
         l10n_util::GetStringFUTF16(IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_ANDROID,
@@ -64,7 +68,7 @@ ScopedJavaLocalRef<jobject> GetNormatStateUiInfo(
         l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_ANDROID);
 
     formatted_description = l10n_util::GetStringFUTF16(
-        IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_ANDROID,
+        IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_ANDROID, origin_for_display,
         base::UTF8ToUTF16(primary_email_address));
   }
 
@@ -122,6 +126,7 @@ void PlusAddressCreationViewAndroid::ShowInit(
     gfx::NativeView native_view,
     TabModel* tab_model,
     const std::string& primary_email_address,
+    const std::u16string& origin_for_display,
     bool refresh_supported,
     bool has_accepted_notice) {
   base::android::ScopedJavaGlobalRef<jobject> java_object =
@@ -132,7 +137,8 @@ void PlusAddressCreationViewAndroid::ShowInit(
 
   Java_PlusAddressCreationViewBridge_show(
       base::android::AttachCurrentThread(), java_object_,
-      GetNormatStateUiInfo(primary_email_address, has_accepted_notice),
+      GetNormatStateUiInfo(primary_email_address, origin_for_display,
+                           has_accepted_notice),
       refresh_supported);
 }
 

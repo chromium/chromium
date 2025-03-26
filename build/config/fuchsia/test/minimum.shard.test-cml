@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 {
-  include: [
-    "syslog/client.shard.cml",
-  ],
   // The following components must be subpackaged by all Chromium tests that
   // aren't system tests, to provide implementations of always-required
   // capabilities (see the `use`s and `offer`s).
@@ -20,9 +17,12 @@
   ],
   offer: [
     {
-      protocol: "fuchsia.logger.LogSink",
+      dictionary: "diagnostics",
       from: "parent",
-      to: [ "#intl_property_manager" ],
+      to: [
+        "#intl_property_manager",
+        "#build-info-service",
+      ],
     }
   ],
   use: [

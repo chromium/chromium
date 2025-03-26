@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -138,9 +139,7 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
 
   // Initialize the pinned action buttons.
   action_view_controller_ = std::make_unique<views::ActionViewController>();
-
   model_->MaybeMigrateExistingPinnedStates();
-
   UpdateViews();
 }
 
@@ -434,14 +433,8 @@ actions::ActionItem* PinnedToolbarActionsContainer::GetActionItemFor(
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPoppedOutButtonFor(
     const actions::ActionId& id) {
   CHECK(GetActionItemFor(id));
-  auto popped_out_button = std::make_unique<PinnedActionToolbarButton>(
-      browser_view_->browser(), id, this);
+  auto popped_out_button = CreateOrGetButtonForAction(id);
   auto* button = popped_out_button.get();
-  action_view_controller_->CreateActionViewRelationship(
-      button, GetActionItemFor(id)->GetAsWeakPtr());
-
-  popped_out_button->SetPaintToLayer();
-  popped_out_button->layer()->SetFillsBoundsOpaquely(false);
   popped_out_buttons_.push_back(AddChildView(std::move(popped_out_button)));
   ReorderViews();
   return button;
@@ -464,6 +457,22 @@ void PinnedToolbarActionsContainer::MaybeRemovePoppedOutButtonFor(
   ReorderViews();
 }
 
+PinnedActionToolbarButton*
+PinnedToolbarActionsContainer::CreatePermanentButtonFor(actions::ActionId id) {
+  PinnedActionToolbarButton* existing_button = GetButtonFor(id);
+  if (existing_button) {
+    existing_button->SetIsPermanent();
+    return existing_button;
+  } else {
+    std::unique_ptr<PinnedActionToolbarButton> new_button =
+        CreateOrGetButtonForAction(id);
+    new_button->SetIsPermanent();
+    PinnedActionToolbarButton* new_button_raw_ptr = new_button.get();
+    permanent_buttons_.push_back(std::move(new_button));
+    return new_button_raw_ptr;
+  }
+}
+
 void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     const actions::ActionId& id) {
   // Pinned buttons shouldn't appear in web apps.
@@ -478,6 +487,7 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
   if (!action_item) {
     return;
   }
+
   if (GetPoppedOutButtonFor(id)) {
     const auto iter = std::ranges::find(popped_out_buttons_, id,
                                         [](PinnedActionToolbarButton* button) {
@@ -487,14 +497,8 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     pinned_buttons_.push_back(*iter);
     popped_out_buttons_.erase(iter);
   } else {
-    auto button = std::make_unique<PinnedActionToolbarButton>(
-        browser_view_->browser(), id, this);
-    action_view_controller_->CreateActionViewRelationship(
-        button.get(), action_item->GetAsWeakPtr());
+    auto button = CreateOrGetButtonForAction(id);
     button->SetPinned(true);
-    button->SetPaintToLayer();
-    button->layer()->SetFillsBoundsOpaquely(false);
-
     pinned_buttons_.push_back(AddChildView(std::move(button)));
   }
 }
@@ -537,10 +541,13 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetPoppedOutButtonFor(
 
 PinnedActionToolbarButton* PinnedToolbarActionsContainer::GetButtonFor(
     const actions::ActionId& id) {
-  if (auto* button = GetPinnedButtonFor(id)) {
-    return button;
+  if (auto* pinned_button = GetPinnedButtonFor(id)) {
+    return pinned_button;
   }
-  return GetPoppedOutButtonFor(id);
+  if (auto* pop_out_button = GetPoppedOutButtonFor(id)) {
+    return pop_out_button;
+  }
+  return nullptr;
 }
 
 bool PinnedToolbarActionsContainer::ShouldRemainPoppedOutInToolbar(
@@ -550,7 +557,7 @@ bool PinnedToolbarActionsContainer::ShouldRemainPoppedOutInToolbar(
 
 void PinnedToolbarActionsContainer::RemoveButton(
     PinnedActionToolbarButton* button) {
-  if (button->NeedsDelayedDestruction()) {
+  if (!button->IsPermanent() && button->NeedsDelayedDestruction()) {
     // Defer deletion of the view to allow the pressed event handler
     // that triggers its removal to run to completion.
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
@@ -560,7 +567,10 @@ void PinnedToolbarActionsContainer::RemoveButton(
         base::BindOnce(&PinnedToolbarActionsContainer::InvalidateLayout,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    RemoveChildViewT(button);
+    auto removed_button = RemoveChildViewT(button);
+    if (removed_button->IsPermanent()) {
+      permanent_buttons_.push_back(std::move(removed_button));
+    }
     InvalidateLayout();
   }
 }
@@ -768,6 +778,32 @@ size_t PinnedToolbarActionsContainer::WidthToIconCount(int x_offset) {
 const std::vector<actions::ActionId>&
 PinnedToolbarActionsContainer::PinnedActionIds() const {
   return model_->PinnedActionIds();
+}
+
+std::unique_ptr<PinnedActionToolbarButton>
+PinnedToolbarActionsContainer::CreateOrGetButtonForAction(
+    actions::ActionId id) {
+  const auto iter = std::ranges::find(
+      permanent_buttons_, id,
+      [](const std::unique_ptr<PinnedActionToolbarButton>& button) {
+        return button->GetActionId();
+      });
+
+  if (iter != permanent_buttons_.end()) {
+    auto button = std::move(*iter);
+    button->SetVisible(true);
+    permanent_buttons_.erase(iter);
+    return button;
+  }
+
+  auto button = std::make_unique<PinnedActionToolbarButton>(
+      browser_view_->browser(), id, this);
+  action_view_controller_->CreateActionViewRelationship(
+      button.get(), GetActionItemFor(id)->GetAsWeakPtr());
+
+  button->SetPaintToLayer();
+  button->layer()->SetFillsBoundsOpaquely(false);
+  return button;
 }
 
 BEGIN_METADATA(PinnedToolbarActionsContainer)

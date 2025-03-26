@@ -24,9 +24,13 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -39,7 +43,6 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,8 +60,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -80,14 +83,9 @@ import java.util.stream.IntStream;
 @Restriction({DeviceFormFactor.TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class BookmarkBarTest {
-
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private BookmarkModel mModel;
     private BookmarkId mDesktopFolderId;
@@ -95,11 +93,11 @@ public class BookmarkBarTest {
 
     @Before
     public void setUp() {
-        mInitialStateRule.startOnBlankPage();
+        mCtaTestRule.startOnBlankPage();
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mModel = sActivityTestRule.getActivity().getBookmarkModelForTesting();
+                    mModel = mCtaTestRule.getActivity().getBookmarkModelForTesting();
                     mModel.removeAllUserBookmarks();
                     mDesktopFolderId = mModel.getDesktopFolderId();
                 });
@@ -116,12 +114,17 @@ public class BookmarkBarTest {
     private @Nullable BookmarkId addBookmark(int index, @NonNull String title, @NonNull GURL url)
             throws ExecutionException {
         return BookmarkTestUtil.addBookmark(
-                sActivityTestRule, mModel, index, title, url, /* parent= */ mDesktopFolderId);
+                mCtaTestRule.getActivityTestRule(),
+                mModel,
+                index,
+                title,
+                url,
+                /* parent= */ mDesktopFolderId);
     }
 
     private @Nullable BookmarkId addFolder(@NonNull String title) throws ExecutionException {
         return BookmarkTestUtil.addFolder(
-                sActivityTestRule, mModel, title, /* parent= */ mDesktopFolderId);
+                mCtaTestRule.getActivityTestRule(), mModel, title, /* parent= */ mDesktopFolderId);
     }
 
     private @NonNull Matcher<View> bookmarkBarItemWithText(@NonNull String text) {
@@ -187,16 +190,16 @@ public class BookmarkBarTest {
     }
 
     private @Nullable Tab getCurrentTab() {
-        return sActivityTestRule.getActivity().getActivityTab();
+        return mCtaTestRule.getActivity().getActivityTab();
     }
 
     private @Nullable Tab getLastTab() {
-        final var tabModel = sActivityTestRule.getActivity().getCurrentTabModel();
+        final var tabModel = mCtaTestRule.getActivity().getCurrentTabModel();
         return tabModel.getTabAt(tabModel.getCount() - 1);
     }
 
     private @NonNull GURL getTestServerUrl(@NonNull String relativeUrl) {
-        return new GURL(sActivityTestRule.getTestServer().getURL(relativeUrl));
+        return new GURL(mCtaTestRule.getTestServer().getURL(relativeUrl));
     }
 
     private <T> @NonNull Optional<T> optionalOfThrowable(@NonNull Callable<T> callable) {
@@ -229,6 +232,45 @@ public class BookmarkBarTest {
     public void testOnAllBookmarksButtonClick() {
         onViewWaiting(bookmarkBarItemWithText("All Bookmarks")).perform(click());
         onViewWaiting(bookmarkManagerToolbarWithText("Bookmarks")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testOnBookmarkBarToggledViaKeyboard() {
+        final var activity = mCtaTestRule.getActivity();
+
+        final var profile =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> activity.getProfileProviderSupplier().get().getOriginalProfile());
+
+        final var keyEvent =
+                new KeyEvent(
+                        /* downTime= */ SystemClock.uptimeMillis(),
+                        /* eventTime= */ SystemClock.uptimeMillis(),
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_B,
+                        /* repeat= */ 0,
+                        KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Case: Toggle w/ feature enabled.
+                    // TODO(crbug.com/394614520): Verify UI updates once implemented.
+                    assertTrue(BookmarkBarUtils.isFeatureEnabled(activity));
+                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
+                    activity.onKeyDown(keyEvent.getKeyCode(), keyEvent);
+                    assertTrue(BookmarkBarUtils.isSettingEnabled(profile));
+                    activity.onKeyDown(keyEvent.getKeyCode(), keyEvent);
+                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
+
+                    // Case: Toggle w/ feature disabled.
+                    // TODO(crbug.com/394614520): Verify UI updates once implemented.
+                    BookmarkBarUtils.setFeatureEnabledForTesting(false);
+                    assertFalse(BookmarkBarUtils.isFeatureEnabled(activity));
+                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
+                    activity.onKeyDown(keyEvent.getKeyCode(), keyEvent);
+                    assertFalse(BookmarkBarUtils.isSettingEnabled(profile));
+                });
     }
 
     @Test

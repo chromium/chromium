@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -91,13 +90,13 @@ ExternallyManagedAppManager::SynchronizeRequest::operator=(
 ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
     SynchronizeRequest&& other) = default;
 
-struct ExternallyManagedAppManager::TaskAndCallback {
-  TaskAndCallback(std::unique_ptr<ExternallyManagedAppInstallTask> task,
-                  OnceInstallCallback callback)
-      : task(std::move(task)), callback(std::move(callback)) {}
-  ~TaskAndCallback() = default;
+struct ExternallyManagedAppManager::ExternalInstallMetadata {
+  ExternalInstallMetadata(ExternalInstallOptions options,
+                          OnceInstallCallback callback)
+      : options(std::move(options)), callback(std::move(callback)) {}
+  ~ExternalInstallMetadata() = default;
 
-  std::unique_ptr<ExternallyManagedAppInstallTask> task;
+  ExternalInstallOptions options;
   OnceInstallCallback callback;
 };
 
@@ -133,8 +132,9 @@ void ExternallyManagedAppManager::SetProvider(base::PassKey<WebAppProvider>,
 void ExternallyManagedAppManager::InstallNow(
     ExternalInstallOptions install_options,
     OnceInstallCallback callback) {
-  pending_installs_.push_front(std::make_unique<TaskAndCallback>(
-      CreateInstallationTask(std::move(install_options)), std::move(callback)));
+  pending_installs_metadata_.push_front(
+      std::make_unique<ExternalInstallMetadata>(std::move(install_options),
+                                                std::move(callback)));
 
   PostMaybeStartNext();
 }
@@ -142,8 +142,9 @@ void ExternallyManagedAppManager::InstallNow(
 void ExternallyManagedAppManager::Install(
     ExternalInstallOptions install_options,
     OnceInstallCallback callback) {
-  pending_installs_.push_back(std::make_unique<TaskAndCallback>(
-      CreateInstallationTask(std::move(install_options)), std::move(callback)));
+  pending_installs_metadata_.push_back(
+      std::make_unique<ExternalInstallMetadata>(std::move(install_options),
+                                                std::move(callback)));
 
   PostMaybeStartNext();
 }
@@ -152,8 +153,9 @@ void ExternallyManagedAppManager::InstallApps(
     std::vector<ExternalInstallOptions> install_options_list,
     const RepeatingInstallCallback& callback) {
   for (auto& install_options : install_options_list) {
-    pending_installs_.push_back(std::make_unique<TaskAndCallback>(
-        CreateInstallationTask(std::move(install_options)), callback));
+    pending_installs_metadata_.push_back(
+        std::make_unique<ExternalInstallMetadata>(std::move(install_options),
+                                                  callback));
   }
 
   PostMaybeStartNext();
@@ -205,11 +207,11 @@ void ExternallyManagedAppManager::Shutdown() {
   is_in_shutdown_ = true;
   pending_registrations_.clear();
   current_registration_.reset();
-  pending_installs_.clear();
+  pending_installs_metadata_.clear();
   url_loader_.reset();
   // `current_install_` keeps a pointer to `web_contents_` so destroy it before
   // releasing the WebContents.
-  current_install_.reset();
+  current_install_metadata_.reset();
   ReleaseWebContents();
 }
 
@@ -228,19 +230,10 @@ void ExternallyManagedAppManager::SetDataRetrieverFactoryForTesting(
 void ExternallyManagedAppManager::ReleaseWebContents() {
   DCHECK(pending_registrations_.empty());
   DCHECK(!current_registration_);
-  DCHECK(pending_installs_.empty());
-  DCHECK(!current_install_);
+  DCHECK(pending_installs_metadata_.empty());
+  DCHECK(!current_install_metadata_);
 
   web_contents_.reset();
-}
-
-std::unique_ptr<ExternallyManagedAppInstallTask>
-ExternallyManagedAppManager::CreateInstallationTask(
-    ExternalInstallOptions install_options) {
-  std::unique_ptr<ExternallyManagedAppInstallTask> install_task =
-      std::make_unique<ExternallyManagedAppInstallTask>(
-          *provider_, std::move(install_options));
-  return install_task;
 }
 
 std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
@@ -281,7 +274,7 @@ void ExternallyManagedAppManager::PostMaybeStartNext() {
 }
 
 void ExternallyManagedAppManager::MaybeStartNext() {
-  if (current_install_ || IsShuttingDown()) {
+  if (current_install_metadata_ || IsShuttingDown()) {
     return;
   }
   provider_->scheduler().ScheduleCallback(
@@ -294,17 +287,16 @@ void ExternallyManagedAppManager::MaybeStartNext() {
 void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     AllAppsLock& lock,
     base::Value::Dict& debug_value) {
-  if (current_install_ || IsShuttingDown()) {
+  if (current_install_metadata_ || IsShuttingDown()) {
     return;
   }
 
-  while (!pending_installs_.empty()) {
-    std::unique_ptr<TaskAndCallback> front =
-        std::move(pending_installs_.front());
-    pending_installs_.pop_front();
+  while (!pending_installs_metadata_.empty()) {
+    std::unique_ptr<ExternalInstallMetadata> front =
+        std::move(pending_installs_metadata_.front());
+    pending_installs_metadata_.pop_front();
 
-    const ExternalInstallOptions& install_options =
-        front->task->install_options();
+    const ExternalInstallOptions& install_options = front->options;
 
     CHECK(install_options.install_url.is_valid(), base::NotFatalUntil::M130);
     std::optional<webapps::AppId> app_id =
@@ -398,7 +390,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
                           /*installed_placeholder_app_id=*/std::nullopt);
     return;
   }
-  DCHECK(!current_install_);
+  DCHECK(!current_install_metadata_);
 
   if (current_registration_ || RunNextRegistration()) {
     return;
@@ -408,12 +400,12 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
 }
 
 void ExternallyManagedAppManager::StartInstallationTask(
-    std::unique_ptr<TaskAndCallback> task,
+    std::unique_ptr<ExternalInstallMetadata> external_install_metadata,
     std::optional<webapps::AppId> installed_placeholder_app_id) {
   if (IsShuttingDown()) {
     return;
   }
-  DCHECK(!current_install_);
+  DCHECK(!current_install_metadata_);
   DCHECK(!is_in_shutdown_);
   if (current_registration_) {
     // Preempt current registration.
@@ -423,9 +415,10 @@ void ExternallyManagedAppManager::StartInstallationTask(
     current_registration_.reset();
   }
 
-  current_install_ = std::move(task);
+  current_install_metadata_ = std::move(external_install_metadata);
   CreateWebContentsIfNecessary();
-  current_install_->task->Install(
+  provider_->scheduler().InstallExternallyManagedApp(
+      current_install_metadata_->options,
       std::move(installed_placeholder_app_id),
       base::BindOnce(&ExternallyManagedAppManager::OnInstalled,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -462,8 +455,7 @@ void ExternallyManagedAppManager::CreateWebContentsIfNecessary() {
 void ExternallyManagedAppManager::OnInstalled(
     ExternallyManagedAppManagerInstallResult result) {
   if (result.app_id && IsSuccess(result.code)) {
-    MaybeEnqueueServiceWorkerRegistration(
-        current_install_->task->install_options());
+    MaybeEnqueueServiceWorkerRegistration(current_install_metadata_->options);
   }
 
   // Post a task to avoid webapps::InstallableManager crashing and do so before
@@ -471,10 +463,10 @@ void ExternallyManagedAppManager::OnInstalled(
   // app.
   PostMaybeStartNext();
 
-  std::unique_ptr<TaskAndCallback> task_and_callback;
-  task_and_callback.swap(current_install_);
-  std::move(task_and_callback->callback)
-      .Run(task_and_callback->task->install_options().install_url, result);
+  std::unique_ptr<ExternalInstallMetadata> metadata_and_callback;
+  metadata_and_callback.swap(current_install_metadata_);
+  std::move(metadata_and_callback->callback)
+      .Run(metadata_and_callback->options.install_url, result);
 }
 
 void ExternallyManagedAppManager::MaybeEnqueueServiceWorkerRegistration(

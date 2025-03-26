@@ -152,8 +152,7 @@ class GooglePhotosFetcherTestBase : public testing::Test {
   // testing::Test:
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail,
-                                                     /*is_main_profile=*/true);
+    profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
   }
 
  private:

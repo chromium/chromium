@@ -44,12 +44,10 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
-#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
@@ -98,6 +96,8 @@ static const char kErrorCardDataUnavailable[] = "Credit card data unavailable";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
 static const char kErrorAutofillAiUnavailable[] =
     "Autofill AI data unavailable.";
+static const char kErrorAutofillAiInvalidData[] =
+    "The provided Autofill AI entity/attribute is invalid.";
 static const char kErrorAutofillAiTypeNameOutOfBounds[] =
     "The provided Autofill AI entity/attribute type name is out of bounds.";
 static const char kErrorAutofillAiEntityInstanceNotFound[] =
@@ -580,54 +580,6 @@ AutofillPrivateGetCreditCardListFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateMigrateCreditCardsFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivateMigrateCreditCardsFunction::Run() {
-  autofill::ContentAutofillClient* client =
-      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
-  if (!client) {
-    return RespondNow(Error(kErrorDataUnavailable));
-  }
-
-  // If `paydm` is not available, then don't do anything since
-  // `LocalCardMigrationManager` depends on it containing current data.
-  if (PaymentsDataManager* paydm = payments_data_manager();
-      !paydm || !paydm->is_payments_data_loaded()) {
-    return RespondNow(Error(kErrorDataUnavailable));
-  }
-
-  // Get the BrowserAutofillManager from the web contents.
-  // BrowserAutofillManager has a pointer to its AutofillClient which owns
-  // FormDataImporter.
-  autofill::AutofillManager* autofill_manager =
-      GetBrowserAutofillManager(GetSenderWebContents());
-  if (!autofill_manager) {
-    return RespondNow(Error(kErrorDataUnavailable));
-  }
-
-  // Get the FormDataImporter from AutofillClient. FormDataImporter owns
-  // LocalCardMigrationManager.
-  autofill::FormDataImporter* form_data_importer =
-      autofill_manager->client().GetFormDataImporter();
-  if (!form_data_importer)
-    return RespondNow(Error(kErrorDataUnavailable));
-
-  // Get local card migration manager from form data importer.
-  autofill::LocalCardMigrationManager* local_card_migration_manager =
-      form_data_importer->local_card_migration_manager();
-  if (!local_card_migration_manager)
-    return RespondNow(Error(kErrorDataUnavailable));
-
-  // Since we already check the migration requirements on the settings page, we
-  // don't check the migration requirements again.
-  local_card_migration_manager->GetMigratableCreditCards();
-  local_card_migration_manager->AttemptToOfferLocalCardMigration(
-      /*is_from_settings_page=*/true);
-  return RespondNow(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateLogServerCardLinkClickedFunction
 
 ExtensionFunction::ResponseAction
@@ -1018,33 +970,6 @@ AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateIsUserEligibleForAutofillImprovementsFunction
-
-// TODO(crbug.com/393318914): Remove function.
-ExtensionFunction::ResponseAction
-AutofillPrivateIsUserEligibleForAutofillImprovementsFunction::Run() {
-  Profile* profile =
-      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
-  return RespondNow(WithArguments(autofill_ai::IsUserEligible(profile)));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivatePredictionImprovementsIphFeatureUsedFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivatePredictionImprovementsIphFeatureUsedFunction::Run() {
-  autofill::ContentAutofillClient* client =
-      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
-  if (!client) {
-    return RespondNow(Error(kErrorDataUnavailable));
-  }
-
-  client->NotifyIphFeatureUsed(
-      autofill::AutofillClient::IphFeature::kAutofillAi);
-  return RespondNow(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateAddOrUpdateEntityInstanceFunction
 
 ExtensionFunction::ResponseAction
@@ -1058,9 +983,10 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
       parameters->entity_instance;
   std::optional<EntityInstance> entity_instance =
       autofill_ai_util::PrivateApiEntityInstanceToEntityInstance(
-          private_api_entity_instance);
+          private_api_entity_instance,
+          g_browser_process->GetApplicationLocale());
   if (!entity_instance.has_value()) {
-    return RespondNow(Error(kErrorAutofillAiTypeNameOutOfBounds));
+    return RespondNow(Error(kErrorAutofillAiInvalidData));
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());

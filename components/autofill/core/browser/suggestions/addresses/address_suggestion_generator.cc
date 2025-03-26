@@ -628,6 +628,14 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
           &feature_engagement::
               kIPHAutofillExternalAccountProfileSuggestionFeature);
     }
+
+    if ((profile.record_type() == AutofillProfile::RecordType::kAccountHome ||
+         profile.record_type() == AutofillProfile::RecordType::kAccountWork) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForHomeAndWork)) {
+      suggestion.iph_metadata = Suggestion::IPHMetadata(
+          &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature);
+    }
   }
   return suggestions;
 }

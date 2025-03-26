@@ -158,7 +158,7 @@ class VotesUploaderTest : public testing::Test {
   PasswordForm form_to_upload_;
   PasswordForm submitted_form_;
 
-  std::string login_form_signature_ = "123";
+  FormSignature login_form_signature_ = FormSignature(123);
 };
 
 TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {

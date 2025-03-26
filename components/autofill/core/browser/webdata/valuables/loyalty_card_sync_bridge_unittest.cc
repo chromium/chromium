@@ -40,8 +40,9 @@ constexpr char kId2[] = "2";
 constexpr char kInvalidId[] = "";
 
 LoyaltyCard TestLoyaltyCard(std::string_view id) {
-  return LoyaltyCard(std::string(id), "merchant_name", "program_name",
-                     GURL("http://foobar.com/logo.png"), "card_suffix");
+  return LoyaltyCard(ValuableId(std::string(id)), "merchant_name",
+                     "program_name", GURL("http://foobar.com/logo.png"),
+                     "card_suffix");
 }
 
 std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
@@ -78,8 +79,8 @@ class LoyaltyCardSyncBridgeTest : public testing::Test {
     ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
     syncer::EntityChangeList entity_data;
     for (const LoyaltyCard& card : loyalty_cards) {
-      entity_data.push_back(
-          syncer::EntityChange::CreateAdd(card.id(), CardToEntity(card)));
+      entity_data.push_back(syncer::EntityChange::CreateAdd(
+          card.id().value(), CardToEntity(card)));
     }
     // `MergeFullSyncData()` returns an error if it fails.
     return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),

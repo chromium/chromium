@@ -191,9 +191,6 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
-    return false;
-  }
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(profile);

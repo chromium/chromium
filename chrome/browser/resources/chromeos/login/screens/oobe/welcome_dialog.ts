@@ -113,6 +113,7 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
   private currentLanguage: string;
   private timezoneButtonVisible: boolean;
   private debuggingLinkVisible: boolean;
+  override hidden: boolean;
   private isMeet: boolean;
   private isBootAnimation: boolean;
   private isDeviceRequisitionConfigurable: boolean;

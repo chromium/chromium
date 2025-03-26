@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
@@ -319,6 +320,7 @@ void BrowserActions::InitializeBrowserActions() {
               kPerformanceSpeedometerIcon, ui::kColorIcon,
               ui::SimpleMenuModel::kDefaultIconSize))
           .SetEnabled(true)
+          .SetProperty(views::kElementIdentifierKey, kMemorySaverChipElementId)
           .Build());
 
   root_action_item_->AddChild(
@@ -355,6 +357,19 @@ void BrowserActions::InitializeBrowserActions() {
                        IDS_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon)
           .SetEnabled(IncognitoModePrefs::IsIncognitoAllowed(profile))
           .Build());
+
+  if (features::HasTabSearchToolbarButton()) {
+    root_action_item_->AddChild(
+        ChromeMenuAction(base::BindRepeating(
+                             [](Browser* browser, actions::ActionItem* item,
+                                actions::ActionInvocationContext context) {
+                               chrome::ShowTabSearch(browser);
+                             },
+                             base::Unretained(browser)),
+                         kActionTabSearch, IDS_TAB_SEARCH_MENU,
+                         IDS_TAB_SEARCH_MENU, kSearchMenuIcon)
+            .Build());
+  }
 
   root_action_item_->AddChild(
       ChromeMenuAction(base::BindRepeating(

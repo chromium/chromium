@@ -149,6 +149,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1455242230282523554">Vis språkinnstillinger</translation>
 <translation id="1459693405370120464">Vær</translation>
 <translation id="1460620680449458626">Lyden er dempet.</translation>
+<translation id="1462439140224375968">Opprettet et Google-dokument</translation>
 <translation id="14648076227129703">Dette gir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet</translation>
 <translation id="1467432559032391204">Venstre</translation>
 <translation id="146902737843070955">Administratoren din har forespurt denne endringen</translation>
@@ -593,6 +594,7 @@ Ellers blir den innebygde styreflaten slått på igjen om <ph name="TIMEOUT_SECO
 <translation id="301584155502740476">Vis detaljer for wifi-sonen. Wifi-sonen er av.</translation>
 <translation id="3017079585324758401">Bakgrunn</translation>
 <translation id="3018135054368884502">Spol medieinnhold fremover</translation>
+<translation id="3026897869154397692">Lagt til i kalenderen</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Åpne filer</translation>
@@ -1012,6 +1014,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4351244548802238354">Lukk dialogboks</translation>
 <translation id="4356872429719185452">Vis detaljer for wifi-sonen. Wifi-sonen slås på.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" /> – opptak</translation>
+<translation id="4368227575116094370">Opprett et Google-regneark</translation>
 <translation id="4371348193907997655">Cast-innstillinger</translation>
 <translation id="4371834685492830207">PIN-koden kan bare inneholde gyldige tegn</translation>
 <translation id="4375482231364171368">Søk i adressefeltet</translation>
@@ -1481,6 +1484,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
 <translation id="5830180081891717894"><ph name="WINDOWS" /> til</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
+<translation id="5840658767386246331">Søk med Google</translation>
 <translation id="5841296711770970362">Gå til neste spor</translation>
 <translation id="5842553299352339114">Wifi-sonen på <ph name="DEVICE_NAME" /> er på – ingen enheter er tilkoblet</translation>
 <translation id="584525477304726060">Hold for å maksimere</translation>
@@ -1512,6 +1516,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="595202126637698455">Ytelsessporing er aktivert</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Administrert bruker</translation>
+<translation id="596035801491797438">Slå av ansiktskontroll</translation>
 <translation id="5960410286721553511">Se nylige bilder og medier fra telefonen din</translation>
 <translation id="5965524703725988602">Slå av/på mørkt tema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Gå fremover gjennom vinduer</translation>
@@ -1894,6 +1899,7 @@ Nylig installert</translation>
 <translation id="7228968829656641943">Velg for å søke på skjermen. Trykk på Tab og deretter på mellomromstasten for å navigere med tastaturet.</translation>
 <translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
 <translation id="7239814253344511868">Begge museknappene</translation>
+<translation id="7240636904654154599">Opprettet et Google-regneark</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" /> % batteri gjenstår. Koble enheten til strøm.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook må startes på nytt for å ta i bruk en oppdatering. Dette kan ta opptil ett minutt.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2410,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8921624153894383499">Google-assistenten kan ikke dette språket.</translation>
 <translation id="8926951137623668982">Hyllen skjules alltid</translation>
 <translation id="8929566928381252430">Prøver du å bruke Caps Lock-tasten? Bruk</translation>
+<translation id="8929623844713377237">Opprettet kontakt</translation>
 <translation id="8934418770423095813">Opprett Google-dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}other{# filer}}</translation>
 <translation id="8936501819958976551">deaktivert</translation>

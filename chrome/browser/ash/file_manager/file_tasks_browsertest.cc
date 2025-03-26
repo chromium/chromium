@@ -12,6 +12,7 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -764,7 +765,8 @@ class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
       // Verifies that all tasks are either blocked or not by DLP, according to
       // |test|.
       bool expect_dlp_blocked =
-          test.dlp_source_url && strcmp(test.dlp_source_url, blockedUrl) == 0;
+          test.dlp_source_url &&
+          UNSAFE_TODO(strcmp(test.dlp_source_url, blockedUrl)) == 0;
       EXPECT_EQ(expect_dlp_blocked,
                 std::ranges::all_of(resulting_tasks.tasks,
                                     &FullTaskDescriptor::is_dlp_blocked));

@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">Показати налаштування мови</translation>
 <translation id="1459693405370120464">Погода</translation>
 <translation id="1460620680449458626">Гучність вимкнено.</translation>
+<translation id="1462439140224375968">Документ Google створено</translation>
 <translation id="14648076227129703">Буде надано доступ до камери для додатків <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="1467432559032391204">Ліворуч</translation>
 <translation id="146902737843070955">Ваш адміністратор надіслав запит на цю зміну</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">Показати відомості про точку доступу. Точку доступу вимкнено.</translation>
 <translation id="3017079585324758401">Фон</translation>
 <translation id="3018135054368884502">Перемотати медіаконтент уперед</translation>
+<translation id="3026897869154397692">Додано в календар</translation>
 <translation id="3033545621352269033">Увімкнено</translation>
 <translation id="3033912566804961911">Об’єднати з робочим столом "<ph name="DESK_NAME" />"</translation>
 <translation id="3036649622769666520">Відкрити файли</translation>
@@ -1481,6 +1483,7 @@
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
 <translation id="5830180081891717894">Ще <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="5840658767386246331">Пошук у Google</translation>
 <translation id="5841296711770970362">Перейти до наступної композиції</translation>
 <translation id="5842553299352339114">Точку доступу <ph name="DEVICE_NAME" /> увімкнено. До неї не підключено жодного пристрою.</translation>
 <translation id="584525477304726060">Утримуйте, щоб збільшити</translation>
@@ -1894,6 +1897,7 @@
 <translation id="7228968829656641943">Виберіть ділянку на екрані, за якою хочете виконати пошук. Для навігації за допомогою клавіатури натисніть клавішу Tab, а потім – пробіл.</translation>
 <translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">Обидві кнопки миші</translation>
+<translation id="7240636904654154599">Таблицю Google створено</translation>
 <translation id="7244725679040769470">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора. Підключіть пристрій до джерела живлення.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Щоб оновлення почали діяти, Chromebook потрібно перезапустити. Це може зайняти до 1 хвилини.</translation>
 <translation id="7256057185598509352">Клавіша ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@
 <translation id="8921624153894383499">Google Асистент не підтримує цю мову.</translation>
 <translation id="8926951137623668982">Полицю завжди сховано</translation>
 <translation id="8929566928381252430">Щоб натиснути клавішу Caps Lock, скористайтеся такою комбінацією:</translation>
+<translation id="8929623844713377237">Контакт створено</translation>
 <translation id="8934418770423095813">Створити документ Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="8936501819958976551">деактивовано</translation>

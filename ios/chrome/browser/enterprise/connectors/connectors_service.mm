@@ -88,4 +88,10 @@ ConnectorsService::GetManagedUserCloudPolicyManager() const {
   return user_cloud_policy_manager_.get();
 }
 
+std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
+    bool is_cloud) {
+  // TODO(crbug.com/406048604): Build ClientMetadata for iOS.
+  return nullptr;
+}
+
 }  // namespace enterprise_connectors

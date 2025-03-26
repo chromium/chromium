@@ -11,11 +11,10 @@
 namespace regional_capabilities {
 
 TEST(RegionalCapabilitiesCountryIdTest, EqualityChecks) {
-  CountryIdHolder us_holder(country_codes::CountryStringToCountryID("US"));
-  CountryIdHolder other_us_holder(
-      country_codes::CountryStringToCountryID("US"));
-  CountryIdHolder fr_holder(country_codes::CountryStringToCountryID("FR"));
-  CountryIdHolder unknown_holder(country_codes::kCountryIDUnknown);
+  CountryIdHolder us_holder(country_codes::CountryId("US"));
+  CountryIdHolder other_us_holder(country_codes::CountryId("US"));
+  CountryIdHolder fr_holder(country_codes::CountryId("FR"));
+  CountryIdHolder unknown_holder((country_codes::CountryId()));
 
   EXPECT_EQ(us_holder, other_us_holder);
   EXPECT_NE(us_holder, fr_holder);
@@ -23,13 +22,12 @@ TEST(RegionalCapabilitiesCountryIdTest, EqualityChecks) {
 }
 
 TEST(RegionalCapabilitiesCountryIdTest, GetRestricted) {
-  int country_id = country_codes::CountryStringToCountryID("US");
+  auto country_id = country_codes::CountryId("US");
 
   CountryIdHolder country_id_holder(country_id);
 
-  CountryId actual_country_id =
-      country_id_holder.GetRestricted(CountryAccessKey(
-          CountryAccessReason::kTemplateURLPrepopulateDataResolution));
+  auto actual_country_id = country_id_holder.GetRestricted(CountryAccessKey(
+      CountryAccessReason::kTemplateURLPrepopulateDataResolution));
 
   EXPECT_EQ(actual_country_id, country_id);
 }

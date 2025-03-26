@@ -2684,6 +2684,15 @@ BASE_FEATURE_PARAM(bool,
                    "latency_exact",
                    true);
 
+// This feature flag controls whether the WebAudio destination resampler is
+// bypassed. When enabled, if the WebAudio context's sample rate differs from
+// the hardware's sample rate, the resampling step that normally occurs within
+// the WebAudio destination node is skipped. This allows the AudioService to
+// handle any necessary resampling, potentially reducing latency and overhead.
+BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
+             "WebAudioRemoveAudioDestinationResampler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at
 // https://crbug.com/942440.

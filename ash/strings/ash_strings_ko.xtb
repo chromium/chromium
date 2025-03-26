@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">언어 설정 표시</translation>
 <translation id="1459693405370120464">날씨</translation>
 <translation id="1460620680449458626">음소거되어 있습니다.</translation>
+<translation id="1462439140224375968">Google 문서 생성됨</translation>
 <translation id="14648076227129703">카메라 액세스 권한이 있는 <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> 앱을 포함한 모든 앱 및 웹사이트에서 카메라에 액세스할 수 있게 됩니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
 <translation id="146902737843070955">관리자가 요청한 변경사항입니다.</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">핫스팟 세부정보를 표시합니다. 핫스팟이 꺼져 있습니다.</translation>
 <translation id="3017079585324758401">배경</translation>
 <translation id="3018135054368884502">미디어 빨리 감기</translation>
+<translation id="3026897869154397692">캘린더에 추가됨</translation>
 <translation id="3033545621352269033">사용</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> 합치기</translation>
 <translation id="3036649622769666520">파일 열기</translation>
@@ -1012,6 +1014,7 @@
 <translation id="4351244548802238354">대화상자 닫기</translation>
 <translation id="4356872429719185452">핫스팟 세부정보를 표시합니다. 핫스팟을 켜는 중입니다.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  녹화 중</translation>
+<translation id="4368227575116094370">Google 시트 만들기</translation>
 <translation id="4371348193907997655">전송 설정</translation>
 <translation id="4371834685492830207">PIN에는 유효한 문자만 포함해야 합니다.</translation>
 <translation id="4375482231364171368">주소 표시줄에서 검색</translation>
@@ -1481,6 +1484,7 @@
 <translation id="5825969630400862129">연결된 기기 설정</translation>
 <translation id="5830180081891717894">그 외 <ph name="WINDOWS" />개</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
+<translation id="5840658767386246331">Google로 검색</translation>
 <translation id="5841296711770970362">다음 트랙으로 이동</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> 핫스팟이 켜져 있으며 연결된 기기가 없습니다.</translation>
 <translation id="584525477304726060">눌러서 최대화</translation>
@@ -1512,6 +1516,7 @@
 <translation id="595202126637698455">성능 추적 사용 중</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">관리 대상 사용자</translation>
+<translation id="596035801491797438">페이스 컨트롤 사용 중지</translation>
 <translation id="5960410286721553511">휴대전화의 최신 사진 및 미디어를 봅니다.</translation>
 <translation id="5965524703725988602">어두운 테마를 전환합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">여러 창 사이에서 앞으로 이동하기</translation>
@@ -1894,6 +1899,7 @@
 <translation id="7228968829656641943">화면을 검색하려면 선택하세요. 키보드 탐색을 사용하려면 Tab과 스페이스바를 차례로 누르세요.</translation>
 <translation id="7229029500464092426">총 메모리 <ph name="TOTAL_MEMORY" /> 중 <ph name="AVAILABLE_MEMORY" /> 사용</translation>
 <translation id="7239814253344511868">마우스 양쪽 버튼</translation>
+<translation id="7240636904654154599">Google 시트 생성됨</translation>
 <translation id="7244725679040769470">배터리가 <ph name="PERCENTAGE" />% 남았습니다. 기기를 전원에 연결하세요.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. 업데이트를 적용하려면 Chromebook을 다시 시작해야 합니다. 여기에는 최대 1분이 걸릴 수 있습니다.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2410,7 @@
 <translation id="8921624153894383499">Google 어시스턴트가 이 언어를 지원하지 않음</translation>
 <translation id="8926951137623668982">앱 표시줄 항상 숨김</translation>
 <translation id="8929566928381252430">Caps Lock 키를 사용하려는 중인가요? 사용</translation>
+<translation id="8929623844713377237">연락처 생성됨</translation>
 <translation id="8934418770423095813">Google 문서 만들기</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{파일 1개}other{파일 #개}}</translation>
 <translation id="8936501819958976551">비활성화됨</translation>

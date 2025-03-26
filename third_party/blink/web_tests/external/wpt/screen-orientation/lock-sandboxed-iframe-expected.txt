@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test without 'allow-orientation-lock' sandboxing directive
+  assert_equals: screen.orientation.unlock() throws a SecurityError expected (string) "SecurityError" but got (undefined) undefined
+Harness: the test ran to completion.
+

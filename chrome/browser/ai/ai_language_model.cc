@@ -267,14 +267,12 @@ AILanguageModel::AILanguageModel(
     mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote,
     AIContextBoundObjectSet& context_bound_object_set,
     AIManager& ai_manager,
-    AIUtils::LanguageCodes expected_input_languages,
     const std::optional<const Context>& context)
     : AIContextBoundObject(context_bound_object_set),
       session_(std::move(session)),
       browser_context_(browser_context),
       context_bound_object_set_(context_bound_object_set),
       ai_manager_(ai_manager),
-      expected_input_languages_(std::move(expected_input_languages)),
       pending_remote_(std::move(pending_remote)),
       receiver_(this, pending_remote_.InitWithNewPipeAndPassReceiver()) {
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -376,6 +374,10 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
 
   initial_prompts.tokens = size;
   context_ = std::make_unique<Context>(max_token, std::move(initial_prompts));
+
+  // Begin processing the initial prompts immediately.
+  session_->SetInput(context_->MakeRequest());
+
   std::move(callback).Run(TakePendingRemote(), GetLanguageModelInstanceInfo());
 }
 
@@ -439,7 +441,7 @@ void AILanguageModel::ModelExecutionCallback(
                          current_response_));
       if (context_->AddContextItem(std::move(copy)) ==
           Context::SpaceReservationResult::kSpaceMadeAvailable) {
-        responder->OnContextOverflow();
+        responder->OnQuotaOverflow();
       }
     }
     responder->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
@@ -480,7 +482,7 @@ void AILanguageModel::PromptGetInputSizeCompletion(
   }
 
   if (space_reserved == Context::SpaceReservationResult::kSpaceMadeAvailable) {
-    responder->OnContextOverflow();
+    responder->OnQuotaOverflow();
   }
   current_item.tokens = number_of_tokens;
 
@@ -610,17 +612,6 @@ void AILanguageModel::Prompt(
                      std::move(item)));
 }
 
-AIUtils::LanguageCodes AILanguageModel::GetExpectedInputLanguagesCopy() {
-  if (!expected_input_languages_.has_value()) {
-    return std::nullopt;
-  }
-  std::vector<blink::mojom::AILanguageCodePtr> cloned_languages;
-  for (auto& language : expected_input_languages_.value()) {
-    cloned_languages.emplace_back(language->Clone());
-  }
-  return cloned_languages;
-}
-
 void AILanguageModel::Fork(
     mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
         client) {
@@ -648,8 +639,8 @@ void AILanguageModel::Fork(
       base::PassKey<AILanguageModel>(),
       blink::mojom::AILanguageModelSamplingParams::New(
           sampling_param.top_k, sampling_param.temperature),
-      context_bound_object_set_.get(), GetExpectedInputLanguagesCopy(),
-      *context_, std::move(client_remote), std::move(override_session));
+      session_->GetCapabilities(), context_bound_object_set_.get(), *context_,
+      std::move(client_remote), std::move(override_session));
 }
 
 void AILanguageModel::Destroy() {
@@ -673,13 +664,12 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
   return blink::mojom::AILanguageModelInstanceInfo::New(
       context_->max_tokens(), context_->current_tokens(),
       blink::mojom::AILanguageModelSamplingParams::New(
-          session_sampling_params.top_k, session_sampling_params.temperature),
-      GetExpectedInputLanguagesCopy());
+          session_sampling_params.top_k, session_sampling_params.temperature));
 }
 
-void AILanguageModel::CountPromptTokens(
+void AILanguageModel::MeasureInputUsage(
     const std::string& input,
-    mojo::PendingRemote<blink::mojom::AILanguageModelCountPromptTokensClient>
+    mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
         client) {
   Context::ContextItem item;
   item.prompts.emplace_back(
@@ -691,7 +681,7 @@ void AILanguageModel::CountPromptTokens(
   session_->GetExecutionInputSizeInTokens(
       request.read(),
       base::BindOnce(
-          [](mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>
+          [](mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient>
                  client_remote,
              std::optional<uint32_t> result) {
             // TODO(crbug.com/351935691): Explicitly return an error. Consider
@@ -699,7 +689,7 @@ void AILanguageModel::CountPromptTokens(
             // for Writing Assistance APIs.
             client_remote->OnResult(result.value_or(0));
           },
-          mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>(
+          mojo::Remote<blink::mojom::AILanguageModelMeasureInputUsageClient>(
               std::move(client))));
 }
 

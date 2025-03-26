@@ -56,6 +56,7 @@ static_library("country_id") {
   deps = [
     ":country_access_reason",
     "//base",
+    "//components/country_codes",
   ]
 }
 

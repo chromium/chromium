@@ -4,11 +4,15 @@
 
 #include "chrome/browser/glic/widget/glic_widget.h"
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -41,11 +45,13 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
 
 void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 
-GlicWidget::GlicWidget(InitParams params) : views::Widget(std::move(params)) {
+GlicWidget::GlicWidget(ThemeService* theme_service, InitParams params)
+    : views::Widget(std::move(params)) {
   if (UserResizeEnabled()) {
     // Widget starts out non-resizable; client may enable resizing.
     minimum_widget_size_ = GetInitialSize();
   }
+  theme_service_observation_.Observe(theme_service);
 }
 
 GlicWidget::~GlicWidget() = default;
@@ -75,7 +81,8 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   auto delegate = std::make_unique<GlicWidgetDelegate>();
   params.delegate = delegate.release();
 
-  std::unique_ptr<GlicWidget> widget(new GlicWidget(std::move(params)));
+  auto widget = base::WrapUnique(new GlicWidget(
+      ThemeServiceFactory::GetForProfile(profile), std::move(params)));
 
   widget->SetContentsView(std::make_unique<GlicView>(
       profile, initial_bounds.size(), accelerator_delegate));
@@ -105,6 +112,25 @@ void GlicWidget::SetMinimumSize(const gfx::Size& size) {
 
 gfx::Size GlicWidget::GetMinimumSize() const {
   return UserResizeEnabled() ? minimum_widget_size_ : gfx::Size();
+}
+
+ui::ColorProviderKey GlicWidget::GetColorProviderKey() const {
+  ui::ColorProviderKey key = Widget::GetColorProviderKey();
+
+  ThemeService::BrowserColorScheme theme_color_scheme =
+      theme_service_observation_.GetSource()->GetBrowserColorScheme();
+  if (theme_color_scheme != ThemeService::BrowserColorScheme::kSystem) {
+    key.color_mode =
+        theme_color_scheme == ThemeService::BrowserColorScheme::kLight
+            ? ui::ColorProviderKey::ColorMode::kLight
+            : ui::ColorProviderKey::ColorMode::kDark;
+  }
+
+  return key;
+}
+
+void GlicWidget::OnThemeChanged() {
+  NotifyColorProviderChanged();
 }
 
 }  // namespace glic

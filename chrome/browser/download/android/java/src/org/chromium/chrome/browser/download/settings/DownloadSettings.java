@@ -12,6 +12,7 @@ import androidx.preference.Preference;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
+import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.MimeUtils;
 import org.chromium.chrome.browser.download.R;
@@ -44,7 +45,6 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
 
         mLocationPromptEnabledPref =
                 (ChromeSwitchPreference) findPreference(PREF_LOCATION_PROMPT_ENABLED);
-        mLocationPromptEnabledPref.setOnPreferenceChangeListener(this);
         mLocationPromptEnabledPrefDelegate =
                 new ChromeManagedPreferenceDelegate(getProfile()) {
                     @Override
@@ -53,6 +53,13 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
                     }
                 };
         mLocationPromptEnabledPref.setManagedPreferenceDelegate(mLocationPromptEnabledPrefDelegate);
+        if (PdfUtils.shouldOpenPdfInline(getProfile().isOffTheRecord())
+                && DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories().isEmpty()) {
+            mLocationPromptEnabledPref.setVisible(false);
+        } else {
+            mLocationPromptEnabledPref.setOnPreferenceChangeListener(this);
+        }
+
         mLocationChangePref = (DownloadLocationPreference) findPreference(PREF_LOCATION_CHANGE);
         mLocationChangePref.setDownloadLocationHelper(new DownloadLocationHelperImpl(getProfile()));
 

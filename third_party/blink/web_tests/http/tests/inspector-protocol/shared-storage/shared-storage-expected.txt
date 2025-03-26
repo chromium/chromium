@@ -96,7 +96,7 @@ Events: [
         mainFrameId : <string>
         ownerOrigin : http://127.0.0.1:8000
         params : {
-            scriptSourceUrl : http://127.0.0.1:8000/inspector-protocol/resources/shared-storage-module.js
+            scriptSourceUrl : http://127.0.0.1:8000/inspector-protocol/shared-storage/resources/shared-storage-module.js
         }
         type : documentAddModule
     }

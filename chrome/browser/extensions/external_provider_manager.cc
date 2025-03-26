@@ -166,7 +166,7 @@ void ExternalProviderManager::OnAllExternalProvidersReady() {
 
   ExtensionErrorController::Get(context_)->ShowErrorIfNeeded();
 
-  service->external_install_manager()->UpdateExternalExtensionAlert();
+  ExternalInstallManager::Get(context_)->UpdateExternalExtensionAlert();
 }
 
 void ExternalProviderManager::CheckExternalUninstall(const std::string& id) {
@@ -333,7 +333,7 @@ bool ExternalProviderManager::OnExternalExtensionFileFound(
   // notification on installation. For such extensions, mark them acknowledged
   // now to suppress the notification.
   if (info.mark_acknowledged) {
-    service->external_install_manager()->AcknowledgeExternalExtension(
+    ExternalInstallManager::Get(context_)->AcknowledgeExternalExtension(
         info.extension_id);
   }
 
@@ -508,7 +508,7 @@ void ExternalProviderManager::OnExternalProviderUpdateComplete(
   }
 
   error_controller_->ShowErrorIfNeeded();
-  service->external_install_manager()->UpdateExternalExtensionAlert();
+  ExternalInstallManager::Get(context_)->UpdateExternalExtensionAlert();
 }
 
 void ExternalProviderManager::InstallationFromExternalFileFinished(

@@ -459,7 +459,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3114507951000454849">Basahin ang balita ngayong araw <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Higit pang detalye</translation>
 <translation id="3123734510202723619">Mga Anunsyo</translation>
-<translation id="3131961580615093332">Binago ni <ph name="GIVEN_NAME" /> ang tab na “<ph name="TAB_NAME" />”</translation>
 <translation id="3148237711805373460">Dalhin ako roon</translation>
 <translation id="314939179385989105">Homepage ng Chrome</translation>
 <translation id="3158667104057012316">Ibinubukod-bukod ayon sa manual na pagkakasunod-sunod</translation>
@@ -821,6 +820,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{I-restore ang grupo ng tab na may <ph name="TAB_COUNT_ONE" /> tab, na kulay <ph name="COLOR_NAME" />, bilang bagong background na grupo ng tab.}one{I-restore ang grupo ng tab na may <ph name="TAB_COUNT_MANY" /> tab, na kulay <ph name="COLOR_NAME" />, bilang bagong background na grupo ng tab.}other{I-restore ang grupo ng tab na may <ph name="TAB_COUNT_MANY" /> na tab, na kulay <ph name="COLOR_NAME" />, bilang bagong background na grupo ng tab.}}</translation>
 <translation id="4837753911714442426">Buksan ang mga opsyon sa pag-print ng page</translation>
 <translation id="4844633725025837809">Para sa dagdag na kaligtasan, i-encrypt ang mga password sa iyong device bago i-save ang mga ito sa Google Password Manager</translation>
+<translation id="4849731766219625109">Gamitin ang iyong <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4852014461738377247">Nagsa-sign in\u2026</translation>
 <translation id="4860895144060829044">Tawagan</translation>
@@ -840,14 +840,12 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4910889077668685004">Mga app sa pagbabayad</translation>
 <translation id="4912413785358399818">Ilipat ang tab</translation>
 <translation id="4913169188695071480">Ihinto ang pag-refresh</translation>
-<translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ie-export ang iyong mga password at ida-download ang mga ito bilang text file. Magiging visible ang mga ito sa sinuman at sa anumang app na may access sa folder ng destinasyon.</translation>
 <translation id="4926901776383726965">Puwede kang mag-save ng mga larawan at file na titingnan offline o ishe-share sa iba pang app</translation>
 <translation id="4932247056774066048">Dahil nagsa-sign out ka sa isang account na pinapamahalaan ng <ph name="DOMAIN_NAME" />, made-delete ang data ng Chrome sa device na ito. Mananatili ito sa iyong Google Account.</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Walang mga resulta</translation>
-<translation id="4953833914914492602">Hindi na available ang grupo ng tab na “<ph name="TAB_GROUP_NAME" />”</translation>
 <translation id="4957722034734105353">Matuto pa...</translation>
 <translation id="4961107849584082341">Isalin ang page na ito sa anumang wika</translation>
 <translation id="4964614743143953889">Babalaan ka ng Chrome tungkol sa mga hindi ligtas na site at download</translation>
@@ -966,7 +964,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5526281268548144413">Hindi maisasara sa maraming window</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
 <translation id="5548606607480005320">Pag-check sa kaligtasan</translation>
-<translation id="5551564597369878730">Sumali si <ph name="GIVEN_NAME" /> sa grupo ng tab na “<ph name="TAB_GROUP_NAME" />”</translation>
 <translation id="5554520618550346933">Kapag gumamit ka ng password, babalaan ka ng Chrome kung na-publish na ito online. Kapag ginagawa ito, naka-encrypt ang iyong mga password at username para hindi mabasa ng sinuman ang mga ito, kabilang ang Google.</translation>
 <translation id="5555525474779371165">Piliin ang iyong proteksyon sa Ligtas na Pag-browse</translation>
 <translation id="5556459405103347317">I-reload</translation>
@@ -1183,7 +1180,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6481963882741794338">I-link ang Chrome at iba pang serbisyo ng Google para sa pag-personalize at iba pang layunin</translation>
 <translation id="6482749332252372425">Hindi na-download ang <ph name="FILE_NAME" /> dahil kulang ang espasyo sa storage.</translation>
 <translation id="6486420406192123355">Ang PDF file na ito ay mula sa site na gumagamit ng hindi secure na koneksyon</translation>
-<translation id="6495590690749880440">Buksan ang Grupo ng Tab?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Na-download ang file}one{Tapos na ang # pag-download}other{Tapos na ang # na pag-download}}</translation>
 <translation id="6508722015517270189">I-restart ang Chrome</translation>
 <translation id="6518133107902771759">I-verify</translation>
@@ -1562,6 +1558,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8073388330009372546">Buksan ang larawan sa bagong tab</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8078096376109663956">Magbahagi lang ng text</translation>
+<translation id="8078348702936632821">I-pin ang shortcut na ito</translation>
 <translation id="8084114998886531721">Naka-save na password</translation>
 <translation id="8084285576995584326">Kontrolin ang data sa iyong Google Account</translation>
 <translation id="8084864785646838999">Posibleng hindi lumabas dito ang ilan sa iyong history. Buksan ang buong history sa Chrome para makita ang lahat ng iyong history sa Chrome. Gayundin, posibleng may iba pang uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
@@ -1617,7 +1614,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8282297628636750033">Ilapat ang dark theme sa sites</translation>
 <translation id="8282950411412455249">Pumunta sa mga setting ng seguridad</translation>
 <translation id="8306751933352925837">Malapit nang hindi gumana ang mga password sa device na ito. Para patuloy na magamit ang iyong mga password, i-update ang mga serbisyo ng Google Play. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469">Inalis ni <ph name="GIVEN_NAME" /> ang tab na “<ph name="TAB_NAME" />”</translation>
 <translation id="8310451567823644042">Malapit nang hindi gumana ang mga password</translation>
 <translation id="831192587911042850">Idinaragdag ang kasalukuyang web site sa listahan ng mga web site na sinusubaybayan mo.</translation>
 <translation id="8320212361750431956">Kamakailang Aktibidad</translation>

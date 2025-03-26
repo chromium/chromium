@@ -23,7 +23,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/test/mock_sync_service.h"
+#import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -79,12 +78,18 @@ class PrivacyTableViewControllerTest
     LegacyChromeTableViewControllerTest::SetUp();
 
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
     profile_ = std::move(builder).Build();
+
+    test_sync_service()->SetSignedOut();
 
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
@@ -122,8 +127,8 @@ class PrivacyTableViewControllerTest
                                         reauthenticationModule:nil];
   }
 
-  syncer::MockSyncService* mock_sync_service() {
-    return static_cast<syncer::MockSyncService*>(
+  syncer::TestSyncService* test_sync_service() {
+    return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));
   }
 
@@ -263,12 +268,8 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
 }
 
 // Tests PrivacyTableViewController sets the correct privacy footer for a
-// non-syncing user.
-TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
-  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(Return(false));
-
+// signed out user.
+TEST_P(PrivacyTableViewControllerTest, TestModelFooterSignedOut) {
   CreateController();
   CheckController();
 
@@ -281,29 +282,6 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
   // Testing section index and text of the privacy footer.
   CheckSectionFooter(l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER),
                      /* section= */ expectedNumberOfSections - 1);
-}
-
-// Tests PrivacyTableViewController sets the correct privacy footer for a
-// syncing user.
-TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
-  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(Return(true));
-  ON_CALL(*mock_sync_service(), HasSyncConsent()).WillByDefault(Return(true));
-
-  CreateController();
-  CheckController();
-
-  int expectedNumberOfSections = 7;
-
-  // IncognitoInterstitial section.
-  expectedNumberOfSections++;
-  EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
-
-  // Testing section index and text of the privacy footer.
-  CheckSectionFooter(
-      l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER),
-      /* section= */ expectedNumberOfSections - 1);
 }
 
 // Tests that the Enhanced Safe Browsing Inline Promo is triggered when a

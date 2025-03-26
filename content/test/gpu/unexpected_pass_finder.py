@@ -89,12 +89,12 @@ def ParseArgs() -> argparse.Namespace:
     expectation_files = suite_class.ExpectationsFiles()
     if not expectation_files:
       raise RuntimeError(
-          'Suite %s does not specify an expectation file and is thus not '
-          'compatible with this script.' % args.suite)
+          f'Suite {args.suite} does not specify an expectation file and is '
+          f'thus not compatible with this script.')
     if len(expectation_files) > 1:
       raise RuntimeError(
-          'Suite %s specifies %d expectation files when only 1 is supported.' %
-          len(expectation_files))
+          f'Suite {suite_class} specifies {len(expectation_files)} expectation '
+          f'files when only 1 is supported.')
     args.expectation_file = expectation_files[0]
 
   if args.remove_stale_expectations and not args.expectation_file:
@@ -154,22 +154,20 @@ def main() -> None:
       affected_urls |= expectations_instance.RemoveExpectationsFromFile(
           expectation_map.keys(), expectation_file,
           expectations.RemovalType.STALE)
-      stale_message += ('Stale expectations removed from %s. Stale comments, '
-                        'etc. may still need to be removed.\n' %
-                        expectation_file)
+      stale_message += (f'Stale expectations removed from {expectation_file}. '
+                        f'Stale comments, etc. may still need to be removed.\n')
     for expectation_file, unused_list in unused_expectations.items():
       affected_urls |= expectations_instance.RemoveExpectationsFromFile(
           unused_list, expectation_file, expectations.RemovalType.UNUSED)
-      stale_message += ('Unused expectations removed from %s. Stale comments, '
-                        'etc. may still need to be removed.\n' %
-                        expectation_file)
+      stale_message += (f'Unused expectations removed from {expectation_file}. '
+                        f'Stale comments, etc. may still need to be removed.\n')
 
   if args.narrow_semi_stale_expectation_scope:
     affected_urls |= expectations_instance.NarrowSemiStaleExpectationScope(
         semi_stale)
-    stale_message += ('Semi-stale expectations narrowed in %s. Stale comments, '
-                      'etc. may still need still need to be removed.\n' %
-                      args.expectation_file)
+    stale_message += (f'Semi-stale expectations narrowed in '
+                      f'{args.expectation_file}. Stale comments, etc. may '
+                      f'still need to be removed.\n')
 
   if stale_message:
     print(stale_message)

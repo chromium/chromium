@@ -14,7 +14,7 @@
 
 namespace regional_capabilities {
 
-bool IsEeaCountry(int country_id) {
+bool IsEeaCountry(country_codes::CountryId country_id) {
   // The `HasSearchEngineCountryListOverride()` check is here for compatibility
   // with the way EEA presence was checked from `search_engines`. But it should
   // logically be done only when the EEA presence is checked specifically for
@@ -42,7 +42,7 @@ std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride() {
   if (country_id == switches::kEeaListCountryOverride) {
     return SearchEngineCountryListOverride::kEeaAll;
   }
-  return country_codes::CountryStringToCountryID(country_id);
+  return country_codes::CountryId(country_id);
 }
 
 bool HasSearchEngineCountryListOverride() {

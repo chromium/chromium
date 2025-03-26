@@ -40,6 +40,7 @@
 <translation id="2758123043070977469">ማረጋገጥ ላይ አንድ ችግር ነበር፣ እባክዎ እንደገና ይግቡ።</translation>
 <translation id="2803375539583399270">ፒን ያስገቡ</translation>
 <translation id="2919669478609886916">በአሁኑ ጊዜ ይህንን ማሽን ከሌላ ተጠቃሚ ጋር እየተጋሩ ነዎት። ማጋራቱን መቀጠል ይፈልጋሉ?</translation>
+<translation id="2929683002824598593">መሣሪያ አጋራ</translation>
 <translation id="2939145106548231838">ለማስተናገድ ያረጋግጡ</translation>
 <translation id="3027681561976217984">ንኪ ሁነታ</translation>
 <translation id="3106379468611574572">የርቀት ኮምፒውተሩ ለግንኙነት ጥያቄዎች ምላሽ እየሰጠ አይደለም። እባክዎ መስመር ላይ መሆኑን ያረጋግጡና እንደገና ይሞክሩ።</translation>
@@ -117,10 +118,12 @@
 <translation id="6178645564515549384">ቤተኛ የመልዕክት መላኪያ አስተናጋጅ ለርቀት እርዳታ</translation>
 <translation id="618120821413932081">ከመስኮቱ ጋር ለማገጣጠም የርቀት ምስል ጥራቱን ያዘምኑ</translation>
 <translation id="6223301979382383752">የማያ ቀረጻ ምርጫዎችን ይክፈቱ</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ማያ ገፅዎን ለማየት እና የእርስዎን ቁልፍ ሰሌዳ እና መዳፊት ለመቆጣጠር መዳረሻን ጠይቋል። መሣሪያዎን ማጋራት ይፈልጋሉ?</translation>
 <translation id="6284412385303060032">በመሥሪያ አመክንዮ ማያ ገፅ ላይ አያሄደ ያለው አስተናጋጅ በተጠቃሚ-ተኮር ክፍለ-ጊዜ ውስጥ በማሄድ የመጋረጃ ሁነታን ለመደገፍ ተዘግቷል።</translation>
 <translation id="6542902059648396432">አንድ ችግር ሪፖርት አድርግ…</translation>
 <translation id="6583902294974160967">ድጋፍ</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del ላክ</translation>
+<translation id="6625262630437221505">{0,plural, =1{እርምጃ ካልወሰዱ መሣሪያዎ በ# ሰከንድ ውስጥ በራስ-ሰር ማጋራት ይጀምራል።}one{እርምጃ ካልወሰዱ መሣሪያዎ በ# ሰከንድ ውስጥ በራስ-ሰር ማጋራት ይጀምራል።}other{እርምጃ ካልወሰዱ መሣሪያዎ በ# ሰከንዶች ውስጥ በራስ-ሰር ማጋራት ይጀምራል።}}</translation>
 <translation id="6654753848497929428">አጋራ</translation>
 <translation id="677755392401385740">አስተናጋጅ ለተጠቃሚ ተጀምሯል፦ <ph name="HOST_USERNAME" />።</translation>
 <translation id="6902524959760471898">በ<ph name="PRODUCT_NAME" /> ደንበኛው ላይ ዩአርኤልን ለመክፈት አጋዥ መተግበሪያ</translation>

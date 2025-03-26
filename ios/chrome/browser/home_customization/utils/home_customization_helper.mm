@@ -44,8 +44,11 @@
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS);
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_ALT_TITLE);
       }
-      // TODO(crbug.com/404335872) Implement for reviews (arm 2).
       return @"";
   }
 }
@@ -83,8 +86,11 @@
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS_SUBTITLE);
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_CUSTOMIZE_CARDS_SUBTITLE);
       }
-      // TODO(crbug.com/404335872) Implement for reviews (arm 2).
       return @"";
   }
 }
@@ -124,11 +130,12 @@
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return CustomSymbolWithConfiguration(kDownTrendSymbol,
                                              fallbackImageConfig);
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        return DefaultSymbolWithPointSize(kRectangleGroupBubble,
+                                          kToggleIconPointSize);
       }
-      // Placeholder until arm 2 (product reviews) is implemented
-      // (crbug.com/404335872).
-      return CustomSymbolWithConfiguration(kChromeProductSymbol,
-                                           fallbackImageConfig);
+      NOTREACHED();
     }
   }
 }
@@ -158,9 +165,11 @@
     case CustomizationToggleType::kShopCard:
       if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
         return kCustomizationToggleShopCardPriceTrackingIdentifier;
+      } else if (commerce::kShopCardVariation.Get() ==
+                 commerce::kShopCardArm2) {
+        return kCustomizationToggleShopCardReviewsIdentifier;
       }
-      // TODO(crbug.com/404335872) Implement for arm 2 (reviews).
-      return @"";
+      NOTREACHED();
   }
 }
 

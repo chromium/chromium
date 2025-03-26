@@ -37,9 +37,6 @@ suite('GraduationAppTest.AuthenticationSuccess', function() {
 
   teardown(() => {
     resetGraduationHandlerForTesting();
-    // TODO(crbug.com/396612314): Figure out why CHECK failure happens when the
-    // next line is removed.
-    return Promise.resolve();
   });
 
   test('Navigate between Welcome and Takeout screens', function() {

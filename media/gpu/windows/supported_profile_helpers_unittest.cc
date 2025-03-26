@@ -4,13 +4,16 @@
 
 #include "media/gpu/windows/supported_profile_helpers.h"
 
+#include <initguid.h>
+
 #include <d3d11.h>
 #include <d3d11_1.h>
-#include <initguid.h>
+
 #include <map>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_helpers.h"
@@ -158,7 +161,7 @@ class SupportedResolutionResolverTest : public ::testing::Test {
 
   struct GUIDComparison {
     bool operator()(const GUID& a, const GUID& b) const {
-      return memcmp(&a, &b, sizeof(GUID)) < 0;
+      return UNSAFE_TODO(memcmp(&a, &b, sizeof(GUID))) < 0;
     }
   };
   base::flat_map<GUID, gfx::Size, GUIDComparison> max_size_for_guids_;

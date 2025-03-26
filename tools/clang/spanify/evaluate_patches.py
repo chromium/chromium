@@ -163,6 +163,17 @@ def uploadScratch(creds, file_name, scratch_dir):
         print(f"Failed to upload scratch: {e}", file=sys.stderr)
 
 
+def writeCommonArgs(f):
+    f.write("target_os = 'linux'\n")
+    f.write("clang_use_chrome_plugins = false\n")
+    f.write("dcheck_always_on = true\n")
+    f.write("is_chrome_branded = true\n")
+    f.write("is_debug = false\n")
+    f.write("is_official_build = true\n")
+    f.write("chrome_pgo_phase = 0\n")
+    f.write("force_enable_raw_ptr_exclusion = true\n")
+
+
 today = datetime.now().strftime("%Y/%m/%d")
 today_underscore = today.replace("/", "_")
 scratch_dir = os.path.expanduser("~/scratch")
@@ -187,11 +198,13 @@ try:
     run("gcertstatus --check_remaining=3h --nocheck_ssh")
     print("Remote exec available. Enabling.")
     with open("out/linux/args.gn", "w") as f:
+        writeCommonArgs(f)
         f.write("use_remoteexec = true\n")
         f.write("use_siso = true\n")
 except:
     print("Remote exec not available. Disabling.")
     with open("out/linux/args.gn", "w") as f:
+        writeCommonArgs(f)
         f.write("use_remoteexec = false\n")
         f.write("use_reclient = false\n")
         f.write("use_siso = true\n")
@@ -306,6 +319,7 @@ try:
                 "fail",
                 "Failed to commit diff",
                 diff,
+                user,
             ])
             continue
 
@@ -349,10 +363,29 @@ try:
                 "fail",
                 error_msg,
                 diff,
+                user,
             ])
 
             shutil.copy(scratch_dir + f"/patch_{index}.out",
                         scratch_dir + f"/patch_{index}.fail")
+        elif not run('gn check out/linux', exit_on_error=False):
+            error_msg = "failed gn check"
+            with open(scratch_dir + "/evaluation.csv", "a") as f:
+                f.write(f"{index}, fail, {error_msg}\n")
+
+            appendRow(spreadsheet, [
+                today,
+                index,
+                len(patches),
+                "fail",
+                error_msg,
+                diff,
+                user,
+            ])
+
+            shutil.copy(scratch_dir + f"/patch_{index}.out",
+                        scratch_dir + f"/patch_{index}.fail")
+            continue
         else:
             with open(scratch_dir + "/evaluation.csv", "a") as f:
                 f.write(f"{index}, pass, \"\"\n")
@@ -363,6 +396,7 @@ try:
                 "pass",
                 "",
                 diff,
+                user,
             ])
             shutil.copy(scratch_dir + f"/patch_{index}.out",
                         scratch_dir + f"/patch_{index}.pass")

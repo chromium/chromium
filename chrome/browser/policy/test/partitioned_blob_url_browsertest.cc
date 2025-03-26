@@ -4,12 +4,14 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -214,6 +216,15 @@ IN_PROC_BROWSER_TEST_P(PartitionedBlobUrlUsagePolicyBrowserTestP,
 
   content::RenderFrameHost* rfh_b = content::ChildFrameAt(rfh_c, 0);
   content::RenderFrameHost* rfh_c_2 = content::ChildFrameAt(rfh_b, 0);
+
+  // The default cookie setting to BLOCK here to ensure that the
+  // cross-origin blob URL fetch will be blocked due to lack of storage
+  // access. If cookies are allowed, storage access might be granted, and the
+  // fetch would succeed even if the blob URL is cross-origin and
+  // kBlockCrossPartitionBlobUrlFetching is enabled.
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
   bool fetch_results = FetchAndReadBlobUrl(rfh_c_2, blob_url);
 

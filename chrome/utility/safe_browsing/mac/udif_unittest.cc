@@ -11,6 +11,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -154,7 +155,8 @@ TEST_P(UDIFParserTest, ParseUDIF) {
       HFSPlusVolumeHeader alternate_header = {0};
       EXPECT_TRUE(stream->ReadType(alternate_header));
 
-      EXPECT_EQ(0, memcmp(&header, &alternate_header, sizeof(header)));
+      EXPECT_EQ(
+          0, UNSAFE_TODO(memcmp(&header, &alternate_header, sizeof(header))));
       EXPECT_EQ(kHFSPlusSigWord, OSSwapBigToHostInt16(header.signature));
     }
 

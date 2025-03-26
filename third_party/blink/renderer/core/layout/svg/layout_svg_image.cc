@@ -64,9 +64,7 @@ void LayoutSVGImage::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
-      RuntimeEnabledFeatures::SvgViewportOptimizationEnabled()
-          ? TransformHelper::DependsOnReferenceBox(StyleRef())
-          : TransformHelper::UpdateReferenceBoxDependency(*this);
+      TransformHelper::DependsOnReferenceBox(StyleRef());
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
 }
 

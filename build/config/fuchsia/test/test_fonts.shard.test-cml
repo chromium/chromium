@@ -10,7 +10,7 @@
   ],
   offer: [
     {
-      protocol: "fuchsia.logger.LogSink",
+      dictionary: "diagnostics",
       from: "parent",
       to: "#test_fonts",
     },

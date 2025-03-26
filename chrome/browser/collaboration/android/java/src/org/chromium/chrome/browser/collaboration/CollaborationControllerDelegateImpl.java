@@ -99,7 +99,6 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
 
         if (mFlowType == FlowType.JOIN) {
             loadingFullscreenCoordinator.startLoading(
-                    mActivity.getString(R.string.collaboration_loading_text),
                     () -> {
                         destroy();
                     });

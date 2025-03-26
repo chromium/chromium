@@ -135,6 +135,58 @@ TEST_F(NoiseHelperTest, NoisePixelsAllSameValue) {
   }
 }
 
+TEST_F(NoiseHelperTest, NoisePixelsVerticalStripes) {
+  const size_t width = 16u;
+  const size_t height = 16u;
+  const uint64_t token = 0x01234678901234567;
+  auto token_hash = NoiseHash(token, "https://a.test");
+
+  const std::vector<uint8_t> image_data_orig = GetRandomPixels(width, height);
+  const base::span pixels_orig(image_data_orig);
+  std::vector<uint8_t> image_data(image_data_orig.size());
+  base::span pixels(image_data);
+
+  for (size_t x = 0u; x < width; ++x) {
+    // For each column, copy the original image and create a vertical stripe.
+    pixels.copy_from(pixels_orig);
+    for (size_t y = 0u; y < height; ++y) {
+      // Fill the stripe with the same value (avoiding the empty pixel).
+      std::ranges::fill(pixels.subspan((x + y * width) * 4, 4u), x + 1);
+    }
+    // When noised, the vertical stripe should have the same color.
+    NoisePixels(token_hash, pixels, width, height);
+    for (size_t y = 1u; y < height; ++y) {
+      EXPECT_EQ(pixels.subspan(x * 4, 4u),
+                pixels.subspan((x + y * width) * 4, 4u));
+    }
+  }
+}
+
+TEST_F(NoiseHelperTest, NoisePixelsHorizontalStripes) {
+  const size_t width = 16u;
+  const size_t height = 16u;
+  const uint64_t token = 0x01234678901234567;
+  auto token_hash = NoiseHash(token, "https://a.test");
+
+  const std::vector<uint8_t> image_data_orig = GetRandomPixels(width, height);
+  const base::span pixels_orig(image_data_orig);
+  std::vector<uint8_t> image_data(image_data_orig.size());
+  base::span pixels(image_data);
+
+  for (size_t y = 0u; y < height; ++y) {
+    // For each row, copy the original image and create a horizontal stripe.
+    pixels.copy_from(pixels_orig);
+    // Fill the stripe with the same value (avoiding the empty pixel).
+    std::ranges::fill(pixels.subspan(y * width * 4, width * 4), y + 1);
+    // When noised, the horizontal stripe should have the same color.
+    NoisePixels(token_hash, pixels, width, height);
+    for (size_t x = 1; x < width; ++x) {
+      EXPECT_EQ(pixels.subspan(y * width * 4, 4u),
+                pixels.subspan((x + y * width) * 4, 4u));
+    }
+  }
+}
+
 TEST_F(NoiseHelperTest, NoisePixelsSingleNeighbor) {
   const int width = 3;
   const int height = 3;

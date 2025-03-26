@@ -459,7 +459,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3114507951000454849">Llegeix les notícies d'avui <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Més detalls</translation>
 <translation id="3123734510202723619">Anuncis</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> ha fet canvis a la pestanya "<ph name="TAB_NAME" />"</translation>
 <translation id="3148237711805373460">Porta-m'hi</translation>
 <translation id="314939179385989105">Pàgina d'inici de Chrome</translation>
 <translation id="3158667104057012316">S'ordena manualment</translation>
@@ -840,14 +839,12 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4910889077668685004">Aplicacions de pagament</translation>
 <translation id="4912413785358399818">Mou la pestanya</translation>
 <translation id="4913169188695071480">Deixa d'actualitzar</translation>
-<translation id="4918086044614829423">Accepta</translation>
 <translation id="4925120120285606924">Captura de pantalla del dia <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Les teves contrasenyes s'exportaran i es baixaran com a fitxer de text. Qualsevol persona o aplicació que tingui accés a la carpeta de destinació podrà veure també les teves contrasenyes.</translation>
 <translation id="4926901776383726965">Pots desar imatges i fitxers per veure'ls sense connexió o per compartir-los en altres aplicacions</translation>
 <translation id="4932247056774066048">Com que estàs tancant la sessió d'un compte gestionat per <ph name="DOMAIN_NAME" />, les teves dades de Chrome se suprimiran d'aquest dispositiu. Tanmateix, es conservaran al teu Compte de Google.</translation>
 <translation id="4943703118917034429">Realitat virtual</translation>
 <translation id="4943872375798546930">No hi ha cap resultat</translation>
-<translation id="4953833914914492602">El grup de pestanyes "<ph name="TAB_GROUP_NAME" />" ja no està disponible</translation>
 <translation id="4957722034734105353">Més informació...</translation>
 <translation id="4961107849584082341">Tradueix aquesta pàgina a qualsevol idioma</translation>
 <translation id="4964614743143953889">Chrome t'avisa sobre baixades i llocs web que no són segurs</translation>
@@ -966,7 +963,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5526281268548144413">No es pot tancar en diverses finestres</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Fa # min}other{Fa # min}}</translation>
 <translation id="5548606607480005320">Comprovació de seguretat</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> s'ha unit al grup de pestanyes "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">Quan utilitzes una contrasenya, Chrome t'avisa si s'ha publicat en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="5555525474779371165">Tria la teva protecció de Navegació segura</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
@@ -1183,7 +1179,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6481963882741794338">Enllaça Chrome i altres serveis de Google per a la personalització i altres finalitats</translation>
 <translation id="6482749332252372425">No s'ha pogut baixar <ph name="FILE_NAME" /> perquè falta espai d'emmagatzematge.</translation>
 <translation id="6486420406192123355">Aquest fitxer PDF prové d'un lloc web que utilitza una connexió no segura</translation>
-<translation id="6495590690749880440">Vols obrir el grup de pestanyes?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{S'ha baixat el fitxer}other{S'han completat # baixades}}</translation>
 <translation id="6508722015517270189">Reinicia Chrome</translation>
 <translation id="6518133107902771759">Verifica</translation>
@@ -1617,7 +1612,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8282297628636750033">Aplica el tema fosc als llocs web, sempre que sigui possible</translation>
 <translation id="8282950411412455249">Ves a la configuració de seguretat</translation>
 <translation id="8306751933352925837">Les contrasenyes deixaran de funcionar aviat en aquest dispositiu. Per continuar utilitzant-les, actualitza Serveis de Google Play. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ha suprimit la pestanya "<ph name="TAB_NAME" />"</translation>
 <translation id="8310451567823644042">Les contrasenyes deixaran de funcionar aviat</translation>
 <translation id="831192587911042850">Afegeix el lloc web actual a la llista de llocs web que segueixes.</translation>
 <translation id="8320212361750431956">Activitat recent</translation>

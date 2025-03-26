@@ -9,9 +9,6 @@
 #include "base/containers/to_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_latency.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_presentation_source.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_presentationsource_usvstring.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -30,56 +27,10 @@
 namespace blink {
 
 namespace {
-
 bool IsKnownProtocolForPresentationUrl(const KURL& url) {
   return url.ProtocolIsInHTTPFamily() || url.ProtocolIs("cast") ||
          url.ProtocolIs("cast-dial");
 }
-
-int GetPlayoutDelay(const PresentationSource& source) {
-  if (!source.hasLatencyHint() || !source.latencyHint()) {
-    return 400;
-  }
-  switch (source.latencyHint()->AsEnum()) {
-    case V8CaptureLatency::Enum::kLow:
-      return 200;
-    case V8CaptureLatency::Enum::kDefault:
-      return 400;
-    case V8CaptureLatency::Enum::kHigh:
-      return 800;
-  }
-}
-
-KURL CreateMirroringUrl(const PresentationSource& source) {
-  int capture_audio = !source.hasAudioPlayback() || !source.audioPlayback() ||
-                              (source.audioPlayback()->AsEnum() ==
-                               V8AudioPlaybackDestination::Enum::kReceiver)
-                          ? 1
-                          : 0;
-  int playout_delay = GetPlayoutDelay(source);
-  // TODO(crbug.com/1267372): Instead of converting a mirroring source into a
-  // URL with a hardcoded Cast receiver app ID, pass the source object directly
-  // to the embedder.
-  return KURL(
-      String::Format("cast:0F5096E8?streamingCaptureAudio=%d&"
-                     "streamingTargetPlayoutDelayMillis=%d",
-                     capture_audio, playout_delay));
-}
-
-KURL CreateUrlFromSource(const ExecutionContext& execution_context,
-                         const PresentationSource& source) {
-  if (!source.hasType()) {
-    return KURL();
-  }
-  switch (source.type().AsEnum()) {
-    case V8PresentationSourceType::Enum::kUrl:
-      return source.hasUrl() ? KURL(execution_context.Url(), source.url())
-                             : KURL();
-    case V8PresentationSourceType::Enum::kMirroring:
-      return CreateMirroringUrl(source);
-  }
-}
-
 }  // anonymous namespace
 
 // static
@@ -87,15 +38,15 @@ PresentationRequest* PresentationRequest::Create(
     ExecutionContext* execution_context,
     const String& url,
     ExceptionState& exception_state) {
-  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> urls(1);
-  urls[0] = MakeGarbageCollected<V8UnionPresentationSourceOrUSVString>(url);
+  Vector<String> urls(1);
+  urls[0] = url;
   return Create(execution_context, urls, exception_state);
 }
 
 // static
 PresentationRequest* PresentationRequest::Create(
     ExecutionContext* execution_context,
-    const HeapVector<Member<V8UnionPresentationSourceOrUSVString>>& sources,
+    const Vector<String>& urls,
     ExceptionState& exception_state) {
   if (execution_context->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kPresentationController)) {
@@ -110,29 +61,8 @@ PresentationRequest* PresentationRequest::Create(
   }
 
   Vector<KURL> parsed_urls;
-  for (const auto& source : sources) {
-    if (source->IsPresentationSource()) {
-      if (!RuntimeEnabledFeatures::SiteInitiatedMirroringEnabled()) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kNotSupportedError,
-            "You must pass in valid URL strings.");
-        return nullptr;
-      }
-      const KURL source_url = CreateUrlFromSource(
-          *execution_context, *source->GetAsPresentationSource());
-      if (!source_url.IsValid()) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kNotSupportedError,
-            "You must pass in valid presentation sources.");
-        return nullptr;
-      }
-      parsed_urls.push_back(source_url);
-      continue;
-    }
-    DCHECK(source->IsUSVString());
-    const String& url = source->GetAsUSVString();
+  for (const auto& url : urls) {
     const KURL& parsed_url = KURL(execution_context->Url(), url);
-
     if (!parsed_url.IsValid()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,

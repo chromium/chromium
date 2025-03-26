@@ -32,6 +32,7 @@
 #include "components/permissions/contexts/automatic_fullscreen_permission_context.h"
 #include "components/permissions/contexts/keyboard_lock_permission_context.h"
 #include "components/permissions/contexts/local_fonts_permission_context.h"
+#include "components/permissions/contexts/local_network_access_permission_context.h"
 #include "components/permissions/contexts/pointer_lock_permission_context.h"
 #include "components/permissions/contexts/speaker_selection_permission_context.h"
 #include "components/permissions/contexts/web_app_installation_permission_context.h"
@@ -127,6 +128,11 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   // support it on WebLayer yet.
   permission_contexts[ContentSettingsType::LOCAL_FONTS] =
       std::make_unique<LocalFontsPermissionContext>(profile);
+
+  // TODO(crbug.com/400455013): Move to CreateDefaultPermissionContexts() once
+  // support for Android is ready.
+  permission_contexts[ContentSettingsType::LOCAL_NETWORK_ACCESS] =
+      std::make_unique<LocalNetworkAccessPermissionContext>(profile);
 
   // Depends on Chrome specific policies not available on WebLayer.
   permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =

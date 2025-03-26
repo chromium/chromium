@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/infobars/ui_bundled/test_infobar_delegate.h",
   "+ios/chrome/browser/menu/ui_bundled",
-  "+ios/chrome/browser/ui/popup_menu/public",
+  "+ios/chrome/browser/popup_menu/ui_bundled/public",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/omnibox/ui_bundled",

@@ -297,12 +297,6 @@ class AuthenticationFlowTest : public PlatformTest {
 
 // Tests a Sign In of a normal account on the same profile.
 TEST_F(AuthenticationFlowTest, TestSignInSimple) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Enable user policy to make sure that the authentication flow doesn't try
-  // a registration when the account isn't managed.
-  scoped_feature_list.InitAndEnableFeature(
-      policy::kUserPolicyForSigninOrSyncConsentLevel);
-
   SignIn(identity1_, signin_metrics::AccessPoint::kStartPage);
 
   histogram_tester_.ExpectUniqueSample(
@@ -339,15 +333,10 @@ TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
   histogram_tester_.ExpectTotalCount("Signin.AccountType.SigninConsent", 0);
 }
 
-// Tests that when signed in only with a managed account and the
-// needed features are enabled, the managed account confirmation dialog is
-// shown.
+// Tests that when signed in only with a managed account, the managed account
+// confirmation dialog is shown.
 TEST_F(AuthenticationFlowTest,
-       TestShowManagedConfirmationForSigninConsentLevelIfAllFeaturesEnabled) {
-  // Enable user policy and sign-in promos.
-  base::test::ScopedFeatureList scoped_feature_list(
-      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
-
+       TestShowManagedConfirmationForSigninConsentLevel) {
   SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser);
   histogram_tester_.ExpectUniqueSample(
       "Signin.AccountType.SigninConsent",
@@ -360,10 +349,6 @@ TEST_F(AuthenticationFlowTest,
 // level. This only applies to the sign-in consent level.
 TEST_F(AuthenticationFlowTest,
        TestSkipManagedConfirmationWhenAlreadyManagedAtMachineLevel) {
-  // Enable user policy and sign-in consent only.
-  base::test::ScopedFeatureList scoped_feature_list(
-      policy::kUserPolicyForSigninAndNoSyncConsentLevel);
-
   // Set a machine level policy.
   base::ScopedTempDir state_directory;
   ASSERT_TRUE(state_directory.CreateUniqueTempDir());
@@ -385,12 +370,8 @@ TEST_F(AuthenticationFlowTest,
 // Tests that the managed confirmation dialog is only show once per account,
 // when signing in from the Account Menu.
 TEST_F(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
-  // Enable user policy and sign-in promos.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {policy::kUserPolicyForSigninAndNoSyncConsentLevel,
-       kIdentityDiscAccountMenu},
-      {});
+  scoped_feature_list.InitAndEnableFeature(kIdentityDiscAccountMenu);
 
   // First signin, show the dialog.
   SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu);

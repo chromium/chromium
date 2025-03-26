@@ -20,6 +20,9 @@ enum class PlusAddressURLType;
 // Asks the delegate for the user's primary email address.
 - (NSString*)primaryEmailAddress;
 
+// Asks the delegate for the displayable origin.
+- (NSString*)originForDisplay;
+
 // Asks the delegate to open the URL for `PlusAddressUrlType` on new tab.
 - (void)openNewTab:(PlusAddressURLType)type;
 

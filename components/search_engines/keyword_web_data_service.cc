@@ -15,6 +15,8 @@
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_service.h"
 
+using ::country_codes::CountryId;
+
 namespace {
 
 WebDatabase::State PerformKeywordOperationsImpl(
@@ -57,7 +59,7 @@ WebDatabase::State ClearBuiltinKeywordMilestoneImpl(WebDatabase* db) {
              : WebDatabase::COMMIT_NOT_NEEDED;
 }
 
-WebDatabase::State SetBuiltinKeywordCountryImpl(int country_id,
+WebDatabase::State SetBuiltinKeywordCountryImpl(CountryId country_id,
                                                 WebDatabase* db) {
   return KeywordTable::FromWebDatabase(db)->SetBuiltinKeywordCountry(country_id)
              ? WebDatabase::COMMIT_NEEDED
@@ -169,7 +171,7 @@ void KeywordWebDataService::ClearBuiltinKeywordMilestone() {
                         base::BindOnce(&ClearBuiltinKeywordMilestoneImpl));
 }
 
-void KeywordWebDataService::SetBuiltinKeywordCountry(int version) {
+void KeywordWebDataService::SetBuiltinKeywordCountry(CountryId version) {
   wdbs_->ScheduleDBTask(FROM_HERE,
                         base::BindOnce(&SetBuiltinKeywordCountryImpl, version));
 }

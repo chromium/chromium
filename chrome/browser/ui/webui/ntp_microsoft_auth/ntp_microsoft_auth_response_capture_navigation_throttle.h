@@ -15,9 +15,10 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-// This throttle looks for redirections from a microsoft popup opened on the
-// NTP to a fake url in order to instead redirect to about:blank at the same
-// origin as the opener.
+// This throttle looks for redirections from a microsoft popup (for login
+// explicitly started by the user) or iframe (for silent reauthentication in
+// the background) opened on the NTP to a fake url in order to instead redirect
+// to about:blank at the same origin as the opener or parent frame.
 class NtpMicrosoftAuthResponseCaptureNavigationThrottle
     : public content::NavigationThrottle {
  public:

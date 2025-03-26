@@ -1,11 +1,11 @@
-caption: Control rollout of <ph name="AL_HEADER_NAME">Accept-Language</ph> reduction
+caption: Control <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph>
 
 desc: |-
   The <ph name="AL_HEADER_NAME">Accept-Language</ph> HTTP request header and the JavaScript <ph name="JS_GETTER_NAME">navigator.languages</ph> getter are planned for reduction for privacy reasons.
-  To facilitate testing and ensure compatibility, this policy allows you to enable or disable this reduction rollout.
+  To facilitate testing and ensure compatibility, this policy allows you to enable or disable the <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph> feature.
 
-  If this policy is set to enabled or left unset, <ph name="AL_HEADER_NAME">Accept-Language</ph> reduction rollout will be applied through field trials.
-  If this policy is set to disabled, field trials will not be able to activate the reduction rollout.
+  If this policy is set to enabled or left unset, <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph> will be applied through field trials.
+  If this policy is set to disabled, field trials will not be able to activate <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph>.
 
   For more information about this feature, please visit: https://github.com/explainers-by-googlers/reduce-accept-language.
 
@@ -28,9 +28,9 @@ features:
 schema:
   type: boolean
 items:
-- caption: Enable <ph name="AL_HEADER_NAME">Accept-Language</ph> reduction rollout to be controlled via field trials
+- caption: Enable <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph>
   value: true
-- caption: Disable <ph name="AL_HEADER_NAME">Accept-Language</ph> reduction rollout to be controlled via field trials
+- caption: Disable <ph name="ALR_FEATURE_NAME">Accept-Language Reduction</ph>
   value: false
 
 default: true

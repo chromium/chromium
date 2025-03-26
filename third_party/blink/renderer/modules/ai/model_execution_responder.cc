@@ -120,7 +120,7 @@ class Responder final : public GarbageCollected<Responder>,
     Cleanup();
   }
 
-  void OnContextOverflow() override {
+  void OnQuotaOverflow() override {
     if (overflow_callback_) {
       overflow_callback_.Run();
     }
@@ -282,7 +282,7 @@ class StreamingResponder final
     Cleanup();
   }
 
-  void OnContextOverflow() override {
+  void OnQuotaOverflow() override {
     if (overflow_callback_) {
       overflow_callback_.Run();
     }

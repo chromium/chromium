@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -526,7 +527,7 @@ void StarboardDecryptorCast::OnProvisionResponse(int ticket,
 
   LOG(INFO) << "Provisioning succeeded. Updating session in starboard.";
   std::vector<uint8_t> response_vec(response.size());
-  memcpy(response_vec.data(), response.c_str(), response.size());
+  UNSAFE_TODO(memcpy(response_vec.data(), response.c_str(), response.size()));
 
   // This will be called if we successfully update the session.
   auto success_cb =

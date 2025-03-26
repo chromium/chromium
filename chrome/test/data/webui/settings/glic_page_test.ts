@@ -6,13 +6,14 @@ import 'chrome://settings/settings.js';
 
 import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 const POLICY_ENABLED_VALUE = 0;
 const POLICY_DISABLED_VALUE = 1;
@@ -26,9 +27,12 @@ suite('GlicPage', function() {
   let settingsPrefs: SettingsPrefsElement;
   let glicBrowserProxy: TestGlicBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   function createGlicPage(initialShortcut: string) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     glicBrowserProxy = new TestGlicBrowserProxy();
     glicBrowserProxy.setGlicShortcutResponse(initialShortcut);
@@ -380,5 +384,56 @@ suite('GlicPage', function() {
     const infoCard = $<CrCollapseElement>('tabAccessInfoCollapse');
     assertTrue(!!infoCard);
     assertFalse(infoCard.opened);
+  });
+
+  suite('Metrics', () => {
+    async function verifyUserAction(userAction: string) {
+      const userActions = await metricsBrowserProxy.getArgs('recordAction');
+      assertEquals(1, userActions.length);
+      assertTrue(userActions.includes(userAction));
+      metricsBrowserProxy.reset();
+    }
+
+    test('GeolocationToggle', async () => {
+      page.setPrefValue(PrefName.GEOLOCATION_ENABLED, false);
+
+      const geolocationToggle =
+          $<SettingsToggleButtonElement>('geolocationToggle')!;
+      assertTrue(!!geolocationToggle);
+
+      geolocationToggle.click();
+      await verifyUserAction('Glic.Settings.Geolocation.Enabled');
+
+      geolocationToggle.click();
+      await verifyUserAction('Glic.Settings.Geolocation.Disabled');
+    });
+
+    test('MicrophoneToggle', async () => {
+      page.setPrefValue(PrefName.MICROPHONE_ENABLED, false);
+
+      const microphoneToggle =
+          $<SettingsToggleButtonElement>('microphoneToggle')!;
+      assertTrue(!!microphoneToggle);
+
+      microphoneToggle.click();
+      await verifyUserAction('Glic.Settings.Microphone.Enabled');
+
+      microphoneToggle.click();
+      await verifyUserAction('Glic.Settings.Microphone.Disabled');
+    });
+
+    test('TabContextToggle', async () => {
+      page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
+
+      const tabAccessToggle =
+          $<SettingsToggleButtonElement>('tabAccessToggle')!;
+      assertTrue(!!tabAccessToggle);
+
+      tabAccessToggle.click();
+      await verifyUserAction('Glic.Settings.TabContext.Enabled');
+
+      tabAccessToggle.click();
+      await verifyUserAction('Glic.Settings.TabContext.Disabled');
+    });
   });
 });

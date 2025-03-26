@@ -14,11 +14,6 @@ BASE_FEATURE(kAutofillDisableDefaultSaveCardFixFlowDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// When enabled, local credit card migration flows will not be offered.
-BASE_FEATURE(kAutofillDisableLocalCardMigration,
-             "AutofillDisableLocalCardMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, card category benefits offered by BMO will be shown in Autofill
 // suggestions on the allowlisted merchant websites.
 BASE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits,
@@ -92,12 +87,6 @@ BASE_FEATURE(kAutofillEnableCardBenefitsSync,
 BASE_FEATURE(kAutofillEnableCardInfoRuntimeRetrieval,
              "AutofillEnableCardInfoRuntimeRetrieval",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, card product name (instead of issuer network) will be shown in
-// Payments Autofill UI.
-BASE_FEATURE(kAutofillEnableCardProductName,
-             "AutofillEnableCardProductName",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, we will store CVC for both local and server credit cards. This
 // will also allow the users to autofill their CVCs on checkout pages.

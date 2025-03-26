@@ -25,6 +25,7 @@ class HistorySidePanelCoordinator;
 class MemorySaverOptInIPHController;
 class SidePanelCoordinator;
 class SidePanelUI;
+class TabSearchToolbarButtonController;
 class TabStripModel;
 class TranslateBubbleController;
 class ToastController;
@@ -154,6 +155,7 @@ class BrowserWindowFeatures {
   tabs::GlicNudgeController* glic_nudge_controller() {
     return glic_nudge_controller_.get();
   }
+
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
   // Returns a pointer to the ToastController for the browser window. This can
@@ -199,6 +201,10 @@ class BrowserWindowFeatures {
 
   TranslateBubbleController* translate_bubble_controller() {
     return translate_bubble_controller_.get();
+  }
+
+  TabSearchToolbarButtonController* tab_search_toolbar_button_controller() {
+    return tab_search_toolbar_button_controller_.get();
   }
 
  protected:
@@ -272,6 +278,9 @@ class BrowserWindowFeatures {
       shared_tab_group_feedback_controller_;
 
   std::unique_ptr<TranslateBubbleController> translate_bubble_controller_;
+
+  std::unique_ptr<TabSearchToolbarButtonController>
+      tab_search_toolbar_button_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

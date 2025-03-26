@@ -24,7 +24,7 @@ struct BLINK_COMMON_EXPORT AcceleratedImageInfo {
   gpu::ExportedSharedImage shared_image;
   gpu::SyncToken sync_token;
   gfx::Size size;
-  SkColorType sk_color_type;
+  viz::SharedImageFormat format;
   SkAlphaType alpha_type;
   sk_sp<SkColorSpace> sk_color_space;
   base::OnceCallback<void(const gpu::SyncToken& sync_token)> release_callback;

@@ -78,9 +78,22 @@ function acquireTokenPopup() {
 }
 
 function acquireTokenSilent() {
-  msalApp.acquireTokenSilent(requestConfig)
-      .then(handleAcquireTokenResponse)
-      .catch(handleAuthError);
+  const accounts = msalApp.getAllAccounts();
+  if (accounts.length === 0) {
+    // If there is no account in the cache, attempt to silently request a token
+    // from the authentication server.
+    msalApp.ssoSilent(requestConfig)
+        .then(handleAcquireTokenResponse)
+        .catch(handleAuthError);
+  } else {
+    // Otherwise, attempt to get token silently with cached account.
+    if (!msalApp.getActiveAccount()) {
+      msalApp.setActiveAccount(accounts[0]!);
+    }
+    msalApp.acquireTokenSilent(requestConfig)
+        .then(handleAcquireTokenResponse)
+        .catch(handleAuthError);
+  }
 }
 
 function signOut() {

@@ -68,6 +68,7 @@ class AwProxyingRestrictedCookieManager
                           const url::Origin& top_frame_origin,
                           net::StorageAccessApiStatus storage_access_api_status,
                           net::CookieInclusionStatus status,
+                          bool is_ad_tagged,
                           bool apply_devtools_overrides,
                           SetCanonicalCookieCallback callback) override;
   void AddChangeListener(
@@ -84,6 +85,7 @@ class AwProxyingRestrictedCookieManager
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
       bool get_version_shared_memory,
+      bool is_ad_tagged,
       bool apply_devtools_overrides,
       const std::string& cookie,
       SetCookieFromStringCallback callback) override;

@@ -11,7 +11,10 @@ mojom("mojom") {
     "mantis_processor.mojom",
     "mantis_service.mojom",
   ]
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//chromeos/services/machine_learning/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
   webui_module_path = "/"
 
   # The generated Mojo needs to be imported into the internal repository.

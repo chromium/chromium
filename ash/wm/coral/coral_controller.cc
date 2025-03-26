@@ -129,8 +129,8 @@ CoralController::CoralController() = default;
 
 CoralController::~CoralController() = default;
 
-void CoralController::Initialize() {
-  CoralProcessor* coral_processor = EnsureCoralProcessor();
+void CoralController::Initialize(std::string language) {
+  CoralProcessor* coral_processor = EnsureCoralProcessor(std::move(language));
   if (!coral_processor) {
     LOG(ERROR) << "Failed to connect to coral processor.";
   }
@@ -147,7 +147,7 @@ void CoralController::GenerateContentGroups(
     return;
   }
 
-  CoralProcessor* coral_processor = EnsureCoralProcessor();
+  CoralProcessor* coral_processor = EnsureCoralProcessor(request.language());
   if (!coral_processor) {
     LOG(ERROR) << "Failed to connect to coral processor.";
     std::move(callback).Run(nullptr);
@@ -182,7 +182,7 @@ void CoralController::GenerateContentGroups(
 }
 
 void CoralController::CacheEmbeddings(const CoralRequest& request) {
-  CoralProcessor* coral_processor = EnsureCoralProcessor();
+  CoralProcessor* coral_processor = EnsureCoralProcessor(request.language());
   if (!coral_processor) {
     LOG(ERROR) << "Failed to connect to coral processor.";
     return;
@@ -303,7 +303,8 @@ void CoralController::OpenFeedbackDialog(const std::string& group_description) {
                      weak_factory_.GetWeakPtr()));
 }
 
-CoralController::CoralProcessor* CoralController::EnsureCoralProcessor() {
+CoralController::CoralProcessor* CoralController::EnsureCoralProcessor(
+    std::string language) {
   // Generate a fake processor if --force-birch-fake-coral-backend is enabled.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceBirchFakeCoralBackend)) {
@@ -333,7 +334,8 @@ CoralController::CoralProcessor* CoralController::EnsureCoralProcessor() {
         ->BindMachineLearningService(
             ml_service.InitWithNewPipeAndPassReceiver());
     coral_service_->Initialize(std::move(ml_service),
-                               coral_processor_.BindNewPipeAndPassReceiver());
+                               coral_processor_.BindNewPipeAndPassReceiver(),
+                               language);
     coral_processor_.reset_on_disconnect();
   }
 

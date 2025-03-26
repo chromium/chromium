@@ -142,7 +142,7 @@ void LogEventDispatcher::Impl::Subscribe(RawEventSubscriber* subscriber) {
 
 void LogEventDispatcher::Impl::Unsubscribe(RawEventSubscriber* subscriber) {
   const auto it = std::ranges::find(subscribers_, subscriber);
-  CHECK(it != subscribers_.end(), base::NotFatalUntil::M130);
+  CHECK(it != subscribers_.end());
   subscribers_.erase(it);
 }
 

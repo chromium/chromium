@@ -314,6 +314,8 @@ source_set("utf8_range") {
     "third_party/utf8_range/utf8_validity.h",
   ]
 
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
   configs += [ ":protobuf_config_internal" ]
 
   deps = [ "//third_party/abseil-cpp:absl" ]

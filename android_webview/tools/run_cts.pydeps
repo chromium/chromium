@@ -16,8 +16,16 @@
 //build/gn_helpers.py
 //build/util/lib/__init__.py
 //build/util/lib/proto/__init__.py
+//build/util/lib/proto/average.py
+//build/util/lib/proto/count.py
+//build/util/lib/proto/data_points.py
 //build/util/lib/proto/exception_occurrences_pb2.py
 //build/util/lib/proto/exception_recorder.py
+//build/util/lib/proto/measure.py
+//build/util/lib/proto/measures.py
+//build/util/lib/proto/metric.py
+//build/util/lib/proto/test_script_metrics_pb2.py
+//build/util/lib/proto/time_consumption.py
 //third_party/catapult/common/py_utils/py_utils/__init__.py
 //third_party/catapult/common/py_utils/py_utils/cloud_storage.py
 //third_party/catapult/common/py_utils/py_utils/cloud_storage_global_lock.py

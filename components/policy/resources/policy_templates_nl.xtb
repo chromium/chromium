@@ -584,7 +584,6 @@ Online opnieuw verifiëren kan om verschillende redenen vereist zijn, zoals wach
 <translation id="143649776386947790">Standaardgedrag gebruiken</translation>
 <translation id="1438739959477268107">Standaardinstelling voor het genereren van sleutels</translation>
 <translation id="1440408958042020947">Hierdoor kunnen gebruikers die Telefoonhub toestaan, toegang krijgen tot recente foto's en video's die ze hebben gemaakt op hun telefoon</translation>
-<translation id="1442458649848299896">Toestaan dat de uitrol van <ph name="AL_HEADER_NAME" />-inkorting wordt beheerd via praktijktests</translation>
 <translation id="1443532790824582949">Het virtuele aanraaktoetsenbord aanzetten</translation>
 <translation id="1449083855104537880">Als je het beleid instelt op True, worden de toegankelijkheidsopties weergegeven in het systeemvakmenu. Als je het beleid instelt op False, worden de opties niet weergegeven in het menu.
 
@@ -3218,15 +3217,6 @@ Als je dit beleid niet toepast, is de functie voor voorspellend schrijven op het
 <translation id="3387999258705169775">Standaardgedrag voor genest vastzetten voor de functie setTimeout().</translation>
 <translation id="3388628790024977864">Het <ph name="CLOUD_UPLOAD_NAME" />-proces niet toestaan voor <ph name="GOOGLE_DRIVE_NAME" /> en <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Gnubby-verificatie aanzetten voor de host voor externe toegang</translation>
-<translation id="3394895899282672754">De <ph name="AL_HEADER_NAME" /> HTTP-verzoekheader en de JavaScript-getter <ph name="JS_GETTER_NAME" /> worden om privacyredenen ingekort.
-Met dit beleid kun je uitrol van inkorting aan- of uitzetten om testen mogelijk te maken en compatibiliteit te garanderen.
-
-Als je dit beleid toepast of niet instelt, wordt de uitrol van <ph name="AL_HEADER_NAME" />-inkorting toegepast via praktijktests.
-Als je dit beleid niet toepast, kunnen praktijktests de uitrol van inkorting niet activeren.
-
-Ga voor meer informatie over deze functie naar: https://github.com/explainers-by-googlers/reduce-accept-language.
-
-OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
 <translation id="3395744872155955051">Toestaan dat bestanden rechtstreeks worden gekozen uit <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Geen app-aanbevelingen laten zien in de <ph name="PRODUCT_OS_NAME" />-launcher</translation>
 <translation id="3398051852031115795">Standaard systeemgedrag (afhankelijk van schermgrootte)</translation>
@@ -5959,7 +5949,6 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
       <ph name="IMAGE_SEARCH_SOURCE" />,
       <ph name="IMAGE_THUMBNAIL" />,
       <ph name="IMAGE_THUMBNAIL_BASE64" />.</translation>
-<translation id="5368878547690689592">Uitrol van <ph name="AL_HEADER_NAME" />-inkorting beheren</translation>
 <translation id="5369937289900051171">Alleen afdrukken in kleur</translation>
 <translation id="5370279767682621504">Ondersteuning voor HTTP/0.9 op niet-standaardpoorten aanzetten</translation>
 <translation id="5370765433640162225">Als je dit beleid instelt op True, wordt de automatische opruiming uitgevoerd tijdens het inloggen om te zorgen dat er voldoende vrije schijfruimte beschikbaar is.
@@ -8684,6 +8673,18 @@ Planningen met overlappende intervallen worden niet ondersteund. Dit beleid heef
 <ph name="PRODUCT_OS_NAME" />-apparaten gebruiken de tijdzone van het systeem om deze intervallen toe te passen.
 
 Belangrijke opmerking: De planningen die door dit beleid zijn ingesteld, worden misschien niet uitgevoerd zoals verwacht als ze conflicteren met andere instellingen voor energiebeheer, zoals <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Zorg dat deze instellingen zo zijn ingesteld dat de geplande opschortingsintervallen van kracht worden.</translation>
+<translation id="7196944905905233325">Hiermee wordt de provider van het <ph name="UIA_NAME" />-toegankelijkheidsframework in <ph name="PRODUCT_NAME" /> aangezet voor gebruik door toegankelijkheidstools.
+
+Dit beleid wordt in <ph name="PRODUCT_NAME" /> ondersteund voor een overgangsperiode van één jaar, zodat bedrijfsbeheerders de implementatie van de provider van het <ph name="UIA_NAME" />-toegankelijkheidsframework van de browser kunnen beheren. Voor toegankelijkheid en andere tools die het <ph name="UIA_NAME" />-toegankelijkheidsframework gebruiken voor samenwerking met de browser, zijn misschien updates nodig voor een goede werking met de provider van <ph name="UIA_NAME" /> van de browser. Beheerders kunnen dit beleid gebruiken om de provider van <ph name="UIA_NAME" /> van de browser tijdelijk uit te zetten (waardoor het beleid wordt teruggezet naar het oude gedrag) terwijl ze samenwerken met leveranciers om updates voor getroffen tools te leveren.
+
+Als je dit beleid instelt op Onwaar, zet <ph name="PRODUCT_NAME" /> alleen de <ph name="MSAA_NAME" />-provider aan. Toegankelijkheid en andere tools die het nieuwere <ph name="UIA_NAME" />-toegankelijkheidsframework gebruiken voor samenwerking met de browser, communiceren via een tussenliggende compatibiliteitsfunctie in <ph name="MS_WIN_NAME" />.
+
+Als je dit instelt op Waar, zet <ph name="PRODUCT_NAME" /> de provider van <ph name="UIA_NAME" /> aan in aanvulling op de <ph name="MSAA_NAME" />-provider.
+Toegankelijkheid en andere tools die het nieuwere <ph name="UIA_NAME" />-toegankelijkheidsframework gebruiken voor samenwerking met de browser, communiceren rechtstreeks met de browser.
+
+Als je dit beleid niet instelt, wordt het framework voor varianten in <ph name="PRODUCT_NAME" /> gebruikt om de provider aan of uit te zetten.
+
+Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_NAME" /> 146.</translation>
 <translation id="7198134478421755850">Extensie</translation>
 <translation id="7199304109870655950">Configureer opties voor externe toegang in de Chrome Remote Desktop-host.
 
@@ -11057,7 +11058,6 @@ Opmerking: Op dit moment wordt alleen rekening gehouden met de eerste vermelding
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor meer informatie over geldige invoerpatronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.</translation>
 <translation id="9010080992450148617">Downloads naar Google sturen voor uitgebreide scans voor gebruikers die zijn ingeschreven voor Geavanceerde beveiliging</translation>
 <translation id="9012101302849557459">Ondersteuning voor Chrome-apps op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NAME" /> uitbreiden.</translation>
-<translation id="9013629280364842072">Niet toestaan dat de uitrol van <ph name="AL_HEADER_NAME" />-inkorting wordt beheerd via praktijktests</translation>
 <translation id="9013875414788074110">Tijdens het inloggen kan <ph name="PRODUCT_OS_NAME" /> de verificatie uitvoeren met behulp van een server (online) of door gebruik te maken van een gecachet wachtwoord (offline).
 
       Wanneer voor dit beleid de waarde -1 is ingesteld, kan de gebruiker zich offline oneindig verifiëren. Wanneer er een andere waarde voor dit beleid is opgegeven, wordt hiermee aangegeven na hoeveel tijd sinds de meest recente online verificatie de gebruiker opnieuw een online verificatie moet uitvoeren.

@@ -61,6 +61,7 @@ class FilledCardInformationBubbleControllerImpl
   bool ShouldShowGooglePayIconInTitle() const override;
   std::u16string GetMaskedCardNameForDescriptionView() const override;
   gfx::Image GetCardImageForDescriptionView() const override;
+  bool EducationalBodyHasLearnMoreLink() const override;
 
  protected:
   explicit FilledCardInformationBubbleControllerImpl(

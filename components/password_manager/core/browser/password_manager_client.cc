@@ -38,11 +38,7 @@ void PasswordManagerClient::ShowPasswordManagerErrorMessage(
 
 void PasswordManagerClient::ShowKeyboardReplacingSurface(
     PasswordManagerDriver* driver,
-    const PasswordFillingParams& password_filling_params,
-    bool is_webauthn_form,
-    base::OnceCallback<void(bool)> shown_cb) {
-  std::move(shown_cb).Run(false);
-}
+    const autofill::PasswordSuggestionRequest& request) {}
 #endif
 
 bool PasswordManagerClient::IsReauthBeforeFillingRequired(

@@ -125,7 +125,7 @@ public class FeedManagementMediator {
     void handleFollowingClick(View view) {
         Log.d(TAG, "Following click caught.");
         FeedServiceBridge.reportOtherUserAction(
-                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
+                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
         launchUriActivity("https://www.google.com/preferences/interests/yourinterests?sh=n");
     }
 
@@ -133,7 +133,7 @@ public class FeedManagementMediator {
     void handleHiddenClick(View view) {
         Log.d(TAG, "Hidden click caught.");
         FeedServiceBridge.reportOtherUserAction(
-                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
+                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_HIDDEN);
         launchUriActivity("https://www.google.com/preferences/interests/hidden?sh=n");
     }
 }

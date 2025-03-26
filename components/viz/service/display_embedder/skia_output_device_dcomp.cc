@@ -165,7 +165,24 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
 }
 
 SkiaOutputDeviceDComp::~SkiaOutputDeviceDComp() {
-  DCHECK(presenter_->HasOneRef());
+  // `SkiaOutputDeviceDComp` is non-copyable and non-movable, so dtor will only
+  // happen once.
+  CHECK(presenter_);
+
+  // We expect `SkiaOutputDeviceDComp::presenter_` to act like a unique pointer,
+  // only owned by `SkiaOutputDeviceDComp`.
+  CHECK(presenter_->HasOneRef());
+
+  if (!presenter_->DestroyDCLayerTree()) {
+    // If the `Commit` call in `~DCompPresenter` failed with device lost, exit
+    // the process via context loss, since it would not be valid to clean up
+    // `overlays_` if it contains DComp textures since they would still be
+    // attached to the visual tree.
+    context_state_->MarkContextLost();
+
+    // We expect `MarkContextLost` to exit the GPU process synchronously.
+    NOTREACHED();
+  }
 }
 
 void SkiaOutputDeviceDComp::Present(const std::optional<gfx::Rect>& update_rect,

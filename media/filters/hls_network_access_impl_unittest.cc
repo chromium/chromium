@@ -4,11 +4,13 @@
 
 #include "media/filters/hls_network_access_impl.h"
 
+#include "base/compiler_specific.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/test_helpers.h"
 #include "media/filters/hls_rendition_impl.h"
 #include "media/filters/hls_test_helpers.h"
+
 namespace media {
 
 namespace {
@@ -282,7 +284,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithKey) {
       .WillOnce(base::test::RunOnceCallback<0>(true));
   EXPECT_CALL(*ds_for_keyfetch, Read(0, 16384, _, _))
       .WillOnce([](int64_t, int, uint8_t* data, DataSource::ReadCB cb) {
-        memset(data, 'x', 16);
+        UNSAFE_TODO(memset(data, 'x', 16));
         std::move(cb).Run(16);
       });
   EXPECT_CALL(*ds_for_keyfetch, Read(16, 16384, _, _))

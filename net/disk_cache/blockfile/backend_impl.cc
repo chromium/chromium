@@ -770,7 +770,7 @@ LruData* BackendImpl::GetLruData() {
 void BackendImpl::UpdateRank(EntryImpl* entry, bool modified) {
   if (read_only_ || (!modified && GetCacheType() == net::SHADER_CACHE))
     return;
-  eviction_.UpdateRank(entry, modified);
+  eviction_.UpdateRank(entry);
 }
 
 void BackendImpl::RecoveredEntry(CacheRankingsBlock* rankings) {

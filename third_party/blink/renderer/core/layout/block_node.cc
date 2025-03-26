@@ -645,9 +645,6 @@ const LayoutResult* BlockNode::Layout(
       box_->SetNeedsLayout(layout_invalidation_reason::kScrollbarChanged,
                            kMarkOnlyThis);
 
-      if (auto* view = DynamicTo<LayoutView>(GetLayoutBox())) {
-        view->InvalidateSvgRootsWithRelativeLengthDescendents();
-      }
       fragment_geometry = CalculateInitialFragmentGeometry(constraint_space,
                                                            *this, break_token);
       layout_result = LayoutWithAlgorithm(params);

@@ -368,13 +368,26 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected void initializeToolbar() {
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        boolean shouldEnableOmnibox =
+                connection.shouldEnableOmniboxForIntent(mIntentDataProvider.get());
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.Omnibox.EnabledState", shouldEnableOmnibox);
+        var omniboxParams =
+                shouldEnableOmnibox
+                        ? new CustomTabToolbar.OmniboxParams(
+                                mCustomTabSearchClient,
+                                mIntentDataProvider.get().getClientPackageName(),
+                                connection.getAlternateOmniboxTapHandler(mIntentDataProvider.get()))
+                        : null;
         if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
             CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
             toolbar.initializeToolbar(
                     mActivity,
                     mIntentDataProvider.get(),
                     mFeatureOverridesManagerSupplier.get(),
-                    mMinimizeDelegateSupplier.get());
+                    mMinimizeDelegateSupplier.get(),
+                    omniboxParams);
 
             super.initializeToolbar();
 
@@ -425,16 +438,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             }
         }
 
-        CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        boolean shouldEnableOmnibox =
-                connection.shouldEnableOmniboxForIntent(mIntentDataProvider.get());
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.Omnibox.EnabledState", shouldEnableOmnibox);
         if (shouldEnableOmnibox) {
-            toolbar.setOmniboxEnabled(
-                    mCustomTabSearchClient,
-                    mIntentDataProvider.get().getClientPackageName(),
-                    connection.getAlternateOmniboxTapHandler(mIntentDataProvider.get()));
+            toolbar.setOmniboxParams(omniboxParams);
         }
     }
 

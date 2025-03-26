@@ -43,6 +43,10 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               GetFacilitatedPaymentsNetworkInterface,
               (),
               (override));
+  MOCK_METHOD(MultipleRequestFacilitatedPaymentsNetworkInterface*,
+              GetMultipleRequestFacilitatedPaymentsNetworkInterface,
+              (),
+              (override));
   MOCK_METHOD(std::optional<CoreAccountInfo>,
               GetCoreAccountInfo,
               (),

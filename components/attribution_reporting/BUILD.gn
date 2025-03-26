@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
-import("//testing/test.gni")
 
 mojom("mojom") {
   sources = [
@@ -168,6 +166,7 @@ source_set("unit_tests") {
     "event_level_epsilon_unittest.cc",
     "event_report_windows_unittest.cc",
     "event_trigger_data_unittest.cc",
+    "filters_fuzztest.cc",
     "filters_unittest.cc",
     "max_event_level_reports_unittest.cc",
     "os_registration_unittest.cc",
@@ -185,11 +184,14 @@ source_set("unit_tests") {
 
   deps = [
     ":attribution_reporting",
+    ":fuzzer_support",
     ":test_support",
     "//base",
+    "//base/test:fuzztest_support",
     "//base/test:test_support",
     "//services/network/public/mojom:mojom_headers",
     "//testing/gtest",
+    "//third_party/fuzztest",
   ]
 }
 
@@ -207,58 +209,6 @@ source_set("test_support") {
   ]
 
   deps = [ "//base" ]
-}
-
-fuzzer_test("parse_info_header_fuzzer") {
-  sources = [ "parse_info_header_fuzzer.cc" ]
-  deps = [
-    ":attribution_reporting",
-    "//base",
-    "//base:i18n",
-  ]
-
-  seed_corpus =
-      "//components/attribution_reporting/parse_info_header_fuzzer_corpus/"
-}
-
-fuzzer_test("parse_os_header_fuzzer") {
-  sources = [ "parse_os_header_fuzzer.cc" ]
-  deps = [
-    ":attribution_reporting",
-    "//base",
-    "//base:i18n",
-  ]
-
-  seed_corpus =
-      "//components/attribution_reporting/parse_os_header_fuzzer_corpus/"
-}
-
-fuzzer_test("source_registration_fuzzer") {
-  sources = [ "source_registration_fuzzer.cc" ]
-  deps = [
-    ":attribution_reporting",
-    "//base",
-    "//base:i18n",
-    "//testing/libfuzzer/proto:json_proto",
-    "//testing/libfuzzer/proto:json_proto_converter",
-    "//third_party/libprotobuf-mutator",
-  ]
-  seed_corpus =
-      "//components/attribution_reporting/source_registration_fuzzer_corpus"
-}
-
-fuzzer_test("trigger_registration_fuzzer") {
-  sources = [ "trigger_registration_fuzzer.cc" ]
-  deps = [
-    ":attribution_reporting",
-    "//base",
-    "//base:i18n",
-    "//testing/libfuzzer/proto:json_proto",
-    "//testing/libfuzzer/proto:json_proto_converter",
-    "//third_party/libprotobuf-mutator",
-  ]
-  seed_corpus =
-      "//components/attribution_reporting/trigger_registration_fuzzer_corpus"
 }
 
 mojom("registration_mojom") {
@@ -562,17 +512,4 @@ mojom("data_host_mojom") {
   export_class_attribute_blink = "PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
-}
-
-test("filters_fuzztest") {
-  sources = [ "filters_fuzztest.cc" ]
-
-  fuzztests = [ "FilterDataTest.Matches" ]
-
-  deps = [
-    ":attribution_reporting",
-    ":fuzzer_support",
-    ":test_support",
-    "//third_party/fuzztest:fuzztest_gtest_main",
-  ]
 }

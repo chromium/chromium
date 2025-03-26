@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
@@ -147,7 +148,7 @@ public class HubPaneHostViewUnitTest {
 
     @Test
     public void testHubColorScheme() {
-        verify(mColorMixer).registerBlend(any());
+        verify(mColorMixer, times(2)).registerBlend(any());
     }
 
     /** Order of children does not matter. */

@@ -149,6 +149,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1455242230282523554">Erakutsi hizkuntza-ezarpenak</translation>
 <translation id="1459693405370120464">Eguraldia</translation>
 <translation id="1460620680449458626">Bolumena desaktibatuta dago.</translation>
+<translation id="1462439140224375968">Sortu da Google-ko dokumentua</translation>
 <translation id="14648076227129703"><ph name="APP1_NAME" /> eta <ph name="APP2_NAME" /> aplikazioek eta kamera erabiltzeko baimena daukaten beste aplikazio eta webgune guztiek kamera atzitu ahal izango dute</translation>
 <translation id="1467432559032391204">Ezkerrera</translation>
 <translation id="146902737843070955">Administratzaileak eskatu du aldaketa</translation>
@@ -593,6 +594,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="301584155502740476">Erakutsi wifi-gunearen xehetasunak. Wifi-gunea desaktibatuta dago.</translation>
 <translation id="3017079585324758401">Atzeko planoa</translation>
 <translation id="3018135054368884502">Aurreratu multimedia-edukia</translation>
+<translation id="3026897869154397692">Gehitu da egutegian</translation>
 <translation id="3033545621352269033">Aktibatuta</translation>
 <translation id="3033912566804961911">Konbinatu <ph name="DESK_NAME" /> lan-eremuarekin</translation>
 <translation id="3036649622769666520">Ireki fitxategiak</translation>
@@ -1482,6 +1484,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5825969630400862129">Konektatutako gailuen ezarpenak</translation>
 <translation id="5830180081891717894">beste <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804">Utzi <ph name="ROUTE_TITLE" /> (<ph name="RECEIVER_NAME" />) hargailura igortzeari</translation>
+<translation id="5840658767386246331">Bilatu Google-n</translation>
 <translation id="5841296711770970362">Joan hurrengo pistara</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> gailuaren wifi-gunea aktibatuta dago, eta ez dago gailurik konektatuta</translation>
 <translation id="584525477304726060">Leihoa maximizatzeko, eduki ezazu sakatuta</translation>
@@ -1895,6 +1898,7 @@ Berriki instalatu da</translation>
 <translation id="7228968829656641943">Pantailan bilatzeko, hautatu hau. Teklatuaren bidez nabigatzeko, sakatu tabuladorea eta, gero, zuriunea.</translation>
 <translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> guztira</translation>
 <translation id="7239814253344511868">Saguaren 2 botoiak</translation>
+<translation id="7240636904654154599">Sortu da Google-ko kalkulu-orria</translation>
 <translation id="7244725679040769470">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio. Konektatu gailua korrontera.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook hau berrabiarazi egin behar da eguneratzea aplikatzeko. Baliteke minutu bat behar izatea.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2405,6 +2409,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8921624153894383499">Google-ren Laguntzailea zerbitzuak ezin du erabili hizkuntza hori.</translation>
 <translation id="8926951137623668982">Apala beti dago ezkutatuta</translation>
 <translation id="8929566928381252430">"Blok maius" erabili nahi duzu? Erabili</translation>
+<translation id="8929623844713377237">Sortu da kontaktua</translation>
 <translation id="8934418770423095813">Sortu Google-ko dokumentu bat</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxategi}other{# fitxategi}}</translation>
 <translation id="8936501819958976551">desaktibatuta</translation>

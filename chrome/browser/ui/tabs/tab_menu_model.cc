@@ -152,7 +152,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
         commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
             tab_strip->profile());
     if (commerce::ExistingComparisonTableSubMenuModel::ShouldShowSubmenu(
-            tab_strip->GetActiveWebContents()->GetLastCommittedURL(),
+            tab_strip->GetWebContentsAt(index)->GetLastCommittedURL(),
             product_specs_service)) {
       // Create submenu with existing comparison tables.
       add_to_existing_comparison_table_submenu_ =

@@ -459,7 +459,6 @@
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">आणखी तपशील</translation>
 <translation id="3123734510202723619">घोषणा</translation>
-<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> यांनी “<ph name="TAB_NAME" />” टॅब बदलला आहे</translation>
 <translation id="3148237711805373460">मला तिथे न्या</translation>
 <translation id="314939179385989105">Chrome चे होम पेज</translation>
 <translation id="3158667104057012316">मॅन्युअल ऑर्डरनुसार क्रमाने लावत आहे</translation>
@@ -821,6 +820,7 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT_ONE" /> टॅबचा टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.}other{नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT_MANY" /> टॅबचा टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.}}</translation>
 <translation id="4837753911714442426">पेज प्रिंट करण्‍यासाठी पर्याय उघडा</translation>
 <translation id="4844633725025837809">अतिरिक्त सुरक्षिततेसाठी, पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी तुमच्या डिव्हाइसवर एंक्रिप्ट करा</translation>
+<translation id="4849731766219625109">तुमचे <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाते वापरा</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="4852014461738377247">साइन इन करत आहे\u2026</translation>
 <translation id="4860895144060829044">कॉल करा</translation>
@@ -840,14 +840,12 @@
 <translation id="4910889077668685004">पेमेंट ॲप्स</translation>
 <translation id="4912413785358399818">टॅब हलवा</translation>
 <translation id="4913169188695071480">रिफ्रेश करणे थांबवा</translation>
-<translation id="4918086044614829423">स्वीकारा</translation>
 <translation id="4925120120285606924">स्क्रीनशॉट <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">तुमचे पासवर्ड एखादी मजकूर फाइल म्हणून एक्सपोर्ट आणि डाउनलोड केले जातील. गंतव्य फोल्डरचा अ‍ॅक्सेस असलेल्या कोणालाही आणि कोणत्याही अ‍ॅपसाठी ते दृश्यमान असतील.</translation>
 <translation id="4926901776383726965">ऑफलाइन पाहण्यासाठी किंवा इतर अ‍ॅप्समध्ये शेअर करण्यासाठी तुम्ही इमेज आणि फाइल सेव्ह करू शकता</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> द्वारे व्यवस्थापित केलेल्या खात्यामधून तुम्ही साइन आउट करत असल्यामुळे, या डिव्हाइसवरून Chrome डेटा हटवला जाईल. तो तुमच्या Google खात्यामध्ये तसाच राहिल.</translation>
 <translation id="4943703118917034429">आभासी वास्तविकता</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
-<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” टॅब गट आता उपलब्ध नाही</translation>
 <translation id="4957722034734105353">अधिक जाणून घ्या...</translation>
 <translation id="4961107849584082341">या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>
 <translation id="4964614743143953889">Chrome तुम्हाला असुरक्षित साइट आणि डाउनलोडविषयी चेतावणी देते</translation>
@@ -966,7 +964,6 @@
 <translation id="5526281268548144413">एकाहून अधिक विंडोवर बंद केले जाऊ शकत नाहीत</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
-<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> हे “<ph name="TAB_GROUP_NAME" />” टॅब गटामध्ये सामील झाले आहेत</translation>
 <translation id="5554520618550346933">तुम्ही पासवर्ड वापरता, तेव्हा तो ऑनलाइन प्रकाशित झाला असल्यास Chrome तुम्हाला चेतावणी देते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे या गोष्टी एंक्रिप्ट केल्या जातात, जेणेकरून Google च्या समावेशासह इतर कोणीही त्या वाचू शकणार नाही.</translation>
 <translation id="5555525474779371165">तुमचे सुरक्षित ब्राउझिंग संरक्षण निवडा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
@@ -1183,7 +1180,6 @@
 <translation id="6481963882741794338">पर्सनलायझेशन आणि इतर हेतूंसाठी Chrome व इतर Google सेवा लिंक करा</translation>
 <translation id="6482749332252372425">स्टोरेज स्थानाच्या अभावामुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
 <translation id="6486420406192123355">ही फाइल असुरक्षित कनेक्शन वापरणाऱ्या साइटवरील आहे</translation>
-<translation id="6495590690749880440">टॅब गट उघडायचा आहे का?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{फाइल डाउनलोड केली}other{# डाउनलोड पूर्ण झाले}}</translation>
 <translation id="6508722015517270189">Chrome रीस्टार्ट करा</translation>
 <translation id="6518133107902771759">सत्यापित करा</translation>
@@ -1562,6 +1558,7 @@
 <translation id="8073388330009372546">नवीन टॅबमध्ये इमेज उघडा</translation>
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8078096376109663956">फक्त मजकूर शेअर करा</translation>
+<translation id="8078348702936632821">हा शॉर्टकट पिन करा</translation>
 <translation id="8084114998886531721">सेव्ह केलेले पासवर्ड</translation>
 <translation id="8084285576995584326">तुमच्या Google खाते चा डेटा नियंत्रित करा</translation>
 <translation id="8084864785646838999">तुमचा काही इतिहास कदाचित इथे दिसणार नाही. तुमचा सर्व Chrome इतिहास पाहण्यासाठी, संपूर्ण Chrome इतिहास उघडा. तसेच, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाचे इतर प्रकार असू शकतात.</translation>
@@ -1617,7 +1614,6 @@
 <translation id="8282297628636750033">शक्य असेल तेव्हा, साइटवर गडद थीम लागू करा</translation>
 <translation id="8282950411412455249">सुरक्षा सेटिंग्जवर जा</translation>
 <translation id="8306751933352925837">पासवर्ड लवकरच या डिव्हाइसवर काम करणे थांबवतील. तुमचे पासवर्ड वापरणे सुरू ठेवण्यासाठी, Google Play सेवा अपडेट करा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
-<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> यांनी “<ph name="TAB_NAME" />” टॅब काढून टाकला आहे</translation>
 <translation id="8310451567823644042">पासवर्ड लवकरच काम करणे थांबवतील</translation>
 <translation id="831192587911042850">तुम्ही फॉलो करत असलेल्या वेबसाइटच्या सूचीमध्ये सध्याची वेबसाइट जोडते.</translation>
 <translation id="8320212361750431956">अलीकडील अ‍ॅक्टिव्हिटी</translation>

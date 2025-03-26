@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -26,19 +28,22 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
      * @param tabModelSupplier The supplier of the tab model.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
+     * @param context The {@link Context} that the coordinator resides in.
      */
     protected TabGroupOverflowMenuCoordinator(
             int menuLayout,
             OnItemClickedCallback<Token> onItemClickedCallback,
             Supplier<TabModel> tabModelSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @NonNull CollaborationService collaborationService) {
+            @NonNull CollaborationService collaborationService,
+            @NonNull Context context) {
         super(
                 menuLayout,
                 onItemClickedCallback,
                 tabModelSupplier,
                 tabGroupSyncService,
-                collaborationService);
+                collaborationService,
+                context);
     }
 
     @Override

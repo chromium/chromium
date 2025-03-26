@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_split.h"
 
 namespace chromecast {
@@ -37,15 +38,17 @@ void ForkAndRunLogProcess(std::string log_process_path,
   int pipefds[2];
   pid_t cpid;
   if (pipe(pipefds) == -1) {
-    fprintf(stderr, "Could not create pipes for logging process: %s\n",
-            strerror(errno));
+    UNSAFE_TODO(fprintf(stderr,
+                        "Could not create pipes for logging process: %s\n",
+                        strerror(errno)));
     fflush(stderr);
     return;
   }
   cpid = fork();
   if (cpid == -1) {
-    fprintf(stderr, "Could not fork new process for logging process: %s\n",
-            strerror(errno));
+    UNSAFE_TODO(fprintf(stderr,
+                        "Could not fork new process for logging process: %s\n",
+                        strerror(errno)));
     fflush(stderr);
     close(pipefds[0]);
     close(pipefds[1]);
@@ -60,8 +63,8 @@ void ForkAndRunLogProcess(std::string log_process_path,
     int ret =
         execv(log_process_path.c_str(), const_cast<char* const*>(&argv[0]));
     if (ret == -1) {
-      fprintf(stderr, "Could not start process: %s error: %s\n",
-              log_process_path.c_str(), strerror(errno));
+      UNSAFE_TODO(fprintf(stderr, "Could not start process: %s error: %s\n",
+                          log_process_path.c_str(), strerror(errno)));
       _exit(1);
     }
   } else {

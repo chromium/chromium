@@ -25,6 +25,19 @@ class DISPLAY_EXPORT DisplayInfo final {
               const gfx::Vector2dF& pixels_per_inch,
               DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology,
               const std::string& label);
+
+  // This should only be used in headless mode when synthesized display ids are
+  // used in place of the ones derived from the real monitor information.
+  DisplayInfo(int64_t id,
+              const MONITORINFOEX& monitor_info,
+              float device_scale_factor,
+              float sdr_white_level,
+              Display::Rotation rotation,
+              float display_frequency,
+              const gfx::Vector2dF& pixels_per_inch,
+              DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology,
+              const std::string& label);
+
   DisplayInfo(const DisplayInfo& other);
   ~DisplayInfo();
 

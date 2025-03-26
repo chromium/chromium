@@ -138,6 +138,18 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     this.hideHelpBubble(OS_WIDGET_TOGGLE_ELEMENT_ID);
   }
 
+  private onGeolocationToggleChange_(event: Event) {
+    const enabled = (event.target as SettingsToggleButtonElement).checked;
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.Geolocation' + (enabled ? '.Enabled' : '.Disabled'));
+  }
+
+  private onMicrophoneToggleChange_(event: Event) {
+    const enabled = (event.target as SettingsToggleButtonElement).checked;
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.Microphone' + (enabled ? '.Enabled' : '.Disabled'));
+  }
+
   private async onShortcutUpdated_(event: CustomEvent<string>) {
     this.shortcutInput_ = event.detail;
     await this.browserProxy_.setGlicShortcut(this.shortcutInput_);
@@ -183,7 +195,10 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   private onTabAccessToggleChange_(event: CustomEvent) {
     const target = event.target as SettingsToggleButtonElement;
-    this.tabAccessToggleExpanded_ = target.checked;
+    const enabled = target.checked;
+    this.tabAccessToggleExpanded_ = enabled;
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.TabContext' + (enabled ? '.Enabled' : '.Disabled'));
   }
 
   private onActivityRowClick_() {

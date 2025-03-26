@@ -14,7 +14,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="@dimen/price_insights_general_padding"
-    android:background="@drawable/price_insights_sheet_content_background">
+    android:background="@macro/sheet_container_bg_color">
     <TextView
         android:id="@+id/price_history_title"
         android:focusable="true"

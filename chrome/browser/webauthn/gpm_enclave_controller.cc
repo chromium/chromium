@@ -573,15 +573,16 @@ void GPMEnclaveController::OnAccountStateDownloaded(
   download_account_state_request_.reset();
   account_state_timeout_.reset();
 
-  FIDO_LOG(EVENT) << "Download account state result: " << ToString(result.state)
-                  << ", key_version: " << result.key_version.value_or(0)
-                  << ", has PIN: " << result.gpm_pin_metadata.has_value()
-                  << ", expiry: "
-                  << (result.gpm_pin_metadata.has_value()
-                          ? base::TimeFormatAsIso8601(
-                                result.gpm_pin_metadata->expiry)
-                          : "<none>")
-                  << ", iCloud Keychain keys: " << result.icloud_keys.size();
+  FIDO_LOG(EVENT)
+      << "Download account state result: " << ToString(result.state)
+      << ", key_version: " << result.key_version.value_or(0)
+      << ", has PIN: " << result.gpm_pin_metadata.has_value() << ", expiry: "
+      << (result.gpm_pin_metadata &&
+                  result.gpm_pin_metadata->usable_pin_metadata
+              ? base::TimeFormatAsIso8601(
+                    result.gpm_pin_metadata->usable_pin_metadata->expiry)
+              : "<none>")
+      << ", iCloud Keychain keys: " << result.icloud_keys.size();
 
   if (enclave_manager_->is_ready() &&
       enclave_manager_->ConsiderSecurityDomainState(result,
@@ -592,10 +593,6 @@ void GPMEnclaveController::OnAccountStateDownloaded(
     }
     return;
   }
-
-  FIDO_LOG(EVENT) << "Account state: " << ToString(result.state)
-                  << ", has PIN: " << result.gpm_pin_metadata.has_value()
-                  << ", iCloud Keychain keys: " << result.icloud_keys.size();
 
   switch (result.state) {
     case Result::State::kError:
@@ -614,8 +611,7 @@ void GPMEnclaveController::OnAccountStateDownloaded(
       SetAccountState(AccountState::kIrrecoverable);
       break;
   }
-
-  if (result.gpm_pin_metadata) {
+  if (result.gpm_pin_metadata && result.gpm_pin_metadata->usable_pin_metadata) {
     pin_metadata_ = std::move(result.gpm_pin_metadata);
   }
   security_domain_icloud_recovery_keys_ = std::move(result.icloud_keys);

@@ -338,8 +338,9 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
     simple_menu_items_.push_back(AddChildView(BuildNewTabInGroupButton()));
     simple_menu_items_.push_back(
         AddChildView(BuildMoveGroupToNewWindowButton()));
+    AddChildView(BuildSeparator());
+    simple_menu_items_.push_back(AddChildView(BuildUngroupButton()));
     simple_menu_items_.push_back(AddChildView(BuildHideGroupButton()));
-
   } else {
     simple_menu_items_.push_back(AddChildView(BuildNewTabInGroupButton()));
     simple_menu_items_.push_back(

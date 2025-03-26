@@ -135,6 +135,13 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
       if (!recorded_score.has_value()) {
         continue;
       }
+      const std::string* revoked_status =
+          dict.FindString(safety_hub::kRevokedStatusDictKeyStr);
+      if (revoked_status && *revoked_status == safety_hub::kFalsePositiveStr) {
+        base::UmaHistogramEnumeration(kRevocationResultHistogram,
+                                      RevocationResult::kAlreadyFalsePositive);
+        continue;
+      }
       const double new_score = site_engagement_service_->GetScore(url);
       if (recorded_score.value() < new_score) {
         dict.Set(safety_hub::kRevokedStatusDictKeyStr,

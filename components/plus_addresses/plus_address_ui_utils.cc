@@ -30,4 +30,11 @@ std::u16string GetOriginForDisplay(const PlusProfile& plus_address) {
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 
+std::u16string GetOriginForDisplay(const url::Origin& origin) {
+  // TODO: crbug.com/399683240 - Add support for Android apps.
+
+  return url_formatter::FormatOriginForSecurityDisplay(
+      origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+}
+
 }  // namespace plus_addresses

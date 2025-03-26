@@ -53,6 +53,14 @@ class ConnectorsServiceBase {
 
   virtual std::optional<ReportingSettings> GetReportingSettings();
 
+  virtual std::optional<std::string> GetBrowserDmToken() const = 0;
+
+  // Obtain a ClientMetadata instance corresponding to the current
+  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
+  // based service provider and false when using a local service provider.
+  virtual std::unique_ptr<ClientMetadata> BuildClientMetadata(
+      bool is_cloud) = 0;
+
 #if !BUILDFLAG(IS_CHROMEOS)
   std::optional<std::string> GetProfileDmToken() const;
 #endif

@@ -108,8 +108,7 @@ TestingProfile* StartSessionOfTypeWithProfile(
   TestingProfile* profile = session_type == TestSessionType::kGuestSession
                                 ? profile_manager.CreateGuestProfile()
                                 : profile_manager.CreateTestingProfile(
-                                      user->GetAccountId().GetUserEmail(),
-                                      /*is_main_profile=*/true);
+                                      user->GetAccountId().GetUserEmail());
   ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
   return profile;
 }

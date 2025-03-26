@@ -149,6 +149,7 @@
 <translation id="1455242230282523554">மொழி அமைப்புகளைக் காட்டும்</translation>
 <translation id="1459693405370120464">வானிலை</translation>
 <translation id="1460620680449458626">ஒலி முடக்கப்பட்டுள்ளது.</translation>
+<translation id="1462439140224375968">Google ஆவணம் உருவாக்கப்பட்டது</translation>
 <translation id="14648076227129703">கேமராவைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ஆப்ஸுக்கும், ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் கேமராவிற்கான அணுகலை இது வழங்கும்</translation>
 <translation id="1467432559032391204">இடது</translation>
 <translation id="146902737843070955">உங்கள் நிர்வாகி இந்த மாற்றத்தைக் கோரியுள்ளார்</translation>
@@ -593,6 +594,7 @@
 <translation id="301584155502740476">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="3017079585324758401">பின்புலம்</translation>
 <translation id="3018135054368884502">மீடியாவை முன்னோக்கி நகர்த்து</translation>
+<translation id="3026897869154397692">கேலெண்டரில் சேர்க்கப்பட்டது</translation>
 <translation id="3033545621352269033">இயக்கப்பட்டுள்ளது</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> உடன் ஒன்றிணைக்கும்</translation>
 <translation id="3036649622769666520">ஃபைல்களைத் திற</translation>
@@ -1481,6 +1483,7 @@
 <translation id="5825969630400862129">இணைக்கப்பட்ட சாதனங்களின் அமைப்புகள்</translation>
 <translation id="5830180081891717894">மேலும் <ph name="WINDOWS" /></translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புவதை நிறுத்து</translation>
+<translation id="5840658767386246331">Google மூலம் தேடுக</translation>
 <translation id="5841296711770970362">அடுத்த டிராக்குக்குச் செல்</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ஹாட்ஸ்பாட் இயக்கப்பட்டுள்ளது, சாதனம் எதுவும் இணைக்கப்படவில்லை</translation>
 <translation id="584525477304726060">பெரிதாக்க, தொட்டுப் பிடிக்கவும்</translation>
@@ -1894,6 +1897,7 @@
 <translation id="7228968829656641943">உங்கள் திரையில் தேட தேர்ந்தெடுங்கள். கீபோர்டு மூலம் செல்ல Tab அழுத்திவிட்டு space பட்டனை அழுத்துங்கள்.</translation>
 <translation id="7229029500464092426">நினைவக உபயோகம்: <ph name="AVAILABLE_MEMORY" /> | மொத்த நினைவகம்: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">இரண்டு மவுஸ் பட்டன்களும்</translation>
+<translation id="7240636904654154599">Google விரிதாள் உருவாக்கப்பட்டது</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% பேட்டரி மீதமுள்ளது. சாதனத்தைச் சார்ஜ் செய்யவும்.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. புதுப்பிப்பைப் பயன்படுத்த இந்த Chromebookகை மீண்டும் தொடங்க வேண்டும். இதற்கு 1 நிமிடம் வரை ஆகலாம்.</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
@@ -2404,6 +2408,7 @@
 <translation id="8921624153894383499">Google அசிஸ்டண்ட், இந்த மொழியை ஆதரிக்கவில்லை.</translation>
 <translation id="8926951137623668982">ஷெல்ஃப் எப்போதும் மறைக்கப்படும்</translation>
 <translation id="8929566928381252430">Caps Lock பட்டனைப் பயன்படுத்த வேண்டுமா? இதைப் பயன்படுத்துங்கள்</translation>
+<translation id="8929623844713377237">தொடர்பு உருவாக்கப்பட்டது</translation>
 <translation id="8934418770423095813">Google ஆவணத்தை உருவாக்கு</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ஃபைல்}other{# ஃபைல்கள்}}</translation>
 <translation id="8936501819958976551">முடக்கப்பட்டது</translation>

@@ -557,7 +557,7 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
   // produces multiple surfaces with the same |buffer_id|, so we shouldn't
   // remove the timestamp from the cache.
   const auto it = buffer_id_to_timestamp_.Peek(buffer_id);
-  CHECK(it != buffer_id_to_timestamp_.end(), base::NotFatalUntil::M130);
+  CHECK(it != buffer_id_to_timestamp_.end());
   base::TimeDelta timestamp = it->second;
 
   // Find the frame associated with the surface. We won't erase it from

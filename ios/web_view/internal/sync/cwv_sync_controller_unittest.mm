@@ -96,7 +96,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
   CWVWebView.skipAccountStorageCheckEnabled = true;
   AccountInfo account_info =
       identity_test_environment_.MakeAccountAvailable(kTestEmail);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.SetPersistentAuthError();
   ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
       &pref_service_, &sync_service_));

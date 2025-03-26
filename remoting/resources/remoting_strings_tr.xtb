@@ -40,6 +40,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="2758123043070977469">Kimlik doğrulanırken bir sorun oluştu, lütfen tekrar giriş yapın.</translation>
 <translation id="2803375539583399270">PIN girin</translation>
 <translation id="2919669478609886916">Bu makineyi şu anda başka bir kullanıcıyla paylaşıyorsunuz. Paylaşmaya devam etmek istiyor musunuz?</translation>
+<translation id="2929683002824598593">Cihazı paylaş</translation>
 <translation id="2939145106548231838">Ana makineyle kimlik doğrulaması yap</translation>
 <translation id="3027681561976217984">Dokunma modu</translation>
 <translation id="3106379468611574572">Uzaktan bağlanacağınız bilgisayar, bağlantı isteklerine yanıt vermiyor. Lütfen bu bilgisayarın çevrimiçi olduğunu doğrulayın ve tekrar deneyin.</translation>
@@ -117,10 +118,12 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="6178645564515549384">Uzaktan yardım için yerel mesajlaşma ana makinesi</translation>
 <translation id="618120821413932081">Uzak cihazın çözünürlüğünü pencereyle eşleşecek şekilde güncelle</translation>
 <translation id="6223301979382383752">Ekran Kaydı Tercihlerini Aç</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> kullanıcısı, ekranınızı görüp klavye ve farenizi kontrol etmek için erişim istedi. Cihazınızı paylaşmak ister misiniz?</translation>
 <translation id="6284412385303060032">Konsol mantık ekranında çalışan ana makine, kullanıcı tanımlı oturumda çalışan bir ana makineye geçerek perde modunu desteklemek için kapandı.</translation>
 <translation id="6542902059648396432">Sorun bildir…</translation>
 <translation id="6583902294974160967">Destek</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del Gönder</translation>
+<translation id="6625262630437221505">{0,plural, =1{İşlem yapmazsanız cihazınız # saniye sonra otomatik olarak paylaşıma başlar.}other{İşlem yapmazsanız cihazınız # saniye sonra otomatik olarak paylaşıma başlar.}}</translation>
 <translation id="6654753848497929428">Paylaş</translation>
 <translation id="677755392401385740">Ana makine bu kullanıcı için başlatıldı: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> istemcisinde URL açmak için yardımcı uygulama</translation>

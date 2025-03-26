@@ -22,6 +22,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/cyan_600_color.colorset/Contents.json",
     "Assets.xcassets/cyan_700_color.colorset/Contents.json",
     "Assets.xcassets/darker_scrim_background_color.colorset/Contents.json",
+    "Assets.xcassets/destination_highlight_color.colorset/Contents.json",
     "Assets.xcassets/disabled_tint_color.colorset/Contents.json",
     "Assets.xcassets/favicon_background_color.colorset/Contents.json",
     "Assets.xcassets/green_100_color.colorset/Contents.json",

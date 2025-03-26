@@ -429,6 +429,7 @@ test("test_libaom") {
   deps = [
     ":libaom",
     "//testing/gtest",
+    "//third_party/libyuv",
   ]
 
   defines = [ "CHROMIUM" ]

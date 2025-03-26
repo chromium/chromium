@@ -14,10 +14,12 @@ iframe {
   width: 96vw;
   padding-right: 24px;
   padding-left: 24px;
+  top: 0;
+  left: 0;
 }
 
 :host(:not([should-show])) iframe {
-  position: absolute;
+  position: fixed;
   z-index: -1;
   opacity: 0;
 }

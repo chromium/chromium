@@ -516,6 +516,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7787950393032327779">另一部電腦 (<ph name="PROCESS_ID" />) 的 Google Chrome 處理程序 (<ph name="HOST_NAME" />) 正在使用這個設定檔。Chrome 已鎖定這個設定檔，確保其不致受損。如果您確定其他處理程序目前未使用這個設定檔，請解除鎖定，然後重新啟動 Chrome。</translation>
 <translation id="7801699035218095297">Google Chrome 正在嘗試複製密碼。如果您同意，請輸入 Windows 密碼。</translation>
 <translation id="7808348361785373670">從 Chrome 中移除…</translation>
+<translation id="782480918904119604">如要將此設定檔與 Glic 配搭使用，請開啟 Chrome 並登入</translation>
 <translation id="7825851276765848807">不明錯誤導致安裝失敗，請再次下載 Google Chrome。</translation>
 <translation id="7845233973568007926">多謝安裝。您必須先重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7872446069773932638">正在下載… 剩餘 <ph name="SECONDS" /> 秒</translation>

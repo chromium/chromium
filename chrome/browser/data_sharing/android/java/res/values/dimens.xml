@@ -19,10 +19,6 @@ found in the LICENSE file.
     <dimen name="shared_image_tiles_text_padding">6dp</dimen>
     <dimen name="default_bg_elevation">@dimen/default_elevation_5</dimen>
 
-    <!-- Dimens for recipient invitation modal -->
-    <dimen name="data_sharing_invitation_footer_width">300dp</dimen>
-    <dimen name="data_sharing_invitation_button_margin">8dp</dimen>
-
     <!-- Dimens for recent activity screen -->
     <dimen name="recent_activity_avatar_container_size">40dp</dimen>
     <dimen name="recent_activity_avatar_size">40dp</dimen>

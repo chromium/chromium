@@ -640,7 +640,7 @@ void VdVideoDecodeAccelerator::OnFrameReleased(
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   auto it = frame_token_to_picture_id_.find(origin_frame->tracking_token());
-  CHECK(it != frame_token_to_picture_id_.end(), base::NotFatalUntil::M130);
+  CHECK(it != frame_token_to_picture_id_.end());
   int32_t picture_buffer_id = it->second;
   frame_token_to_picture_id_.erase(it);
 

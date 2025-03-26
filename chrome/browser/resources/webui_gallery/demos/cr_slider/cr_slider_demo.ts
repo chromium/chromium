@@ -47,17 +47,16 @@ export class CrSliderDemoElement extends CrLitElement {
   static override get properties() {
     return {
       basicValue_: {type: Number},
-      disabledTicks_: {type: Array},
       showMarkers_: {type: Boolean},
       tickedValue_: {type: Number},
       ticks_: {type: Array},
     };
   }
 
-  protected basicValue_: number = 5;
-  protected showMarkers_: boolean = false;
-  protected tickedValue_: number = 0;
-  protected ticks_: SliderTick[] = createTicks(0, 5, 5);
+  protected accessor basicValue_: number = 5;
+  protected accessor showMarkers_: boolean = false;
+  protected accessor tickedValue_: number = 0;
+  protected accessor ticks_: SliderTick[] = createTicks(0, 5, 5);
 
   protected getMarkerCount_(): number {
     if (!this.showMarkers_) {

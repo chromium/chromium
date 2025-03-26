@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AnnotationTool, ViewerInkHostElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -24,7 +24,7 @@ function contentElement(): HTMLElement {
 }
 
 function isAnnotationMode(): boolean {
-  return viewer.$.toolbar.annotationMode;
+  return viewer.$.toolbar.annotationMode === AnnotationMode.DRAW;
 }
 
 chrome.test.runTests([
@@ -39,7 +39,7 @@ chrome.test.runTests([
     chrome.test.assertEq('EMBED', contentElement().tagName);
 
     // Enter annotation mode.
-    viewer.$.toolbar.toggleAnnotation();
+    viewer.$.toolbar.setAnnotationMode(AnnotationMode.DRAW);
     await viewer.loaded;
     chrome.test.assertEq('VIEWER-INK-HOST', contentElement().tagName);
     chrome.test.succeed();
@@ -444,7 +444,7 @@ chrome.test.runTests([
   async function testExitAnnotationMode() {
     chrome.test.assertTrue(isAnnotationMode());
     // Exit annotation mode.
-    viewer.$.toolbar.toggleAnnotation();
+    viewer.$.toolbar.setAnnotationMode(AnnotationMode.NONE);
     await viewer.loaded;
     chrome.test.assertEq('EMBED', contentElement().tagName);
     chrome.test.succeed();

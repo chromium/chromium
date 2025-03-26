@@ -32,7 +32,9 @@
     [HTMLConstructor] constructor();
 
     [CEReactions, Reflect] attribute boolean disabled;
-    readonly attribute HTMLFormElement? form;
+    // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
+    // https://github.com/whatwg/html/pull/10995
+    [ImplementedAs=formForBinding] readonly attribute HTMLElement? form;
     [CEReactions] attribute DOMString label;
     [CEReactions, Reflect=selected] attribute boolean defaultSelected;
     [ImplementedAs=selectedForBinding] attribute boolean selected;

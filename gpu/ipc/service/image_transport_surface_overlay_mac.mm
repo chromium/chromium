@@ -269,7 +269,6 @@ void ImageTransportSurfaceOverlayMacEGL::CommitPresentedFrameToCA() {
 
   // Update the CALayer tree in the GPU process.
   {
-    base::TimeTicks before_transaction_time = base::TimeTicks::Now();
     base::TimeTicks display_time;
     base::TimeDelta frame_interval;
 #if BUILDFLAG(IS_MAC)
@@ -280,12 +279,6 @@ void ImageTransportSurfaceOverlayMacEGL::CommitPresentedFrameToCA() {
                  (display_time - base::TimeTicks::Now()).InMicroseconds());
     ca_layer_tree_coordinator_->CommitPresentedFrameToCA(frame_interval,
                                                          display_time);
-
-    base::TimeDelta transaction_time =
-        base::TimeTicks::Now() - before_transaction_time;
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "GPU.IOSurface.CATransactionTimeUs", transaction_time,
-        kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
   }
 }
 

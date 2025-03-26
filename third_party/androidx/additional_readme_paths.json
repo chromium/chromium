@@ -31,6 +31,7 @@
     "committed/libs/androidx_compose_material3_material3_android",
     "committed/libs/androidx_compose_material_material_ripple_android",
     "committed/libs/androidx_compose_runtime_runtime_android",
+    "committed/libs/androidx_compose_runtime_runtime_annotation_android",
     "committed/libs/androidx_compose_runtime_runtime_saveable_android",
     "committed/libs/androidx_compose_ui_ui_android",
     "committed/libs/androidx_compose_ui_ui_geometry_android",

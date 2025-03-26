@@ -268,6 +268,13 @@ void HTMLFormControlElement::DidChangeForm() {
     formOwner()->InvalidateDefaultButtonStyle();
 }
 
+// Note HTMLFormControlElement also inherits from HTMLElement, which has its own
+// formForBinding for non-form control elements. This function is needed to
+// ensure we are calling the correct version from ListedElement.
+HTMLElement* HTMLFormControlElement::formForBinding() const {
+  return ListedElement::RetargetedForm();
+}
+
 HTMLFormElement* HTMLFormControlElement::formOwner() const {
   return ListedElement::Form();
 }

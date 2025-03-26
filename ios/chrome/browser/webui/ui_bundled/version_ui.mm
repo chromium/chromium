@@ -53,6 +53,9 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
   html_source->AddString(version_ui::kOSType,
                          std::string(version_info::GetOSType()));
 
+  // Always empty on iOS.
+  html_source->AddString(version_ui::kVersionSuffix, std::string());
+
   html_source->AddLocalizedString(version_ui::kCompany,
                                   IDS_IOS_ABOUT_VERSION_COMPANY_NAME);
   html_source->AddLocalizedString(version_ui::kCopyLabel,

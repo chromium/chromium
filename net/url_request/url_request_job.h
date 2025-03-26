@@ -136,6 +136,10 @@ class NET_EXPORT URLRequestJob {
   // for more information on the difference.
   virtual void GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
 
+  // Populates load timing internal information.
+  virtual void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const;
+
   // Gets the remote endpoint that the network stack is currently fetching the
   // URL from. Returns true and fills in |endpoint| if it is available; returns
   // false and leaves |endpoint| unchanged if it is unavailable.

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
+#include "base/test/fuzztest_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -35,6 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -697,6 +699,13 @@ TEST(TriggerRegistrationTest, SerializeAggregatableNamedBudgetCandidate) {
                 base::test::IsJson(test_case.expected_json));
   }
 }
+
+void Parses(base::Value value) {
+  std::ignore = TriggerRegistration::Parse(std::move(value));
+}
+
+FUZZ_TEST(TriggerRegistrationTest, Parses)
+    .WithDomains(fuzztest::Arbitrary<base::Value>());
 
 }  // namespace
 }  // namespace attribution_reporting

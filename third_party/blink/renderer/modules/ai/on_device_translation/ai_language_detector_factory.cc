@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_availability.h"
+#include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -51,52 +52,55 @@ class RejectOnDestructionHelper {
   Persistent<ScriptPromiseResolver<T>> resolver_;
 };
 
-class AILanguageDetectorCreateTask
-    : public GarbageCollected<AILanguageDetectorCreateTask> {
+class LanguageDetectorCreateTask
+    : public GarbageCollected<LanguageDetectorCreateTask>,
+      public ExecutionContextClient,
+      public AIContextObserver<AILanguageDetector> {
  public:
-  AILanguageDetectorCreateTask(
+  LanguageDetectorCreateTask(
       ScriptState* script_state,
-      ExecutionContext* execution_context,
       scoped_refptr<base::SequencedTaskRunner>& task_runner,
       ScriptPromiseResolver<AILanguageDetector>* resolver,
       LanguageDetectionModel* model,
       const AILanguageDetectorCreateOptions* options)
-      : task_runner_(task_runner),
-        script_state_(script_state),
+      : ExecutionContextClient(ExecutionContext::From(script_state)),
+        AIContextObserver(script_state,
+                          this,
+                          resolver,
+                          options->getSignalOr(nullptr)),
+        task_runner_(task_runner),
         resolver_(resolver),
-        language_detection_model_(model),
-        abort_signal_(options->getSignalOr(nullptr)) {
+        language_detection_model_(model) {
     if (options->hasMonitor()) {
-      monitor_ = MakeGarbageCollected<AICreateMonitor>(execution_context,
+      monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
                                                        task_runner_);
       std::ignore = options->monitor()->Invoke(nullptr, monitor_);
-    }
-    if (options->hasSignal()) {
-      CHECK(!options->signal()->aborted());
-      abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
-          &AILanguageDetectorCreateTask::OnAborted, WrapWeakPersistent(this)));
     }
   }
 
   void CreateDetector(base::File model_file) {
     language_detection_model_->LoadModelFile(
         std::move(model_file),
-        WTF::BindOnce(&AILanguageDetectorCreateTask::OnModelLoaded,
+        WTF::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
                       WrapPersistent(this)));
   }
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(script_state_);
+  void Trace(Visitor* visitor) const override {
+    ExecutionContextClient::Trace(visitor);
+    AIContextObserver::Trace(visitor);
     visitor->Trace(resolver_);
     visitor->Trace(monitor_);
     visitor->Trace(language_detection_model_);
-    visitor->Trace(abort_signal_);
-    visitor->Trace(abort_handle_);
   }
+
+  void ResetReceiver() override { resolver_ = nullptr; }
 
  private:
   void OnModelLoaded(base::expected<LanguageDetectionModel*,
                                     DetectLanguageError> maybe_model) {
+    if (!resolver_) {
+      return;
+    }
     if (maybe_model.has_value()) {
       LanguageDetectionModel* model = maybe_model.value();
       // TODO (crbug.com/383022111): Pass the real download progress rather than
@@ -115,21 +119,12 @@ class AILanguageDetectorCreateTask
       }
     }
   }
-  void OnAborted() {
-    if (!resolver_) {
-      return;
-    }
-    resolver_->Reject(abort_signal_->reason(script_state_));
-  }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  Member<ScriptState> script_state_;
   Member<AICreateMonitor> monitor_;
   Member<ScriptPromiseResolver<AILanguageDetector>> resolver_;
   Member<LanguageDetectionModel> language_detection_model_;
-  Member<AbortSignal> abort_signal_;
-  Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 
 }  // namespace
@@ -205,13 +200,13 @@ ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<AILanguageDetector>>(
           script_state);
-  AILanguageDetectorCreateTask* create_task =
-      MakeGarbageCollected<AILanguageDetectorCreateTask>(
-          script_state, GetExecutionContext(), task_runner_, resolver,
-          language_detection_model_, options);
+  LanguageDetectorCreateTask* create_task =
+      MakeGarbageCollected<LanguageDetectorCreateTask>(
+          script_state, task_runner_, resolver, language_detection_model_,
+          options);
   GetLanguageDetectionDriverRemote()->GetLanguageDetectionModel(WTF::BindOnce(
       [](RejectOnDestructionHelper<AILanguageDetector> resolver_holder,
-         AILanguageDetectorCreateTask* create_task, base::File model_file) {
+         LanguageDetectorCreateTask* create_task, base::File model_file) {
         auto resolver(resolver_holder.Take());
         if (!model_file.IsValid()) {
           RejectModelNotAvailable(resolver);

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/api/scripts_internal.h"
@@ -19,6 +20,11 @@
 // Contains helper methods for parsing content script fields.
 
 namespace extensions::script_parsing {
+
+enum class ContentScriptType {
+  kJs,
+  kCss,
+};
 
 // Returns the maximum length allowed in an individual script file. Scripts
 // above this length will not be loaded.
@@ -71,6 +77,12 @@ void ParseGlobs(const std::vector<std::string>* include_globs,
                 const std::vector<std::string>* exclude_globs,
                 UserScript* result);
 
+// Validates that the mime type, deduced from the file extension, is allowed to
+// be used for a content script of a given type.
+bool ValidateMimeTypeFromFileExtension(const base::FilePath& relative_path,
+                                       ContentScriptType content_script_type,
+                                       std::string* error);
+
 // Validates that the claimed file sources in `scripts` actually exist and are
 // UTF-8 encoded. This function must be called on a sequence which allows file
 // I/O.
@@ -78,6 +90,11 @@ bool ValidateFileSources(const UserScriptList& scripts,
                          ExtensionResource::SymlinkPolicy symlink_policy,
                          std::string* error,
                          std::vector<InstallWarning>* warnings);
+
+// Validates that the user script mime types, deduced from the file extensions,
+// are allowed to be used.
+bool ValidateUserScriptMimeTypesFromFileExtensions(const UserScript& script,
+                                                   std::string* error);
 
 // Validates that `match_origin_as_fallback` is legal in relation to the match
 // patterns specified in `url_patterns`. I.e. patterns in `url_patterns` must

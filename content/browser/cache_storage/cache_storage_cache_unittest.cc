@@ -219,9 +219,6 @@ class FailableCacheEntry : public disk_cache::Entry {
   void Close() override { entry_->Close(); }
   std::string GetKey() const override { return entry_->GetKey(); }
   base::Time GetLastUsed() const override { return entry_->GetLastUsed(); }
-  base::Time GetLastModified() const override {
-    return entry_->GetLastModified();
-  }
   int32_t GetDataSize(int index) const override {
     return entry_->GetDataSize(index);
   }

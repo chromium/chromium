@@ -81,7 +81,7 @@ void FakeSession::SetTransport(Transport* transport) {
 
 void FakeSession::Close(ErrorCode error,
                         std::string_view error_details,
-                        const base::Location& error_location) {
+                        const SourceLocation& error_location) {
   closed_ = true;
   error_ = error;
   event_handler_->OnSessionStateChange(CLOSED);
@@ -98,12 +98,9 @@ void FakeSession::Close(ErrorCode error,
           FROM_HERE,
           // Cannot just bind `error_details` as a string view, since the
           // underlying data could be invalidated before the callback is run.
-          base::BindOnce(
-              [](base::WeakPtr<FakeSession> peer, ErrorCode error,
-                 std::string error_details, base::Location error_location) {
-                peer->Close(error, error_details, error_location);
-              },
-              peer, error, std::string(error_details), error_location),
+          // See: crbug.com/376675478
+          base::BindOnce(&FakeSession::Close, peer, error,
+                         std::string(error_details), error_location),
           signaling_delay_);
     }
   }

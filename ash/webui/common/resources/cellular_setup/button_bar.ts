@@ -38,7 +38,7 @@ export class ButtonBarElement extends ButtonBarElementBase {
         value: {},
       },
 
-      Button: {
+      buttonEnum_: {
         type: Object,
         value: Button,
       },

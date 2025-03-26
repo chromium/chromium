@@ -54,8 +54,6 @@ using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 class FormData;
 struct FormDataPredictions;
 
-class RandomizedEncoder;
-
 // FormStructure stores a single HTML form together with the values entered
 // in the fields along with additional information needed by Autofill.
 class FormStructure {
@@ -111,12 +109,6 @@ class FormStructure {
   // defined by the given CreditCardFormCompleteness level.
   bool IsCompleteCreditCardForm(
       CreditCardFormCompleteness credit_card_form_completeness) const;
-
-  // Resets |autofill_count_| and counts the number of auto-fillable fields.
-  // This is used when we receive server data for form fields.  At that time,
-  // we may have more known fields than just the number of fields we matched
-  // heuristically.
-  void UpdateAutofillCount();
 
   // Returns true if this form matches the structural requirements for Autofill.
   [[nodiscard]] bool ShouldBeParsed(LogManager* log_manager = nullptr) const {
@@ -253,9 +245,6 @@ class FormStructure {
   // are included in queries to the Autofill server.
   size_t active_field_count() const;
 
-  // Returns the number of fields that are able to be autofilled.
-  size_t autofill_count() const { return autofill_count_; }
-
   // Used for iterating over the fields.
   std::vector<std::unique_ptr<AutofillField>>::const_iterator begin() const {
     return fields_.begin();
@@ -280,8 +269,6 @@ class FormStructure {
   const url::Origin& main_frame_origin() const { return main_frame_origin_; }
 
   const ButtonTitleList& button_titles() const { return button_titles_; }
-
-  bool has_password_field() const { return has_password_field_; }
 
   // Returns whether the form comes from an HTML form with a <form> tag.
   bool is_form_element() const;
@@ -342,12 +329,6 @@ class FormStructure {
     return developer_engagement_metrics_;
   }
 
-  void set_randomized_encoder(std::unique_ptr<RandomizedEncoder> encoder);
-
-  base::optional_ref<const RandomizedEncoder> randomized_encoder() const {
-    return randomized_encoder_.get();
-  }
-
   const LanguageCode& current_page_language() const {
     return current_page_language_;
   }
@@ -406,8 +387,6 @@ class FormStructure {
 
   // Sets each field's `html_type` and `html_mode` based on the field's
   // `parsed_autocomplete` member.
-  // Sets `has_author_specified_types_` to `true` iff the `parsed_autocomplete`
-  // is available for at least one field.
   void SetFieldTypesFromAutocompleteAttribute();
 
   // Production code only uses the default parameters.
@@ -475,9 +454,6 @@ class FormStructure {
   // trees. For details, see RenderFrameHost::GetMainFrame().
   url::Origin main_frame_origin_;
 
-  // The number of fields able to be auto-filled.
-  size_t autofill_count_ = 0;
-
   // A vector of all the input fields in the form.
   // See FormFieldData::fields.
   std::vector<std::unique_ptr<AutofillField>> fields_;
@@ -485,9 +461,6 @@ class FormStructure {
   // The number of fields that are part of the form signature and that are
   // included in queries to the Autofill server.
   size_t active_field_count_ = 0;
-
-  // True if the form contains at least one password field.
-  bool has_password_field_ = false;
 
   // Indicates whether the client may run the AutofillAI model for this form.
   bool may_run_autofill_ai_model_ = false;
@@ -515,10 +488,6 @@ class FormStructure {
   int developer_engagement_metrics_ = 0;
 
   mojom::SubmissionSource submission_source_ = mojom::SubmissionSource::NONE;
-
-  // The randomized encoder to use to encode form metadata during upload.
-  // If this is nullptr, no randomized metadata will be sent.
-  std::unique_ptr<RandomizedEncoder> randomized_encoder_;
 
   // True iff queries encoded from this form structure should include rich
   // form/field metadata.

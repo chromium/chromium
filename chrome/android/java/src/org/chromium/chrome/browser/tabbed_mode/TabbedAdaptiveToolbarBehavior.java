@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -67,5 +68,10 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     @Override
     public boolean useRawResults() {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+    }
+
+    @Override
+    public @AdaptiveToolbarButtonVariant int getSegmentationDefault() {
+        return AdaptiveToolbarFeatures.getDefaultButtonVariant(mContext);
     }
 }

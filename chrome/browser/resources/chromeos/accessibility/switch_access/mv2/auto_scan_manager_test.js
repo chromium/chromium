@@ -7,7 +7,7 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 UNDEFINED_INTERVAL_DELAY = -1;
 
 /** Test fixture for auto scan manager. */
-SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
+SwitchAccessMV2AutoScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -22,7 +22,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
         Navigator.byItem.moveForward.bind(Navigator.byItem);
     this.moveForwardCount = 0;
 
-    setInterval = function(func, delay) {
+    globalThis.setInterval = function(func, delay) {
       globalThis.intervalCount++;
       globalThis.intervalDelay = delay;
 
@@ -30,7 +30,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
       return globalThis.defaultSetInterval(func, 0);
     };
 
-    clearInterval = function(intervalId) {
+    globalThis.clearInterval = function(intervalId) {
       if (intervalId) {
         globalThis.intervalCount--;
       }
@@ -48,7 +48,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
 };
 
 // https://crbug.com/1452024: Flaky on linux-chromeos-rel/linux-chromeos-dbg
-TEST_F('SwitchAccessAutoScanManagerTest', 'DISABLED_SetEnabled', function() {
+TEST_F('SwitchAccessMV2AutoScanManagerTest', 'DISABLED_SetEnabled', function() {
   this.runWithLoadedDesktop(() => {
     assertFalse(
         AutoScanManager.instance.isRunning_(),
@@ -82,7 +82,8 @@ GEN('#else');
 GEN('#define MAYBE_SetEnabledMultiple SetEnabledMultiple');
 GEN('#endif');
 TEST_F(
-    'SwitchAccessAutoScanManagerTest', 'MAYBE_SetEnabledMultiple', function() {
+    'SwitchAccessMV2AutoScanManagerTest', 'MAYBE_SetEnabledMultiple',
+    function() {
       this.runWithLoadedDesktop(() => {
         assertFalse(
             AutoScanManager.instance.isRunning_(),
@@ -103,7 +104,8 @@ TEST_F(
 
 // TODO(crbug.com/40888769): Test is flaky.
 TEST_F(
-    'SwitchAccessAutoScanManagerTest', 'DISABLED_EnableAndDisable', function() {
+    'SwitchAccessMV2AutoScanManagerTest', 'DISABLED_EnableAndDisable',
+    function() {
       this.runWithLoadedDesktop(() => {
         assertFalse(
             AutoScanManager.instance.isRunning_(),
@@ -133,7 +135,7 @@ GEN('#define MAYBE_RestartIfRunningMultiple RestartIfRunningMultiple');
 GEN('#endif');
 
 TEST_F(
-    'SwitchAccessAutoScanManagerTest', 'MAYBE_RestartIfRunningMultiple',
+    'SwitchAccessMV2AutoScanManagerTest', 'MAYBE_RestartIfRunningMultiple',
     function() {
       this.runWithLoadedDesktop(() => {
         assertFalse(
@@ -165,7 +167,7 @@ GEN('#define MAYBE_RestartIfRunningWhenOff RestartIfRunningWhenOff');
 GEN('#endif');
 
 TEST_F(
-    'SwitchAccessAutoScanManagerTest', 'MAYBE_RestartIfRunningWhenOff',
+    'SwitchAccessMV2AutoScanManagerTest', 'MAYBE_RestartIfRunningWhenOff',
     function() {
       this.runWithLoadedDesktop(() => {
         assertFalse(
@@ -185,7 +187,7 @@ GEN('#else');
 GEN('#define MAYBE_SetPrimaryScanTime SetPrimaryScanTime');
 GEN('#endif');
 
-TEST_F('SwitchAccessAutoScanManagerTest', 'SetPrimaryScanTime', function() {
+TEST_F('SwitchAccessMV2AutoScanManagerTest', 'SetPrimaryScanTime', function() {
   this.runWithLoadedDesktop(() => {
     assertFalse(
         AutoScanManager.instance.isRunning_(),

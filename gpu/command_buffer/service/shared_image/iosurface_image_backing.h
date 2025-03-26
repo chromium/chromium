@@ -118,6 +118,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       GLenum gl_target,
       bool framebuffer_attachment_angle,
       bool is_cleared,
+      bool is_thread_safe,
       GrContextType gr_context_type,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
   IOSurfaceImageBacking(const IOSurfaceImageBacking& other) = delete;

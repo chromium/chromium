@@ -49,6 +49,8 @@
 #include "components/variations/service/variations_service.h"  // nogncheck
 #endif
 
+using ::country_codes::CountryId;
+
 namespace search_engines {
 namespace {
 
@@ -162,16 +164,16 @@ void LogSearchRepromptKeyHistograms(RepromptResult result, bool is_wildcard) {
   }
 }
 
-int GetVariationsCountryId(variations::VariationsService* variations_service) {
+CountryId GetVariationsCountryId(
+    variations::VariationsService* variations_service) {
 #if BUILDFLAG(IS_FUCHSIA)
   // We can't add a dependency from Fuchsia to
   // `//components/variations/service`.
-  return country_codes::kCountryIDUnknown;
+  return CountryId();
 #else
-  return variations_service
-             ? country_codes::CountryStringToCountryID(
-                   base::ToUpperASCII(variations_service->GetLatestCountry()))
-             : country_codes::kCountryIDUnknown;
+  return variations_service ? CountryId(base::ToUpperASCII(
+                                  variations_service->GetLatestCountry()))
+                            : CountryId();
 #endif
 }
 
@@ -183,7 +185,7 @@ SearchEngineChoiceService::SearchEngineChoiceService(
     regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
     TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
     bool is_profile_eligbile_for_dse_guest_propagation,
-    int variations_country_id)
+    CountryId variations_country_id)
     : profile_prefs_(profile_prefs),
       local_state_(local_state),
       regional_capabilities_service_(regional_capabilities),
@@ -516,7 +518,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   }
 
   const base::Version& current_version = version_info::GetVersion();
-  regional_capabilities::CountryId country_id =
+  CountryId country_id =
       regional_capabilities_service_->GetCountryId().GetRestricted(
           regional_capabilities::CountryAccessKey(
               regional_capabilities::CountryAccessReason::

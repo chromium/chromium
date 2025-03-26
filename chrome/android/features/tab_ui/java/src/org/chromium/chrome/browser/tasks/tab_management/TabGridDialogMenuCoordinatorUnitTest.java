@@ -100,7 +100,8 @@ public class TabGridDialogMenuCoordinatorUnitTest {
                                 () -> mTabModel,
                                 () -> TAB_GROUP_TOKEN,
                                 mTabGroupSyncService,
-                                mCollaborationService));
+                                mCollaborationService,
+                                mActivity));
     }
 
     private void onActivity(TestActivity activity) {

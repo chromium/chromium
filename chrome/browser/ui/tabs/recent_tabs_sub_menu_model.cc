@@ -404,6 +404,8 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
         }
         case sessions::tab_restore::Type::WINDOW: {
           auto& window = static_cast<sessions::tab_restore::Window&>(*entry);
+          // TODO(https://crbug.com/41227458): Consider if we should re-add the
+          // ability for single tab windows to be represented as single tabs.
           BuildLocalWindowItem(window, ++last_local_model_index_);
           break;
         }

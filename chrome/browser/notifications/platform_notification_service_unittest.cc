@@ -136,6 +136,8 @@ class PlatformNotificationServiceTest : public testing::Test {
 
   void TearDown() override {
     display_service_tester_.reset();
+    mock_logger_ = nullptr;
+    profile_.reset();
   }
 
  protected:
@@ -801,6 +803,11 @@ class PlatformNotificationServiceTest_NotificationContentDetection
                         {base::MayBlock()}))));
   }
 
+  void TearDown() override {
+    mock_notification_content_detection_service_ = nullptr;
+    PlatformNotificationServiceTest::TearDown();
+  }
+
   bool IsSafeBrowsingEnabled() { return std::get<0>(GetParam()); }
 
   bool IsNotificationContentDetectionEnabled() {
@@ -818,16 +825,8 @@ INSTANTIATE_TEST_SUITE_P(
     PlatformNotificationServiceTest_NotificationContentDetection,
     testing::Combine(testing::Bool(), testing::Bool()));
 
-// TODO(crbug.com/378566914): Test fails on Linux MSAN
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_PerformNotificationContentDetectionWhenEnabled \
-  DISABLED_PerformNotificationContentDetectionWhenEnabled
-#else
-#define MAYBE_PerformNotificationContentDetectionWhenEnabled \
-  PerformNotificationContentDetectionWhenEnabled
-#endif
 TEST_P(PlatformNotificationServiceTest_NotificationContentDetection,
-       MAYBE_PerformNotificationContentDetectionWhenEnabled) {
+       PerformNotificationContentDetectionWhenEnabled) {
   PlatformNotificationData data;
   data.title = u"My notification's title";
   data.body = u"Hello, world!";

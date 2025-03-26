@@ -18,14 +18,14 @@
 <cr-button id="cancel"
     class="cancel-button"
     on-click="onCancelButtonClicked_"
-    disabled="[[isButtonDisabled_(Button.CANCEL, buttonState.*)]]"
-    hidden$="[[isButtonHidden_(Button.CANCEL, buttonState.*)]]">
+    disabled="[[isButtonDisabled_(buttonEnum_.CANCEL, buttonState.*)]]"
+    hidden$="[[isButtonHidden_(buttonEnum_.CANCEL, buttonState.*)]]">
   [[i18n('cancel')]]
 </cr-button>
 <cr-button id="forward"
     class="action-button"
     on-click="onForwardButtonClicked_"
-    disabled="[[isButtonDisabled_(Button.FORWARD, buttonState.*)]]"
-    hidden$="[[isButtonHidden_(Button.FORWARD, buttonState.*)]]">
+    disabled="[[isButtonDisabled_(buttonEnum_.FORWARD, buttonState.*)]]"
+    hidden$="[[isButtonHidden_(buttonEnum_.FORWARD, buttonState.*)]]">
   [[forwardButtonLabel]]
 </cr-button>

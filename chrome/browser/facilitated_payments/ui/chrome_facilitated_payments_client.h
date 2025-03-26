@@ -10,6 +10,7 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -64,6 +65,8 @@ class ChromeFacilitatedPaymentsClient
   // This returns nullptr if the `Profile` associated is null.
   payments::facilitated::FacilitatedPaymentsNetworkInterface*
   GetFacilitatedPaymentsNetworkInterface() final;
+  payments::facilitated::MultipleRequestFacilitatedPaymentsNetworkInterface*
+  GetMultipleRequestFacilitatedPaymentsNetworkInterface() final;
   // This returns std::nullopt if the `Profile` associated is null.
   std::optional<CoreAccountInfo> GetCoreAccountInfo() final;
   bool IsInLandscapeMode() final;
@@ -94,6 +97,9 @@ class ChromeFacilitatedPaymentsClient
 
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsNetworkInterface>
       facilitated_payments_network_interface_;
+  std::unique_ptr<
+      payments::facilitated::MultipleRequestFacilitatedPaymentsNetworkInterface>
+      multiple_request_facilitated_payments_network_interface_;
 
   std::unique_ptr<FacilitatedPaymentsController>
       facilitated_payments_controller_;

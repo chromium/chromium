@@ -208,6 +208,8 @@ class WPTAdapterTest(unittest.TestCase):
         adapter = WPTAdapter.from_args(self.host, args, 'test-linux-trusty')
         with adapter.test_env() as options:
             self.assertEqual(options.processes, 1)
+            self.assertIn('--no-sandbox', options.binary_args)
+            self.assertIn('--disable-hang-monitor', options.binary_args)
 
     def test_scratch_directory_cleanup(self):
         """Only test results should be left behind, even with an exception."""

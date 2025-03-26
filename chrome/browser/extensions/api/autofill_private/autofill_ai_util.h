@@ -31,11 +31,13 @@ AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
     autofill::AttributeType::DataType data_type);
 
 // Converts an `api::autofill_private::EntityInstance` object to an
-// `autofill::EntityInstance` object. Returns `std::nullopt` if one of the
-// attribute types or entity types are out of bounds of the enum.
+// `autofill::EntityInstance` object, according to a given `app_locale`. Returns
+// `std::nullopt` if one of the attribute types or entity types are out of
+// bounds of the enum, or if the date value is used incorrectly.
 std::optional<autofill::EntityInstance>
 PrivateApiEntityInstanceToEntityInstance(
-    const api::autofill_private::EntityInstance& private_api_entity_instance);
+    const api::autofill_private::EntityInstance& private_api_entity_instance,
+    const std::string& app_locale);
 
 // Converts an `autofill::EntityInstance` object to an
 // `api::autofill_private::EntityInstance` object, according to a given

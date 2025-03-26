@@ -30,6 +30,9 @@ message ZeroStateSuggestionsLoggingData {
 message ZeroStateSuggestionsRequest {
   // The context of the page to generate suggestions for.
   PageContext page_context = 1;
+
+  // Whether the request is for FRE mode.
+  bool is_fre = 2;
 }
 
 message ZeroStateSuggestionsResponse {

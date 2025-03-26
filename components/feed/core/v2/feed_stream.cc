@@ -1629,6 +1629,10 @@ void FeedStream::ReportOtherUserAction(const StreamType& stream_type,
   metrics_reporter_->OtherUserAction(stream_type, action_type);
 }
 
+void FeedStream::ReportOtherUserAction(FeedUserActionType action_type) {
+  metrics_reporter_->OtherUserAction(action_type);
+}
+
 void FeedStream::ReportInfoCardTrackViewStarted(SurfaceId surface_id,
                                                 int info_card_type) {
   FeedStreamSurface* surface = FindSurface(surface_id);

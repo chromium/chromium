@@ -50,6 +50,8 @@ source_set("test_support") {
     "mock_unexportable_key.h",
     "mock_unexportable_key_service.cc",
     "mock_unexportable_key_service.h",
+    "scoped_mock_unexportable_key_provider.cc",
+    "scoped_mock_unexportable_key_provider.h",
   ]
 
   public_deps = [

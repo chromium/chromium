@@ -9,6 +9,7 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
+#include "ui/base/clipboard/file_info.h"
 
 namespace extensions::api {
 
@@ -157,6 +158,46 @@ class DeveloperPrivateUpdateExtensionConfigurationFunction
  protected:
   ~DeveloperPrivateUpdateExtensionConfigurationFunction() override;
   ResponseAction Run() override;
+};
+
+class DeveloperPrivateInstallDroppedFileFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.installDroppedFile",
+                             DEVELOPERPRIVATE_INSTALLDROPPEDFILE)
+  DeveloperPrivateInstallDroppedFileFunction();
+
+  DeveloperPrivateInstallDroppedFileFunction(
+      const DeveloperPrivateInstallDroppedFileFunction&) = delete;
+  DeveloperPrivateInstallDroppedFileFunction& operator=(
+      const DeveloperPrivateInstallDroppedFileFunction&) = delete;
+
+ private:
+  ~DeveloperPrivateInstallDroppedFileFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class DeveloperPrivateNotifyDragInstallInProgressFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.notifyDragInstallInProgress",
+                             DEVELOPERPRIVATE_NOTIFYDRAGINSTALLINPROGRESS)
+
+  DeveloperPrivateNotifyDragInstallInProgressFunction();
+
+  DeveloperPrivateNotifyDragInstallInProgressFunction(
+      const DeveloperPrivateNotifyDragInstallInProgressFunction&) = delete;
+  DeveloperPrivateNotifyDragInstallInProgressFunction& operator=(
+      const DeveloperPrivateNotifyDragInstallInProgressFunction&) = delete;
+
+  ResponseAction Run() override;
+
+  static void SetDropFileForTesting(ui::FileInfo* file_info);
+
+ private:
+  ~DeveloperPrivateNotifyDragInstallInProgressFunction() override;
 };
 
 class DeveloperPrivateDeleteExtensionErrorsFunction

@@ -15,6 +15,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/btm_redirect_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -39,27 +40,31 @@ struct CONTENT_EXPORT BtmServerRedirectInfo {
 };
 
 struct CONTENT_EXPORT BtmNavigationInfo {
+  // Precondition: `navigation_handle.HasCommitted()` must be `true`.
   explicit BtmNavigationInfo(NavigationHandle& navigation_handle);
   BtmNavigationInfo(const BtmNavigationInfo&);
+  BtmNavigationInfo& operator=(const BtmNavigationInfo&);
   BtmNavigationInfo(BtmNavigationInfo&&);
+  BtmNavigationInfo& operator=(BtmNavigationInfo&&);
   ~BtmNavigationInfo();
 
   std::vector<BtmServerRedirectInfo> server_redirects;
   bool was_user_initiated;
   bool was_renderer_initiated;
   ui::PageTransition page_transition;
+  // The page where the navigation ultimately committed.
+  UrlAndSourceId destination;
 };
 
 class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
  public:
-  using VisitCallback = base::RepeatingCallback<
-      void(const BtmPageVisitInfo&, const BtmNavigationInfo&, const GURL&)>;
+  using VisitCallback = base::RepeatingCallback<void(const BtmPageVisitInfo&,
+                                                     const BtmNavigationInfo&)>;
 
-  // The three arguments to `VisitCallback`.
+  // The arguments to `VisitCallback`.
   struct VisitTuple {
     BtmPageVisitInfo prev_page;
     BtmNavigationInfo navigation;
-    GURL url;
   };
 
   BtmPageVisitObserver(WebContents* web_contents,

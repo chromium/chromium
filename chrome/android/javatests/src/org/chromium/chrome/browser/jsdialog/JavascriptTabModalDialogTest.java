@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isFocusable;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -144,7 +145,7 @@ public class JavascriptTabModalDialogTest {
         Assert.assertNotNull("No dialog showing.", jsDialog);
 
         onView(withText(R.string.ok)).check(matches(isDisplayed()));
-        onView(withText(R.string.cancel)).check(matches(isDisplayed()));
+        onView(allOf(withText(R.string.cancel), isDisplayed()));
 
         onView(withText(R.string.ok)).perform(click());
         Assert.assertTrue(
@@ -159,7 +160,7 @@ public class JavascriptTabModalDialogTest {
         jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
 
-        onView(withText(R.string.cancel)).perform(click());
+        onView(allOf(withText(R.string.cancel), isDisplayed())).perform(click());
         Assert.assertTrue(
                 "JavaScript execution should continue after closing dialog.",
                 scriptEvent.waitUntilHasValue());

@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
@@ -78,6 +79,39 @@ class GlicWindowController : public views::WidgetObserver,
   class WebUiStateObserver : public base::CheckedObserver {
    public:
     virtual void WebUiStateChanged(mojom::WebUiState state) = 0;
+  };
+
+  // Logs in to the account and then re-opens the glic widget after reauth.
+  class LogInAndOpen {
+   public:
+    LogInAndOpen();
+    ~LogInAndOpen();
+    LogInAndOpen(const LogInAndOpen&) = delete;
+    LogInAndOpen& operator=(const LogInAndOpen&) = delete;
+
+    enum class State {
+      // Indicates that the user needs to log in.
+      kLogIn,
+      // The user is logged in.
+      kPostLogIn,
+    };
+
+    void set_state(State state) { state_ = state; }
+
+    State state() { return state_; }
+
+    void set_attached_browser(base::WeakPtr<Browser> browser) {
+      attached_browser_ = browser;
+    }
+
+    Browser* attached_browser() { return attached_browser_.get(); }
+
+   private:
+    // The current login status. Defaulted to logged in.
+    State state_ = State::kPostLogIn;
+
+    // The browser to invoke the widget from (if the glic button was clicked).
+    base::WeakPtr<Browser> attached_browser_;
   };
 
   GlicWindowController(const GlicWindowController&) = delete;
@@ -249,6 +283,10 @@ class GlicWindowController : public views::WidgetObserver,
   GlicFreController* fre_controller() { return fre_controller_.get(); }
 
   GlicWindowAnimator* window_animator() { return glic_window_animator_.get(); }
+
+  LogInAndOpen& log_in_and_open() { return log_in_and_open_; }
+
+  Profile* profile() { return profile_; }
 
   // Helper function to get the always detached flag.
   static bool AlwaysDetached();
@@ -425,6 +463,10 @@ class GlicWindowController : public views::WidgetObserver,
   // window to the desired position.
   class AnchorObserver;
   std::unique_ptr<AnchorObserver> anchor_observer_;
+
+  // This class tracks when the user needs to login and opens the glic widget
+  // after logging back in from a paused profile.
+  LogInAndOpen log_in_and_open_;
 
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;

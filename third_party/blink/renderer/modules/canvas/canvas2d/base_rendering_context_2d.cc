@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_variant_caps.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -427,6 +428,15 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   scoped_refptr<StaticBitmapImage> snapshot =
       GetImage(FlushReason::kGetImageData);
 
+  bool noised = false;
+  if (auto* host = GetCanvasRenderingContextHost()) {
+    if (snapshot) {
+      noised = CanvasInterventionsHelper::MaybeNoiseSnapshot(
+          host->RenderingContext(), GetTopExecutionContext(), snapshot,
+          host->GetRasterMode());
+    }
+  }
+
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
       "CanvasReadback", perfetto::Flow::FromPointer(this),
@@ -441,6 +451,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
           }
         }
         ctx.AddDebugAnnotation("data_url", data.Utf8());
+        ctx.AddDebugAnnotation("noised", noised);
       });
 
   // Determine if the array should be zero initialized, or if it will be
@@ -1076,6 +1087,7 @@ void BaseRenderingContext2D::DrawTextInternal(
     location.set_x(location.x() / ClampTo<float>(width / font_width));
   }
 
+  SetTriggerForCanvasIntervention();
   Draw<OverdrawOp::kNone>(
       [font, text = std::move(text), direction, bidi_override, location,
        run_start, run_end, canvas, text_painter](

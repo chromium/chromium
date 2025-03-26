@@ -503,6 +503,12 @@ void ArcSettingsServiceImpl::DefaultNetworkChanged(
     sync_proxy = true;
   }
 
+  // If the default network change is triggered by establishment of ARC VPN, we
+  // should not report back the proxy settings. Details: crbug.com/401900912
+  if (network->GetVpnProviderType() == shill::kProviderArcVpn) {
+    sync_proxy = false;
+  }
+
   if (!sync_proxy)
     return;
 

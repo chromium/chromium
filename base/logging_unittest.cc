@@ -88,9 +88,11 @@ class MockLogSource {
 
 class MockLogAssertHandler {
  public:
-  MOCK_METHOD4(
-      HandleLogAssert,
-      void(const char*, int, const std::string_view, const std::string_view));
+  MOCK_METHOD4(HandleLogAssert,
+               void(std::string_view,
+                    int,
+                    const std::string_view,
+                    const std::string_view));
 };
 
 TEST_F(LoggingTest, BasicLogging) {
@@ -755,7 +757,7 @@ TEST_F(LoggingTest, LogPrefix) {
   // Use a static because only captureless lambdas can be converted to a
   // function pointer for SetLogMessageHandler().
   static base::NoDestructor<std::string> log_string;
-  SetLogMessageHandler([](int severity, const char* file, int line,
+  SetLogMessageHandler([](int severity, std::string_view file, int line,
                           size_t start, const std::string& str) -> bool {
     *log_string = str;
     return true;
@@ -784,7 +786,7 @@ TEST_F(LoggingTest, LogCrosSyslogFormat) {
   // Use a static because only captureless lambdas can be converted to a
   // function pointer for SetLogMessageHandler().
   static base::NoDestructor<std::string> log_string;
-  SetLogMessageHandler([](int severity, const char* file, int line,
+  SetLogMessageHandler([](int severity, std::string_view file, int line,
                           size_t start, const std::string& str) -> bool {
     *log_string = str;
     return true;
@@ -987,7 +989,7 @@ TEST_F(LoggingTest, CorrectSystemErrorUsed) {
   // Use a static because only captureless lambdas can be converted to a
   // function pointer for SetLogMessageHandler().
   static base::NoDestructor<std::string> log_string;
-  SetLogMessageHandler([](int severity, const char* file, int line,
+  SetLogMessageHandler([](int severity, std::string_view file, int line,
                           size_t start, const std::string& str) -> bool {
     *log_string = str;
     return true;
@@ -1016,7 +1018,7 @@ TEST_F(LoggingTest, BuildTimeVLOG) {
   // Use a static because only captureless lambdas can be converted to a
   // function pointer for SetLogMessageHandler().
   static base::NoDestructor<std::string> log_string;
-  SetLogMessageHandler([](int severity, const char* file, int line,
+  SetLogMessageHandler([](int severity, std::string_view file, int line,
                           size_t start, const std::string& str) -> bool {
     *log_string = str;
     return true;

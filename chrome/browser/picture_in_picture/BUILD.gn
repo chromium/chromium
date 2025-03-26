@@ -101,6 +101,9 @@ source_set("impl") {
       "//ui/views",
     ]
   }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -197,6 +200,9 @@ if (!is_android) {
         "//chromeos/ui/base",
         "//ui/aura",
       ]
+    }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
     }
   }
 }

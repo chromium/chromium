@@ -280,7 +280,7 @@ MultivariantPlaylist::Parse(std::string_view source,
   auto variant_format = VariantStream::OptimalFormatForCollection(variants);
   int variant_index = 0;
   for (VariantStream& variant : variants) {
-    std::string name = variant.Format(variant_format, variant_index++);
+    std::string name = variant.Format(variant_format, ++variant_index);
     variant.UpdateImplicitRenditionMediaTrackName(name);
   }
 

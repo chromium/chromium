@@ -61,12 +61,12 @@ export class BookmarksEditDialogElement extends CrLitElement {
     };
   }
 
-  protected isFolder_: boolean = false;
-  private isEdit_: boolean = false;
-  private editItem_: BookmarkNode|null = null;
-  private parentId_: string|null = null;
-  protected titleValue_: string = '';
-  protected urlValue_: string = '';
+  protected accessor isFolder_: boolean = false;
+  private accessor isEdit_: boolean = false;
+  private accessor editItem_: BookmarkNode|null = null;
+  private accessor parentId_: string|null = null;
+  protected accessor titleValue_: string = '';
+  protected accessor urlValue_: string = '';
 
   /**
    * Show the dialog to add a new folder (if |isFolder|) or item, which will be

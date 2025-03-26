@@ -33,10 +33,6 @@ namespace content {
 
 namespace {
 
-BASE_FEATURE(kSqlWALModeOnDipsDatabase,
-             "SqlWALModeOnDipsDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // NOTE: This is flag is intended for local testing and debugging only.
 // TODO: crbug.com/380903149 - re-enable exclusive locking.
 BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,
@@ -102,8 +98,7 @@ BtmDatabase::BtmDatabase(const std::optional<base::FilePath>& db_path)
 
   sql::DatabaseOptions db_options =
       sql::DatabaseOptions()
-          .set_wal_mode(base::FeatureList::IsEnabled(kSqlWALModeOnDipsDatabase))
-          .set_page_size(4096)
+          .set_wal_mode(true)
           .set_cache_size(32)
           .set_exclusive_locking(!base::FeatureList::IsEnabled(
               kDisableExclusiveLockingOnDipsDatabase));

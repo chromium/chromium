@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  card.SetNickname(l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_AFFIRM));
+  card.SetNickname(BnplIssuerIdToDisplayName(kBnplAffirmIssuerId));
   test_api(card).set_issuer_id_for_card(kBnplAffirmIssuerId);
   ShowBubble(&card, u"345");
 
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  card.SetNickname(l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
+  card.SetNickname(BnplIssuerIdToDisplayName(kBnplZipIssuerId));
   test_api(card).set_issuer_id_for_card(kBnplZipIssuerId);
   ShowBubble(&card, u"345");
 
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  card.SetNickname(l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ZIP));
+  card.SetNickname(BnplIssuerIdToDisplayName(kBnplZipIssuerId));
   test_api(card).set_issuer_id_for_card(kBnplZipIssuerId);
   ShowBubble(&card, u"345");
   ASSERT_TRUE(GetBubbleViews());
@@ -674,6 +674,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
                        BnplCardImageAndName) {
   CreditCard card = test::GetVirtualCard();
   card.set_is_bnpl_card(true);
+  card.SetNickname(BnplIssuerIdToDisplayName(kBnplZipIssuerId));
   test_api(card).set_issuer_id_for_card(kBnplZipIssuerId);
   ShowBubble(&card, u"345");
 

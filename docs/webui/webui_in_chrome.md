@@ -73,7 +73,7 @@ body {
 ```
 
 `chrome/browser/resources/hello_world/app.html.ts`
-```js
+```ts
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -89,7 +89,7 @@ export function getHtml(this: HelloWorldAppElement) {
 ```
 
 `chrome/browser/resources/hello_world/app.ts`
-```js
+```ts
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -517,7 +517,7 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui) {
 It is suggested to turn off any optimizations during WebUI development by adding
 the following in the args.gn file:
 
-```
+```py
 optimize_webui = false
 ```
 
@@ -541,7 +541,7 @@ iterate faster by **not having to do the above steps**. In order to use this
 flow, follow the steps below:
 
 **Step 1:** Add the following in your args.gn file and build the `chrome` target.
-```
+```py
 optimize_webui = false # explained in previous section
 load_webui_from_disk = true
 ```

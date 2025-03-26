@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(https://crbug.com/405980483): Evaluate whether to keep generating `cargo vet`'s
+// `config.toml`.  Note that we have removed `cargo vet` presubmits (as tracked
+// in https://crbug.com/405980483).
+
 use crate::group::Group;
 use anyhow::Result;
 

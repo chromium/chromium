@@ -1490,9 +1490,16 @@ void CrostiniManager::InstallBaguette(BaguetteImageCallback callback) {
         } else if (result == BaguetteInstaller::InstallResult::Cancelled) {
           LOG(ERROR) << "Installing Baguette failed: cancelled";
           res = CrostiniResult::INSTALL_BAGUETTE_CANCELLED;
+        } else if (result == BaguetteInstaller::InstallResult::ChecksumError) {
+          LOG(ERROR) << "Installing Baguette failed: checksum did not match.";
+          res = CrostiniResult::DOWNLOAD_BAGUETTE_FAILED;
+        } else if (result == BaguetteInstaller::InstallResult::DownloadError) {
+          LOG(ERROR) << "Installing Baguette failed: download failed.";
+          res = CrostiniResult::DOWNLOAD_BAGUETTE_FAILED;
         } else {
-          NOTREACHED()
-              << "Got unexpected value of BaguetteInstaller::InstallResult";
+          LOG(ERROR)
+              << "Installing Baguette failed: encountered an unknown error.";
+          res = CrostiniResult::UNKNOWN_ERROR;
         }
         std::move(callback).Run(std::move(fd), res);
       },
@@ -1537,7 +1544,11 @@ void CrostiniManager::CancelInstallTermina() {
 }
 
 void CrostiniManager::UninstallTermina(BoolCallback callback) {
-  termina_installer_.Uninstall(std::move(callback));
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    baguette_installer_.Uninstall(std::move(callback));
+  } else {
+    termina_installer_.Uninstall(std::move(callback));
+  }
 }
 
 void CrostiniManager::CreateDiskImage(

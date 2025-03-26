@@ -14,7 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -185,8 +184,8 @@ void ChildAccountService::UpdateForceGoogleSafeSearch() {
   bool should_force_google_safe_search =
       (is_subject_to_parental_controls &&
        GetGoogleAuthState() != AuthState::AUTHENTICATED);
-  user_prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch,
-                          should_force_google_safe_search);
+  SetGoogleSafeSearch(*user_prefs_, static_cast<GoogleSafeSearchStateStatus>(
+                                        should_force_google_safe_search));
 }
 
 void ChildAccountService::OnExtendedAccountInfoUpdated(

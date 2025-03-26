@@ -99,45 +99,6 @@ TEST_F(SearchSectionTest,
                    .value());
 }
 
-TEST_F(SearchSectionTest,
-       DoesNotIncludeSunfishSettingsWhenSunfishFeaturesDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(/*enabled_features=*/{}, /*disabled_features=*/
-                                {
-                                    features::kSunfishFeature,
-                                    features::kScannerUpdate,
-                                    features::kScannerDogfood,
-                                });
-  search_section_ =
-      std::make_unique<SearchSection>(profile(), search_tag_registry());
-  std::unique_ptr<content::TestWebUIDataSource> html_source =
-      content::TestWebUIDataSource::Create("test-search-section");
-  // `AddLoadTimeData` assumes that `chromeos::MagicBoostState::Get()` returns
-  // a non-null pointer, so this cannot be removed.
-  chromeos::test::FakeMagicBoostState magic_boost_state;
-
-  search_section_->AddLoadTimeData(html_source->GetWebUIDataSource());
-
-  EXPECT_FALSE(html_source->GetLocalizedStrings()
-                   ->FindBool("isSunfishSettingsToggleVisible")
-                   .value());
-}
-
-TEST_F(SearchSectionTest, IncludesSunfishSettingsWhenSunfishEnabled) {
-  base::test::ScopedFeatureList feature_list(features::kSunfishFeature);
-  search_section_ =
-      std::make_unique<SearchSection>(profile(), search_tag_registry());
-  std::unique_ptr<content::TestWebUIDataSource> html_source =
-      content::TestWebUIDataSource::Create("test-search-section");
-  chromeos::test::FakeMagicBoostState magic_boost_state;
-
-  search_section_->AddLoadTimeData(html_source->GetWebUIDataSource());
-
-  EXPECT_TRUE(html_source->GetLocalizedStrings()
-                  ->FindBool("isSunfishSettingsToggleVisible")
-                  .value());
-}
-
 // MagicBoost availability check requires an async operation. There is a short
 // period where `MagicBoostState` returns false for its availability even if a
 // user/device is eligible.

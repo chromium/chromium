@@ -40,6 +40,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="2758123043070977469">Arazo bat izan da autentifikatzean. Hasi berriro saioa.</translation>
 <translation id="2803375539583399270">Idatzi PINa</translation>
 <translation id="2919669478609886916">Gailua beste erabiltzaile batekin partekatzen ari zara. Partekatzen jarraitu nahi duzu?</translation>
+<translation id="2929683002824598593">Partekatu gailua</translation>
 <translation id="2939145106548231838">Autentifikatu ostalariaren aurrean</translation>
 <translation id="3027681561976217984">Ukipen modua</translation>
 <translation id="3106379468611574572">Urruneko ordenagailua ez da konexio-eskaerei erantzuten ari. Egiaztatu Internetera konektatuta dagoela eta saiatu berriro.</translation>
@@ -117,10 +118,12 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="6178645564515549384">Urruneko laguntzarako mezularitza-ostalari natiboa</translation>
 <translation id="618120821413932081">Eguneratu urruneko bereizmena leihoarenarekin bat etor dadin</translation>
 <translation id="6223301979382383752">Ireki pantaila grabatzeko hobespenak</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> erabiltzaileak pantaila ikusteko, eta teklatua eta sagua kontrolatzeko baimena eskatu du. Gailua partekatu nahi duzu?</translation>
 <translation id="6284412385303060032">Kontsolaren pantaila logikoan abian den ostalaria desaktibatu egin da mahaigaina ezkutatzeko modua erabili ahal izateko. Horretarako, erabiltzaile jakin baten saioan abiarazitako ostalari batera aldatu da.</translation>
 <translation id="6542902059648396432">Eman arazo baten berri…</translation>
 <translation id="6583902294974160967">Laguntza-zerbitzua</translation>
 <translation id="6612717000975622067">Bidali Ktrl-Alt-Ezab</translation>
+<translation id="6625262630437221505">{0,plural, =1{Ezer egiten ez baduzu, gailua # segundo barru hasiko da partekatzen automatikoki.}other{Ezer egiten ez baduzu, gailua # segundo barru hasiko da partekatzen automatikoki.}}</translation>
 <translation id="6654753848497929428">Partekatu</translation>
 <translation id="677755392401385740"><ph name="HOST_USERNAME" /> ostatatzen hasi da.</translation>
 <translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> bezeroan URL bat irekitzeko aplikazio laguntzailea</translation>

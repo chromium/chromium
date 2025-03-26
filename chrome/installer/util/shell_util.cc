@@ -39,6 +39,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -976,16 +977,24 @@ void RemoveRunVerbOnWindows8() {
   installer::DeleteRegistryKey(root_key, run_verb_key, WorkItem::kWow64Default);
 }
 
-// Probe using IApplicationAssociationRegistration::QueryCurrentDefault
-// (Windows 8); see ProbeProtocolHandlers.  This mechanism is not suitable for
-// use on previous versions of Windows despite the presence of
-// QueryCurrentDefault on them since versions of Windows prior to Windows 8
-// did not perform validation on the ProgID registered as the current default.
-// As a result, stale ProgIDs could be returned, leading to false positives.
+// Probes default handler registration (in a manner appropriate for the current
+// version of Windows) to determine if Chrome is the default handler for
+// `identifiers`. `identifiers` can be either protocols or file extensions, and
+// `type` should indicate which they are. Returns `IS_DEFAULT` only if Chrome is
+// the default for all specified identifiers.
 ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
     const base::FilePath& chrome_exe,
-    const wchar_t* const* protocols,
-    size_t num_protocols) {
+    base::span<const base::wcstring_view> identifiers,
+    ASSOCIATIONTYPE type) {
+#if DCHECK_IS_ON()
+  DCHECK(!identifiers.empty());
+  for (const auto& identifier : identifiers) {
+    DCHECK(!identifier.empty());
+    if (type == AT_FILEEXTENSION) {
+      DCHECK(identifier.starts_with(base::FilePath::kExtensionSeparator));
+    }
+  }
+#endif
   Microsoft::WRL::ComPtr<IApplicationAssociationRegistration> registration;
   HRESULT hr = ::SHCreateAssociationRegistration(IID_PPV_ARGS(&registration));
   if (FAILED(hr))
@@ -999,16 +1008,22 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
   const int current_install_mode_index =
       install_static::InstallDetails::Get().install_mode_index();
   bool other_mode_is_default = false;
-  for (size_t i = 0; i < num_protocols; ++i) {
+  for (const auto& identifier : identifiers) {
     base::win::ScopedCoMem<wchar_t> current_app;
-    hr = registration->QueryCurrentDefault(protocols[i], AT_URLPROTOCOL,
+    // Probe using `IApplicationAssociationRegistration::QueryCurrentDefault`.
+    // This mechanism is not suitable for use on versions of Windows older than
+    // Windows 8 despite the presence of `QueryCurrentDefault` on them, as those
+    // versions did not perform validation on the ProgID registered as the
+    // current default. As a result, stale ProgIDs could be returned, leading to
+    // false positives.
+    hr = registration->QueryCurrentDefault(identifier.c_str(), type,
                                            AL_EFFECTIVE, &current_app);
     if (FAILED(hr))
       return ShellUtil::NOT_DEFAULT;
     if (prog_id.compare(current_app) == 0)
       continue;
 
-    // See if another mode is the default handler for this protocol.
+    // See if another mode is the default handler for this identifier.
     size_t current_app_len = std::char_traits<wchar_t>::length(current_app);
     const auto it = std::ranges::find_if(
         install_static::kInstallModes,
@@ -1033,24 +1048,21 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
     }
     other_mode_is_default = true;
   }
-  // This mode is default if it has all of the protocols.
+  // This mode is default if it has all of the identifiers.
   return other_mode_is_default ? ShellUtil::OTHER_MODE_IS_DEFAULT
                                : ShellUtil::IS_DEFAULT;
 }
 
-// A helper function that probes default protocol handler registration (in a
-// manner appropriate for the current version of Windows) to determine if
-// Chrome is the default handler for |protocols|.  Returns IS_DEFAULT
-// only if Chrome is the default for all specified protocols.
-ShellUtil::DefaultState ProbeProtocolHandlers(const base::FilePath& chrome_exe,
-                                              const wchar_t* const* protocols,
-                                              size_t num_protocols) {
-#if DCHECK_IS_ON()
-  DCHECK(!num_protocols || protocols);
-  for (size_t i = 0; i < num_protocols; ++i)
-    DCHECK(protocols[i] && *protocols[i]);
-#endif
-  return ProbeCurrentDefaultHandlers(chrome_exe, protocols, num_protocols);
+// Helper function to call `ProbeCurrentDefaultHandlers()` with a single
+// `identifier`.
+ShellUtil::DefaultState ProbeSingleCurrentDefaultHandler(
+    base::wcstring_view identifier,
+    ASSOCIATIONTYPE type) {
+  if (identifier.empty()) {
+    return ShellUtil::UNKNOWN_DEFAULT;
+  }
+  return ProbeCurrentDefaultHandlers(
+      base::PathService::CheckedGet(base::FILE_EXE), {identifier}, type);
 }
 
 // Finds and stores an app shortcuts folder path in *`path`.
@@ -1971,25 +1983,22 @@ ShellUtil::DefaultState ShellUtil::GetChromeDefaultStateFromPath(
   // re-run the installer or run with the --set-default-browser command line
   // flag. There is doubtless some other key we can hook into to cause "Repair"
   // to show up in Add/Remove programs for us.
-  static const wchar_t* const kChromeProtocols[] = {L"http", L"https"};
-  DefaultState default_state = ProbeProtocolHandlers(
-      chrome_exe, kChromeProtocols, std::size(kChromeProtocols));
+  static const base::wcstring_view kChromeProtocols[] = {L"http", L"https"};
+  const DefaultState default_state =
+      ProbeCurrentDefaultHandlers(chrome_exe, kChromeProtocols, AT_URLPROTOCOL);
   UpdateDefaultBrowserBeaconWithState(default_state);
   return default_state;
 }
 
 ShellUtil::DefaultState ShellUtil::GetChromeDefaultProtocolClientState(
-    const std::wstring& protocol) {
-  if (protocol.empty())
-    return UNKNOWN_DEFAULT;
+    base::wcstring_view protocol) {
+  return ProbeSingleCurrentDefaultHandler(protocol, AT_URLPROTOCOL);
+}
 
-  base::FilePath chrome_exe;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED();
-  }
-
-  const wchar_t* const protocols[] = {protocol.c_str()};
-  return ProbeProtocolHandlers(chrome_exe, protocols, std::size(protocols));
+ShellUtil::DefaultState ShellUtil::GetChromeDefaultFileHandlerState(
+    base::wcstring_view file_extension) {
+  DCHECK(file_extension.starts_with(base::FilePath::kExtensionSeparator));
+  return ProbeSingleCurrentDefaultHandler(file_extension, AT_FILEEXTENSION);
 }
 
 // static

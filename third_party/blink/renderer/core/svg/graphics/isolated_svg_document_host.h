@@ -76,6 +76,7 @@ class IsolatedSVGDocumentHost final
   static void CopySettingsFrom(Settings& settings,
                                const Settings& inherited_settings);
   void LoadCompleted();
+  void AsyncLoadCompleted();
 
   class LocalFrameClient;
 

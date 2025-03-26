@@ -404,11 +404,8 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
   }
 
   ukm::builders::Autofill2_FieldInfo builder(ukm_source_id);
-  builder
-      .SetFormSessionIdentifier(
-          AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id()))
-      .SetFieldSessionIdentifier(
-          AutofillMetrics::FieldGlobalIdToHash64Bit(field.global_id()))
+  builder.SetFormSessionIdentifier(FormGlobalIdToHash64Bit(form.global_id()))
+      .SetFieldSessionIdentifier(FieldGlobalIdToHash64Bit(field.global_id()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetFormControlType2(base::to_underlying(field.form_control_type()))
       .SetAutocompleteState(base::to_underlying(autocomplete_state))
@@ -532,7 +529,7 @@ void FormInteractionsUkmLogger::LogAutofillFormSummaryAtFormRemove(
   ukm::builders::Autofill2_FormSummary builder(ukm_source_id);
   builder
       .SetFormSessionIdentifier(
-          AutofillMetrics::FormGlobalIdToHash64Bit(form_structure.global_id()))
+          FormGlobalIdToHash64Bit(form_structure.global_id()))
       .SetFormSignature(HashFormSignature(form_structure.form_signature()))
       .SetAutofillFormEvents(form_events.data()[0])
       .SetAutofillFormEvents2(form_events.data()[1])
@@ -643,8 +640,8 @@ void FormInteractionsUkmLogger::
     ukm::builders::Autofill2_SubmittedFormWithExperimentalFields builder(
         ukm_source_id);
     builder
-        .SetFormSessionIdentifier(AutofillMetrics::FormGlobalIdToHash64Bit(
-            form_structure.global_id()))
+        .SetFormSessionIdentifier(
+            FormGlobalIdToHash64Bit(form_structure.global_id()))
         .SetFormSignature(HashFormSignature(form_structure.form_signature()));
     if (num_experimental_fields[0]) {
       builder.SetNumberOfNonEmptyExperimentalFields0(
@@ -794,7 +791,7 @@ void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
   ukm::builders::Autofill2_FocusedComplexForm builder(ukm_source_id);
   builder
       .SetFormSessionIdentifier(
-          AutofillMetrics::FormGlobalIdToHash64Bit(form_structure.global_id()))
+          FormGlobalIdToHash64Bit(form_structure.global_id()))
       .SetFormSignature(HashFormSignature(form_structure.form_signature()))
       .SetWasSubmitted(!form_submitted_timestamp.is_null())
       .SetAutofillDataQueried(autofill_data_queried.data()[0])

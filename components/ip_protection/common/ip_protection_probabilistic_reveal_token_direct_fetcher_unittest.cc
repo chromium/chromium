@@ -22,6 +22,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/version_info/channel.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/get_probabilistic_reveal_token.pb.h"
 #include "net/base/features.h"
@@ -116,6 +117,7 @@ class FetcherTestBase : public testing::Test {
           EXPECT_THAT(
               request.headers.GetHeader("Ip-Protection-Debug-Experiment-Arm"),
               expected_experiment_arm_);
+          EXPECT_TRUE(request.headers.HasHeader("X-Goog-Api-Key"));
           ASSERT_TRUE(request.request_body);
           GetProbabilisticRevealTokenRequest request_proto;
           ASSERT_TRUE(request_proto.ParseFromString(GetUploadData(request)));
@@ -145,7 +147,8 @@ class IpProtectionProbabilisticRevealTokenDirectFetcherRetrieverTest
     FetcherTestBase::SetFeatureParameters(parameters);
     retriever_ = std::make_unique<
         IpProtectionProbabilisticRevealTokenDirectFetcher::Retriever>(
-        test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
+        test_url_loader_factory_.GetSafeWeakWrapper()->Clone(),
+        version_info::Channel::DEFAULT);
   }
 
   std::unique_ptr<IpProtectionProbabilisticRevealTokenDirectFetcher::Retriever>
@@ -246,7 +249,8 @@ class IpProtectionProbabilisticRevealTokenDirectFetcherTest
     FetcherTestBase::SetFeatureParameters(parameters);
     fetcher_ =
         std::make_unique<IpProtectionProbabilisticRevealTokenDirectFetcher>(
-            test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
+            test_url_loader_factory_.GetSafeWeakWrapper()->Clone(),
+            version_info::Channel::DEFAULT);
 
     absl::StatusOr<std::string> maybe_public_key_bytes =
         GetTestPublicKeyBytes(/*private_key=*/1);

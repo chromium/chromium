@@ -141,6 +141,28 @@ TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
   EXPECT_FALSE(model.show_key_binding());
 }
 
+// TODO(crbug.com/405148986): Modify this test once the appropriate how to use
+// text is decided for MV3 action extensions.
+TEST_F(ExtensionInstalledBubbleModelTest, MV3ActionExtension) {
+  // An extension with a MV3 action...
+  auto extension = extensions::ExtensionBuilder("Foo")
+                       .SetManifestVersion(3)
+                       .SetAction(extensions::ActionInfo::Type::kAction)
+                       .Build();
+  service()->AddExtension(extension.get());
+
+  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
+
+  // should anchor to that action
+  EXPECT_TRUE(model.anchor_to_action());
+  EXPECT_FALSE(model.anchor_to_omnibox());
+
+  // and have how-to-manage but no how-to-use and key binding.
+  EXPECT_FALSE(model.show_how_to_use());
+  EXPECT_TRUE(model.show_how_to_manage());
+  EXPECT_FALSE(model.show_key_binding());
+}
+
 TEST_F(ExtensionInstalledBubbleModelTest, ExtensionWithKeyBinding) {
   // An extension with a browser action and a key binding...
   auto builder = extensions::ExtensionBuilder("Foo");

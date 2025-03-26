@@ -7920,6 +7920,7 @@ void PositionTryFallbacks::ApplyValue(StyleResolverState& state,
   if (value.IsIdentifierValue()) {
     DCHECK(To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kNone);
     // Just represent as nullptr.
+    state.StyleBuilder().SetPositionTryFallbacks(nullptr);
     return;
   }
   HeapVector<PositionTryFallback> fallbacks;

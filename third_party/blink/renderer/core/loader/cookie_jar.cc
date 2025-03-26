@@ -70,6 +70,8 @@ void CookieJar::SetCookie(const String& value) {
 
   base::ElapsedTimer timer;
   RequestRestrictedCookieManagerIfNeeded();
+  bool is_ad_tagged =
+      document_->GetFrame() && document_->GetFrame()->IsAdFrame();
 
   CookiesResponsePtr response;
   const bool get_version_shared_memory =
@@ -80,7 +82,8 @@ void CookieJar::SetCookie(const String& value) {
     backend_->SetCookieFromString(
         cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
         document_->GetExecutionContext()->GetStorageAccessApiStatus(),
-        get_version_shared_memory, apply_devtools_overrides, value,
+        get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
+        value,
         WTF::BindOnce(&CookieJar::OnSetCookieResponse, WrapWeakPersistent(this),
                       cookie_url, apply_devtools_overrides));
   } else {
@@ -88,8 +91,8 @@ void CookieJar::SetCookie(const String& value) {
             cookie_url, document_->SiteForCookies(),
             document_->TopFrameOrigin(),
             document_->GetExecutionContext()->GetStorageAccessApiStatus(),
-            get_version_shared_memory, apply_devtools_overrides, value,
-            &response)) {
+            get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
+            value, &response)) {
       // On IPC failure invalidate cached values and return empty string since
       // there is no guarantee the client can still validly access cookies in
       // the current context. See crbug.com/1468909.

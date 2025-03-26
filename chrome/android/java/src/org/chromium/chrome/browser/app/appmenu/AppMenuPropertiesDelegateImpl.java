@@ -33,6 +33,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -1442,6 +1443,20 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 && UrlUtilities.isNtpUrl(currentTab.getUrl())
                 && !currentTab.isIncognito()) {
             BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.MENU_BUTTON);
+        }
+        switch (getMenuGroup()) {
+            case MenuGroup.PAGE_MENU:
+                RecordUserAction.record("MobileMenuShow.PageMenu");
+                break;
+            case MenuGroup.OVERVIEW_MODE_MENU:
+                RecordUserAction.record("MobileMenuShow.OverviewModeMenu");
+                break;
+            case MenuGroup.TABLET_EMPTY_MODE_MENU:
+                RecordUserAction.record("MobileMenuShow.TabletEmptyModeMenu");
+                break;
+            case MenuGroup.INVALID: // fallthrough
+            default:
+                // Intentional noop.
         }
     }
 

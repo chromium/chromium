@@ -27,6 +27,8 @@ class NavigationControllerImpl final
       public content::WebContentsObserver,
       public favicon::FaviconDriverObserver {
  public:
+  static const void* const kAbortedRequestKey;
+
   NavigationControllerImpl(content::WebContents* web_contents,
                            void* parent_for_trace_flow);
 

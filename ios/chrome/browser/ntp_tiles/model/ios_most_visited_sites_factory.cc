@@ -36,5 +36,6 @@ IOSMostVisitedSitesFactory::NewForBrowserState(ProfileIOS* profile) {
               image_fetcher::CreateIOSImageDecoder(),
               profile->GetSharedURLLoaderFactory()),
           /*data_decoder=*/nullptr),
-      false);
+      /*is_default_chrome_app_migrated=*/false,
+      /*is_custom_links_mixable=*/false);
 }

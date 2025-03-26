@@ -198,11 +198,15 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // Return mode describing what the GPU process will be launched to run.
   gpu::GpuMode GetGpuMode() const;
 
-  // Called when GPU process initialization failed or the GPU process has
-  // crashed repeatedly. This will try to disable hardware acceleration and then
-  // SwiftShader WebGL. It will also crash the browser process as a last resort
-  // on Android and Chrome OS.
+  // Called when GPU process initialization failed. This will try to disable
+  // hardware acceleration and then SwiftShader WebGL. It will also crash the
+  // browser process as a last resort on Android and Chrome OS.
   void FallBackToNextGpuMode();
+
+  // Called when the GPU process has crashed repeatedly. Will try other gpu
+  // modes (like FallBackToNextGpuMode) but may skip software acceleration based
+  // on features.
+  void FallBackToNextGpuModeDueToCrash();
 
   // Check if there is at least one fallback option available.
   bool CanFallback() const;

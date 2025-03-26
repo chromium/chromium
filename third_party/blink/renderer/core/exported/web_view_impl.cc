@@ -1898,6 +1898,9 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   if (!prefs.strict_mime_type_check_for_worker_scripts_enabled) {
     RuntimeEnabledFeatures::SetStrictMimeTypesForWorkersEnabled(false);
   }
+
+  RuntimeEnabledFeatures::SetPaymentRequestEnabled(
+      prefs.payment_request_enabled);
 }
 
 void WebViewImpl::ThemeChanged() {

@@ -446,6 +446,15 @@ void CertProvisioningSchedulerImpl::UpdateWorkerListWithExistingCerts(
       ScheduleRenewal(profile.profile_id, /*delay=*/target_time - now);
       continue;
     }
+
+    CertProvisioningWorker* worker = FindWorker(profile.profile_id);
+    if (worker) {
+      // If a valid, non-expiring certificate is found but its associated worker
+      // exists, this indicates the worker was likely restored from a previous
+      // state (deserialized) and is now redundant.
+      worker->Stop(CertProvisioningWorkerState::kSucceeded);
+      continue;
+    }
   }
 
   if (!queued_profiles_to_update_.empty()) {

@@ -54,6 +54,7 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   const String& ClassId() const { return class_id_; }
 
   HTMLFormElement* formOwner() const override;
+  HTMLElement* formForBinding() const override;
 
   bool ContainsJavaApplet() const;
 

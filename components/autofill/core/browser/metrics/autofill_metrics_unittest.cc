@@ -5647,10 +5647,9 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
     }
     std::map<std::string, int64_t> expected = {
         {UFIT::kFormSessionIdentifierName,
-         AutofillMetrics::FormGlobalIdToHash64Bit(form_.global_id())},
+         FormGlobalIdToHash64Bit(form_.global_id())},
         {UFIT::kFieldSessionIdentifierName,
-         AutofillMetrics::FieldGlobalIdToHash64Bit(
-             form_.fields()[i].global_id())},
+         FieldGlobalIdToHash64Bit(form_.fields()[i].global_id())},
         {UFIT::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form_.fields()[i])).value()},
         {UFIT::kAutofillSkippedStatusName, skipped_status_vector.data()[0]},

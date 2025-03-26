@@ -42,19 +42,18 @@ export class CrActionMenuDemoElement extends CrLitElement {
       alignmentOptions_: {type: Array},
       customAlignmentX_: {type: String},
       customAlignmentY_: {type: String},
-      statusText_: {type: String},
     };
   }
 
-  protected alignmentOptions_: AnchorAlignmentKey[] = [
+  protected accessor alignmentOptions_: AnchorAlignmentKey[] = [
     'BEFORE_START',
     'AFTER_START',
     'CENTER',
     'BEFORE_END',
     'AFTER_END',
   ];
-  protected customAlignmentX_: AnchorAlignmentKey = 'CENTER';
-  protected customAlignmentY_: AnchorAlignmentKey = 'CENTER';
+  protected accessor customAlignmentX_: AnchorAlignmentKey = 'CENTER';
+  protected accessor customAlignmentY_: AnchorAlignmentKey = 'CENTER';
 
   protected onShowAnchoredMenuClick_(event: MouseEvent) {
     this.$.menu.showAt(event.target as HTMLElement);

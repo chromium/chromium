@@ -55,6 +55,8 @@ SkiaOutputDeviceOffscreen::SkiaOutputDeviceOffscreen(
       kBGRA_8888_SkColorType;
   capabilities_.sk_color_type_map[SinglePlaneFormat::kBGRX_8888] =
       kBGRA_8888_SkColorType;
+  capabilities_.sk_color_type_map[SinglePlaneFormat::kRGBA_F16] =
+      kRGBA_F16_SkColorType;
 }
 
 SkiaOutputDeviceOffscreen::~SkiaOutputDeviceOffscreen() {

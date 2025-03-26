@@ -19,6 +19,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -170,9 +171,10 @@ void ShellDownloadManagerDelegate::ChooseDownloadPath(
 #if BUILDFLAG(IS_WIN)
   std::wstring file_part = base::FilePath(suggested_path).BaseName().value();
   wchar_t file_name[MAX_PATH];
-  base::wcslcpy(file_name, file_part.c_str(), std::size(file_name));
+  UNSAFE_TODO(
+      base::wcslcpy(file_name, file_part.c_str(), std::size(file_name)));
   OPENFILENAME save_as;
-  ZeroMemory(&save_as, sizeof(save_as));
+  UNSAFE_TODO(ZeroMemory(&save_as, sizeof(save_as)));
   save_as.lStructSize = sizeof(OPENFILENAME);
   WebContents* web_contents = DownloadItemUtils::GetWebContents(item);
   // |web_contents| could be null if the tab was quickly closed.

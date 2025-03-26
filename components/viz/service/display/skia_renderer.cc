@@ -1440,9 +1440,25 @@ bool SkiaRenderer::NeedsLayerForColorConversion(
 }
 
 gfx::ColorSpace SkiaRenderer::CurrentDrawLayerColorSpace() const {
-  return hdr_color_conversion_layer_reset_
-             ? gfx::ColorSpace::CreateExtendedSRGB()
-             : RenderPassColorSpace(current_frame()->current_render_pass);
+  if (hdr_color_conversion_layer_reset_) {
+    // A color conversion layer allows us to draw everything in extended sRGB.
+    return gfx::ColorSpace::CreateExtendedSRGB();
+  }
+
+  // `NeedsLayerForColorConversion` can return false when no quads in a render
+  // pass require blending. To correctly handle color conversion, the
+  // destination color space (the result of this function) must match the actual
+  // render pass backing. We thus cannot unconditionally use the compositing
+  // color space because it may not be what SCANOUT render pass backings use.
+  const auto it =
+      render_pass_backings_.find(current_frame()->current_render_pass->id);
+  if (it != render_pass_backings_.end()) {
+    return it->second.color_space;
+  }
+
+  // If there is no render pass backing, we must be drawing the root pass.
+  CHECK(!output_surface_->capabilities().renderer_allocates_images);
+  return RenderPassColorSpace(current_frame()->root_render_pass);
 }
 
 void SkiaRenderer::BeginDrawingRenderPass(
@@ -3643,7 +3659,8 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     DCHECK(!requirements.is_scanout);
     usage |= gpu::SHARED_IMAGE_USAGE_MIPMAP;
   }
-  if (requirements.is_scanout) {
+  if (requirements.is_scanout &&
+      !settings_->force_non_scanout_backing_for_pixel_tests) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
 #if BUILDFLAG(IS_WIN)

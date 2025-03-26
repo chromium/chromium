@@ -39,6 +39,7 @@ class MockCanvasAsyncBlobCreator : public CanvasAsyncBlobCreator {
             base::TimeTicks(),
             document->GetExecutionContext(),
             0,
+            CanvasInterventionsHelper::CanvasInterventionType::kNone,
             nullptr) {
     if (fail_encoder_initialization)
       fail_encoder_initialization_for_test_ = true;
