@@ -337,16 +337,20 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     private void signinInternal(SignInState signInState) {
-        assert isSigninAllowed()
-                : String.format(
-                        "Sign-in isn't allowed!\n"
-                                + "  mSignInState: %s\n"
-                                + "  mSigninAllowedPref: %s\n"
-                                + "  Signed-in account: %s",
-                        mSignInState,
-                        mSigninAllowedPref,
-                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        assert signInState != null : "SigninState shouldn't be null!";
+        if (signInState == null) {
+            throw new IllegalArgumentException("SigninState shouldn't be null!");
+        }
+        if (!isSigninAllowed()) {
+            throw new IllegalStateException(
+                    String.format(
+                            "Sign-in isn't allowed!\n"
+                                    + "  mSignInState: %s\n"
+                                    + "  mSigninAllowedPref: %s\n"
+                                    + "  Signed-in account: %s",
+                            mSignInState,
+                            mSigninAllowedPref,
+                            mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+        }
 
         // The mSignInState must be updated prior to the async processing below, as this indicates
         // that a signin operation is in progress and prevents other sign in operations from being
