@@ -22,10 +22,12 @@ class BackButtonProperties {
             new WritableObjectPropertyKey<>();
     public static WritableIntPropertyKey BACKGROUND_HIGHLIGHT_RESOURCE =
             new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<Runnable> LONG_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
 
     public static PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                CLICK_LISTENER, TINT_COLOR_LIST, BACKGROUND_HIGHLIGHT_RESOURCE,
+                CLICK_LISTENER, TINT_COLOR_LIST, BACKGROUND_HIGHLIGHT_RESOURCE, LONG_CLICK_LISTENER
             };
 
     private BackButtonProperties() {}

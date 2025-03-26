@@ -274,13 +274,9 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     public boolean showContextMenuForChild(View originalView) {
-        if (mBackButton == originalView) {
-            // Display backwards navigation popup.
-            displayNavigationPopup(false, mBackButton);
-            return true;
-        } else if (mForwardButton == originalView) {
+        if (mForwardButton == originalView) {
             // Display forwards navigation popup.
-            displayNavigationPopup(true, mForwardButton);
+            displayNavigationPopupForForwardButton(mForwardButton);
             return true;
         }
         return super.showContextMenuForChild(originalView);
@@ -296,7 +292,7 @@ public class ToolbarTablet extends ToolbarLayout
         super.onWindowFocusChanged(hasWindowFocus);
     }
 
-    private void displayNavigationPopup(boolean isForward, View anchorView) {
+    private void displayNavigationPopupForForwardButton(View anchorView) {
         Tab tab = getToolbarDataProvider().getTab();
         if (tab == null || tab.getWebContents() == null) return;
         mNavigationPopup =
@@ -304,9 +300,7 @@ public class ToolbarTablet extends ToolbarLayout
                         tab.getProfile(),
                         getContext(),
                         tab.getWebContents().getNavigationController(),
-                        isForward
-                                ? NavigationPopup.Type.TABLET_FORWARD
-                                : NavigationPopup.Type.TABLET_BACK,
+                        NavigationPopup.Type.TABLET_FORWARD,
                         getToolbarDataProvider()::getTab,
                         mHistoryDelegate);
         mNavigationPopup.show(anchorView);

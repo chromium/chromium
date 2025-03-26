@@ -905,6 +905,12 @@ public class ToolbarManager
                             browsingModeThemeColorProvider);
         }
 
+        NavigationPopup.HistoryDelegate historyDelegate =
+                (tab) -> {
+                    HistoryManagerUtils.showHistoryManager(
+                            tab.getWindowAndroid().getActivity().get(), tab, tab.getProfile());
+                };
+
         ImageButton backButton = mControlContainer.findViewById(R.id.back_button);
         if (backButton != null) {
             mBackButtonCoordinator =
@@ -915,7 +921,9 @@ public class ToolbarManager
                                 final boolean isSuccess = mToolbarTabController.back();
                                 if (isSuccess) RecordUserAction.record("MobileToolbarBack");
                             },
-                            browsingModeThemeColorProvider);
+                            browsingModeThemeColorProvider,
+                            mActivityTabProvider,
+                            historyDelegate);
         }
 
         mToolbarLongPressMenuHandler =
@@ -947,7 +955,8 @@ public class ToolbarManager
                         initializeWithIncognitoColors,
                         mConstraintsProxy,
                         onLongClickListener,
-                        progressBar);
+                        progressBar,
+                        historyDelegate);
         mTabStripHeightSupplier = new ObservableSupplierImpl<>(mToolbar.getTabStripHeight());
         mActionModeController =
                 new ActionModeController(
@@ -1577,12 +1586,8 @@ public class ToolbarManager
             boolean initializeWithIncognitoColors,
             ObservableSupplier<Integer> constraintsSupplier,
             OnLongClickListener onLongClickListener,
-            ToolbarProgressBar progressBar) {
-        NavigationPopup.HistoryDelegate historyDelegate =
-                (tab) -> {
-                    HistoryManagerUtils.showHistoryManager(
-                            tab.getWindowAndroid().getActivity().get(), tab, tab.getProfile());
-                };
+            ToolbarProgressBar progressBar,
+            NavigationPopup.HistoryDelegate historyDelegate) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,

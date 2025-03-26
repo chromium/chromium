@@ -42,6 +42,17 @@ class BackButtonViewBinder {
         } else if (key == BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE) {
             button.setBackgroundResource(
                     model.get(BackButtonProperties.BACKGROUND_HIGHLIGHT_RESOURCE));
+        } else if (key == BackButtonProperties.LONG_CLICK_LISTENER) {
+            final var listener = model.get(BackButtonProperties.LONG_CLICK_LISTENER);
+            button.setOnLongClickListener(
+                    view -> {
+                        if (listener == null) {
+                            return false;
+                        }
+
+                        listener.run();
+                        return true;
+                    });
         } else {
             assert false : String.format("Unsupported property key %s", key.toString());
         }
