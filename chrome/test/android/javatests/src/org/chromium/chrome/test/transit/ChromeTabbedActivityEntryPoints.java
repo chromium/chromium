@@ -26,6 +26,17 @@ public class ChromeTabbedActivityEntryPoints {
         return sentinel.travelToSync(entryPageStation, ctaTestRule::startMainActivityOnBlankPage);
     }
 
+    /** Start the ChromeTabbedActivity in a web page at the given |url|. */
+    public static WebPageStation startOnUrl(ChromeTabbedActivityTestRule ctaTestRule, String url) {
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+
+        WebPageStation entryPageStation =
+                WebPageStation.newBuilder().withEntryPoint().withExpectedUrlSubstring(url).build();
+        return sentinel.travelToSync(
+                entryPageStation, () -> ctaTestRule.startMainActivityWithURL(url));
+    }
+
     /** Start the ChromeTabbedActivity in an NTP. */
     public static RegularNewTabPageStation startOnNtp(ChromeTabbedActivityTestRule ctaTestRule) {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
