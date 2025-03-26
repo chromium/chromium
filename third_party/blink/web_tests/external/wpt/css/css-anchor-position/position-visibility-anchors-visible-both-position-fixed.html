@@ -3,12 +3,12 @@
 <meta name="assert" content="position-visibility: anchors-visible should work with a fixed-position anchored element." />
 <title>CSS Anchor Positioning Test: position-visibility: anchors-visible</title>
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7758">
-<link rel="match" href="position-visibility-anchors-visible-position-fixed-ref.html">
+<link rel="match" href="position-visibility-anchors-visible-both-position-fixed-ref.html">
 <style>
   #anchor {
     anchor-name: --a1;
-    position: absolute;
-    top: 0;
+    position: fixed;
+    top: -100px;
     left: 0;
     width: 100px;
     height: 100px;
@@ -21,7 +21,7 @@
     position-area: bottom right;
     width: 100px;
     height: 100px;
-    background: red;
+    background: green;
     position: fixed;
     top: 0;
     left: 0;
@@ -32,11 +32,7 @@
   }
 </style>
 
-<!-- Test passes if #target is not visible, due to #anchor being off-screen. -->
+<!-- Test passes if #target is visible because there are no intervening clips. -->
 <div id="anchor">anchor</div>
 <div id="target">target</div>
 <div id="spacer"></div>
-
-<script>
-  window.scrollTo(0, 100);
-</script>
