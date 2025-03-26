@@ -2099,6 +2099,8 @@ interface TransformStreamDefaultController
     method error
     method terminate
 interface Translator
+    static method availability
+    static method create
     attribute @@toStringTag
     getter inputQuota
     getter sourceLanguage

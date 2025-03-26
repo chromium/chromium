@@ -4,18 +4,31 @@
     SecureContext
 ]
 interface Translator {
-[
-  MeasureAs=Translator_Translate,
-  CallWith=ScriptState,
-  RaisesException
-]
+  [
+    MeasureAs=Translator_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Translator> create(TranslatorCreateOptions options);
+  [
+    MeasureAs=Translator_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<AIAvailability> availability(TranslatorCreateCoreOptions options);
+
+  [
+    MeasureAs=Translator_Translate,
+    CallWith=ScriptState,
+    RaisesException
+  ]
   Promise<DOMString> translate(DOMString input, optional TranslatorTranslateOptions options = {});
 
-[
-  MeasureAs=Translator_TranslateStreaming,
-  CallWith=ScriptState,
-  RaisesException
-]
+  [
+    MeasureAs=Translator_TranslateStreaming,
+    CallWith=ScriptState,
+    RaisesException
+  ]
   ReadableStream translateStreaming(DOMString input, optional TranslatorTranslateOptions options = {});
 
   [MeasureAs=Translator_SourceLanguage]
@@ -23,17 +36,17 @@ interface Translator {
   [MeasureAs=Translator_TargetLanguage]
   readonly attribute DOMString targetLanguage;
 
-[
-  MeasureAs=Translator_Destroy,
-  CallWith=ScriptState
-]
+  [
+    MeasureAs=Translator_Destroy,
+    CallWith=ScriptState
+  ]
   undefined destroy();
 
-[
-  MeasureAs=Translator_MeasureInputUsage,
-  CallWith=ScriptState,
-  RaisesException
-]
+  [
+    MeasureAs=Translator_MeasureInputUsage,
+    CallWith=ScriptState,
+    RaisesException
+  ]
   Promise<double> measureInputUsage(
     DOMString input,
     optional TranslatorTranslateOptions options = {}

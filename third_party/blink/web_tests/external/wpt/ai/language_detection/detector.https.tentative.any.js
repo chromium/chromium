@@ -89,4 +89,4 @@ promise_test(async t => {
   await testAbortPromise(t, signal => {
     return detector.measureInputUsage('hello', {signal});
   });
-}, 'Aborting AITranslator.measureInputUsage().');
+}, 'Aborting Translator.measureInputUsage().');

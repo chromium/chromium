@@ -10178,6 +10178,8 @@ interface TransitionEvent : Event
     getter pseudoElement
     method constructor
 interface Translator
+    static method availability
+    static method create
     attribute @@toStringTag
     getter inputQuota
     getter sourceLanguage

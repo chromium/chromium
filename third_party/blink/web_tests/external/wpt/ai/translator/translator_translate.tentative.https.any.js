@@ -12,7 +12,7 @@
 
 async function createTranslator(options) {
   return await test_driver.bless('Create translator', async () => {
-    return await ai.translator.create(options);
+    return await Translator.create(options);
   });
 }
 
@@ -21,18 +21,18 @@ promise_test(async t => {
 
   // Creating the translator without user activation rejects with
   // NotAllowedError.
-  const createPromise = ai.translator.create(languagePair);
+  const createPromise = Translator.create(languagePair);
   await promise_rejects_dom(t, 'NotAllowedError', createPromise);
 
   // Creating the translator with user activation succeeds.
   await createTranslator(languagePair);
 
   // Creating it should have switched it to available.
-  const availability = await ai.translator.availability(languagePair);
+  const availability = await Translator.availability(languagePair);
   assert_equals(availability, 'available');
 
   // Now that it is available, we should no longer need user activation.
-  await ai.translator.create(languagePair);
+  await Translator.create(languagePair);
 }, 'Translator.create() requires user activation when availability is "downloadable.');
 
 promise_test(async t => {
@@ -60,7 +60,7 @@ promise_test(async t => {
       await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
   assert_equals(translator.sourceLanguage, 'en');
   assert_equals(translator.targetLanguage, 'ja');
-}, 'Translator: sourceLanguage and targetLanguage are equal to their respective option passed in to AITranslatorFactory.create.');
+}, 'Translator: sourceLanguage and targetLanguage are equal to their respective option passed in to Translator.create.');
 
 promise_test(async (t) => {
   const translator =
@@ -78,14 +78,14 @@ promise_test(async t => {
       {signal: controller.signal, sourceLanguage: 'en', targetLanguage: 'ja'});
 
   await promise_rejects_dom(t, 'AbortError', createPromise);
-}, 'AITranslatorFactory.create() call with an aborted signal.');
+}, 'Translator.create() call with an aborted signal.');
 
 promise_test(async t => {
   await testAbortPromise(t, signal => {
     return createTranslator(
         {signal, sourceLanguage: 'en', targetLanguage: 'ja'});
   });
-}, 'Aborting AITranslatorFactory.create().');
+}, 'Aborting Translator.create().');
 
 promise_test(async t => {
   const controller = new AbortController();
@@ -140,11 +140,11 @@ promise_test(async t => {
   for (const progressEvent of progressEvents) {
     assert_equals(progressEvent.total, 1);
   }
-}, 'AITranslatorFactory.create() monitor option is called correctly.');
+}, 'Translator.create() monitor option is called correctly.');
 
 promise_test(async t => {
   const translator =
-      await ai.translator.create({sourceLanguage: 'en', targetLanguage: 'ja'});
+      await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja'});
 
   // Strings containing only white space are not translatable.
   const nonTranslatableStrings = ['', ' ', '     ', ' \r\n\t\f'];

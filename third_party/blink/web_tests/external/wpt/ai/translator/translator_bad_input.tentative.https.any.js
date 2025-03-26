@@ -9,15 +9,15 @@
 
 promise_test(async t => {
   await promise_rejects_js(
-      t, TypeError, ai.translator.create(/*empty options*/));
-}, 'AITranslatorFactory.create rejects with TypeError if no options are passed.');
+      t, TypeError, Translator.create(/*empty options*/));
+}, 'Translator.create rejects with TypeError if no options are passed.');
 
 promise_test(async t => {
   await promise_rejects_js(
-      t, TypeError, ai.translator.create({sourceLanguage: 'en'}));
-}, 'AITranslatorFactory.create rejects with TypeError targetLanguage is not provided.');
+      t, TypeError, Translator.create({sourceLanguage: 'en'}));
+}, 'Translator.create rejects with TypeError targetLanguage is not provided.');
 
 promise_test(async t => {
   await promise_rejects_js(
-      t, TypeError, ai.translator.create({targetLanguage: 'en'}));
-}, 'AITranslatorFactory.create rejects with TypeError sourceLanguage is not provided.');
+      t, TypeError, Translator.create({targetLanguage: 'en'}));
+}, 'Translator.create rejects with TypeError sourceLanguage is not provided.');
