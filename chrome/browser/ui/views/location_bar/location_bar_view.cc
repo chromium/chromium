@@ -575,9 +575,6 @@ void LocationBarView::RemovedFromWidget() {
   }
 }
 
-void LocationBarView::OnWillChangeFocus(views::View* before, views::View* now) {
-}
-
 void LocationBarView::OnDidChangeFocus(views::View* before, views::View* now) {
   // TODO(crbug.com/376283383): Remove this once Lens Overlay is migrated to the
   // new page actions design.

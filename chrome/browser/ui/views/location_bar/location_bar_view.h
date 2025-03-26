@@ -230,7 +230,6 @@ class LocationBarView
   void ChildPreferredSizeChanged(views::View* child) override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* before, views::View* now) override;
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   // IconLabelBubbleView::Delegate:

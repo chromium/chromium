@@ -233,9 +233,6 @@ void LensOverlayEntryPointController::OnViewRemovedFromWidget(
   location_bar_->GetFocusManager()->RemoveFocusChangeListener(this);
 }
 
-void LensOverlayEntryPointController::OnWillChangeFocus(views::View* before,
-                                                        views::View* now) {}
-
 void LensOverlayEntryPointController::OnDidChangeFocus(views::View* before,
                                                        views::View* now) {
   UpdatePageActionState();
