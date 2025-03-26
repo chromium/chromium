@@ -183,7 +183,12 @@ std::string GetBase64EncodedInTransactionalDataForPayload(
   transaction_data.mutable_payload()->set_value(
       approval_url.SerializeAsString());
   transaction_data.mutable_payload()->set_type_url(kPacpUrlPayloadMessageType);
-  return base::Base64Encode(transaction_data.SerializeAsString());
+  std::string base_64_url_encoded_data;
+  base::Base64UrlEncode(transaction_data.SerializeAsString(),
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &base_64_url_encoded_data);
+  CHECK(base_64_url_encoded_data.length() > 0);
+  return base_64_url_encoded_data;
 }
 
 // Returns the PACP widget url with the appropriate query parameters.
