@@ -2117,11 +2117,30 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
                            return info.param ? "origin_keyed" : "site_keyed";
                          });
 
-INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
-                         StorageAccessAPIStorageBrowserTest,
-                         testing::Combine(testing::Values(TestType::kFrame,
-                                                          TestType::kWorker),
-                                          testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    StorageAccessAPIStorageBrowserTest,
+    testing::Combine(testing::Values(TestType::kFrame, TestType::kWorker),
+                     testing::Bool()  // IsStoragePartitioned
+                     ),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<std::tuple<TestType, bool>>& info) {
+      std::string name = base::NumberToString(info.index);
+      switch (std::get<0>(info.param)) {
+        case TestType::kFrame:
+          name += "_frame";
+          break;
+        case TestType::kWorker:
+          name += "_worker";
+          break;
+      }
+      if (std::get<1>(info.param)) {
+        name += "_partitioned";
+      } else {
+        name += "_unpartitioned";
+      }
+      return name;
+    });
 
 class StorageAccessAPIWithFirstPartySetsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
