@@ -23,8 +23,8 @@ steps:
         path: "/root/.ssh"
 
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
-    id: 'sync-deps'
-    waitFor: [ 'configure-gclient' ]
+    id: 'prepare'
+    waitFor: [ 'sshkey' ]
     entrypoint: 'bash'
     args:
       - '-c'
