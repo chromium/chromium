@@ -467,6 +467,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kLanguageModel_Create,
           WebFeature::kLanguageModel_Prompt,
           WebFeature::kLanguageModel_PromptStreaming,
+          // NOTE: before adding new use counters here, verify in UMA that their
+          // emissions are very rare, e.g. <1% of page loads.
       }));
   return *opt_in_features;
 }
