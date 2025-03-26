@@ -20,19 +20,6 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<PrivacySandboxDialogMixinInterface> => {
       class PrivacySandboxDialogMixin extends superClass {
-        wasScrolledToBottom: boolean = true;
-
-        private didStartWithScrollbar_: boolean = false;
-        private wasScrolledToBottomResolver_: PromiseResolver<void>;
-        private moreButtonInitialized_: PromiseResolver<void>;
-        private shouldShowV2_: boolean;
-
-        /**
-         * Contains true if the dialog dismissal buttons should be the same
-         * styling.
-         */
-        private equalizedButtons_: boolean;
-
         static get properties() {
           return {
             wasScrolledToBottom: {
@@ -62,6 +49,19 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             },
           };
         }
+
+        wasScrolledToBottom: boolean = true;
+        private didStartWithScrollbar_: boolean = false;
+        private wasScrolledToBottomResolver_: PromiseResolver<void>;
+        private moreButtonInitialized_: PromiseResolver<void>;
+        private shouldShowV2_: boolean;
+
+        /**
+         * Contains true if the dialog dismissal buttons should be the same
+         * styling.
+         */
+        private equalizedButtons_: boolean;
+
 
         shouldShowV2(): boolean {
           return this.shouldShowV2_;

@@ -146,6 +146,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     };
   }
 
+  private prefs_: {[key: string]: any};
   private selectedPage_: Page;
   private narrow_: boolean;
   private collapsed_: boolean;

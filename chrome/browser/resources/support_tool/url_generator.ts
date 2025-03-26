@@ -47,10 +47,6 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
         type: Array,
         value: () => [],
       },
-      generatedURL_: {
-        type: String,
-        value: '',
-      },
       errorMessage_: {
         type: String,
         value: '',
