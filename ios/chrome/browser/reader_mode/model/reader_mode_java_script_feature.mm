@@ -4,27 +4,46 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 
-#import "base/metrics/histogram_macros.h"
 #import "base/values.h"
 #import "components/dom_distiller/core/distillable_page_detector.h"
 #import "components/dom_distiller/core/page_features.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
 const char kScriptName[] = "reader_mode";
 const char kScriptHandlerName[] = "ReaderModeMessageHandler";
 
-void RecordHeuristicLatencyIfAvailable(const base::Value::Dict& body) {
+// Tab helper method to record the latency of the heuristic JavaScript
+// execution.
+void RecordHeuristicLatencyIfAvailable(web::WebState* web_state,
+                                       const base::Value::Dict& body) {
   std::optional<double> opt_latency = body.FindDouble("time");
   if (!opt_latency.has_value()) {
     return;
   }
-  UMA_HISTOGRAM_TIMES(kReaderModeHeuristicLatencyHistogram,
-                      base::Milliseconds(opt_latency.value()));
+  ReaderModeTabHelper* tab_helper =
+      ReaderModeTabHelper::FromWebState(web_state);
+  if (tab_helper) {
+    tab_helper->RecordReaderModeHeuristicLatency(
+        base::Milliseconds(opt_latency.value()));
+  }
+}
+
+// Tab helper method to process the result of the DOM distiller heuristic.
+void ReaderModeHeuristicResultAvailable(web::WebState* web_state,
+                                        const GURL& original_url,
+                                        ReaderModeHeuristicResult result) {
+  ReaderModeTabHelper* tab_helper =
+      ReaderModeTabHelper::FromWebState(web_state);
+  if (tab_helper) {
+    tab_helper->HandleReaderModeHeuristicResult(original_url, result);
+  }
 }
 
 }  // namespace
@@ -64,18 +83,18 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
   }
 
   if (!message.body() || !message.body()->is_dict()) {
-    UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram,
-                              ReaderModeHeuristicResult::kMalformedResponse);
+    ReaderModeHeuristicResultAvailable(
+        web_state, url.value(), ReaderModeHeuristicResult::kMalformedResponse);
     return;
   }
 
-  RecordHeuristicLatencyIfAvailable(message.body()->GetDict());
+  RecordHeuristicLatencyIfAvailable(web_state, message.body()->GetDict());
 
   std::optional<std::vector<double>> result =
       TransformToDerivedFeatures(message.body()->GetDict(), url.value());
   if (!result.has_value()) {
-    UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram,
-                              ReaderModeHeuristicResult::kMalformedResponse);
+    ReaderModeHeuristicResultAvailable(
+        web_state, url.value(), ReaderModeHeuristicResult::kMalformedResponse);
     return;
   }
 
@@ -88,22 +107,20 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
   double long_page_score = long_page_detector->Score(result.value()) -
                            long_page_detector->GetThreshold();
 
+  ReaderModeHeuristicResult heuristic_result;
   if (long_page_score > 0 && page_score > 0) {
-    UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram,
-                              ReaderModeHeuristicResult::kReaderModeEligible);
+    heuristic_result = ReaderModeHeuristicResult::kReaderModeEligible;
   } else if (page_score <= 0 && long_page_score <= 0) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kReaderModeHeuristicResultHistogram,
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength);
+    heuristic_result =
+        ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength;
   } else if (page_score <= 0) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kReaderModeHeuristicResultHistogram,
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly);
+    heuristic_result =
+        ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly;
   } else {
-    UMA_HISTOGRAM_ENUMERATION(
-        kReaderModeHeuristicResultHistogram,
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength);
+    heuristic_result =
+        ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength;
   }
+  ReaderModeHeuristicResultAvailable(web_state, url.value(), heuristic_result);
 }
 
 void ReaderModeJavaScriptFeature::TriggerReaderModeHeuristic(
