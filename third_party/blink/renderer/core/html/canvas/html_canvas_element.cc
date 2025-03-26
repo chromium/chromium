@@ -1630,7 +1630,30 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
 }
 
 void HTMLCanvasElement::DiscardResourceProvider() {
-  canvas2d_bridge_.reset();
+  // Historically this method dropped `canvas2d_bridge_`. However, changing
+  // CanvasRenderingContext2D::IsPaintable() to check for the presence of the
+  // resource provider instead of the bridge has the intentional behavioral
+  // change that we no longer guard recreation of the resource provider in
+  // CanvasRenderingContext2D::Restore() by a check of IsPaintable() being true.
+  // In this case, it is necessary to preserve the bridge (and hibernation
+  // handler) to preserve the invariant that the hibernation handler is present
+  // whenever there is a valid resource provider for Canvas2D. We can simply
+  // clear hibernation rather than dropping the bridge entirely.
+  if (CanvasRenderingContext::
+          CheckProviderInCanvas2DRenderingContextIsPaintable()) {
+    if (IsHibernating()) {
+      // Ensure consistency of metrics reporting across the change from the
+      // previous code flow.
+      // TODO(crbug.com/40280152): Determine how we want to report metrics here
+      // in the long-term once the dust has settled on the killswitch removal.
+      CanvasHibernationHandler::ReportHibernationEvent(
+          CanvasHibernationHandler::HibernationEvent::
+              kHibernationEndedWithTeardown);
+      GetHibernationHandler()->Clear();
+    }
+  } else {
+    canvas2d_bridge_.reset();
+  }
   ResetLayer();
   CanvasResourceHost::DiscardResourceProvider();
   dirty_rect_ = gfx::Rect();

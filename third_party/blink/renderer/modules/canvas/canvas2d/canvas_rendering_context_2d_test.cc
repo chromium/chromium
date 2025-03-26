@@ -2166,10 +2166,15 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
   }
 }
 
+// Tests that when `kIsPaintableChecksResourceProviderInsteadOfBridge` is
+// disabled, tearing down the page causes a pending hibernation to be aborted
+// because the hibernation handler was torn down.
 TEST_P(CanvasRenderingContext2DTestAccelerated,
-       TeardownWhileHibernationIsPendingAbortsHibernation) {
+       TeardownWhileHibernationIsPendingAbortsHibernationDueToBridgeTeardown) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+  scoped_feature_list.InitWithFeatures(
+      {features::kCanvas2DHibernation},
+      {features::kIsPaintableChecksResourceProviderInsteadOfBridge});
 
   CreateContext(kNonOpaque);
   CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
@@ -2215,6 +2220,65 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
         "Blink.Canvas.HibernationEvents",
         CanvasHibernationHandler::HibernationEvent::
             kHibernationAbortedDueToDestructionWhileHibernatePending,
+        1);
+  }
+}
+
+// Tests that when `kIsPaintableChecksResourceProviderInsteadOfBridge` is
+// enabled, tearing down the page causes a pending hibernation to be aborted
+// because the page teardown causes the resource provider to be discarded.
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       TeardownWhileHibernationIsPendingAbortsHibernationDueToSurfaceLoss) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kCanvas2DHibernation,
+       features::kIsPaintableChecksResourceProviderInsteadOfBridge},
+      {});
+
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
+  auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
+
+  // Install a minimal delay for testing to ensure that the test remains fast
+  // to execute.
+  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
+
+  EXPECT_FALSE(handler.IsHibernating());
+
+  // Verify that going to the background triggers hibernation asynchronously.
+  {
+    base::HistogramTester histogram_tester;
+    GetDocument().GetPage()->SetVisibilityState(
+        mojom::blink::PageVisibilityState::kHidden,
+        /*is_initial_state=*/false);
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
+    EXPECT_FALSE(handler.IsHibernating());
+  }
+
+  // Tear down the page while hibernation is pending.
+  TearDownPage();
+
+  // Verify that running the hibernation task aborts hibernation (and doesn't
+  // crash by calling into the destroyed state).
+  {
+    base::HistogramTester histogram_tester;
+
+    // Run the task that initiates hibernation, which has been posted as an idle
+    // task.
+    ThreadScheduler::Current()
+        ->ToMainThreadScheduler()
+        ->StartIdlePeriodForTesting();
+    blink::test::RunPendingTasks();
+
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedBecauseNoSurface,
         1);
   }
 }

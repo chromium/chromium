@@ -1214,11 +1214,9 @@ BASE_FEATURE_ENUM_PARAM(IsolateSandboxedIframesGrouping,
 // from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
 // NOTE: Do not check this feature directly: Check
 // CheckProviderInCanvas2DRenderingContextIsPaintable() instead.
-// TODO(crbug.com/40280152): Fix issues between interaction of this code and
-// CanvasRenderingContext2D::Restore() and re-enable.
 BASE_FEATURE(kIsPaintableChecksResourceProviderInsteadOfBridge,
              "IsPaintableChecksResourceProviderInsteadOfBridge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kKalmanDirectionCutOff,
              "KalmanDirectionCutOff",
