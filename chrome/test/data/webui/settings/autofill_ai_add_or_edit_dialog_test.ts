@@ -178,7 +178,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         // Edit first field.
         const firstAttributeInstanceField =
             dialog.shadowRoot!.querySelector<CrInputElement>(
-                '#attributeInstanceField');
+                '#attribute-instance-field');
         assertTrue(!!firstAttributeInstanceField);
         firstAttributeInstanceField.value = newAttributeInstanceValue;
         await flushTasks();
@@ -221,7 +221,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     // The validation error should not be visible yet and the save button
     // should be enabled.
     const validationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validationError');
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error');
     const saveButton =
         dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!validationError);
@@ -233,7 +233,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     // fields.
     const attributeInstanceFields =
         dialog.shadowRoot!.querySelectorAll<CrInputElement>(
-            '#attributeInstanceField');
+            '#attribute-instance-field');
     assertTrue(!!attributeInstanceFields);
     attributeInstanceFields.forEach(
         (attributeInstanceField: CrInputElement) =>
@@ -553,7 +553,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     // The validation error should not be visible yet and the save button
     // should be enabled.
     const validationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validationError');
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error');
     const saveButton =
         dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!validationError);
@@ -594,18 +594,31 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
     await flushTasks();
 
-    // The validation error should not be visible yet and the save button
-    // should be enabled.
-    const validationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validationError');
+    // The invalid label and validation errors should not be visible yet, and
+    // the save button should be enabled.
+    const dateSelectLabel =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#date-select-label');
+    const invalidDateSelectLabel =
+        dialog.shadowRoot!.querySelector<HTMLElement>(
+            '#invalid-date-select-label');
+    const dateValidationError =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#date-validation-error');
+    const regularValidationError =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error');
     const saveButton =
         dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    assertTrue(!!validationError);
+    assertTrue(!!dateSelectLabel);
+    assertTrue(!!invalidDateSelectLabel);
+    assertTrue(!!dateValidationError);
     assertTrue(!!saveButton);
-    assertFalse(isVisible(validationError));
+    assertTrue(isVisible(dateSelectLabel));
+    assertFalse(isVisible(invalidDateSelectLabel));
+    assertFalse(isVisible(dateValidationError));
+    assertFalse(isVisible(regularValidationError));
     assertFalse(saveButton.disabled);
 
-    // Simulate that the user clears the date field.
+    // Simulate that the user introduces an invalid date (30th of February).
+    const invalidDate = {month: '2', day: '30', year: '2022'};
     const monthSelect =
         dialog.shadowRoot!.querySelector<HTMLSelectElement>('#month-select');
     const daySelect =
@@ -615,78 +628,118 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     assertTrue(!!monthSelect);
     assertTrue(!!daySelect);
     assertTrue(!!yearSelect);
+    await simulateDateChange(monthSelect, daySelect, yearSelect, invalidDate);
+
+    // The date is invalid, but the save button was not clicked yet, so there
+    // is no validation error.
+    assertTrue(isVisible(dateSelectLabel));
+    assertFalse(isVisible(invalidDateSelectLabel));
+    assertFalse(isVisible(dateValidationError));
+    assertFalse(isVisible(regularValidationError));
+    assertFalse(saveButton.disabled);
+
+    // Simulate that the user clears the date field.
     await simulateDateChange(
         monthSelect, daySelect, yearSelect, {month: '', day: '', year: ''});
 
     // All fields are empty, but the save button was not clicked yet, so there
     // is no validation error.
-    assertFalse(isVisible(validationError));
+    assertTrue(isVisible(dateSelectLabel));
+    assertFalse(isVisible(invalidDateSelectLabel));
+    assertFalse(isVisible(dateValidationError));
+    assertFalse(isVisible(regularValidationError));
     assertFalse(saveButton.disabled);
 
     saveButton.click();
     await flushTasks();
-    // All fields are empty and the save button was clicked, so the validation
-    // error should be visible and the save button should be disabled.
-    assertTrue(isVisible(validationError));
+
+    // All fields are empty and the save button was clicked, so the regular
+    // validation error should be visible and the save button should be
+    // disabled. The date validation error and the invalid select label should
+    // not be visible.
+    assertTrue(isVisible(dateSelectLabel));
+    assertFalse(isVisible(invalidDateSelectLabel));
+    assertFalse(isVisible(dateValidationError));
+    assertTrue(isVisible(regularValidationError));
     assertTrue(saveButton.disabled);
 
     await simulateDateChange(
         monthSelect, daySelect, yearSelect,
         {month: '3', day: '17', year: '2024'});
 
-    // One field is not empty, so the validation error should not be visible
-    // anymore and the save button should be enabled.
-    assertFalse(isVisible(validationError));
+    // One field is not empty, so no validation errors
+    // should be visible anymore and the save button should be enabled.
+    assertTrue(isVisible(dateSelectLabel));
+    assertFalse(isVisible(invalidDateSelectLabel));
+    assertFalse(isVisible(dateValidationError));
+    assertFalse(isVisible(regularValidationError));
     assertFalse(saveButton.disabled);
 
     // Populate the name field and completely clear the date field.
     const nameField = dialog.shadowRoot!.querySelector<CrInputElement>(
-        '#attributeInstanceField');
+        '#attribute-instance-field');
     assertTrue(!!nameField);
     nameField.value = 'John Doe';
     await flushTasks();
     await simulateDateChange(
         monthSelect, daySelect, yearSelect, {month: '', day: '', year: ''});
 
-    // One field is not empty, so the validation error should still not be
-    // visible and the save button should be enabled.
-    assertFalse(isVisible(validationError));
+    // One field is not empty, so no validation errors
+    // should be visible and the save button should be enabled.
+    assertTrue(isVisible(dateSelectLabel));
+    assertFalse(isVisible(invalidDateSelectLabel));
+    assertFalse(isVisible(dateValidationError));
+    assertFalse(isVisible(regularValidationError));
     assertFalse(saveButton.disabled);
 
     await simulateDateChange(
         monthSelect, daySelect, yearSelect,
         {month: '2', day: '', year: '2020'});
 
-    // The date is incomplete, so the validation error should be visible and the
-    // save button should be disabled.
-    assertTrue(isVisible(validationError));
+    // The date is incomplete, so the invalid label and the date validation
+    // error should be visible and the save button should be disabled. The
+    // regular validation error should not be visible.
+    assertFalse(isVisible(dateSelectLabel));
+    assertTrue(isVisible(invalidDateSelectLabel));
+    assertTrue(isVisible(dateValidationError));
+    assertFalse(isVisible(regularValidationError));
     assertTrue(saveButton.disabled);
 
     await simulateDateChange(
         monthSelect, daySelect, yearSelect,
         {month: '2', day: '', year: '2020'});
 
-    // The date is incomplete, so the validation error should be visible and the
-    // save button should be disabled.
-    assertTrue(isVisible(validationError));
+    // The date is incomplete, so the invalid label and the date validation
+    // error should be visible and the save button should be disabled. The
+    // regular validation error should not be visible.
+    assertFalse(isVisible(dateSelectLabel));
+    assertTrue(isVisible(invalidDateSelectLabel));
+    assertTrue(isVisible(dateValidationError));
+    assertFalse(isVisible(regularValidationError));
     assertTrue(saveButton.disabled);
 
     await simulateDateChange(
         monthSelect, daySelect, yearSelect,
         {month: '9', day: '5', year: '2022'});
 
-    // The date is now valid, so the validation error should be visible and the
-    // save button should be disabled.
-    assertFalse(isVisible(validationError));
+    // The date is now valid, so the invalid label and the date validation error
+    // should not be visible and the save button should be enabled. The regular
+    // validation error should not be visible.
+    assertTrue(isVisible(dateSelectLabel));
+    assertFalse(isVisible(invalidDateSelectLabel));
+    assertFalse(isVisible(dateValidationError));
+    assertFalse(isVisible(regularValidationError));
     assertFalse(saveButton.disabled);
 
-    await simulateDateChange(
-        monthSelect, daySelect, yearSelect,
-        {month: '2', day: '30', year: '2022'});
+    await simulateDateChange(monthSelect, daySelect, yearSelect, invalidDate);
 
-    // The date is now invalid (30th of February), so the validation error
-    // should be visible and the save button should be disabled.
-    assertTrue(isVisible(validationError));
+    // The date is now invalid, so the invalid label and the date validation
+    // error should be visible and the save button should be disabled. The
+    // regular validation error should not be visible.
+    assertFalse(isVisible(dateSelectLabel));
+    assertTrue(isVisible(invalidDateSelectLabel));
+    assertTrue(isVisible(dateValidationError));
+    assertFalse(isVisible(regularValidationError));
     assertTrue(saveButton.disabled);
   });
 
