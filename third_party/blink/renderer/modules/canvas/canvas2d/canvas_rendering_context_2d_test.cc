@@ -291,9 +291,10 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
 
   void TearDown() override;
 
-  void TearDownHost() {
-    // To tear down the host it is both necessary and sufficient to tear down
-    // the document, as the document effectively owns the host.
+  void TearDownPage() {
+    // Synchronously tears down the page, which causes ContextDestroyed() to be
+    // invoked on the canvas element (which in turn causes Stop() to be invoked
+    // on the rendering context).
     web_view_helper_ = nullptr;
   }
 
@@ -2153,10 +2154,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
   EXPECT_TRUE(handler.IsHibernating());
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 
-  // Verify that tearing down the host ends hibernation synchronously.
+  // Verify that tearing down the page ends hibernation synchronously.
   {
     base::HistogramTester histogram_tester;
-    TearDownHost();
+    TearDownPage();
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
         CanvasHibernationHandler::HibernationEvent::
@@ -2195,8 +2196,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  // Tear down the host while hibernation is pending.
-  TearDownHost();
+  // Tear down the page while hibernation is pending.
+  TearDownPage();
 
   // Verify that running the hibernation task aborts hibernation (and doesn't
   // crash by calling into the destroyed state).
