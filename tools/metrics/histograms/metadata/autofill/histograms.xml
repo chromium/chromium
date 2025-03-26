@@ -5095,6 +5095,13 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Query.GetUrlLength" units="bytes"
+    expires_after="2026-03-26">
+  <owner>doland@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>The length of url of GET request sent to Autofill Server.</summary>
+</histogram>
+
 <histogram name="Autofill.Query.HttpResponseOrErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-12-12">
   <owner>battre@chromium.org</owner>
