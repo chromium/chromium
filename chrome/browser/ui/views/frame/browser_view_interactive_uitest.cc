@@ -134,7 +134,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
     // Move mouse to the upper border of the browser window and the toolbar
     // should become visible.
     ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
-        browser_view->GetBoundsInScreen().top_center()));
+        browser_view->GetBoundsInScreen().top_center(),
+        browser_view->GetWidget()->GetNativeWindow()));
     views::test::PropertyWaiter(
         base::BindRepeating(&BrowserView::GetTabStripVisible,
                             base::Unretained(browser_view)),
