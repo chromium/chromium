@@ -1400,10 +1400,6 @@ static_library("ui") {
       "webui/data_sharing/data_sharing_page_handler.h",
       "webui/data_sharing/data_sharing_ui.cc",
       "webui/data_sharing/data_sharing_ui.h",
-      "webui/devtools/devtools_ui.cc",
-      "webui/devtools/devtools_ui.h",
-      "webui/devtools/devtools_ui_data_source.cc",
-      "webui/devtools/devtools_ui_data_source.h",
       "webui/downloads/downloads_dom_handler.cc",
       "webui/downloads/downloads_dom_handler.h",
       "webui/downloads/downloads_list_tracker.cc",
@@ -1990,6 +1986,15 @@ static_library("ui") {
         "webui/new_tab_page/foo/foo_handler.h",
       ]
     }
+  }
+
+  if (!is_android || is_desktop_android) {
+    sources += [
+      "webui/devtools/devtools_ui.cc",
+      "webui/devtools/devtools_ui.h",
+      "webui/devtools/devtools_ui_data_source.cc",
+      "webui/devtools/devtools_ui_data_source.h",
+    ]
   }
 
   if (enable_paint_preview) {
