@@ -34,7 +34,7 @@ class GlicLauncherConfigurationTest : public testing::Test {
   ~GlicLauncherConfigurationTest() override = default;
 
   void SetUp() override {
-    GlicLauncherConfiguration::RegisterLocalStatePrefs(local_state_.registry());
+    prefs::RegisterLocalStatePrefs(local_state_.registry());
     TestingBrowserProcess::GetGlobal()->SetLocalState(local_state());
   }
 
