@@ -12461,7 +12461,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           People with access
         </message>
         <message name ="IDS_DATA_SHARING_LINK_EDIT_ACCESS" desc="Text describing how link sharing works.">
-          Anyone with the link can edit all tabs
+          Anyone with the link can edit all tabs.
         </message>
         <message name ="IDS_DATA_SHARING_LINK_JOIN_TOGGLE" desc="A description of how the the toggle for link sharing works.">
           Let anyone with the link join
