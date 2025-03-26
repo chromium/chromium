@@ -78,7 +78,7 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kFledgePrepareSellerContextsInAdvance,
              "FledgePrepareSellerContextsInAdvance",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
                    kFledgeMaxSellerContextsPerThreadInAdvance,
                    &kFledgePrepareSellerContextsInAdvance,
