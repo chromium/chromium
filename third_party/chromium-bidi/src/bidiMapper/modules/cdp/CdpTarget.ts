@@ -54,6 +54,12 @@ export class CdpTarget {
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
   readonly #logger: LoggerFn | undefined;
+  /**
+   * Target's window id. Is filled when the CDP target is created and do not reflect
+   * moving targets from one window to another. The actual values
+   * will be set during `#unblock`.
+   * */
+  #windowId?: number;
 
   #deviceAccessEnabled = false;
   #cacheDisableState = false;
@@ -159,6 +165,19 @@ export class CdpTarget {
   }
 
   /**
+   * Window id the target belongs to. If not known, returns 0.
+   */
+  get windowId(): number {
+    if (this.#windowId === undefined) {
+      this.#logger?.(
+        LogType.debugError,
+        'Getting windowId before it was set, returning 0',
+      );
+    }
+    return this.#windowId ?? 0;
+  }
+
+  /**
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
@@ -215,6 +234,7 @@ export class CdpTarget {
           waitForDebuggerOnStart: true,
           flatten: true,
         }),
+        this.#updateWindowId(),
         this.#initAndEvaluatePreloadScripts(),
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
         // Resume tab execution as well if it was paused by the debugger.
@@ -518,6 +538,14 @@ export class CdpTarget {
     return this.#preloadScriptStorage
       .find()
       .flatMap((script) => script.channels);
+  }
+
+  async #updateWindowId() {
+    const {windowId} = await this.#browserCdpClient.sendCommand(
+      'Browser.getWindowForTarget',
+      {targetId: this.id},
+    );
+    this.#windowId = windowId;
   }
 
   /** Loads all top-level preload scripts. */

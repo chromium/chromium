@@ -375,8 +375,7 @@ export class BrowsingContextImpl {
       url: this.url,
       userContext: this.userContext,
       originalOpener: this.#originalOpener ?? null,
-      // TODO(#2646): Implement Client Window correctly
-      clientWindow: '',
+      clientWindow: `${this.cdpTarget.windowId}`,
       children:
         maxDepth === null || maxDepth > 0
           ? this.directChildren.map((c) =>

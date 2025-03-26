@@ -19,7 +19,7 @@ from test_helpers import (execute_command, goto_url, send_JSON_command,
                           subscribe)
 
 SNAPSHOT_EXCLUDE = props("timestamp", "timings", "headers", "stacktrace",
-                         "response", "initiator", "realm")
+                         "response", "initiator", "realm", "clientWindow")
 KEYS_TO_STABILIZE = [
     'context', 'navigation', 'id', 'url', 'request', 'originalOpener'
 ]

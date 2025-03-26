@@ -1791,7 +1791,6 @@
       'method': 'browsingContext.contextCreated',
       'params': dict({
         'children': None,
-        'clientWindow': '',
         'context': 'stable_0',
         'originalOpener': 'stable_2',
         'parent': None,
@@ -1808,7 +1807,6 @@
       'method': 'browsingContext.contextCreated',
       'params': dict({
         'children': None,
-        'clientWindow': '',
         'context': 'stable_0',
         'originalOpener': 'stable_2',
         'parent': None,
@@ -1825,7 +1823,6 @@
       'method': 'browsingContext.contextCreated',
       'params': dict({
         'children': None,
-        'clientWindow': '',
         'context': 'stable_0',
         'originalOpener': 'stable_2',
         'parent': None,
@@ -1842,7 +1839,6 @@
       'method': 'browsingContext.contextCreated',
       'params': dict({
         'children': None,
-        'clientWindow': '',
         'context': 'stable_0',
         'originalOpener': 'stable_2',
         'parent': None,
