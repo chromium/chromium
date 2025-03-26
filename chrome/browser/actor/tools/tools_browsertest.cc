@@ -20,12 +20,15 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 using base::test::ScopedFeatureList;
 using base::test::TestFuture;
 using content::WebContents;
 using optimization_guide::proto::BrowserAction;
+using optimization_guide::proto::ClickAction;
+using optimization_guide::proto::NavigateAction;
 using tabs::TabInterface;
 
 namespace actor {
@@ -47,6 +50,9 @@ class ActorToolsTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+
     actor_coordinator_ = std::make_unique<actor::ActorCoordinator>();
   }
 
@@ -66,7 +72,6 @@ class ActorToolsTest : public InProcessBrowserTest {
 
 // Exercises the basic API to ensure nothing CHECKs or crashes.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, BasicSmokeTest) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -77,6 +82,26 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, BasicSmokeTest) {
   TestFuture<bool> result_success;
   actor_coordinator().Act(tab, action, result_success.GetCallback());
   EXPECT_TRUE(result_success.Get());
+}
+
+// Basic test of the NavigateTool.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool) {
+  const GURL url_start = embedded_test_server()->GetURL("/simple.html?start");
+  const GURL url_target = embedded_test_server()->GetURL("/simple.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+
+  BrowserAction action;
+  NavigateAction* navigate =
+      action.add_action_information()->mutable_navigate();
+  navigate->mutable_url()->assign(url_target.spec());
+
+  TabInterface& tab = *active_tab();
+
+  TestFuture<bool> result_success;
+  actor_coordinator().Act(tab, action, result_success.GetCallback());
+  EXPECT_TRUE(result_success.Get());
+
+  EXPECT_EQ(web_contents()->GetURL(), url_target);
 }
 
 }  // namespace
