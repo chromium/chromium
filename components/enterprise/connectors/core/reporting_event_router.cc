@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 
 #include "base/containers/contains.h"
 #include "base/time/time.h"
