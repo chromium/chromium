@@ -11,21 +11,24 @@
 
 2. Set up your account on Gerrit by visiting
    https://chromium-review.googlesource.com/ and signing in once. This makes
-   sure that you have an account on these review systems, which is required for
-   uploading new CLs.
+   sure that you have an account, which is needed for uploading CLs.
 
-3. To ensure that git cl workflows authenticate correctly:
+3. Set your real name on Gerrit by visiting
+   https://chromium-review.googlesource.com/#/settings/ and check the "Full
+   Name" field.
 
+4. Ensure Git is set up correctly:
+
+        # Make sure to set your name and email
+        git config --global user.name "CHANGE ME"
+        git config --global user.email CHANGE_ME@chromium.org
         git config --global depot-tools.useNewAuthStack 1
+        update_depot_tools
+        git cl creds-check
 
-4. If you are using a @google.com account:
+5. If you are using a @google.com account:
 
     1. Run gcert once a day to authenticate your account.
-
-5. Make sure to set your real name.
-
-    1. Visit https://chromium-review.googlesource.com/#/settings/ and check the
-       "Full Name" field.
 
 ### (Googler) Link @chromium.org & @google.com accounts
 
