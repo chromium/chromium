@@ -25,6 +25,7 @@ source_set("hooks") {
   deps = [
     ":switches",
     "//base",
+    "//base/test:test_support",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
     "//components/feature_engagement/public",
