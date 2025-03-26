@@ -25,7 +25,6 @@
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
-#include "components/search_engines/regional_settings.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -39,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+#include "third_party/search_engines_data/resources/definitions/regional_settings.h"
 
 using ::base::ASCIIToUTF16;
 using ::country_codes::CountryId;
