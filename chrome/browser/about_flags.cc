@@ -9055,6 +9055,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmWithoutWellKnownEnforcementDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmWithoutWellKnownEnforcement)},
 
+    {"fedcm-segmentation-platform",
+     flag_descriptions::kFedCmSegmentationPlatformName,
+     flag_descriptions::kFedCmSegmentationPlatformDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kSegmentationPlatformFedCmUser)},
+
     {"web-identity-digital-credentials",
      flag_descriptions::kWebIdentityDigitalCredentialsName,
      flag_descriptions::kWebIdentityDigitalCredentialsDescription, kOsAll,

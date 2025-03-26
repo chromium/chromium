@@ -1157,6 +1157,9 @@ extern const char kFedCmUseOtherAccountDescription[];
 extern const char kFedCmWithoutWellKnownEnforcementName[];
 extern const char kFedCmWithoutWellKnownEnforcementDescription[];
 
+extern const char kFedCmSegmentationPlatformName[];
+extern const char kFedCmSegmentationPlatformDescription[];
+
 extern const char kWebIdentityDigitalCredentialsName[];
 extern const char kWebIdentityDigitalCredentialsDescription[];
 

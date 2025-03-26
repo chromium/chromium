@@ -2016,6 +2016,11 @@ const char kFedCmUseOtherAccountDescription[] =
     "Enables the \"Use a different account\" button on the FedCM account "
     "chooser to log in to another IdP account, for IdPs who have opted in.";
 
+const char kFedCmSegmentationPlatformName[] = "FedCmSegmentationPlatform";
+const char kFedCmSegmentationPlatformDescription[] =
+    "Enables the segmentation platform service to provide UI volume "
+    "recommendations to FedCM.";
+
 const char kWebIdentityDigitalCredentialsName[] = "DigitalCredentials";
 const char kWebIdentityDigitalCredentialsDescription[] =
     "Enables the three-party verifier/holder/issuer identity model.";

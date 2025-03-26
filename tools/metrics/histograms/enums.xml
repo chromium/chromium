@@ -12020,6 +12020,7 @@ from previous Chrome versions.
   <int value="-844537521" label="HttpFormWarning:disabled"/>
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>
   <int value="-843496368" label="AutofillRejectCompanyBirthyear:disabled"/>
+  <int value="-843440212" label="SegmentationPlatformFedCmUser:enabled"/>
   <int value="-843339105" label="NtpSharepointModule:disabled"/>
   <int value="-842798026" label="LinkCrossDeviceInternals:disabled"/>
   <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
@@ -17974,6 +17975,7 @@ from previous Chrome versions.
   <int value="1466380480" label="enable-device-discovery-notifications"/>
   <int value="1466502102" label="DelayNavigation:disabled"/>
   <int value="1466687702" label="BookmarkIndexPaths:enabled"/>
+  <int value="1467117605" label="SegmentationPlatformFedCmUser:disabled"/>
   <int value="1467322206" label="AssistAutoCorrect:enabled"/>
   <int value="1467494310" label="JavaScriptExperimentalSharedMemory:enabled"/>
   <int value="1467583815" label="AVIF:disabled"/>
