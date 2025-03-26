@@ -23,6 +23,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -234,6 +235,13 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
 
   network::ResourceRequest request;
   request.url = script_url;
+
+  // TODO(https://crbug.com/406525486): Permissions policies for workers are
+  // currently not supported so an all-blocking permissions policy is set.
+  // Propagate the actual permissions policy once it is available.
+  request.permissions_policy =
+      *network::PermissionsPolicy::CreateFromParsedPolicy(
+          {}, {}, url::Origin::Create(request.url));
 
   request.site_for_cookies = storage_key.ToNetSiteForCookies();
   request.do_not_prompt_for_login = true;
