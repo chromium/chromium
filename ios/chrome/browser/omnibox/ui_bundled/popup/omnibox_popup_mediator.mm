@@ -39,9 +39,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/autocomplete_controller_observer_bridge.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/popup_debug_info_consumer.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/remote_suggestions_service_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_section_extractor.h"
@@ -80,10 +77,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 // It is observed through OmniboxPopupViewIOS.
 @property(nonatomic, assign) AutocompleteController* autocompleteController;
 
-// Remote suggestions service backing `autocompleteController`. Observed in
-// debug mode.
-@property(nonatomic, assign) RemoteSuggestionsService* remoteSuggestionsService;
-
 // Whether the omnibox has a thumbnail.
 @property(nonatomic, assign) BOOL hasThumbnail;
 
@@ -96,12 +89,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 @implementation OmniboxPopupMediator {
   // Fetcher for Answers in Suggest images.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
-
-  std::unique_ptr<AutocompleteControllerObserverBridge>
-      _autocompleteObserverBridge;
-  std::unique_ptr<RemoteSuggestionsServiceObserverBridge>
-      _remoteSuggestionsServiceObserverBridge;
-
   /// Holds cached images keyed by their URL. The cache is purged when the popup
   /// is closed.
   NSCache<NSString*, UIImage*>* _cachedImages;
@@ -114,60 +101,23 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
              initWithFetcher:
                  (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
                faviconLoader:(FaviconLoader*)faviconLoader
-      autocompleteController:(AutocompleteController*)autocompleteController
-    remoteSuggestionsService:(RemoteSuggestionsService*)remoteSuggestionsService
                      tracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
-    DCHECK(autocompleteController);
     _imageFetcher = std::move(imageFetcher);
     _faviconLoader = faviconLoader;
     _open = NO;
     _preselectedGroupIndex = 0;
-    _autocompleteController = autocompleteController;
-    _remoteSuggestionsService = remoteSuggestionsService;
     _tracker = tracker;
     _cachedImages = [[NSCache alloc] init];
   }
   return self;
 }
 
-- (void)disconnect {
-  if (_remoteSuggestionsServiceObserverBridge) {
-    self.remoteSuggestionsService->RemoveObserver(
-        _remoteSuggestionsServiceObserverBridge.get());
-    _remoteSuggestionsServiceObserverBridge.reset();
-  }
-}
-
-- (void)setDebugInfoConsumer:
-    (id<PopupDebugInfoConsumer,
-        RemoteSuggestionsServiceObserver,
-        AutocompleteControllerObserver>)debugInfoConsumer {
-  DCHECK(experimental_flags::IsOmniboxDebuggingEnabled());
-
-  _autocompleteObserverBridge =
-      std::make_unique<AutocompleteControllerObserverBridge>(debugInfoConsumer);
-  self.autocompleteController->AddObserver(_autocompleteObserverBridge.get());
-
-  // Observe the remote suggestions service if it's available. It might not
-  // be available e.g. in incognito.
-  if (self.remoteSuggestionsService) {
-    _remoteSuggestionsServiceObserverBridge =
-        std::make_unique<RemoteSuggestionsServiceObserverBridge>(
-            debugInfoConsumer, self.remoteSuggestionsService);
-    self.remoteSuggestionsService->AddObserver(
-        _remoteSuggestionsServiceObserverBridge.get());
-  }
-
-  _debugInfoConsumer = debugInfoConsumer;
-}
-
 - (void)setOpen:(BOOL)open {
   // When closing the popup.
   if (_open && !open) {
     [_cachedImages removeAllObjects];
-    [_debugInfoConsumer removeAllObjects];
   }
   _open = open;
 }
@@ -180,15 +130,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                                                isFocusing:(BOOL)isFocusing {
   [self.consumer newResultsAvailable];
 
-  if (self.debugInfoConsumer) {
-    DCHECK(experimental_flags::IsOmniboxDebuggingEnabled());
-
-    [self.debugInfoConsumer
-        setVariationIDString:
-            base::SysUTF8ToNSString(
-                variations::VariationsIdsProvider::GetInstance()
-                    ->GetTriggerVariationsString())];
-  }
   self.open = hasSuggestions;
   [self.presenter updatePopupOnFocus:isFocusing];
 }
