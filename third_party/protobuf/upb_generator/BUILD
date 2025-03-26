@@ -55,7 +55,7 @@ bootstrap_cc_library(
         "//src/google/protobuf:port",
         "//upb:mini_table",
         "//upb:port",
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
@@ -79,13 +79,16 @@ bootstrap_cc_library(
         "//upb:mini_descriptor",
         "//upb:mini_table",
         "//upb:port",
-        "@com_google_absl//absl/container:flat_hash_map",
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
 bootstrap_cc_library(
     name = "plugin",
+    srcs = [
+        "plugin.cc",
+    ],
     hdrs = [
         "plugin.h",
     ],
@@ -93,19 +96,21 @@ bootstrap_cc_library(
         ":plugin_upb_proto",
         "//upb/reflection:descriptor_upb_proto",
         "//upb/reflection:reflection",
+        "//upb_generator:file_layout",
     ],
     copts = UPB_DEFAULT_CPPOPTS,
     visibility = ["//upb:friend_generators"],
     deps = [
+        "//src/google/protobuf",
         "//src/google/protobuf/compiler:code_generator_lite",
         "//upb:base",
         "//upb:mem",
         "//upb:port",
-        "@com_google_absl//absl/container:flat_hash_map",
-        "@com_google_absl//absl/container:flat_hash_set",
-        "@com_google_absl//absl/log:absl_check",
-        "@com_google_absl//absl/log:absl_log",
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/container:flat_hash_map",
+        "@abseil-cpp//absl/container:flat_hash_set",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/log:absl_log",
+        "@abseil-cpp//absl/strings",
     ],
 )
 

@@ -59,7 +59,6 @@
 #include "absl/log/globals.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
-#include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
@@ -93,6 +92,7 @@
 #endif
 
 #include "google/protobuf/stubs/platform_macros.h"
+#include "google/protobuf/compiler/notices.h"
 
 // Must be included last.
 #include "google/protobuf/port_def.inc"
@@ -394,10 +394,6 @@ class CommandLineInterface::ErrorPrinter
                          std::ostream& out) {
     std::string dfile;
     if (
-#ifndef PROTOBUF_OPENSOURCE
-        // Print full path when running under MSVS
-        format_ == CommandLineInterface::ERROR_FORMAT_MSVS &&
-#endif  // !PROTOBUF_OPENSOURCE
         tree_ != nullptr && tree_->VirtualFileToDiskFile(filename, &dfile)) {
       out << dfile;
     } else {
@@ -1257,12 +1253,13 @@ int CommandLineInterface::Run(int argc, const char* const argv[]) {
     return EXIT_FAILURE;
   }
 
-  // Enforce extension declarations only when compiling. We want to skip
-  // this enforcement when protoc is just being invoked to encode or decode
-  // protos.
-  if (mode_ == MODE_COMPILE
-  ) {
-    descriptor_pool->EnforceExtensionDeclarations(true);
+  // Enforce extension declarations only when compiling. We want to skip this
+  // enforcement when protoc is just being invoked to encode or decode
+  // protos. If allowlist is disabled, we will not check for descriptor
+  // extensions declarations, either.
+  if (mode_ == MODE_COMPILE) {
+      descriptor_pool->EnforceExtensionDeclarations(
+          ExtDeclEnforcementLevel::kCustomExtensions);
   }
   if (!ParseInputFiles(descriptor_pool.get(), disk_source_tree.get(),
                        &parsed_files)) {
@@ -1319,6 +1316,10 @@ int CommandLineInterface::Run(int argc, const char* const argv[]) {
 
 
   if (validation_error) {
+    return 1;
+  }
+
+  if (!EnforceProtocEditionsSupport(parsed_files)) {
     return 1;
   }
 
@@ -1496,7 +1497,6 @@ PopulateSingleSimpleDescriptorDatabase(const std::string& descriptor_set_name) {
 
 }  // namespace
 
-
 bool CommandLineInterface::VerifyInputFilesInDescriptors(
     DescriptorDatabase* database) {
   for (const auto& input_file : input_files_) {
@@ -1515,7 +1515,6 @@ bool CommandLineInterface::VerifyInputFilesInDescriptors(
                 << std::endl;
       return false;
     }
-
   }
   return true;
 }
@@ -1524,10 +1523,6 @@ bool CommandLineInterface::SetupFeatureResolution(DescriptorPool& pool) {
   // Calculate the feature defaults for each built-in generator.  All generators
   // that support editions must agree on the supported edition range.
   std::vector<const FieldDescriptor*> feature_extensions;
-  Edition minimum_edition = MinimumAllowedEdition();
-  // Override maximum_edition if experimental_editions is true.
-  Edition maximum_edition =
-      !experimental_editions_ ? MaximumAllowedEdition() : Edition::EDITION_MAX;
   for (const auto& output : output_directives_) {
     if (output.generator == nullptr) continue;
     if (!experimental_editions_ &&
@@ -1536,20 +1531,20 @@ bool CommandLineInterface::SetupFeatureResolution(DescriptorPool& pool) {
       // Only validate min/max edition on generators that advertise editions
       // support.  Generators still under development will always use the
       // correct values.
-      if (output.generator->GetMinimumEdition() != minimum_edition) {
+      if (output.generator->GetMinimumEdition() != ProtocMinimumEdition()) {
         ABSL_LOG(ERROR) << "Built-in generator " << output.name
                         << " specifies a minimum edition "
                         << output.generator->GetMinimumEdition()
                         << " which is not the protoc minimum "
-                        << minimum_edition << ".";
+                        << ProtocMinimumEdition() << ".";
         return false;
       }
-      if (output.generator->GetMaximumEdition() != maximum_edition) {
+      if (output.generator->GetMaximumEdition() != ProtocMaximumEdition()) {
         ABSL_LOG(ERROR) << "Built-in generator " << output.name
                         << " specifies a maximum edition "
                         << output.generator->GetMaximumEdition()
                         << " which is not the protoc maximum "
-                        << maximum_edition << ".";
+                        << ProtocMaximumEdition() << ".";
         return false;
       }
     }
@@ -1564,9 +1559,9 @@ bool CommandLineInterface::SetupFeatureResolution(DescriptorPool& pool) {
     }
   }
   absl::StatusOr<FeatureSetDefaults> defaults =
-      FeatureResolver::CompileDefaults(FeatureSet::descriptor(),
-                                       feature_extensions, minimum_edition,
-                                       maximum_edition);
+      FeatureResolver::CompileDefaults(
+          FeatureSet::descriptor(), feature_extensions, ProtocMinimumEdition(),
+          MaximumKnownEdition());
   if (!defaults.ok()) {
     ABSL_LOG(ERROR) << defaults.status();
     return false;
@@ -1621,7 +1616,6 @@ bool CommandLineInterface::ParseInputFiles(
       result = false;
       break;
     }
-
 
     // Enforce --direct_dependencies
     if (direct_dependencies_explicitly_set_) {
@@ -2007,6 +2001,7 @@ bool CommandLineInterface::ParseArgument(const char* arg, std::string* name,
       *name == "--include_imports" || *name == "--include_source_info" ||
       *name == "--retain_options" || *name == "--version" ||
       *name == "--decode_raw" ||
+      *name == "--notices" ||
       *name == "--experimental_editions" ||
       *name == "--print_free_field_numbers" ||
       *name == "--experimental_allow_proto3_optional" ||
@@ -2225,8 +2220,6 @@ CommandLineInterface::InterpretArgument(const std::string& name,
 
   } else if (name == "--disallow_services") {
     disallow_services_ = true;
-
-
   } else if (name == "--experimental_allow_proto3_optional") {
     // Flag is no longer observed, but we allow it for backward compat.
   } else if (name == "--encode" || name == "--decode" ||
@@ -2336,6 +2329,9 @@ CommandLineInterface::InterpretArgument(const std::string& name,
 #else
     ::setenv(io::Printer::kProtocCodegenTrace.data(), "yes", 0);
 #endif
+  } else if (name == "--notices") {
+    std::cout << notices_text << std::endl;
+    return PARSE_ARGUMENT_DONE_AND_EXIT;
   } else if (name == "--experimental_editions") {
     // If you're reading this, you're probably wondering what
     // --experimental_editions is for and thinking of turning it on. This is an
@@ -2511,6 +2507,8 @@ Parse PROTO_FILES and generate output based on the options given:
   --enable_codegen_trace      Enables tracing which parts of protoc are
                               responsible for what codegen output. Not supported
                               by all backends or on all platforms.)";
+  std::cout << R"(
+  --notices                   Show notice file and exit.)";
   if (!plugin_prefix_.empty()) {
     std::cout << R"(
   --plugin=EXECUTABLE         Specifies a plugin executable to use.
@@ -2611,6 +2609,31 @@ bool CommandLineInterface::EnforceEditionsSupport(
           "generator $1.  Please ask the owner of this code generator to add "
           "support or switch back to a maximum of edition $3.",
           fd->name(), codegen_name, edition, maximum_edition);
+      return false;
+    }
+  }
+  return true;
+}
+
+bool CommandLineInterface::EnforceProtocEditionsSupport(
+    const std::vector<const FileDescriptor*>& parsed_files) const {
+  if (experimental_editions_) {
+    // The user has explicitly specified the experimental flag.
+    return true;
+  }
+  for (const auto* fd : parsed_files) {
+    Edition edition =
+        ::google::protobuf::internal::InternalFeatureHelper::GetEdition(*fd);
+    if (CanSkipEditionCheck(fd->name())) {
+      // Legacy proto2/proto3 or exempted files don't need any checks.
+      continue;
+    }
+
+    if (edition > ProtocMaximumEdition()) {
+      std::cerr << absl::Substitute(
+          "$0: is a file using edition $1, which is later than the protoc "
+          "maximum supported edition $2.",
+          fd->name(), edition, ProtocMaximumEdition());
       return false;
     }
   }
@@ -3037,11 +3060,11 @@ bool CommandLineInterface::WriteEditionDefaults(const DescriptorPool& pool) {
   std::vector<const FieldDescriptor*> extensions;
   pool.FindAllExtensions(feature_set, &extensions);
 
-  Edition minimum = MinimumAllowedEdition();
+  Edition minimum = ProtocMinimumEdition();
   if (edition_defaults_minimum_ != EDITION_UNKNOWN) {
     minimum = edition_defaults_minimum_;
   }
-  Edition maximum = MaximumAllowedEdition();
+  Edition maximum = ProtocMaximumEdition();
   if (edition_defaults_maximum_ != EDITION_UNKNOWN) {
     maximum = edition_defaults_maximum_;
   }

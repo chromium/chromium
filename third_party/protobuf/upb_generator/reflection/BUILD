@@ -19,7 +19,7 @@ cc_library(
     deps = [
         "//upb:port",
         "//upb_generator/common:names",
-        "@com_google_absl//absl/strings",
+        "@abseil-cpp//absl/strings",
     ],
 )
 
@@ -44,7 +44,10 @@ cc_library(
     deps = [
         ":names",
         "//src/google/protobuf:descriptor_upb_c_proto",
+        "//src/google/protobuf/compiler:code_generator",
+        "//src/google/protobuf/compiler:plugin",
         "//upb:mem",
+        "//upb:port",
         "//upb:reflection",
         "//upb/util:def_to_proto",
         "//upb_generator:common",
@@ -52,8 +55,12 @@ cc_library(
         "//upb_generator:plugin",
         "//upb_generator/common:names",
         "//upb_generator/minitable:names",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/strings:string_view",
+        "@abseil-cpp//absl/container:flat_hash_set",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/memory",
+        "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:cord",
+        "@abseil-cpp//absl/strings:string_view",
     ],
 )
 
