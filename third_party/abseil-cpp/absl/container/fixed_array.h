@@ -447,7 +447,8 @@ class ABSL_ATTRIBUTE_WARN_UNUSED FixedArray {
 
    private:
     ABSL_ADDRESS_SANITIZER_REDZONE(redzone_begin_);
-    alignas(StorageElement) char buff_[sizeof(StorageElement[inline_elements])];
+    alignas(StorageElement) unsigned char buff_[sizeof(
+        StorageElement[inline_elements])];
     ABSL_ADDRESS_SANITIZER_REDZONE(redzone_end_);
   };
 

@@ -2004,6 +2004,15 @@ config("default_warnings") {
       cflags_cc += [
         # TODO(crbug.com/328490295): Fix and re-enable for C flags.
         "-Wenum-compare-conditional",
+
+        # nullability-completeness is an on-by-default diagnostic in Clang,
+        # but we don't want it in chromium.
+        # These trigger build errors during transitional patches that will
+        # progressively roll out nullability annotations across third-party
+        # code. Once there is a widly used file-level pragma that
+        # nullability-completeness check can detect or an alternate check for
+        # annotation completeness, this warning exception can be removed.
+        "-Wno-nullability-completeness",
       ]
 
       if (!is_nacl) {

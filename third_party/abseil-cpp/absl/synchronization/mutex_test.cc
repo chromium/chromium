@@ -1725,7 +1725,7 @@ TEST(Mutex, Logging) {
 TEST(Mutex, LoggingAddressReuse) {
   // Repeatedly re-create a Mutex with debug logging at the same address.
   ScopedInvariantDebugging scoped_debugging;
-  alignas(absl::Mutex) char storage[sizeof(absl::Mutex)];
+  alignas(absl::Mutex) unsigned char storage[sizeof(absl::Mutex)];
   auto invariant =
       +[](void *alive) { EXPECT_TRUE(*static_cast<bool *>(alive)); };
   constexpr size_t kIters = 10;

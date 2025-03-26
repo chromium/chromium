@@ -1,4 +1,4 @@
-// Copyright 2017 The Abseil Authors.
+// Copyright 2025 The Abseil Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,27 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/base/internal/thread_identity.h"
-#include "absl/synchronization/internal/create_thread_identity.h"
-#include "absl/synchronization/internal/per_thread_sem.h"
+#include <utility>
+#include "absl/status/status.h"
 #include "benchmark/benchmark.h"
 
 namespace {
 
-void BM_SafeCurrentThreadIdentity(benchmark::State& state) {
+void BM_CreateOk(benchmark::State& state) {
   for (auto _ : state) {
-    benchmark::DoNotOptimize(
-        absl::synchronization_internal::GetOrCreateCurrentThreadIdentity());
+    absl::Status s;  // ok.
+    benchmark::DoNotOptimize(s);
   }
 }
-BENCHMARK(BM_SafeCurrentThreadIdentity);
+BENCHMARK(BM_CreateOk);
 
-void BM_UnsafeCurrentThreadIdentity(benchmark::State& state) {
+void BM_CreateBad(benchmark::State& state) {
   for (auto _ : state) {
-    benchmark::DoNotOptimize(
-        absl::base_internal::CurrentThreadIdentityIfPresent());
+    absl::Status s(absl::StatusCode::kInvalidArgument, "message");
+    benchmark::DoNotOptimize(s);
   }
 }
-BENCHMARK(BM_UnsafeCurrentThreadIdentity);
+BENCHMARK(BM_CreateBad);
 
 }  // namespace

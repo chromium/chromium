@@ -25,14 +25,14 @@ namespace debugging_internal {
 
 // Removes any metadata (tag bits) from the given pointer, converting it into a
 // user-readable address.
-inline uintptr_t StripPointerMetadata(void* ptr) {
+inline uintptr_t StripPointerMetadata(uintptr_t ptr) {
 #if defined(__aarch64__)
   // When PAC-RET (-mbranch-protection=pac-ret) is enabled, return addresses
   // stored on the stack will be signed, which means that pointer bits outside
   // of the virtual address range are potentially set. Since the stacktrace code
   // is expected to return normal code pointers, this function clears those
   // bits.
-  register uintptr_t x30 __asm__("x30") = reinterpret_cast<uintptr_t>(ptr);
+  register uintptr_t x30 __asm__("x30") = ptr;
   // The normal instruction for clearing PAC bits is XPACI, but for
   // compatibility with ARM platforms that do not support pointer
   // authentication, we use the hint space instruction XPACLRI instead. Hint
@@ -42,8 +42,12 @@ inline uintptr_t StripPointerMetadata(void* ptr) {
 #undef ABSL_XPACLRI_HINT
   return x30;
 #else
-  return reinterpret_cast<uintptr_t>(ptr);
+  return ptr;
 #endif
+}
+
+inline uintptr_t StripPointerMetadata(void* ptr) {
+  return StripPointerMetadata(reinterpret_cast<uintptr_t>(ptr));
 }
 
 }  // namespace debugging_internal
