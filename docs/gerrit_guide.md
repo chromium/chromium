@@ -30,6 +30,13 @@
 
     1. Run gcert once a day to authenticate your account.
 
+### (EVERYONE) Verification
+
+Run `git ls-remote https://chromium.googlesource.com/chromiumos/manifest.git`
+
+This should **not** prompt for any credentials, and should just print out a list
+of git references.
+
 ### (Googler) Link @chromium.org & @google.com accounts
 
 If you have both @chromium.org and @google.com accounts, you may want to link
@@ -97,13 +104,6 @@ ticket](https://bugs.chromium.org/p/chromium/issues/entry?template=Infra-Git)
 with the subject "Unlink my <id>@chromium.org and <id>@google.com accounts". If
 it is urgent, email ajp@chromium.org. Otherwise, the request should be handled
 within 2-3 days.
-
-### (EVERYONE) Verification
-
-Run `git ls-remote https://chromium.googlesource.com/chromiumos/manifest.git`
-
-This should **not** prompt for any credentials, and should just print out a list
-of git references.
 
 ## Watching Projects / Notifications
 
