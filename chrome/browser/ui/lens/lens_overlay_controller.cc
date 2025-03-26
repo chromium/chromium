@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
+#include <memory>
 #include <optional>
 #include <set>
 #include <sstream>
@@ -3828,6 +3829,34 @@ void LensOverlayController::InitializeTutorialIPHUrlMatcher() {
       JSONArrayToVector(
           feature_engagement::kIPHLensOverlayUrlBlockFilters.Get()),
       &iph_url_filters_);
+
+  auto allow_strings = JSONArrayToVector(
+      feature_engagement::kIPHLensOverlayUrlPathMatchAllowPatterns.Get());
+  std::vector<base::MatcherStringPattern> allow_patterns;
+  std::vector<const base::MatcherStringPattern*> allow_pointers;
+  allow_patterns.reserve(allow_strings.size());
+  allow_pointers.reserve(allow_strings.size());
+  for (const std::string& entry : allow_strings) {
+    allow_patterns.emplace_back(entry, ++id);
+    allow_pointers.push_back(&allow_patterns.back());
+  }
+  page_path_allow_matcher_ = std::make_unique<url_matcher::RegexSetMatcher>();
+  // Pointers will not be referenced after AddPatterns() completes.
+  page_path_allow_matcher_->AddPatterns(allow_pointers);
+
+  auto block_strings = JSONArrayToVector(
+      feature_engagement::kIPHLensOverlayUrlPathMatchBlockPatterns.Get());
+  std::vector<base::MatcherStringPattern> block_patterns;
+  std::vector<const base::MatcherStringPattern*> block_pointers;
+  block_patterns.reserve(block_strings.size());
+  block_pointers.reserve(block_strings.size());
+  for (const std::string& entry : block_strings) {
+    block_patterns.emplace_back(entry, ++id);
+    block_pointers.push_back(&block_patterns.back());
+  }
+  page_path_block_matcher_ = std::make_unique<url_matcher::RegexSetMatcher>();
+  // Pointers will not be referenced after AddPatterns() completes.
+  page_path_block_matcher_->AddPatterns(block_pointers);
 }
 
 void LensOverlayController::MaybeShowDelayedTutorialIPH(const GURL& url) {
@@ -3860,6 +3889,15 @@ bool LensOverlayController::IsUrlEligibleForTutorialIPH(const GURL& url) {
     if (!iph_url_filters_[match].allow) {
       return false;
     }
+  }
+
+  if (page_path_block_matcher_ && !page_path_block_matcher_->IsEmpty() &&
+      page_path_block_matcher_->Match(url.path(), &matches)) {
+    return false;
+  }
+  if (page_path_allow_matcher_ && !page_path_allow_matcher_->IsEmpty() &&
+      !page_path_allow_matcher_->Match(url.path(), &matches)) {
+    return false;
   }
   return true;
 }
