@@ -1951,7 +1951,7 @@ void BrowserAutofillManager::DidShowSuggestions(
     const FieldGlobalId& field_id) {
   NotifyObservers(&Observer::OnSuggestionsShown);
 
-  if (!std::ranges::any_of(
+  if (std::ranges::none_of(
           shown_suggestion_types,
           AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId)) {
     return;
@@ -2728,8 +2728,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       is_card_number_autofilled && card_number_field_value.size() >= 4
           ? card_number_field_value.substr(card_number_field_value.size() - 4)
           : u"");
-  bool is_virtual_card_standalone_cvc_field = std::any_of(
-      suggestions.begin(), suggestions.end(), [](Suggestion suggestion) {
+  bool is_virtual_card_standalone_cvc_field =
+      std::ranges::any_of(suggestions, [](Suggestion suggestion) {
         return suggestion.type == SuggestionType::kVirtualCreditCardEntry;
       });
   if (!is_virtual_card_standalone_cvc_field) {
