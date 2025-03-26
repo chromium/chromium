@@ -1229,7 +1229,8 @@ void RenderViewContextMenu::InitMenu() {
 
   // ITEM_GROUP_SMART_SELECTION is for selected text that is not a link.
   if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_SMART_SELECTION)) {
+          ContextMenuContentType::ITEM_GROUP_SMART_SELECTION) &&
+      !content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
     AppendReadingModeItem();
   }
 
