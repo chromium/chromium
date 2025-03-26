@@ -964,6 +964,13 @@ BASE_DECLARE_FEATURE(kSupportsRtcWakeOver24Hours);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDisableShortcutsEnableDiy);
 
+#if BUILDFLAG(IS_CHROMEOS)
+COMPONENT_EXPORT(CHROME_FEATURES)
+bool IsK12AgeClassificationMetricsProviderEnabled();
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kK12AgeClassificationMetricsProvider);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 bool PrefServiceEnabled();
 
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in

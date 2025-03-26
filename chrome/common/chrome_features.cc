@@ -1624,6 +1624,12 @@ BASE_FEATURE(kEventBasedLogUpload,
 BASE_FEATURE(kPeriodicLogUploadMigration,
              "PeriodicLogUploadMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A feature to enable periodic log K12 user age classification. See
+// go/teachers-on-chromeos-data.
+BASE_FEATURE(kK12AgeClassificationMetricsProvider,
+             "K12AgeClassificationMetricsProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // A feature to disable shortcut creation from the Chrome UI, and instead use
