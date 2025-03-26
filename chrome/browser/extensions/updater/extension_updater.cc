@@ -32,6 +32,7 @@
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
+#include "chrome/browser/extensions/updater/extension_updater_factory.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -159,24 +160,30 @@ ExtensionUpdater::InProgressCheck::InProgressCheck() = default;
 
 ExtensionUpdater::InProgressCheck::~InProgressCheck() = default;
 
-ExtensionUpdater::ExtensionUpdater(
-    ExtensionPrefs* extension_prefs,
-    PrefService* prefs,
-    Profile* profile,
-    int frequency_seconds,
-    ExtensionCache* cache,
-    const ExtensionDownloader::Factory& downloader_factory)
-    : downloader_factory_(downloader_factory),
-      frequency_(base::Seconds(frequency_seconds)),
-      extension_prefs_(extension_prefs),
-      prefs_(prefs),
-      profile_(profile),
+// static
+ExtensionUpdater* ExtensionUpdater::Get(Profile* profile) {
+  return ExtensionUpdaterFactory::GetForBrowserContext(profile);
+}
+
+ExtensionUpdater::ExtensionUpdater(Profile* profile)
+    : profile_(profile),
       registry_(ExtensionRegistry::Get(profile)),
       registrar_(ExtensionRegistrar::Get(profile)),
       delayed_install_manager_(DelayedInstallManager::Get(profile)),
       pending_extension_manager_(PendingExtensionManager::Get(profile)),
-      external_install_manager_(ExternalInstallManager::Get(profile)),
-      extension_cache_(cache) {
+      external_install_manager_(ExternalInstallManager::Get(profile)) {}
+
+void ExtensionUpdater::Init(
+    ExtensionPrefs* extension_prefs,
+    PrefService* prefs,
+    int frequency_seconds,
+    ExtensionCache* cache,
+    const ExtensionDownloader::Factory& downloader_factory) {
+  downloader_factory_ = downloader_factory;
+  frequency_ = base::Seconds(frequency_seconds);
+  extension_prefs_ = extension_prefs;
+  prefs_ = prefs;
+  extension_cache_ = cache;
   DCHECK_LE(frequency_seconds, kMaxUpdateFrequencySeconds);
 #if defined(NDEBUG)
   // In Release mode we enforce that update checks don't happen too often.
@@ -189,25 +196,11 @@ ExtensionUpdater::ExtensionUpdater(
           &ExtensionUpdater::OnAppTerminating, base::Unretained(this)));
 }
 
-// Constructor for test.
-ExtensionUpdater::ExtensionUpdater(
-    CrxInstallerFactoryForTest* crx_installer_factory,
-    ExtensionPrefs* extension_prefs,
-    PrefService* prefs,
-    Profile* profile,
-    int frequency_seconds,
-    ExtensionCache* cache,
-    const ExtensionDownloader::Factory& downloader_factory)
-    : ExtensionUpdater(extension_prefs,
-                       prefs,
-                       profile,
-                       frequency_seconds,
-                       cache,
-                       downloader_factory) {
-  crx_installer_factory_for_test_ = crx_installer_factory;
+ExtensionUpdater::~ExtensionUpdater() {
+  Stop();
 }
 
-ExtensionUpdater::~ExtensionUpdater() {
+void ExtensionUpdater::Shutdown() {
   Stop();
 }
 
@@ -251,6 +244,10 @@ void ExtensionUpdater::Stop() {
   update_service_ = nullptr;
   registry_ = nullptr;
   registrar_ = nullptr;
+  delayed_install_manager_ = nullptr;
+  pending_extension_manager_ = nullptr;
+  external_install_manager_ = nullptr;
+  extension_cache_ = nullptr;
 }
 
 void ExtensionUpdater::ScheduleNextCheck() {

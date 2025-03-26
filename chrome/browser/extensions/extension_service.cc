@@ -254,9 +254,9 @@ ExtensionService::ExtensionService(
 
   // Set up the ExtensionUpdater.
   if (autoupdate_enabled) {
-    updater_ = std::make_unique<ExtensionUpdater>(
-        extension_prefs, profile->GetPrefs(), profile,
-        kDefaultUpdateFrequencySeconds,
+    updater_ = ExtensionUpdater::Get(profile);
+    updater_->Init(
+        extension_prefs, profile->GetPrefs(), kDefaultUpdateFrequencySeconds,
         ExtensionsBrowserClient::Get()->GetExtensionCache(),
         base::BindRepeating(ChromeExtensionDownloaderFactory::CreateForProfile,
                             profile));
@@ -318,6 +318,7 @@ void ExtensionService::Shutdown() {
   error_controller_ = nullptr;
   allowlist_ = nullptr;
   external_install_manager_ = nullptr;
+  updater_ = nullptr;
 }
 
 void ExtensionService::Init() {
@@ -765,7 +766,7 @@ void ExtensionService::CheckManagementPolicy() {
     EnableExtension(id);
   }
 
-  if (updater_.get()) {
+  if (updater_) {
     // Find all extensions disabled due to minimum version requirement from
     // policy (including the ones that got disabled just now), and check
     // for update.
@@ -804,7 +805,7 @@ void ExtensionService::CheckManagementPolicy() {
 
 void ExtensionService::CheckForUpdatesSoon() {
   // This can legitimately happen in unit tests.
-  if (!updater_.get()) {
+  if (!updater_) {
     return;
   }
 

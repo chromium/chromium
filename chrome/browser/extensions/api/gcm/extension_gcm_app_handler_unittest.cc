@@ -369,9 +369,10 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     crx_info.extension_id = extension->id();
 
     ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-    ExtensionUpdater updater(prefs, prefs->pref_service(), profile(),
-                             /*frequency_seconds=*/600, /*cache=*/nullptr,
-                             ExtensionDownloader::Factory());
+    ExtensionUpdater updater(profile());
+    updater.Init(prefs, prefs->pref_service(),
+                 /*frequency_seconds=*/600, /*cache=*/nullptr,
+                 ExtensionDownloader::Factory());
     auto installer = updater.CreateUpdateInstaller(crx_info, true);
     installer->AddInstallerCallback(base::BindOnce(
         &ExtensionGCMAppHandlerTest::InstallerDone, base::Unretained(this)));
