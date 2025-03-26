@@ -2254,6 +2254,12 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
   UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
   if (tab_at(model_index)->group().has_value()) {
     base::RecordAction(base::UserMetricsAction("CloseGroupedTab"));
+
+    if (controller_->GetCount() == 1) {
+      // Prevent the browser from closing when the last grouped tab is closed
+      // from the browser by adding a new tab.
+      controller_->CreateNewTab();
+    }
   }
   controller_->CloseTab(model_index);
 }
