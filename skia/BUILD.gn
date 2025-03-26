@@ -44,8 +44,8 @@ source_set("path_bridge") {
 rust_static_library("bridge_rust_side") {
   allow_unsafe = true
   crate_root = skia_fontations_bridge_root
-  sources = skia_fontations_bridge_sources
-  cxx_bindings = skia_fontations_bridge_sources
+  sources = skia_ports_fontations_bridge_rust_side_sources
+  cxx_bindings = [ skia_fontations_bridge_root ]
   deps = [
     ":path_bridge",
     "//third_party/rust/font_types/v0_8:lib",
