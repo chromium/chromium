@@ -12,10 +12,6 @@
 
 namespace net {
 
-// Returns true if support for using the simdutf library for base64
-// encode/decode is enabled.
-bool IsSimdutfBase64SupportEnabled();
-
 // Note: Only safe for use with trustworthy data or in sandboxed processes.
 NET_EXPORT bool SimdutfBase64Decode(
     std::string_view input,
