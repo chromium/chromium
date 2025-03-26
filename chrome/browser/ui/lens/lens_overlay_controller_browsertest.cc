@@ -428,6 +428,8 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     last_received_should_show_contextual_searchbox_ = should_show;
   }
 
+  void NotifyHandshakeComplete() override {}
+
   void NotifyResultsPanelOpened() override {
     did_notify_results_opened_ = true;
   }

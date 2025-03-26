@@ -2592,6 +2592,10 @@ void LensOverlayController::InitializeOverlayUI(
   if (pending_region_) {
     page_->SetPostRegionSelection(pending_region_->Clone());
   }
+  if (init_data.suggest_inputs_.has_encoded_request_id()) {
+    // Notify the overlay that it is safe to query autocomplete.
+    page_->NotifyHandshakeComplete();
+  }
 
   // Record the UMA for lens overlay invocation.
   lens::RecordInvocation(invocation_source_, initial_document_type_);
@@ -3559,6 +3563,19 @@ void LensOverlayController::HandleSuggestInputsResponse(
     pre_initialization_suggest_inputs_ = std::make_optional(suggest_inputs);
     return;
   }
+
+  // Check if the handshake with the server has been completed. This is
+  // signified bysuggest inputs having an encoded request ID. If the previous
+  // `suggest_inputs` already had an encoded request ID, then the handshake was
+  // already completed and we do not need to notify again. If `page_` doesn't
+  // exist, then it will be notified when it is created.
+  if (page_ &&
+      !initialization_data_->suggest_inputs_.has_encoded_request_id() &&
+      suggest_inputs.has_encoded_request_id()) {
+    // Notify the overlay that it is now safe to query autocomplete.
+    page_->NotifyHandshakeComplete();
+  }
+
   initialization_data_->suggest_inputs_ = suggest_inputs;
 }
 
