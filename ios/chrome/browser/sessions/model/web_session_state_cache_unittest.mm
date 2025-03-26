@@ -31,8 +31,8 @@ class WebSessionStateCacheTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestProfileIOS::Builder test_cbs_builder;
-    profile_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder test_profile_builder;
+    profile_ = std::move(test_profile_builder).Build();
     sessionCache_ =
         [[WebSessionStateCache alloc] initWithProfile:profile_.get()];
 
