@@ -42,6 +42,7 @@ class WebUIContentsContainer : public content::WebContentsDelegate {
   void InnerWebContentsAttached(content::WebContents* contents,
                                 WCObserver* observer);
   void RendererCrashed(WCObserver* observer);
+  void RecordRendererCrashedMetrics(WCObserver* observer);
 
   ScopedProfileKeepAlive profile_keep_alive_;
   const std::unique_ptr<content::WebContents> web_contents_;

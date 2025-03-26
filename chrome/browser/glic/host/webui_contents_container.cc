@@ -39,6 +39,7 @@ class WebUIContentsContainer::WCObserver : public content::WebContentsObserver {
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override {
     container_->RendererCrashed(this);
+    // WARNING: Do not do any more work, as `this` may have been destroyed.
   }
 
   // The container that owns this.
@@ -94,6 +95,17 @@ void WebUIContentsContainer::InnerWebContentsAttached(
 }
 
 void WebUIContentsContainer::RendererCrashed(WCObserver* observer) {
+  RecordRendererCrashedMetrics(observer);
+  if (outer_wc_observer_.get() == observer) {
+    auto* keyed_service = GlicKeyedServiceFactory::GetGlicKeyedService(
+        web_contents_->GetBrowserContext());
+    keyed_service->CloseUI();
+  }
+  // WARNING: Do not do any more work, as `this` may have been destroyed.
+}
+
+void WebUIContentsContainer::RecordRendererCrashedMetrics(
+    WCObserver* observer) {
   if (inner_wc_observer_.get() == observer) {
     base::RecordAction(base::UserMetricsAction("GlicSessionWebClientCrash"));
   }
