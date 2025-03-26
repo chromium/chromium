@@ -1268,6 +1268,8 @@
   [self cancelOmniboxEdit];
   [self setContentOffsetToTop];
   [self.feedHeaderViewController updateForFeedVisibilityChanged];
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  nil);
 }
 
 - (void)feedDidScroll {
