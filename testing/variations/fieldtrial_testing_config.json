@@ -9126,22 +9126,6 @@
             ]
         }
     ],
-    "EnablePixPayFlow": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableSyncingOfPixBankAccounts",
-                        "EnablePixPayments"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnablePkcs12ToChapsDualWrite": [
         {
             "platforms": [
