@@ -836,11 +836,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kLCPCriticalPathPredictorMaxHostsToTrack);
 
-// The virtual sliding window size for LCP critical path predictor (LCPP)
-// histogram.
+// The virtual sliding window size for LCP critical path predictor (LCPP).
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
-    kLCPCriticalPathPredictorHistogramSlidingWindowSize);
+    kLCPCriticalPathPredictorSlidingWindowSize);
 
 // The max histogram bucket count that can be stored in the LCP critical path
 // predictor (LCPP) database.
@@ -876,6 +875,17 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kLCPScriptObserverAdjustImageLoadPriority);
 
+// The virtual sliding window size for kLCPScriptObserver.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPScriptObserverSlidingWindowSize);
+
+// The max histogram bucket count that can be stored in the LCP critical path
+// predictor (LCPP) database for kLCPScriptObserver.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPScriptObserverMaxHistogramBuckets);
+
 // If enabled, Prerender2 by Speculation Rules API is delayed until
 // LCP is finished.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPTimingPredictorPrerender2);
@@ -893,6 +903,17 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kkLCPPAutoPreconnectMaxPreconnectOriginsCount);
+
+// The virtual sliding window size for kLCPPAutoPreconnectLcpOrigin.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPPAutoPreconnectSlidingWindowSize);
+
+// The max histogram bucket count that can be stored in the LCP critical path
+// predictor (LCPP) database for kLCPPAutoPreconnectLcpOrigin.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPPAutoPreconnectMaxHistogramBuckets);
 
 // If enabled, unused preload requests are deferred to the timing on LCP.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPDeferUnusedPreload);
@@ -947,6 +968,17 @@ enum class LcppDeferUnusedPreloadTiming {
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(LcppDeferUnusedPreloadTiming,
                                                kLcppDeferUnusedPreloadTiming);
 
+// The virtual sliding window size for kLCPPDeferUnusedPreload.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPPDeferUnusedPreloadSlidingWindowSize);
+
+// The max histogram bucket count that can be stored in the LCP critical path
+// predictor (LCPP) database for kLCPPDeferUnusedPreload.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPPDeferUnusedPreloadMaxHistogramBuckets);
+
 // If enabled, fetched font URLs are observed to predict font usage in the
 // future navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPFontURLPredictor);
@@ -995,6 +1027,17 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kLCPPCrossSiteFontPredictionAllowed);
+
+// The virtual sliding window size for kLCPPFontURLPredictor.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPPFontURLPredictorSlidingWindowSize);
+
+// The max histogram bucket count that can be stored in the LCP critical path
+// predictor (LCPP) database for kLCPPFontURLPredictor.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kLCPPFontURLPredictorMaxHistogramBuckets);
 
 // If enabled, LCPP learns with a navigation-initiator origin.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPInitiatorOrigin);
@@ -1111,6 +1154,17 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kHttpDiskCachePrewarmingSkipDuringBrowserStartup);
+
+// The virtual sliding window size for kLCPScriptObserver.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kHttpDiskCachePrewarmingSlidingWindowSize);
+
+// The max histogram bucket count that can be stored in the LCP critical path
+// predictor (LCPP) database for kLCPScriptObserver.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kHttpDiskCachePrewarmingMaxHistogramBuckets);
 
 // Kill-switch for new parsing behaviour of the X-Content-Type-Options header.
 // (Should be removed after the new behaviour has been launched.)
