@@ -130,27 +130,6 @@ namespace blink {
 
 namespace {
 
-bool AdjustGetOrCreate2DCanvasProvider() {
-  // The change to GetOrCreateCanvasResourceProvider() is safe only if the below
-  // new features are also enabled, as (a) our reasoning about the
-  // GetOrCreateCanvasResourceProvider() change is built on the behavior enabled
-  // by these features feature, and (b) if we were to ever disable the below
-  // features but leave the GetOrCreateCanvasResourceProvider() change in place
-  // we would be putting the codebase in an untested state.
-  if (!CanvasRenderingContext::
-          CheckProviderInCanCreateCanvas2dResourceProvider()) {
-    return false;
-  }
-
-  if (!CanvasRenderingContext::
-          CheckProviderInCanvas2DRenderingContextIsPaintable()) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(
-      features::kAdjustGetOrCreate2DCanvasProvider);
-}
-
 // These two constants determine if a newly created canvas starts with
 // acceleration disabled. Specifically:
 // 1. More than `kDisableAccelerationThreshold` canvases have been created.
@@ -2116,7 +2095,8 @@ void HTMLCanvasElement::ReplaceExistingResourceProviderFor2DContext() {
 CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     RasterModeHint hint) {
   if (IsRenderingContext2D()) {
-    if (!AdjustGetOrCreate2DCanvasProvider()) {
+    if (!CanvasRenderingContext::
+            CheckProviderInCanvas2DRenderingContextIsPaintable()) {
       Canvas2DLayerBridge* bridge = GetOrCreateCanvas2DLayerBridge();
       if (bridge == nullptr) {
         return nullptr;
@@ -2133,7 +2113,8 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
       return resource_provider;
     }
 
-    if (AdjustGetOrCreate2DCanvasProvider()) {
+    if (CanvasRenderingContext::
+            CheckProviderInCanvas2DRenderingContextIsPaintable()) {
       if (did_fail_to_create_resource_provider_) {
         return nullptr;
       }
@@ -2156,7 +2137,8 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     resource_provider = RecreateCanvasResourceProviderFor2DContext(
         canvas2d_bridge_->GetHibernationHandler());
 
-    if (AdjustGetOrCreate2DCanvasProvider()) {
+    if (CanvasRenderingContext::
+            CheckProviderInCanvas2DRenderingContextIsPaintable()) {
       UpdateMemoryUsage();
 
       if (context_) {

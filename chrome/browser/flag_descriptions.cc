@@ -26,12 +26,6 @@ const char kAdjustCanCreateCanvas2DResourceProviderDescription[] =
     "Changes CanvasRenderingContxt2D::CanCreateCanvas2DResourceProvider() "
     "to check for provider recreation rather than bridge recreation";
 
-const char kAdjustGetOrCreate2DCanvasProviderName[] =
-    "Adjust GetOrCreateCanvasResourceProvider() for Canvas2D";
-const char kAdjustGetOrCreate2DCanvasProviderDescription[] =
-    "Moves HTMLCanvasElement::GetOrCreateCanvasResourceProvider() "
-    "away from calling GetOrCreateCanvas2DLayerBridge() for Canvas2D";
-
 const char kAiSettingsPageRefreshName[] = "AI settings page refresh";
 const char kAiSettingsPageRefreshDescription[] =
     "Enables a revamp of the existing AI settings page.";

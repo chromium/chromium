@@ -12057,11 +12057,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kAdjustCanCreateCanvas2dResourceProvider)},
 
-    {"adjust-get-or-create-2dcanvas-provider",
-     flag_descriptions::kAdjustGetOrCreate2DCanvasProviderName,
-     flag_descriptions::kAdjustGetOrCreate2DCanvasProviderDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kAdjustGetOrCreate2DCanvasProvider)},
-
     {"is-paintable-checks-resource-provider",
      flag_descriptions::kIsPaintableChecksResourceProviderInsteadOfBridgeName,
      flag_descriptions::

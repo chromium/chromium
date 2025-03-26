@@ -42,10 +42,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAdjustCanCreateCanvas2dResourceProvider);
 
-// Serves as killswitch for changing GetOrCreateCanvasResourceProvider() away
-// from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdjustGetOrCreate2DCanvasProvider);
-
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvoidTrustedParamsCopies);
 
