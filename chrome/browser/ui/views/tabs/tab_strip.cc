@@ -1361,10 +1361,22 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
 
   if (new_active_tab != old_active_tab) {
     if (old_active_tab) {
-      old_active_tab->ActiveStateChanged();
+      if (old_active_tab->split().has_value()) {
+        for (Tab* split_tab : GetTabsInSplit(old_active_tab)) {
+          split_tab->ActiveStateChanged();
+        }
+      } else {
+        old_active_tab->ActiveStateChanged();
+      }
     }
 
-    new_active_tab->ActiveStateChanged();
+    if (new_active_tab->split().has_value()) {
+      for (Tab* split_tab : GetTabsInSplit(new_active_tab)) {
+        split_tab->ActiveStateChanged();
+      }
+    } else {
+      new_active_tab->ActiveStateChanged();
+    }
 
     tab_container_->SetActiveTab(selected_tabs_.active(),
                                  new_selection.active());
@@ -1922,20 +1934,20 @@ bool TabStrip::HoverCardIsShowingForTab(Tab* tab) {
 void TabStrip::ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) {
   if (tab->split().has_value()) {
     for (Tab* split_tab : GetTabsInSplit(tab)) {
-      split_tab->tab_style_views()->ShowHover(style);
+      split_tab->ShowHover(style);
     }
   } else {
-    tab->tab_style_views()->ShowHover(style);
+    tab->ShowHover(style);
   }
 }
 
 void TabStrip::HideHover(Tab* tab, TabStyle::HideHoverStyle style) {
   if (tab->split().has_value()) {
     for (Tab* split_tab : GetTabsInSplit(tab)) {
-      split_tab->tab_style_views()->HideHover(style);
+      split_tab->HideHover(style);
     }
   } else {
-    tab->tab_style_views()->HideHover(style);
+    tab->HideHover(style);
   }
 }
 
